@@ -1,0 +1,47 @@
+schemaVersion: 1
+unknownLicenseAction: reject
+pendingLicenseState: candidate-only
+sourceSnapshotRequirements:
+  - selected-source-sha256
+  - upstream-commit
+  - file-level-license-inventory
+  - patch-inventory
+  - transitive-dependency-license-closure
+permissiveLicenses:
+  - id: Apache-2.0
+    obligations: [include-license-text, preserve-copyright, preserve-notices]
+  - id: MIT
+    obligations: [include-license-text, preserve-copyright]
+  - id: BSD-2-Clause
+    obligations: [include-license-text, preserve-copyright]
+  - id: BSD-3-Clause
+    obligations: [include-license-text, preserve-copyright, no-endorsement]
+  - id: MPL-2.0
+    obligations: [include-license-text, preserve-notices, disclose-modified-covered-files]
+  - id: ISC
+    obligations: [include-license-text, preserve-copyright]
+  - id: 0BSD
+    obligations: [include-license-text]
+copyleftLicenses:
+  - id: GPL-2.0-only
+    requiresSpecialADR: true
+    defaultBundleAdmission: denied
+  - id: GPL-2.0-or-later
+    requiresSpecialADR: true
+    defaultBundleAdmission: denied
+  - id: GPL-3.0-only
+    requiresSpecialADR: true
+    defaultBundleAdmission: denied
+  - id: GPL-3.0-or-later
+    requiresSpecialADR: true
+    defaultBundleAdmission: denied
+  - id: AGPL-3.0-only
+    requiresSpecialADR: true
+    defaultBundleAdmission: denied
+    staticLinkAllowed: false
+    codeCopyAllowed: false
+  - id: AGPL-3.0-or-later
+    requiresSpecialADR: true
+    defaultBundleAdmission: denied
+    staticLinkAllowed: false
+    codeCopyAllowed: false
