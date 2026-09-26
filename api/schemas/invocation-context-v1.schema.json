@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/invocation-context/v1",
+  "title": "invocation-context",
+  "type": "object",
+  "properties": {
+    "context_id": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "iss": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "aud": {
+      "const": "platform-mcp-gateway"
+    },
+    "job_id": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "incident_id": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "subject": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "tenant_id": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+    },
+    "cluster_uids": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+      },
+      "maxItems": 1000
+    },
+    "namespaces": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+      },
+      "maxItems": 1000
+    },
+    "allowed_tools": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "maxItems": 64
+    },
+    "allowed_data_classes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "D0",
+          "D1",
+          "D2",
+          "D3"
+        ]
+      },
+      "maxItems": 4
+    },
+    "policy_version": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/versionRef"
+    },
+    "iat": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799
+    },
+    "exp": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799
+    },
+    "session_nonce": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "cnf": {
+      "type": "object",
+      "properties": {
+        "workload_identity": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "workload_identity"
+      ],
+      "additionalProperties": false
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "context_id",
+    "iss",
+    "aud",
+    "job_id",
+    "incident_id",
+    "subject",
+    "tenant_id",
+    "cluster_uids",
+    "namespaces",
+    "allowed_tools",
+    "allowed_data_classes",
+    "policy_version",
+    "iat",
+    "exp",
+    "session_nonce",
+    "cnf"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/action-plan/v2",
+  "title": "action-plan",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "action-plan/v2"
+    },
+    "actionPlanId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "tenantId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+    },
+    "incidentId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "rcaRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "iteration": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "targetCanonicalId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+    },
+    "suggestedCommand": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/commandText"
+    },
+    "shell": {
+      "const": "bash"
+    },
+    "recommendedExecutionProfileId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "reason": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+    },
+    "expectedImpact": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+    },
+    "preconditions": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+      },
+      "maxItems": 100
+    },
+    "riskSummary": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+    },
+    "operationRisk": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/operationRisk"
+    },
+    "dataRisk": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/dataClass"
+    },
+    "postCheckInstructions": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+      },
+      "maxItems": 100
+    },
+    "rollbackSuggestion": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "generatedBy": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        "name": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "type",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "state": {
+      "enum": [
+        "suggested",
+        "accepted",
+        "dismissed",
+        "superseded"
+      ]
+    },
+    "createdAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "actionPlanId",
+    "tenantId",
+    "incidentId",
+    "rcaRevision",
+    "iteration",
+    "targetCanonicalId",
+    "suggestedCommand",
+    "shell",
+    "recommendedExecutionProfileId",
+    "reason",
+    "expectedImpact",
+    "preconditions",
+    "riskSummary",
+    "operationRisk",
+    "dataRisk",
+    "postCheckInstructions",
+    "rollbackSuggestion",
+    "generatedBy",
+    "state",
+    "createdAt"
+  ],
+  "additionalProperties": false
+}

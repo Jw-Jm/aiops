@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/finding-envelope/v1",
+  "title": "finding-envelope",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "finding-envelope/v1"
+    },
+    "eventId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "tenantId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+    },
+    "clusterUid": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "system": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        "instance": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        "ruleId": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        "ruleVersion": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "system",
+        "instance",
+        "ruleId",
+        "ruleVersion"
+      ],
+      "additionalProperties": false
+    },
+    "sourceFingerprint": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "occurrenceId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "lifecycleState": {
+      "enum": [
+        "firing",
+        "resolved"
+      ]
+    },
+    "startsAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "sentAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "resolvedAt": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "observedAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "receivedAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "resourceCanonicalId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+    },
+    "status": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "severity": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/severity"
+    },
+    "payloadDigest": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "idempotencyKey": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+      },
+      "maxItems": 1000
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "tenantId",
+    "clusterUid",
+    "source",
+    "sourceFingerprint",
+    "occurrenceId",
+    "lifecycleState",
+    "startsAt",
+    "resolvedAt",
+    "observedAt",
+    "receivedAt",
+    "resourceCanonicalId",
+    "status",
+    "severity",
+    "payloadDigest",
+    "idempotencyKey",
+    "evidenceRefs"
+  ],
+  "additionalProperties": false
+}

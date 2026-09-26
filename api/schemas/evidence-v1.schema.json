@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/evidence/v1",
+  "title": "evidence",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "evidence/v1"
+    },
+    "evidenceId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "tenantId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+    },
+    "incidentId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "resourceCanonicalId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+    },
+    "type": {
+      "enum": [
+        "metric",
+        "log",
+        "event",
+        "network",
+        "hardware",
+        "kubevirt",
+        "resource_state",
+        "change"
+      ]
+    },
+    "sourceSystem": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "sourceInstance": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "dataClass": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/dataClass"
+    },
+    "observedFrom": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "observedTo": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "summary": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+    },
+    "reason": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+    },
+    "severity": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/severity"
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "provenanceState": {
+      "enum": [
+        "asserted",
+        "observed",
+        "inferred"
+      ]
+    },
+    "provenanceSourceType": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "queryRef": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "queryTextRef": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "queryHash": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "adapterVersion": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/versionRef"
+    },
+    "normalizationVersion": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/versionRef"
+    },
+    "backendLogicalId": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contentDigest": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "archiveObjectRef": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "retentionUntil": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "evidenceId",
+    "tenantId",
+    "incidentId",
+    "resourceCanonicalId",
+    "type",
+    "sourceSystem",
+    "sourceInstance",
+    "observedFrom",
+    "observedTo",
+    "summary",
+    "reason",
+    "severity",
+    "score",
+    "confidence",
+    "dataClass",
+    "provenanceState",
+    "provenanceSourceType",
+    "queryRef",
+    "queryTextRef",
+    "queryHash",
+    "adapterVersion",
+    "normalizationVersion",
+    "backendLogicalId",
+    "contentDigest",
+    "archiveObjectRef",
+    "retentionUntil",
+    "createdAt"
+  ],
+  "additionalProperties": false
+}

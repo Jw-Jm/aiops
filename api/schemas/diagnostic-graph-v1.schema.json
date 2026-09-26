@@ -1,0 +1,295 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/diagnostic-graph/v1",
+  "title": "diagnostic-graph",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "diagnostic-graph/v1"
+    },
+    "entry": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/entity"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/entity"
+      },
+      "maxItems": 1000
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+          },
+          "to": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+          },
+          "kind": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+          },
+          "provenance": {
+            "type": "object",
+            "properties": {
+              "sourceType": {
+                "enum": [
+                  "explicit_ref",
+                  "owner_reference",
+                  "selector_match",
+                  "binding_resolution",
+                  "identity_join",
+                  "inference_rule",
+                  "runtime_observed"
+                ]
+              },
+              "state": {
+                "enum": [
+                  "asserted",
+                  "observed",
+                  "inferred"
+                ]
+              },
+              "resolver": {
+                "anyOf": [
+                  {
+                    "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "extensions": {
+                "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+              }
+            },
+            "required": [
+              "sourceType",
+              "state",
+              "resolver"
+            ],
+            "additionalProperties": false
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "observedAt": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+          },
+          "validFrom": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+          },
+          "validTo": {
+            "anyOf": [
+              {
+                "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "extensions": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "kind",
+          "provenance",
+          "confidence",
+          "observedAt",
+          "validFrom",
+          "validTo"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 100000
+    },
+    "collectedAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "partial": {
+      "type": "boolean"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+      },
+      "maxItems": 1000
+    },
+    "degradedSources": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+      },
+      "maxItems": 1000
+    },
+    "budgets": {
+      "type": "object",
+      "properties": {
+        "maxDepth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxNodes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "maxEdges": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "rankedEvidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "evidenceId": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+          },
+          "source": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+          },
+          "resourceId": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+          },
+          "severity": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/severity"
+          },
+          "reason": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+          },
+          "message": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "timestamp": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+          },
+          "extensions": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+          }
+        },
+        "required": [
+          "rank",
+          "evidenceId",
+          "source",
+          "resourceId",
+          "severity",
+          "reason",
+          "message",
+          "confidence",
+          "score",
+          "timestamp"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 1000
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "conflictId": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+          },
+          "code": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+          },
+          "summary": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+            },
+            "maxItems": 1000
+          },
+          "severity": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/severity"
+          },
+          "resolution": {
+            "anyOf": [
+              {
+                "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "extensions": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+          }
+        },
+        "required": [
+          "conflictId",
+          "code",
+          "summary",
+          "evidenceRefs",
+          "severity",
+          "resolution"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 1000
+    },
+    "freshness": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/freshness"
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "entry",
+    "nodes",
+    "edges",
+    "collectedAt",
+    "partial",
+    "warnings",
+    "degradedSources",
+    "budgets",
+    "rankedEvidence",
+    "conflicts",
+    "freshness"
+  ],
+  "additionalProperties": false
+}

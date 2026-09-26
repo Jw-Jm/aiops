@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/rca-result/v1",
+  "title": "rca-result",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "rca-result/v1"
+    },
+    "incidentId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "status": {
+      "enum": [
+        "confirmed",
+        "probable",
+        "unresolved"
+      ]
+    },
+    "primaryCandidate": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "candidateId": {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+            },
+            "type": {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+            },
+            "resourceCanonicalId": {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+            },
+            "rank": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "source": {
+              "enum": [
+                "deterministic",
+                "pyrca",
+                "agent",
+                "manual"
+              ]
+            },
+            "evidenceRefs": {
+              "type": "array",
+              "items": {
+                "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+              },
+              "maxItems": 1000
+            },
+            "extensions": {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+            }
+          },
+          "required": [
+            "candidateId",
+            "type",
+            "resourceCanonicalId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "reasoningSummary": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+    },
+    "supportingEvidence": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+      },
+      "maxItems": 1000
+    },
+    "conflictingEvidence": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+      },
+      "maxItems": 1000
+    },
+    "missingEvidence": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+      },
+      "maxItems": 1000
+    },
+    "degradedSources": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+      },
+      "maxItems": 1000
+    },
+    "generatedBy": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        "name": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "type",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "policyVersion": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/versionRef"
+    },
+    "modelRef": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "promptPolicyVersion": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "incidentId",
+    "revision",
+    "status",
+    "primaryCandidate",
+    "confidence",
+    "reasoningSummary",
+    "supportingEvidence",
+    "conflictingEvidence",
+    "missingEvidence",
+    "degradedSources",
+    "generatedBy",
+    "policyVersion",
+    "modelRef",
+    "promptPolicyVersion",
+    "createdAt"
+  ],
+  "additionalProperties": false
+}

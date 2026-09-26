@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/finding-event/v1",
+  "title": "finding-event",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "finding-event/v1"
+    },
+    "eventId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "eventType": {
+      "const": "finding.updated"
+    },
+    "tenantId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+    },
+    "aggregateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^finding-[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "occurredAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "eventType",
+    "tenantId",
+    "aggregateId",
+    "occurredAt",
+    "payload"
+  ],
+  "additionalProperties": false
+}
