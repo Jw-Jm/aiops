@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	"gopkg.in/yaml.v3"
 	"ops-platform/internal/supplychain"
@@ -130,7 +131,7 @@ func TestLoadCatalogRejectsUnpinnedOrUnverifiedQualifiedComponents(t *testing.T)
 }
 
 func TestLoadCatalogAcceptsFullyLockedQualifiedComponent(t *testing.T) {
-	catalog, err := supplychain.LoadCatalog(strings.NewReader(qualifiedCatalog))
+	catalog, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(qualifiedCatalog), validQualifiedEvidence())
 	if err != nil {
 		t.Fatalf("LoadCatalog(qualified): %v", err)
 	}
@@ -141,8 +142,74 @@ func TestLoadCatalogAcceptsFullyLockedQualifiedComponent(t *testing.T) {
 
 func TestLoadCatalogAcceptsExactPrereleaseVersionContainingX(t *testing.T) {
 	document := strings.Replace(qualifiedCatalog, "version: 1.2.3", "version: 1.2.3-experimental", 1)
-	if _, err := supplychain.LoadCatalog(strings.NewReader(document)); err != nil {
+	if _, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(document), validQualifiedEvidence()); err != nil {
 		t.Fatalf("LoadCatalog(exact prerelease version): %v", err)
+	}
+}
+
+func TestLoadCatalogWithEvidenceRejectsMissingQualifiedEvidenceFiles(t *testing.T) {
+	tests := []struct {
+		name      string
+		files     fstest.MapFS
+		wantError string
+	}{
+		{
+			name: "missing PoC report",
+			files: fstest.MapFS{
+				"test/fixtures/demo.json": &fstest.MapFile{Data: []byte(`{"fixture":"demo"}`)},
+			},
+			wantError: "PoC report",
+		},
+		{
+			name: "missing conformance fixture",
+			files: fstest.MapFS{
+				"reports/demo-poc.md": &fstest.MapFile{Data: []byte("# Demo PoC\nResult: passed\n")},
+			},
+			wantError: "conformance fixture",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if _, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(qualifiedCatalog), test.files); err == nil || !strings.Contains(err.Error(), test.wantError) {
+				t.Fatalf("LoadCatalogWithEvidence error = %v, want %q rejection", err, test.wantError)
+			}
+		})
+	}
+}
+
+func TestLoadCatalogWithEvidenceRejectsEmptyEvidenceContent(t *testing.T) {
+	files := validQualifiedEvidence()
+	files["reports/demo-poc.md"].Data = []byte(" \n\t")
+	if _, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(qualifiedCatalog), files); err == nil || !strings.Contains(err.Error(), "empty") {
+		t.Fatalf("LoadCatalogWithEvidence error = %v, want empty evidence rejection", err)
+	}
+}
+
+func TestLoadCatalogWithEvidenceRejectsMalformedFixtureContent(t *testing.T) {
+	files := validQualifiedEvidence()
+	files["test/fixtures/demo.json"].Data = []byte(`{"fixture":`)
+	if _, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(qualifiedCatalog), files); err == nil || !strings.Contains(err.Error(), "valid JSON") {
+		t.Fatalf("LoadCatalogWithEvidence error = %v, want malformed JSON fixture rejection", err)
+	}
+}
+
+func TestLoadCatalogWithEvidenceRejectsTraversalEvidencePath(t *testing.T) {
+	document := strings.Replace(qualifiedCatalog, "pocReport: reports/demo-poc.md", "pocReport: ../reports/demo-poc.md", 1)
+	if _, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(document), validQualifiedEvidence()); err == nil || !strings.Contains(err.Error(), "clean relative path") {
+		t.Fatalf("LoadCatalogWithEvidence error = %v, want traversal path rejection", err)
+	}
+}
+
+func TestLoadCatalogWithoutEvidenceContextRejectsQualifiedComponent(t *testing.T) {
+	if _, err := supplychain.LoadCatalog(strings.NewReader(qualifiedCatalog)); err == nil || !strings.Contains(err.Error(), "evidence") {
+		t.Fatalf("LoadCatalog error = %v, want evidence resolver requirement", err)
+	}
+}
+
+func validQualifiedEvidence() fstest.MapFS {
+	return fstest.MapFS{
+		"reports/demo-poc.md":     &fstest.MapFile{Data: []byte("# Demo PoC\nEnvironment: test\nResult: passed\n")},
+		"test/fixtures/demo.json": &fstest.MapFile{Data: []byte(`{"fixture":"demo","expected":"pass"}`)},
 	}
 }
 
@@ -187,7 +254,7 @@ func TestLoadCatalogRejectsAGPLStaticLinkOrCodeCopy(t *testing.T) {
 
 func TestValidateBundleRejectsDeepFlowApp(t *testing.T) {
 	document := strings.Replace(qualifiedCatalog, "name: demo", "name: deepflow", 1)
-	catalog, err := supplychain.LoadCatalog(strings.NewReader(document))
+	catalog, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(document), validQualifiedEvidence())
 	if err != nil {
 		t.Fatalf("LoadCatalog(deepflow): %v", err)
 	}

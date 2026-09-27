@@ -1,8 +1,10 @@
 package supplychain
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"net/url"
 	"path"
 	"regexp"
@@ -28,6 +30,7 @@ type Catalog struct {
 	Components        []Component
 	FirstPartyKernels []FirstPartyKernel
 	byName            map[string]Component
+	evidenceVerified  bool
 }
 
 type Component struct {
@@ -93,8 +96,36 @@ func (c Catalog) Component(name string) (Component, bool) {
 	return component, ok
 }
 
-// LoadCatalog decodes and validates the supply-chain admission catalog.
+// LoadCatalog decodes candidate entries. Qualified entries require an evidence
+// filesystem and must be loaded with LoadCatalogWithEvidence.
 func LoadCatalog(reader io.Reader) (Catalog, error) {
+	catalog, err := loadCatalog(reader)
+	if err != nil {
+		return Catalog{}, err
+	}
+	for _, component := range catalog.Components {
+		if component.State == "qualified" {
+			return Catalog{}, fmt.Errorf("qualified component %q evidence requires LoadCatalogWithEvidence", component.Name)
+		}
+	}
+	return catalog, nil
+}
+
+// LoadCatalogWithEvidence decodes and validates the catalog and resolves all
+// PoC reports and conformance fixtures for qualified components from evidence.
+func LoadCatalogWithEvidence(reader io.Reader, evidence fs.FS) (Catalog, error) {
+	catalog, err := loadCatalog(reader)
+	if err != nil {
+		return Catalog{}, err
+	}
+	if err := catalog.validateQualifiedEvidence(evidence); err != nil {
+		return Catalog{}, err
+	}
+	catalog.evidenceVerified = true
+	return catalog, nil
+}
+
+func loadCatalog(reader io.Reader) (Catalog, error) {
 	decoder := yaml.NewDecoder(reader)
 	var document map[string]any
 	if err := decoder.Decode(&document); err != nil {
@@ -176,6 +207,61 @@ func (c Catalog) ValidateBundle(componentNames []string) error {
 		}
 		if component.State != "qualified" {
 			return fmt.Errorf("candidate component %q cannot enter a Bundle", name)
+		}
+		if !c.evidenceVerified {
+			return fmt.Errorf("qualified component %q evidence was not resolved before Bundle admission", name)
+		}
+	}
+	return nil
+}
+
+func (c Catalog) validateQualifiedEvidence(evidence fs.FS) error {
+	for _, component := range c.Components {
+		if component.State != "qualified" {
+			continue
+		}
+		if err := validateEvidenceFile(evidence, "PoC report", component.POCReport); err != nil {
+			return fmt.Errorf("component %q: %w", component.Name, err)
+		}
+		for _, fixture := range component.ConformanceFixtures {
+			if err := validateEvidenceFile(evidence, "conformance fixture", fixture); err != nil {
+				return fmt.Errorf("component %q: %w", component.Name, err)
+			}
+		}
+	}
+	return nil
+}
+
+func validateEvidenceFile(evidence fs.FS, kind, name string) error {
+	if evidence == nil {
+		return fmt.Errorf("%s evidence filesystem is required", kind)
+	}
+	if name == "." || !fs.ValidPath(name) {
+		return fmt.Errorf("%s path %q must be a clean relative path", kind, name)
+	}
+	info, err := fs.Stat(evidence, name)
+	if err != nil {
+		return fmt.Errorf("%s %q cannot be resolved: %w", kind, name, err)
+	}
+	if !info.Mode().IsRegular() {
+		return fmt.Errorf("%s %q must resolve to a regular file", kind, name)
+	}
+	contents, err := fs.ReadFile(evidence, name)
+	if err != nil {
+		return fmt.Errorf("read %s %q: %w", kind, name, err)
+	}
+	if strings.TrimSpace(string(contents)) == "" {
+		return fmt.Errorf("%s %q is empty", kind, name)
+	}
+	switch strings.ToLower(path.Ext(name)) {
+	case ".json":
+		if !json.Valid(contents) {
+			return fmt.Errorf("%s %q must contain valid JSON", kind, name)
+		}
+	case ".yaml", ".yml":
+		var document any
+		if err := yaml.Unmarshal(contents, &document); err != nil {
+			return fmt.Errorf("%s %q must contain valid YAML: %w", kind, name, err)
 		}
 	}
 	return nil
