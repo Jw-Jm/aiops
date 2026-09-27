@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/klauspost/compress/zstd"
 	"ops-platform/internal/contract"
@@ -226,6 +227,79 @@ func TestBundleLockSchemaRequiresMaterialPayloadReference(t *testing.T) {
 	}
 	if err := contract.Validate(ManifestSchemaID, canonical); err == nil {
 		t.Fatal("Bundle Lock Schema accepted a material without a payloadRef")
+	}
+}
+
+func TestValidateCatalogAdmissionAcceptsQualifiedComponentWithVerifiedEvidence(t *testing.T) {
+	catalog := []byte(`
+schemaVersion: 1
+components:
+  - name: demo
+    state: qualified
+    version: 1.2.3
+    source: https://example.org/demo
+    commit: 0123456789abcdef0123456789abcdef01234567
+    digest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    license: Apache-2.0
+    specialLicenseADR: pending
+    fileLicenses: []
+    sourceSnapshot: false
+    architectures: [linux/arm64]
+    usage: contract-test
+    reuseMode: direct-dependency
+    linkageMode: dynamic
+    importedPaths: []
+    dependencyClosure: []
+    dependencyClosureVerified: true
+    conformanceFixtures: [test/fixtures/demo.json]
+    forkPolicy: not-applicable
+    owner: platform-team
+    pocReport: reports/demo-poc.md
+    exitPlan: replace-through-adapter
+firstPartyKernels: []
+`)
+	evidence := fstest.MapFS{
+		"reports/demo-poc.md":     &fstest.MapFile{Data: []byte("PoC evidence")},
+		"test/fixtures/demo.json": &fstest.MapFile{Data: []byte(`{"status":"pass"}`)},
+	}
+
+	if err := validateCatalogAdmissionWithEvidence([]Material{{Name: "demo"}}, catalog, evidence); err != nil {
+		t.Fatalf("validateCatalogAdmissionWithEvidence(qualified): %v", err)
+	}
+}
+
+func TestValidateCatalogAdmissionRejectsQualifiedComponentWithoutEvidence(t *testing.T) {
+	catalog := []byte(`
+schemaVersion: 1
+components:
+  - name: demo
+    state: qualified
+    version: 1.2.3
+    source: https://example.org/demo
+    commit: 0123456789abcdef0123456789abcdef01234567
+    digest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    license: Apache-2.0
+    specialLicenseADR: pending
+    fileLicenses: []
+    sourceSnapshot: false
+    architectures: [linux/arm64]
+    usage: contract-test
+    reuseMode: direct-dependency
+    linkageMode: dynamic
+    importedPaths: []
+    dependencyClosure: []
+    dependencyClosureVerified: true
+    conformanceFixtures: [test/fixtures/demo.json]
+    forkPolicy: not-applicable
+    owner: platform-team
+    pocReport: reports/demo-poc.md
+    exitPlan: replace-through-adapter
+firstPartyKernels: []
+`)
+
+	err := validateCatalogAdmissionWithEvidence([]Material{{Name: "demo"}}, catalog, fstest.MapFS{})
+	if err == nil || !strings.Contains(err.Error(), "cannot be resolved") {
+		t.Fatalf("validateCatalogAdmissionWithEvidence(missing evidence) error = %v, want unresolved evidence rejection", err)
 	}
 }
 

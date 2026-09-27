@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -139,7 +140,15 @@ func Verify(ctx context.Context, manifest Manifest, trustRoot TrustRoot) (Verifi
 }
 
 func validateCatalogAdmission(materials []Material) error {
-	catalog, err := supplychain.LoadCatalog(bytes.NewReader(componentcatalog.ComponentCatalog()))
+	evidence, err := componentcatalog.ComponentEvidence()
+	if err != nil {
+		return fmt.Errorf("load embedded component evidence: %w", err)
+	}
+	return validateCatalogAdmissionWithEvidence(materials, componentcatalog.ComponentCatalog(), evidence)
+}
+
+func validateCatalogAdmissionWithEvidence(materials []Material, catalogYAML []byte, evidence fs.FS) error {
+	catalog, err := supplychain.LoadCatalogWithEvidence(bytes.NewReader(catalogYAML), evidence)
 	if err != nil {
 		return fmt.Errorf("load embedded component catalog: %w", err)
 	}
