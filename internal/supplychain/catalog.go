@@ -14,10 +14,11 @@ import (
 )
 
 var (
-	commitPattern       = regexp.MustCompile(`^[0-9a-fA-F]{40,64}$`)
-	digestPattern       = regexp.MustCompile(`^sha256:[0-9a-f]{64}$`)
-	exactVersionPattern = regexp.MustCompile(`^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$`)
-	exactReleasePattern = regexp.MustCompile(`^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z][0-9A-Za-z.-]*)?$`)
+	commitPattern            = regexp.MustCompile(`^[0-9a-fA-F]{40,64}$`)
+	digestPattern            = regexp.MustCompile(`^sha256:[0-9a-f]{64}$`)
+	exactVersionPattern      = regexp.MustCompile(`^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$`)
+	exactReleasePattern      = regexp.MustCompile(`^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z][0-9A-Za-z.-]*)?$`)
+	exactChartVersionPattern = regexp.MustCompile(`^v?[0-9]+\.[0-9]+(\.[0-9]+)?(-[0-9A-Za-z][0-9A-Za-z.-]*)?(\+[0-9A-Za-z.-]+)?$`)
 )
 
 var knownLicenses = map[string]struct{}{
@@ -412,7 +413,7 @@ func validateComponent(component Component) error {
 		}
 	}
 	if component.ChartLock != nil {
-		if component.ChartLock.Name == "" || !isExactVersion(component.ChartLock.Version) || !digestPattern.MatchString(component.ChartLock.Digest) {
+		if component.ChartLock.Name == "" || !exactChartVersionPattern.MatchString(component.ChartLock.Version) || isFloating(component.ChartLock.Version) || !digestPattern.MatchString(component.ChartLock.Digest) {
 			return fmt.Errorf("chartLock requires a name, exact version, and sha256 digest")
 		}
 		parsed, err := url.Parse(component.ChartLock.Source)

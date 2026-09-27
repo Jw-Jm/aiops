@@ -148,6 +148,31 @@ func TestLoadCatalogLocksBundledHelmChartArtifact(t *testing.T) {
 	}
 }
 
+func TestLoadCatalogAcceptsExactZeroPaddedChartRelease(t *testing.T) {
+	document := strings.Replace(qualifiedCatalog, "    exitPlan: replace-through-adapter", "    exitPlan: replace-through-adapter\n    chartLock:\n      name: deepflow\n      version: 7.1.002\n      digest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n      source: https://example.org/deepflow-7.1.002.tgz", 1)
+	if _, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(document), fstest.MapFS{
+		"reports/demo-poc.md":     &fstest.MapFile{Data: []byte("PoC report\n")},
+		"test/fixtures/demo.json": &fstest.MapFile{Data: []byte(`{"fixture":true}`)},
+	}); err != nil {
+		t.Fatalf("exact upstream chart release rejected: %v", err)
+	}
+}
+
+func TestLoadCatalogRejectsFloatingChartRelease(t *testing.T) {
+	base := strings.Replace(qualifiedCatalog, "    exitPlan: replace-through-adapter", "    exitPlan: replace-through-adapter\n    chartLock:\n      name: deepflow\n      version: 7.1.002\n      digest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n      source: https://example.org/deepflow-7.1.002.tgz", 1)
+	for _, version := range []string{"latest", "develop", "7.1.x"} {
+		t.Run(version, func(t *testing.T) {
+			document := strings.Replace(base, "version: 7.1.002", "version: "+version, 1)
+			if _, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(document), fstest.MapFS{
+				"reports/demo-poc.md":     &fstest.MapFile{Data: []byte("PoC report\n")},
+				"test/fixtures/demo.json": &fstest.MapFile{Data: []byte(`{"fixture":true}`)},
+			}); err == nil {
+				t.Fatalf("floating chart release %q was accepted", version)
+			}
+		})
+	}
+}
+
 func TestVictoriaArtifactsRemainBlockedFromBundleWhileCandidate(t *testing.T) {
 	contents, err := os.ReadFile(filepath.Join("..", "..", "bundle", "component-catalog.yaml"))
 	if err != nil {

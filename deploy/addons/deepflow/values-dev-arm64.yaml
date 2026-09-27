@@ -1,0 +1,95 @@
+global:
+  image:
+    repository: docker.io/deepflowce
+    pullPolicy: IfNotPresent
+  password:
+    mysql: __DEEPFLOW_POC_DB_PASSWORD__
+  replicas: 1
+  allInOneLocalStorage: false
+  ntpServer: ""
+
+image:
+  server:
+    repository: docker.io/deepflowce/deepflow-server
+    tag: v7.2.0@sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939
+    pullPolicy: IfNotPresent
+  app:
+    repository: docker.io/deepflowce/deepflow-app
+    tag: disabled
+    pullPolicy: IfNotPresent
+
+server:
+  replicas: 1
+  service:
+    type: ClusterIP
+
+app:
+  replicas: "0"
+  service:
+    type: ClusterIP
+
+configmap:
+  server.yaml:
+    reporting:
+      reporting-disabled: true
+    ingester:
+      flow-metrics-ttl-hour:
+        vtap-flow-1m: 6
+        vtap-flow-1s: 6
+        vtap-app-1m: 6
+        vtap-app-1s: 6
+      flow-log-ttl-hour:
+        l4-flow-log: 6
+        l7-flow-log: 6
+        l4-packet: 6
+
+deepflow-agent:
+  enabled: true
+  image:
+    repository: docker.io/deepflowce/deepflow-agent
+    tag: v7.2.0@sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9
+    pullPolicy: IfNotPresent
+  clusterNAME: ops-sp02-deepflow-poc
+  sysctlInitContainer:
+    enabled: false
+
+mysql:
+  enabled: true
+  image:
+    repository: docker.io/library/mysql
+    tag: 8.0.39@sha256:a1f202a397782b7e2a98359b3f476132189b179e04f9123d4750d527e937f138
+    pullPolicy: IfNotPresent
+  storageConfig:
+    type: persistentVolumeClaim
+    persistence:
+      size: 2Gi
+  service:
+    type: ClusterIP
+
+clickhouse:
+  enabled: true
+  replicas: 1
+  image:
+    repository: docker.io/clickhouse/clickhouse-server
+    tag: 23.10.4.25@sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76
+    pullPolicy: IfNotPresent
+  storageConfig:
+    type: persistentVolumeClaim
+    persistence:
+      - name: clickhouse-path
+        accessModes: [ReadWriteOnce]
+        size: 2Gi
+        storageClass: ""
+      - name: clickhouse-storage-path
+        accessModes: [ReadWriteOnce]
+        size: 2Gi
+        storageClass: ""
+  service:
+    type: ClusterIP
+
+grafana:
+  enabled: false
+stella-agent-ce:
+  enabled: false
+byconity:
+  enabled: false

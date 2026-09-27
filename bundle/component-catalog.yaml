@@ -100,29 +100,55 @@ components:
     state: candidate
     version: "7.2.0"
     source: "https://github.com/deepflowio/deepflow"
-    commit: pending
-    digest: pending
-    license: pending
+    commit: e567b167453ffa99f08f26def20379b4f831e073
+    digest: sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939
+    license: Apache-2.0
     specialLicenseADR: pending
     fileLicenses: pending
     sourceSnapshot: false
     sourceArchiveSHA256: pending
-    architectures: pending
+    architectures: [linux/arm64]
     usage: "optional network and eBPF addon"
     reuseMode: bundled-image
     linkageMode: pending
     importedPaths: pending
-    dependencyClosure: pending
+    dependencyClosure:
+      - name: deepflow-agent
+        version: "7.2.0"
+        source: "https://github.com/deepflowio/deepflow"
+        commit: e567b167453ffa99f08f26def20379b4f831e073
+        digest: sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9
+        license: Apache-2.0
+      - name: mysql
+        version: "8.0.39"
+        source: "https://github.com/mysql/mysql-server"
+        commit: d69a12a94538d2d17c0cc45abedd57648a7b2ebd
+        digest: sha256:a1f202a397782b7e2a98359b3f476132189b179e04f9123d4750d527e937f138
+        license: GPL-2.0-only
+      - name: clickhouse
+        version: "23.10.4.25"
+        source: "https://github.com/ClickHouse/ClickHouse"
+        commit: 330fd687d41e2b6a3adb8920bcb2a39c1330e9af
+        digest: sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76
+        license: Apache-2.0
     dependencyClosureVerified: false
     patches: pending
     forkPolicy: pending
     owner: pending
-    pocReport: pending
-    conformanceFixtures: pending
+    pocReport: docs/poc/deepflow-v7.2.0-orbstack.md
+    conformanceFixtures:
+      - test/fixtures/deepflow/v7.2.0/orbstack-networkpolicy-egress-failure.json
+      - test/fixtures/deepflow/v7.2.0/querier-show-tables-upstream.json
     exitPlan: pending
     requiredFor1_0: true
-    candidateNote: "Candidate release 7.2.0 remains PoC-gated; the standard 1.0 bundle excludes deepflow-app, GUI, Stella, ByConity, Jaeger, and OTel."
-    officialSupportSources: []
+    candidateNote: "The upstream chart index has no 7.2.0 chart; the PoC pins chart archive 7.1.002 with v7.2.0 server and agent images. OrbStack did not enforce the release-scoped deny-egress policy, so networkEvidenceMode is fixture_only; Agent registration and Querier flow capture were not used to claim live qualification. Dependency/license admission remains incomplete. deepflow-app, GUI, Stella, ByConity, Jaeger, and OTel are excluded."
+    chartLock:
+      name: deepflow
+      version: "7.1.002"
+      digest: sha256:ca0ce1e919cd1a4184e6fba5e41ce1935694557fd78a4b04883f036de288d519
+      source: "https://deepflowio.github.io/deepflow/deepflow-7.1.002.tgz"
+    officialSupportSources:
+      - "https://github.com/deepflowio/deepflow/releases/tag/v7.2.0"
   - name: kubernetes
     state: candidate
     version: pending

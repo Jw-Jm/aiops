@@ -1,0 +1,19 @@
+{
+  "apiVersion": "deepflow.io/v7.2.0/orbstack-poc/v1",
+  "l7Context": false,
+  "networkEvidence": true,
+  "networkEvidenceMode": "fixture_only",
+  "observedAtUTC": "2026-09-27T13:55:16Z",
+  "probe": {
+    "policyName": "deepflow-isolated",
+    "probeImage": "docker.io/library/busybox:1.36.1@sha256:bd44eb136a95dcc8dc58995e43abc40a413f2e8e3d4a2aae6bccbe94686acb05",
+    "destination": "http://1.1.1.1/",
+    "podPhase": "Failed",
+    "exitCode": 10,
+    "log": "wget: note: TLS certificate validation not implemented\npublic-egress-connected",
+    "denied": false
+  },
+  "reason": "OrbStack Kubernetes accepted public egress from a test Pod despite the release-scoped deny-egress NetworkPolicy; live network-isolation prerequisite is not met",
+  "sourceCommit": "e567b167453ffa99f08f26def20379b4f831e073",
+  "traceCompletion": false
+}
