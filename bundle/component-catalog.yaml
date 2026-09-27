@@ -1,0 +1,734 @@
+schemaVersion: 1
+components:
+  - name: victoria-metrics
+    state: candidate
+    version: pending
+    source: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "metrics query/store"
+    reuseMode: external-service
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Existing compatible instances are reused; offline bundled artifacts remain a separate unresolved admission item."
+    officialSupportSources: []
+  - name: victoria-logs
+    state: candidate
+    version: pending
+    source: "https://github.com/VictoriaMetrics/VictoriaLogs"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "logs and events query/store"
+    reuseMode: external-service
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Existing compatible instances are reused; offline bundled artifacts remain a separate unresolved admission item."
+    officialSupportSources: []
+  - name: deepflow
+    state: candidate
+    version: "7.2.0"
+    source: "https://github.com/deepflowio/deepflow"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "optional network and eBPF addon"
+    reuseMode: bundled-image
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Candidate release 7.2.0 remains PoC-gated; the standard 1.0 bundle excludes deepflow-app, GUI, Stella, ByConity, Jaeger, and OTel."
+    officialSupportSources: []
+  - name: kubernetes
+    state: candidate
+    version: pending
+    source: "https://github.com/kubernetes/kubernetes"
+    commit: pending
+    digest: pending
+    license: Apache-2.0
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "host Kubernetes API prerequisite"
+    reuseMode: host-prerequisite
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Use the actual OrbStack server version; the platform does not bundle or select a production Kubernetes version here."
+    officialSupportSources: []
+  - name: kubevirt
+    state: candidate
+    version: pending
+    source: "https://github.com/kubevirt/kubevirt"
+    commit: pending
+    digest: pending
+    license: Apache-2.0
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "KubeVirt API and VM runtime"
+    reuseMode: bundled-image
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Development selection follows the detected Kubernetes version. The production Kubernetes 1.27 plus KubeVirt 1.3 pairing remains unsupported and unresolved."
+    officialSupportSources:
+      - "https://github.com/kubevirt/sig-release/blob/main/releases/k8s-support-matrix.md"
+      - "https://kubevirt.io/user-guide/release_notes/#v1-3-0"
+  - name: cdi
+    state: candidate
+    version: pending
+    source: "https://github.com/kubevirt/containerized-data-importer"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "KubeVirt data import integration"
+    reuseMode: bundled-image
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Version and API compatibility must come from the actual cluster CRD, Operator, and status."
+    officialSupportSources: []
+  - name: holmesgpt
+    state: candidate
+    version: pending
+    source: "https://github.com/HolmesGPT/holmesgpt"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "read-only investigation runtime"
+    reuseMode: process-isolated
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Disable upstream write/remediation and direct production data source toolsets; use platform MCP Gateway only."
+    officialSupportSources: []
+  - name: k8sgpt
+    state: candidate
+    version: pending
+    source: "https://github.com/k8sgpt-ai/k8sgpt"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "Kubernetes inspection/analyzer"
+    reuseMode: process-isolated
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Consume deterministic analyzer output without enabling --explain or an LLM in the deterministic chain."
+    officialSupportSources: []
+  - name: coroot-community
+    state: candidate
+    version: pending
+    source: "https://github.com/coroot/coroot"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "selective Community Check/Audit reuse"
+    reuseMode: vendor
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Only low-coupling Community files may be considered after file-level license and dependency review."
+    officialSupportSources: []
+  - name: kubevirt-observability-controller
+    state: candidate
+    version: pending
+    source: "https://github.com/kubevirt/kubevirt-observability-controller"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "KubeVirt rules and metrics"
+    reuseMode: selective-rules
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Alpha upstream; only validated rules/code may be selected, with an explicit rollback version."
+    officialSupportSources: []
+  - name: kubevirt-must-gather
+    state: candidate
+    version: pending
+    source: "https://github.com/kubevirt/must-gather"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "KubeVirt bounded diagnostics"
+    reuseMode: process-isolated
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Use oc adm must-gather on OpenShift; native Kubernetes requires a separately reviewed least-privilege collector."
+    officialSupportSources: []
+  - name: node-problem-detector
+    state: candidate
+    version: pending
+    source: "https://github.com/kubernetes/node-problem-detector"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "node/kernel problem rules"
+    reuseMode: selective-rules
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Prefer reviewed rule reuse after result-equivalence validation."
+    officialSupportSources: []
+  - name: gofish
+    state: candidate
+    version: pending
+    source: "https://github.com/stmcginnis/gofish"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "Redfish Go SDK"
+    reuseMode: direct-dependency
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Read-only BMC fact source; no IPMI raw command or arbitrary Redfish write proxy."
+    officialSupportSources: []
+  - name: ipmi-exporter
+    state: candidate
+    version: pending
+    source: "https://github.com/prometheus-community/ipmi_exporter"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "IPMI metrics exporter"
+    reuseMode: external-service
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Reuse a controlled existing exporter where available; no platform-managed BMC write access."
+    officialSupportSources: []
+  - name: smartctl-exporter
+    state: candidate
+    version: pending
+    source: "https://github.com/prometheus-community/smartctl_exporter"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "disk health exporter"
+    reuseMode: external-service
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Exporter deployment and exact target compatibility remain subject to admission."
+    officialSupportSources: []
+  - name: kubernetes-ontology
+    state: candidate
+    version: pending
+    source: "https://github.com/Colvin-Y/kubernetes-ontology"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "Diagnostic Subgraph and Evidence baseline"
+    reuseMode: vendor
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Do not expose upstream schemas; only selected model and reusable logic may enter after PoC and source review."
+    officialSupportSources: []
+  - name: ariadne
+    state: candidate
+    version: pending
+    source: "https://github.com/aalpar/ariadne"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "Kubernetes/CRD relation resolver"
+    reuseMode: direct-dependency
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Use as the internal relation resolver baseline; do not replace it with a new graph engine."
+    officialSupportSources: []
+  - name: pyrca
+    state: candidate
+    version: pending
+    source: "https://github.com/salesforce/PyRCA"
+    commit: pending
+    digest: pending
+    license: BSD-3-Clause
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "optional RCA candidate ranking"
+    reuseMode: process-isolated
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: false
+    candidateNote: "Optional metric time-series candidate ranking only after gain and dependency gates."
+    officialSupportSources: []
+  - name: keep-community
+    state: candidate
+    version: pending
+    source: "https://github.com/keephq/keep"
+    commit: pending
+    digest: pending
+    license: MIT
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "selective Incident/correlation rules or models"
+    reuseMode: reference-only
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Continue PoC; never import ee/; only file-reviewed Community code may be extracted."
+    officialSupportSources: []
+  - name: metal3-bmo
+    state: candidate
+    version: pending
+    source: "https://github.com/metal3-io/baremetal-operator"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "hardware resource model baseline"
+    reuseMode: reference-only
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Reuse model/code only; do not deploy the complete Metal3 stack."
+    officialSupportSources: []
+  - name: keycloak
+    state: candidate
+    version: pending
+    source: "https://github.com/keycloak/keycloak"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "OIDC identity provider"
+    reuseMode: bundled-image
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Exact release, digest, license closure, and arm64 support are pending admission."
+    officialSupportSources: []
+  - name: openbao
+    state: candidate
+    version: pending
+    source: "https://github.com/openbao/openbao"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "secret management and transit"
+    reuseMode: bundled-image
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Exact release, digest, license closure, and arm64 support are pending admission."
+    officialSupportSources: []
+  - name: seaweedfs
+    state: candidate
+    version: pending
+    source: "https://github.com/seaweedfs/seaweedfs"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "S3-compatible evidence archive"
+    reuseMode: bundled-image
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Default archive choice; exact release, digest, license closure, and arm64 support are pending admission."
+    officialSupportSources: []
+  - name: opa
+    state: candidate
+    version: pending
+    source: "https://github.com/open-policy-agent/opa"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "policy evaluation"
+    reuseMode: bundled-image
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Exact release, digest, license closure, and arm64 support are pending admission."
+    officialSupportSources: []
+  - name: postgresql
+    state: candidate
+    version: pending
+    source: "https://github.com/postgres/postgres"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "platform control-plane database"
+    reuseMode: bundled-image
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Exact release, digest, license closure, and arm64 support are pending admission."
+    officialSupportSources: []
+  - name: robusta
+    state: candidate
+    version: pending
+    source: "https://github.com/robusta-dev/robusta"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "optional remediation code source"
+    reuseMode: reference-only
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: false
+    candidateNote: "Non-required candidate for 1.0; not part of the Agent command execution path."
+    officialSupportSources: []
+  - name: medik8s
+    state: candidate
+    version: pending
+    source: "https://github.com/medik8s/node-healthcheck-operator"
+    commit: pending
+    digest: pending
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: pending
+    usage: "optional node remediation code source"
+    reuseMode: reference-only
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: false
+    candidateNote: "Non-required candidate for 1.0; keep as a later PoC option."
+    officialSupportSources: []
+firstPartyKernels: []
