@@ -1,0 +1,2318 @@
+# OpenAPI 3.1 source of truth for public REST and SSE contracts.
+components:
+    schemas:
+        CanonicalID:
+            description: RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
+            format: canonical-id
+            type: string
+        CommandExecutionEvent:
+            additionalProperties: false
+            properties:
+                eventId:
+                    type: string
+                eventType:
+                    type: string
+                executionId:
+                    $ref: '#/components/schemas/Identifier'
+                occurredAt:
+                    format: date-time
+                    type: string
+                payload: {}
+            required:
+                - eventId
+                - eventType
+                - occurredAt
+                - executionId
+                - payload
+            type: object
+        CommandExecutionRequest:
+            additionalProperties: false
+            properties:
+                actionPlanId:
+                    type:
+                        - string
+                        - "null"
+                actualCommand:
+                    type: string
+                executionProfileId:
+                    $ref: '#/components/schemas/Identifier'
+                riskAcknowledgementId:
+                    $ref: '#/components/schemas/Identifier'
+                shell:
+                    type: string
+                target:
+                    $ref: '#/components/schemas/CanonicalID'
+            required:
+                - actualCommand
+                - target
+                - shell
+                - executionProfileId
+                - riskAcknowledgementId
+            type: object
+        DiagnosticGraphBuildRequest:
+            additionalProperties: false
+            properties:
+                entryCanonicalId:
+                    $ref: '#/components/schemas/CanonicalID'
+                policy:
+                    $ref: '#/components/schemas/GraphBudget'
+                recipe:
+                    enum:
+                        - incident
+                    type: string
+            required:
+                - entryCanonicalId
+                - recipe
+                - policy
+            type: object
+        ErrorEnvelope:
+            additionalProperties: false
+            properties:
+                code:
+                    enum:
+                        - INVALID_ARGUMENT
+                        - UNAUTHENTICATED
+                        - FORBIDDEN
+                        - NOT_FOUND
+                        - CONFLICT
+                        - PRECONDITION_FAILED
+                        - RATE_LIMITED
+                        - SOURCE_DEGRADED
+                        - GRAPH_NOT_READY
+                        - GRAPH_PARTIAL
+                        - TIMEOUT
+                        - BUDGET_EXHAUSTED
+                        - POLICY_DENIED
+                        - RISK_ACK_REQUIRED
+                        - RISK_ACK_COMMAND_MISMATCH
+                        - STEP_UP_REQUIRED
+                        - STEP_UP_EXPIRED
+                        - IDEMPOTENCY_CONFLICT
+                        - INTERNAL
+                        - CAPABILITY_DISABLED
+                        - SOURCE_NOT_CONFIGURED
+                        - IDEMPOTENCY_KEY_REUSED
+                        - IDEMPOTENCY_IN_PROGRESS
+                        - EXECUTION_PROFILE_DENIED
+                        - COMMAND_POLICY_DENIED
+                        - EXECUTION_UNKNOWN
+                        - OUTPUT_TRUNCATED
+                        - BUNDLE_SIGNATURE_INVALID
+                        - BUNDLE_DIGEST_MISMATCH
+                        - BUNDLE_EXTRACTION_REJECTED
+                        - PROFILE_COMPONENT_CONFLICT
+                        - UPSTREAM_COMPATIBILITY_UNVERIFIED
+                        - OPENBAO_SEALED
+                        - HOST_NOT_ONBOARDED
+                    type: string
+                details:
+                    additionalProperties: true
+                    type: object
+                message:
+                    type: string
+                requestId:
+                    $ref: '#/components/schemas/Identifier'
+                retryable:
+                    type: boolean
+            required:
+                - code
+                - message
+                - requestId
+                - retryable
+            type: object
+        EvidenceQueryBudget:
+            additionalProperties: false
+            properties:
+                maxBytes:
+                    minimum: 1
+                    type: integer
+                timeoutMs:
+                    minimum: 1
+                    type: integer
+            required:
+                - timeoutMs
+                - maxBytes
+            type: object
+        EvidenceQueryRequest:
+            additionalProperties: false
+            properties:
+                budget:
+                    $ref: '#/components/schemas/EvidenceQueryBudget'
+                queryTemplate:
+                    type: string
+                resourceCanonicalId:
+                    $ref: '#/components/schemas/CanonicalID'
+                timeRange:
+                    $ref: '#/components/schemas/EvidenceQueryTimeRange'
+                type:
+                    type: string
+            required:
+                - resourceCanonicalId
+                - type
+                - timeRange
+                - queryTemplate
+                - budget
+            type: object
+            x-contract-schema-id: https://ops.local/schemas/evidence/v1
+        EvidenceQueryTimeRange:
+            additionalProperties: false
+            properties:
+                from:
+                    format: date-time
+                    type: string
+                to:
+                    format: date-time
+                    type: string
+            required:
+                - from
+                - to
+            type: object
+        FindingEnvelope:
+            additionalProperties: true
+            description: Finding ingestion payload validated against finding-envelope/v1.
+            type: object
+            x-json-schema-id: https://ops.local/schemas/finding-envelope/v1
+        GraphBudget:
+            additionalProperties: false
+            properties:
+                maxDepth:
+                    minimum: 0
+                    type: integer
+                maxEdges:
+                    minimum: 1
+                    type: integer
+                maxNodes:
+                    minimum: 1
+                    type: integer
+                timeoutMs:
+                    minimum: 1
+                    type: integer
+            required:
+                - maxDepth
+                - maxNodes
+                - maxEdges
+                - timeoutMs
+            type: object
+        Identifier:
+            format: identifier
+            type: string
+        IncidentTransitionRequest:
+            additionalProperties: false
+            properties:
+                expectedRevision:
+                    minimum: 1
+                    type: integer
+                reason:
+                    type: string
+                targetState:
+                    type: string
+            required:
+                - targetState
+                - reason
+                - expectedRevision
+            type: object
+        InvestigationEvent:
+            additionalProperties: false
+            properties:
+                eventId:
+                    type: string
+                eventType:
+                    enum:
+                        - job.state
+                        - step.started
+                        - step.completed
+                        - evidence.added
+                        - rca.updated
+                        - job.completed
+                    type: string
+                jobId:
+                    $ref: '#/components/schemas/Identifier'
+                occurredAt:
+                    format: date-time
+                    type: string
+                payload: {}
+            required:
+                - eventId
+                - eventType
+                - occurredAt
+                - jobId
+                - payload
+            type: object
+        JSONRequest:
+            additionalProperties: true
+            description: JSON object body. Operation-specific fields are defined by the owning public contract.
+            type: object
+        PageEnvelope:
+            additionalProperties: false
+            properties:
+                data:
+                    items: {}
+                    type: array
+                meta:
+                    additionalProperties: true
+                    properties:
+                        nextCursor:
+                            type: string
+                    type: object
+                requestId:
+                    $ref: '#/components/schemas/Identifier'
+            required:
+                - data
+                - requestId
+                - meta
+            type: object
+        SuccessEnvelope:
+            additionalProperties: false
+            properties:
+                data: {}
+                meta:
+                    additionalProperties: true
+                    type: object
+                requestId:
+                    $ref: '#/components/schemas/Identifier'
+            required:
+                - data
+                - requestId
+            type: object
+    securitySchemes:
+        BearerAuth:
+            bearerFormat: JWT
+            scheme: bearer
+            type: http
+info:
+    title: Smart Operations Platform API
+    version: 1.0.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+openapi: 3.1.0
+paths:
+    /api/v1/action-plans:
+        post:
+            operationId: createActionPlan
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: createActionPlan
+            tags:
+                - ActionPlans
+            x-idempotency: required
+    /api/v1/action-plans/{actionPlanId}:
+        get:
+            operationId: getActionPlan
+            parameters:
+                - in: path
+                  name: actionPlanId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getActionPlan
+            tags:
+                - ActionPlans
+    /api/v1/action-plans/{actionPlanId}:accept:
+        post:
+            operationId: acceptActionPlan
+            parameters:
+                - in: path
+                  name: actionPlanId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: acceptActionPlan
+            tags:
+                - ActionPlans
+            x-idempotency: required
+    /api/v1/action-plans/{actionPlanId}:dismiss:
+        post:
+            operationId: dismissActionPlan
+            parameters:
+                - in: path
+                  name: actionPlanId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: dismissActionPlan
+            tags:
+                - ActionPlans
+            x-idempotency: required
+    /api/v1/admin/clusters:
+        get:
+            operationId: getClusters
+            parameters:
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getClusters
+            tags:
+                - Admin
+        post:
+            operationId: createCluster
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: createCluster
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/execution-profiles:
+        get:
+            operationId: getExecutionProfiles
+            parameters:
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getExecutionProfiles
+            tags:
+                - Admin
+        post:
+            operationId: createExecutionProfile
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: createExecutionProfile
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/legal-holds:
+        get:
+            operationId: getLegalHolds
+            parameters:
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getLegalHolds
+            tags:
+                - Admin
+        post:
+            operationId: createLegalHold
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: createLegalHold
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/policy-bundles:
+        get:
+            operationId: getPolicyBundles
+            parameters:
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getPolicyBundles
+            tags:
+                - Admin
+    /api/v1/admin/policy-bundles:publish:
+        post:
+            operationId: publishPolicyBundle
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: publishPolicyBundle
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/recipes:
+        get:
+            operationId: getRecipes
+            parameters:
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getRecipes
+            tags:
+                - Admin
+    /api/v1/admin/role-bindings:
+        get:
+            operationId: getRoleBindings
+            parameters:
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getRoleBindings
+            tags:
+                - Admin
+        post:
+            operationId: createRoleBinding
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: createRoleBinding
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/source-registrations:
+        get:
+            operationId: getSourceRegistrations
+            parameters:
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getSourceRegistrations
+            tags:
+                - Admin
+        post:
+            operationId: createSourceRegistration
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: createSourceRegistration
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/tenants:
+        get:
+            operationId: getTenants
+            parameters:
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getTenants
+            tags:
+                - Admin
+        post:
+            operationId: createTenant
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: createTenant
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/tools:
+        get:
+            operationId: getTools
+            parameters:
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getTools
+            tags:
+                - Admin
+    /api/v1/audit-records:
+        get:
+            operationId: getAuditRecords
+            parameters:
+                - in: query
+                  name: subject
+                  schema:
+                    type: string
+                - in: query
+                  name: operation
+                  schema:
+                    type: string
+                - in: query
+                  name: incidentId
+                  schema:
+                    type: string
+                - in: query
+                  name: actionPlanId
+                  schema:
+                    type: string
+                - in: query
+                  name: resource
+                  schema:
+                    type: string
+                - in: query
+                  name: from
+                  schema:
+                    format: date-time
+                    type: string
+                - in: query
+                  name: to
+                  schema:
+                    format: date-time
+                    type: string
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getAuditRecords
+            tags:
+                - Audit
+    /api/v1/audit-records/{auditId}:
+        get:
+            operationId: getAuditRecord
+            parameters:
+                - in: path
+                  name: auditId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getAuditRecord
+            tags:
+                - Audit
+    /api/v1/capabilities:
+        get:
+            operationId: getCapabilities
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getCapabilities
+            tags:
+                - Overview
+    /api/v1/command-executions:
+        post:
+            operationId: createCommandExecution
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CommandExecutionRequest'
+                required: true
+            responses:
+                "202":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: createCommandExecution
+            tags:
+                - CommandExecutions
+            x-idempotency: required
+    /api/v1/command-executions/{executionId}:
+        get:
+            operationId: getCommandExecution
+            parameters:
+                - in: path
+                  name: executionId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getCommandExecution
+            tags:
+                - CommandExecutions
+    /api/v1/command-executions/{executionId}/events:
+        get:
+            operationId: streamCommandExecutionEvents
+            parameters:
+                - in: path
+                  name: executionId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        text/event-stream:
+                            schema:
+                                type: string
+                    description: Server-sent event stream. Each event uses the referenced envelope.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: streamCommandExecutionEvents
+            tags:
+                - CommandExecutions
+            x-sse-event-envelope: '#/components/schemas/CommandExecutionEvent'
+    /api/v1/command-executions/{executionId}/post-check:
+        get:
+            operationId: getCommandPostCheck
+            parameters:
+                - in: path
+                  name: executionId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getCommandPostCheck
+            tags:
+                - CommandExecutions
+    /api/v1/command-executions/{executionId}:cancel:
+        post:
+            operationId: cancelCommandExecution
+            parameters:
+                - in: path
+                  name: executionId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: cancelCommandExecution
+            tags:
+                - CommandExecutions
+            x-idempotency: required
+    /api/v1/commands:risk-acknowledge:
+        post:
+            operationId: acknowledgeCommandRisk
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: acknowledgeCommandRisk
+            tags:
+                - Commands
+            x-idempotency: required
+    /api/v1/commands:risk-assess:
+        post:
+            operationId: assessCommandRisk
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: assessCommandRisk
+            tags:
+                - Commands
+            x-idempotency: required
+    /api/v1/diagnostic-graphs:build:
+        post:
+            operationId: buildDiagnosticGraph
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DiagnosticGraphBuildRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: buildDiagnosticGraph
+            tags:
+                - DiagnosticGraphs
+            x-idempotency: required
+    /api/v1/evidence/{evidenceId}:
+        get:
+            operationId: getEvidence
+            parameters:
+                - in: path
+                  name: evidenceId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getEvidence
+            tags:
+                - Evidence
+    /api/v1/evidence:query:
+        post:
+            operationId: queryEvidence
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/EvidenceQueryRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: queryEvidence
+            tags:
+                - Evidence
+            x-idempotency: required
+    /api/v1/findings:
+        get:
+            operationId: getFindings
+            parameters:
+                - in: query
+                  name: state
+                  schema:
+                    type: string
+                - in: query
+                  name: severity
+                  schema:
+                    type: string
+                - allowReserved: false
+                  description: Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
+                  in: query
+                  name: resourceCanonicalId
+                  schema:
+                    $ref: '#/components/schemas/CanonicalID'
+                - in: query
+                  name: incidentId
+                  schema:
+                    type: string
+                - in: query
+                  name: sourceSystem
+                  schema:
+                    type: string
+                - in: query
+                  name: observedFrom
+                  schema:
+                    format: date-time
+                    type: string
+                - in: query
+                  name: observedTo
+                  schema:
+                    format: date-time
+                    type: string
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getFindings
+            tags:
+                - Findings
+    /api/v1/findings/{findingId}:
+        get:
+            operationId: getFinding
+            parameters:
+                - in: path
+                  name: findingId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getFinding
+            tags:
+                - Findings
+    /api/v1/findings:ingest:
+        post:
+            operationId: ingestFinding
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FindingEnvelope'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: ingestFinding
+            tags:
+                - Findings
+            x-idempotency: required
+    /api/v1/incidents:
+        get:
+            operationId: getIncidents
+            parameters:
+                - in: query
+                  name: state
+                  schema:
+                    type: string
+                - in: query
+                  name: severity
+                  schema:
+                    type: string
+                - in: query
+                  name: clusterUid
+                  schema:
+                    type: string
+                - allowReserved: false
+                  description: Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
+                  in: query
+                  name: resourceCanonicalId
+                  schema:
+                    $ref: '#/components/schemas/CanonicalID'
+                - in: query
+                  name: rcaStatus
+                  schema:
+                    type: string
+                - in: query
+                  name: openedFrom
+                  schema:
+                    format: date-time
+                    type: string
+                - in: query
+                  name: openedTo
+                  schema:
+                    format: date-time
+                    type: string
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getIncidents
+            tags:
+                - Incidents
+    /api/v1/incidents/{incidentId}:
+        get:
+            operationId: getIncident
+            parameters:
+                - in: path
+                  name: incidentId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getIncident
+            tags:
+                - Incidents
+    /api/v1/incidents/{incidentId}/evidence:
+        get:
+            operationId: getIncidentEvidence
+            parameters:
+                - in: path
+                  name: incidentId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getIncidentEvidence
+            tags:
+                - Evidence
+    /api/v1/incidents/{incidentId}/investigations:
+        post:
+            operationId: createInvestigation
+            parameters:
+                - in: path
+                  name: incidentId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "202":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: createInvestigation
+            tags:
+                - Investigations
+            x-idempotency: required
+    /api/v1/incidents/{incidentId}/rca:
+        get:
+            operationId: getIncidentRCA
+            parameters:
+                - in: path
+                  name: incidentId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getIncidentRCA
+            tags:
+                - RCA
+    /api/v1/incidents/{incidentId}/rca/revisions:
+        get:
+            operationId: getRCARevisions
+            parameters:
+                - in: path
+                  name: incidentId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getRCARevisions
+            tags:
+                - RCA
+    /api/v1/incidents/{incidentId}/rca/revisions/{revision}:
+        get:
+            operationId: getRCARevision
+            parameters:
+                - in: path
+                  name: incidentId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - in: path
+                  name: revision
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getRCARevision
+            tags:
+                - RCA
+    /api/v1/incidents/{incidentId}/timeline:
+        get:
+            operationId: getIncidentTimeline
+            parameters:
+                - in: path
+                  name: incidentId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - in: query
+                  name: eventType
+                  schema:
+                    type: string
+                - in: query
+                  name: from
+                  schema:
+                    format: date-time
+                    type: string
+                - in: query
+                  name: to
+                  schema:
+                    format: date-time
+                    type: string
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getIncidentTimeline
+            tags:
+                - Incidents
+    /api/v1/incidents/{incidentId}:split:
+        post:
+            operationId: splitIncident
+            parameters:
+                - in: path
+                  name: incidentId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: splitIncident
+            tags:
+                - Incidents
+            x-idempotency: required
+    /api/v1/incidents/{incidentId}:transition:
+        post:
+            operationId: transitionIncident
+            parameters:
+                - in: path
+                  name: incidentId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/IncidentTransitionRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: transitionIncident
+            tags:
+                - Incidents
+            x-idempotency: required
+    /api/v1/incidents:merge:
+        post:
+            operationId: mergeIncidents
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/JSONRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: mergeIncidents
+            tags:
+                - Incidents
+            x-idempotency: required
+    /api/v1/investigations/{jobId}:
+        get:
+            operationId: getInvestigation
+            parameters:
+                - in: path
+                  name: jobId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getInvestigation
+            tags:
+                - Investigations
+    /api/v1/investigations/{jobId}/events:
+        get:
+            operationId: streamInvestigationEvents
+            parameters:
+                - in: path
+                  name: jobId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+            responses:
+                "200":
+                    content:
+                        text/event-stream:
+                            schema:
+                                type: string
+                    description: Server-sent event stream. Each event uses the referenced envelope.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: streamInvestigationEvents
+            tags:
+                - Investigations
+            x-sse-event-envelope: '#/components/schemas/InvestigationEvent'
+    /api/v1/investigations/{jobId}/steps:
+        get:
+            operationId: getInvestigationSteps
+            parameters:
+                - in: path
+                  name: jobId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getInvestigationSteps
+            tags:
+                - Investigations
+    /api/v1/investigations/{jobId}:cancel:
+        post:
+            operationId: cancelInvestigation
+            parameters:
+                - in: path
+                  name: jobId
+                  required: true
+                  schema:
+                    format: identifier
+                    type: string
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: cancelInvestigation
+            tags:
+                - Investigations
+            x-idempotency: required
+    /api/v1/overview:
+        get:
+            operationId: getOverview
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getOverview
+            tags:
+                - Overview
+    /api/v1/resources:
+        get:
+            operationId: getResources
+            parameters:
+                - in: query
+                  name: kind
+                  schema:
+                    type: string
+                - in: query
+                  name: clusterUid
+                  schema:
+                    type: string
+                - in: query
+                  name: namespace
+                  schema:
+                    type: string
+                - in: query
+                  name: name
+                  schema:
+                    type: string
+                - in: query
+                  name: health
+                  schema:
+                    type: string
+                - in: query
+                  name: label
+                  schema:
+                    type: string
+                - description: Opaque cursor for keyset pagination.
+                  in: query
+                  name: cursor
+                  schema:
+                    type: string
+                - in: query
+                  name: limit
+                  schema:
+                    minimum: 1
+                    type: integer
+                - in: query
+                  name: sort
+                  schema:
+                    type: string
+                - in: query
+                  name: order
+                  schema:
+                    enum:
+                        - asc
+                        - desc
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getResources
+            tags:
+                - Resources
+    /api/v1/resources/by-canonical-id:
+        get:
+            operationId: getResourceByCanonicalID
+            parameters:
+                - allowReserved: false
+                  description: Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
+                  in: query
+                  name: canonicalId
+                  required: true
+                  schema:
+                    $ref: '#/components/schemas/CanonicalID'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getResourceByCanonicalID
+            tags:
+                - Resources
+    /api/v1/resources/impact-scope:
+        get:
+            operationId: getResourceImpactScope
+            parameters:
+                - allowReserved: false
+                  description: Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
+                  in: query
+                  name: canonicalId
+                  required: true
+                  schema:
+                    $ref: '#/components/schemas/CanonicalID'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getResourceImpactScope
+            tags:
+                - Resources
+    /api/v1/resources/neighbors:
+        get:
+            operationId: getResourceNeighbors
+            parameters:
+                - allowReserved: false
+                  description: Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
+                  in: query
+                  name: canonicalId
+                  required: true
+                  schema:
+                    $ref: '#/components/schemas/CanonicalID'
+                - in: query
+                  name: direction
+                  schema:
+                    enum:
+                        - in
+                        - out
+                        - both
+                    type: string
+                - in: query
+                  name: relationKind
+                  schema:
+                    type: string
+                - in: query
+                  name: depth
+                  schema:
+                    minimum: 0
+                    type: integer
+                - in: query
+                  name: maxNodes
+                  schema:
+                    minimum: 1
+                    type: integer
+                - in: query
+                  name: maxEdges
+                  schema:
+                    minimum: 1
+                    type: integer
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PageEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: getResourceNeighbors
+            tags:
+                - Resources
+security:
+    - BearerAuth: []
+servers:
+    - url: /
