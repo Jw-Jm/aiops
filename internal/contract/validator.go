@@ -66,9 +66,6 @@ func Validate(schemaID string, payload []byte) error {
 	if err := schema.Validate(value); err != nil {
 		return fmt.Errorf("validate payload against schema %q: %w", schemaID, err)
 	}
-	if strings.Contains(schemaID, "#") {
-		return nil
-	}
 	if err := validateTenantBindings(value); err != nil {
 		return fmt.Errorf("validate tenant-bound canonical IDs for schema %q: %w", schemaID, err)
 	}

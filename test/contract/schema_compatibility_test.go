@@ -167,6 +167,21 @@ func TestMCPToolSchemas(t *testing.T) {
 	}
 }
 
+func TestMCPOutputRejectsCrossTenantCanonicalID(t *testing.T) {
+	payload := fixture(t, "valid", "mcp-output-get_incident_context.json")
+	var output map[string]any
+	if err := json.Unmarshal(payload, &output); err != nil {
+		t.Fatalf("decode MCP output fixture: %v", err)
+	}
+	data := output["data"].(map[string]any)
+	incident := data["incident"].(map[string]any)
+	incident["tenantId"] = "tenant-b"
+
+	if err := platformcontract.Validate("https://ops.local/schemas/get_incident_context/v1#output", encode(t, output)); err == nil {
+		t.Fatal("Validate accepted an MCP output whose Canonical ID tenant differs from its incident tenant")
+	}
+}
+
 func fixture(t *testing.T, group, name string) []byte {
 	t.Helper()
 	path := filepath.Join("..", "fixtures", "contracts", group, name)
