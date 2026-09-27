@@ -17,6 +17,7 @@ var (
 	commitPattern       = regexp.MustCompile(`^[0-9a-fA-F]{40,64}$`)
 	digestPattern       = regexp.MustCompile(`^sha256:[0-9a-f]{64}$`)
 	exactVersionPattern = regexp.MustCompile(`^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$`)
+	exactReleasePattern = regexp.MustCompile(`^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z][0-9A-Za-z.-]*)?$`)
 )
 
 var knownLicenses = map[string]struct{}{
@@ -779,5 +780,5 @@ func isFloating(version string) bool {
 }
 
 func isExactVersion(version string) bool {
-	return exactVersionPattern.MatchString(version) || commitPattern.MatchString(version)
+	return exactVersionPattern.MatchString(version) || exactReleasePattern.MatchString(version) || commitPattern.MatchString(version)
 }

@@ -54,6 +54,33 @@ components:
     requiredFor1_0: true
     candidateNote: "Existing compatible instances are reused; offline bundled artifacts remain a separate unresolved admission item."
     officialSupportSources: []
+  - name: vmalert
+    state: candidate
+    version: v1.116.0
+    source: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+    commit: pending
+    digest: sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+    license: pending
+    specialLicenseADR: pending
+    fileLicenses: pending
+    sourceSnapshot: false
+    sourceArchiveSHA256: pending
+    architectures: [linux/arm64]
+    usage: "Prometheus-compatible alert rule executor"
+    reuseMode: bundled-image
+    linkageMode: pending
+    importedPaths: pending
+    dependencyClosure: pending
+    dependencyClosureVerified: false
+    patches: pending
+    forkPolicy: pending
+    owner: pending
+    pocReport: pending
+    conformanceFixtures: pending
+    exitPlan: pending
+    requiredFor1_0: true
+    candidateNote: "Exact arm64 image pin: docker.io/victoriametrics/vmalert:v1.116.0, matching the detected VictoriaMetrics v1.116.0 server; remains candidate pending license, dependency, and rule execution evidence."
+    officialSupportSources: []
   - name: deepflow
     state: candidate
     version: "7.2.0"
@@ -544,16 +571,16 @@ components:
     officialSupportSources: []
   - name: keycloak
     state: candidate
-    version: pending
+    version: 26.7.4
     source: "https://github.com/keycloak/keycloak"
     commit: pending
-    digest: pending
+    digest: sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c
     license: pending
     specialLicenseADR: pending
     fileLicenses: pending
     sourceSnapshot: false
     sourceArchiveSHA256: pending
-    architectures: pending
+    architectures: [linux/arm64]
     usage: "OIDC identity provider"
     reuseMode: bundled-image
     linkageMode: pending
@@ -567,20 +594,20 @@ components:
     conformanceFixtures: pending
     exitPlan: pending
     requiredFor1_0: true
-    candidateNote: "Exact release, digest, license closure, and arm64 support are pending admission."
+    candidateNote: "Exact arm64 image pin: quay.io/keycloak/keycloak:26.7.4; remains candidate until license, dependency, and runtime admission evidence is complete."
     officialSupportSources: []
   - name: openbao
     state: candidate
-    version: pending
+    version: 2.7.0
     source: "https://github.com/openbao/openbao"
     commit: pending
-    digest: pending
+    digest: sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6
     license: pending
     specialLicenseADR: pending
     fileLicenses: pending
     sourceSnapshot: false
     sourceArchiveSHA256: pending
-    architectures: pending
+    architectures: [linux/arm64]
     usage: "secret management and transit"
     reuseMode: bundled-image
     linkageMode: pending
@@ -594,20 +621,20 @@ components:
     conformanceFixtures: pending
     exitPlan: pending
     requiredFor1_0: true
-    candidateNote: "Exact release, digest, license closure, and arm64 support are pending admission."
+    candidateNote: "Exact arm64 image pin: ghcr.io/openbao/openbao:2.7.0; remains candidate until license, dependency, and runtime admission evidence is complete."
     officialSupportSources: []
   - name: seaweedfs
     state: candidate
-    version: pending
+    version: "4.47"
     source: "https://github.com/seaweedfs/seaweedfs"
     commit: pending
-    digest: pending
+    digest: sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e
     license: pending
     specialLicenseADR: pending
     fileLicenses: pending
     sourceSnapshot: false
     sourceArchiveSHA256: pending
-    architectures: pending
+    architectures: [linux/arm64]
     usage: "S3-compatible evidence archive"
     reuseMode: bundled-image
     linkageMode: pending
@@ -621,7 +648,7 @@ components:
     conformanceFixtures: pending
     exitPlan: pending
     requiredFor1_0: true
-    candidateNote: "Default archive choice; exact release, digest, license closure, and arm64 support are pending admission."
+    candidateNote: "Default archive exact arm64 image pin: docker.io/chrislusf/seaweedfs:4.47; remains candidate until license, dependency, and runtime admission evidence is complete."
     officialSupportSources: []
   - name: opa
     state: candidate
@@ -652,16 +679,16 @@ components:
     officialSupportSources: []
   - name: postgresql
     state: candidate
-    version: pending
+    version: "17.11"
     source: "https://github.com/postgres/postgres"
     commit: pending
-    digest: pending
+    digest: sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
     license: pending
     specialLicenseADR: pending
     fileLicenses: pending
     sourceSnapshot: false
     sourceArchiveSHA256: pending
-    architectures: pending
+    architectures: [linux/arm64]
     usage: "platform control-plane database"
     reuseMode: bundled-image
     linkageMode: pending
@@ -675,7 +702,7 @@ components:
     conformanceFixtures: pending
     exitPlan: pending
     requiredFor1_0: true
-    candidateNote: "Exact release, digest, license closure, and arm64 support are pending admission."
+    candidateNote: "Exact arm64 image pin: docker.io/library/postgres:17.11-bookworm; remains candidate until license, dependency, and runtime admission evidence is complete."
     officialSupportSources: []
   - name: robusta
     state: candidate

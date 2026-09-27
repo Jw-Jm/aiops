@@ -130,6 +130,19 @@ func TestLoadCatalogRejectsUnpinnedOrUnverifiedQualifiedComponents(t *testing.T)
 	}
 }
 
+func TestLoadCatalogAcceptsExactTwoPartUpstreamReleases(t *testing.T) {
+	for _, version := range []string{"17.11", "4.47", "17.11-bookworm"} {
+		t.Run(version, func(t *testing.T) {
+			document := strings.Replace(qualifiedCatalog, "state: qualified", "state: candidate", 1)
+			document = strings.Replace(document, "version: 1.2.3", `version: "`+version+`"`, 1)
+			_, err := supplychain.LoadCatalog(strings.NewReader(document))
+			if err != nil {
+				t.Fatalf("exact upstream release %q rejected: %v", version, err)
+			}
+		})
+	}
+}
+
 func TestLoadCatalogAcceptsFullyLockedQualifiedComponent(t *testing.T) {
 	catalog, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(qualifiedCatalog), validQualifiedEvidence())
 	if err != nil {
