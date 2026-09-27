@@ -176,6 +176,65 @@ func TestHelmRenderNeverPublishesCredentialValues(t *testing.T) {
 	}
 }
 
+func TestHelmRenderOpenBaoTokenReviewIdentity(t *testing.T) {
+	cmd := exec.Command("helm", "template", "bao-contract", filepath.Join("..", "..", "deploy", "charts", "ops-dependencies"), "--namespace", "ops-contract")
+	output, err := cmd.Output()
+	if err != nil {
+		t.Fatalf("render OpenBao identity: %v", err)
+	}
+	type identityResource struct {
+		Kind     string `yaml:"kind"`
+		Metadata struct {
+			Name string `yaml:"name"`
+		} `yaml:"metadata"`
+		AutomountServiceAccountToken *bool `yaml:"automountServiceAccountToken"`
+		RoleRef                      struct {
+			Kind string `yaml:"kind"`
+			Name string `yaml:"name"`
+		} `yaml:"roleRef"`
+		Subjects []struct {
+			Kind      string `yaml:"kind"`
+			Name      string `yaml:"name"`
+			Namespace string `yaml:"namespace"`
+		} `yaml:"subjects"`
+		Spec struct {
+			Template struct {
+				Spec struct {
+					ServiceAccountName           string `yaml:"serviceAccountName"`
+					AutomountServiceAccountToken *bool  `yaml:"automountServiceAccountToken"`
+				} `yaml:"spec"`
+			} `yaml:"template"`
+		} `yaml:"spec"`
+	}
+	decoder := yaml.NewDecoder(bytes.NewReader(output))
+	serviceAccount, binding, statefulSet := false, false, false
+	for {
+		var resource identityResource
+		if err := decoder.Decode(&resource); errors.Is(err, io.EOF) {
+			break
+		} else if err != nil {
+			t.Fatalf("decode rendered OpenBao resource: %v", err)
+		}
+		switch resource.Kind {
+		case "ServiceAccount":
+			if resource.Metadata.Name == "ops-openbao-tokenreview" {
+				serviceAccount = resource.AutomountServiceAccountToken != nil && *resource.AutomountServiceAccountToken
+			}
+		case "ClusterRoleBinding":
+			if resource.Metadata.Name == "ops-openbao-tokenreview-bao-contract" {
+				binding = resource.RoleRef.Kind == "ClusterRole" && resource.RoleRef.Name == "system:auth-delegator" && len(resource.Subjects) == 1 && resource.Subjects[0].Kind == "ServiceAccount" && resource.Subjects[0].Name == "ops-openbao-tokenreview" && resource.Subjects[0].Namespace == "ops-contract"
+			}
+		case "StatefulSet":
+			if resource.Metadata.Name == "ops-openbao" {
+				statefulSet = resource.Spec.Template.Spec.ServiceAccountName == "ops-openbao-tokenreview" && resource.Spec.Template.Spec.AutomountServiceAccountToken != nil && *resource.Spec.Template.Spec.AutomountServiceAccountToken
+			}
+		}
+	}
+	if !serviceAccount || !binding || !statefulSet {
+		t.Fatalf("OpenBao TokenReview identity incomplete: ServiceAccount=%v ClusterRoleBinding=%v StatefulSet=%v", serviceAccount, binding, statefulSet)
+	}
+}
+
 func TestHelmRenderRejectsDetectionTemplatesAsInstallInput(t *testing.T) {
 	cmd := exec.Command("helm", "template", "ops", filepath.Join("..", "..", "deploy", "charts", "ops-dependencies"),
 		"--namespace", "default", "--set", "components.postgresql.mode=detect")
@@ -346,11 +405,11 @@ func assertKindSnapshot(t *testing.T, resources []renderedResource, profile stri
 	want := map[string]int{}
 	switch profile {
 	case "all-bundled":
-		want = map[string]int{"Service": 4, "StatefulSet": 3, "Deployment": 1, "ConfigMap": 1}
+		want = map[string]int{"Service": 4, "StatefulSet": 3, "Deployment": 1, "ConfigMap": 1, "ServiceAccount": 1, "ClusterRoleBinding": 1}
 	case "all-external":
 		want = map[string]int{"ConfigMap": 4, "Secret": 4}
 	case "external-postgresql-bundled-keycloak":
-		want = map[string]int{"Service": 2, "StatefulSet": 1, "Deployment": 1, "ConfigMap": 3, "Secret": 2}
+		want = map[string]int{"Service": 2, "StatefulSet": 1, "Deployment": 1, "ConfigMap": 3, "Secret": 2, "ServiceAccount": 1, "ClusterRoleBinding": 1}
 	case "bundled-postgresql-external-keycloak":
 		want = map[string]int{"Service": 2, "StatefulSet": 2, "ConfigMap": 2, "Secret": 2}
 	default:

@@ -9,15 +9,21 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net"
+	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
+	"gopkg.in/yaml.v3"
 	"ops-platform/internal/bundle"
+	"ops-platform/internal/integrations/openbao"
 	"ops-platform/internal/profile"
 )
 
-const usage = "usage: opsctl bundle verify --manifest <file> --signature <file> --payload <archive> --key <pubkey> | opsctl profile detect --context <name> -o <file> | opsctl profile resolve -f <file> -o <file>"
+const usage = "usage: opsctl bundle verify --manifest <file> --signature <file> --payload <archive> --key <pubkey> | opsctl profile detect --context <name> -o <file> | opsctl profile resolve -f <file> -o <file> | opsctl openbao status|init|unseal|configure --profile <resolved>"
 
 func main() {
 	if err := run(context.Background(), os.Args[1:], os.Stdout, os.Stderr); err != nil {
@@ -27,6 +33,9 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
+	if len(args) > 0 && args[0] == "openbao" {
+		return runOpenBao(ctx, args[1:], stdout, stderr)
+	}
 	if len(args) > 0 && args[0] == "profile" {
 		return runProfile(ctx, args[1:], stdout, stderr)
 	}
@@ -180,6 +189,252 @@ func runProfile(ctx context.Context, args []string, stdout, stderr io.Writer) er
 	default:
 		return errors.New("usage: opsctl profile detect|resolve")
 	}
+}
+
+func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) error {
+	if len(args) == 0 {
+		return errors.New("usage: opsctl openbao status|init|unseal|configure --profile <resolved>")
+	}
+	operation := args[0]
+	if operation != "status" && operation != "init" && operation != "unseal" && operation != "configure" {
+		return errors.New("usage: opsctl openbao status|init|unseal|configure --profile <resolved>")
+	}
+	flags := flag.NewFlagSet("opsctl openbao "+operation, flag.ContinueOnError)
+	flags.SetOutput(stderr)
+	profilePath := flags.String("profile", "", "resolved Deployment Profile")
+	caFile := flags.String("ca-file", "", "trusted bootstrap CA file outside the repository and Bundle")
+	recoveryFile := flags.String("recovery-file", "", "0600 recovery file outside the repository and Bundle")
+	bundleDirectory := flags.String("bundle-dir", "", "Bundle directory to exclude from recovery file paths")
+	shareIndex := flags.Int("share-index", -1, "zero-based Shamir share index for unseal")
+	if err := flags.Parse(args[1:]); err != nil {
+		return err
+	}
+	if flags.NArg() != 0 || *profilePath == "" || *caFile == "" {
+		return errors.New("openbao command requires --profile <resolved> --ca-file <path>")
+	}
+	if operation != "status" && *recoveryFile == "" {
+		return errors.New("openbao init|unseal|configure requires --recovery-file <0600-path>")
+	}
+	resolved, err := readResolvedProfile(*profilePath)
+	if err != nil {
+		return err
+	}
+	component, ok := resolved.Components["openbao"]
+	if !ok || component.Mode != "bundled" || component.Endpoint == "" {
+		return errors.New("OPENBAO_PROFILE_INVALID: resolved profile must select a bundled OpenBao endpoint")
+	}
+	if operation != "status" && resolved.Environment != "development" {
+		return errors.New("OPENBAO_PRODUCTION_GATE_UNRESOLVED: production seal, HA, and auto-unseal decisions are not accepted")
+	}
+	contextName := resolved.Kubernetes.Context
+	if contextName == "" {
+		return errors.New("OPENBAO_PROFILE_INVALID: resolved Kubernetes context is required")
+	}
+	service, namespace, serverName, serviceDomain, err := parseOpenBaoEndpoint(component.Endpoint)
+	if err != nil {
+		return err
+	}
+	repositoryRoot, err := platformRepositoryRoot()
+	if err != nil {
+		return err
+	}
+	if *bundleDirectory == "" {
+		*bundleDirectory = filepath.Join(repositoryRoot, "bundle")
+	}
+	if operation == "init" {
+		if err := openbao.EnsureBootstrapTLS(ctx, contextName, namespace, service, *caFile, repositoryRoot, *bundleDirectory); err != nil {
+			return err
+		}
+	}
+	caPEM, err := openbao.ReadBootstrapCA(*caFile, repositoryRoot, *bundleDirectory)
+	if err != nil {
+		return err
+	}
+	var recovery openbao.RecoveryMaterial
+	if operation != "init" && *recoveryFile != "" {
+		recovery, err = openbao.ReadExternalRecoveryMaterial(*recoveryFile, repositoryRoot, *bundleDirectory)
+		if err != nil {
+			return err
+		}
+	}
+	if err := waitOpenBaoPod(ctx, contextName, namespace); err != nil {
+		return err
+	}
+	localAddress, stopPortForward, err := startOpenBaoPortForward(ctx, contextName, namespace, service)
+	if err != nil {
+		return err
+	}
+	defer stopPortForward()
+	client, err := openbao.NewClient(openbao.ClientConfig{
+		Address:         localAddress,
+		ServerName:      serverName,
+		CACertBundle:    caPEM,
+		Token:           recovery.RootToken,
+		RepositoryRoot:  repositoryRoot,
+		BundleDirectory: *bundleDirectory,
+		ServiceDomain:   serviceDomain,
+		ExpectedVersion: component.Version,
+	})
+	if err != nil {
+		return err
+	}
+
+	switch operation {
+	case "init":
+		if err := client.Initialize(ctx, *recoveryFile); err != nil {
+			return err
+		}
+		_, err := fmt.Fprintf(stdout, "OpenBao initialized; state=sealed; key-shares=3; key-threshold=2; recovery material stored at %s\n", *recoveryFile)
+		return err
+	case "status":
+		status, err := client.Status(ctx)
+		if err != nil {
+			return err
+		}
+		return writeOpenBaoStatus(stdout, status)
+	case "unseal":
+		if *shareIndex < 0 || *shareIndex >= len(recovery.Shares) {
+			return errors.New("unseal requires --share-index in the range 0..2")
+		}
+		status, err := client.Unseal(ctx, recovery.Shares[*shareIndex])
+		if err != nil {
+			return err
+		}
+		return writeOpenBaoStatus(stdout, status)
+	case "configure":
+		if err := client.Configure(ctx); err != nil {
+			return err
+		}
+		status, err := client.Status(ctx)
+		if err != nil {
+			return err
+		}
+		if status.State != openbao.StateReady {
+			return fmt.Errorf("OpenBao configuration did not reach ready state: %s", status.State)
+		}
+		component.Version = status.Version
+		component.Evidence = append(component.Evidence, "OpenBao status API confirmed initialized, unsealed, and configured at version "+status.Version)
+		resolved.Components["openbao"] = component
+		if err := profile.WriteYAML(*profilePath, resolved); err != nil {
+			return fmt.Errorf("write observed OpenBao version to resolved profile: %w", err)
+		}
+		return writeOpenBaoStatus(stdout, status)
+	default:
+		return errors.New("usage: opsctl openbao status|init|unseal|configure --profile <resolved>")
+	}
+}
+
+func readResolvedProfile(path string) (profile.ResolvedProfile, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return profile.ResolvedProfile{}, fmt.Errorf("open resolved profile: %w", err)
+	}
+	defer file.Close()
+	decoder := yaml.NewDecoder(file)
+	decoder.KnownFields(true)
+	var resolved profile.ResolvedProfile
+	if err := decoder.Decode(&resolved); err != nil {
+		return profile.ResolvedProfile{}, fmt.Errorf("decode resolved profile: %w", err)
+	}
+	if err := resolved.Validate(); err != nil {
+		return profile.ResolvedProfile{}, fmt.Errorf("resolved profile validation: %w", err)
+	}
+	return resolved, nil
+}
+
+func parseOpenBaoEndpoint(endpoint string) (service, namespace, serverName, serviceDomain string, err error) {
+	parsed, parseErr := url.Parse(endpoint)
+	if parseErr != nil || parsed.Scheme != "https" || parsed.Hostname() == "" {
+		return "", "", "", "", errors.New("OPENBAO_PROFILE_INVALID: OpenBao endpoint must be HTTPS")
+	}
+	parts := strings.Split(parsed.Hostname(), ".")
+	if len(parts) < 4 || parts[2] != "svc" || parts[3] != "cluster" {
+		return "", "", "", "", errors.New("OPENBAO_PROFILE_INVALID: OpenBao endpoint must identify a Kubernetes Service DNS name")
+	}
+	return parts[0], parts[1], parsed.Hostname(), parts[1] + ".svc.cluster.local", nil
+}
+
+func platformRepositoryRoot() (string, error) {
+	workingDirectory, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("get current working directory: %w", err)
+	}
+	command := exec.Command("git", "-C", workingDirectory, "rev-parse", "--show-toplevel")
+	output, err := command.Output()
+	if err != nil {
+		return "", errors.New("opsctl openbao must run from the platform Git repository")
+	}
+	return strings.TrimSpace(string(output)), nil
+}
+
+func waitOpenBaoPod(ctx context.Context, kubeContext, namespace string) error {
+	command := exec.CommandContext(ctx, "kubectl", "--context", kubeContext, "--namespace", namespace, "wait", "--for=condition=Ready", "pod/ops-openbao-0", "--timeout=3m")
+	command.Stdout, command.Stderr = io.Discard, io.Discard
+	if err := command.Run(); err != nil {
+		return errors.New("OPENBAO_UNAVAILABLE: OpenBao pod did not become Ready")
+	}
+	return nil
+}
+
+func startOpenBaoPortForward(ctx context.Context, kubeContext, namespace, service string) (string, func(), error) {
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		return "", nil, fmt.Errorf("allocate local OpenBao port: %w", err)
+	}
+	localPort := listener.Addr().(*net.TCPAddr).Port
+	if err := listener.Close(); err != nil {
+		return "", nil, fmt.Errorf("release local OpenBao port: %w", err)
+	}
+	command := exec.CommandContext(ctx, "kubectl", "--context", kubeContext, "--namespace", namespace, "port-forward", "--address", "127.0.0.1", "service/"+service, fmt.Sprintf("%d:8200", localPort))
+	command.Stdout, command.Stderr = io.Discard, io.Discard
+	if err := command.Start(); err != nil {
+		return "", nil, fmt.Errorf("start OpenBao port-forward: %w", err)
+	}
+	done := make(chan error, 1)
+	go func() { done <- command.Wait() }()
+	stop := func() {
+		if command.Process != nil {
+			_ = command.Process.Kill()
+		}
+		select {
+		case <-done:
+		case <-time.After(2 * time.Second):
+		}
+	}
+	deadline := time.NewTimer(20 * time.Second)
+	defer deadline.Stop()
+	ticker := time.NewTicker(100 * time.Millisecond)
+	defer ticker.Stop()
+	for {
+		connection, dialErr := net.DialTimeout("tcp", fmt.Sprintf("127.0.0.1:%d", localPort), 150*time.Millisecond)
+		if dialErr == nil {
+			_ = connection.Close()
+			return fmt.Sprintf("https://127.0.0.1:%d", localPort), stop, nil
+		}
+		select {
+		case err := <-done:
+			if err == nil {
+				err = errors.New("port-forward exited before the local listener became ready")
+			}
+			if command.Process != nil {
+				_ = command.Process.Kill()
+			}
+			return "", nil, fmt.Errorf("OPENBAO_UNAVAILABLE: port-forward failed: %w", err)
+		case <-deadline.C:
+			stop()
+			return "", nil, errors.New("OPENBAO_UNAVAILABLE: port-forward did not become ready")
+		case <-ticker.C:
+		case <-ctx.Done():
+			stop()
+			return "", nil, ctx.Err()
+		}
+	}
+}
+
+func writeOpenBaoStatus(writer io.Writer, status openbao.Status) error {
+	encoder := json.NewEncoder(writer)
+	encoder.SetIndent("", "  ")
+	return encoder.Encode(status)
 }
 
 const (

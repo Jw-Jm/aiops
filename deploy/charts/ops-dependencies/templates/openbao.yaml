@@ -21,6 +21,33 @@ spec:
       targetPort: cluster
 ---
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-openbao-tokenreview
+  labels:
+    app.kubernetes.io/name: ops-openbao
+    ops.platform.io/component: openbao
+    ops.platform.io/mode: bundled
+automountServiceAccountToken: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ops-openbao-tokenreview-{{ .Release.Name | trunc 40 | trimSuffix "-" }}
+  labels:
+    app.kubernetes.io/name: ops-openbao
+    ops.platform.io/component: openbao
+    ops.platform.io/mode: bundled
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: ops-openbao-tokenreview
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: ops-openbao-config
@@ -66,7 +93,8 @@ spec:
         ops.platform.io/component: openbao
         ops.platform.io/mode: bundled
     spec:
-      automountServiceAccountToken: false
+      serviceAccountName: ops-openbao-tokenreview
+      automountServiceAccountToken: true
       securityContext:
         runAsNonRoot: true
         runAsUser: 100
