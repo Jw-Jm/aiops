@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	commitPattern = regexp.MustCompile(`^[0-9a-fA-F]{40,64}$`)
-	digestPattern = regexp.MustCompile(`^sha256:[0-9a-f]{64}$`)
+	commitPattern       = regexp.MustCompile(`^[0-9a-fA-F]{40,64}$`)
+	digestPattern       = regexp.MustCompile(`^sha256:[0-9a-f]{64}$`)
+	exactVersionPattern = regexp.MustCompile(`^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$`)
 )
 
 var knownLicenses = map[string]struct{}{
@@ -293,6 +294,9 @@ func validateComponent(component Component) error {
 	if isFloating(component.Version) {
 		return fmt.Errorf("floating version %q is not allowed", component.Version)
 	}
+	if component.Version != "pending" && !isExactVersion(component.Version) {
+		return fmt.Errorf("version %q must be an exact version or immutable commit", component.Version)
+	}
 	if component.Source != "pending" {
 		parsed, err := url.Parse(component.Source)
 		if err != nil || parsed.Host == "" || (parsed.Scheme != "https" && parsed.Scheme != "oci") {
@@ -310,11 +314,14 @@ func validateComponent(component Component) error {
 	if component.State == "candidate" {
 		return nil
 	}
+	if component.PendingFields["dependencyClosure"] {
+		return fmt.Errorf("qualified component dependency closure must not be pending")
+	}
+	if component.PendingFields["fileLicenses"] {
+		return fmt.Errorf("qualified component file-level license inventory must not be pending")
+	}
 	if component.Source == "pending" {
 		return fmt.Errorf("qualified component must declare its source URL")
-	}
-	if component.Version == "pending" {
-		return fmt.Errorf("qualified component must lock an exact version")
 	}
 	if !commitPattern.MatchString(component.Commit) {
 		return fmt.Errorf("qualified component must lock a full source commit")
@@ -372,7 +379,7 @@ func validateComponent(component Component) error {
 		}
 	}
 	for _, dependency := range component.DependencyClosure {
-		if dependency.Name == "" || dependency.Version == "" || dependency.Version == "pending" || isFloating(dependency.Version) || dependency.Source == "" || !commitPattern.MatchString(dependency.Commit) || !digestPattern.MatchString(dependency.Digest) {
+		if dependency.Name == "" || !isExactVersion(dependency.Version) || dependency.Source == "" || !commitPattern.MatchString(dependency.Commit) || !digestPattern.MatchString(dependency.Digest) {
 			return fmt.Errorf("dependency closure contains an unpinned dependency")
 		}
 		if _, known := knownLicenses[dependency.License]; !known {
@@ -679,4 +686,8 @@ func isFloating(version string) bool {
 	default:
 		return strings.ContainsAny(version, "*xX")
 	}
+}
+
+func isExactVersion(version string) bool {
+	return exactVersionPattern.MatchString(version) || commitPattern.MatchString(version)
 }

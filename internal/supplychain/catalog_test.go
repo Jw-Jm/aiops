@@ -52,6 +52,27 @@ func TestLoadCatalogRejectsUnpinnedOrUnverifiedQualifiedComponents(t *testing.T)
 			},
 		},
 		{
+			name:      "develop branch version",
+			wantError: "exact version or immutable commit",
+			mutate: func(document string) string {
+				return strings.Replace(document, "version: 1.2.3", "version: develop", 1)
+			},
+		},
+		{
+			name:      "pending dependency closure",
+			wantError: "dependency closure must not be pending",
+			mutate: func(document string) string {
+				return strings.Replace(document, "dependencyClosure: []", "dependencyClosure: pending", 1)
+			},
+		},
+		{
+			name:      "pending file license inventory without source snapshot",
+			wantError: "file-level license inventory must not be pending",
+			mutate: func(document string) string {
+				return strings.Replace(document, "fileLicenses: []", "fileLicenses: pending", 1)
+			},
+		},
+		{
 			name:      "empty digest",
 			wantError: "field \"digest\" must not be empty",
 			mutate: func(document string) string {
