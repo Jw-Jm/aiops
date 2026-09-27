@@ -46,6 +46,7 @@ type fixtureMaterial struct {
 	Version      string   `json:"version"`
 	Digest       string   `json:"digest"`
 	Architecture string   `json:"architecture"`
+	PayloadRef   string   `json:"payloadRef"`
 	SBOMRef      string   `json:"sbomRef"`
 	LicenseRef   string   `json:"licenseRef"`
 	InstallAfter []string `json:"installAfter"`
@@ -59,6 +60,15 @@ func TestVerifyAcceptsSignedBundleWithExplicitTrustRoot(t *testing.T) {
 	}
 	if !report.SignatureVerified || !report.PayloadDigestVerified {
 		t.Fatalf("VerificationReport = %+v, want signature and payload verified", report)
+	}
+}
+
+func TestVerifyAcceptsExactPrereleaseVersionContainingX(t *testing.T) {
+	manifest, trustRoot, _ := signedFixture(t, func(manifest *fixtureManifest) {
+		manifest.Materials[0].Version = "1.0.0-experimental"
+	})
+	if _, err := Verify(context.Background(), manifest, trustRoot); err != nil {
+		t.Fatalf("Verify(exact prerelease version): %v", err)
 	}
 }
 
@@ -131,11 +141,15 @@ func TestParseManifestAcceptsCanonicalJSON(t *testing.T) {
 }
 
 func TestBundleLockSchemaRejectsFloatingVersion(t *testing.T) {
-	manifest, _, _ := signedFixture(t, func(manifest *fixtureManifest) {
-		manifest.Materials[0].Version = "latest"
-	})
-	if err := contract.Validate(ManifestSchemaID, manifest.CanonicalJSON); err == nil {
-		t.Fatal("Bundle Lock Schema accepted a floating material version")
+	for _, version := range []string{"latest", "1.x", "develop"} {
+		t.Run(version, func(t *testing.T) {
+			manifest, _, _ := signedFixture(t, func(manifest *fixtureManifest) {
+				manifest.Materials[0].Version = version
+			})
+			if err := contract.Validate(ManifestSchemaID, manifest.CanonicalJSON); err == nil {
+				t.Fatalf("Bundle Lock Schema accepted floating material version %q", version)
+			}
+		})
 	}
 }
 
@@ -161,6 +175,22 @@ func TestBundleLockSchemaRejectsMissingDigestAndUnsupportedArchitecture(t *testi
 			t.Fatal("Bundle Lock Schema accepted a missing material digest")
 		}
 	})
+	t.Run("missing payload reference", func(t *testing.T) {
+		copy := cloneJSONMap(t, document)
+		materials := copy["materials"].([]any)
+		delete(materials[0].(map[string]any), "payloadRef")
+		encoded, err := json.Marshal(copy)
+		if err != nil {
+			t.Fatal(err)
+		}
+		canonical, err := CanonicalizeJSON(encoded)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := contract.Validate(ManifestSchemaID, canonical); err == nil {
+			t.Fatal("Bundle Lock Schema accepted a missing material payload reference")
+		}
+	})
 	t.Run("unsupported architecture", func(t *testing.T) {
 		copy := cloneJSONMap(t, document)
 		copy["architecture"] = "darwin/arm64"
@@ -176,6 +206,27 @@ func TestBundleLockSchemaRejectsMissingDigestAndUnsupportedArchitecture(t *testi
 			t.Fatal("Bundle Lock Schema accepted an unsupported architecture")
 		}
 	})
+}
+
+func TestBundleLockSchemaRequiresMaterialPayloadReference(t *testing.T) {
+	manifest, _, _ := signedFixture(t, nil)
+	var document map[string]any
+	if err := json.Unmarshal(manifest.CanonicalJSON, &document); err != nil {
+		t.Fatal(err)
+	}
+	materials := document["materials"].([]any)
+	delete(materials[0].(map[string]any), "payloadRef")
+	encoded, err := json.Marshal(document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	canonical, err := CanonicalizeJSON(encoded)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := contract.Validate(ManifestSchemaID, canonical); err == nil {
+		t.Fatal("Bundle Lock Schema accepted a material without a payloadRef")
+	}
 }
 
 func cloneJSONMap(t *testing.T, source map[string]any) map[string]any {
@@ -222,6 +273,13 @@ func TestVerifyRejectsManifestContractViolations(t *testing.T) {
 			wantError: "floating version",
 		},
 		{
+			name: "floating wildcard version",
+			mutate: func(manifest *fixtureManifest) {
+				manifest.Materials[0].Version = "1.x"
+			},
+			wantError: "floating version",
+		},
+		{
 			name: "duplicate material name",
 			mutate: func(manifest *fixtureManifest) {
 				manifest.Materials = append(manifest.Materials, manifest.Materials[0])
@@ -234,10 +292,11 @@ func TestVerifyRejectsManifestContractViolations(t *testing.T) {
 				manifest.Materials[0].InstallAfter = []string{"worker"}
 				manifest.Materials = append(manifest.Materials, fixtureMaterial{
 					Name: "worker", Kind: "binary", Version: "1.0.0", Digest: fixtureDigest("worker"),
-					Architecture: manifest.Architecture, SBOMRef: "sbom/worker.json", LicenseRef: "licenses/worker.txt",
+					Architecture: manifest.Architecture, PayloadRef: "binaries/worker", SBOMRef: "sbom/worker.json", LicenseRef: "licenses/worker.txt",
 					InstallAfter: []string{manifest.Materials[0].Name},
 				})
 				manifest.Payload.Files = append(manifest.Payload.Files,
+					PayloadFile{Path: "binaries/worker", Digest: fixtureDigest("worker"), Size: 6, Kind: "binary"},
 					PayloadFile{Path: "sbom/worker.json", Digest: fixtureDigest("worker sbom"), Size: 10, Kind: "sbom"},
 					PayloadFile{Path: "licenses/worker.txt", Digest: fixtureDigest("worker license"), Size: 10, Kind: "license"},
 				)
@@ -336,10 +395,44 @@ func TestSafeExtractDoesNotCountDirectoriesAsFiles(t *testing.T) {
 
 func TestVerifyRejectsPayloadFileInventoryMismatch(t *testing.T) {
 	manifest, trustRoot, _ := signedFixture(t, func(manifest *fixtureManifest) {
-		manifest.Payload.Files[0].Digest = fixtureDigest("different content")
+		mismatchedDigest := fixtureDigest("different content")
+		manifest.Payload.Files[0].Digest = mismatchedDigest
+		manifest.Materials[0].Digest = mismatchedDigest
 	})
 	if _, err := Verify(context.Background(), manifest, trustRoot); err == nil || !strings.Contains(err.Error(), "signed inventory") {
 		t.Fatalf("Verify(inventory mismatch) error = %v, want signed inventory rejection", err)
+	}
+}
+
+func TestVerifyRejectsMaterialDigestNotBoundToItsPayloadFile(t *testing.T) {
+	manifest, trustRoot, _ := signedFixture(t, func(manifest *fixtureManifest) {
+		manifest.Materials[0].Digest = fixtureDigest("license")
+	})
+	if _, err := Verify(context.Background(), manifest, trustRoot); err == nil {
+		t.Fatal("Verify accepted a material digest that identifies another payload file")
+	}
+}
+
+func TestVerifyRejectsCandidateCatalogMaterial(t *testing.T) {
+	manifest, trustRoot, _ := signedFixture(t, func(manifest *fixtureManifest) {
+		manifest.Materials = append(manifest.Materials, fixtureMaterial{
+			Name: "deepflow", Kind: "container-image", Version: "7.2.0", Digest: fixtureDigest("api"),
+			Architecture: manifest.Architecture, PayloadRef: manifest.Materials[0].PayloadRef,
+			SBOMRef: "sbom/platform-api.cdx.json", LicenseRef: "licenses/platform-api.txt",
+			InstallAfter: []string{},
+		})
+	})
+	if _, err := Verify(context.Background(), manifest, trustRoot); err == nil {
+		t.Fatal("Verify accepted a Bundle containing a candidate catalog component")
+	}
+}
+
+func TestVerifyRejectsUncataloguedThirdPartyMaterial(t *testing.T) {
+	manifest, trustRoot, _ := signedFixture(t, func(manifest *fixtureManifest) {
+		manifest.Materials[0].Name = "unlisted-third-party"
+	})
+	if _, err := Verify(context.Background(), manifest, trustRoot); err == nil {
+		t.Fatal("Verify accepted a material that is neither first-party nor in the component catalog")
 	}
 }
 
@@ -370,7 +463,7 @@ func signedFixture(t *testing.T, mutate func(*fixtureManifest)) (Manifest, Trust
 		},
 		Materials: []fixtureMaterial{{
 			Name: "platform-api", Kind: "container-image", Version: "1.0.0", Digest: fixtureDigest("api"),
-			Architecture: "linux/arm64", SBOMRef: "sbom/platform-api.cdx.json", LicenseRef: "licenses/platform-api.txt",
+			Architecture: "linux/arm64", PayloadRef: "oci/platform-api.tar", SBOMRef: "sbom/platform-api.cdx.json", LicenseRef: "licenses/platform-api.txt",
 			InstallAfter: []string{},
 		}},
 	}

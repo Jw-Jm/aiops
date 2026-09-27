@@ -15,8 +15,17 @@ import (
 	"path/filepath"
 
 	"github.com/sigstore/sigstore/pkg/signature"
+	componentcatalog "ops-platform/bundle"
 	"ops-platform/internal/contract"
+	"ops-platform/internal/supplychain"
 )
+
+var firstPartyMaterialNames = map[string]struct{}{
+	"platform-api":    {},
+	"platform-worker": {},
+	"platform-web":    {},
+	"opsctl":          {},
+}
 
 // Verify authenticates the canonical manifest using the independently trusted
 // key, checks the compressed payload digest, then safely extracts into a private
@@ -69,6 +78,9 @@ func Verify(ctx context.Context, manifest Manifest, trustRoot TrustRoot) (Verifi
 	}
 	if err := verifier.VerifySignature(bytes.NewReader(manifest.Signature), bytes.NewReader(manifest.CanonicalJSON)); err != nil {
 		return VerificationReport{}, fmt.Errorf("verify detached manifest signature: %w", err)
+	}
+	if err := validateCatalogAdmission(manifest.Materials); err != nil {
+		return VerificationReport{}, err
 	}
 
 	if filepath.Base(manifest.PayloadPath) != "payload.tar.zst" {
@@ -124,6 +136,35 @@ func Verify(ctx context.Context, manifest Manifest, trustRoot TrustRoot) (Verifi
 		SignatureVerified: true, PayloadDigestVerified: true,
 		PayloadFilesVerified: extracted.FileCount, PayloadBytesVerified: extracted.TotalBytes,
 	}, nil
+}
+
+func validateCatalogAdmission(materials []Material) error {
+	catalog, err := supplychain.LoadCatalog(bytes.NewReader(componentcatalog.ComponentCatalog()))
+	if err != nil {
+		return fmt.Errorf("load embedded component catalog: %w", err)
+	}
+	selectedNames := make([]string, 0, len(materials))
+	selected := make(map[string]bool, len(materials))
+	for _, material := range materials {
+		selected[material.Name] = true
+	}
+	if selected["deepflow"] && selected["deepflow-app"] {
+		return errors.New("DeepFlow bundle must not contain deepflow-app")
+	}
+	for _, material := range materials {
+		if _, known := catalog.Component(material.Name); known {
+			selectedNames = append(selectedNames, material.Name)
+			continue
+		}
+		if _, firstParty := firstPartyMaterialNames[material.Name]; firstParty {
+			continue
+		}
+		return fmt.Errorf("bundle material %q is not in the component catalog or first-party allowlist", material.Name)
+	}
+	if err := catalog.ValidateBundle(selectedNames); err != nil {
+		return fmt.Errorf("validate component admission: %w", err)
+	}
+	return nil
 }
 
 func validateManifestContract(raw []byte) error {

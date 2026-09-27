@@ -53,7 +53,7 @@
     "material": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "kind", "version", "digest", "architecture", "sbomRef", "licenseRef", "installAfter"],
+      "required": ["name", "kind", "version", "digest", "architecture", "payloadRef", "sbomRef", "licenseRef", "installAfter"],
       "properties": {
         "name": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]*$"},
         "kind": {"enum": ["container-image", "chart", "binary", "source", "profile"]},
@@ -61,6 +61,7 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 256,
+          "pattern": "^(v?(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?|[A-Fa-f0-9]{40,64})$",
           "allOf": [
             {"not": {"enum": ["latest", "main", "master", "develop", "trunk", "stable", "nightly", "edge", "release", "dev", "unstable", "canary", "pending"]}},
             {"not": {"pattern": "[*?]"}}
@@ -68,6 +69,7 @@
         },
         "digest": {"$ref": "#/$defs/sha256"},
         "architecture": {"enum": ["linux/amd64", "linux/arm64"]},
+        "payloadRef": {"$ref": "#/$defs/relativePath"},
         "sbomRef": {"$ref": "#/$defs/relativePath"},
         "licenseRef": {"$ref": "#/$defs/relativePath"},
         "installAfter": {"type": "array", "maxItems": 10000, "items": {"type": "string", "minLength": 1, "maxLength": 256}}

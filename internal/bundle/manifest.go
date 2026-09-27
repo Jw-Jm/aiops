@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"regexp"
 	"strings"
 
 	"ops-platform/internal/contract"
@@ -59,6 +60,7 @@ type Material struct {
 	Version      string   `json:"version"`
 	Digest       string   `json:"digest"`
 	Architecture string   `json:"architecture"`
+	PayloadRef   string   `json:"payloadRef"`
 	SBOMRef      string   `json:"sbomRef"`
 	LicenseRef   string   `json:"licenseRef"`
 	InstallAfter []string `json:"installAfter"`
@@ -202,6 +204,9 @@ func validateManifest(manifest Manifest) error {
 		if isFloatingVersion(material.Version) {
 			return fmt.Errorf("material %q uses a floating version %q", material.Name, material.Version)
 		}
+		if !isExactBundleVersion(material.Version) {
+			return fmt.Errorf("material %q version %q must be an exact version or immutable commit", material.Name, material.Version)
+		}
 		if _, exists := materials[material.Name]; exists {
 			return fmt.Errorf("duplicate material name %q", material.Name)
 		}
@@ -210,6 +215,16 @@ func validateManifest(manifest Manifest) error {
 		}
 		if !isSHA256(material.Digest) {
 			return fmt.Errorf("material %q digest must be a sha256 digest", material.Name)
+		}
+		artifact, ok := files[material.PayloadRef]
+		if !ok {
+			return fmt.Errorf("material %q payload reference %q is missing", material.Name, material.PayloadRef)
+		}
+		if artifact.Digest != material.Digest {
+			return fmt.Errorf("material %q digest does not match payload file %q", material.Name, material.PayloadRef)
+		}
+		if artifact.Kind != materialPayloadKind(material.Kind) {
+			return fmt.Errorf("material %q payload file %q has kind %q, want %q", material.Name, material.PayloadRef, artifact.Kind, materialPayloadKind(material.Kind))
 		}
 		if sbom, ok := files[material.SBOMRef]; !ok || sbom.Kind != "sbom" {
 			return fmt.Errorf("material %q SBOM reference %q is missing", material.Name, material.SBOMRef)
@@ -220,6 +235,23 @@ func validateManifest(manifest Manifest) error {
 		materials[material.Name] = material
 	}
 	return validateInstallOrder(materials)
+}
+
+func materialPayloadKind(materialKind string) string {
+	switch materialKind {
+	case "container-image":
+		return "oci"
+	case "chart":
+		return "chart"
+	case "binary":
+		return "binary"
+	case "source":
+		return "source"
+	case "profile":
+		return "profile"
+	default:
+		return ""
+	}
 }
 
 func validateInstallOrder(materials map[string]Material) error {
@@ -296,10 +328,17 @@ func isSHA256(value string) bool {
 }
 
 func isFloatingVersion(value string) bool {
-	switch strings.ToLower(strings.TrimSpace(value)) {
+	normalized := strings.ToLower(strings.TrimSpace(value))
+	switch normalized {
 	case "latest", "main", "master", "develop", "trunk", "stable", "nightly", "edge", "release", "dev", "unstable", "canary", "pending":
 		return true
 	default:
-		return strings.ContainsAny(value, "*?")
+		return strings.ContainsAny(value, "*?") || strings.HasSuffix(normalized, ".x")
 	}
+}
+
+var exactBundleVersionPattern = regexp.MustCompile(`^(v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?|[A-Fa-f0-9]{40,64})$`)
+
+func isExactBundleVersion(value string) bool {
+	return exactBundleVersionPattern.MatchString(value)
 }
