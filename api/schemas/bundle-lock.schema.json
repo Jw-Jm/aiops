@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/bundle-lock/v1",
+  "title": "Offline platform Bundle lock",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "bundleId", "platformVersion", "architecture", "payload", "materials"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "bundleId": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "platformVersion": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+([+-][A-Za-z0-9.-]+)?$"},
+    "architecture": {"enum": ["linux/amd64", "linux/arm64"]},
+    "payload": {"$ref": "#/$defs/payload"},
+    "materials": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "items": {"$ref": "#/$defs/material"}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$", "minLength": 71, "maxLength": 71},
+    "relativePath": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 1024,
+      "pattern": "^(oci|charts|binaries|sbom|licenses|sources|profiles)/.+$"
+    },
+    "payloadFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "digest", "size", "kind"],
+      "properties": {
+        "path": {"$ref": "#/$defs/relativePath"},
+        "digest": {"$ref": "#/$defs/sha256"},
+        "size": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "kind": {"enum": ["oci", "chart", "binary", "sbom", "license", "source", "profile"]}
+      }
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "digest", "maxFiles", "maxBytes", "maxCompressedBytes", "files"],
+      "properties": {
+        "file": {"const": "payload.tar.zst"},
+        "digest": {"$ref": "#/$defs/sha256"},
+        "maxFiles": {"type": "integer", "minimum": 1, "maximum": 100000},
+        "maxBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxCompressedBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "files": {"type": "array", "minItems": 1, "maxItems": 100000, "items": {"$ref": "#/$defs/payloadFile"}}
+      }
+    },
+    "material": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "kind", "version", "digest", "architecture", "payloadRef", "sbomRef", "licenseRef", "installAfter"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]*$"},
+        "kind": {"enum": ["container-image", "chart", "binary", "source", "profile"]},
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^(v?(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?|[A-Fa-f0-9]{40,64})$",
+          "allOf": [
+            {"not": {"enum": ["latest", "main", "master", "develop", "trunk", "stable", "nightly", "edge", "release", "dev", "unstable", "canary", "pending"]}},
+            {"not": {"pattern": "[*?]"}}
+          ]
+        },
+        "digest": {"$ref": "#/$defs/sha256"},
+        "architecture": {"enum": ["linux/amd64", "linux/arm64"]},
+        "payloadRef": {"$ref": "#/$defs/relativePath"},
+        "sbomRef": {"$ref": "#/$defs/relativePath"},
+        "licenseRef": {"$ref": "#/$defs/relativePath"},
+        "installAfter": {"type": "array", "maxItems": 10000, "items": {"type": "string", "minLength": 1, "maxLength": 256}}
+      }
+    }
+  }
+}
