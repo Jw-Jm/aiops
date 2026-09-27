@@ -53,9 +53,16 @@ func TestLoadCatalogRejectsUnpinnedOrUnverifiedQualifiedComponents(t *testing.T)
 		},
 		{
 			name:      "develop branch version",
-			wantError: "exact version or immutable commit",
+			wantError: "floating version",
 			mutate: func(document string) string {
 				return strings.Replace(document, "version: 1.2.3", "version: develop", 1)
+			},
+		},
+		{
+			name:      "pending qualified version",
+			wantError: "qualified component must lock an exact version",
+			mutate: func(document string) string {
+				return strings.Replace(document, "version: 1.2.3", "version: pending", 1)
 			},
 		},
 		{
@@ -129,6 +136,13 @@ func TestLoadCatalogAcceptsFullyLockedQualifiedComponent(t *testing.T) {
 	}
 	if err := catalog.ValidateBundle([]string{"demo"}); err != nil {
 		t.Fatalf("ValidateBundle(qualified): %v", err)
+	}
+}
+
+func TestLoadCatalogAcceptsExactPrereleaseVersionContainingX(t *testing.T) {
+	document := strings.Replace(qualifiedCatalog, "version: 1.2.3", "version: 1.2.3-experimental", 1)
+	if _, err := supplychain.LoadCatalog(strings.NewReader(document)); err != nil {
+		t.Fatalf("LoadCatalog(exact prerelease version): %v", err)
 	}
 }
 

@@ -314,6 +314,9 @@ func validateComponent(component Component) error {
 	if component.State == "candidate" {
 		return nil
 	}
+	if component.Version == "pending" {
+		return fmt.Errorf("qualified component must lock an exact version")
+	}
 	if component.PendingFields["dependencyClosure"] {
 		return fmt.Errorf("qualified component dependency closure must not be pending")
 	}
@@ -680,11 +683,12 @@ func requiresSpecialLicenseADR(license string) bool {
 }
 
 func isFloating(version string) bool {
-	switch strings.ToLower(version) {
-	case "latest", "main", "master", "stable":
+	normalized := strings.ToLower(strings.TrimSpace(version))
+	switch normalized {
+	case "latest", "main", "master", "develop", "trunk", "stable", "nightly", "edge", "release", "dev", "unstable", "canary":
 		return true
 	default:
-		return strings.ContainsAny(version, "*xX")
+		return strings.ContainsAny(version, "*?") || strings.HasSuffix(normalized, ".x")
 	}
 }
 
