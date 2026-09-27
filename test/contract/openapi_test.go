@@ -2,6 +2,7 @@ package contract_test
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -249,6 +250,81 @@ func TestCheckGeneratedCoversGoAndTypeScriptOutput(t *testing.T) {
 		if !strings.Contains(string(makefile), directory) {
 			t.Errorf("check-generated does not inspect %s", directory)
 		}
+	}
+}
+
+func TestCheckGeneratedAllowsStagedNewArtifactsAndRejectsWorkingTreeDrift(t *testing.T) {
+	tests := []struct {
+		name     string
+		staged   bool
+		tracked  bool
+		wantPass bool
+	}{
+		{name: "staged generated artifact", staged: true, wantPass: true},
+		{name: "untracked generated artifact", wantPass: false},
+		{name: "modified tracked generated artifact", tracked: true, wantPass: false},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			root := t.TempDir()
+			makefile, err := os.ReadFile(filepath.Join("..", "..", "Makefile"))
+			if err != nil {
+				t.Fatalf("read Makefile: %v", err)
+			}
+			writeFile := func(name, contents string) {
+				t.Helper()
+				path := filepath.Join(root, name)
+				if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+					t.Fatalf("create %s parent: %v", name, err)
+				}
+				if err := os.WriteFile(path, []byte(contents), 0o644); err != nil {
+					t.Fatalf("write %s: %v", name, err)
+				}
+			}
+			writeFile("Makefile", string(makefile))
+			writeFile("go.mod", "module check-generated-fixture\n\ngo 1.27.1\n")
+			writeFile("fixture.go", "package fixture\n")
+			if test.tracked {
+				writeFile("gen/tracked.txt", "baseline\n")
+			}
+			runGit := func(args ...string) []byte {
+				t.Helper()
+				command := exec.Command("git", args...)
+				command.Dir = root
+				output, err := command.CombinedOutput()
+				if err != nil {
+					t.Fatalf("git %v: %v\n%s", args, err, output)
+				}
+				return output
+			}
+			runGit("init", "--quiet")
+			runGit("config", "user.name", "SP-01 contract test")
+			runGit("config", "user.email", "sp01-contract-test@example.invalid")
+			runGit("add", "Makefile", "go.mod", "fixture.go")
+			if test.tracked {
+				runGit("add", "gen/tracked.txt")
+			}
+			runGit("commit", "--quiet", "-m", "baseline")
+
+			if !test.tracked {
+				writeFile("gen/review-probe.txt", "generated\n")
+				if test.staged {
+					runGit("add", "gen/review-probe.txt")
+				}
+			} else {
+				writeFile("gen/tracked.txt", "changed\n")
+			}
+
+			command := exec.Command("make", "check-generated")
+			command.Dir = root
+			output, err := command.CombinedOutput()
+			if test.wantPass && err != nil {
+				t.Fatalf("make check-generated failed: %v\n%s", err, output)
+			}
+			if !test.wantPass && err == nil {
+				t.Fatalf("make check-generated unexpectedly passed\n%s", output)
+			}
+		})
 	}
 }
 

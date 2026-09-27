@@ -36,8 +36,14 @@ generate:
 
 check-generated: generate
 	@if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
-		if [ -n "$$(git status --porcelain --untracked-files=all -- gen web/src/api/generated)" ]; then \
-			git status --short --untracked-files=all -- gen web/src/api/generated >&2; \
+		if ! git diff --quiet -- gen web/src/api/generated; then \
+			git diff -- gen web/src/api/generated >&2; \
+			echo "Generated artifacts are out of date; run make generate and review the generated changes." >&2; \
+			exit 1; \
+		fi; \
+		untracked=$$(git ls-files --others --exclude-standard -- gen web/src/api/generated); \
+		if [ -n "$$untracked" ]; then \
+			printf '%s\n' "$$untracked" >&2; \
 			echo "Generated artifacts are out of date; run make generate and review the generated changes." >&2; \
 			exit 1; \
 		fi; \
