@@ -240,6 +240,18 @@ func TestOpenAPIConventions(t *testing.T) {
 	}
 }
 
+func TestCheckGeneratedCoversGoAndTypeScriptOutput(t *testing.T) {
+	makefile, err := os.ReadFile(filepath.Join("..", "..", "Makefile"))
+	if err != nil {
+		t.Fatalf("read Makefile: %v", err)
+	}
+	for _, directory := range []string{"gen", "web/src/api/generated"} {
+		if !strings.Contains(string(makefile), directory) {
+			t.Errorf("check-generated does not inspect %s", directory)
+		}
+	}
+}
+
 func contains(values []string, value string) bool {
 	for _, candidate := range values {
 		if candidate == value {
