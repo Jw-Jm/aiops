@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/deployment-profile/v1",
+  "title": "Deployment Profile v1",
+  "oneOf": [
+    { "$ref": "#/$defs/inputProfile" },
+    { "$ref": "#/$defs/resolvedProfile" }
+  ],
+  "$defs": {
+    "componentInput": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": { "enum": ["template", "detect", "external", "bundled", "disabled"] },
+        "version": { "type": "string", "minLength": 1 },
+        "versionCandidate": { "type": "string", "minLength": 1 },
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "image": { "type": "string", "pattern": "^[^\\s]+@sha256:[0-9a-f]{64}$" },
+        "endpoint": { "type": "string", "format": "uri", "minLength": 1 },
+        "namespace": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "detectExisting": { "type": "boolean" },
+        "enabledIn": { "type": "array", "items": { "enum": ["core", "deepflow", "virtualization", "full"] }, "uniqueItems": true },
+        "disabledReason": { "type": "string" },
+        "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "compatibility": { "enum": ["supported", "unsupported", "unverified"] }
+      },
+      "additionalProperties": false
+    },
+    "kubernetes": {
+      "type": "object",
+      "required": ["distribution"],
+      "properties": {
+        "distribution": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "architecture": { "enum": ["arm64", "amd64"] },
+        "context": { "type": "string", "minLength": 1 },
+        "clusterUid": { "type": "string", "minLength": 1 },
+        "storageClass": { "type": "string", "minLength": 1 },
+        "crds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "kubevirtCompatibility": { "enum": ["supported", "unsupported", "unverified"] },
+        "kubevirtInstalled": { "type": "boolean" },
+        "kubevirtVersion": { "type": "string", "minLength": 1 },
+        "cdiInstalled": { "type": "boolean" },
+        "cdiVersion": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["publicEgress", "cpuBudget", "memoryMiB"],
+      "properties": {
+        "publicEgress": { "enum": ["deny", "allow"] },
+        "cpuBudget": { "type": "integer", "minimum": 1 },
+        "memoryMiB": { "type": "integer", "minimum": 1 },
+        "imageImporter": { "enum": ["detect", "orbstack_shared_store", "containerd_ctr", "internal_registry", "unverified"] }
+      },
+      "additionalProperties": false
+    },
+    "model": {
+      "type": "object",
+      "required": ["api", "endpoint", "providerForDevelopment", "model", "bundleWeights"],
+      "properties": {
+        "api": { "const": "openai-compatible" },
+        "endpoint": { "type": "string", "format": "uri", "minLength": 1 },
+        "providerForDevelopment": { "type": "string", "minLength": 1 },
+        "model": { "type": "string", "minLength": 1 },
+        "bundleWeights": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "inputProfile": {
+      "type": "object",
+      "required": ["schemaVersion", "kind", "profileId", "environment", "architecture", "selectedProfile", "kubernetes", "runtime", "components", "model", "profiles"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "kind": { "enum": ["template", "detected", "operator"] },
+        "profileId": { "type": "string", "minLength": 1 },
+        "environment": { "enum": ["development", "production"] },
+        "architecture": { "enum": ["arm64", "amd64"] },
+        "context": { "type": "string", "minLength": 1 },
+        "selectedProfile": { "enum": ["core", "deepflow", "virtualization", "full"] },
+        "kubernetes": { "$ref": "#/$defs/kubernetes" },
+        "runtime": { "$ref": "#/$defs/runtime" },
+        "components": { "type": "object", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/componentInput" } },
+        "model": { "$ref": "#/$defs/model" },
+        "profiles": { "type": "object", "required": ["core", "deepflow", "virtualization", "full"], "additionalProperties": { "type": "array", "items": { "type": "string" } } },
+        "discovery": {
+          "type": "object",
+          "required": ["observedAt", "context", "clusterUid", "serverVersion"],
+          "properties": {
+            "observedAt": { "type": "string", "format": "date-time" },
+            "context": { "type": "string", "minLength": 1 },
+            "clusterUid": { "type": "string", "minLength": 1 },
+            "serverVersion": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "resolvedComponent": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": { "enum": ["external", "bundled", "disabled"] },
+        "version": { "type": "string", "pattern": "^v?(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*))?(-[0-9A-Za-z][0-9A-Za-z.-]*)?(\\+[0-9A-Za-z.-]+)?$" },
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "image": { "type": "string", "pattern": "^[^\\s]+@sha256:[0-9a-f]{64}$" },
+        "endpoint": { "type": "string", "format": "uri", "minLength": 1 },
+        "namespace": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "compatibility": { "enum": ["supported", "unsupported", "unverified"] },
+        "admissionState": { "enum": ["candidate", "qualified", "external"] }
+      },
+      "allOf": [
+        { "if": { "properties": { "mode": { "const": "disabled" } }, "required": ["mode"] }, "then": { "required": ["mode"] } },
+        { "if": { "properties": { "mode": { "enum": ["external", "bundled"] } }, "required": ["mode"] }, "then": { "required": ["version", "digest", "endpoint"] } },
+        { "if": { "properties": { "mode": { "const": "bundled" } }, "required": ["mode"] }, "then": { "required": ["image"] } }
+      ],
+      "additionalProperties": false
+    },
+    "resolvedProfile": {
+      "type": "object",
+      "required": ["schemaVersion", "kind", "profileId", "environment", "architecture", "selectedProfile", "kubernetes", "runtime", "components", "model", "discovery", "installable"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "kind": { "const": "resolved" },
+        "profileId": { "type": "string", "minLength": 1 },
+        "environment": { "enum": ["development", "production"] },
+        "architecture": { "enum": ["arm64", "amd64"] },
+        "selectedProfile": { "enum": ["core", "deepflow", "virtualization", "full"] },
+        "kubernetes": { "$ref": "#/$defs/kubernetes" },
+        "runtime": { "$ref": "#/$defs/runtime" },
+        "components": { "type": "object", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/resolvedComponent" } },
+        "model": { "$ref": "#/$defs/model" },
+        "discovery": { "$ref": "#/$defs/inputProfile/properties/discovery" },
+        "installable": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

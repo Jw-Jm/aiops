@@ -14,9 +14,10 @@ import (
 	"strings"
 
 	"ops-platform/internal/bundle"
+	"ops-platform/internal/profile"
 )
 
-const usage = "usage: opsctl bundle verify --manifest <file> --signature <file> --payload <archive> --key <pubkey>"
+const usage = "usage: opsctl bundle verify --manifest <file> --signature <file> --payload <archive> --key <pubkey> | opsctl profile detect --context <name> -o <file> | opsctl profile resolve -f <file> -o <file>"
 
 func main() {
 	if err := run(context.Background(), os.Args[1:], os.Stdout, os.Stderr); err != nil {
@@ -26,6 +27,9 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
+	if len(args) > 0 && args[0] == "profile" {
+		return runProfile(ctx, args[1:], stdout, stderr)
+	}
 	if len(args) < 2 || args[0] != "bundle" || args[1] != "verify" {
 		return errors.New(usage)
 	}
@@ -100,6 +104,82 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 		return fmt.Errorf("write verification report: %w", err)
 	}
 	return nil
+}
+
+func runProfile(ctx context.Context, args []string, stdout, stderr io.Writer) error {
+	if len(args) == 0 {
+		return errors.New("usage: opsctl profile detect|resolve")
+	}
+	operation := args[0]
+	flags := flag.NewFlagSet("opsctl profile "+operation, flag.ContinueOnError)
+	flags.SetOutput(stderr)
+	contextName := flags.String("context", "", "Kubernetes context for detection")
+	inputPath := flags.String("f", "", "detected or operator-edited Deployment Profile")
+	outputPath := flags.String("o", "", "profile output path")
+	if err := flags.Parse(args[1:]); err != nil {
+		return err
+	}
+	if flags.NArg() != 0 || *outputPath == "" {
+		return errors.New("profile operation requires -o <file>")
+	}
+	catalogPath := "bundle/component-catalog.yaml"
+	switch operation {
+	case "detect":
+		if *contextName == "" || *inputPath != "" {
+			return errors.New("usage: opsctl profile detect --context <name> -o <file>")
+		}
+		input, err := profile.ReadProfileFile("deploy/profiles/dev-orbstack.yaml")
+		if err != nil {
+			return err
+		}
+		discovery, err := profile.Discover(ctx, *contextName, "", catalogPath)
+		if err != nil {
+			return err
+		}
+		detected, err := profile.Detect(input, discovery)
+		if err != nil {
+			return err
+		}
+		if err := profile.WriteYAML(*outputPath, detected); err != nil {
+			return err
+		}
+		_, err = fmt.Fprintf(stdout, "detected Deployment Profile written to %s\n", *outputPath)
+		return err
+	case "resolve":
+		if *inputPath == "" || *contextName != "" {
+			return errors.New("usage: opsctl profile resolve -f <detected-profile> -o <file>")
+		}
+		input, err := profile.ReadProfileFile(*inputPath)
+		if err != nil {
+			return err
+		}
+		if input.Kind == "template" {
+			return errors.New("PROFILE_INPUT_NOT_DETECTED: repository templates cannot be used directly; run profile detect first")
+		}
+		resolvedContext := input.Context
+		if resolvedContext == "" {
+			resolvedContext = input.Kubernetes.Context
+		}
+		discovery, err := profile.Discover(ctx, resolvedContext, "", catalogPath)
+		if err != nil {
+			return err
+		}
+		resolved, err := profile.Resolve(ctx, input, discovery)
+		if err != nil {
+			return err
+		}
+		if err := profile.WriteYAML(*outputPath, resolved); err != nil {
+			return err
+		}
+		if !resolved.Installable {
+			_, err = fmt.Fprintf(stdout, "resolved Deployment Profile written to %s; installability is blocked by candidate Component Catalog entries\n", *outputPath)
+			return err
+		}
+		_, err = fmt.Fprintf(stdout, "resolved Deployment Profile written to %s\n", *outputPath)
+		return err
+	default:
+		return errors.New("usage: opsctl profile detect|resolve")
+	}
 }
 
 const (

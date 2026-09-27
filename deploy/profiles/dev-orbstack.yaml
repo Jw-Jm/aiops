@@ -1,0 +1,61 @@
+schemaVersion: 1
+kind: template
+profileId: dev-orbstack-arm64
+environment: development
+architecture: arm64
+context: orbstack
+selectedProfile: core
+kubernetes:
+  distribution: orbstack
+  version: detect-and-lock
+  context: orbstack
+runtime:
+  publicEgress: deny
+  cpuBudget: 8
+  memoryMiB: 18432
+components:
+  postgresql:
+    mode: bundled
+    endpoint: postgresql://ops-postgresql.ops-system.svc.cluster.local:5432
+  keycloak:
+    mode: bundled
+    endpoint: http://ops-keycloak.ops-system.svc.cluster.local:8080
+  seaweedfs:
+    mode: bundled
+    endpoint: http://ops-seaweedfs-s3.ops-system.svc.cluster.local:8333
+  openbao:
+    mode: bundled
+    endpoint: https://ops-openbao.ops-system.svc.cluster.local:8200
+  victoriaMetrics:
+    mode: detect
+    detectExisting: true
+  victoriaLogs:
+    mode: detect
+    detectExisting: true
+  vmalert:
+    mode: detect
+    detectExisting: true
+    endpoint: http://ops-vmalert.ops-system.svc.cluster.local:8880
+  deepflow:
+    mode: bundled
+    versionCandidate: 7.2.0
+    enabledIn: [deepflow, full]
+  kubevirt:
+    mode: detect
+    enabledIn: [virtualization, full]
+    compatibility: unverified
+  cdi:
+    mode: detect
+    enabledIn: [virtualization, full]
+    compatibility: unverified
+model:
+  api: openai-compatible
+  endpoint: http://host.orb.internal:11434/v1
+  providerForDevelopment: ollama-0.34.2
+  model: llama3.1:8b-16k
+  bundleWeights: false
+profiles:
+  core: [postgresql, keycloak, seaweedfs, openbao, platform]
+  deepflow: [core, deepflow]
+  virtualization: [core, kubevirt, cdi]
+  full: [core, deepflow, kubevirt, cdi]
