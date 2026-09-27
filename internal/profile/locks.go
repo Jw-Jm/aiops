@@ -9,11 +9,13 @@ import (
 )
 
 var componentImages = map[string]string{
-	"postgresql": "docker.io/library/postgres",
-	"keycloak":   "quay.io/keycloak/keycloak",
-	"seaweedfs":  "docker.io/chrislusf/seaweedfs",
-	"openbao":    "ghcr.io/openbao/openbao",
-	"vmalert":    "docker.io/victoriametrics/vmalert",
+	"victoria-metrics": "victoriametrics/victoria-metrics",
+	"victoria-logs":    "victoriametrics/victoria-logs",
+	"postgresql":       "docker.io/library/postgres",
+	"keycloak":         "quay.io/keycloak/keycloak",
+	"seaweedfs":        "docker.io/chrislusf/seaweedfs",
+	"openbao":          "ghcr.io/openbao/openbao",
+	"vmalert":          "docker.io/victoriametrics/vmalert",
 }
 
 func loadComponentLocks(catalogPath, architecture string) (map[string]ComponentLock, error) {
@@ -32,6 +34,12 @@ func loadComponentLocks(catalogPath, architecture string) (map[string]ComponentL
 			Version       string `yaml:"version"`
 			Digest        string `yaml:"digest"`
 			Architectures any    `yaml:"architectures"`
+			ChartLock     struct {
+				Name    string `yaml:"name"`
+				Version string `yaml:"version"`
+				Digest  string `yaml:"digest"`
+				Source  string `yaml:"source"`
+			} `yaml:"chartLock"`
 		} `yaml:"components"`
 	}
 	if err := yaml.Unmarshal(contents, &catalog); err != nil {
@@ -42,6 +50,10 @@ func loadComponentLocks(catalogPath, architecture string) (map[string]ComponentL
 	}
 	locks := make(map[string]ComponentLock)
 	for _, component := range catalog.Components {
+		profileName := map[string]string{"victoria-metrics": "victoriaMetrics", "victoria-logs": "victoriaLogs"}[component.Name]
+		if profileName == "" {
+			profileName = component.Name
+		}
 		image, isImage := componentImages[component.Name]
 		if !isImage {
 			continue
@@ -55,11 +67,13 @@ func loadComponentLocks(catalogPath, architecture string) (map[string]ComponentL
 		if !architectureIncludes(component.Architectures, "linux/"+architecture) {
 			return nil, fmt.Errorf("Component Catalog lock for %q does not include linux/%s", component.Name, architecture)
 		}
-		locks[component.Name] = ComponentLock{
-			Version: component.Version,
-			Digest:  component.Digest,
-			Image:   image + "@" + component.Digest,
-			State:   component.State,
+		locks[profileName] = ComponentLock{
+			Version:   component.Version,
+			Digest:    component.Digest,
+			Image:     image + "@" + component.Digest,
+			State:     component.State,
+			ChartName: component.ChartLock.Name, ChartVersion: component.ChartLock.Version,
+			ChartDigest: component.ChartLock.Digest, ChartSource: component.ChartLock.Source,
 		}
 	}
 	return locks, nil

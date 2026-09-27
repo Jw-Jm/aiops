@@ -51,6 +51,7 @@ type Component struct {
 	DependencyClosureVerified bool
 	RequiredFor1_0            bool
 	OfficialSupportSources    []string
+	ChartLock                 *ChartLock
 	FileLicenses              []FileLicense
 	Architectures             []string
 	ImportedPaths             []string
@@ -62,6 +63,13 @@ type Component struct {
 	ConformanceFixtures       []string
 	ExitPlan                  string
 	PendingFields             map[string]bool
+}
+
+type ChartLock struct {
+	Name    string
+	Version string
+	Digest  string
+	Source  string
 }
 
 type FileLicense struct {
@@ -278,6 +286,7 @@ func parseComponent(values map[string]any) (Component, error) {
 		"pocReport": true, "conformanceFixtures": true, "exitPlan": true,
 		"requiredFor1_0": true, "officialSupportSources": true, "candidateNote": true,
 		"specialLicenseADR": true,
+		"chartLock":         true,
 	}
 	for key := range values {
 		if !allowed[key] {
@@ -285,6 +294,13 @@ func parseComponent(values map[string]any) (Component, error) {
 		}
 	}
 	component := Component{PendingFields: make(map[string]bool)}
+	if rawChart, exists := values["chartLock"]; exists {
+		chart, err := parseChartLock(rawChart)
+		if err != nil {
+			return Component{}, err
+		}
+		component.ChartLock = chart
+	}
 	for _, field := range []string{
 		"name", "state", "version", "source", "commit", "digest", "license", "usage", "reuseMode",
 		"linkageMode", "owner", "pocReport", "exitPlan",
@@ -395,6 +411,15 @@ func validateComponent(component Component) error {
 			return fmt.Errorf("unknown SPDX license %q", component.License)
 		}
 	}
+	if component.ChartLock != nil {
+		if component.ChartLock.Name == "" || !isExactVersion(component.ChartLock.Version) || !digestPattern.MatchString(component.ChartLock.Digest) {
+			return fmt.Errorf("chartLock requires a name, exact version, and sha256 digest")
+		}
+		parsed, err := url.Parse(component.ChartLock.Source)
+		if err != nil || parsed.Host == "" || parsed.Scheme != "https" {
+			return fmt.Errorf("chartLock source must be an HTTPS URL")
+		}
+	}
 	if isAGPL(component.License) && (component.LinkageMode == "static" || component.LinkageMode == "copied" || component.ReuseMode == "static-link" || component.ReuseMode == "code-copy" || component.ReuseMode == "vendor" || component.ReuseMode == "fork") {
 		return fmt.Errorf("AGPL component %q cannot be statically linked or copied into platform code", component.Name)
 	}
@@ -484,6 +509,33 @@ func validateComponent(component Component) error {
 		}
 	}
 	return nil
+}
+
+func parseChartLock(raw any) (*ChartLock, error) {
+	values, ok := raw.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("chartLock must be an object")
+	}
+	for key := range values {
+		if key != "name" && key != "version" && key != "digest" && key != "source" {
+			return nil, fmt.Errorf("chartLock has unknown field %q", key)
+		}
+	}
+	chart := &ChartLock{}
+	var err error
+	if chart.Name, err = requiredString(values, "name"); err != nil {
+		return nil, err
+	}
+	if chart.Version, err = requiredString(values, "version"); err != nil {
+		return nil, err
+	}
+	if chart.Digest, err = requiredString(values, "digest"); err != nil {
+		return nil, err
+	}
+	if chart.Source, err = requiredString(values, "source"); err != nil {
+		return nil, err
+	}
+	return chart, nil
 }
 
 func parseKernel(values map[string]any) (FirstPartyKernel, error) {

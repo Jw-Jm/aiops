@@ -1,0 +1,53 @@
+# Upstream victoria-metrics-alert chart 0.18.0.
+# chart archive sha256: e2cf619cc58ffac532447654d9d0c072dcbf1185f5c59b86c83472da3cd44c20
+# Optional credentials are injected only through server.env valueFrom.secretKeyRef entries.
+global:
+  imagePullSecrets: []
+serviceAccount:
+  create: true
+  automountToken: false
+server:
+  fullnameOverride: ops-vmalert
+  replicaCount: 1
+  image:
+    repository: victoriametrics/vmalert
+    tag: v1.116.0@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+    pullPolicy: Never
+  config:
+    alerts:
+      groups: []
+  datasource:
+    url: http://ops-victoria-metrics.ops-system.svc.cluster.local:8428
+    basicAuth:
+      username: ""
+      password: ""
+    bearer:
+      token: ""
+      tokenFile: ""
+  remote:
+    write:
+      url: http://ops-victoria-metrics.ops-system.svc.cluster.local:8428/api/v1/write
+      basicAuth:
+        username: ""
+        password: ""
+      bearer:
+        token: ""
+        tokenFile: ""
+  notifier:
+    alertmanager:
+      url: ""
+      basicAuth:
+        username: ""
+        password: ""
+      bearer:
+        token: ""
+        tokenFile: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: "1"
+      memory: 256Mi
+alertmanager:
+  enabled: false

@@ -128,10 +128,14 @@ type ComponentCandidate struct {
 }
 
 type ComponentLock struct {
-	Version string
-	Digest  string
-	Image   string
-	State   string
+	Version      string
+	Digest       string
+	Image        string
+	State        string
+	ChartName    string
+	ChartVersion string
+	ChartDigest  string
+	ChartSource  string
 }
 
 func (profile InputProfile) ValidateTemplate() error {

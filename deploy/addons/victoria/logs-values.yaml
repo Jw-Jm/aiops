@@ -1,0 +1,29 @@
+# Upstream victoria-logs-single chart 0.13.9.
+# chart archive sha256: 593b3f8e0d26eb925a0e3d59848d17a0abc94597802dc26ba8e0925584176a86
+global:
+  imagePullSecrets: []
+serviceAccount:
+  create: true
+  automountToken: false
+server:
+  enabled: true
+  fullnameOverride: ops-victoria-logs
+  replicaCount: 1
+  image:
+    repository: victoriametrics/victoria-logs
+    tag: v1.52.0@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e
+    pullPolicy: Never
+  persistentVolume:
+    enabled: true
+    size: 2Gi
+  serviceMonitor:
+    enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+vector:
+  enabled: false

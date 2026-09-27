@@ -130,6 +130,40 @@ func TestLoadCatalogRejectsUnpinnedOrUnverifiedQualifiedComponents(t *testing.T)
 	}
 }
 
+func TestLoadCatalogLocksBundledHelmChartArtifact(t *testing.T) {
+	document := strings.Replace(qualifiedCatalog, "    exitPlan: replace-through-adapter", "    exitPlan: replace-through-adapter\n    chartLock:\n      name: victoria-metrics-single\n      version: 0.18.0\n      digest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n      source: https://example.org/victoria-metrics-single-0.18.0.tgz", 1)
+	catalog, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(document), fstest.MapFS{
+		"reports/demo-poc.md":     &fstest.MapFile{Data: []byte("PoC report\n")},
+		"test/fixtures/demo.json": &fstest.MapFile{Data: []byte(`{"fixture":true}`)},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	component, ok := catalog.Component("demo")
+	if !ok || component.ChartLock == nil {
+		t.Fatalf("chart lock was not parsed: %#v", component)
+	}
+	if component.ChartLock.Name != "victoria-metrics-single" || component.ChartLock.Version != "0.18.0" || component.ChartLock.Digest != "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" {
+		t.Fatalf("unexpected chart lock: %#v", component.ChartLock)
+	}
+}
+
+func TestVictoriaArtifactsRemainBlockedFromBundleWhileCandidate(t *testing.T) {
+	contents, err := os.ReadFile(filepath.Join("..", "..", "bundle", "component-catalog.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	catalog, err := supplychain.LoadCatalog(strings.NewReader(string(contents)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, component := range []string{"victoria-metrics", "victoria-logs", "vmalert"} {
+		if err := catalog.ValidateBundle([]string{component}); err == nil {
+			t.Errorf("candidate component %q was admitted into a Bundle", component)
+		}
+	}
+}
+
 func TestLoadCatalogAcceptsExactTwoPartUpstreamReleases(t *testing.T) {
 	for _, version := range []string{"17.11", "4.47", "17.11-bookworm"} {
 		t.Run(version, func(t *testing.T) {

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/url"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -163,6 +162,7 @@ func Discover(ctx context.Context, contextName, kubectlPath, catalogPath string)
 	}
 	result.Kubernetes.KubeVirt = "unverified"
 	result.Components = discoverComponents(ctx, resources, reader)
+	enrichVictoriaCandidates(ctx, reader, result.Components)
 	crdSet := make(map[string]bool, len(result.Kubernetes.CRDs))
 	for _, name := range result.Kubernetes.CRDs {
 		crdSet[name] = true
@@ -331,14 +331,6 @@ func discoverComponents(ctx context.Context, resources []map[string]any, reader 
 		} else {
 			candidate.Endpoint = componentEndpoint(component, candidate.Name, candidate.Namespace, port, protocol)
 			candidate.Evidence = append(candidate.Evidence, fmt.Sprintf("Service %s/%s port %d", candidate.Namespace, candidate.Name, port))
-			if component == "victoriaMetrics" || component == "victoriaLogs" || component == "vmalert" {
-				if err := probeHealth(ctx, reader, candidate.Namespace, candidate.Name, port); err != nil {
-					candidate.Compatible = false
-					candidate.Evidence = append(candidate.Evidence, "health probe failed: "+err.Error())
-				} else {
-					candidate.Evidence = append(candidate.Evidence, "read-only /health probe succeeded")
-				}
-			}
 		}
 		if candidate.Version == "" || candidate.Digest == "" {
 			candidate.Compatible = false
@@ -420,18 +412,6 @@ func serviceCandidate(service map[string]any, component string, resources []map[
 		}
 	}
 	return candidate
-}
-
-func probeHealth(ctx context.Context, reader kubectlReader, namespace, service string, port int) error {
-	proxyPath := fmt.Sprintf("/api/v1/namespaces/%s/services/http:%s:%d/proxy/health", url.PathEscape(namespace), url.PathEscape(service), port)
-	output, err := reader.raw(ctx, proxyPath)
-	if err != nil {
-		return err
-	}
-	if strings.TrimSpace(string(output)) != "OK" {
-		return fmt.Errorf("unexpected health response %q", strings.TrimSpace(string(output)))
-	}
-	return nil
 }
 
 func servicePort(service map[string]any, component string) (int, string) {

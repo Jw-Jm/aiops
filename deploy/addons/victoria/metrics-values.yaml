@@ -1,0 +1,30 @@
+# Upstream victoria-metrics-single chart 0.18.0.
+# chart archive sha256: 7ee8361ee6cfca692f0ad836817ceefaa96a9c020a8255f1a8c4f081009da0f1
+global:
+  imagePullSecrets: []
+serviceAccount:
+  create: true
+  automountToken: false
+server:
+  enabled: true
+  fullnameOverride: ops-victoria-metrics
+  replicaCount: 1
+  image:
+    repository: victoriametrics/victoria-metrics
+    tag: v1.116.0@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638
+    pullPolicy: Never
+  retentionPeriod: 1
+  persistentVolume:
+    enabled: true
+    size: 2Gi
+  serviceMonitor:
+    enabled: false
+  scrape:
+    enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi

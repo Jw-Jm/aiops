@@ -116,6 +116,28 @@ func TestResolveKeepsUnqualifiedComponentsNonInstallable(t *testing.T) {
 	}
 }
 
+func TestComponentLocksResolveVictoriaCatalogNamesAndCharts(t *testing.T) {
+	locks, err := loadComponentLocks("../../bundle/component-catalog.yaml", "arm64")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for component, expected := range map[string]struct {
+		version, chartName, chartVersion, chartDigest string
+	}{
+		"victoriaMetrics": {"v1.116.0", "victoria-metrics-single", "0.18.0", "sha256:7ee8361ee6cfca692f0ad836817ceefaa96a9c020a8255f1a8c4f081009da0f1"},
+		"victoriaLogs":    {"v1.52.0", "victoria-logs-single", "0.13.9", "sha256:593b3f8e0d26eb925a0e3d59848d17a0abc94597802dc26ba8e0925584176a86"},
+		"vmalert":         {"v1.116.0", "victoria-metrics-alert", "0.18.0", "sha256:e2cf619cc58ffac532447654d9d0c072dcbf1185f5c59b86c83472da3cd44c20"},
+	} {
+		lock, ok := locks[component]
+		if !ok || lock.Version != expected.version || lock.ChartName != expected.chartName || lock.ChartVersion != expected.chartVersion || lock.ChartDigest != expected.chartDigest {
+			t.Fatalf("%s Component Catalog lock = %#v, want %#v", component, lock, expected)
+		}
+		if lock.State != "candidate" {
+			t.Fatalf("%s state = %q, candidate admission must remain explicit", component, lock.State)
+		}
+	}
+}
+
 func TestResolveVirtualizationStopsWhenMatrixIsUnverified(t *testing.T) {
 	input := testProfile("detect")
 	input.Selected = "virtualization"

@@ -2,8 +2,11 @@ package contract_test
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"errors"
+	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,9 +15,11 @@ import (
 	"testing"
 
 	"gopkg.in/yaml.v3"
+	"ops-platform/internal/supplychain"
 )
 
 var immutableImage = regexp.MustCompile(`^[^\s@]+@sha256:[a-f0-9]{64}$`)
+var immutableTaggedDigestImage = regexp.MustCompile(`^[^\s@]+:[^\s@]+@sha256:[a-f0-9]{64}$`)
 
 type renderedResource struct {
 	Kind                         string `yaml:"kind"`
@@ -101,6 +106,60 @@ func TestHelmRenderComponentModesAreExclusive(t *testing.T) {
 			}
 			assertImagesPinned(t, resources)
 			assertWorkloadsHardened(t, resources)
+		})
+	}
+}
+
+func TestVictoriaAddonChartsAndImagesAreDigestLocked(t *testing.T) {
+	catalogBytes, err := os.ReadFile(filepath.Join("..", "..", "bundle", "component-catalog.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	catalog, err := supplychain.LoadCatalog(bytes.NewReader(catalogBytes))
+	if err != nil {
+		t.Fatal(err)
+	}
+	components := []struct {
+		name       string
+		chartFile  string
+		valuesFile string
+		image      string
+	}{
+		{"victoria-metrics", "victoria-metrics-single-0.18.0.tgz", "metrics-values.yaml", "victoriametrics/victoria-metrics:v1.116.0@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638"},
+		{"victoria-logs", "victoria-logs-single-0.13.9.tgz", "logs-values.yaml", "victoriametrics/victoria-logs:v1.52.0@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e"},
+		{"vmalert", "victoria-metrics-alert-0.18.0.tgz", "vmalert-values.yaml", "victoriametrics/vmalert:v1.116.0@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311"},
+	}
+	for _, component := range components {
+		t.Run(component.name, func(t *testing.T) {
+			lock, ok := catalog.Component(component.name)
+			if !ok || lock.ChartLock == nil {
+				t.Fatalf("%s chart has no Component Catalog lock", component.name)
+			}
+			chartPath := filepath.Join("..", "..", "deploy", "addons", "victoria", "charts", component.chartFile)
+			archive, err := os.ReadFile(chartPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := fmt.Sprintf("sha256:%x", sha256.Sum256(archive)); got != lock.ChartLock.Digest {
+				t.Fatalf("chart archive digest = %s, catalog lock = %s", got, lock.ChartLock.Digest)
+			}
+			chartSource, err := url.Parse(lock.ChartLock.Source)
+			if err != nil || filepath.Base(chartSource.Path) != component.chartFile {
+				t.Fatalf("chart source %q does not identify %s", lock.ChartLock.Source, component.chartFile)
+			}
+			valuesPath := filepath.Join("..", "..", "deploy", "addons", "victoria", component.valuesFile)
+			command := exec.Command("helm", "template", "sp02", chartPath, "--namespace", "ops-task24", "--values", valuesPath)
+			output, err := command.CombinedOutput()
+			if err != nil {
+				t.Fatalf("render locked local chart: %v\n%s", err, output)
+			}
+			images := regexp.MustCompile(`(?m)^\s*image:\s*(\S+)`).FindAllSubmatch(output, -1)
+			if len(images) != 1 || string(images[0][1]) != component.image {
+				t.Fatalf("rendered images = %q, want exactly %q", images, component.image)
+			}
+			if !immutableTaggedDigestImage.MatchString(component.image) {
+				t.Fatalf("catalog-locked image is not digest pinned: %s", component.image)
+			}
 		})
 	}
 }

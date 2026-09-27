@@ -2,16 +2,16 @@ schemaVersion: 1
 components:
   - name: victoria-metrics
     state: candidate
-    version: pending
+    version: v1.116.0
     source: "https://github.com/VictoriaMetrics/VictoriaMetrics"
-    commit: pending
-    digest: pending
-    license: pending
+    commit: 27d3fb2105d6ca5c633c6dbbb2e66feae0c53124
+    digest: sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638
+    license: Apache-2.0
     specialLicenseADR: pending
     fileLicenses: pending
     sourceSnapshot: false
     sourceArchiveSHA256: pending
-    architectures: pending
+    architectures: [linux/arm64]
     usage: "metrics query/store"
     reuseMode: external-service
     linkageMode: pending
@@ -25,20 +25,25 @@ components:
     conformanceFixtures: pending
     exitPlan: pending
     requiredFor1_0: true
-    candidateNote: "Existing compatible instances are reused; offline bundled artifacts remain a separate unresolved admission item."
+    candidateNote: "Exact v1.116.0 arm64 image and 0.18.0 upstream chart are pinned; remains candidate pending dependency-closure, conformance, and offline Bundle admission evidence."
+    chartLock:
+      name: victoria-metrics-single
+      version: 0.18.0
+      digest: sha256:7ee8361ee6cfca692f0ad836817ceefaa96a9c020a8255f1a8c4f081009da0f1
+      source: "https://github.com/VictoriaMetrics/helm-charts/releases/download/victoria-metrics-single-0.18.0/victoria-metrics-single-0.18.0.tgz"
     officialSupportSources: []
   - name: victoria-logs
     state: candidate
-    version: pending
+    version: v1.52.0
     source: "https://github.com/VictoriaMetrics/VictoriaLogs"
-    commit: pending
-    digest: pending
-    license: pending
+    commit: 46a54c976fa3d404396050e8a5ee6c5b0320efc5
+    digest: sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e
+    license: Apache-2.0
     specialLicenseADR: pending
     fileLicenses: pending
     sourceSnapshot: false
     sourceArchiveSHA256: pending
-    architectures: pending
+    architectures: [linux/arm64]
     usage: "logs and events query/store"
     reuseMode: external-service
     linkageMode: pending
@@ -52,15 +57,20 @@ components:
     conformanceFixtures: pending
     exitPlan: pending
     requiredFor1_0: true
-    candidateNote: "Existing compatible instances are reused; offline bundled artifacts remain a separate unresolved admission item."
+    candidateNote: "Exact v1.52.0 arm64 image and 0.13.9 upstream chart are pinned; remains candidate pending dependency-closure, conformance, and offline Bundle admission evidence."
+    chartLock:
+      name: victoria-logs-single
+      version: 0.13.9
+      digest: sha256:593b3f8e0d26eb925a0e3d59848d17a0abc94597802dc26ba8e0925584176a86
+      source: "https://github.com/VictoriaMetrics/helm-charts/releases/download/victoria-logs-single-0.13.9/victoria-logs-single-0.13.9.tgz"
     officialSupportSources: []
   - name: vmalert
     state: candidate
     version: v1.116.0
     source: "https://github.com/VictoriaMetrics/VictoriaMetrics"
-    commit: pending
+    commit: 27d3fb2105d6ca5c633c6dbbb2e66feae0c53124
     digest: sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
-    license: pending
+    license: Apache-2.0
     specialLicenseADR: pending
     fileLicenses: pending
     sourceSnapshot: false
@@ -79,7 +89,12 @@ components:
     conformanceFixtures: pending
     exitPlan: pending
     requiredFor1_0: true
-    candidateNote: "Exact arm64 image pin: docker.io/victoriametrics/vmalert:v1.116.0, matching the detected VictoriaMetrics v1.116.0 server; remains candidate pending license, dependency, and rule execution evidence."
+    candidateNote: "Exact v1.116.0 arm64 image and 0.18.0 upstream chart are pinned; remains candidate pending dependency-closure, conformance, and Task 2.9 rule execution evidence."
+    chartLock:
+      name: victoria-metrics-alert
+      version: 0.18.0
+      digest: sha256:e2cf619cc58ffac532447654d9d0c072dcbf1185f5c59b86c83472da3cd44c20
+      source: "https://github.com/VictoriaMetrics/helm-charts/releases/download/victoria-metrics-alert-0.18.0/victoria-metrics-alert-0.18.0.tgz"
     officialSupportSources: []
   - name: deepflow
     state: candidate
