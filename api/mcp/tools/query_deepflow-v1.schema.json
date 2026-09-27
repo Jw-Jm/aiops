@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/query_deepflow/v1",
+  "title": "query_deepflow",
+  "description": "Run an approved semantic network query through the DeepFlow Server or Querier API.",
+  "type": "object",
+  "properties": {
+    "operation": {
+      "enum": [
+        "get network health",
+        "get dependencies",
+        "find retransmission",
+        "find packet loss",
+        "find connection failure",
+        "get network path"
+      ]
+    },
+    "resourceCanonicalId": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "timeRange": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timeRange"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "operation"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "output": {
+      "$anchor": "output",
+      "type": "object",
+      "properties": {
+        "tool": {
+          "const": "query_deepflow"
+        },
+        "state": {
+          "const": "succeeded"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "https://ops.local/schemas/evidence/v1"
+              },
+              "maxItems": 1000
+            },
+            "extensions": {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+            }
+          },
+          "required": [
+            "items"
+          ],
+          "additionalProperties": false
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+          },
+          "maxItems": 1000
+        },
+        "degradedSources": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+          },
+          "maxItems": 1000
+        },
+        "budget": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/resultBudget"
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "tool",
+        "state",
+        "data",
+        "evidenceRefs",
+        "degradedSources",
+        "budget"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "x-tool-contract": {
+    "name": "query_deepflow",
+    "version": "v1",
+    "purpose": "Run an approved semantic network query through the DeepFlow Server or Querier API.",
+    "inputSchema": {
+      "$ref": "https://ops.local/schemas/query_deepflow/v1"
+    },
+    "outputSchema": {
+      "$ref": "https://ops.local/schemas/query_deepflow/v1#output"
+    },
+    "requiredPermissions": [
+      "allowed_tools",
+      "tenant_scope",
+      "cluster_scope",
+      "allowed_data_classes"
+    ],
+    "allowedDataClasses": [
+      "D0",
+      "D1"
+    ],
+    "defaultTimeout": {
+      "jobBudget": "maxDuration"
+    },
+    "maxResultBytes": {
+      "jobBudget": "maxResultBytes"
+    },
+    "rateLimit": {
+      "jobBudget": "maxRawQueries"
+    },
+    "auditPolicy": "every_invocation_and_sanitized_result",
+    "failureSemantics": [
+      "invalid_arguments",
+      "permission_denied",
+      "data_class_denied",
+      "budget_exhausted",
+      "source_degraded",
+      "timeout",
+      "temporary_upstream_error",
+      "job_cancelled"
+    ]
+  }
+}

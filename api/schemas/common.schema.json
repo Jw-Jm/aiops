@@ -1,0 +1,617 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/common/v1",
+  "title": "Common platform schema definitions",
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "versionRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "shortText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "commandText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 65536
+    },
+    "tenantId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 64
+    },
+    "sha256": {
+      "type": "string",
+      "minLength": 71,
+      "maxLength": 71,
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "canonicalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^[a-z][a-z0-9.-]{0,62}\\+v1://[A-Za-z0-9][A-Za-z0-9._~-]{0,127}/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})*/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+$"
+    },
+    "severity": {
+      "enum": [
+        "info",
+        "warning",
+        "critical"
+      ]
+    },
+    "health": {
+      "enum": [
+        "normal",
+        "abnormal",
+        "unknown",
+        "degraded"
+      ]
+    },
+    "entity": {
+      "type": "object",
+      "properties": {
+        "canonicalId": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+        },
+        "tenantId": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+        },
+        "domain": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        "scope": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        "apiGroup": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 256
+        },
+        "kind": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        "stableId": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        "name": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        "namespace": {
+          "anyOf": [
+            {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "labels": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "additionalProperties": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+          },
+          "maxProperties": 256
+        },
+        "attributes": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "additionalProperties": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/extensionValue"
+          },
+          "maxProperties": 256
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+          },
+          "maxItems": 1000
+        },
+        "firstObservedAt": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        "lastObservedAt": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "canonicalId",
+        "tenantId",
+        "domain",
+        "scope",
+        "apiGroup",
+        "kind",
+        "stableId",
+        "name",
+        "namespace",
+        "labels",
+        "attributes",
+        "sourceRefs",
+        "firstObservedAt",
+        "lastObservedAt"
+      ],
+      "additionalProperties": false
+    },
+    "dataClass": {
+      "enum": [
+        "D0",
+        "D1",
+        "D2",
+        "D3"
+      ]
+    },
+    "operationRisk": {
+      "enum": [
+        "O0",
+        "O1",
+        "O2",
+        "O3"
+      ]
+    },
+    "canonicalIdList": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+      },
+      "maxItems": 1000
+    },
+    "stringList": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+      },
+      "maxItems": 1000
+    },
+    "sourceFreshness": {
+      "type": "object",
+      "properties": {
+        "ready": {
+          "type": "boolean"
+        },
+        "lastListAt": {
+          "anyOf": [
+            {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastWatchAt": {
+          "anyOf": [
+            {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "watchContinuous": {
+          "type": "boolean"
+        },
+        "lastError": {
+          "anyOf": [
+            {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "staleness": {
+          "enum": [
+            "fresh",
+            "stale",
+            "partial",
+            "rebuilding"
+          ]
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "ready",
+        "lastListAt",
+        "lastWatchAt",
+        "watchContinuous",
+        "lastError",
+        "staleness"
+      ],
+      "additionalProperties": false
+    },
+    "freshness": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "additionalProperties": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/sourceFreshness"
+      },
+      "maxProperties": 1000
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/extensionValue"
+      },
+      "maxProperties": 64
+    },
+    "extensionValue": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 4096
+        },
+        {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        },
+        {
+          "type": "number",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/extensionValue"
+          },
+          "maxItems": 100
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "additionalProperties": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/extensionValue"
+          },
+          "maxProperties": 64
+        }
+      ]
+    },
+    "jobBudget": {
+      "type": "object",
+      "properties": {
+        "maxDuration": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "maxToolCalls": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "maxRawQueries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxResultBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "maxGraphNodes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "maxEvidenceItems": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxModelRequests": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxInputTokens": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxOutputTokens": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxModelCost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "allowedDataClasses": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "D0",
+              "D1",
+              "D2",
+              "D3"
+            ]
+          },
+          "maxItems": 4
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "timeRange": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        "to": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "from",
+        "to"
+      ],
+      "additionalProperties": false
+    },
+    "resultBudget": {
+      "type": "object",
+      "properties": {
+        "consumed": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/jobBudget"
+        },
+        "remaining": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/jobBudget"
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "consumed",
+        "remaining"
+      ],
+      "additionalProperties": false
+    },
+    "toolMetadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "version": {
+          "enum": [
+            "v1"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "$ref"
+          ],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "format": "uri-reference"
+            }
+          },
+          "required": [
+            "$ref"
+          ],
+          "additionalProperties": false
+        },
+        "requiredPermissions": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "allowed_tools",
+              "tenant_scope",
+              "cluster_scope",
+              "namespace_scope",
+              "allowed_data_classes"
+            ]
+          },
+          "maxItems": 5
+        },
+        "allowedDataClasses": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "D0",
+              "D1",
+              "D2",
+              "D3"
+            ]
+          },
+          "maxItems": 4
+        },
+        "defaultTimeout": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            {
+              "type": "object",
+              "properties": {
+                "jobBudget": {
+                  "const": "maxDuration"
+                }
+              },
+              "required": [
+                "jobBudget"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "maxResultBytes": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            {
+              "type": "object",
+              "properties": {
+                "jobBudget": {
+                  "const": "maxResultBytes"
+                }
+              },
+              "required": [
+                "jobBudget"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "rateLimit": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            {
+              "type": "object",
+              "properties": {
+                "jobBudget": {
+                  "const": "maxToolCalls"
+                }
+              },
+              "required": [
+                "jobBudget"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "jobBudget": {
+                  "const": "maxRawQueries"
+                }
+              },
+              "required": [
+                "jobBudget"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "auditPolicy": {
+          "enum": [
+            "every_invocation_and_sanitized_result"
+          ]
+        },
+        "failureSemantics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "maxItems": 16
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "purpose",
+        "inputSchema",
+        "outputSchema",
+        "requiredPermissions",
+        "allowedDataClasses",
+        "defaultTimeout",
+        "maxResultBytes",
+        "rateLimit",
+        "auditPolicy",
+        "failureSemantics"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

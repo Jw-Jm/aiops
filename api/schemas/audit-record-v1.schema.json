@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/audit-record/v1",
+  "title": "audit-record",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "audit-record/v1"
+    },
+    "auditId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "tenantId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+    },
+    "requestId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "subject": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "operation": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "resourceScope": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "inputDigest": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "policyDecision": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "riskAcknowledgementRef": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "result": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "incidentId": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+      },
+      "maxItems": 1000
+    },
+    "actionPlanId": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "auditId",
+    "tenantId",
+    "requestId",
+    "subject",
+    "operation",
+    "resourceScope",
+    "inputDigest",
+    "policyDecision",
+    "riskAcknowledgementRef",
+    "result",
+    "incidentId",
+    "evidenceRefs",
+    "actionPlanId",
+    "createdAt"
+  ],
+  "additionalProperties": false
+}

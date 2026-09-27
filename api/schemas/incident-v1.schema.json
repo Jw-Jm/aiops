@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/incident/v1",
+  "title": "incident",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "incident/v1"
+    },
+    "incidentId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "tenantId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+    },
+    "fingerprint": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "primaryResourceCanonicalId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+    },
+    "ruleFamily": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "normalizedSymptom": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+    },
+    "state": {
+      "enum": [
+        "open",
+        "acknowledged",
+        "mitigating",
+        "resolved",
+        "closed",
+        "suppressed"
+      ]
+    },
+    "severity": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/severity"
+    },
+    "resolutionState": {
+      "enum": [
+        "none",
+        "resolution_pending",
+        "resolved"
+      ]
+    },
+    "openedAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "acknowledgedAt": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "mitigatingAt": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "resolvedAt": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "closedAt": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "suppressedAt": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastActivityAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "resolutionReason": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "currentRcaRevision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "createdAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "incidentId",
+    "tenantId",
+    "fingerprint",
+    "primaryResourceCanonicalId",
+    "ruleFamily",
+    "normalizedSymptom",
+    "state",
+    "severity",
+    "resolutionState",
+    "openedAt",
+    "acknowledgedAt",
+    "mitigatingAt",
+    "resolvedAt",
+    "closedAt",
+    "suppressedAt",
+    "lastActivityAt",
+    "resolutionReason",
+    "currentRcaRevision",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "additionalProperties": false
+}

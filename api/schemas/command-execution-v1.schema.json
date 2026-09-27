@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/command-execution/v1",
+  "title": "command-execution",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "command-execution/v1"
+    },
+    "executionId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "tenantId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+    },
+    "incidentId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "actionPlanId": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "iteration": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "subject": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "executionProfileId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "shell": {
+      "const": "bash"
+    },
+    "suggestedCommandDigest": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actualCommandDigest": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "suggestionMatch": {
+      "enum": [
+        "exact",
+        "modified",
+        "unrelated",
+        "not_applicable"
+      ]
+    },
+    "suggestionMatchVersion": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "acknowledgementId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "policyDecisionId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "state": {
+      "enum": [
+        "prepared",
+        "dispatching",
+        "running",
+        "execution_unknown",
+        "succeeded",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "exitCode": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "startedAt": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stdoutObjectRef": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stderrObjectRef": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outputDigest": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outputTruncated": {
+      "type": "boolean"
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "executionId",
+    "tenantId",
+    "incidentId",
+    "actionPlanId",
+    "iteration",
+    "subject",
+    "executionProfileId",
+    "shell",
+    "suggestedCommandDigest",
+    "actualCommandDigest",
+    "suggestionMatch",
+    "suggestionMatchVersion",
+    "acknowledgementId",
+    "policyDecisionId",
+    "state",
+    "exitCode",
+    "startedAt",
+    "completedAt",
+    "stdoutObjectRef",
+    "stderrObjectRef",
+    "outputDigest",
+    "outputTruncated"
+  ],
+  "additionalProperties": false
+}

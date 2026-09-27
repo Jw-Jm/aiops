@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/get_ranked_evidence/v1",
+  "title": "get_ranked_evidence",
+  "description": "Return evidence ranked for the authorized incident.",
+  "type": "object",
+  "properties": {
+    "incidentId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "incidentId"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "output": {
+      "$anchor": "output",
+      "type": "object",
+      "properties": {
+        "tool": {
+          "const": "get_ranked_evidence"
+        },
+        "state": {
+          "const": "succeeded"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "rank": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "evidenceId": {
+                    "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+                  },
+                  "source": {
+                    "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+                  },
+                  "resourceId": {
+                    "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+                  },
+                  "severity": {
+                    "$ref": "https://ops.local/schemas/common/v1#/$defs/severity"
+                  },
+                  "reason": {
+                    "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+                  },
+                  "message": {
+                    "$ref": "https://ops.local/schemas/common/v1#/$defs/text"
+                  },
+                  "confidence": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "score": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "timestamp": {
+                    "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+                  },
+                  "extensions": {
+                    "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+                  }
+                },
+                "required": [
+                  "rank",
+                  "evidenceId",
+                  "source",
+                  "resourceId",
+                  "severity",
+                  "reason",
+                  "message",
+                  "confidence",
+                  "score",
+                  "timestamp"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1000
+            },
+            "extensions": {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+            }
+          },
+          "required": [
+            "items"
+          ],
+          "additionalProperties": false
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+          },
+          "maxItems": 1000
+        },
+        "degradedSources": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+          },
+          "maxItems": 1000
+        },
+        "budget": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/resultBudget"
+        },
+        "extensions": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+        }
+      },
+      "required": [
+        "tool",
+        "state",
+        "data",
+        "evidenceRefs",
+        "degradedSources",
+        "budget"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "x-tool-contract": {
+    "name": "get_ranked_evidence",
+    "version": "v1",
+    "purpose": "Return evidence ranked for the authorized incident.",
+    "inputSchema": {
+      "$ref": "https://ops.local/schemas/get_ranked_evidence/v1"
+    },
+    "outputSchema": {
+      "$ref": "https://ops.local/schemas/get_ranked_evidence/v1#output"
+    },
+    "requiredPermissions": [
+      "allowed_tools",
+      "tenant_scope",
+      "allowed_data_classes"
+    ],
+    "allowedDataClasses": [
+      "D0",
+      "D1"
+    ],
+    "defaultTimeout": {
+      "jobBudget": "maxDuration"
+    },
+    "maxResultBytes": {
+      "jobBudget": "maxResultBytes"
+    },
+    "rateLimit": {
+      "jobBudget": "maxToolCalls"
+    },
+    "auditPolicy": "every_invocation_and_sanitized_result",
+    "failureSemantics": [
+      "invalid_arguments",
+      "permission_denied",
+      "data_class_denied",
+      "budget_exhausted",
+      "source_degraded",
+      "timeout",
+      "temporary_upstream_error",
+      "job_cancelled"
+    ]
+  }
+}
