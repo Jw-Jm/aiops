@@ -1,0 +1,40 @@
+global:
+  imagePullPolicy: IfNotPresent
+
+components:
+  postgresql:
+    mode: bundled
+    endpoint: postgresql://ops-postgresql:5432
+    image: docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+    storage: 2Gi
+    auth:
+      existingSecret: ops-postgresql-auth
+      usernameKey: username
+      passwordKey: password
+  keycloak:
+    mode: bundled
+    endpoint: http://ops-keycloak:8080
+    image: quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c
+    auth:
+      existingSecret: ops-keycloak-auth
+      usernameKey: username
+      passwordKey: password
+  seaweedfs:
+    mode: bundled
+    endpoint: http://ops-seaweedfs-s3:8333
+    image: docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e
+    storage: 2Gi
+    auth:
+      existingSecret: ops-seaweedfs-auth
+      usernameKey: accessKey
+      passwordKey: secretKey
+  openbao:
+    mode: bundled
+    endpoint: https://ops-openbao:8200
+    image: ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6
+    storage: 2Gi
+    tlsSecretName: ops-openbao-bootstrap-tls
+    auth:
+      existingSecret: ops-openbao-auth
+      usernameKey: username
+      passwordKey: token

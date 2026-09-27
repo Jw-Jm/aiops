@@ -1,0 +1,110 @@
+{{- $component := .Values.components.keycloak -}}
+{{- if eq $component.mode "bundled" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-keycloak
+  labels:
+    app.kubernetes.io/name: ops-keycloak
+    ops.platform.io/component: keycloak
+    ops.platform.io/mode: bundled
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ops-keycloak
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ops-keycloak
+  labels:
+    app.kubernetes.io/name: ops-keycloak
+    ops.platform.io/component: keycloak
+    ops.platform.io/mode: bundled
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ops-keycloak
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ops-keycloak
+        ops.platform.io/component: keycloak
+        ops.platform.io/mode: bundled
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 0
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: keycloak
+          image: {{ $component.image | quote }}
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          args: ["start", "--hostname-strict=false"]
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: KC_HTTP_ENABLED
+              value: "true"
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL
+              value: {{ printf "jdbc:%s/ops" (trimSuffix "/" (required "components.postgresql.endpoint is required" $.Values.components.postgresql.endpoint)) | quote }}
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.components.postgresql.auth.existingSecret | quote }}
+                  key: {{ $.Values.components.postgresql.auth.usernameKey | quote }}
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.components.postgresql.auth.existingSecret | quote }}
+                  key: {{ $.Values.components.postgresql.auth.passwordKey | quote }}
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $component.auth.existingSecret | quote }}
+                  key: {{ $component.auth.usernameKey | quote }}
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $component.auth.existingSecret | quote }}
+                  key: {{ $component.auth.passwordKey | quote }}
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: data
+              mountPath: /opt/keycloak/data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+{{- end }}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["components"],
+  "properties": {
+    "components": {
+      "type": "object",
+      "required": ["postgresql", "keycloak", "seaweedfs", "openbao"],
+      "properties": {
+        "postgresql": { "$ref": "#/definitions/component" },
+        "keycloak": { "$ref": "#/definitions/component" },
+        "seaweedfs": { "$ref": "#/definitions/component" },
+        "openbao": { "$ref": "#/definitions/component" }
+      }
+    }
+  },
+  "definitions": {
+    "component": {
+      "type": "object",
+      "required": ["mode", "image"],
+      "properties": {
+        "mode": { "enum": ["external", "bundled"] },
+        "image": { "type": "string", "pattern": "^[^\\s@]+@sha256:[a-f0-9]{64}$" },
+        "endpoint": { "type": "string", "minLength": 1 },
+        "storage": { "type": "string", "pattern": "^[1-9][0-9]*(Mi|Gi)$" }
+      }
+    }
+  }
+}

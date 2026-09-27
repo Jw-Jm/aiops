@@ -1,0 +1,28 @@
+{{- range $name := list "postgresql" "keycloak" "seaweedfs" "openbao" }}
+{{- $component := index $.Values.components $name }}
+{{- if eq $component.mode "external" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-{{ $name }}-connection
+  labels:
+    ops.platform.io/component: {{ $name }}
+    ops.platform.io/mode: external
+data:
+  endpoint: {{ required (printf "components.%s.endpoint is required in external mode" $name) $component.endpoint | quote }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ops-{{ $name }}-external-credential-reference
+  labels:
+    ops.platform.io/component: {{ $name }}
+    ops.platform.io/mode: external
+  annotations:
+    ops.platform.io/credential-secret-name: {{ required (printf "components.%s.auth.existingSecret is required in external mode" $name) $component.auth.existingSecret | quote }}
+    ops.platform.io/username-key: {{ $component.auth.usernameKey | default "username" | quote }}
+    ops.platform.io/password-key: {{ $component.auth.passwordKey | default "password" | quote }}
+type: ops.platform.io/external-credential-reference
+---
+{{- end }}
+{{- end }}
