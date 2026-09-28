@@ -190,10 +190,51 @@ func Discover(ctx context.Context, contextName, kubectlPath, catalogPath string)
 		return Discovery{}, err
 	}
 	result.Locks = locks
+	completeDigestOnlyCandidateVersions(result.Components, locks)
 	if result.Kubernetes.Distribution == "orbstack" {
 		result.Runtime.ImageImporter = "unverified"
 	}
 	return result, nil
+}
+
+func completeDigestOnlyCandidateVersions(components map[string][]ComponentCandidate, locks map[string]ComponentLock) {
+	const missingVersionEvidence = "image version or runtime digest is unavailable"
+	for name, candidates := range components {
+		lock, ok := locks[name]
+		if !ok || !versionPattern.MatchString(lock.Version) || !digestPattern.MatchString(lock.Digest) {
+			continue
+		}
+		lockImage, _, lockHasDigest := strings.Cut(lock.Image, "@")
+		if !lockHasDigest {
+			continue
+		}
+		for index := range candidates {
+			candidate := &candidates[index]
+			if candidate.Version != "" || candidate.Digest != lock.Digest || !strings.Contains(candidate.Image, "@") {
+				continue
+			}
+			image, _, hasDigest := strings.Cut(candidate.Image, "@")
+			if !hasDigest || image != lockImage {
+				continue
+			}
+			missingVersion := false
+			remainingEvidence := candidate.Evidence[:0]
+			for _, evidence := range candidate.Evidence {
+				if evidence == missingVersionEvidence {
+					missingVersion = true
+					continue
+				}
+				remainingEvidence = append(remainingEvidence, evidence)
+			}
+			if !missingVersion {
+				continue
+			}
+			candidate.Evidence = append(remainingEvidence, fmt.Sprintf("exact version %s resolved from Component Catalog by runtime image digest %s", lock.Version, lock.Digest))
+			candidate.Version = lock.Version
+			candidate.Compatible = candidate.Endpoint != "" && digestPattern.MatchString(candidate.Digest)
+		}
+		components[name] = candidates
+	}
 }
 
 func resourceVersion(instances []map[string]any, fields ...string) string {
