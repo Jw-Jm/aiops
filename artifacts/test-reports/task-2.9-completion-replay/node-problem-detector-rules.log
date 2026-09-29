@@ -1,0 +1,24 @@
+capability=node-problem-detector-rules source_commit=e2b57e2f42052e4cf62cd2be1eb882f6a71a7804 runtime_enabled=false
+locked_state=qualified disabled_reason=
+command: ["git", "-C", "/tmp/ops-sp02-task29/node-problem-detector", "archive", "--format=tar", "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-u_plhuoa/node-problem-detector-rules.tar", "e2b57e2f42052e4cf62cd2be1eb882f6a71a7804"]
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-u_plhuoa,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-u_plhuoa/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-u_plhuoa/node-problem-detector-rules/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/node-problem-detector-rules", "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414", "go", "test", "-mod=readonly", "-p", "1", "-count=1", "-v", "-timeout=5m", "./pkg/systemlogmonitor", "-run", "^TestLogBuffer"]
+go: downloading k8s.io/api v0.35.4
+go: downloading k8s.io/apimachinery v0.35.4
+go: downloading github.com/acobaugh/osrelease v0.1.0
+go: downloading github.com/euank/go-kmsg-parser v2.0.0+incompatible
+go: downloading k8s.io/utils v0.0.0-20251222233032-718f0e51e6d2
+FAIL	k8s.io/node-problem-detector/pkg/systemlogmonitor [setup failed]
+FAIL
+# k8s.io/node-problem-detector/pkg/systemlogmonitor
+pkg/util/helpers_linux.go:23:2: mkdir /gomodcache/cache/download/github.com/acobaugh: read-only file system
+# k8s.io/node-problem-detector/pkg/systemlogmonitor
+pkg/util/convert.go:22:2: open /gomodcache/cache/download/k8s.io/api/@v/v0.35.4.lock: read-only file system
+# k8s.io/node-problem-detector/pkg/systemlogmonitor
+pkg/util/convert.go:23:2: open /gomodcache/cache/download/k8s.io/apimachinery/@v/v0.35.4.lock: read-only file system
+# k8s.io/node-problem-detector/pkg/systemlogmonitor
+third_party/forked/cadvisor/tail/tail_linux.go:28:2: open /gomodcache/cache/download/k8s.io/utils/@v/v0.0.0-20251222233032-718f0e51e6d2.lock: read-only file system
+# k8s.io/node-problem-detector/pkg/systemlogmonitor
+pkg/systemlogmonitor/logwatchers/kmsg/log_watcher_linux.go:24:2: mkdir /gomodcache/cache/download/github.com/euank: read-only file system
+exit_code=1
+replay_exit_code=1 error=command failed with exit 1; see /Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay/node-problem-detector-rules.log

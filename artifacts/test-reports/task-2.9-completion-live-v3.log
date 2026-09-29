@@ -1,0 +1,23 @@
+started_at=2026-09-29T13:31:28.742134+00:00
+source_parent=11e7da972bc9404fb8b5a528eae4f9c805f08a0a
+test/contract/inspection_replay_test.go sha256=bdfe4550a0d2f5e9050f8dd0e10deb9d90667abd75c5b9250a611ce2f8ca83c6
+test/fixtures/upstream-inspection/replay-nonvirtual.py sha256=522314d5c2b8280f93986d0c46d41be4102fceb3006d578b104abb00d9d62f11
+docs/poc/inspection-reuse-lock.yaml sha256=071466563aaa194ee0de7f6a9cd870081e9436daaf50b2e78f514cb3453848ca
+OPS_INSPECTION_REPLAY=1 OPS_INSPECTION_SOURCE_DIR=/tmp/ops-sp02-task29 OPS_INSPECTION_KEEP_WHEELS=/tmp/ops-sp02-keep/wheelhouse
+command: go test ./test/contract -run ^TestInspectionNonVirtual(ReplayEntryPoint|UpstreamReplay)$ -count=1 -timeout=30m -v
+=== RUN   TestInspectionNonVirtualReplayEntryPoint
+--- PASS: TestInspectionNonVirtualReplayEntryPoint (0.12s)
+=== RUN   TestInspectionNonVirtualUpstreamReplay
+    inspection_replay_test.go:76: command=/Users/mssc/.local/share/mise/installs/python/3.12.14/bin/python3 ["/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection/replay-nonvirtual.py" "--sources" "/tmp/ops-sp02-task29" "--keep-wheels" "/tmp/ops-sp02-keep/wheelhouse" "--output" "/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v3"]
+        k8sgpt-analyzer: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v3/k8sgpt-analyzer.log
+        node-problem-detector-rules: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v3/node-problem-detector-rules.log
+        coroot-community-check: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v3/coroot-community-check.log
+        keep-community-model: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v3/keep-community-model.log
+        metal3-bmo-model: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v3/metal3-bmo-model.log
+        gofish-redfish: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v3/gofish-redfish.log
+        ipmi-exporter: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v3/ipmi-exporter.log
+        smartctl-exporter: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v3/smartctl-exporter.log
+--- PASS: TestInspectionNonVirtualUpstreamReplay (175.12s)
+PASS
+ok  	ops-platform/test/contract	175.577s
+exit_code=0

@@ -1,0 +1,31 @@
+OPS_INSPECTION_REPLAY=1 OPS_INSPECTION_SOURCE_DIR=/tmp/ops-sp02-task29 OPS_INSPECTION_KEEP_WHEELS=/tmp/ops-sp02-keep/wheelhouse
+command: go test ./test/contract -run ^TestInspectionNonVirtual(ReplayEntryPoint|UpstreamReplay)$ -count=1 -timeout=30m -v
+=== RUN   TestInspectionNonVirtualReplayEntryPoint
+--- PASS: TestInspectionNonVirtualReplayEntryPoint (0.12s)
+=== RUN   TestInspectionNonVirtualUpstreamReplay
+    inspection_replay_test.go:54: command=/Users/mssc/.local/share/mise/installs/python/3.12.14/bin/python3 ["/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection/replay-nonvirtual.py" "--sources" "/tmp/ops-sp02-task29" "--keep-wheels" "/tmp/ops-sp02-keep/wheelhouse" "--output" "/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v2"]
+        k8sgpt-analyzer: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v2/k8sgpt-analyzer.log
+        node-problem-detector-rules: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v2/node-problem-detector-rules.log
+        coroot-community-check: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v2/coroot-community-check.log
+        keep-community-model: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v2/keep-community-model.log
+        metal3-bmo-model: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v2/metal3-bmo-model.log
+        gofish-redfish: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v2/gofish-redfish.log
+        ipmi-exporter: exit 0; runtime remains disabled; log=/Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v2/ipmi-exporter.log
+        Traceback (most recent call last):
+          File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection/replay-nonvirtual.py", line 200, in <module>
+            main()
+          File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection/replay-nonvirtual.py", line 184, in main
+            go_test(["./"], "^(TestCollectDevices|TestReadSMARTctl|TestTask29SMARTctlFixture)$")
+          File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection/replay-nonvirtual.py", line 142, in go_test
+            docker(images["golang"], ["go", "test", "-mod=readonly", "-p", "1", "-count=1", "-v", "-timeout=5m", *packages, "-run", pattern], cwd)
+          File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection/replay-nonvirtual.py", line 128, in docker
+            command([
+          File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection/replay-nonvirtual.py", line 46, in command
+            raise RuntimeError(f"command failed with exit {result.returncode}; see {log.name}")
+        RuntimeError: command failed with exit 1; see /Users/mssc/Documents/Code/ops/platform/artifacts/test-reports/task-2.9-completion-replay-v2/smartctl-exporter.log
+    inspection_replay_test.go:56: nonvirtual upstream replay: exit status 1
+--- FAIL: TestInspectionNonVirtualUpstreamReplay (172.97s)
+FAIL
+FAIL	ops-platform/test/contract	173.677s
+FAIL
+exit_code=1

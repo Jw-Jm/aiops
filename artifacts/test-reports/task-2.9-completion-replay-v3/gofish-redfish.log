@@ -1,0 +1,43 @@
+capability=gofish-redfish source_commit=af1cf20386d538767ed9b6dd3a770736ab90e2d0 runtime_enabled=false
+locked_state=qualified disabled_reason=
+command: ["git", "-C", "/tmp/ops-sp02-task29/gofish", "archive", "--format=tar", "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-4vw4pew1/gofish-redfish.tar", "af1cf20386d538767ed9b6dd3a770736ab90e2d0"]
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-4vw4pew1,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-4vw4pew1/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-4vw4pew1/gofish-redfish/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/gofish-redfish", "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414", "go", "test", "-mod=readonly", "-p", "1", "-count=1", "-v", "-timeout=5m", "./schemas", "-run", "^Test(Chassis|ComputerSystem|Manager|LogEntry)"]
+=== RUN   TestChassis
+--- PASS: TestChassis (0.00s)
+=== RUN   TestChassisUpdate
+--- PASS: TestChassisUpdate (0.00s)
+=== RUN   TestChassisDrives
+--- PASS: TestChassisDrives (0.00s)
+=== RUN   TestChassisLinkedDrives
+--- PASS: TestChassisLinkedDrives (0.00s)
+=== RUN   TestChassisSupportedReset
+--- PASS: TestChassisSupportedReset (0.00s)
+=== RUN   TestComputerSystem
+--- PASS: TestComputerSystem (0.00s)
+=== RUN   TestComputerSystemUpdate
+--- PASS: TestComputerSystemUpdate (0.00s)
+=== RUN   TestLogEntry
+--- PASS: TestLogEntry (0.00s)
+=== RUN   TestManager
+=== RUN   TestManager/Check_fields
+--- PASS: TestManager (0.00s)
+    --- PASS: TestManager/Check_fields (0.00s)
+=== RUN   TestManagerUpdate
+--- PASS: TestManagerUpdate (0.00s)
+=== RUN   TestManagerReset
+--- PASS: TestManagerReset (0.00s)
+=== RUN   TestManagerResetTypes
+--- PASS: TestManagerResetTypes (0.00s)
+=== RUN   TestManagerResetToDefaultsTypes
+--- PASS: TestManagerResetToDefaultsTypes (0.00s)
+=== RUN   TestManagerAccount
+--- PASS: TestManagerAccount (0.00s)
+=== RUN   TestManagerAccountUpdate
+--- PASS: TestManagerAccountUpdate (0.00s)
+=== RUN   TestManagerDiagnosticData
+--- PASS: TestManagerDiagnosticData (0.00s)
+PASS
+ok  	github.com/stmcginnis/gofish/schemas	0.003s
+exit_code=0
+replay_exit_code=0

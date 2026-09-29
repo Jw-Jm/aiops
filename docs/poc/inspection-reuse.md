@@ -56,6 +56,80 @@ fixtures. The complete lock is also checked against `third_party/manifest.yaml`
 and the Component Catalog; these eight entries remain candidates and cannot
 enter a Bundle.
 
+## Executable non-virtual replay
+
+The opt-in `TestInspectionNonVirtualUpstreamReplay` reconstructs the frozen
+Git archives in disposable directories and invokes
+`test/fixtures/upstream-inspection/replay-nonvirtual.py`. It checks archive,
+selected-file, Fixture, license-evidence and Keep wheel hashes before using
+them. Its containers use the explicit OrbStack context, digest-locked images,
+`--network none`, `--pull=never`, read-only sources/module cache and
+`GOPROXY=off`. Keep installs only the exact wheel inventory with
+`--no-index --require-hashes --no-deps`; there is no runtime download fallback.
+
+```sh
+OPS_INSPECTION_REPLAY=1 \
+OPS_INSPECTION_SOURCE_DIR=/absolute/prepared/upstream \
+OPS_INSPECTION_KEEP_WHEELS=/absolute/prepared/keep/wheelhouse \
+OPS_INSPECTION_REPLAY_OUTPUT=/absolute/empty/evidence-directory \
+GOPROXY=off GOSUMDB=off \
+go test ./test/contract -run '^TestInspectionNonVirtual(ReplayEntryPoint|UpstreamReplay)$' \
+  -count=1 -timeout=30m -v
+```
+
+The source directory contains the eight Git repositories named in the script;
+only their frozen commits are used, regardless of checkout changes. Replays
+never promote a capability or Component Catalog entry. The default Contract
+test rejects virtual capability names and missing source; the actual upstream
+replay is skipped unless explicitly enabled. K8sGPT's license blocker and the
+Fixture-only hardware boundaries still apply after a passing replay.
+
+### Verification on 2026-09-29
+
+The final complete replay exited 0 in 175.577 seconds. Its command, source
+parent and exact runner/Contract-test/lock hashes are in
+`artifacts/test-reports/task-2.9-completion-live-v3.log`. All eight capability
+logs and their hashes are in
+`artifacts/test-reports/task-2.9-completion-replay-v3/summary.json`.
+
+K8sGPT Analyzer tests, a fresh arm64 CLI build and repeated deterministic JSON
+output passed. NPD's upstream `TestPush`/`TestMatch` source tests and all 28
+VictoriaLogs equivalence vectors passed. Coroot Check/Audit, Keep SQLite/DTO,
+Metal3 API types, Gofish schemas, synthetic IPMI metrics and SMART fake-data
+metrics also passed without network or image pulls.
+
+Two runner preparation failures are preserved in the earlier completion logs.
+The first selected the unneeded NPD daemon package and failed because its
+extra dependencies were absent in the read-only cache. The runner now tests
+the selected upstream matcher files. The second omitted the SMART fake-data
+reader's `debug/sdr.json` path. The runner now binds that path to the locked
+upstream JSON Fixture. Neither correction changes upstream versions, source,
+licenses, runtime admission or hardware validation claims.
+
+`task-2.9-completion-check-final.log` records exit 0 for the locked toolchain,
+uncached reuse/graph/projection Contract tests, `make check`, generated-file
+drift checks and `git diff --check`. The original eight Component Catalog
+candidates, disabled K8sGPT license gate and deferred virtual capabilities are
+unchanged.
+
+### Exit and disable conditions
+
+Future consumers must use the locked selected surfaces and public platform
+projections. Source/hash/license drift, a changed import closure or a failed
+offline Fixture stops that capability until its lock and evidence are reviewed.
+No replay enables a full Coroot/Keep/Metal3 runtime, a hardware exporter or
+privileged collector. Preserve disabled status when required evidence is
+missing; do not substitute a generic in-house Inspection framework.
+
+K8sGPT can leave disabled status only after the five frozen Buf dependency
+licenses are established and its CLI closure and no-LLM JSON tests are rerun.
+NPD rule reuse still requires real journald/kernel ingestion to preserve
+message, node and timestamp semantics in the later adapter task; a failed
+mapping must follow the plan's NPD admission path. Keep remains a selected
+Community model boundary; any broader extraction must close its dependencies
+and exclude `ee/` before SP-05 consumes it. Hardware Fixture results do not
+authorize device access or establish live hardware compatibility.
+
 ## Virtual capabilities deferred
 
 KubeVirt observability rules, KubeVirt must-gather and the Kubernetes MCP
