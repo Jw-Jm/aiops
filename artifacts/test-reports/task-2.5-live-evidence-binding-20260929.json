@@ -1,0 +1,36 @@
+{
+  "scope": "Task 2.5 actual arm64 OrbStack minimum live PoC; not full Bundle/production admission",
+  "sourceParent": "2f5aba5c7362c772252591844521d62f6e239b44",
+  "command": "OPS_DEEPFLOW_ORBSTACK_POC=1 go test ./test/e2e -run ^TestDeepFlowPOC$ -count=1 -v -timeout=30m",
+  "exitCode": 0,
+  "durationSeconds": 724.5,
+  "log": {
+    "path": "artifacts/test-reports/task-2.5-live-uid-runtime-selector-20260929.log",
+    "sha256": "41e0eac402830d5a179b15b5685244032d6f85d299836cfa62851bb2c3726457"
+  },
+  "postRunSourceHashes": [
+    {
+      "path": "test/e2e/deepflow_poc_test.go",
+      "sha256": "f02960a495e4184be5c9960b14b83e81b0f156dff9f853742e619a2f5c5892e9"
+    },
+    {
+      "path": "deploy/addons/deepflow/install.yaml",
+      "sha256": "09601eb4660a437fd30f58012cbf725b6633b2184d91f1105c6b0badef5ab71e"
+    },
+    {
+      "path": "deploy/addons/deepflow/values-dev-arm64.yaml",
+      "sha256": "e084545eceab23a29ae8a531059b53e99c3ceeb3625efd1a00d8d6b8e70f2a18"
+    },
+    {
+      "path": "test/fixtures/deepflow/v7.2.0/querier-l4-flow-live.json",
+      "sha256": "cf07d800a62310310d665769f77d0249bc2e3e159fcdca66d6e452d6bf088a27"
+    }
+  ],
+  "networkEvidenceMode": "live",
+  "registeredAgentState": 1,
+  "queryRows": 1,
+  "l7Context": false,
+  "traceCompletion": false,
+  "postCleanupReleaseResources": 0,
+  "notes": "These are explicit post-run hashes, not a reconstructed historical red-first record."
+}

@@ -10,6 +10,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/netip"
 	"net/url"
 	"os"
 	"os/exec"
@@ -127,13 +128,14 @@ func runDeepFlowOrbStackPOC(t *testing.T, root, manifest string) {
 		t.Fatalf("OrbStack node not found in selected context: %s", strings.TrimSpace(output))
 	}
 	prepareDeepFlowNamespace(t)
+	apiPolicy := deepFlowAPIPolicy(t)
 
 	secretBytes := make([]byte, 32)
 	if _, err := rand.Read(secretBytes); err != nil {
 		t.Fatalf("generate test-only database credential: %v", err)
 	}
 	password := hex.EncodeToString(secretBytes)
-	materialized := strings.ReplaceAll(manifest, deepFlowPasswordToken, password)
+	materialized := strings.ReplaceAll(manifest, deepFlowPasswordToken, password) + "\n---\n" + apiPolicy
 	if strings.Contains(materialized, deepFlowPasswordToken) {
 		t.Fatal("failed to materialize all test-only Secret references")
 	}
@@ -149,16 +151,21 @@ func runDeepFlowOrbStackPOC(t *testing.T, root, manifest string) {
 	}
 
 	selector := "ops.platform.io/test-release=" + deepFlowTestRelease
-	deepFlowCommandTimeout(t, 9*time.Minute, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "wait", "--for=condition=Ready", "pods", "-l", selector, "--timeout=8m")
+	waitDeepFlowRuntimeReady(t, selector)
+	controllerPort, querierPort := deepFlowReservePort(t), deepFlowReservePort(t)
+	stopPortForward := deepFlowPortForward(t, controllerPort, querierPort)
+	defer stopPortForward()
+	client := &http.Client{Timeout: 20 * time.Second}
+	configureDeepFlowAgentGroup(t, client, controllerPort)
+	agent := waitForDeepFlowAgent(t, client, controllerPort)
+	waitDeepFlowRuntimeReady(t, selector)
 	assertDeepFlowRuntimeResources(t, selector)
+	probeDeepFlowRuntimeEgress(t, selector)
 	publicEgressDenied, egressEvidence := probeDeepFlowPublicEgress(t, selector)
 	if !publicEgressDenied {
-		if err := writeDeepFlowEgressFailureFixture(root, egressEvidence); err != nil {
-			t.Fatalf("write observed OrbStack NetworkPolicy failure fixture: %v", err)
-		}
-		t.Logf("DeepFlow PoC result: fixture_only; OrbStack allowed a digest-pinned probe Pod to reach a public IP despite the applied deny-egress NetworkPolicy: %s", egressEvidence.Log)
-		return
+		t.Fatalf("DeepFlow live gate failed: public egress was not denied; keep fixture_only: %+v", egressEvidence)
 	}
+	t.Logf("DeepFlow public egress probe: %+v", egressEvidence)
 
 	mysqlPod := strings.TrimSpace(deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "get", "pods", "-l", "component=mysql", "-o", "jsonpath={.items[0].metadata.name}"))
 	if mysqlPod == "" {
@@ -171,16 +178,299 @@ func runDeepFlowOrbStackPOC(t *testing.T, root, manifest string) {
 		}
 	}
 
-	controllerPort, querierPort := deepFlowReservePort(t), deepFlowReservePort(t)
-	stopPortForward := deepFlowPortForward(t, controllerPort, querierPort)
-	defer stopPortForward()
-	client := &http.Client{Timeout: 20 * time.Second}
-	agent := waitForDeepFlowAgent(t, client, controllerPort)
 	query, sample := waitForDeepFlowQuery(t, client, querierPort)
 	if err := writeDeepFlowFixture(root, agent, query, sample); err != nil {
 		t.Fatalf("write captured DeepFlow v7.2.0 query fixture: %v", err)
 	}
 	t.Logf("DeepFlow live PoC passed: agent=%q state=%d cluster=%q queryRows=%d columns=%v retrans_tx=%v retrans_rx=%v", agent.Name, agent.State, agent.PodClusterName, sample.RowCount, sample.Columns, sample.Sample["retrans_tx"], sample.Sample["retrans_rx"])
+}
+
+func waitDeepFlowRuntimeReady(t *testing.T, selector string) {
+	t.Helper()
+	deadline := time.Now().Add(8 * time.Minute)
+	for time.Now().Before(deadline) {
+		waitDeepFlowPolicyRules(t, selector, 4)
+		if _, err := deepFlowCommandTimeoutResult(t, 15*time.Second, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "wait", "--for=condition=Ready", "pods", "-l", selector, "--timeout=5s"); err == nil {
+			return
+		}
+	}
+	t.Fatal("DeepFlow Pods did not become Ready after their scoped egress rules were programmed")
+}
+
+func waitDeepFlowPolicyRules(t *testing.T, selector string, count int) {
+	t.Helper()
+	deadline := time.Now().Add(2 * time.Minute)
+	for time.Now().Before(deadline) {
+		podJSON := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "get", "pods", "-l", selector, "-o", "json")
+		var pods struct {
+			Items []struct {
+				Metadata struct {
+					Name string `json:"name"`
+					UID  string `json:"uid"`
+				} `json:"metadata"`
+				Status struct {
+					IP string `json:"podIP"`
+				} `json:"status"`
+			} `json:"items"`
+		}
+		if err := json.Unmarshal([]byte(podJSON), &pods); err != nil {
+			t.Fatal(err)
+		}
+		rules := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", "ops-dev-network", "exec", "daemonset/ops-dev-network", "--", "iptables-save")
+		ready := len(pods.Items) == count
+		for _, pod := range pods.Items {
+			if !deepFlowPolicyRejectsUnmarkedEgress(rules, pod.Status.IP) {
+				ready = false
+			}
+		}
+		if ready {
+			var approved []string
+			for _, pod := range pods.Items {
+				if pod.Metadata.UID == "" {
+					t.Fatal("Pod UID is missing from scoped network gate")
+				}
+				approved = append(approved, pod.Metadata.UID)
+			}
+			current := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "get", "configmap", "ops-sp02-deepflow-network-gate", "-o", "json")
+			var gate struct {
+				Data map[string]string `json:"data"`
+			}
+			if err := json.Unmarshal([]byte(current), &gate); err != nil {
+				t.Fatal(err)
+			}
+			value := strings.Join(approved, "\n") + "\n"
+			if gate.Data["approved-uids"] != value {
+				patch, err := json.Marshal(map[string]any{"data": map[string]string{"approved-uids": value}})
+				if err != nil {
+					t.Fatal(err)
+				}
+				deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "patch", "configmap", "ops-sp02-deepflow-network-gate", "--type=merge", "-p", string(patch))
+				for _, pod := range pods.Items {
+					t.Logf("confirmed programmed egress deny before approving Pod UID %s: %s %s", pod.Metadata.UID, pod.Metadata.Name, pod.Status.IP)
+				}
+			}
+			return
+		}
+		time.Sleep(time.Second)
+	}
+	t.Fatal("policy controller did not install release Pod egress rules; runtime network gate stays closed")
+}
+
+func deepFlowPolicyRejectsUnmarkedEgress(rules, address string) bool {
+	ip, err := netip.ParseAddr(address)
+	if err != nil || !ip.Is4() || !ip.IsPrivate() {
+		return false
+	}
+	chain := ""
+	for _, line := range strings.Split(rules, "\n") {
+		if strings.HasPrefix(line, "-A KUBE-ROUTER-FORWARD ") && strings.Contains(line, "-s "+address+"/32 ") {
+			parts := strings.Fields(line)
+			for i, part := range parts {
+				if part == "-j" && i+1 < len(parts) && strings.HasPrefix(parts[i+1], "KUBE-POD-FW-") {
+					chain = parts[i+1]
+				}
+			}
+		}
+	}
+	if chain == "" {
+		return false
+	}
+	policy, reject := false, false
+	for _, line := range strings.Split(rules, "\n") {
+		if !strings.HasPrefix(line, "-A "+chain+" ") {
+			continue
+		}
+		if strings.Contains(line, "-s "+address+"/32 ") {
+			if strings.Contains(line, "-j KUBE-NWPLCY-DEFAULT") {
+				return false
+			}
+			if strings.Contains(line, "-j KUBE-NWPLCY-") {
+				policy = true
+			}
+		}
+		if strings.Contains(line, "-m mark ! --mark 0x10000/0x10000 -j REJECT") {
+			reject = true
+		}
+	}
+	return policy && reject
+}
+
+func configureDeepFlowAgentGroup(t *testing.T, client *http.Client, port int) {
+	t.Helper()
+	call := func(method, path string, body []byte) []byte {
+		req, err := http.NewRequest(method, fmt.Sprintf("http://127.0.0.1:%d%s", port, path), bytes.NewReader(body))
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.Header.Set("X-Org-Id", "1")
+		req.Header.Set("X-User-Id", "1")
+		req.Header.Set("X-User-Type", "1")
+		req.Header.Set("Content-Type", "application/json")
+		res, err := client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer res.Body.Close()
+		b, err := io.ReadAll(res.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var envelope struct {
+			Status string `json:"OPT_STATUS"`
+		}
+		if json.Unmarshal(b, &envelope) != nil || res.StatusCode != http.StatusOK || envelope.Status != "SUCCESS" {
+			t.Fatalf("upstream Agent group API %s %s failed HTTP %d: %s", method, path, res.StatusCode, b)
+		}
+		return b
+	}
+	var groups struct {
+		Data []struct {
+			Name   string `json:"NAME"`
+			LCUUID string `json:"LCUUID"`
+		} `json:"DATA"`
+	}
+	if err := json.Unmarshal(call(http.MethodGet, "/v1/vtap-groups/", nil), &groups); err != nil {
+		t.Fatal(err)
+	}
+	groupID := ""
+	for _, g := range groups.Data {
+		if g.Name == "default" {
+			groupID = g.LCUUID
+		}
+	}
+	if groupID == "" {
+		t.Fatal("fresh PoC has no upstream default Agent group")
+	}
+	serverIP := strings.TrimSpace(deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "get", "pods", "-l", "component=deepflow-server", "-o", "jsonpath={.items[0].status.podIP}"))
+	ip, err := netip.ParseAddr(serverIP)
+	if err != nil || !ip.IsPrivate() {
+		t.Fatalf("server Pod IP is not private: %q", serverIP)
+	}
+	config := map[string]any{"global": map[string]any{"communication": map[string]any{"proxy_controller_ip": serverIP, "proxy_controller_port": 20035, "ingester_ip": serverIP, "ingester_port": 20033}}}
+	b, err := json.Marshal(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	call(http.MethodPost, "/v1/agent-group-configuration/"+url.PathEscape(groupID)+"/json", b)
+	t.Log("upstream default Agent group configured with the observed server Pod IP and internal control/ingester ports")
+}
+
+func probeDeepFlowRuntimeEgress(t *testing.T, selector string) {
+	t.Helper()
+	output := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "get", "pods", "-l", selector, "-o", "json")
+	var pods struct {
+		Items []struct {
+			Metadata struct {
+				Name string `json:"name"`
+			} `json:"metadata"`
+			Spec struct {
+				HostNetwork bool `json:"hostNetwork"`
+			} `json:"spec"`
+		} `json:"items"`
+	}
+	if err := json.Unmarshal([]byte(output), &pods); err != nil {
+		t.Fatal(err)
+	}
+	if len(pods.Items) != 4 {
+		t.Fatalf("expected four runtime Pods, got %d", len(pods.Items))
+	}
+	profile := filepath.Join(t.TempDir(), "probe-container.json")
+	if err := os.WriteFile(profile, []byte(`{"securityContext":{"runAsUser":65534,"runAsNonRoot":true,"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"seccompProfile":{"type":"RuntimeDefault"}}}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	script := `set -eu
+nslookup kubernetes.default.svc >/dev/null
+nc -z -w 3 ops-sp02-deepflow-mysql 30130
+echo internal-dns-and-mysql-connected
+for ip in 1.1.1.1 8.8.8.8 2606:4700:4700::1111; do
+  for port in 80 443; do
+    if nc -z -w 2 "$ip" "$port" >/dev/null 2>&1; then echo "public-connected:$ip:$port"; exit 10; fi
+    echo "public-denied:$ip:$port"
+  done
+done`
+	for _, pod := range pods.Items {
+		if pod.Spec.HostNetwork {
+			t.Fatalf("cannot claim Pod-policy isolation for host-network Pod %s", pod.Metadata.Name)
+		}
+		deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "debug", "pod/"+pod.Metadata.Name, "--container=sp02-network-proof", "--image=docker.io/library/busybox:1.36.1@sha256:"+deepFlowBusyboxDigest, "--image-pull-policy=Never", "--profile=restricted", "--custom="+profile, "--attach=true", "--quiet", "--", "sh", "-c", script)
+		logs := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "logs", pod.Metadata.Name, "-c", "sp02-network-proof")
+		if !strings.Contains(logs, "internal-dns-and-mysql-connected") || strings.Count(logs, "public-denied:") != 6 || strings.Contains(logs, "public-connected:") {
+			t.Fatalf("runtime Pod isolation failed %s: %s", pod.Metadata.Name, logs)
+		}
+		t.Logf("DeepFlow runtime network namespace %s: %s", pod.Metadata.Name, strings.TrimSpace(logs))
+	}
+}
+
+// Pin the API exception to endpoints discovered from this selected cluster.
+// Broad node/Internet CIDRs would defeat the live isolation gate.
+func deepFlowAPIPolicy(t *testing.T) string {
+	t.Helper()
+	endpoints := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", "default", "get", "endpoints", "kubernetes", "-o", "json")
+	var object struct {
+		Subsets []struct {
+			Addresses []struct {
+				IP string `json:"ip"`
+			} `json:"addresses"`
+			Ports []struct {
+				Port     int    `json:"port"`
+				Protocol string `json:"protocol"`
+			} `json:"ports"`
+		} `json:"subsets"`
+	}
+	if err := json.Unmarshal([]byte(endpoints), &object); err != nil {
+		t.Fatal(err)
+	}
+	var rules []any
+	for _, subset := range object.Subsets {
+		for _, endpoint := range subset.Addresses {
+			ip, err := netip.ParseAddr(endpoint.IP)
+			if err != nil || !ip.IsPrivate() {
+				t.Fatalf("API endpoint is not a verified private IP: %q", endpoint.IP)
+			}
+			for _, port := range subset.Ports {
+				if port.Protocol != "TCP" || port.Port < 1 || port.Port > 65535 {
+					t.Fatalf("invalid API endpoint port: %+v", port)
+				}
+				rules = append(rules, map[string]any{"to": []any{map[string]any{"ipBlock": map[string]string{"cidr": netip.PrefixFrom(ip, ip.BitLen()).String()}}}, "ports": []any{map[string]any{"protocol": "TCP", "port": port.Port}}})
+			}
+		}
+	}
+	if len(rules) == 0 {
+		t.Fatal("no private Kubernetes API endpoint was discovered")
+	}
+	// Some policy implementations evaluate before Service DNAT. Permit only
+	// the API Service's exact VIP and HTTPS port as well as its backend above.
+	serviceJSON := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", "default", "get", "service", "kubernetes", "-o", "json")
+	var service struct {
+		Spec struct {
+			ClusterIPs []string `json:"clusterIPs"`
+			Ports      []struct {
+				Name string `json:"name"`
+				Port int    `json:"port"`
+			} `json:"ports"`
+		} `json:"spec"`
+	}
+	if err := json.Unmarshal([]byte(serviceJSON), &service); err != nil {
+		t.Fatal(err)
+	}
+	for _, vip := range service.Spec.ClusterIPs {
+		ip, err := netip.ParseAddr(vip)
+		if err != nil || !ip.IsPrivate() {
+			t.Fatalf("API VIP is not private: %q", vip)
+		}
+		for _, port := range service.Spec.Ports {
+			if port.Name == "https" && port.Port > 0 && port.Port < 65536 {
+				rules = append(rules, map[string]any{"to": []any{map[string]any{"ipBlock": map[string]string{"cidr": netip.PrefixFrom(ip, ip.BitLen()).String()}}}, "ports": []any{map[string]any{"protocol": "TCP", "port": port.Port}}})
+			}
+		}
+	}
+	policy := map[string]any{"apiVersion": "networking.k8s.io/v1", "kind": "NetworkPolicy", "metadata": map[string]any{"name": "deepflow-api-only", "namespace": deepFlowTestNamespace, "labels": map[string]string{"ops.platform.io/test-release": deepFlowTestRelease}}, "spec": map[string]any{"podSelector": map[string]any{"matchLabels": map[string]string{"ops.platform.io/test-release": deepFlowTestRelease}}, "policyTypes": []string{"Egress"}, "egress": rules}}
+	contents, err := json.Marshal(policy)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("DeepFlow Kubernetes API egress exceptions: %v", rules)
+	return string(contents)
 }
 
 func prepareDeepFlowNamespace(t *testing.T) {
@@ -195,9 +485,9 @@ func prepareDeepFlowNamespace(t *testing.T) {
 		if err := json.Unmarshal([]byte(output), &namespace); err != nil || namespace.Metadata.Labels["ops.platform.io/test-release"] != deepFlowTestRelease {
 			t.Fatalf("refusing to use pre-existing namespace %s without its Task 2.5 label", deepFlowTestNamespace)
 		}
-		deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "delete", "all,configmaps,secrets,persistentvolumeclaims,serviceaccounts,roles,rolebindings,networkpolicies", "-l", "ops.platform.io/test-release="+deepFlowTestRelease, "--ignore-not-found", "--wait=true", "--timeout=2m")
+		deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "delete", "all,configmaps,secrets,persistentvolumeclaims,serviceaccounts,roles,rolebindings,networkpolicies,leases", "-l", "ops.platform.io/test-release="+deepFlowTestRelease, "--ignore-not-found", "--wait=true", "--timeout=2m")
 		deepFlowCommand(t, "kubectl", "--context", "orbstack", "delete", "clusterroles,clusterrolebindings", "-l", "ops.platform.io/test-release="+deepFlowTestRelease, "--ignore-not-found", "--wait=true", "--timeout=2m")
-		remaining := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "get", "all,configmaps,secrets,persistentvolumeclaims,serviceaccounts,roles,rolebindings,networkpolicies", "-o", "json")
+		remaining := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "get", "all,configmaps,secrets,persistentvolumeclaims,serviceaccounts,roles,rolebindings,networkpolicies,leases", "-o", "json")
 		var resources struct {
 			Items []struct {
 				Kind     string `json:"kind"`
@@ -237,7 +527,7 @@ func prepareDeepFlowNamespace(t *testing.T) {
 		}
 	}
 	t.Cleanup(func() {
-		deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "delete", "all,configmaps,secrets,persistentvolumeclaims,serviceaccounts,roles,rolebindings,networkpolicies", "-l", "ops.platform.io/test-release="+deepFlowTestRelease, "--ignore-not-found", "--wait=true", "--timeout=3m")
+		deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "delete", "all,configmaps,secrets,persistentvolumeclaims,serviceaccounts,roles,rolebindings,networkpolicies,leases", "-l", "ops.platform.io/test-release="+deepFlowTestRelease, "--ignore-not-found", "--wait=true", "--timeout=3m")
 		deepFlowCommand(t, "kubectl", "--context", "orbstack", "delete", "clusterroles,clusterrolebindings", "-l", "ops.platform.io/test-release="+deepFlowTestRelease, "--ignore-not-found", "--wait=true", "--timeout=3m")
 	})
 }
@@ -326,61 +616,13 @@ type deepFlowEgressEvidence struct {
 func probeDeepFlowPublicEgress(t *testing.T, selector string) (bool, deepFlowEgressEvidence) {
 	t.Helper()
 	name := "sp02-deepflow-egress-probe"
-	probe := `if wget -T 4 -qO- http://1.1.1.1/ >/dev/null; then echo public-egress-connected; exit 10; else echo public-egress-denied; fi`
+	// The probe initially waits without opening a socket. Its policy rules
+	// must exist before the exec below performs the connection attempt.
+	probe := `sleep 600`
 	deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "run", name, "--image=docker.io/library/busybox:1.36.1@sha256:"+deepFlowBusyboxDigest, "--image-pull-policy=IfNotPresent", "--restart=Never", "--labels="+selector, "--command", "--", "sh", "-c", probe)
-	deadline := time.Now().Add(60 * time.Second)
-	phase := ""
-	for time.Now().Before(deadline) {
-		phase = strings.TrimSpace(deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "get", "pod", name, "-o", "jsonpath={.status.phase}"))
-		if phase == "Succeeded" || phase == "Failed" {
-			break
-		}
-		time.Sleep(time.Second)
-	}
-	if phase != "Succeeded" && phase != "Failed" {
-		t.Fatalf("public-egress probe did not finish within 60 seconds; phase=%q", phase)
-	}
-	logs := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "logs", name)
-	evidence := deepFlowEgressEvidence{
-		PolicyName: "deepflow-isolated", ProbeImage: "docker.io/library/busybox:1.36.1@sha256:" + deepFlowBusyboxDigest,
-		Destination: "http://1.1.1.1/", PodPhase: phase, Log: strings.TrimSpace(logs), Denied: strings.Contains(logs, "public-egress-denied"),
-	}
-	if phase == "Failed" {
-		var pod struct {
-			Status struct {
-				ContainerStatuses []struct {
-					State struct {
-						Terminated struct {
-							ExitCode int `json:"exitCode"`
-						} `json:"terminated"`
-					} `json:"state"`
-				} `json:"containerStatuses"`
-			} `json:"status"`
-		}
-		output := deepFlowCommand(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "get", "pod", name, "-o", "json")
-		if json.Unmarshal([]byte(output), &pod) == nil && len(pod.Status.ContainerStatuses) > 0 {
-			evidence.ExitCode = pod.Status.ContainerStatuses[0].State.Terminated.ExitCode
-		}
-	}
-	return evidence.Denied, evidence
-}
-
-func writeDeepFlowEgressFailureFixture(root string, evidence deepFlowEgressEvidence) error {
-	fixture := map[string]any{
-		"apiVersion": "deepflow.io/v7.2.0/orbstack-poc/v1", "sourceCommit": "e567b167453ffa99f08f26def20379b4f831e073",
-		"networkEvidence": true, "networkEvidenceMode": "fixture_only", "l7Context": false, "traceCompletion": false,
-		"reason":        "OrbStack Kubernetes accepted public egress from a test Pod despite the release-scoped deny-egress NetworkPolicy; live network-isolation prerequisite is not met",
-		"observedAtUTC": time.Now().UTC().Format(time.RFC3339), "probe": evidence,
-	}
-	contents, err := json.MarshalIndent(fixture, "", "  ")
-	if err != nil {
-		return err
-	}
-	directory := filepath.Join(root, "test", "fixtures", "deepflow", "v7.2.0")
-	if err := os.MkdirAll(directory, 0o755); err != nil {
-		return err
-	}
-	return os.WriteFile(filepath.Join(directory, "orbstack-networkpolicy-egress-failure.json"), append(contents, '\n'), 0o644)
+	waitDeepFlowPolicyRules(t, selector, 5)
+	probeOutput, probeError := deepFlowCommandResult(t, "kubectl", "--context", "orbstack", "-n", deepFlowTestNamespace, "exec", name, "--", "sh", "-c", `if nc -z -w 4 1.1.1.1 80; then echo public-egress-connected; exit 10; else echo public-egress-denied; fi`)
+	return probeError == nil && strings.Contains(probeOutput, "public-egress-denied"), deepFlowEgressEvidence{PolicyName: "deepflow-isolated", ProbeImage: "docker.io/library/busybox:1.36.1@sha256:" + deepFlowBusyboxDigest, Destination: "tcp://1.1.1.1:80", PodPhase: "Running", Log: strings.TrimSpace(probeOutput), Denied: probeError == nil && strings.Contains(probeOutput, "public-egress-denied")}
 }
 
 type deepFlowAgentRecord struct {
@@ -391,9 +633,10 @@ type deepFlowAgentRecord struct {
 
 func waitForDeepFlowAgent(t *testing.T, client *http.Client, port int) deepFlowAgentRecord {
 	t.Helper()
-	deadline := time.Now().Add(4 * time.Minute)
+	deadline := time.Now().Add(8 * time.Minute)
 	last := "no response"
 	for time.Now().Before(deadline) {
+		waitDeepFlowPolicyRules(t, "ops.platform.io/test-release="+deepFlowTestRelease+",component", 4)
 		request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("http://127.0.0.1:%d/v1/vtaps/", port), nil)
 		request.Header.Set("X-Org-Id", "1")
 		response, err := client.Do(request)
@@ -437,8 +680,9 @@ func waitForDeepFlowQuery(t *testing.T, client *http.Client, port int) (string, 
 	deadline := time.Now().Add(6 * time.Minute)
 	last := "no response"
 	for time.Now().Before(deadline) {
+		waitDeepFlowPolicyRules(t, "ops.platform.io/test-release="+deepFlowTestRelease+",component", 4)
 		form := url.Values{"db": {"flow_log"}, "sql": {query}}
-		request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("http://127.0.0.1:%d/v1/query/?simple_sql=true", port), strings.NewReader(form.Encode()))
+		request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("http://127.0.0.1:%d/v1/query/", port), strings.NewReader(form.Encode()))
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		request.Header.Set("X-Org-Id", "1")
 		response, err := client.Do(request)
@@ -488,6 +732,20 @@ func validateDeepFlowQueryRows(columns []string, rows [][]any) (deepFlowQuerySam
 		if len(row) < len(columns) || fmt.Sprint(row[indices["ip_0"]]) == "" || fmt.Sprint(row[indices["ip_1"]]) == "" || fmt.Sprint(row[indices["server_port"]]) != "30130" {
 			continue
 		}
+		if _, err := netip.ParseAddr(fmt.Sprint(row[indices["ip_0"]])); err != nil {
+			continue
+		}
+		if _, err := netip.ParseAddr(fmt.Sprint(row[indices["ip_1"]])); err != nil {
+			continue
+		}
+		if row[indices["flow_id"]] == nil {
+			continue
+		}
+		tx, txOK := row[indices["retrans_tx"]].(float64)
+		rx, rxOK := row[indices["retrans_rx"]].(float64)
+		if !txOK || !rxOK || tx < 0 || rx < 0 {
+			continue
+		}
 		return deepFlowQuerySample{Columns: columns, RowCount: len(rows), Sample: map[string]any{
 			"sourceEndpointObserved": true, "destinationEndpointObserved": true,
 			"server_port": row[indices["server_port"]], "flow_id_present": row[indices["flow_id"]] != nil,
@@ -501,7 +759,7 @@ func writeDeepFlowFixture(root string, agent deepFlowAgentRecord, query string, 
 	fixture := map[string]any{
 		"apiVersion": "deepflow.io/v7.2.0/query-fixture/v1", "sourceCommit": "e567b167453ffa99f08f26def20379b4f831e073",
 		"observedAgent": map[string]any{"registered": true, "state": agent.State, "cluster": agent.PodClusterName},
-		"query":         query, "querierStatus": "SUCCESS", "networkEvidence": true, "querySample": sample,
+		"query":         query, "querierStatus": "SUCCESS", "networkEvidence": true, "networkEvidenceMode": "live", "querySample": sample,
 		"l7Context": false, "traceCompletion": false, "capturedAtUTC": time.Now().UTC().Format(time.RFC3339),
 		"privacyRedaction": "endpoint IPs and flow identifiers are not retained; counters and port are copied from the live response",
 	}
@@ -604,9 +862,11 @@ func deepFlowCommandTimeoutResult(t *testing.T, timeout time.Duration, name stri
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	command := exec.CommandContext(ctx, name, args...)
-	output, err := command.CombinedOutput()
+	var stderr bytes.Buffer
+	command.Stderr = &stderr
+	output, err := command.Output()
 	if err != nil {
-		return string(output), fmt.Errorf("%w", err)
+		return string(output) + stderr.String(), fmt.Errorf("%w", err)
 	}
 	return string(output), nil
 }

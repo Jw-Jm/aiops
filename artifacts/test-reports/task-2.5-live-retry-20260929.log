@@ -1,0 +1,8 @@
+=== RUN   TestDeepFlowPOC
+    deepflow_poc_test.go:121: DeepFlow public egress probe: {PolicyName:deepflow-isolated ProbeImage:docker.io/library/busybox:1.36.1@sha256:bd44eb136a95dcc8dc58995e43abc40a413f2e8e3d4a2aae6bccbe94686acb05 Destination:http://1.1.1.1/ PodPhase:Succeeded ExitCode:0 Log:wget: can't connect to remote host (1.1.1.1): Connection refused
+        public-egress-denied Denied:true}
+    deepflow_poc_test.go:121: DeepFlow Agent did not register RUNNING in the PoC cluster: status=SUCCESS agents={"OPT_STATUS":"SUCCESS","DESCRIPTION":"","DATA":null}
+--- FAIL: TestDeepFlowPOC (322.22s)
+FAIL
+FAIL	ops-platform/test/e2e	323.055s
+FAIL

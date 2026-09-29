@@ -1,6 +1,11 @@
 # DeepFlow v7.2.0 OrbStack PoC
 
-**Result:** `fixture_only`. The minimum services reached Ready with the pinned arm64 image digests, but OrbStack did not enforce the release-scoped deny-egress NetworkPolicy. The Agent registration and live Querier flow query were therefore not used as qualification evidence. This report does not claim live network evidence, L7 context, or production compatibility.
+**Current result (2026-09-29): `live`, exit 0.** The final source-bound working
+implementation passed actual Agent registration, generated MySQL traffic,
+standard Querier L4 API queries and public TCP-denial probes in all four
+runtime Pod network namespaces. L7 context and trace completion remain false.
+
+**Historical result before the policy controller was installed:** `fixture_only`. The minimum services reached Ready with the pinned arm64 image digests, but OrbStack did not enforce the release-scoped deny-egress NetworkPolicy. The Agent registration and live Querier flow query were therefore not used as qualification evidence. This report does not claim live network evidence, L7 context, or production compatibility.
 
 ## Locked inputs
 
@@ -18,7 +23,7 @@ The official chart index did not provide a 7.2.0 chart. The PoC pins chart 7.1.0
 
 The final manifest uses one Server, one MySQL, one ClickHouse StatefulSet, and one Agent DaemonSet. All DeepFlow Services are ClusterIP. Usage reporting is disabled; flow metrics and flow logs have six-hour retention. The MySQL credential and Server configuration are Kubernetes Secrets; the checked-in manifest contains only a replacement token. MySQL init SQL containing credentials was removed, with remote root access configured through the MySQL image's `MYSQL_ROOT_HOST` startup option. ClickHouse and MySQL storage claims are confined to the labeled PoC namespace.
 
-## OrbStack observation
+## Historical OrbStack observation
 
 The tested node reported Kubernetes `v1.35.6+orb1`, Linux arm64, kernel `7.0.14-orbstack-00374-gbbca68e8d741`, and container runtime `docker://29.4.0`. The `deepflow` namespace was absent before this PoC. The final install created the expected Agent, Server, MySQL, and ClickHouse Pods; they reached Ready using the digest-pinned images already present on the node. The final installed manifest and cluster contained no `deepflow-app` workload; the upstream raw chart emits that workload, which was excluded from the final manifest. The isolated namespace had no egress allow rule except same-namespace traffic and DNS to `kube-system`.
 
@@ -33,7 +38,7 @@ The probe exited 10 after the public request connected, despite the applied egre
 
 Because the isolation prerequisite failed, this run stopped before querying `/v1/vtaps/` for Agent registration or posting an L4 flow query to `/v1/query/`. No live dependency row, retransmission counter, L7 context, or trace was observed. The separate `querier-show-tables-upstream.json` fixture is explicitly copied from the pinned v7.2.0 upstream Querier README and only describes the documented response envelope; it is not represented as a live query sample.
 
-## Capability and admission result
+## Historical capability and admission result
 
 ```yaml
 networkEvidence: true
@@ -44,15 +49,70 @@ traceCompletion: false
 
 `networkEvidence: true` records that a reproducible PoC observation exists; `fixture_only` makes clear the platform has no live network-evidence qualification from this run. DeepFlow remains `candidate`. The full transitive software/license closure and GPL-specific distribution review are not marked qualified; this PoC does not promote the Component Catalog entry or establish production support.
 
-## Reproduction
+## Current reproduction
 
 ```sh
 helm lint /tmp/deepflow-chartpkg/deepflow --values deploy/addons/deepflow/values-dev-arm64.yaml
 OPS_DEEPFLOW_ORBSTACK_POC=1 go test ./test/e2e -run '^TestDeepFlowPOC$' -count=1 -v -timeout=30m
 ```
 
-The final OrbStack E2E exits 0 only after it recognizes the observed policy failure, records `fixture_only`, and cleans resources carrying the Task 2.5 release label. It does not report live Agent registration or Querier flow capture as passed.
+The live E2E now fails on isolation, registration or query errors. Exit 0 requires real Agent registration, application traffic, a valid Querier response and actual runtime Pod network probes. Cleanup selects only resources carrying the Task 2.5 release label, including its Lease.
 
 ## Exit plan
 
-Keep DeepFlow optional and candidate. Do not enable it in a resolved install profile as live evidence. Re-run the PoC only in an environment whose CNI demonstrably enforces the release-scoped deny-egress policy, then verify Agent state `RUNNING` and capture a real L4 Querier response containing endpoint, service port, and retransmission fields. Re-evaluate chart/image compatibility and complete the dependency and license admission evidence before any qualification change.
+Keep DeepFlow optional and candidate outside the core Bundle. The current
+bounded live PoC does not qualify its full software/license distribution
+closure or production compatibility. A future runtime/Bundle admission must
+complete those separate obligations. Isolation, source/digest, Agent or query
+failure disables live evidence; the preserved failure record cannot stand in
+for a later live result.
+
+## Accepted live replay on 2026-09-29
+
+`OPS_DEEPFLOW_ORBSTACK_POC=1 go test ./test/e2e -run '^TestDeepFlowPOC$' -count=1 -v -timeout=30m`
+exited 0 in 724.50 seconds. The raw log is
+`artifacts/test-reports/task-2.5-live-uid-runtime-selector-20260929.log`;
+post-run source/manifest/Fixture hashes are recorded in
+`task-2.5-live-evidence-binding-20260929.json`.
+
+The policy-only kube-router prerequisite from the core offline environment
+actually programs scoped deny rules. The test checks those rules before
+approving each runtime Pod UID through a ConfigMap-backed native-image init
+gate. A replacement Agent UID must be approved after its own rules are
+programmed. The test then checks the current four runtime Pod namespaces:
+internal DNS and MySQL connect; raw TCP attempts to 1.1.1.1 and 8.8.8.8 on
+80/443 and 2606:4700:4700::1111 on 80/443 fail. The standalone probe has the
+same release-scoped policy and also rejects public TCP. API exceptions are
+limited to the selected cluster's observed private backend/VIP and ports,
+without a node-wide or public CIDR allow rule.
+
+The actual upstream default Agent group is configured using its REST API and
+the observed private Server Pod IP with internal controller/ingester ports.
+After upstream registration reports state 1/RUNNING for this PoC cluster,
+the test creates 24 real MySQL Service connections and queries `/v1/query/`
+for `ip_0`, `ip_1`, `server_port`, `flow_id`, `retrans_tx` and `retrans_rx`.
+One real matching row was observed; both retransmission counters were zero.
+The redacted live Fixture retains port, counters and observed-field presence;
+it does not synthesize endpoint IDs or claim induced packet loss.
+
+```yaml
+networkEvidence: true
+networkEvidenceMode: live
+l7Context: false
+traceCompletion: false
+```
+
+Earlier retries and their original errors remain in the `task-2.5-live-*`
+logs: unavailable Agent/API connectivity, stdout contamination by a kubectl
+warning, the `simple_sql` bypass selecting the wrong table, a fresh probe
+starting before policy convergence, and the query-stage selector counting the
+standalone probe as a runtime Pod. The final test uses clean stdout, the
+standard Querier path, per-UID gates and runtime component selectors; none of
+those earlier failures is represented as a pass.
+
+Cleanup removed only release-labeled PoC resources, including its Lease;
+afterward the release selector returned no resources. Core, existing Victoria
+and external OpenBao remained deployed. The unchanged v7.2.0 digests and
+runtime dependency list above remain the exact tested inputs. DeepFlow stays
+candidate outside the core Bundle until its separate full distribution
+license/source admission is completed.

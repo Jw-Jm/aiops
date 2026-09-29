@@ -1,0 +1,69 @@
+index_tree=b771276e04587032398c9d435114ef7d6105947d
+snapshot=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-task-2.5-review-g0ygaesh
+Unrelated user changes are excluded. Default skipped live tests do not count as live acceptance.
+command: ["make", "check-toolchain"]
+exit_code=0
+command: ["pnpm", "--dir", "web", "install", "--offline", "--frozen-lockfile"]
+✓ Lockfile passes supply-chain policies (verified 3d ago)
+Lockfile is up to date, resolution step is skipped
+Packages are cloned from the content-addressable store to the virtual store.
+  Content-addressable store is at: /Users/mssc/Library/pnpm/store/v11
+  Virtual store is at:             node_modules/.pnpm
+Packages: +89
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 89, reused 89, downloaded 0, added 89, done
+
+devDependencies:
++ orval 8.37.0
+
+Done in 242ms using pnpm v12.7.0
+exit_code=0
+command: ["make", "check-generated"]
+go generate ./...
+$ orval --config ./orval.config.ts
+🍻 orval v8.37.0 - A swagger client generator for typescript
+platform - 🎉 Smart Operations Platform API - Your OpenAPI spec has been converted into ready to use orval!
+exit_code=0
+command: ["make", "check"]
+go generate ./...
+$ orval --config ./orval.config.ts
+🍻 orval v8.37.0 - A swagger client generator for typescript
+platform - 🎉 Smart Operations Platform API - Your OpenAPI spec has been converted into ready to use orval!
+go vet ./...
+?   	ops-platform/api	[no test files]
+?   	ops-platform/bundle	[no test files]
+ok  	ops-platform/cmd/opsctl	1.197s
+?   	ops-platform/cmd/platform-api	[no test files]
+?   	ops-platform/cmd/platform-worker	[no test files]
+?   	ops-platform/gen/api	[no test files]
+ok  	ops-platform/internal/app	0.415s
+ok  	ops-platform/internal/bundle	2.965s
+ok  	ops-platform/internal/bundle/drivers	1.964s
+?   	ops-platform/internal/contract	[no test files]
+?   	ops-platform/internal/httpapi	[no test files]
+?   	ops-platform/internal/integrations	[no test files]
+?   	ops-platform/internal/integrations/openbao	[no test files]
+?   	ops-platform/internal/integrations/victorialogs	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics	[no test files]
+?   	ops-platform/internal/integrations/vmalert	[no test files]
+ok  	ops-platform/internal/profile	4.885s
+ok  	ops-platform/internal/supplychain	2.886s
+ok  	ops-platform/test/contract	19.855s
+ok  	ops-platform/test/e2e	4.408s
+?   	ops-platform/test/fixtures/upstream-inspection	[no test files]
+$ node --experimental-strip-types --test ./test/*.test.mjs
+✔ typed SSE reader yields a decoded envelope before the stream closes (36.6265ms)
+✔ typed SSE fetch client requests and parses text/event-stream (13.290417ms)
+✔ typed SSE envelope decoder rejects incomplete event data (0.289667ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 93.95975
+ok  	ops-platform/test/contract	(cached)
+exit_code=0
+command: ["git", "diff", "--check"]
+exit_code=0

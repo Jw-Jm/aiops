@@ -1,0 +1,36 @@
+{
+  "apiVersion": "deepflow.io/v7.2.0/query-fixture/v1",
+  "capturedAtUTC": "2026-09-29T14:54:07Z",
+  "l7Context": false,
+  "networkEvidence": true,
+  "networkEvidenceMode": "live",
+  "observedAgent": {
+    "cluster": "ops-sp02-deepflow-poc",
+    "registered": true,
+    "state": 1
+  },
+  "privacyRedaction": "endpoint IPs and flow identifiers are not retained; counters and port are copied from the live response",
+  "querierStatus": "SUCCESS",
+  "query": "SELECT ip_0, ip_1, server_port, flow_id, retrans_tx, retrans_rx FROM l4_flow_log WHERE server_port = 30130 LIMIT 20",
+  "querySample": {
+    "columns": [
+      "ip_0",
+      "ip_1",
+      "server_port",
+      "flow_id",
+      "retrans_tx",
+      "retrans_rx"
+    ],
+    "rowCount": 1,
+    "sample": {
+      "destinationEndpointObserved": true,
+      "flow_id_present": true,
+      "retrans_rx": 0,
+      "retrans_tx": 0,
+      "server_port": 30130,
+      "sourceEndpointObserved": true
+    }
+  },
+  "sourceCommit": "e567b167453ffa99f08f26def20379b4f831e073",
+  "traceCompletion": false
+}

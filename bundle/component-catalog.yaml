@@ -1791,9 +1791,10 @@ components:
     conformanceFixtures:
       - test/fixtures/deepflow/v7.2.0/orbstack-networkpolicy-egress-failure.json
       - test/fixtures/deepflow/v7.2.0/querier-show-tables-upstream.json
+      - test/fixtures/deepflow/v7.2.0/querier-l4-flow-live.json
     exitPlan: pending
     requiredFor1_0: true
-    candidateNote: "The upstream chart index has no 7.2.0 chart; the PoC pins chart archive 7.1.002 with v7.2.0 server and agent images. OrbStack did not enforce the release-scoped deny-egress policy, so networkEvidenceMode is fixture_only; Agent registration and Querier flow capture were not used to claim live qualification. Dependency/license admission remains incomplete. deepflow-app, GUI, Stella, ByConity, Jaeger, and OTel are excluded."
+    candidateNote: "The upstream chart index has no 7.2.0 chart; the PoC pins chart archive 7.1.002 with v7.2.0 server and agent images. The 2026-09-29 live replay passes current-Pod egress denial, Agent registration and real Querier L4 capture; networkEvidenceMode=live, l7Context=false, traceCompletion=false. Earlier fixture_only failure evidence is retained. Full distribution dependency/license admission remains incomplete, so candidate stays outside the core Bundle. deepflow-app, GUI, Stella, ByConity, Jaeger and OTel are excluded."
     chartLock:
       name: deepflow
       version: "7.1.002"

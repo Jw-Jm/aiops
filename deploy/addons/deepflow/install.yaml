@@ -26,23 +26,71 @@ metadata:
     ops.platform.io/test-release: sp02-task-2-5
 type: Opaque
 stringData:
-  server.yaml: "log-file: \"/var/log/deepflow/server.log\"\nlog-level: info\ncontroller:\n
-    \ election-name: ops-sp02-deepflow-server\n  election-namespace: ops-sp02-deepflow-poc\n
-    \ grpc-max-message-length: 104857600\n  grpc-port: 20035\n  kubeconfig: \n  listen-port:
-    20417\n  clickhouse:\n    database: flow_tag\n    endpoint-tcp-port-name: tcp-port\n
-    \   host: ops-sp02-deepflow-clickhouse\n    port: 9000\n    user-name: default\n
-    \   user-password: \n  mysql:\n    database: deepflow\n    host: ops-sp02-deepflow-mysql\n
-    \   port: 30130\n    timeout: 30\n    user-name: root\n    user-password: __DEEPFLOW_POC_DB_PASSWORD__\n
-    \ trisolaris:\n    trident-type-for-unknow-vtap: 3\n    chrony:\n      host: \n
-    \     port: 123\n      timeout: 1\ningester:\n  es-syslog: false\n  ckdb:\n    cluster-name:
-    \n    endpoint-tcp-port-name: tcp-port\n    external: false\n    host: ops-sp02-deepflow-clickhouse\n
-    \   port: 9000\n    storage-policy: \n    type: clickhouse\n  ckdb-auth:\n    password:
-    \n    username: default\n  flow-log-ttl-hour:\n    l4-flow-log: 6\n    l4-packet:
-    6\n    l7-flow-log: 6\n  flow-metrics-ttl-hour:\n    vtap-app-1m: 6\n    vtap-app-1s:
-    6\n    vtap-flow-1m: 6\n    vtap-flow-1s: 6\nquerier:\n  listen-port: 20416\n
-    \ clickhouse:\n    database: flow_tag\n    host: ops-sp02-deepflow-clickhouse\n
-    \   port: 9000\n    timeout: 60\n    user-name: default\n    user-password: \nreporting:\n
-    \ reporting-disabled: true\n"
+  server.yaml: |
+    controller:
+        clickhouse:
+            database: flow_tag
+            endpoint-tcp-port-name: tcp-port
+            host: ops-sp02-deepflow-clickhouse
+            port: 9000
+            user-name: default
+            user-password: null
+        election-name: ops-sp02-deepflow-server
+        election-namespace: ops-sp02-deepflow-poc
+        grpc-max-message-length: 104857600
+        grpc-port: 20035
+        kubeconfig: null
+        listen-port: 20417
+        mysql:
+            database: deepflow
+            host: ops-sp02-deepflow-mysql
+            port: 30130
+            timeout: 30
+            user-name: root
+            user-password: __DEEPFLOW_POC_DB_PASSWORD__
+        reporting-disabled: true
+        trisolaris:
+            chrony:
+                host: null
+                port: 123
+                timeout: 1
+            trident-type-for-unknow-vtap: 3
+    ingester:
+        ckdb:
+            cluster-name: null
+            endpoint-tcp-port-name: tcp-port
+            external: false
+            host: ops-sp02-deepflow-clickhouse
+            port: 9000
+            storage-policy: null
+            type: clickhouse
+        ckdb-auth:
+            password: null
+            username: default
+        es-syslog: false
+        flow-log-ttl-hour:
+            l4-flow-log: 6
+            l4-packet: 6
+            l7-flow-log: 6
+        flow-metrics-ttl-hour:
+            vtap-app-1m: 6
+            vtap-app-1s: 6
+            vtap-flow-1m: 6
+            vtap-flow-1s: 6
+    log-file: /var/log/deepflow/server.log
+    log-level: info
+    querier:
+        clickhouse:
+            database: flow_tag
+            host: ops-sp02-deepflow-clickhouse
+            port: 9000
+            timeout: 60
+            user-name: default
+            user-password: null
+        listen-port: 20416
+    reporting:
+        reporting-disabled: true
+
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -1629,6 +1677,20 @@ spec:
       imagePullSecrets:
       serviceAccountName: deepflow-agent
       securityContext: {}
+      initContainers:
+      - name: network-policy-gate
+        image: docker.io/deepflowce/deepflow-agent:v7.2.0@sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9
+        imagePullPolicy: Never
+        command: [sh, -c, 'while ! grep -Fxq "$POD_UID" /network-policy/approved-uids; do sleep 1; done']
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        volumeMounts:
+        - name: network-policy-gate
+          mountPath: /network-policy
+          readOnly: true
       containers:
       - name: deepflow-agent
         securityContext:
@@ -1642,7 +1704,7 @@ spec:
             - IPC_LOCK
             - SYSLOG
         image: docker.io/deepflowce/deepflow-agent:v7.2.0@sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Never
         ports:
         - name: receive
           containerPort: 38086
@@ -1678,6 +1740,9 @@ spec:
         - name: deepflow-agent-conf
           mountPath: "/etc/deepflow-agent"
       volumes:
+      - name: network-policy-gate
+        configMap:
+          name: ops-sp02-deepflow-network-gate
       - name: sys-kernel-debug
         hostPath:
           path: "/sys/kernel/debug"
@@ -1727,11 +1792,25 @@ spec:
       dnsPolicy: ClusterFirst
       imagePullSecrets:
       securityContext: {}
+      initContainers:
+      - name: network-policy-gate
+        image: docker.io/library/mysql:8.0.39@sha256:a1f202a397782b7e2a98359b3f476132189b179e04f9123d4750d527e937f138
+        imagePullPolicy: Never
+        command: [sh, -c, 'while ! grep -Fxq "$POD_UID" /network-policy/approved-uids; do sleep 1; done']
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        volumeMounts:
+        - name: network-policy-gate
+          mountPath: /network-policy
+          readOnly: true
       containers:
       - name: mysql
         securityContext:
         image: docker.io/library/mysql:8.0.39@sha256:a1f202a397782b7e2a98359b3f476132189b179e04f9123d4750d527e937f138
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Never
         ports:
         - name: tcp
           containerPort: 30130
@@ -1771,6 +1850,9 @@ spec:
         - mountPath: "/var/lib/mysql"
           name: data-path
       volumes:
+      - name: network-policy-gate
+        configMap:
+          name: ops-sp02-deepflow-network-gate
       - name: mysql-config
         configMap:
           name: ops-sp02-deepflow-mysql
@@ -1827,11 +1909,25 @@ spec:
       imagePullSecrets:
       securityContext: {}
       serviceAccountName: ops-sp02-deepflow-server
+      initContainers:
+      - name: network-policy-gate
+        image: docker.io/deepflowce/deepflow-server:v7.2.0@sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939
+        imagePullPolicy: Never
+        command: [sh, -c, 'while ! grep -Fxq "$POD_UID" /network-policy/approved-uids; do sleep 1; done']
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        volumeMounts:
+        - name: network-policy-gate
+          mountPath: /network-policy
+          readOnly: true
       containers:
       - name: deepflow-server
         securityContext: {}
         image: docker.io/deepflowce/deepflow-server:v7.2.0@sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Never
         ports:
         - name: server
           containerPort: 20417
@@ -1891,6 +1987,9 @@ spec:
         - name: TZ
           value: Asia/Shanghai
       volumes:
+      - name: network-policy-gate
+        configMap:
+          name: ops-sp02-deepflow-network-gate
       - name: server-config
         secret:
           secretName: deepflow-server-config
@@ -1953,6 +2052,19 @@ spec:
       imagePullSecrets:
       securityContext: {}
       initContainers:
+      - name: network-policy-gate
+        image: docker.io/clickhouse/clickhouse-server:23.10.4.25@sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76
+        imagePullPolicy: Never
+        command: [sh, -c, 'while ! grep -Fxq "$POD_UID" /network-policy/approved-uids; do sleep 1; done']
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        volumeMounts:
+        - name: network-policy-gate
+          mountPath: /network-policy
+          readOnly: true
       - name: clickhouse-init
         image: docker.io/clickhouse/clickhouse-server:23.10.4.25@sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76
         volumeMounts:
@@ -1969,7 +2081,7 @@ spec:
       - name: clickhouse
         securityContext: {}
         image: docker.io/clickhouse/clickhouse-server:23.10.4.25@sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Never
         env:
         - name: TZ
           value: Asia/Shanghai
@@ -2028,6 +2140,9 @@ spec:
                 - clickhouse
             topologyKey: kubernetes.io/hostname
       volumes:
+      - name: network-policy-gate
+        configMap:
+          name: ops-sp02-deepflow-network-gate
       - name: clickhouse-config
         configMap:
           name: ops-sp02-deepflow-clickhouse-config
@@ -2092,3 +2207,23 @@ spec:
       port: 53
     - protocol: TCP
       port: 53
+
+---
+apiVersion: coordination.k8s.io/v1
+kind: Lease
+metadata:
+  name: ops-sp02-deepflow-server
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+spec: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-sp02-deepflow-network-gate
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+data:
+  approved-uids: ""
