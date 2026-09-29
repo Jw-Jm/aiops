@@ -1,0 +1,92 @@
+Scope: SP-02 nonvirtual final code checks; default skipped live tests are not accepted as live PoC evidence.
+command: ["go", "version"]
+go version go1.27.1 darwin/arm64
+exit_code=0
+command: ["node", "--version"]
+v24.21.0
+exit_code=0
+command: ["pnpm", "--version"]
+12.7.0
+exit_code=0
+command: ["python3", "--version"]
+Python 3.12.14
+exit_code=0
+command: ["uv", "--version"]
+uv 0.12.17 (635500036 2026-09-18 aarch64-apple-darwin)
+exit_code=0
+command: ["make", "check-toolchain"]
+exit_code=0
+command: ["go", "test", "./...", "-count=1"]
+?   	ops-platform/api	[no test files]
+?   	ops-platform/artifacts	[no test files]
+?   	ops-platform/bundle	[no test files]
+ok  	ops-platform/cmd/opsctl	1.864s
+?   	ops-platform/cmd/platform-api	[no test files]
+?   	ops-platform/cmd/platform-worker	[no test files]
+?   	ops-platform/gen/api	[no test files]
+ok  	ops-platform/internal/app	3.663s
+ok  	ops-platform/internal/bundle	2.220s
+ok  	ops-platform/internal/bundle/drivers	2.147s
+?   	ops-platform/internal/contract	[no test files]
+?   	ops-platform/internal/httpapi	[no test files]
+?   	ops-platform/internal/integrations	[no test files]
+?   	ops-platform/internal/integrations/openbao	[no test files]
+?   	ops-platform/internal/integrations/victorialogs	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics	[no test files]
+?   	ops-platform/internal/integrations/vmalert	[no test files]
+ok  	ops-platform/internal/profile	4.479s
+ok  	ops-platform/internal/supplychain	3.112s
+ok  	ops-platform/test/contract	19.289s
+ok  	ops-platform/test/e2e	4.173s
+?   	ops-platform/test/fixtures/upstream-inspection	[no test files]
+exit_code=0
+command: ["make", "check-generated"]
+go generate ./...
+$ orval --config ./orval.config.ts
+🍻 orval v8.37.0 - A swagger client generator for typescript
+platform - 🎉 Smart Operations Platform API - Your OpenAPI spec has been converted into ready to use orval!
+exit_code=0
+command: ["make", "check"]
+go generate ./...
+$ orval --config ./orval.config.ts
+🍻 orval v8.37.0 - A swagger client generator for typescript
+platform - 🎉 Smart Operations Platform API - Your OpenAPI spec has been converted into ready to use orval!
+go vet ./...
+?   	ops-platform/api	[no test files]
+?   	ops-platform/artifacts	[no test files]
+?   	ops-platform/bundle	[no test files]
+ok  	ops-platform/cmd/opsctl	0.558s
+?   	ops-platform/cmd/platform-api	[no test files]
+?   	ops-platform/cmd/platform-worker	[no test files]
+?   	ops-platform/gen/api	[no test files]
+ok  	ops-platform/internal/app	(cached)
+ok  	ops-platform/internal/bundle	2.270s
+ok  	ops-platform/internal/bundle/drivers	(cached)
+?   	ops-platform/internal/contract	[no test files]
+?   	ops-platform/internal/httpapi	[no test files]
+?   	ops-platform/internal/integrations	[no test files]
+?   	ops-platform/internal/integrations/openbao	[no test files]
+?   	ops-platform/internal/integrations/victorialogs	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics	[no test files]
+?   	ops-platform/internal/integrations/vmalert	[no test files]
+ok  	ops-platform/internal/profile	2.127s
+ok  	ops-platform/internal/supplychain	1.472s
+ok  	ops-platform/test/contract	20.614s
+ok  	ops-platform/test/e2e	2.008s
+?   	ops-platform/test/fixtures/upstream-inspection	[no test files]
+$ node --experimental-strip-types --test ./test/*.test.mjs
+✔ typed SSE reader yields a decoded envelope before the stream closes (36.618459ms)
+✔ typed SSE fetch client requests and parses text/event-stream (16.3565ms)
+✔ typed SSE envelope decoder rejects incomplete event data (0.224583ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 102.663208
+ok  	ops-platform/test/contract	(cached)
+exit_code=0
+command: ["git", "diff", "--check"]
+exit_code=0

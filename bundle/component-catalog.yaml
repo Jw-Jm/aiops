@@ -1914,10 +1914,10 @@ components:
     officialSupportSources: []
   - name: k8sgpt
     state: candidate
-    version: "v0.4.36"
+    version: "v0.3.41"
     source: "https://github.com/k8sgpt-ai/k8sgpt"
-    commit: d33935a7b6f7039ec649925420d6b29c9b119567
-    digest: sha256:fc69aa617eb0f2d2f4f0f57e1cc5bfaff80c694181d535ff472ff368302abb5a
+    commit: f071b32aa85d77b197cd2d0f9868294f7b55c5eb
+    digest: sha256:28946fdff20bdc37c8ff91649d61c7e8e084d1f159411dbe6c227e697c845a10
     license: Apache-2.0
     specialLicenseADR: not-applicable
     fileLicenses:
@@ -1925,7 +1925,7 @@ components:
         license: Apache-2.0
         digest: sha256:f4484f16a9742bbfdd6f42880a7ff667a65561c3b15b183d6a939de88f66d8bb
     sourceSnapshot: false
-    sourceArchiveSHA256: sha256:fc69aa617eb0f2d2f4f0f57e1cc5bfaff80c694181d535ff472ff368302abb5a
+    sourceArchiveSHA256: sha256:28946fdff20bdc37c8ff91649d61c7e8e084d1f159411dbe6c227e697c845a10
     architectures: ["linux/arm64"]
     usage: "K8sGPT Analyzer Result and deterministic CLI JSON (Pod analyzer only) -> platform FindingCandidate"
     reuseMode: process-isolated
@@ -1947,7 +1947,7 @@ components:
       - "test/fixtures/upstream-inspection/platform-mappings/k8sgpt-analyzer.json"
     exitPlan: "Keep candidate and runtime disabled; any later runtime admission requires a separately scoped implementation task and a target-specific licensed closure/PoC."
     requiredFor1_0: true
-    candidateNote: "Task 2.9 source/model/rule evidence only; runtime admission and Bundle inclusion remain disabled. Read-only analyzer output. LLM, --explain, provider calls, mutation, and automatic remediation are excluded. Future consumer must apply the platform finding contract and redaction. dependency inventory has 268 exact artifacts; license review=false; unknown licenses=5; see test/fixtures/upstream-inspection/dependency-closures.json record k8sgpt-analyzer. Lock: docs/poc/inspection-reuse-lock.yaml#k8sgpt-analyzer."
+    candidateNote: "Task 2.9 source/model/rule evidence only; runtime admission and Bundle inclusion remain disabled. Read-only analyzer output. LLM, --explain, provider calls, mutation, and automatic remediation are excluded. Future consumer must apply the platform finding contract and redaction. dependency inventory has 233 exact artifacts; license review=true; unknown licenses=0; see test/fixtures/upstream-inspection/dependency-closures.json record k8sgpt-analyzer. Lock: docs/poc/inspection-reuse-lock.yaml#k8sgpt-analyzer."
     officialSupportSources: []
   - name: coroot-community
     state: candidate

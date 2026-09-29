@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package schema.v1;
+
+// well know type by google, gRPC gateway uses HTTP annotation.
+import "google/api/annotations.proto";
+
+option go_package = "schema/service/v1";
+
+message Analysis {
+  repeated AnalysisItem analysis = 1;
+}
+
+message AnalysisItem {
+  string name = 1;
+  string description = 2;
+}
+
+message AddConfigRequest {
+  Cache cache = 1;
+  Integrations integrations = 2;
+  repeated CustomAnalyzer custom_analyzers = 3;
+}
+
+message AddConfigResponse {
+  string status = 1;
+}
+
+message RemoveConfigRequest {
+  Cache cache = 1;
+  Integrations integrations = 2;
+  repeated CustomAnalyzer custom_analyzers = 3;
+}
+
+message RemoveConfigResponse {
+  string status = 1;
+}
+
+message Cache {
+  oneof cache_type {
+    S3Cache s3_cache = 1;
+    AzureCache azure_cache = 2;
+    GCSCache gcs_cache = 3;
+    InterplexCache interplex_cache = 4;
+  }
+}
+
+message CustomAnalyzer {
+  string name = 1;
+  Connection connection = 2;
+}
+
+message Connection {
+  string url = 1;
+  string port = 2;
+}
+
+message S3Cache {
+  string region = 1;
+  string bucket_name = 2;
+  string endpoint = 3;
+  bool insecure = 4;
+}
+
+message AzureCache {
+  string storage_account = 1;
+  string container_name = 2;
+}
+
+message GCSCache {
+  string region = 1;
+  string bucket_name = 2;
+  string project_id = 3;
+}
+
+message InterplexCache {
+  string endpoint = 1;
+}
+
+message Trivy {
+  bool enabled = 1;
+  bool skip_install = 2;
+  string namespace = 3;
+}
+
+message Integrations {
+  Trivy trivy = 1;
+}
+
+message ListIntegrationsRequest {}
+
+// Add integrations to list
+message ListIntegrationsResponse {
+  Trivy trivy = 1;
+}
+
+message ShutdownRequest {}
+
+message ShutdownResponse {
+  string status = 1;
+}
+
+service ServerConfigService {
+
+  rpc AddConfig(AddConfigRequest) returns (AddConfigResponse) {}
+  rpc RemoveConfig(RemoveConfigRequest) returns (RemoveConfigResponse) {}
+  rpc ListIntegrations(ListIntegrationsRequest) returns (ListIntegrationsResponse) {
+    // option type is http
+    option (google.api.http) = {
+      // this line means when a HTTP GET request comes with "/v1/list" call this rpc method over this service
+      get: "/v1/list"
+    };
+  }
+  // This command when run against the k8sgpt serve process will terminate it
+  // When that process is run in a Kubernetes pod it will restart it
+  rpc Shutdown(ShutdownRequest) returns (ShutdownResponse) {
+    // option type is http
+    option (google.api.http) = {
+      // this line means when a HTTP POST request comes with "/v1/shutdown" call this rpc method over this service
+      post: "/v1/shutdown"
+      body: "*"
+    };
+  }
+}

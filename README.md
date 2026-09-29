@@ -47,6 +47,7 @@ The accepted architecture decisions are recorded in [docs/adr](docs/adr/):
 - [ADR-0010: Core image license admission](docs/adr/0010-core-image-license-admission.md) — exact native/Go/JVM notice and corresponding-source obligations for the reviewed arm64 distributions.
 - [ADR-0011: Native dependency source provenance](docs/adr/0011-native-dependency-source-provenance.md) — publisher archive checksums and paired source materials.
 - [ADR-0012: Preserve upstream multi-platform digests](docs/adr/0012-preserve-upstream-multiplatform-digests.md) — authenticate original indices and the complete selected platform closure.
+- [ADR-0013: Licensed K8sGPT CLI baseline](docs/adr/0013-lock-licensed-k8sgpt-cli.md) — freeze the reviewed upstream no-LLM CLI and preserve rejected license evidence.
 
 ## Commands
 

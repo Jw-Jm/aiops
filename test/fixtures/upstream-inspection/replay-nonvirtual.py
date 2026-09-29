@@ -142,6 +142,28 @@ def main():
                         docker(images["golang"], ["go", "test", "-mod=readonly", "-p", "1", "-count=1", "-v", "-timeout=5m", *packages, "-run", pattern], cwd)
 
                     if key == "k8sgpt-analyzer":
+                        docker(images["golang"], ["sh", "-c", "go version && go list -mod=readonly -deps -json . > /output/cli-deps.json"])
+                        decoder = json.JSONDecoder()
+                        raw = (output / "cli-deps.json").read_text()
+                        actual_modules = {}
+                        while raw.strip():
+                            package, consumed = decoder.raw_decode(raw.lstrip())
+                            raw = raw.lstrip()[consumed:]
+                            module = package.get("Module")
+                            if module and not module.get("Main"):
+                                resolved = module.get("Replace", module)
+                                actual_modules[module["Path"]] = (module["Version"], resolved["Path"], resolved["Version"])
+                        expected_modules = {m["path"]: (m["version"], m["resolvedPath"], m["resolvedVersion"]) for m in records[key]["modules"]}
+                        if actual_modules != expected_modules:
+                            raise RuntimeError("actual arm64 CLI import closure differs from the reviewed lock")
+                        for module in records[key]["modules"]:
+                            escape = lambda value: "".join("!" + c.lower() if c.isupper() else c for c in value)
+                            artifact = args.module_cache / "cache/download" / escape(module["resolvedPath"]) / "@v" / (escape(module["resolvedVersion"]) + ".zip")
+                            if digest(artifact) != module["artifactSHA256"]:
+                                raise RuntimeError(f"CLI module artifact differs: {module['path']}")
+                            for evidence in module["licenseFiles"] + module.get("noticeFiles", []):
+                                checked_file(root, evidence["path"], evidence["sha256"])
+                        log.write(f"actual CLI import closure and licenses checked: {len(actual_modules)} exact modules\n")
                         go_test(["./pkg/analyzer"], "^TestPod")
                         docker(images["golang"], ["go", "build", "-mod=readonly", "-p", "1", "-o", "/output/k8sgpt", "./"])
                         docker(images["python"], ["python", "/fixtures/verify-k8sgpt-cli.py", "--binary", f"/work/{key}/replay-output/k8sgpt"])

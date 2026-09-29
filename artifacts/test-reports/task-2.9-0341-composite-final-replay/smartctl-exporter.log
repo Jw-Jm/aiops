@@ -1,0 +1,11 @@
+capability=smartctl-exporter source_commit=ef5c03de02cb793e6a1540bef943fe6a167de635 runtime_enabled=false
+locked_state=qualified disabled_reason=
+command: ["git", "-C", "/tmp/ops-sp02-task29/smartctl_exporter", "archive", "--format=tar", "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-tnecn56y/smartctl-exporter.tar", "ef5c03de02cb793e6a1540bef943fe6a167de635"]
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-tnecn56y,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-tnecn56y/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-tnecn56y/smartctl-exporter/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/smartctl-exporter", "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414", "go", "test", "-mod=readonly", "-p", "1", "-count=1", "-v", "-timeout=5m", "./", "-run", "^(TestCollectDevices|TestReadSMARTctl|TestTask29SMARTctlFixture)$"]
+=== RUN   TestTask29SMARTctlFixture
+--- PASS: TestTask29SMARTctlFixture (0.00s)
+PASS
+ok  	github.com/prometheus-community/smartctl_exporter	0.003s
+exit_code=0
+replay_exit_code=0

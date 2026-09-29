@@ -6,21 +6,21 @@ upstream source archive, commit, file-level license evidence, selected file
 hashes, dependency inventory, platform mapping, disconnected replay and
 consumer boundary for each capability.
 
-The review covers eight non-virtual capabilities. Seven bounded upstream
-surfaces have a passing source/model/rule PoC and a complete dependency license
-review. K8sGPT's deterministic CLI path passes, but the 268-module Linux CLI
-closure contains five Buf generated modules without file-level license
-evidence, so K8sGPT remains disabled. Every corresponding Component Catalog
-entry remains `candidate`; the contract test confirms a candidate is rejected
-from a Bundle. `qualified` in this lock refers only to the bounded source or
-fixture evidence listed for that capability. It does not enable a resident
-runtime, hardware access, profile selection or Bundle inclusion.
+The review covers eight non-virtual capabilities with passing bounded upstream
+source/model/rule PoCs and complete dependency license reviews. K8sGPT uses
+upstream `v0.3.41` with a reviewed 233-module arm64 CLI import closure;
+[ADR-0013](../adr/0013-lock-licensed-k8sgpt-cli.md) records the selection.
+The rejected `v0.4.36` license audit is preserved separately. Every corresponding
+Component Catalog entry remains `candidate`; the contract test confirms a
+candidate is rejected from a Bundle. `qualified` in this lock refers only to
+the selected source or Fixture scope. It does not enable a resident runtime,
+hardware access, profile selection or Bundle inclusion.
 
 ## Non-virtual decisions
 
 | Capability | Exact source | Locked review scope | Result and boundary |
 | --- | --- | --- | --- |
-| K8sGPT Analyzer | `v0.4.36`, `d33935a7b6f7039ec649925420d6b29c9b119567` | Analyzer tests, arm64 CLI build, deterministic Pod JSON output | CLI JSON is deterministic without an LLM or `--explain`; five dependency licenses remain unresolved, so capability disabled. |
+| K8sGPT Analyzer | `v0.3.41`, `f071b32aa85d77b197cd2d0f9868294f7b55c5eb` | Analyzer tests, arm64 CLI build, 233-module import/license closure, deterministic Pod JSON output | Source/CLI scope qualified without LLM or `--explain`; runtime and Bundle admission stay disabled. |
 | Node Problem Detector | `v1.35.3`, `e2b57e2f42052e4cf62cd2be1eb882f6a71a7804` | `kernel-monitor.json` rule matching against VictoriaLogs LogsQL | 28 positive/negative vectors match; only the rule mapping is selected. NPD daemon stays disabled. |
 | Coroot Community | `v1.26.8`, `76fa0cff31c530d1a2b0e8adc662433eea2bfeef` | `Check`, `CheckConfig`, `AuditReport` selected model/evaluation slice | The selected Check/Audit boundary test passes. Coroot collectors, storage, watcher and full runtime are excluded. |
 | Keep Community | `v0.54.3`, `118b2dc0c7a45f8a22b6317b983cdba6f5b54b5e` | Six selected Community model files and their Python import closure | The offline SQLite/DTO PoC passes. `ee/`, providers, API, UI and a Keep server are excluded; tenant identity is not projected as public DTO data. |
@@ -81,10 +81,9 @@ The source directory contains the eight Git repositories named in the script;
 only their frozen commits are used, regardless of checkout changes. Replays
 never promote a capability or Component Catalog entry. The default Contract
 test rejects virtual capability names and missing source; the actual upstream
-replay is skipped unless explicitly enabled. K8sGPT's license blocker and the
-Fixture-only hardware boundaries still apply after a passing replay.
+replay is skipped unless explicitly enabled. Fixture-only hardware boundaries still apply after a passing replay.
 
-### Verification on 2026-09-29
+### Earlier replay on 2026-09-29 (superseded K8sGPT selection)
 
 The final complete replay exited 0 in 175.577 seconds. Its command, source
 parent and exact runner/Contract-test/lock hashes are in
@@ -108,9 +107,38 @@ licenses, runtime admission or hardware validation claims.
 
 `task-2.9-completion-check-final.log` records exit 0 for the locked toolchain,
 uncached reuse/graph/projection Contract tests, `make check`, generated-file
-drift checks and `git diff --check`. The original eight Component Catalog
-candidates, disabled K8sGPT license gate and deferred virtual capabilities are
-unchanged.
+drift checks and `git diff --check`. At that earlier replay the eight Component Catalog candidates, K8sGPT license
+gate and deferred virtual capabilities were unchanged.
+
+### Accepted licensed replay on 2026-09-29
+
+The current eight-capability replay exited 0 in 152.36 seconds. Its command and
+results are recorded in `artifacts/test-reports/task-2.9-0341-composite-final-replay.log`;
+per-capability source commits, complete Docker argv, exit codes and log hashes
+are in `artifacts/test-reports/task-2.9-0341-composite-final-replay/summary.json`.
+
+For K8sGPT `v0.3.41`, the run reconstructed the unchanged upstream Git archive,
+verified all selected file hashes, obtained the actual arm64 CLI import closure
+using Go 1.27.1 with network disabled, and matched all 233 exact production
+modules and module-archive digests against the licensed inventory. Upstream Pod
+Analyzer tests, a fresh arm64 CLI build and two equal no-LLM JSON results then
+passed. The three generated K8sGPT SDKs have frozen Schema and generator rights
+in `k8sgpt-buf-license-provenance.json`; physical applicable module and nested
+license/notice texts are retained in `third_party/licenses/k8sgpt-cli-v0.3.41/`.
+Unresolved license count is zero. A separate offline `go mod verify` passed
+against the actual module cache; its log is
+`artifacts/test-reports/task-2.9-k8sgpt-0341-module-integrity-final.log`.
+Immutable upstream evidence retains original spaces, line endings and final
+blank lines. Specific Git attributes for those original-format files preserve
+the exact bytes; hash tests continue to reject any accepted or retained audit
+material change. `v0.4.36` and its two unresolved Interplex
+Schema modules remain rejected in `k8sgpt-v0.4.36-rejected-license-audit.json`
+and the separate rejected closure Fixture, including its historical logs.
+
+All eight current bounded scopes are qualified in the reuse lock. Every
+Component Catalog entry remains candidate, runtime-disabled and excluded from
+Bundle admission; the later adapter tasks must preserve these boundaries.
+The raw replay logs are tied to the selected commit by the Contract test.
 
 ### Exit and disable conditions
 
@@ -121,8 +149,8 @@ No replay enables a full Coroot/Keep/Metal3 runtime, a hardware exporter or
 privileged collector. Preserve disabled status when required evidence is
 missing; do not substitute a generic in-house Inspection framework.
 
-K8sGPT can leave disabled status only after the five frozen Buf dependency
-licenses are established and its CLI closure and no-LLM JSON tests are rerun.
+The current K8sGPT selection has a complete license review; the rejected
+Interplex-dependent release remains unqualified and is not used.
 NPD rule reuse still requires real journald/kernel ingestion to preserve
 message, node and timestamp semantics in the later adapter task; a failed
 mapping must follow the plan's NPD admission path. Keep remains a selected

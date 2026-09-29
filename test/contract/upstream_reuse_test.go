@@ -33,6 +33,7 @@ type upstreamCapability struct {
 	License                   string               `yaml:"license"`
 	LicenseEvidence           string               `yaml:"licenseEvidence"`
 	LicenseEvidenceSHA256     string               `yaml:"licenseEvidenceSHA256"`
+	LicenseProvenance         lockedFile           `yaml:"licenseProvenance"`
 	State                     string               `yaml:"state"`
 	Fixture                   string               `yaml:"fixture"`
 	FixtureSHA256             string               `yaml:"fixtureSHA256"`
@@ -331,7 +332,7 @@ func TestUpstreamReuseLockRejectsUnpinnedOrUnsafeBaselines(t *testing.T) {
 				t.Errorf("%s dependency %s has no file-level license evidence", id, module.Path)
 			}
 			for _, licenseFile := range module.LicenseFiles {
-				if licenseFile.Path == "" || !strings.Contains(module.License, licenseFile.License) || !shaPattern.MatchString(licenseFile.SHA256) {
+				if licenseFile.Path == "" || !containsDeclaredLicenseIdentifiers(module.License, licenseFile.License) || !shaPattern.MatchString(licenseFile.SHA256) {
 					t.Errorf("%s dependency %s has incomplete file license evidence: %+v", id, module.Path, licenseFile)
 				}
 			}
@@ -415,6 +416,10 @@ func TestUpstreamReuseLockRejectsUnpinnedOrUnsafeBaselines(t *testing.T) {
 		if err := verifyLockedFile(root, replay.Log, replay.LogSHA256); err != nil {
 			t.Errorf("%s offline replay log: %v", id, err)
 		}
+		logBytes, err := os.ReadFile(filepath.Join(root, replay.Log))
+		if err != nil || !strings.Contains(string(logBytes), "source_commit="+capability.Commit) || !strings.Contains(string(logBytes), "replay_exit_code=0") {
+			t.Errorf("%s replay is not bound to its selected source commit and successful execution", id)
+		}
 		if len(replay.ContainerImages) == 0 {
 			t.Errorf("%s replay lacks exact container image digests", id)
 		}
@@ -438,8 +443,11 @@ func TestUpstreamReuseLockRejectsUnpinnedOrUnsafeBaselines(t *testing.T) {
 	}
 
 	k8sgpt := byID["k8sgpt-analyzer"]
-	if k8sgpt.State != "disabled" || getPolicyBool(k8sgpt.Policy, "llmEnabled") || getPolicyBool(k8sgpt.Policy, "explainEnabled") || getPolicyString(k8sgpt.Policy, "output") != "json" {
-		t.Error("K8sGPT must remain disabled and use JSON without LLM or --explain")
+	if err := verifyLockedFile(root, k8sgpt.LicenseProvenance.Path, k8sgpt.LicenseProvenance.SHA256); err != nil {
+		t.Errorf("K8sGPT generated SDK license provenance: %v", err)
+	}
+	if k8sgpt.State != "qualified" || getPolicyBool(k8sgpt.Policy, "llmEnabled") || getPolicyBool(k8sgpt.Policy, "explainEnabled") || getPolicyString(k8sgpt.Policy, "output") != "json" {
+		t.Error("K8sGPT selected CLI must be qualified and use JSON without LLM or --explain; runtime stays disabled")
 	}
 	k8sgptScript := filepath.Join(root, "test", "fixtures", "upstream-inspection", "verify-k8sgpt-cli.py")
 	k8sgptScriptBytes, err := os.ReadFile(k8sgptScript)
@@ -617,4 +625,40 @@ func getPolicyBool(policy map[string]any, key string) bool {
 func getPolicyString(policy map[string]any, key string) string {
 	value, _ := policy[key].(string)
 	return value
+}
+
+// Compare SPDX identifiers, preserving file declarations inside parentheses
+// and compound expressions, including Python metadata license lists.
+// Substring matches could confuse MIT with MIT-0.
+func containsDeclaredLicenseIdentifiers(inventory, declaration string) bool {
+	normalize := strings.NewReplacer("(", " ", ")", " ", ";", " ")
+	terms := stringSet(strings.Fields(normalize.Replace(inventory)))
+	declarations := strings.Fields(normalize.Replace(declaration))
+	for _, term := range declarations {
+		if term == "AND" || term == "OR" || term == "WITH" {
+			continue
+		}
+		if !terms[term] {
+			return false
+		}
+	}
+	return len(declarations) > 0
+}
+
+func TestCompoundDependencyLicenseDeclarations(t *testing.T) {
+	for _, tc := range []struct {
+		inventory, declaration string
+		want                   bool
+	}{
+		{"Apache-2.0 AND BSD-3-Clause AND MIT", "Apache-2.0 AND MIT", true},
+		{"Apache-2.0 AND MIT", "Apache-2.0 AND BSD-3-Clause", false},
+		{"(MIT AND PSF-2.0)", "PSF-2.0", true},
+		{"MIT; PSF-2.0", "MIT", true},
+		{"MIT-0", "MIT", false},
+		{"Apache-2.0", "", false},
+	} {
+		if got := containsDeclaredLicenseIdentifiers(tc.inventory, tc.declaration); got != tc.want {
+			t.Errorf("inventory %q, declaration %q: got %v want %v", tc.inventory, tc.declaration, got, tc.want)
+		}
+	}
 }

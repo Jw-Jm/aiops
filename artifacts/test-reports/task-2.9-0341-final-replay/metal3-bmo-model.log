@@ -1,0 +1,181 @@
+capability=metal3-bmo-model source_commit=767846c3f3a8b2426cbc5d5fc3b0f4a8565fa440 runtime_enabled=false
+locked_state=qualified disabled_reason=
+command: ["git", "-C", "/tmp/ops-sp02-task29/baremetal-operator", "archive", "--format=tar", "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-j03xdnlp/metal3-bmo-model.tar", "767846c3f3a8b2426cbc5d5fc3b0f4a8565fa440"]
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-j03xdnlp,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-j03xdnlp/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-j03xdnlp/metal3-bmo-model/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/metal3-bmo-model/apis", "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414", "go", "test", "-mod=readonly", "-p", "1", "-count=1", "-v", "-timeout=5m", "./metal3.io/v1alpha1", "-run", "."]
+=== RUN   TestHostNeedsHardwareInspection
+=== RUN   TestHostNeedsHardwareInspection/no_hardware_details
+=== RUN   TestHostNeedsHardwareInspection/host_with_details
+=== RUN   TestHostNeedsHardwareInspection/unprovisioned_host_with_consumer
+=== RUN   TestHostNeedsHardwareInspection/provisioned_host
+--- PASS: TestHostNeedsHardwareInspection (0.00s)
+    --- PASS: TestHostNeedsHardwareInspection/no_hardware_details (0.00s)
+    --- PASS: TestHostNeedsHardwareInspection/host_with_details (0.00s)
+    --- PASS: TestHostNeedsHardwareInspection/unprovisioned_host_with_consumer (0.00s)
+    --- PASS: TestHostNeedsHardwareInspection/provisioned_host (0.00s)
+=== RUN   TestHostNeedsProvisioning
+=== RUN   TestHostNeedsProvisioning/without_image
+=== RUN   TestHostNeedsProvisioning/without_image_url
+=== RUN   TestHostNeedsProvisioning/with_image_url,_online
+=== RUN   TestHostNeedsProvisioning/with_image_url,_offline
+=== RUN   TestHostNeedsProvisioning/already_provisioned
+=== RUN   TestHostNeedsProvisioning/externally_provisioned
+--- PASS: TestHostNeedsProvisioning (0.00s)
+    --- PASS: TestHostNeedsProvisioning/without_image (0.00s)
+    --- PASS: TestHostNeedsProvisioning/without_image_url (0.00s)
+    --- PASS: TestHostNeedsProvisioning/with_image_url,_online (0.00s)
+    --- PASS: TestHostNeedsProvisioning/with_image_url,_offline (0.00s)
+    --- PASS: TestHostNeedsProvisioning/already_provisioned (0.00s)
+    --- PASS: TestHostNeedsProvisioning/externally_provisioned (0.00s)
+=== RUN   TestCredentialStatusMatch
+=== RUN   TestCredentialStatusMatch/not_set
+=== RUN   TestCredentialStatusMatch/new_name
+=== RUN   TestCredentialStatusMatch/match
+=== RUN   TestCredentialStatusMatch/wrong_namespace
+=== RUN   TestCredentialStatusMatch/new_version
+--- PASS: TestCredentialStatusMatch (0.00s)
+    --- PASS: TestCredentialStatusMatch/not_set (0.00s)
+    --- PASS: TestCredentialStatusMatch/new_name (0.00s)
+    --- PASS: TestCredentialStatusMatch/match (0.00s)
+    --- PASS: TestCredentialStatusMatch/wrong_namespace (0.00s)
+    --- PASS: TestCredentialStatusMatch/new_version (0.00s)
+=== RUN   TestGetImageChecksum
+=== RUN   TestGetImageChecksum/both_checksum_value_and_type_specified
+=== RUN   TestGetImageChecksum/checksum_value_specified_and_type_not_specified,_default_to_auto_type
+=== RUN   TestGetImageChecksum/checksum_value_specified,_auto_type
+=== RUN   TestGetImageChecksum/sha256_checksum_value_and_type_specified
+=== RUN   TestGetImageChecksum/sha512_checksum_value_and_type_specified
+=== RUN   TestGetImageChecksum/checksum_value_not_specified
+=== RUN   TestGetImageChecksum/neither_checksum_value_nor_hash_specified
+=== RUN   TestGetImageChecksum/wrong_checksum_hash_specified
+=== RUN   TestGetImageChecksum/no_image
+=== RUN   TestGetImageChecksum/OCI_image_without_checksum
+=== RUN   TestGetImageChecksum/OCI_image_with_checksum
+=== RUN   TestGetImageChecksum/OCI_image_with_live-iso_format_and_checksum
+=== RUN   TestGetImageChecksum/live-iso_without_checksum
+--- PASS: TestGetImageChecksum (0.00s)
+    --- PASS: TestGetImageChecksum/both_checksum_value_and_type_specified (0.00s)
+    --- PASS: TestGetImageChecksum/checksum_value_specified_and_type_not_specified,_default_to_auto_type (0.00s)
+    --- PASS: TestGetImageChecksum/checksum_value_specified,_auto_type (0.00s)
+    --- PASS: TestGetImageChecksum/sha256_checksum_value_and_type_specified (0.00s)
+    --- PASS: TestGetImageChecksum/sha512_checksum_value_and_type_specified (0.00s)
+    --- PASS: TestGetImageChecksum/checksum_value_not_specified (0.00s)
+    --- PASS: TestGetImageChecksum/neither_checksum_value_nor_hash_specified (0.00s)
+    --- PASS: TestGetImageChecksum/wrong_checksum_hash_specified (0.00s)
+    --- PASS: TestGetImageChecksum/no_image (0.00s)
+    --- PASS: TestGetImageChecksum/OCI_image_without_checksum (0.00s)
+    --- PASS: TestGetImageChecksum/OCI_image_with_checksum (0.00s)
+    --- PASS: TestGetImageChecksum/OCI_image_with_live-iso_format_and_checksum (0.00s)
+    --- PASS: TestGetImageChecksum/live-iso_without_checksum (0.00s)
+=== RUN   TestBootMode
+=== RUN   TestBootMode/default
+=== RUN   TestBootMode/UEFI
+=== RUN   TestBootMode/legacy
+--- PASS: TestBootMode (0.00s)
+    --- PASS: TestBootMode/default (0.00s)
+    --- PASS: TestBootMode/UEFI (0.00s)
+    --- PASS: TestBootMode/legacy (0.00s)
+=== RUN   TestSetOperationalStatus
+=== RUN   TestSetOperationalStatus/Host_is_partially_configured_and_operationalStatus_is_ok
+=== RUN   TestSetOperationalStatus/Host_is_detached_and_operationalStatus_is_also_detached
+=== RUN   TestSetOperationalStatus/Host_has_an_error_and_operationalStatus_also_has_an_error
+=== RUN   TestSetOperationalStatus/Host_is_delayed_and_operationalStatus_is_not_defined
+--- PASS: TestSetOperationalStatus (0.00s)
+    --- PASS: TestSetOperationalStatus/Host_is_partially_configured_and_operationalStatus_is_ok (0.00s)
+    --- PASS: TestSetOperationalStatus/Host_is_detached_and_operationalStatus_is_also_detached (0.00s)
+    --- PASS: TestSetOperationalStatus/Host_has_an_error_and_operationalStatus_also_has_an_error (0.00s)
+    --- PASS: TestSetOperationalStatus/Host_is_delayed_and_operationalStatus_is_not_defined (0.00s)
+=== RUN   TestSetHardwareProfile
+=== RUN   TestSetHardwareProfile/Host_hardware_profile_and_name_is_same
+=== RUN   TestSetHardwareProfile/Host_hardware_profile_and_name_are_different
+=== RUN   TestSetHardwareProfile/Host_hardware_profile_is_not_defined
+--- PASS: TestSetHardwareProfile (0.00s)
+    --- PASS: TestSetHardwareProfile/Host_hardware_profile_and_name_is_same (0.00s)
+    --- PASS: TestSetHardwareProfile/Host_hardware_profile_and_name_are_different (0.00s)
+    --- PASS: TestSetHardwareProfile/Host_hardware_profile_is_not_defined (0.00s)
+=== RUN   TestHasBMCDetails
+=== RUN   TestHasBMCDetails/Only_host_bmc_address_is_set
+=== RUN   TestHasBMCDetails/Only_host_credentialsName_is_set
+=== RUN   TestHasBMCDetails/Neither_host_credentialsName_nor_address_is_set
+--- PASS: TestHasBMCDetails (0.00s)
+    --- PASS: TestHasBMCDetails/Only_host_bmc_address_is_set (0.00s)
+    --- PASS: TestHasBMCDetails/Only_host_credentialsName_is_set (0.00s)
+    --- PASS: TestHasBMCDetails/Neither_host_credentialsName_nor_address_is_set (0.00s)
+=== RUN   TestInspectionDisabled
+=== RUN   TestInspectionDisabled/default
+=== RUN   TestInspectionDisabled/annotation
+=== RUN   TestInspectionDisabled/empty_annotation_value
+=== RUN   TestInspectionDisabled/InspectionMode
+=== RUN   TestInspectionDisabled/both
+--- PASS: TestInspectionDisabled (0.00s)
+    --- PASS: TestInspectionDisabled/default (0.00s)
+    --- PASS: TestInspectionDisabled/annotation (0.00s)
+    --- PASS: TestInspectionDisabled/empty_annotation_value (0.00s)
+    --- PASS: TestInspectionDisabled/InspectionMode (0.00s)
+    --- PASS: TestInspectionDisabled/both (0.00s)
+=== RUN   TestIsOCI
+=== RUN   TestIsOCI/nil_image
+=== RUN   TestIsOCI/OCI_image
+=== RUN   TestIsOCI/OCI_image_with_checksum
+=== RUN   TestIsOCI/HTTP_image
+=== RUN   TestIsOCI/HTTPS_image
+=== RUN   TestIsOCI/empty_URL
+--- PASS: TestIsOCI (0.00s)
+    --- PASS: TestIsOCI/nil_image (0.00s)
+    --- PASS: TestIsOCI/OCI_image (0.00s)
+    --- PASS: TestIsOCI/OCI_image_with_checksum (0.00s)
+    --- PASS: TestIsOCI/HTTP_image (0.00s)
+    --- PASS: TestIsOCI/HTTPS_image (0.00s)
+    --- PASS: TestIsOCI/empty_URL (0.00s)
+=== RUN   TestIsLiveISO
+=== RUN   TestIsLiveISO/nil_image
+=== RUN   TestIsLiveISO/live-iso_format
+=== RUN   TestIsLiveISO/raw_format
+=== RUN   TestIsLiveISO/no_format_specified
+--- PASS: TestIsLiveISO (0.00s)
+    --- PASS: TestIsLiveISO/nil_image (0.00s)
+    --- PASS: TestIsLiveISO/live-iso_format (0.00s)
+    --- PASS: TestIsLiveISO/raw_format (0.00s)
+    --- PASS: TestIsLiveISO/no_format_specified (0.00s)
+=== RUN   TestValidateHostFirmwareComponents
+=== RUN   TestValidateHostFirmwareComponents/ValidHostFirmwareComponents
+=== RUN   TestValidateHostFirmwareComponents/InvalidHostFirmwareComponents
+=== RUN   TestValidateHostFirmwareComponents/ValidNicPrefixComponent
+--- PASS: TestValidateHostFirmwareComponents (0.00s)
+    --- PASS: TestValidateHostFirmwareComponents/ValidHostFirmwareComponents (0.00s)
+    --- PASS: TestValidateHostFirmwareComponents/InvalidHostFirmwareComponents (0.00s)
+    --- PASS: TestValidateHostFirmwareComponents/ValidNicPrefixComponent (0.00s)
+=== RUN   TestValidateSetting
+=== RUN   TestValidateSetting/StringTypePass
+=== RUN   TestValidateSetting/StringTypeFailUpper
+=== RUN   TestValidateSetting/StringTypeFailLower
+=== RUN   TestValidateSetting/EnumerationTypePass
+=== RUN   TestValidateSetting/EnumerationTypeFail
+=== RUN   TestValidateSetting/IntegerTypePassAsString
+=== RUN   TestValidateSetting/IntegerTypePassAsInt
+=== RUN   TestValidateSetting/IntegerTypeFailUpper
+=== RUN   TestValidateSetting/IntegerTypeFailLower
+=== RUN   TestValidateSetting/BooleanTypePass
+=== RUN   TestValidateSetting/BooleanTypeFail
+=== RUN   TestValidateSetting/ReadOnlyTypeFail
+=== RUN   TestValidateSetting/MissingEnumerationField
+=== RUN   TestValidateSetting/UnknownSettingFail
+--- PASS: TestValidateSetting (0.00s)
+    --- PASS: TestValidateSetting/StringTypePass (0.00s)
+    --- PASS: TestValidateSetting/StringTypeFailUpper (0.00s)
+    --- PASS: TestValidateSetting/StringTypeFailLower (0.00s)
+    --- PASS: TestValidateSetting/EnumerationTypePass (0.00s)
+    --- PASS: TestValidateSetting/EnumerationTypeFail (0.00s)
+    --- PASS: TestValidateSetting/IntegerTypePassAsString (0.00s)
+    --- PASS: TestValidateSetting/IntegerTypePassAsInt (0.00s)
+    --- PASS: TestValidateSetting/IntegerTypeFailUpper (0.00s)
+    --- PASS: TestValidateSetting/IntegerTypeFailLower (0.00s)
+    --- PASS: TestValidateSetting/BooleanTypePass (0.00s)
+    --- PASS: TestValidateSetting/BooleanTypeFail (0.00s)
+    --- PASS: TestValidateSetting/ReadOnlyTypeFail (0.00s)
+    --- PASS: TestValidateSetting/MissingEnumerationField (0.00s)
+    --- PASS: TestValidateSetting/UnknownSettingFail (0.00s)
+PASS
+ok  	github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1	0.002s
+exit_code=0
+replay_exit_code=0

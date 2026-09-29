@@ -1,0 +1,37 @@
+{
+  "status": "fixture-pass",
+  "runs": 2,
+  "llmRequested": false,
+  "liveCluster": false,
+  "networkIsolationVerified": true,
+  "interfaces": [
+    "lo"
+  ],
+  "requests": [
+    "/version",
+    "/api/v1/namespaces/fixture/pods",
+    "/version",
+    "/api/v1/namespaces/fixture/pods"
+  ],
+  "result": {
+    "provider": "",
+    "errors": null,
+    "status": "ProblemDetected",
+    "problems": 1,
+    "results": [
+      {
+        "kind": "Pod",
+        "name": "fixture/unschedulable",
+        "error": [
+          {
+            "Text": "fixture: insufficient memory",
+            "KubernetesDoc": "",
+            "Sensitive": []
+          }
+        ],
+        "details": "",
+        "parentObject": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+capability=keep-community-model source_commit=118b2dc0c7a45f8a22b6317b983cdba6f5b54b5e runtime_enabled=false
+locked_state=qualified disabled_reason=The selected Community model files pass the offline SQLite/IncidentDto PoC. No platform adapter, tenant-enforcement integration, or runtime admission is included in Task 2.9; exclude Keep API/database/UI and ee/.
+command: ["git", "-C", "/tmp/ops-sp02-task29/keep", "archive", "--format=tar", "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-tnecn56y/keep-community-model.tar", "118b2dc0c7a45f8a22b6317b983cdba6f5b54b5e"]
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-tnecn56y,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-tnecn56y/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-tnecn56y/keep-community-model/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/keep-community-model", "--mount", "type=bind,src=/private/tmp/ops-sp02-keep/wheelhouse,dst=/wheels,readonly", "python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f", "python", "/fixtures/replay-nonvirtual.py", "--container-keep", "/work/keep-community-model/requirements.txt", "/work/keep-community-model/selected"]
+Looking in links: /wheels
+Processing /wheels/decorator-5.1.1-py3-none-any.whl (from -r /work/keep-community-model/requirements.txt (line 1))
+Processing /wheels/greenlet-3.1.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (from -r /work/keep-community-model/requirements.txt (line 2))
+Processing /wheels/pydantic-1.10.19-py3-none-any.whl (from -r /work/keep-community-model/requirements.txt (line 3))
+Processing /wheels/pytz-2024.2-py2.py3-none-any.whl (from -r /work/keep-community-model/requirements.txt (line 4))
+Processing /wheels/retry2-0.9.5-py2.py3-none-any.whl (from -r /work/keep-community-model/requirements.txt (line 5))
+Processing /wheels/SQLAlchemy-2.0.36-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (from -r /work/keep-community-model/requirements.txt (line 6))
+Processing /wheels/SQLAlchemy_Utils-0.41.2-py3-none-any.whl (from -r /work/keep-community-model/requirements.txt (line 7))
+Processing /wheels/sqlmodel-0.0.22-py3-none-any.whl (from -r /work/keep-community-model/requirements.txt (line 8))
+Processing /wheels/typing_extensions-4.12.2-py3-none-any.whl (from -r /work/keep-community-model/requirements.txt (line 9))
+Installing collected packages: pytz, typing-extensions, sqlmodel, sqlalchemy-utils, sqlalchemy, retry2, pydantic, greenlet, decorator
+Successfully installed decorator-5.1.1 greenlet-3.1.1 pydantic-1.10.19 pytz-2024.2 retry2-0.9.5 sqlalchemy-2.0.36 sqlalchemy-utils-0.41.2 sqlmodel-0.0.22 typing-extensions-4.12.2
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+parsed 6 selected Keep Community model files with Python AST
+external import roots: pydantic, pytz, retry, sqlalchemy, sqlalchemy_utils, sqlmodel
+no Keep ee/ files present; runtime imports were not executed
+Keep Community Incident SQLModel persisted and projected to IncidentDto
+tenant identity excluded from public DTO; consumer must enforce tenant equality
+exit_code=0
+replay_exit_code=0
