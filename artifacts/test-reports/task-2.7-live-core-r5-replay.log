@@ -1,0 +1,248 @@
+Task 2.7 live acceptance replay: source, Bundle and pre-run snapshot
+source_commit=f3ef3c4949cd24ac669a3c5c642d832a0cbd6e3a
+source_branch=task-1.1
+component_catalog_sha256=c481983181ae9ddd51a916f595f41f8fe48d6820749548dc5e44469e4d780700  bundle/component-catalog.yaml
+resolved_profile_sha256=260aa0f81ad8c7d4980e429ac9d41c6bd1f5af60c1c7b816b5b063c69fb85684  /Users/mssc/Documents/Code/ops/platform/artifacts/profiles/task-2.7-qualified-resolved.yaml
+bundle_lock_sha256=de631712ed7d29eacc5fca0fdd17fbaa1a4e6d9d544bc2139bd7829c4fa220d6  /Users/mssc/Documents/Code/ops/platform/artifacts/bundles/task27-core-arm64-r5/bundle.lock.json
+bundle_payload_sha256=12e1e8f8b16c2d061a8daad302520bb7fec931bdd3788541ead498d9b4eea38b  /Users/mssc/Documents/Code/ops/platform/artifacts/bundles/task27-core-arm64-r5/payload.tar.zst
+
+Bundle signature and payload verification:
+{
+  "bundleId": "task27-core-arm64-20260929-r5",
+  "architecture": "linux/arm64",
+  "payloadDigest": "sha256:12e1e8f8b16c2d061a8daad302520bb7fec931bdd3788541ead498d9b4eea38b",
+  "signatureVerified": true,
+  "payloadDigestVerified": true,
+  "payloadFilesVerified": 66,
+  "payloadBytesVerified": 3593486674
+}
+
+Pre-run Helm releases:
+[{"name":"holmes","namespace":"holmes","revision":"2","updated":"2026-09-25 13:34:45.12296 +0800 CST","status":"deployed","chart":"holmes-0.0.1","app_version":"0.0.0"},{"name":"ops-core","namespace":"ops-system","revision":"2","updated":"2026-09-27 19:36:41.738308 +0800 CST","status":"deployed","chart":"ops-dependencies-0.1.0","app_version":"1.0.0"},{"name":"ops-dependencies","namespace":"ops-system","revision":"1","updated":"2026-09-29 10:34:22.165873 +0800 CST","status":"deployed","chart":"ops-dependencies-0.1.0","app_version":"1.0.0"},{"name":"ops-platform","namespace":"ops-system","revision":"2","updated":"2026-09-29 10:35:19.250679 +0800 CST","status":"deployed","chart":"ops-platform-0.1.0","app_version":"1.0.0"},{"name":"vm","namespace":"monitoring","revision":"1","updated":"2026-09-25 13:16:38.916231 +0800 CST","status":"deployed","chart":"victoria-metrics-k8s-stack-0.45.0","app_version":"v1.116.0"},{"name":"vmalert","namespace":"ops-system","revision":"1","updated":"2026-09-29 10:34:58.663265 +0800 CST","status":"deployed","chart":"victoria-metrics-alert-0.18.0","app_version":"v1.116.0"}]
+
+Pre-run protected PVC identities:
+NAMESPACE    NAME                    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE    VOLUMEMODE
+monitoring   vmsingle-vm             Bound    pvc-75f11b01-15be-41b1-bda0-c450a455a4a0   10Gi       RWO            local-path     <unset>                 4d7h   Filesystem
+ops-system   data-ops-openbao-0      Bound    pvc-c6d6fd30-b259-4edd-ab4d-457a86c9680f   2Gi        RWO            local-path     <unset>                 2d     Filesystem
+ops-system   data-ops-postgresql-0   Bound    pvc-fa694502-a948-4fa7-b072-46eb2f4ce8bb   2Gi        RWO            local-path     <unset>                 10h    Filesystem
+ops-system   data-ops-seaweedfs-0    Bound    pvc-cacf92e6-8352-47e0-913c-4f9ff641eb34   2Gi        RWO            local-path     <unset>                 10h    Filesystem
+
+Pre-run ops-system pods:
+NAME                            READY   STATUS    RESTARTS        AGE   IP               NODE       NOMINATED NODE   READINESS GATES
+ops-api-64f56f8567-l4x7v        1/1     Running   1 (7h22m ago)   9h    192.168.194.7    orbstack   <none>           <none>
+ops-keycloak-598f6b66d4-mrbwg   1/1     Running   1 (7h22m ago)   9h    192.168.194.18   orbstack   <none>           <none>
+ops-openbao-0                   1/1     Running   7 (7h22m ago)   2d    192.168.194.12   orbstack   <none>           <none>
+ops-postgresql-0                1/1     Running   1 (7h22m ago)   9h    192.168.194.10   orbstack   <none>           <none>
+ops-seaweedfs-0                 1/1     Running   1 (7h22m ago)   9h    192.168.194.6    orbstack   <none>           <none>
+ops-vmalert-5b48cd5f47-ljbvl    1/1     Running   1 (7h22m ago)   9h    192.168.194.5    orbstack   <none>           <none>
+ops-worker-59c9588678-9tk5r     1/1     Running   1 (7h22m ago)   9h    192.168.194.19   orbstack   <none>           <none>
+
+Pre-run monitoring pods:
+NAME                                            READY   STATUS    RESTARTS         AGE    IP               NODE       NOMINATED NODE   READINESS GATES
+victoria-logs-85d7d5c6d6-kh4x9                  1/1     Running   10 (7h22m ago)   4d7h   192.168.194.9    orbstack   <none>           <none>
+vlagent-hmvs5                                   1/1     Running   10 (7h22m ago)   4d7h   192.168.194.16   orbstack   <none>           <none>
+vm-kube-state-metrics-6bdf7ddb76-c56qg          1/1     Running   10 (7h22m ago)   4d7h   192.168.194.17   orbstack   <none>           <none>
+vm-prometheus-node-exporter-gp8pq               1/1     Running   10 (7h22m ago)   4d7h   192.168.139.2    orbstack   <none>           <none>
+vm-victoria-metrics-operator-6bb5dfbf4c-98p2t   1/1     Running   10 (7h22m ago)   4d7h   192.168.194.15   orbstack   <none>           <none>
+vmagent-vm-85dff8857d-d5cgk                     2/2     Running   20 (7h22m ago)   4d7h   192.168.194.14   orbstack   <none>           <none>
+vmsingle-vm-5bb9646995-znljh                    1/1     Running   10 (7h22m ago)   4d7h   192.168.194.11   orbstack   <none>           <none>
+
+=== read-only release ownership preflight ===
+=== RUN   TestTask27ReleaseOwnershipPreflight
+    release_preflight_test.go:74: release ops-dependencies manifest and live labels verified; no PVC/PV cleanup path
+    release_preflight_test.go:74: release vmalert manifest and live labels verified; no PVC/PV cleanup path
+    release_preflight_test.go:74: release ops-platform manifest and live labels verified; no PVC/PV cleanup path
+--- PASS: TestTask27ReleaseOwnershipPreflight (1.89s)
+PASS
+ok  	ops-platform/internal/bundle	2.512s
+
+=== selected-image ownership and cache preflight ===
+postgresql docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257 pod_references=['ops-system/ops-postgresql-0 release=ops-dependencies']
+  image_aliases=["postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"]|["postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"]
+keycloak quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c pod_references=['ops-system/ops-keycloak-598f6b66d4-mrbwg release=ops-dependencies']
+  image_aliases=["quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"]|["quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"]
+seaweedfs docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e pod_references=['ops-system/ops-seaweedfs-0 release=ops-dependencies']
+  image_aliases=["chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e"]|["chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e"]
+vmalert docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311 pod_references=['ops-system/ops-vmalert-5b48cd5f47-ljbvl release=vmalert']
+  image_aliases=["victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311"]|["victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311"]
+platform-api ops.local/task27/platform-api@sha256:060e12e60dcd539fb18484b02f1a44ef3b50303d87497b26f60d1eb2b1a9ab50 pod_references=['ops-system/ops-api-64f56f8567-l4x7v release=ops-platform']
+  image_aliases=["ops.local/task27/platform-api@sha256:060e12e60dcd539fb18484b02f1a44ef3b50303d87497b26f60d1eb2b1a9ab50"]|["ops.local/task27/platform-api@sha256:060e12e60dcd539fb18484b02f1a44ef3b50303d87497b26f60d1eb2b1a9ab50"]
+platform-worker ops.local/task27/platform-worker@sha256:435ee8bc7dca3b90ed63747b063be0b5432c279db425b60ba53948d1ca227f35 pod_references=['ops-system/ops-worker-59c9588678-9tk5r release=ops-platform']
+  image_aliases=["ops.local/task27/platform-worker@sha256:435ee8bc7dca3b90ed63747b063be0b5432c279db425b60ba53948d1ca227f35"]|["ops.local/task27/platform-worker@sha256:435ee8bc7dca3b90ed63747b063be0b5432c279db425b60ba53948d1ca227f35"]
+non_target_pod_reference_found=false
+
+=== scoped cleanup of the three verified Task 2.7 releases ===
+command=OPS_OFFLINE_RESOLVED_PROFILE=<resolved-profile> go test ./internal/bundle -run ^TestTask27ReleaseCleanup$ -count=1 -v
+=== RUN   TestTask27ReleaseCleanup
+    release_cleanup_test.go:48: release ownership rechecked before cleanup: ops-dependencies
+    release_cleanup_test.go:52: release-scoped cleanup completed: ops-dependencies
+    release_cleanup_test.go:48: release ownership rechecked before cleanup: vmalert
+    release_cleanup_test.go:52: release-scoped cleanup completed: vmalert
+    release_cleanup_test.go:48: release ownership rechecked before cleanup: ops-platform
+    release_cleanup_test.go:52: release-scoped cleanup completed: ops-platform
+--- PASS: TestTask27ReleaseCleanup (2.01s)
+PASS
+ok  	ops-platform/internal/bundle	2.476s
+scoped_release_cleanup_exit_code=0
+
+Post-cleanup checkpoint before exact image removal:
+[{"name":"holmes","namespace":"holmes","revision":"2","updated":"2026-09-25 13:34:45.12296 +0800 CST","status":"deployed","chart":"holmes-0.0.1","app_version":"0.0.0"},{"name":"ops-core","namespace":"ops-system","revision":"2","updated":"2026-09-27 19:36:41.738308 +0800 CST","status":"deployed","chart":"ops-dependencies-0.1.0","app_version":"1.0.0"},{"name":"vm","namespace":"monitoring","revision":"1","updated":"2026-09-25 13:16:38.916231 +0800 CST","status":"deployed","chart":"victoria-metrics-k8s-stack-0.45.0","app_version":"v1.116.0"}]
+NAMESPACE    NAME                    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE    VOLUMEMODE
+monitoring   vmsingle-vm             Bound    pvc-75f11b01-15be-41b1-bda0-c450a455a4a0   10Gi       RWO            local-path     <unset>                 4d7h   Filesystem
+ops-system   data-ops-openbao-0      Bound    pvc-c6d6fd30-b259-4edd-ab4d-457a86c9680f   2Gi        RWO            local-path     <unset>                 2d     Filesystem
+ops-system   data-ops-postgresql-0   Bound    pvc-fa694502-a948-4fa7-b072-46eb2f4ce8bb   2Gi        RWO            local-path     <unset>                 10h    Filesystem
+ops-system   data-ops-seaweedfs-0    Bound    pvc-cacf92e6-8352-47e0-913c-4f9ff641eb34   2Gi        RWO            local-path     <unset>                 10h    Filesystem
+selected_image_pod_references_after_cleanup=["seaweedfs:ops-system/ops-seaweedfs-0"]
+
+Post-cleanup checkpoint after controller termination:
+[{"name":"holmes","namespace":"holmes","revision":"2","updated":"2026-09-25 13:34:45.12296 +0800 CST","status":"deployed","chart":"holmes-0.0.1","app_version":"0.0.0"},{"name":"ops-core","namespace":"ops-system","revision":"2","updated":"2026-09-27 19:36:41.738308 +0800 CST","status":"deployed","chart":"ops-dependencies-0.1.0","app_version":"1.0.0"},{"name":"vm","namespace":"monitoring","revision":"1","updated":"2026-09-25 13:16:38.916231 +0800 CST","status":"deployed","chart":"victoria-metrics-k8s-stack-0.45.0","app_version":"v1.116.0"}]
+NAMESPACE    NAME                    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE    VOLUMEMODE
+monitoring   vmsingle-vm             Bound    pvc-75f11b01-15be-41b1-bda0-c450a455a4a0   10Gi       RWO            local-path     <unset>                 4d7h   Filesystem
+ops-system   data-ops-openbao-0      Bound    pvc-c6d6fd30-b259-4edd-ab4d-457a86c9680f   2Gi        RWO            local-path     <unset>                 2d     Filesystem
+ops-system   data-ops-postgresql-0   Bound    pvc-fa694502-a948-4fa7-b072-46eb2f4ce8bb   2Gi        RWO            local-path     <unset>                 11h    Filesystem
+ops-system   data-ops-seaweedfs-0    Bound    pvc-cacf92e6-8352-47e0-913c-4f9ff641eb34   2Gi        RWO            local-path     <unset>                 11h    Filesystem
+selected_image_pod_references_after_cleanup=[]
+
+=== remove only the six preflighted Bundle image references ===
+remove_exact_image=postgresql reference=docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+Untagged: postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+Deleted: sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+reference_and_manifest_digest_absent=true
+remove_exact_image=keycloak reference=quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c
+Untagged: quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c
+Deleted: sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c
+reference_and_manifest_digest_absent=true
+remove_exact_image=seaweedfs reference=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e
+Untagged: chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e
+Deleted: sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e
+reference_and_manifest_digest_absent=true
+remove_exact_image=vmalert reference=docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+Untagged: victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+Deleted: sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+reference_and_manifest_digest_absent=true
+remove_exact_image=platform-api reference=ops.local/task27/platform-api@sha256:060e12e60dcd539fb18484b02f1a44ef3b50303d87497b26f60d1eb2b1a9ab50
+Untagged: ops.local/task27/platform-api@sha256:060e12e60dcd539fb18484b02f1a44ef3b50303d87497b26f60d1eb2b1a9ab50
+Deleted: sha256:060e12e60dcd539fb18484b02f1a44ef3b50303d87497b26f60d1eb2b1a9ab50
+reference_and_manifest_digest_absent=true
+remove_exact_image=platform-worker reference=ops.local/task27/platform-worker@sha256:435ee8bc7dca3b90ed63747b063be0b5432c279db425b60ba53948d1ca227f35
+Untagged: ops.local/task27/platform-worker@sha256:435ee8bc7dca3b90ed63747b063be0b5432c279db425b60ba53948d1ca227f35
+Deleted: sha256:435ee8bc7dca3b90ed63747b063be0b5432c279db425b60ba53948d1ca227f35
+reference_and_manifest_digest_absent=true
+selected_bundle_images_absent=true count=6
+
+=== explicit offline core install and clean reinstall live acceptance ===
+command=env -u OPS_KUBEVIRT_ORBSTACK_POC GOPROXY=off GOSUMDB=off OPS_OFFLINE_CORE_INSTALL=1 OPS_OFFLINE_BUNDLE_DIR=<r5-bundle> OPS_OFFLINE_TRUST_KEY=<external-public-key> OPS_OFFLINE_RESOLVED_PROFILE=<resolved-profile> OPS_OFFLINE_OPENBAO_CA_FILE=<external-bootstrap-ca> go test ./test/e2e -run ^TestCoreOfflineInstallation$ -count=1 -timeout=20m -v
+=== RUN   TestCoreOfflineInstallation
+    offline_install_test.go:50: resolved core profile accepted: id=dev-orbstack-arm64 architecture=arm64 server=v1.35.6+orb1 cluster_uid=607d16b7-8684-491b-bca8-be31264b371e
+    offline_install_test.go:99: signed Bundle verified: id=task27-core-arm64-20260929-r5 architecture=linux/arm64 payload_digest=sha256:12e1e8f8b16c2d061a8daad302520bb7fec931bdd3788541ead498d9b4eea38b files=66 max_bytes=3593486674
+    offline_install_test.go:103: OpenBao initialized/unsealed/version health check failed: <nil>
+--- FAIL: TestCoreOfflineInstallation (10.85s)
+FAIL
+FAIL	ops-platform/test/e2e	11.398s
+FAIL
+live_test_exit_code=1
+
+=== external OpenBao unseal using share index 0 (recovery file path omitted) ===
+{
+  "state": "sealed",
+  "initialized": true,
+  "sealed": true,
+  "threshold": 2,
+  "shares": 3,
+  "progress": 1,
+  "version": "2.7.0"
+}
+
+=== external OpenBao unseal using share index 1 (recovery file path omitted) ===
+{
+  "state": "ready",
+  "initialized": true,
+  "sealed": false,
+  "threshold": 2,
+  "shares": 3,
+  "progress": 0,
+  "version": "2.7.0"
+}
+
+=== external OpenBao post-unseal status ===
+{
+  "state": "ready",
+  "initialized": true,
+  "sealed": false,
+  "threshold": 2,
+  "shares": 3,
+  "progress": 0,
+  "version": "2.7.0",
+  "detail": "configuration not verified; pass --recovery-file to check drift"
+}
+
+=== explicit offline core install and clean reinstall live acceptance, attempt 2 ===
+command=env -u OPS_KUBEVIRT_ORBSTACK_POC GOPROXY=off GOSUMDB=off OPS_OFFLINE_CORE_INSTALL=1 OPS_OFFLINE_BUNDLE_DIR=<r5-bundle> OPS_OFFLINE_TRUST_KEY=<external-public-key> OPS_OFFLINE_RESOLVED_PROFILE=<resolved-profile> OPS_OFFLINE_OPENBAO_CA_FILE=<external-bootstrap-ca> go test ./test/e2e -run ^TestCoreOfflineInstallation$ -count=1 -timeout=20m -v
+=== RUN   TestCoreOfflineInstallation
+    offline_install_test.go:50: resolved core profile accepted: id=dev-orbstack-arm64 architecture=arm64 server=v1.35.6+orb1 cluster_uid=607d16b7-8684-491b-bca8-be31264b371e
+    offline_install_test.go:99: signed Bundle verified: id=task27-core-arm64-20260929-r5 architecture=linux/arm64 payload_digest=sha256:12e1e8f8b16c2d061a8daad302520bb7fec931bdd3788541ead498d9b4eea38b files=66 max_bytes=3593486674
+    offline_install_test.go:121: empty-cache precondition passed for 6 selected images: keycloak=quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c, platform-api=ops.local/task27/platform-api@sha256:060e12e60dcd539fb18484b02f1a44ef3b50303d87497b26f60d1eb2b1a9ab50, platform-worker=ops.local/task27/platform-worker@sha256:435ee8bc7dca3b90ed63747b063be0b5432c279db425b60ba53948d1ca227f35, postgresql=docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257, seaweedfs=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e, vmalert=docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+    offline_install_test.go:130: signed Bundle imported offline through orbstack_shared_store
+    offline_install_test.go:134: core capabilities passed: SQL, OIDC discovery/JWKS, authenticated S3 object round-trip, Victoria source APIs, unsealed TLS-verified OpenBao
+    offline_install_test.go:135: initial offline core install and health/capability checks passed
+    offline_install_test.go:139: protected resource identities unchanged: /PersistentVolumeClaim/data-ops-openbao-0=c6d6fd30-b259-4edd-ab4d-457a86c9680f, /PersistentVolumeClaim/data-ops-postgresql-0=fa694502-a948-4fa7-b072-46eb2f4ce8bb, /PersistentVolumeClaim/data-ops-seaweedfs-0=cacf92e6-8352-47e0-913c-4f9ff641eb34, /PersistentVolumeClaim/vmsingle-vm=75f11b01-15be-41b1-bda0-c450a455a4a0, monitoring/Deployment/victoria-logs=20b96ff3-9472-4380-87bb-b99f08d800e4, monitoring/Deployment/vm-kube-state-metrics=7c5e3e5e-de0d-47f6-90bf-13fe0e928b0f, monitoring/Deployment/vm-victoria-metrics-operator=0767d700-d98b-48cf-81cc-93682d75056c, monitoring/Deployment/vmagent-vm=e694476a-e6cf-40b2-9d1c-75781c380ec2, monitoring/Deployment/vmsingle-vm=d2e9c396-647f-441a-b609-04e08be956cf, monitoring/Pod/victoria-logs-85d7d5c6d6-kh4x9=0758c194-d2d2-4785-9eff-e94baa3b02c8, monitoring/Pod/vlagent-hmvs5=14381f04-32fc-4661-95cf-8740b8d748e2, monitoring/Pod/vm-kube-state-metrics-6bdf7ddb76-c56qg=675261a5-8cf9-4267-b9c3-437a09db9959, monitoring/Pod/vm-prometheus-node-exporter-gp8pq=35cd51b3-3ca2-4b38-9248-5324a3f704e7, monitoring/Pod/vm-victoria-metrics-operator-6bb5dfbf4c-98p2t=c17a8497-c9d6-4cdb-a0dd-060c3f67035b, monitoring/Pod/vmagent-vm-85dff8857d-d5cgk=78b0a448-308b-44ec-9fb7-9251c6d9b7e7, monitoring/Pod/vmsingle-vm-5bb9646995-znljh=c1663ed0-2425-40df-9fd5-b70f31e8df91, monitoring/Service/victoria-logs=21041d8f-8b02-46f7-9ab4-990b52b086d1, monitoring/Service/vm-kube-state-metrics=50356868-45c4-46f0-bb9f-dc3c92fa2e73, monitoring/Service/vm-prometheus-node-exporter=99358cc4-2bfb-4926-a8dc-1d1ba39b8d34, monitoring/Service/vm-victoria-metrics-operator=05852da6-613a-4f5d-9bce-5e1d146a267d, monitoring/Service/vmagent-vm=f98a30f6-40c5-4f8c-b1b6-597c2d4ac163, monitoring/Service/vmsingle-vm=1b829aba-c6a2-4df6-a44f-c40929a89881, ops-system/Pod/ops-openbao-0=90f6098c-456f-4d54-bb19-b1583effd417, ops-system/Service/ops-openbao=bb7a6f45-71ca-4cad-803f-a247d033fbc7, ops-system/StatefulSet/ops-openbao=1a23d239-7ed2-4714-bcaf-6ce673071183
+    offline_install_test.go:146: release-scoped cleanup passed for ops-dependencies,vmalert,ops-platform
+    offline_install_test.go:147: protected resource identities unchanged: /PersistentVolumeClaim/data-ops-openbao-0=c6d6fd30-b259-4edd-ab4d-457a86c9680f, /PersistentVolumeClaim/data-ops-postgresql-0=fa694502-a948-4fa7-b072-46eb2f4ce8bb, /PersistentVolumeClaim/data-ops-seaweedfs-0=cacf92e6-8352-47e0-913c-4f9ff641eb34, /PersistentVolumeClaim/vmsingle-vm=75f11b01-15be-41b1-bda0-c450a455a4a0, monitoring/Deployment/victoria-logs=20b96ff3-9472-4380-87bb-b99f08d800e4, monitoring/Deployment/vm-kube-state-metrics=7c5e3e5e-de0d-47f6-90bf-13fe0e928b0f, monitoring/Deployment/vm-victoria-metrics-operator=0767d700-d98b-48cf-81cc-93682d75056c, monitoring/Deployment/vmagent-vm=e694476a-e6cf-40b2-9d1c-75781c380ec2, monitoring/Deployment/vmsingle-vm=d2e9c396-647f-441a-b609-04e08be956cf, monitoring/Pod/victoria-logs-85d7d5c6d6-kh4x9=0758c194-d2d2-4785-9eff-e94baa3b02c8, monitoring/Pod/vlagent-hmvs5=14381f04-32fc-4661-95cf-8740b8d748e2, monitoring/Pod/vm-kube-state-metrics-6bdf7ddb76-c56qg=675261a5-8cf9-4267-b9c3-437a09db9959, monitoring/Pod/vm-prometheus-node-exporter-gp8pq=35cd51b3-3ca2-4b38-9248-5324a3f704e7, monitoring/Pod/vm-victoria-metrics-operator-6bb5dfbf4c-98p2t=c17a8497-c9d6-4cdb-a0dd-060c3f67035b, monitoring/Pod/vmagent-vm-85dff8857d-d5cgk=78b0a448-308b-44ec-9fb7-9251c6d9b7e7, monitoring/Pod/vmsingle-vm-5bb9646995-znljh=c1663ed0-2425-40df-9fd5-b70f31e8df91, monitoring/Service/victoria-logs=21041d8f-8b02-46f7-9ab4-990b52b086d1, monitoring/Service/vm-kube-state-metrics=50356868-45c4-46f0-bb9f-dc3c92fa2e73, monitoring/Service/vm-prometheus-node-exporter=99358cc4-2bfb-4926-a8dc-1d1ba39b8d34, monitoring/Service/vm-victoria-metrics-operator=05852da6-613a-4f5d-9bce-5e1d146a267d, monitoring/Service/vmagent-vm=f98a30f6-40c5-4f8c-b1b6-597c2d4ac163, monitoring/Service/vmsingle-vm=1b829aba-c6a2-4df6-a44f-c40929a89881, ops-system/Pod/ops-openbao-0=90f6098c-456f-4d54-bb19-b1583effd417, ops-system/Service/ops-openbao=bb7a6f45-71ca-4cad-803f-a247d033fbc7, ops-system/StatefulSet/ops-openbao=1a23d239-7ed2-4714-bcaf-6ce673071183
+    offline_install_test.go:150: core capabilities passed: SQL, OIDC discovery/JWKS, authenticated S3 object round-trip, Victoria source APIs, unsealed TLS-verified OpenBao
+    offline_install_test.go:151: clean reinstall and post-reinstall health/capability checks passed
+    offline_install_test.go:152: in-cluster egress probe passed: internal DNS reachable; public IPv4/IPv6 TCP destinations denied
+    offline_install_test.go:153: protected resource identities unchanged: /PersistentVolumeClaim/data-ops-openbao-0=c6d6fd30-b259-4edd-ab4d-457a86c9680f, /PersistentVolumeClaim/data-ops-postgresql-0=fa694502-a948-4fa7-b072-46eb2f4ce8bb, /PersistentVolumeClaim/data-ops-seaweedfs-0=cacf92e6-8352-47e0-913c-4f9ff641eb34, /PersistentVolumeClaim/vmsingle-vm=75f11b01-15be-41b1-bda0-c450a455a4a0, monitoring/Deployment/victoria-logs=20b96ff3-9472-4380-87bb-b99f08d800e4, monitoring/Deployment/vm-kube-state-metrics=7c5e3e5e-de0d-47f6-90bf-13fe0e928b0f, monitoring/Deployment/vm-victoria-metrics-operator=0767d700-d98b-48cf-81cc-93682d75056c, monitoring/Deployment/vmagent-vm=e694476a-e6cf-40b2-9d1c-75781c380ec2, monitoring/Deployment/vmsingle-vm=d2e9c396-647f-441a-b609-04e08be956cf, monitoring/Pod/victoria-logs-85d7d5c6d6-kh4x9=0758c194-d2d2-4785-9eff-e94baa3b02c8, monitoring/Pod/vlagent-hmvs5=14381f04-32fc-4661-95cf-8740b8d748e2, monitoring/Pod/vm-kube-state-metrics-6bdf7ddb76-c56qg=675261a5-8cf9-4267-b9c3-437a09db9959, monitoring/Pod/vm-prometheus-node-exporter-gp8pq=35cd51b3-3ca2-4b38-9248-5324a3f704e7, monitoring/Pod/vm-victoria-metrics-operator-6bb5dfbf4c-98p2t=c17a8497-c9d6-4cdb-a0dd-060c3f67035b, monitoring/Pod/vmagent-vm-85dff8857d-d5cgk=78b0a448-308b-44ec-9fb7-9251c6d9b7e7, monitoring/Pod/vmsingle-vm-5bb9646995-znljh=c1663ed0-2425-40df-9fd5-b70f31e8df91, monitoring/Service/victoria-logs=21041d8f-8b02-46f7-9ab4-990b52b086d1, monitoring/Service/vm-kube-state-metrics=50356868-45c4-46f0-bb9f-dc3c92fa2e73, monitoring/Service/vm-prometheus-node-exporter=99358cc4-2bfb-4926-a8dc-1d1ba39b8d34, monitoring/Service/vm-victoria-metrics-operator=05852da6-613a-4f5d-9bce-5e1d146a267d, monitoring/Service/vmagent-vm=f98a30f6-40c5-4f8c-b1b6-597c2d4ac163, monitoring/Service/vmsingle-vm=1b829aba-c6a2-4df6-a44f-c40929a89881, ops-system/Pod/ops-openbao-0=90f6098c-456f-4d54-bb19-b1583effd417, ops-system/Service/ops-openbao=bb7a6f45-71ca-4cad-803f-a247d033fbc7, ops-system/StatefulSet/ops-openbao=1a23d239-7ed2-4714-bcaf-6ce673071183
+    offline_install_test.go:155: Task 2.7 live offline installation acceptance passed
+--- PASS: TestCoreOfflineInstallation (199.74s)
+PASS
+ok  	ops-platform/test/e2e	200.478s
+live_test_attempt2_exit_code=0
+
+=== read-only post-run cluster snapshot ===
+captured=2026-09-29 20:41 Asia/Shanghai
+
+Post-run Helm releases:
+$ helm list -A -o json
+[{"name":"holmes","namespace":"holmes","revision":"2","updated":"2026-09-25 13:34:45.12296 +0800 CST","status":"deployed","chart":"holmes-0.0.1","app_version":"0.0.0"},{"name":"ops-core","namespace":"ops-system","revision":"2","updated":"2026-09-27 19:36:41.738308 +0800 CST","status":"deployed","chart":"ops-dependencies-0.1.0","app_version":"1.0.0"},{"name":"ops-dependencies","namespace":"ops-system","revision":"1","updated":"2026-09-29 20:39:39.608397 +0800 CST","status":"deployed","chart":"ops-dependencies-0.1.0","app_version":"1.0.0"},{"name":"ops-platform","namespace":"ops-system","revision":"2","updated":"2026-09-29 20:40:34.064159 +0800 CST","status":"deployed","chart":"ops-platform-0.1.0","app_version":"1.0.0"},{"name":"vm","namespace":"monitoring","revision":"1","updated":"2026-09-25 13:16:38.916231 +0800 CST","status":"deployed","chart":"victoria-metrics-k8s-stack-0.45.0","app_version":"v1.116.0"},{"name":"vmalert","namespace":"ops-system","revision":"1","updated":"2026-09-29 20:40:15.839284 +0800 CST","status":"deployed","chart":"victoria-metrics-alert-0.18.0","app_version":"v1.116.0"}]
+
+Post-run protected PVC identities:
+$ kubectl get pvc -A -o custom-columns=NS:.metadata.namespace,NAME:.metadata.name,UID:.metadata.uid,STATUS:.status.phase,VOLUME:.spec.volumeName
+NS           NAME                    UID                                    STATUS   VOLUME
+monitoring   vmsingle-vm             75f11b01-15be-41b1-bda0-c450a455a4a0   Bound    pvc-75f11b01-15be-41b1-bda0-c450a455a4a0
+ops-system   data-ops-openbao-0      c6d6fd30-b259-4edd-ab4d-457a86c9680f   Bound    pvc-c6d6fd30-b259-4edd-ab4d-457a86c9680f
+ops-system   data-ops-postgresql-0   fa694502-a948-4fa7-b072-46eb2f4ce8bb   Bound    pvc-fa694502-a948-4fa7-b072-46eb2f4ce8bb
+ops-system   data-ops-seaweedfs-0    cacf92e6-8352-47e0-913c-4f9ff641eb34   Bound    pvc-cacf92e6-8352-47e0-913c-4f9ff641eb34
+
+Post-run ops-system Pods:
+$ kubectl get pods -n ops-system -o wide
+NAME                            READY   STATUS    RESTARTS        AGE     IP               NODE       NOMINATED NODE   READINESS GATES
+ops-api-64f56f8567-qxjvb        1/1     Running   0               88s     192.168.194.34   orbstack   <none>           <none>
+ops-keycloak-598f6b66d4-f9z9j   1/1     Running   0               2m23s   192.168.194.29   orbstack   <none>           <none>
+ops-openbao-0                   1/1     Running   7 (7h32m ago)   2d1h    192.168.194.12   orbstack   <none>           <none>
+ops-postgresql-0                1/1     Running   0               2m23s   192.168.194.30   orbstack   <none>           <none>
+ops-seaweedfs-0                 1/1     Running   0               2m23s   192.168.194.31   orbstack   <none>           <none>
+ops-vmalert-5b48cd5f47-rfgn6    1/1     Running   0               106s    192.168.194.32   orbstack   <none>           <none>
+ops-worker-59c9588678-4cs47     1/1     Running   0               88s     192.168.194.33   orbstack   <none>           <none>
+
+Post-run monitoring Pods:
+$ kubectl get pods -n monitoring -o wide
+NAME                                            READY   STATUS    RESTARTS         AGE    IP               NODE       NOMINATED NODE   READINESS GATES
+victoria-logs-85d7d5c6d6-kh4x9                  1/1     Running   10 (7h32m ago)   4d7h   192.168.194.9    orbstack   <none>           <none>
+vlagent-hmvs5                                   1/1     Running   10 (7h32m ago)   4d7h   192.168.194.16   orbstack   <none>           <none>
+vm-kube-state-metrics-6bdf7ddb76-c56qg          1/1     Running   10 (7h32m ago)   4d7h   192.168.194.17   orbstack   <none>           <none>
+vm-prometheus-node-exporter-gp8pq               1/1     Running   10 (7h32m ago)   4d7h   192.168.139.2    orbstack   <none>           <none>
+vm-victoria-metrics-operator-6bb5dfbf4c-98p2t   1/1     Running   10 (7h32m ago)   4d7h   192.168.194.15   orbstack   <none>           <none>
+vmagent-vm-85dff8857d-d5cgk                     2/2     Running   20 (7h32m ago)   4d7h   192.168.194.14   orbstack   <none>           <none>
+vmsingle-vm-5bb9646995-znljh                    1/1     Running   10 (7h32m ago)   4d7h   192.168.194.11   orbstack   <none>           <none>
+
+Post-run core NetworkPolicies:
+$ kubectl get networkpolicy -n ops-system -o wide
+NAME                                  POD-SELECTOR                                                                                                                                                                                                                AGE
+ops-allow-internal-platform-traffic   ops.platform.io/component in (api,command-runner,investigator,keycloak,openbao,postgresql,seaweedfs,victoria-logs,victoria-metrics,vmalert,web,worker),ops.platform.io/release in (ops-dependencies,ops-platform,vmalert)   2m32s
+ops-default-deny                      ops.platform.io/component in (api,command-runner,investigator,keycloak,openbao,postgresql,seaweedfs,victoria-logs,victoria-metrics,vmalert,web,worker),ops.platform.io/release in (ops-dependencies,ops-platform,vmalert)   2m32s
+
+post-run interpretation: task releases ops-dependencies, ops-platform and vmalert are deployed; pre-existing ops-core, holmes and vm releases remain deployed. Protected PVCs remain Bound with the recorded pre-run UIDs. Monitoring and OpenBao Pods remain present.
+
+Actual successful replay invocation (local paths are public key, profile, Bundle and CA files only):
+cwd=/tmp/ops-sp02-acceptance-f3ef3c4
+env -u OPS_KUBEVIRT_ORBSTACK_POC GOPROXY=off GOSUMDB=off OPS_OFFLINE_CORE_INSTALL=1 OPS_OFFLINE_BUNDLE_DIR=/Users/mssc/Documents/Code/ops/platform/artifacts/bundles/task27-core-arm64-r5 OPS_OFFLINE_TRUST_KEY=/Users/mssc/.local/share/ops-platform/task-2.7-core/bundle-trust-public.pem OPS_OFFLINE_RESOLVED_PROFILE=/Users/mssc/Documents/Code/ops/platform/artifacts/profiles/task-2.7-qualified-resolved.yaml OPS_OFFLINE_OPENBAO_CA_FILE=/Users/mssc/.local/share/ops-platform/task-2.3-openbao/bootstrap-ca.pem go test ./test/e2e -run '^TestCoreOfflineInstallation$' -count=1 -timeout=20m -v

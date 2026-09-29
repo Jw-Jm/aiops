@@ -345,3 +345,33 @@ every protocol and destination has been audited.
   profile. It does not qualify production HA or general Kubernetes
   compatibility. KubeVirt/CDI development and VM lifecycle acceptance remain
   deferred and unverified.
+
+## Accepted source-bound replay (2026-09-29)
+
+- The offline install/reinstall acceptance was replayed from clean source
+  commit `f3ef3c4949cd24ac669a3c5c642d832a0cbd6e3a` after the contract test was
+  made self-contained. The source snapshot's component catalog SHA-256 is
+  `c481983181ae9ddd51a916f595f41f8fe48d6820749548dc5e44469e4d780700`; the
+  resolved Profile, Bundle lock and Bundle payload digests are recorded with
+  the command output in
+  `artifacts/test-reports/task-2.7-live-core-r5-replay.log`.
+- The first replay attempt exited 1 before Bundle import or cluster changes
+  because the pre-existing OpenBao instance was sealed after its prior restart.
+  It was unsealed through the documented external recovery workflow; recovery
+  material was not recorded. The second attempt used the same source, resolved
+  Profile, signed Bundle and independently supplied trust root and exited 0
+  (`TestCoreOfflineInstallation`, 200.478 seconds).
+- The successful run verified all six selected image references absent before
+  import, verified the signed Bundle, imported without pull fallback, passed
+  SQL/OIDC/S3/Victoria/OpenBao checks, completed release-scoped cleanup and
+  clean reinstall, and passed internal DNS plus public IPv4/IPv6 TCP denial
+  probes. Its post-run snapshot confirms `ops-dependencies`, `ops-platform`
+  and `vmalert` deployed; pre-existing `ops-core`, `holmes` and `vm` remained
+  deployed; and all protected PVC UIDs remained unchanged. See the raw,
+  post-run-bound evidence log above for the full command, exit code and object
+  identities. Its recorded SHA-256 is
+  `e084099d0d77d92995079dafdcc6f160ef2d8102954dfd251b80eea39fff6f41`.
+- `make check-toolchain`, `make check-generated` and `make check` passed on the
+  same clean source snapshot. This replay covers only the OrbStack arm64
+  development Profile; production HA and general Kubernetes compatibility
+  remain unverified. KubeVirt/CDI remain deferred and unverified under ADR-0008.
