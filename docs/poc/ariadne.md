@@ -29,3 +29,38 @@ The separate adapter PoC in `test/fixtures/upstream-graph/ariadne-ontology-adapt
 The earlier mixed fixture and `upstream_graph_test.go` are preserved as prior work. This acceptance used only the non-virtual fixture. KubeVirt/CDI relation adaptation remains deferred under ADR-0008 and is unverified.
 
 Ariadne remains `candidate`; it is not selected by the core Profile or admitted to the Bundle. Task 2.8 has established a replayable, test-only route for the non-virtual graph and ontology baseline. Runtime graph construction, durable tenant/cluster routing, production TTL and failure handling, and the SP-04 service remain outside this PoC.
+
+## Executable non-virtual replay
+
+`TestGraphNonVirtualUpstreamReplay` in `test/contract/graph_replay_test.go`
+reconstructs both frozen commits with `git archive`, checks archive and selected
+file hashes, applies the locked ontology patch, and runs a newly compiled
+20,000-object test binary and the upstream ontology graph/diagnostic tests in
+the digest-locked Linux arm64 Go container. Both containers use the explicit
+OrbStack context, `--network none`, `--pull=never`, read-only source/module
+mounts and dropped capabilities. No cluster resources or virtual fixtures are
+used. The source checkouts and module cache must already be available; there is
+no download fallback.
+
+```sh
+OPS_GRAPH_REPLAY=1 OPS_GRAPH_SOURCE_DIR=/absolute/prepared/upstream \
+GOPROXY=off GOSUMDB=off \
+go test ./test/contract -run '^TestGraphNonVirtual(ReplayIsLocked|UpstreamReplay)$' \
+  -count=1 -timeout=20m -v
+```
+
+The source directory must contain the `ariadne` and `kubernetes-ontology` Git
+repositories with the frozen commits. `OPS_GRAPH_MODULE_CACHE` can point to a
+prepared read-only module cache; otherwise the active Go module cache is used.
+The default suite checks the locks and skips this explicitly requested replay.
+
+## Exit conditions
+
+Retain the frozen version while its licensed source and conformance results
+remain valid. Any proposed replacement must pass the same owner/selector,
+storage, update/removal, isolated-instance and 20,000-object tests before
+changing the reuse lock. Failure to preserve bounded queries, stale-edge
+removal or tenant/cluster isolation stops the affected Task 4.3/5.5 work and
+requires an ADR with the failing input and upstream evidence. It does not
+authorize a platform graph engine or a second adjacency store. Public graph
+contracts remain platform-owned during that decision.

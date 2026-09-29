@@ -1,0 +1,90 @@
+OPS_GRAPH_REPLAY=1 OPS_GRAPH_SOURCE_DIR=/tmp/ops-sp02-upstream GOPROXY=off GOSUMDB=off
+command: go test ./test/contract -run ^TestGraphNonVirtual(ReplayIsLocked|UpstreamReplay)$ -count=1 -timeout=20m -v
+=== RUN   TestGraphNonVirtualReplayIsLocked
+--- PASS: TestGraphNonVirtualReplayIsLocked (0.00s)
+=== RUN   TestGraphNonVirtualUpstreamReplay
+    graph_replay_test.go:97: command=go ["version"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:97: go version go1.27.1 darwin/arm64
+    graph_replay_test.go:101: command=go ["env" "GOMODCACHE"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:101: /Users/mssc/go/pkg/mod
+    graph_replay_test.go:114: command=git ["-C" "/tmp/ops-sp02-upstream/ariadne" "archive" "--format=tar" "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001/ariadne.tar" "fa2232ce45c4c869e47ddae1c57e8886830cfb6c"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:114:
+    graph_replay_test.go:122: command=tar ["-xf" "/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001/ariadne.tar" "-C" "/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001/ariadne"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:122:
+    graph_replay_test.go:114: command=git ["-C" "/tmp/ops-sp02-upstream/kubernetes-ontology" "archive" "--format=tar" "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001/ontology.tar" "346236312685a2e2e824c46b9ecdb3e8e8a10c76"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:114:
+    graph_replay_test.go:122: command=tar ["-xf" "/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001/ontology.tar" "-C" "/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001/ontology"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:122:
+    graph_replay_test.go:129: command=git ["apply" "--unidiff-zero" "/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-graph/ontology-ariadne-reader.patch"] cwd=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001/ontology
+    graph_replay_test.go:129:
+    graph_replay_test.go:146: command=go ["test" "-c" "-o" "/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001/graph.test"] cwd=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001/graph
+    graph_replay_test.go:146:
+    graph_replay_test.go:155: command=docker ["--context" "orbstack" "run" "--rm" "--network" "none" "--pull=never" "--read-only" "--cap-drop=ALL" "--security-opt=no-new-privileges" "--tmpfs" "/tmp:rw,exec,mode=1777" "--mount" "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001,dst=/replay,readonly" "--mount" "type=bind,src=/Users/mssc/go/pkg/mod,dst=/go/pkg/mod,readonly" "-e" "GOPROXY=off" "-e" "GOSUMDB=off" "-e" "GOCACHE=/tmp/go-build" "-w" "/replay/graph/run" "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414" "/replay/graph.test" "-test.run=^TestAriadneNonVirtualGolden20K$" "-test.v" "-test.count=1"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:155: === RUN   TestAriadneNonVirtualGolden20K
+            graph_test.go:35: build_objects=18.284854ms
+            graph_test.go:52: graph_load=16.320225447s
+        --- PASS: TestAriadneNonVirtualGolden20K (16.37s)
+        PASS
+    graph_replay_test.go:157: command=docker ["--context" "orbstack" "run" "--rm" "--network" "none" "--pull=never" "--read-only" "--cap-drop=ALL" "--security-opt=no-new-privileges" "--tmpfs" "/tmp:rw,exec,mode=1777" "--mount" "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay4171370055/001,dst=/replay,readonly" "--mount" "type=bind,src=/Users/mssc/go/pkg/mod,dst=/go/pkg/mod,readonly" "-e" "GOPROXY=off" "-e" "GOSUMDB=off" "-e" "GOCACHE=/tmp/go-build" "-w" "/replay/ontology" "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414" "go" "test" "-mod=readonly" "-p" "1" "-count=1" "-v" "./internal/graph" "./internal/service/diagnostic"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:157: === RUN   TestBuilderBuild
+        --- PASS: TestBuilderBuild (0.00s)
+        === RUN   TestBuilderBuildsRoutingPolicyAutoscalingAndAttachmentTopology
+        --- PASS: TestBuilderBuildsRoutingPolicyAutoscalingAndAttachmentTopology (0.00s)
+        === RUN   TestBuilderAddsRuntimeEvidenceFieldsAndEventNameFallback
+        --- PASS: TestBuilderAddsRuntimeEvidenceFieldsAndEventNameFallback (0.00s)
+        === RUN   TestBuilderBuildsConfiguredWorkloadOwnerChain
+        --- PASS: TestBuilderBuildsConfiguredWorkloadOwnerChain (0.00s)
+        === RUN   TestBuilderBuildsConfiguredControllerRuleEdges
+        --- PASS: TestBuilderBuildsConfiguredControllerRuleEdges (0.00s)
+        === RUN   TestBuilderBuildsRBACTopology
+        --- PASS: TestBuilderBuildsRBACTopology (0.00s)
+        === RUN   TestBuilderInfersHelmReleaseAndChartFromLabels
+        --- PASS: TestBuilderInfersHelmReleaseAndChartFromLabels (0.00s)
+        === RUN   TestKernelNeighborsUsesIndexedEdgeLookup
+        --- PASS: TestKernelNeighborsUsesIndexedEdgeLookup (0.00s)
+        === RUN   TestPodFixtureContract
+        --- PASS: TestPodFixtureContract (0.00s)
+        === RUN   TestBuilderBuildPVCToPV
+        --- PASS: TestBuilderBuildPVCToPV (0.00s)
+        === RUN   TestBuilderBuildsPVCStorageTopology
+        --- PASS: TestBuilderBuildsPVCStorageTopology (0.00s)
+        === RUN   TestBuilderDoesNotSynthesizeCSIDriverForNonCSIProvisioner
+        --- PASS: TestBuilderDoesNotSynthesizeCSIDriverForNonCSIProvisioner (0.00s)
+        === RUN   TestBuilderUsesConfiguredCSIComponentRule
+        --- PASS: TestBuilderUsesConfiguredCSIComponentRule (0.00s)
+        === RUN   TestBuilderScopesPVCSINodeAgentToConsumingPodNode
+        --- PASS: TestBuilderScopesPVCSINodeAgentToConsumingPodNode (0.00s)
+        PASS
+        ok  	github.com/Colvin-Y/kubernetes-ontology/internal/graph	0.006s
+        === RUN   TestAriadneBacksOntologyDiagnosticServiceWithoutSecondIndex
+        --- PASS: TestAriadneBacksOntologyDiagnosticServiceWithoutSecondIndex (0.00s)
+        === RUN   TestGetDiagnosticSubgraphRespectsMaxDepth
+        --- PASS: TestGetDiagnosticSubgraphRespectsMaxDepth (0.00s)
+        === RUN   TestGetDiagnosticSubgraph
+        --- PASS: TestGetDiagnosticSubgraph (0.00s)
+        === RUN   TestGetDiagnosticSubgraphByPodFindsCanonicalEntry
+        --- PASS: TestGetDiagnosticSubgraphByPodFindsCanonicalEntry (0.00s)
+        === RUN   TestGetDiagnosticSubgraphTraversesStorageClassAndCSIDriver
+        --- PASS: TestGetDiagnosticSubgraphTraversesStorageClassAndCSIDriver (0.00s)
+        === RUN   TestGetDiagnosticSubgraphScopesCSINodeAgentsForPodStoragePath
+        --- PASS: TestGetDiagnosticSubgraphScopesCSINodeAgentsForPodStoragePath (0.00s)
+        === RUN   TestGetDiagnosticSubgraphReturnsPartialWhenNodeBudgetExceeded
+        --- PASS: TestGetDiagnosticSubgraphReturnsPartialWhenNodeBudgetExceeded (0.00s)
+        === RUN   TestGetDiagnosticSubgraphReturnsPartialWhenEdgeBudgetExceeded
+        --- PASS: TestGetDiagnosticSubgraphReturnsPartialWhenEdgeBudgetExceeded (0.00s)
+        === RUN   TestGetDiagnosticSubgraphRanksEventEvidence
+        --- PASS: TestGetDiagnosticSubgraphRanksEventEvidence (0.00s)
+        === RUN   TestGetDiagnosticSubgraphForHelmReleaseIncludesOwnedResourcesAndChart
+        --- PASS: TestGetDiagnosticSubgraphForHelmReleaseIncludesOwnedResourcesAndChart (0.00s)
+        === RUN   TestGetDiagnosticSubgraphReportsHelmOwnershipConflicts
+        --- PASS: TestGetDiagnosticSubgraphReportsHelmOwnershipConflicts (0.00s)
+        === RUN   TestDefaultExpansionStopsAtTerminalSharedNodes
+        --- PASS: TestDefaultExpansionStopsAtTerminalSharedNodes (0.00s)
+        === RUN   TestExpansionCanTraverseTerminalNodes
+        --- PASS: TestExpansionCanTraverseTerminalNodes (0.00s)
+        PASS
+        ok  	github.com/Colvin-Y/kubernetes-ontology/internal/service/diagnostic	0.005s
+--- PASS: TestGraphNonVirtualUpstreamReplay (68.57s)
+PASS
+ok  	ops-platform/test/contract	69.407s
+exit_code=0

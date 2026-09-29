@@ -37,3 +37,33 @@ The projection normalizes upstream relation names and provenance labels, supplie
 The ontology diagnostic semantics pass the Task 2.8 test-only adapter gate with Ariadne as the only graph index. The ontology source remains `candidate` and outside the Bundle. Production tenant routing, durable lifecycle and failure handling, production TTL, and runtime capacity qualification are still outside this baseline. This is the explicit route forward for SP-04 to consume; it does not implement SP-04.
 
 KubeVirt/CDI relations and runtime evidence remain deferred under ADR-0008 and unverified. The conformance inputs in this phase contain only non-virtual Kubernetes, storage, hardware, and DeepFlow facts.
+
+## Source replay verification (2026-09-29)
+
+The opt-in command documented in `ariadne.md` passed with exit 0 in
+`artifacts/test-reports/task-2.8-completion-live-v2.log` (69.407 seconds).
+It archived the exact commits, checked all selected source hashes and applied
+the unchanged, hash-locked patch with `git apply --unidiff-zero`. A first attempt
+omitted that flag and failed before compilation; its output remains in
+`task-2.8-completion-live.log`.
+Committed replay logs trim trailing whitespace only; original command output
+copies are retained at `/tmp/ops-sp02-completion-raw/` on the development host.
+
+The new Linux arm64 20,000-object run loaded the Ariadne graph in 16.320
+seconds. The ontology graph and diagnostic packages then passed their actual
+upstream tests, including Event evidence ranking, Helm ownership conflicts,
+depth/node/edge budgets and the single-Ariadne-index adapter. The container
+had no network, no image pull and no writable source or module cache. These
+results qualify the non-virtual source baseline for later adaptation; they do
+not admit the sources to the core Bundle or enable a production graph service.
+
+## Exit conditions
+
+Preserve the pinned selected semantics and the three-method reader patch until
+an upstream update passes the same diagnostic budget, evidence ranking,
+ownership-conflict and public Contract projection tests over Ariadne. Stop
+Task 4.3/5.5 if source/license evidence becomes unavailable, the patch can no
+longer compile against the locked dependency closure, or the diagnostic
+semantics cannot operate without a second graph index. Record the failing
+Fixture and an ADR; do not substitute a self-written Evidence/RCA core or
+claim a reference-only implementation satisfies the reuse requirement.

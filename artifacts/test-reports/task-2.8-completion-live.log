@@ -1,0 +1,30 @@
+OPS_GRAPH_REPLAY=1 OPS_GRAPH_SOURCE_DIR=/tmp/ops-sp02-upstream GOPROXY=off GOSUMDB=off
+command: go test ./test/contract -run ^TestGraphNonVirtual(ReplayIsLocked|UpstreamReplay)$ -count=1 -timeout=20m -v
+=== RUN   TestGraphNonVirtualReplayIsLocked
+--- PASS: TestGraphNonVirtualReplayIsLocked (0.00s)
+=== RUN   TestGraphNonVirtualUpstreamReplay
+    graph_replay_test.go:97: command=go ["version"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:97: go version go1.27.1 darwin/arm64
+    graph_replay_test.go:101: command=go ["env" "GOMODCACHE"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:101: /Users/mssc/go/pkg/mod
+    graph_replay_test.go:114: command=git ["-C" "/tmp/ops-sp02-upstream/ariadne" "archive" "--format=tar" "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay3643857809/001/ariadne.tar" "fa2232ce45c4c869e47ddae1c57e8886830cfb6c"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:114:
+    graph_replay_test.go:122: command=tar ["-xf" "/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay3643857809/001/ariadne.tar" "-C" "/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay3643857809/001/ariadne"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:122:
+    graph_replay_test.go:114: command=git ["-C" "/tmp/ops-sp02-upstream/kubernetes-ontology" "archive" "--format=tar" "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay3643857809/001/ontology.tar" "346236312685a2e2e824c46b9ecdb3e8e8a10c76"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:114:
+    graph_replay_test.go:122: command=tar ["-xf" "/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay3643857809/001/ontology.tar" "-C" "/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay3643857809/001/ontology"] cwd=/Users/mssc/Documents/Code/ops/platform
+    graph_replay_test.go:122:
+    graph_replay_test.go:129: command=git ["apply" "/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-graph/ontology-ariadne-reader.patch"] cwd=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/TestGraphNonVirtualUpstreamReplay3643857809/001/ontology
+    graph_replay_test.go:129: error: patch failed: go.mod:3
+        error: go.mod: patch does not apply
+        error: patch failed: go.sum:0
+        error: go.sum: patch does not apply
+        error: patch failed: internal/service/diagnostic/service.go:12
+        error: internal/service/diagnostic/service.go: patch does not apply
+    graph_replay_test.go:129: git: exit status 1
+--- FAIL: TestGraphNonVirtualUpstreamReplay (0.15s)
+FAIL
+FAIL	ops-platform/test/contract	0.901s
+FAIL
+exit_code=1
