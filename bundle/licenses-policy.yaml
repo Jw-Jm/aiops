@@ -1,6 +1,58 @@
 schemaVersion: 1
 unknownLicenseAction: reject
 pendingLicenseState: candidate-only
+licenseExpressions:
+  grammar: "reviewed SPDX identifiers with parentheses, AND, OR and explicitly paired WITH exceptions"
+  unknownIdentifierAction: reject
+  acceptedExceptions:
+    Classpath-exception-2.0: [GPL-2.0-only, GPL-2.0-or-later]
+    Universal-FOSS-exception-1.0: [GPL-2.0-only]
+    GCC-exception-2.0: [GPL-2.0-only, GPL-2.0-or-later, LGPL-2.1-or-later]
+    GCC-exception-3.1: [GPL-3.0-only, GPL-3.0-or-later]
+    LLVM-exception: [Apache-2.0]
+    Linux-syscall-note: [GPL-2.0-only]
+reviewedNativeScopes:
+  registry: internal/supplychain/licenses/native-core-reviewed.json
+  decision: docs/adr/0010-core-image-license-admission.md
+  use: file-and-native-dependency-only
+  requires: [exact-image, component-version, native-package-version, source-checksum, corresponding-source-bundle, original-notice-checksum, accepted-ADR-checksum]
+  unregisteredReferenceAction: reject
+  automaticScannerAdmission: false
+additionalReviewedStandardLicenses:
+  - BSD-2-Clause-Views
+  - BSD-4-Clause
+  - MIT-0
+  - CC0-1.0
+  - Unicode-DFS-2016
+  - Zlib
+  - curl
+  - NCSA
+  - Artistic-1.0
+  - Artistic-2.0
+  - BSL-1.0
+  - OLDAP-2.8
+  - X11
+  - MS-PL
+  - FSFAP
+additionalSourceObligationLicenses:
+  - id: LGPL-2.0-only
+    requiresSpecialADR: true
+  - id: LGPL-2.0-or-later
+    requiresSpecialADR: true
+  - id: LGPL-2.1-only
+    requiresSpecialADR: true
+  - id: LGPL-2.1-or-later
+    requiresSpecialADR: true
+  - id: LGPL-3.0-only
+    requiresSpecialADR: true
+  - id: LGPL-3.0-or-later
+    requiresSpecialADR: true
+  - id: EPL-1.0
+    requiresSpecialADR: true
+  - id: EPL-2.0
+    requiresSpecialADR: true
+  - id: Sleepycat
+    requiresSpecialADR: true
 sourceSnapshotRequirements:
   - selected-source-sha256
   - upstream-commit
@@ -8,6 +60,8 @@ sourceSnapshotRequirements:
   - patch-inventory
   - transitive-dependency-license-closure
 permissiveLicenses:
+  - id: PostgreSQL
+    obligations: [include-license-text, preserve-copyright]
   - id: Apache-2.0
     obligations: [include-license-text, preserve-copyright, preserve-notices]
   - id: MIT

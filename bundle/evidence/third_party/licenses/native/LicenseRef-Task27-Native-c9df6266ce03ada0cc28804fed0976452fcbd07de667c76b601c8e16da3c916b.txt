@@ -1,0 +1,1317 @@
+
+===== Original publisher notice: source-rpm/crypto-policies.spec =====
+%global git_date 20260224
+%global git_commit ea0f072d4d1a138885a75230792417ceb6f44e6b
+%{?git_commit:%global git_commit_hash %(c=%{git_commit}; echo ${c:0:7})}
+
+%global _python_bytecompile_extra 0
+
+Name:           crypto-policies
+Version:        %{git_date}
+Release:        1.git%{git_commit_hash}%{?dist}
+Summary:        System-wide crypto policies
+
+License:        LGPL-2.1-or-later
+URL:            https://gitlab.com/redhat-crypto/fedora-crypto-policies
+# For RHEL-9 we use the upstream branch rhel9.
+Source0:        https://gitlab.com/redhat-crypto/fedora-crypto-policies/-/archive/%{git_commit_hash}/%{name}-git%{git_commit_hash}.tar.gz
+
+BuildArch: noarch
+BuildRequires: asciidoc
+BuildRequires: libxslt
+BuildRequires: openssl
+BuildRequires: nss-tools
+BuildRequires: gnutls-utils
+BuildRequires: openssh-clients
+BuildRequires: java-devel
+BuildRequires: bind
+BuildRequires: python3-devel >= 3.9
+BuildRequires: python3-pytest
+BuildRequires: make
+
+Conflicts: openssl-libs < 1:3.0.1-10
+Conflicts: nss < 3.90.0
+Conflicts: libreswan < 3.28
+Conflicts: openssh < 9.9p1-4.el9
+Conflicts: gnutls < 3.8.10
+
+%description
+This package provides pre-built configuration files with
+cryptographic policies for various cryptographic back-ends,
+such as SSL/TLS libraries.
+
+%package scripts
+Summary: Tool to switch between crypto policies
+Requires: %{name} = %{version}-%{release}
+Recommends: (grubby if kernel)
+Provides: fips-mode-setup = %{version}-%{release}
+
+%description scripts
+This package provides a tool update-crypto-policies, which applies
+the policies provided by the crypto-policies package. These can be
+either the pre-built policies from the base package or custom policies
+defined in simple policy definition files.
+
+The package also provides a tool fips-mode-setup, which can be used
+to enable or disable the system FIPS mode.
+
+%prep
+%setup -q -n fedora-crypto-policies-%{git_commit_hash}-%{git_commit}
+%autopatch -p1
+
+%build
+sed -i \
+  "s/MIN_RSA_DEFAULT = .*/MIN_RSA_DEFAULT = 'RequiredRSASize'/" \
+  python/policygenerators/openssh.py
+grep "MIN_RSA_DEFAULT = 'RequiredRSASize'" python/policygenerators/openssh.py
+
+%make_build
+
+%install
+mkdir -p -m 755 %{buildroot}%{_datarootdir}/crypto-policies/
+mkdir -p -m 755 %{buildroot}%{_datarootdir}/crypto-policies/back-ends/
+mkdir -p -m 755 %{buildroot}%{_sysconfdir}/crypto-policies/back-ends/
+mkdir -p -m 755 %{buildroot}%{_sysconfdir}/crypto-policies/state/
+mkdir -p -m 755 %{buildroot}%{_sysconfdir}/crypto-policies/local.d/
+mkdir -p -m 755 %{buildroot}%{_sysconfdir}/crypto-policies/policies/
+mkdir -p -m 755 %{buildroot}%{_sysconfdir}/crypto-policies/policies/modules/
+mkdir -p -m 755 %{buildroot}%{_bindir}
+
+make DESTDIR=%{buildroot} DIR=%{_datarootdir}/crypto-policies MANDIR=%{_mandir} %{?_smp_mflags} install
+install -p -m 644 default-config %{buildroot}%{_sysconfdir}/crypto-policies/config
+touch %{buildroot}%{_sysconfdir}/crypto-policies/state/current
+touch %{buildroot}%{_sysconfdir}/crypto-policies/state/CURRENT.pol
+
+# Drop pre-generated EMPTY policy, we do not need to ship it
+rm -rf %{buildroot}%{_datarootdir}/crypto-policies/EMPTY
+
+# Create back-end configs for mounting with read-only /etc/
+for d in LEGACY DEFAULT FUTURE FIPS ; do
+    mkdir -p -m 755 %{buildroot}%{_datarootdir}/crypto-policies/back-ends/$d
+    for f in %{buildroot}%{_datarootdir}/crypto-policies/$d/* ; do
+        ln $f %{buildroot}%{_datarootdir}/crypto-policies/back-ends/$d/$(basename $f .txt).config
+    done
+done
+
+for f in %{buildroot}%{_datarootdir}/crypto-policies/DEFAULT/* ; do
+    ln -sf %{_datarootdir}/crypto-policies/DEFAULT/$(basename $f) %{buildroot}%{_sysconfdir}/crypto-policies/back-ends/$(basename $f .txt).config
+done
+
+%py_byte_compile %{__python3} %{buildroot}%{_datadir}/crypto-policies/python
+
+%check
+make test SKIP_LINTING=1
+
+%post -p <lua>
+if not posix.access("%{_sysconfdir}/crypto-policies/config") then
+    local policy = "DEFAULT"
+    local cf = io.open("/proc/sys/crypto/fips_enabled", "r")
+    if cf then
+        if cf:read() == "1" then
+            policy = "FIPS"
+        end
+        cf:close()
+    end
+    cf = io.open("%{_sysconfdir}/crypto-policies/config", "w")
+    if cf then
+        cf:write(policy.."\n")
+        cf:close()
+    end
+    cf = io.open("%{_sysconfdir}/crypto-policies/state/current", "w")
+    if cf then
+        cf:write(policy.."\n")
+        cf:close()
+    end
+    local policypath = "%{_datarootdir}/crypto-policies/"..policy
+    for fn in posix.files(policypath) do
+        if fn ~= "." and fn ~= ".." then
+            local backend = fn:gsub(".*/", ""):gsub("%%..*", "")
+            local cfgfn = "%{_sysconfdir}/crypto-policies/back-ends/"..backend..".config"
+            posix.unlink(cfgfn)
+            posix.symlink(policypath.."/"..fn, cfgfn)
+        end
+    end
+end
+
+%posttrans scripts
+%{_bindir}/update-crypto-policies --no-check >/dev/null 2>/dev/null || :
+
+
+%files
+
+%dir %{_sysconfdir}/crypto-policies/
+%dir %{_sysconfdir}/crypto-policies/back-ends/
+%dir %{_sysconfdir}/crypto-policies/state/
+%dir %{_sysconfdir}/crypto-policies/local.d/
+%dir %{_sysconfdir}/crypto-policies/policies/
+%dir %{_sysconfdir}/crypto-policies/policies/modules/
+%dir %{_datarootdir}/crypto-policies/
+
+%ghost %config(missingok,noreplace) %{_sysconfdir}/crypto-policies/config
+
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/gnutls.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/openssl.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/opensslcnf.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/openssh.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/opensshserver.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/nss.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/bind.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/java.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/javasystem.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/krb5.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/libreswan.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/libssh.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/openssl_fips.config
+%ghost %config(missingok,noreplace) %verify(not mode) %{_sysconfdir}/crypto-policies/back-ends/rpm-sequoia.config
+# %verify(not mode) comes from the fact
+# these turn into symlinks and back to regular files at will, see bz1898986
+
+%ghost %{_sysconfdir}/crypto-policies/state/current
+%ghost %{_sysconfdir}/crypto-policies/state/CURRENT.pol
+
+%{_mandir}/man7/crypto-policies.7*
+%{_datarootdir}/crypto-policies/LEGACY
+%{_datarootdir}/crypto-policies/DEFAULT
+%{_datarootdir}/crypto-policies/FUTURE
+%{_datarootdir}/crypto-policies/FIPS
+%{_datarootdir}/crypto-policies/back-ends
+%{_datarootdir}/crypto-policies/default-config
+%{_datarootdir}/crypto-policies/reload-cmds.sh
+%{_datarootdir}/crypto-policies/policies
+
+%{_libexecdir}/fips-setup-helper
+
+%license COPYING.LESSER
+
+%files scripts
+%{_bindir}/update-crypto-policies
+%{_mandir}/man8/update-crypto-policies.8*
+%{_datarootdir}/crypto-policies/python
+
+%{_bindir}/fips-mode-setup
+%{_bindir}/fips-finish-install
+%{_mandir}/man8/fips-mode-setup.8*
+%{_mandir}/man8/fips-finish-install.8*
+
+%changelog
+* Tue Feb 24 2026 Alexander Sosedkin <asosedkin@redhat.com> - 20260224-1.gitea0f072
+- openssh: enable mlkem768x25519-sha256
+
+* Wed Nov 26 2025 Alexander Sosedkin <asosedkin@redhat.com> - 20251126-1.gite9c4db2
+- gnutls: enable ML-KEM and ML-DSA
+- sequoia: register "eddsa" as an alias to EDDSA-ED25519
+
+* Fri Sep 05 2025 Alexander Sosedkin <asosedkin@redhat.com> - 20250905-1.git377cc42
+- rpm-sequoia: enable MLDSA65-ED25519 and MLDSA87-ED448 in all policies
+- rpm-sequoia: enable SHA-1 in all policies
+- rpm-sequoia: force enable all PQ algorithms for now
+
+* Mon Aug 04 2025 Alexander Sosedkin <asosedkin@redhat.com> - 20250804-1.git2c74f3d
+- nss: enable ML-KEM and ML-DSA
+
+* Mon Jul 21 2025 Alexander Sosedkin <asosedkin@redhat.com> - 20250721-1.git162e4cb
+- rpm-sequoia: add back-end
+- openssl: send one PQ and one classic key_share; prioritize PQ groups
+- policies: alias X25519-MLKEM768 to MLKEM768-X25519
+- nss: enable ED25519
+
+* Mon Jun 02 2025 Alexander Sosedkin <asosedkin@redhat.com> - 20250602-1.gita839241
+- openssl: fix mistakes in integrity-only cipher definitions
+- PQ: add a subpolicy with some post-quantum algorithms
+
+* Tue Jan 28 2025 Alexander Sosedkin <asosedkin@redhat.com> - 20250128-1.git5269e22
+- openssl: stricter enabling of Ciphersuites
+- openssl: make use of -CBC and -AESGCM keywords
+
+* Tue Sep 17 2024 Alexander Sosedkin <asosedkin@redhat.com> - 20240828-2.git626aa59
+- release bump
+
+* Wed Aug 28 2024 Alexander Sosedkin <asosedkin@redhat.com> - 20240828-1.git626aa59
+- fips-mode-setup: small Argon2 detection fix
+
+* Thu Aug 22 2024 Alexander Sosedkin <asosedkin@redhat.com> - 20240822-1.gitbaf3e06
+- fips-mode-setup: block if LUKS devices using Argon2 are detected
+
+* Thu Aug 15 2024 Alexander Sosedkin <asosedkin@redhat.com> - 20240815-1.gite217f03
+- java: start controlling / disable DTLSv1.0
+- java: disable anon ciphersuites, tying them to NULL
+- java: respect more key size restrictions
+- java: specify jdk.tls.namedGroups system property
+- java: make hash, mac and sign more orthogonal
+- fips-mode-setup: add another scary "unsupported"
+- fips-mode-setup: flashy ticking warning upon use
+- java: use and include jdk.disabled.namedCurves
+- ec_min_size: introduce and use in java, default to 256
+- java: stop specifying jdk.tls.namedGroups in javasystem
+- fips-setup-helper: add a libexec helper for anaconda
+- fips-mode-setup: force --no-bootcfg when UKI is detected
+
+* Mon Mar 04 2024 Alexander Sosedkin <asosedkin@redhat.com> - 20240304-1.gitb1c706d
+- packaging: remove perl build-dependency, it's not needed anymore
+- packaging: use newly introduced SKIP_LINTING=1
+- packaging: drop stale workarounds
+
+* Fri Feb 02 2024 Alexander Sosedkin <asosedkin@redhat.com> - 20240202-1.git283706d
+- fips-finish-install: make sure ostree is detected in chroot
+- fips-mode-setup: make sure ostree is detected in chroot
+- fips-finish-install: Create/remove /etc/system-fips on ostree systems
+- java: disable ChaCha20-Poly1305 where applicable
+
+* Mon Nov 13 2023 Clemens Lang <cllang@redhat.com> - 20231113-1.gite9247c2
+- fips-mode-setup: Fix test for empty /boot (RHEL-11350)
+- fips-mode-setup: Avoid 'boot=UUID=' if /boot == / (RHEL-11350)
+
+* Thu Nov 09 2023 Clemens Lang <cllang@redhat.com> - 20231109-1.git0ceff7f
+- Restore support for scoped ssh_etm directives (RHEL-15925)
+- Print matches in syntax deprecation warnings (RHEL-15925)
+
+* Wed Nov 08 2023 Clemens Lang <cllang@redhat.com> - 20231108-1.git994ae09
+- turn ssh_etm into an etm@SSH tri-state (RHEL-15925)
+- fips-mode-setup: increase chroot-friendliness (RHEL-11350)
+- fips-mode-setup: Fix usage with --no-bootcfg (RHEL-11350)
+
+* Mon Oct 16 2023 Alexander Sosedkin <asosedkin@redhat.com> - 20231016-1.git77ceb0b
+- openssl: fix SHA1 and NO-ENFORCE-EMS interaction
+- bind: fix a typo that led to duplication of ECDSAPxxxSHAxxx
+
+* Wed Sep 20 2023 Alexander Sosedkin <asosedkin@redhat.com> - 20230920-1.git8dcf74d
+- OSPP subpolicy: tighten beyond reason for OSPP 4.3
+- fips-mode-setup: more thorough --disable, still unsupported
+
+* Mon Jul 31 2023 Alexander Sosedkin <asosedkin@redhat.com> - 20230731-1.git94f0e2c
+- krb5: sort enctypes mac-first, cipher-second, prioritize SHA-2 ones
+- FIPS: enforce EMS in FIPS mode
+- NO-ENFORCE-EMS: add subpolicy to undo the EMS enforcement in FIPS mode
+- nss: implement EMS enforcement in FIPS mode (disabled in ELN)
+- openssl: implement EMS enforcement in FIPS mode
+- gnutls: implement EMS enforcement in FIPS mode (disabled in ELN)
+- docs: replace `FIPS 140-2` with just `FIPS 140`
+
+* Wed Jun 14 2023 Alexander Sosedkin <asosedkin@redhat.com> - 20230614-1.git027799d
+- policies: restore group order to old OpenSSL default order
+
+* Fri May 05 2023 Alexander Sosedkin <asosedkin@redhat.com> - 20230505-1.gitf69bbc2
+- openssl: set Groups explicitly
+- openssl: add support for Brainpool curves
+
+* Thu Dec 15 2022 Alexander Sosedkin <asosedkin@redhat.com> - 20221215-1.git9a18988
+- bind: expand the list of disableable algorithms
+
+* Mon Oct 03 2022 Alexander Sosedkin <asosedkin@redhat.com> - 20221003-1.git04dee29
+- openssh: rename RSAMinSize option to RequiredRSASize
+
+* Mon Aug 15 2022 Alexander Sosedkin <asosedkin@redhat.com> - 20220815-1.git0fbe86f
+- openssh: add RSAMinSize option following min_rsa_size
+
+* Wed Apr 27 2022 Alexander Sosedkin <asosedkin@redhat.com> - 20220427-1.gitb2323a1
+- bind: control ED25519/ED448
+
+* Mon Apr 04 2022 Alexander Sosedkin <asosedkin@redhat.com> - 20220404-1.git845c0c1
+- DEFAULT: drop DNSSEC SHA-1 exception
+- openssh: add support for sntrup761x25519-sha512@openssh.com
+
+* Wed Feb 23 2022 Alexander Sosedkin <asosedkin@redhat.com> - 20220223-1.git5203b41
+- openssl: allow SHA-1 signatures with rh-allow-sha1-signatures in LEGACY
+- update AD-SUPPORT, move RC4 enctype enabling to AD-SUPPORT-LEGACY
+- fips-mode-setup: catch more inconsistencies, clarify --check
+
+* Thu Feb 03 2022 Alexander Sosedkin <asosedkin@redhat.com> - 20220203-1.gitf03e75e
+- gnutls: enable SHAKE, needed for Ed448
+- fips-mode-setup: improve handling FIPS plus subpolicies
+- FIPS: disable SHA-1 HMAC
+- FIPS: disable CBC ciphers except in Kerberos
+
+* Tue Feb 01 2022 Alexander Sosedkin <asosedkin@redhat.com> - 20220201-1.git636a91d
+- openssl: revert to SECLEVEL=2 in LEGACY
+- openssl: add newlines at the end of the output
+
+* Mon Nov 15 2021 Alexander Sosedkin <asosedkin@redhat.com> - 20211115-1.git70de135
+- OSPP: relax -ECDSA-SHA2-512, -FFDHE-*
+- fips-mode-setup, fips-finish-install: call zipl more often (s390x-specific)
+
+* Wed Sep 22 2021 Alexander Sosedkin <asosedkin@redhat.com> - 20210922-1.git6fb269b
+- openssl: fix disabling ChaCha20
+- update for pylint 2.11
+
+* Tue Sep 14 2021 Alexander Sosedkin <asosedkin@redhat.com> - 20210914-1.git97d08ef
+- gnutls: reorder ECDSA-SECPMMMR1-SHANNN together with ECDSA-SHANNN
+- fix several issues with update-crypto-policies --check
+
+* Mon Aug 09 2021 Mohan Boddu <mboddu@redhat.com> - 20210707-2.git29f6c0b
+- Rebuilt for IMA sigs, glibc 2.34, aarch64 flags
+  Related: rhbz#1991688
+
+* Wed Jul 07 2021 Alexander Sosedkin <asosedkin@redhat.com> - 20210707-1.git29f6c0b
+- gnutls: explicitly enable ECDSA-SECPNNNR1-SHANNN
+- packaging: adapt to the RHEL-9 %check-time testing tools availability
+
+* Mon Jun 28 2021 Alexander Sosedkin <asosedkin@redhat.com> - 20210628-1.gitdd7d273
+- implement scoped policies, e.g., cipher@SSH = ...
+- implement algorithm globbing, e.g., cipher@SSH = -*-CBC
+- deprecate derived properties:
+  tls_cipher, ssh_cipher, ssh_group, ike_protocol, sha1_in_dnssec
+- deprecate unscoped form of protocol property
+- openssl: set MinProtocol / MaxProtocol separately for TLS and DTLS
+- openssh: use PubkeyAcceptedAlgorithms instead of PubkeyAcceptedKeyTypes
+- libssh: respect ssh_certs
+- restrict FIPS:OSPP further
+- improve Python 3.10 compatibility
+- update documentation
+- expand upstream test coverage
+- FUTURE: disable CBC ciphers for all backends but krb5
+- openssl: LEGACY must have SECLEVEL=1, enabling SHA1
+- disable DHE-DSS in LEGACY
+- bump LEGACY key size requirements from 1023 to 1024
+- add javasystem backend
+- *ssh: condition ecdh-sha2-nistp384 on SECP384R1
+- set %verify(not mode) for backend sometimes-symlinks-sometimes-not
+- gnutls: use allowlisting
+
+* Tue Jun 22 2021 Mohan Boddu <mboddu@redhat.com> - 20210218-3.git2246c55
+- Rebuilt for RHEL 9 BETA for openssl 3.0
+  Related: rhbz#1971065
+
+* Thu Apr 15 2021 Mohan Boddu <mboddu@redhat.com> - 20210218-2.git2246c55
+- Rebuilt for RHEL 9 BETA on Apr 15th 2021. Related: rhbz#1947937
+
+* Thu Feb 18 2021 Alexander Sosedkin <asosedkin@redhat.com> - 20210218-1.git2246c55
+- require 2048 bit params in LEGACY
+- require TLSv1.2/DTLSv1.2 in all policies
+- disable DSA
+- disable 3DES in LEGACY
+- drop FFDHE-1024 from LEGACY
+- drop (sub)policies we're not going to offer in RHEL-9
+
+* Sat Feb 13 2021 Alexander Sosedkin <asosedkin@redhat.com> - 20210213-1.git5c710c0
+- exclude RC4 from LEGACY
+- introduce rc4_md5_in_krb5 to narrow AD_SUPPORT's impact
+- an assortment of small fixes
+
+* Wed Jan 27 2021 Alexander Sosedkin <asosedkin@redhat.com> - 20210127-2.gitb21c811
+- fix comparison in %post lua scriptlet
+
+* Wed Jan 27 2021 Alexander Sosedkin <asosedkin@redhat.com> - 20210127-1.gitb21c811
+- don't create /etc/crypto-policies/back-ends/.config in %post
+
+* Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 20210118-2.gitb21c811
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Mon Jan 18 2021 Alexander Sosedkin <asosedkin@redhat.com> - 20210118-1.gitb21c811
+- output sigalgs required by nss >=3.59 (or 3.60 in Fedora case)
+- bump Python requirement to 3.6
+
+* Tue Dec 15 2020 Alexander Sosedkin <asosedkin@redhat.com> - 20201215-1.giteb57e00
+- Kerberos 5: Fix policy generator to account for macs
+
+* Tue Dec 08 2020 Alexander Sosedkin <asosedkin@redhat.com> - 20201208-1.git70def9f
+- add AES-192 support (non-TLS scenarios)
+- add documentation of the --check option
+
+* Wed Sep 23 2020 Tomáš Mráz <tmraz@redhat.com> - 20200918-1.git85dccc5
+- add RSA-PSK algorithm support
+- add GOST algorithms support for openssl
+- add GOST-ONLY policy and fix GOST subpolicy
+- update-crypto-policies: added --check parameter to perform
+  comparison of actual configuration files with the policy
+
+* Thu Aug 13 2020 Tomáš Mráz <tmraz@redhat.com> - 20200813-1.git66d4068
+- libreswan: enable X25519 group
+- libreswan: properly disable FFDH in ECDHE-ONLY subpolicy
+- libreswan: add generation of authby parameter based on sign property
+- libssh: Add diffie-hellman-group14-sha256
+
+* Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 20200702-2.gitc40cede
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Mon Jul 13 2020 Tomáš Mráz <tmraz@redhat.com> - 20200702-1.gitc40cede
+- OSPP subpolicy: remove AES-CCM
+- openssl: handle the AES-CCM removal properly
+- openssh/libssh: drop CBC ciphersuites from DEFAULT and FIPS
+- add AD-SUPPORT subpolicy which re-enables RC4 for Kerberos
+- gnutls: disallow X448/ED448 in FIPS policy
+- merge fips-mode-setup package into the scripts subpackage
+
+* Thu Jun 25 2020 Tomáš Mráz <tmraz@redhat.com> - 20200625-1.gitb298a9e
+- DEFAULT policy: Drop DH < 2048 bits, TLS 1.0, 1.1, SHA-1
+- make the NEXT policy just an alias for DEFAULT as they are now identical
+- policies: introduce sha1_in_dnssec value for BIND
+- add SHA1 and FEDORA32 policy modules to provide backwards compatibility
+  they can be applied as DEFAULT:SHA1 or DEFAULT:FEDORA32
+- avoid duplicates of list items in resulting policy
+
+* Wed Jun 24 2020 Tomáš Mráz <tmraz@redhat.com> - 20200619-1.git781bbd4
+- gnutls: enable DSA signatures in LEGACY
+
+* Wed Jun 10 2020 Tomáš Mráz <tmraz@redhat.com> - 20200610-1.git7f9d474
+- openssh server: new format of configuration to be loaded by config include
+- fallback to FIPS policy instead of the default-config in FIPS mode
+- java: Document properly how to override the crypto policy
+- reorder the signature algorithms to follow the order in default openssl list
+
+* Tue Jun  9 2020 Tomáš Mráz <tmraz@redhat.com> - 20200527-5.gitb234a47
+- make the post script work in environments where /proc/sys is not available
+
+* Fri May 29 2020 Tomáš Mráz <tmraz@redhat.com> - 20200527-4.gitb234a47
+- move the symlink fix-up script to post and fix it
+
+* Fri May 29 2020 Tomáš Mráz <tmraz@redhat.com> - 20200527-3.gitb234a47
+- automatically set up FIPS policy in FIPS mode on first install
+
+* Thu May 28 2020 Tomáš Mráz <tmraz@redhat.com> - 20200527-2.gitb234a47
+- require the base package from scripts subpackage
+- add Recommends for fips-mode-setup to the scripts subpackage
+
+* Wed May 27 2020 Tomáš Mráz <tmraz@redhat.com> - 20200527-1.gitb234a47
+- explicitly enable DHE-DSS in gnutls config if enabled in policy
+- use grubby with --update-kernel=ALL to avoid breaking kernelopts
+- OSPP subpolicy: Allow GCM for SSH protocol
+- openssh: Support newly standardized ECDHE-GSS and DHE-GSS key exchanges
+- if the policy in FIPS mode is not a FIPS policy print a message
+- openssl: Add SignatureAlgorithms support
+
+* Thu Mar 12 2020 Tomáš Mráz <tmraz@redhat.com> - 20200312-1.git3ae59d2
+- custom crypto policies: enable completely overriding contents of the list
+  value
+- added ECDHE-ONLY.pmod policy module example
+- openssh: make LEGACY policy to prefer strong public key algorithms
+- openssh: support FIDO/U2F (with the exception of FIPS policy)
+- gnutls: add support for GOST ciphers
+- various python code cleanups
+- update-crypto-policies: dump the current policy to
+  /etc/crypto-policies/state/CURRENT.pol
+
+* Tue Jan 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 20191128-5.gitcd267a5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Tue Jan 14 2020 Tomáš Mráz <tmraz@redhat.com> - 20191128-4.gitcd267a5
+- the base package must ship the DEFAULT policy config symlinks in case
+  the scripts package is not installed via the weak dependency
+
+* Tue Jan 07 2020 Andrew Jeddeloh <ajeddelo@redhat.com> 20191128-3.gitcd267a5
+- split scripts into their own subpackage. See
+  https://github.com/coreos/fedora-coreos-tracker/issues/280 for more details.
+
+* Mon Dec 16 2019 Tomáš Mráz <tmraz@redhat.com> - 20191128-2.gitcd267a5
+- move the pre-built .config files to /usr/share/crypto-policies/back-ends
+
+* Thu Nov 28 2019 Tomáš Mráz <tmraz@redhat.com> - 20191128-1.gitcd267a5
+- add FIPS subpolicy for OSPP
+- fips-mode-setup: do not reload daemons when changing policy
+- fips-mode-setup: gracefully handle OSTree-based systems
+- gnutls: use new configuration file format
+
+* Tue Oct 29 2019 Tomáš Mráz <tmraz@redhat.com> - 20191002-1.gitc93dc99
+- update-crypto-policies: fix handling of list operations in policy modules
+- update-crypto-policies: fix updating of the current policy marker
+- fips-mode-setup: fixes related to containers and non-root execution
+
+* Tue Sep 24 2019 Tomáš Mráz <tmraz@redhat.com> - 20190816-4.gitbb9bf99
+- add the /etc/crypto-policies/state directory
+
+* Tue Sep 10 2019 Tomáš Mráz <tmraz@redhat.com> - 20190816-3.gitbb9bf99
+- make it possible to use fips-mode-setup --check without dracut
+- add .config symlinks so a crypto policy can be set with read-only
+  /etc by bind-mounting /usr/share/crypto-policies/<policy> to
+  /etc/crypto-policies/back-ends
+
+* Mon Aug 19 2019 Tomáš Mráz <tmraz@redhat.com> - 20190816-2.gitbb9bf99
+- run the update-crypto-policies in posttrans
+- the current config should work fine with OpenSSL >= 7.9p1
+- fix the python bytecompilation
+
+* Fri Aug 16 2019 Tomáš Mráz <tmraz@redhat.com> - 20190816-1.gitbb9bf99
+- custom crypto policies support
+- openssh: Support new configuration option CASignatureAlgorithms
+- libssh: Add libssh as supported backend
+- multiple fixes in fips-mode-setup, BLS support
+
+* Wed Jul 24 2019 Fedora Release Engineering <releng@fedoraproject.org> - 20190527-2.git0b3add8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
+* Mon May 27 2019 Tomáš Mráz <tmraz@redhat.com> - 20190211-1.git0b3add8
+- libreswan: coalesce proposals to avoid IKE packet fragmentation
+- openssh: add missing curve25519-sha256 to the key exchange list
+- nss: map X25519 to CURVE25519
+
+* Thu Apr 25 2019 Tomáš Mráz <tmraz@redhat.com> - 20190211-4.gite3eacfc
+- do not fail in the Java test if the EMPTY policy is not really empty
+
+* Thu Mar  7 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 20190211-3.gite3eacfc
+- Split out fips-mode-setup into separate subpackage
+
+* Mon Feb 11 2019 Tomáš Mráz <tmraz@redhat.com> - 20190211-2.gite3eacfc
+- add crypto-policies.7 manual page
+- Java: Fix FIPS and FUTURE policy to allow RSA certificates in TLS
+- cleanup duplicate and incorrect information from update-crypto-policies.8
+  manual page
+- update-crypto-policies: Fix endless loop
+- update-crypto-policies: Add warning about the need of system restart
+- FUTURE: Add mistakenly ommitted EDDSA-ED25519 signature algorithm
+- openssh: Add missing SHA2 variants of RSA certificates to the policy
+- return exit code 2 when printing usage from all the tools
+- update-crypto-policies: add --no-reload option for testing
+
+* Thu Jan 31 2019 Fedora Release Engineering <releng@fedoraproject.org> - 20181122-2.git70769d9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Thu Nov 22 2018 Tomáš Mráz <tmraz@redhat.com> - 20181122-1.git70769d9
+- update-crypto-policies: fix error on multiple matches in local.d
+
+* Tue Nov 20 2018 Tomáš Mráz <tmraz@redhat.com> - 20181120-1.gitd2b3bc4
+- Print warning when update-crypto-policies --set is used in the FIPS mode
+- Java: Add 3DES and RC4 to legacy algorithms in LEGACY policy
+- OpenSSL: Properly disable non AEAD and AES128 ciphersuites in FUTURE
+- libreswan: Add chacha20_poly1305 to all policies and drop ikev1 from LEGACY
+
+* Fri Oct 26 2018 Tomáš Mráz <tmraz@redhat.com> - 20181026-1.gitd42aaa6
+- Fix regression in discovery of additional configuration
+- NSS: add DSA keyword to LEGACY policy
+- GnuTLS: Add 3DES and RC4 to LEGACY policy
+
+* Tue Sep 25 2018 Tomáš Mráz <tmraz@redhat.com> - 20180925-1.git71ca85f
+- Use Recommends instead of Requires for grubby
+- Revert setting of HostKeyAlgorithms for ssh client for now
+
+* Fri Sep 21 2018 Tomáš Mráz <tmraz@redhat.com> - 20180921-2.git391ed9f
+- Fix requires for grubby
+
+* Fri Sep 21 2018 Tomáš Mráz <tmraz@redhat.com> - 20180921-1.git391ed9f
+- OpenSSH: Generate policy for sign algorithms
+- Enable >= 255 bits EC curves in FUTURE policy
+- OpenSSH: Add group1 key exchanges in LEGACY policy
+- NSS: Add SHA224 to hash lists
+- Print warning when update-crypto-policies --set FIPS is used
+- fips-mode-setup: Kernel boot options are now modified with grubby
+
+* Thu Aug  2 2018 Tomáš Mráz <tmraz@redhat.com> - 20180802-1.git1626592
+- Introduce NEXT policy
+
+* Mon Jul 30 2018 Tomáš Mráz <tmraz@redhat.com> - 20180730-1.git9d9f21d
+- Add OpenSSL configuration file include support
+
+* Tue Jul 24 2018 Tomáš Mráz <tmraz@redhat.com> - 20180723-1.gitdb825c0
+- Initial FIPS mode setup support
+- NSS: Add tests for the generated policy
+- Enable TLS-1.3 if available in the respective TLS library
+- Enable SHA1 in certificates in LEGACY policy
+- Disable CAMELLIA
+- libreswan: Multiple bug fixes in policies
+
+* Thu Jul 12 2018 Fedora Release Engineering <releng@fedoraproject.org> - 20180425-6.git6ad4018
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Fri May 18 2018 Björn Esser <besser82@fedoraproject.org> - 20180425-5.git6ad4018
+- Fix patch0
+
+* Fri May 18 2018 Björn Esser <besser82@fedoraproject.org> - 20180425-4.git6ad4018
+- Remove Requires: systemd
+- Add Patch to silence warnings from reload-cmds
+
+* Thu May 17 2018 Björn Esser <besser82@fedoraproject.org> - 20180425-3.git6ad4018
+- Requires: systemd should be added too
+
+* Thu May 17 2018 Björn Esser <besser82@fedoraproject.org> - 20180425-2.git6ad4018
+- Add Requires(post): systemd to fix:
+  crypto-policies/reload-cmds.sh: line 1: systemctl: command not found
+
+* Wed Apr 25 2018 Tomáš Mráz <tmraz@redhat.com> - 20180425-1.git6ad4018
+- Restart/reload only enabled services
+- Do not enable PSK ciphersuites by default in gnutls and openssl
+- krb5: fix when more than 2048 bits keys are required
+- Fix discovery of additional configurations #1564595
+- Fix incorrect ciphersuite setup for libreswan
+
+* Tue Mar  6 2018 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20180306-1.gitaea6928
+- Updated policy to reduce DH parameter size on DEFAULT level, taking into
+  account feedback in #1549242,1#534532.
+- Renamed openssh-server.config to opensshserver.config to reduce conflicts
+  when local.d/ appending is used.
+
+* Tue Feb 27 2018 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20180227-1.git0ce1729
+- Updated to include policies for libreswan
+
+* Mon Feb 12 2018 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20180112-1.git386e3fe
+- Updated to apply the settings as in StrongCryptoSettings project. The restriction
+  to TLS1.2, is not yet applied as we have no method to impose that in openssl.
+  https://fedoraproject.org/wiki/Changes/StrongCryptoSettings
+
+* Fri Feb 09 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 20171115-3.git921600e
+- Escape macros in %%changelog
+
+* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 20171115-2.git921600e
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
+* Wed Nov 15 2017 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20171115-1.git921600e
+- Updated openssh policies for new openssh without rc4
+- Removed policies for compat-gnutls28
+
+* Wed Aug 23 2017 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20170823-1.git8d18c27
+- Updated gnutls policies for 3.6.0
+
+* Wed Aug 16 2017 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20170816-1.git2618a6c
+- Updated to latest upstream
+- Restarts openssh server on policy update
+
+* Wed Aug  2 2017 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20170802-1.git9300620
+- Updated to latest upstream
+- Reloads openssh server on policy update
+
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 20170606-4.git7c32281
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Tue Jul 25 2017 Igor Gnatenko <ignatenko@redhat.com> - 20170606-3.git7c32281
+- Restore Requires(post)
+
+* Mon Jul 24 2017 Troy Dawson <tdawson@redhat.com> 20170606-2.git7c32281
+- perl dependency renamed to perl-interpreter <ppisar@redhat.com>
+- remove useless Requires(post) <ignatenko@redhat.com>
+- Fix path of libdir in generate-policies.pl (#1474442) <tdawson@redhat.com>
+
+* Tue Jun  6 2017 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20170606-1.git7c32281
+- Updated to latest upstream
+- Allows gnutls applications in LEGACY mode, to use certificates of 768-bits
+
+* Wed May 31 2017 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20170531-1.gitce0df7b
+- Updated to latest upstream
+- Added new kerberos key types
+
+* Sat Apr 01 2017 Björn Esser <besser82@fedoraproject.org> - 20170330-3.git55b66da
+- Add Requires for update-crypto-policies in %%post
+
+* Fri Mar 31 2017 Petr Šabata <contyk@redhat.com> - 20170330-2.git55b66da
+- update-crypto-policies uses gred and sed, require them
+
+* Thu Mar 30 2017 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20170330-1-git55b66da
+- GnuTLS policies include RC4 in legacy mode (#1437213)
+
+* Fri Feb 17 2017 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20160214-2-gitf3018dd
+- Added openssh file
+
+* Tue Feb 14 2017 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20160214-1-gitf3018dd
+- Updated policies for BIND to address #1421875
+
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 20161111-2.gita2363ce
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Fri Nov 11 2016 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20161111-1-gita2363ce
+- Include OpenJDK documentation.
+
+* Tue Sep 27 2016 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20160926-2-git08b5501
+- Improved messages on error.
+
+* Mon Sep 26 2016 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20160926-1-git08b5501
+- Added support for openssh client policy
+
+* Wed Sep 21 2016 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20160921-1-git75b9b04
+- Updated with latest upstream.
+
+* Thu Jul 21 2016 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20160718-2-gitdb5ca59
+- Added support for administrator overrides in generated policies in local.d
+
+* Thu Jul 21 2016 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20160718-1-git340cb69
+- Fixed NSS policy generation to include allowed hash algorithms
+
+* Wed Jul 20 2016 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20160718-1-gitcaa4a8d
+- Updated to new version with auto-generated policies
+
+* Mon May 16 2016 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20160516-1-git8f69c35
+- Generate policies for NSS
+- OpenJDK policies were updated for opendjk 8
+
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 20151104-2.gitf1cba5f
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Wed Nov  4 2015 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20151104-1-gitcf1cba5f
+- Generate policies for compat-gnutls28 (#1277790)
+
+* Fri Oct 23 2015 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20151005-2-gitc8452f8
+- Generated files are put in a %%ghost directive
+
+* Mon Oct  5 2015 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20151005-1-gitc8452f8
+- Updated policies from upstream
+- Added support for the generation of libkrb5 policy
+- Added support for the generation of openjdk policy
+
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 20150518-2.gitffe885e
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Mon May 18 2015 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20150518-1-gitffe885e
+- Updated policies to remove SSL 3.0 and RC4 (#1220679)
+
+* Fri Mar  6 2015 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20150305-3-git2eeb03b
+- Added make check
+
+* Fri Mar  6 2015 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20150305-2-git44afaa1
+- Removed support for SECLEVEL (#1199274)
+
+* Thu Mar  5 2015 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20150305-1-git098a8a6
+- Include AEAD ciphersuites in gnutls (#1198979)
+
+* Sun Jan 25 2015 Peter Robinson <pbrobinson@fedoraproject.org> 20150115-3-git9ef7493
+- Bump release so lastest git snapshot is newer NVR
+
+* Thu Jan 15 2015 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20150115-2-git9ef7493
+- Updated to newest upstream version.
+- Includes bind policies (#1179925)
+
+* Tue Dec 16 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20141124-2-gitd4aa178
+- Corrected typo in gnutls' future policy (#1173886)
+
+* Mon Nov 24 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20141124-1-gitd4aa178
+- re-enable SSL 3.0 (until its removal is coordinated with a Fedora change request)
+
+* Thu Nov 20 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20141120-1-git9a26a5b
+- disable SSL 3.0 (doesn't work in openssl)
+
+* Fri Sep 05 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20140905-1-git4649b7d
+- enforce the acceptable TLS versions in openssl
+
+* Wed Aug 27 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20140827-1-git4e06f1d
+- fix issue with RC4 being disabled in DEFAULT settings for openssl
+
+* Thu Aug 14 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20140814-1-git80e1e98
+- fix issue in post script run on upgrade (#1130074)
+
+* Tue Aug 12 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20140812-1-gitb914bfd
+- updated crypto-policies from repository
+
+* Fri Jul 11 2014 Tom Callaway <spot@fedoraproject.org> - 20140708-2-git3a7ae3f
+- fix license handling
+
+* Tue Jul 08 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20140708-1-git3a7ae3f
+- updated crypto-policies from repository
+
+* Fri Jun 20 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 20140620-1-gitdac1524
+- updated crypto-policies from repository
+- changed versioning
+
+* Thu Jun 12 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 0.9-7-20140612gita2fa0c6
+- updated crypto-policies from repository
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9-7.20140522gita50bad2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Thu May 29 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 0.9-6-20140522gita50bad2
+- Require(post) coreutils (#1100335).
+
+* Tue May 27 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 0.9-5-20140522gita50bad2
+- Require coreutils.
+
+* Thu May 22 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 0.9-4-20140522gita50bad2
+- Install the default configuration file.
+
+* Wed May 21 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 0.9-3-20140520git81364e4
+- Run update-crypto-policies after installation.
+
+* Tue May 20 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 0.9-2-20140520git81364e4
+- Updated spec based on comments by Petr Lautrbach.
+
+* Mon May 19 2014 Nikos Mavrogiannopoulos <nmav@redhat.com> - 0.9-1-20140519gitf15621a
+- Initial package build
+
+
+===== Original publisher notice: /usr/share/licenses/crypto-policies/COPYING.LESSER =====
+		  GNU LESSER GENERAL PUBLIC LICENSE
+		       Version 2.1, February 1999
+
+ Copyright (C) 1991, 1999 Free Software Foundation, Inc.
+     51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+[This is the first released version of the Lesser GPL.  It also counts
+ as the successor of the GNU Library Public License, version 2, hence
+ the version number 2.1.]
+
+			    Preamble
+
+  The licenses for most software are designed to take away your
+freedom to share and change it.  By contrast, the GNU General Public
+Licenses are intended to guarantee your freedom to share and change
+free software--to make sure the software is free for all its users.
+
+  This license, the Lesser General Public License, applies to some
+specially designated software packages--typically libraries--of the
+Free Software Foundation and other authors who decide to use it.  You
+can use it too, but we suggest you first think carefully about whether
+this license or the ordinary General Public License is the better
+strategy to use in any particular case, based on the explanations below.
+
+  When we speak of free software, we are referring to freedom of use,
+not price.  Our General Public Licenses are designed to make sure that
+you have the freedom to distribute copies of free software (and charge
+for this service if you wish); that you receive source code or can get
+it if you want it; that you can change the software and use pieces of
+it in new free programs; and that you are informed that you can do
+these things.
+
+  To protect your rights, we need to make restrictions that forbid
+distributors to deny you these rights or to ask you to surrender these
+rights.  These restrictions translate to certain responsibilities for
+you if you distribute copies of the library or if you modify it.
+
+  For example, if you distribute copies of the library, whether gratis
+or for a fee, you must give the recipients all the rights that we gave
+you.  You must make sure that they, too, receive or can get the source
+code.  If you link other code with the library, you must provide
+complete object files to the recipients, so that they can relink them
+with the library after making changes to the library and recompiling
+it.  And you must show them these terms so they know their rights.
+
+  We protect your rights with a two-step method: (1) we copyright the
+library, and (2) we offer you this license, which gives you legal
+permission to copy, distribute and/or modify the library.
+
+  To protect each distributor, we want to make it very clear that
+there is no warranty for the free library.  Also, if the library is
+modified by someone else and passed on, the recipients should know
+that what they have is not the original version, so that the original
+author's reputation will not be affected by problems that might be
+introduced by others.
+
+  Finally, software patents pose a constant threat to the existence of
+any free program.  We wish to make sure that a company cannot
+effectively restrict the users of a free program by obtaining a
+restrictive license from a patent holder.  Therefore, we insist that
+any patent license obtained for a version of the library must be
+consistent with the full freedom of use specified in this license.
+
+  Most GNU software, including some libraries, is covered by the
+ordinary GNU General Public License.  This license, the GNU Lesser
+General Public License, applies to certain designated libraries, and
+is quite different from the ordinary General Public License.  We use
+this license for certain libraries in order to permit linking those
+libraries into non-free programs.
+
+  When a program is linked with a library, whether statically or using
+a shared library, the combination of the two is legally speaking a
+combined work, a derivative of the original library.  The ordinary
+General Public License therefore permits such linking only if the
+entire combination fits its criteria of freedom.  The Lesser General
+Public License permits more lax criteria for linking other code with
+the library.
+
+  We call this license the "Lesser" General Public License because it
+does Less to protect the user's freedom than the ordinary General
+Public License.  It also provides other free software developers Less
+of an advantage over competing non-free programs.  These disadvantages
+are the reason we use the ordinary General Public License for many
+libraries.  However, the Lesser license provides advantages in certain
+special circumstances.
+
+  For example, on rare occasions, there may be a special need to
+encourage the widest possible use of a certain library, so that it becomes
+a de-facto standard.  To achieve this, non-free programs must be
+allowed to use the library.  A more frequent case is that a free
+library does the same job as widely used non-free libraries.  In this
+case, there is little to gain by limiting the free library to free
+software only, so we use the Lesser General Public License.
+
+  In other cases, permission to use a particular library in non-free
+programs enables a greater number of people to use a large body of
+free software.  For example, permission to use the GNU C Library in
+non-free programs enables many more people to use the whole GNU
+operating system, as well as its variant, the GNU/Linux operating
+system.
+
+  Although the Lesser General Public License is Less protective of the
+users' freedom, it does ensure that the user of a program that is
+linked with the Library has the freedom and the wherewithal to run
+that program using a modified version of the Library.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.  Pay close attention to the difference between a
+"work based on the library" and a "work that uses the library".  The
+former contains code derived from the library, whereas the latter must
+be combined with the library in order to run.
+
+		  GNU LESSER GENERAL PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. This License Agreement applies to any software library or other
+program which contains a notice placed by the copyright holder or
+other authorized party saying it may be distributed under the terms of
+this Lesser General Public License (also called "this License").
+Each licensee is addressed as "you".
+
+  A "library" means a collection of software functions and/or data
+prepared so as to be conveniently linked with application programs
+(which use some of those functions and data) to form executables.
+
+  The "Library", below, refers to any such software library or work
+which has been distributed under these terms.  A "work based on the
+Library" means either the Library or any derivative work under
+copyright law: that is to say, a work containing the Library or a
+portion of it, either verbatim or with modifications and/or translated
+straightforwardly into another language.  (Hereinafter, translation is
+included without limitation in the term "modification".)
+
+  "Source code" for a work means the preferred form of the work for
+making modifications to it.  For a library, complete source code means
+all the source code for all modules it contains, plus any associated
+interface definition files, plus the scripts used to control compilation
+and installation of the library.
+
+  Activities other than copying, distribution and modification are not
+covered by this License; they are outside its scope.  The act of
+running a program using the Library is not restricted, and output from
+such a program is covered only if its contents constitute a work based
+on the Library (independent of the use of the Library in a tool for
+writing it).  Whether that is true depends on what the Library does
+and what the program that uses the Library does.
+  
+  1. You may copy and distribute verbatim copies of the Library's
+complete source code as you receive it, in any medium, provided that
+you conspicuously and appropriately publish on each copy an
+appropriate copyright notice and disclaimer of warranty; keep intact
+all the notices that refer to this License and to the absence of any
+warranty; and distribute a copy of this License along with the
+Library.
+
+  You may charge a fee for the physical act of transferring a copy,
+and you may at your option offer warranty protection in exchange for a
+fee.
+
+  2. You may modify your copy or copies of the Library or any portion
+of it, thus forming a work based on the Library, and copy and
+distribute such modifications or work under the terms of Section 1
+above, provided that you also meet all of these conditions:
+
+    a) The modified work must itself be a software library.
+
+    b) You must cause the files modified to carry prominent notices
+    stating that you changed the files and the date of any change.
+
+    c) You must cause the whole of the work to be licensed at no
+    charge to all third parties under the terms of this License.
+
+    d) If a facility in the modified Library refers to a function or a
+    table of data to be supplied by an application program that uses
+    the facility, other than as an argument passed when the facility
+    is invoked, then you must make a good faith effort to ensure that,
+    in the event an application does not supply such function or
+    table, the facility still operates, and performs whatever part of
+    its purpose remains meaningful.
+
+    (For example, a function in a library to compute square roots has
+    a purpose that is entirely well-defined independent of the
+    application.  Therefore, Subsection 2d requires that any
+    application-supplied function or table used by this function must
+    be optional: if the application does not supply it, the square
+    root function must still compute square roots.)
+
+These requirements apply to the modified work as a whole.  If
+identifiable sections of that work are not derived from the Library,
+and can be reasonably considered independent and separate works in
+themselves, then this License, and its terms, do not apply to those
+sections when you distribute them as separate works.  But when you
+distribute the same sections as part of a whole which is a work based
+on the Library, the distribution of the whole must be on the terms of
+this License, whose permissions for other licensees extend to the
+entire whole, and thus to each and every part regardless of who wrote
+it.
+
+Thus, it is not the intent of this section to claim rights or contest
+your rights to work written entirely by you; rather, the intent is to
+exercise the right to control the distribution of derivative or
+collective works based on the Library.
+
+In addition, mere aggregation of another work not based on the Library
+with the Library (or with a work based on the Library) on a volume of
+a storage or distribution medium does not bring the other work under
+the scope of this License.
+
+  3. You may opt to apply the terms of the ordinary GNU General Public
+License instead of this License to a given copy of the Library.  To do
+this, you must alter all the notices that refer to this License, so
+that they refer to the ordinary GNU General Public License, version 2,
+instead of to this License.  (If a newer version than version 2 of the
+ordinary GNU General Public License has appeared, then you can specify
+that version instead if you wish.)  Do not make any other change in
+these notices.
+
+  Once this change is made in a given copy, it is irreversible for
+that copy, so the ordinary GNU General Public License applies to all
+subsequent copies and derivative works made from that copy.
+
+  This option is useful when you wish to copy part of the code of
+the Library into a program that is not a library.
+
+  4. You may copy and distribute the Library (or a portion or
+derivative of it, under Section 2) in object code or executable form
+under the terms of Sections 1 and 2 above provided that you accompany
+it with the complete corresponding machine-readable source code, which
+must be distributed under the terms of Sections 1 and 2 above on a
+medium customarily used for software interchange.
+
+  If distribution of object code is made by offering access to copy
+from a designated place, then offering equivalent access to copy the
+source code from the same place satisfies the requirement to
+distribute the source code, even though third parties are not
+compelled to copy the source along with the object code.
+
+  5. A program that contains no derivative of any portion of the
+Library, but is designed to work with the Library by being compiled or
+linked with it, is called a "work that uses the Library".  Such a
+work, in isolation, is not a derivative work of the Library, and
+therefore falls outside the scope of this License.
+
+  However, linking a "work that uses the Library" with the Library
+creates an executable that is a derivative of the Library (because it
+contains portions of the Library), rather than a "work that uses the
+library".  The executable is therefore covered by this License.
+Section 6 states terms for distribution of such executables.
+
+  When a "work that uses the Library" uses material from a header file
+that is part of the Library, the object code for the work may be a
+derivative work of the Library even though the source code is not.
+Whether this is true is especially significant if the work can be
+linked without the Library, or if the work is itself a library.  The
+threshold for this to be true is not precisely defined by law.
+
+  If such an object file uses only numerical parameters, data
+structure layouts and accessors, and small macros and small inline
+functions (ten lines or less in length), then the use of the object
+file is unrestricted, regardless of whether it is legally a derivative
+work.  (Executables containing this object code plus portions of the
+Library will still fall under Section 6.)
+
+  Otherwise, if the work is a derivative of the Library, you may
+distribute the object code for the work under the terms of Section 6.
+Any executables containing that work also fall under Section 6,
+whether or not they are linked directly with the Library itself.
+
+  6. As an exception to the Sections above, you may also combine or
+link a "work that uses the Library" with the Library to produce a
+work containing portions of the Library, and distribute that work
+under terms of your choice, provided that the terms permit
+modification of the work for the customer's own use and reverse
+engineering for debugging such modifications.
+
+  You must give prominent notice with each copy of the work that the
+Library is used in it and that the Library and its use are covered by
+this License.  You must supply a copy of this License.  If the work
+during execution displays copyright notices, you must include the
+copyright notice for the Library among them, as well as a reference
+directing the user to the copy of this License.  Also, you must do one
+of these things:
+
+    a) Accompany the work with the complete corresponding
+    machine-readable source code for the Library including whatever
+    changes were used in the work (which must be distributed under
+    Sections 1 and 2 above); and, if the work is an executable linked
+    with the Library, with the complete machine-readable "work that
+    uses the Library", as object code and/or source code, so that the
+    user can modify the Library and then relink to produce a modified
+    executable containing the modified Library.  (It is understood
+    that the user who changes the contents of definitions files in the
+    Library will not necessarily be able to recompile the application
+    to use the modified definitions.)
+
+    b) Use a suitable shared library mechanism for linking with the
+    Library.  A suitable mechanism is one that (1) uses at run time a
+    copy of the library already present on the user's computer system,
+    rather than copying library functions into the executable, and (2)
+    will operate properly with a modified version of the library, if
+    the user installs one, as long as the modified version is
+    interface-compatible with the version that the work was made with.
+
+    c) Accompany the work with a written offer, valid for at
+    least three years, to give the same user the materials
+    specified in Subsection 6a, above, for a charge no more
+    than the cost of performing this distribution.
+
+    d) If distribution of the work is made by offering access to copy
+    from a designated place, offer equivalent access to copy the above
+    specified materials from the same place.
+
+    e) Verify that the user has already received a copy of these
+    materials or that you have already sent this user a copy.
+
+  For an executable, the required form of the "work that uses the
+Library" must include any data and utility programs needed for
+reproducing the executable from it.  However, as a special exception,
+the materials to be distributed need not include anything that is
+normally distributed (in either source or binary form) with the major
+components (compiler, kernel, and so on) of the operating system on
+which the executable runs, unless that component itself accompanies
+the executable.
+
+  It may happen that this requirement contradicts the license
+restrictions of other proprietary libraries that do not normally
+accompany the operating system.  Such a contradiction means you cannot
+use both them and the Library together in an executable that you
+distribute.
+
+  7. You may place library facilities that are a work based on the
+Library side-by-side in a single library together with other library
+facilities not covered by this License, and distribute such a combined
+library, provided that the separate distribution of the work based on
+the Library and of the other library facilities is otherwise
+permitted, and provided that you do these two things:
+
+    a) Accompany the combined library with a copy of the same work
+    based on the Library, uncombined with any other library
+    facilities.  This must be distributed under the terms of the
+    Sections above.
+
+    b) Give prominent notice with the combined library of the fact
+    that part of it is a work based on the Library, and explaining
+    where to find the accompanying uncombined form of the same work.
+
+  8. You may not copy, modify, sublicense, link with, or distribute
+the Library except as expressly provided under this License.  Any
+attempt otherwise to copy, modify, sublicense, link with, or
+distribute the Library is void, and will automatically terminate your
+rights under this License.  However, parties who have received copies,
+or rights, from you under this License will not have their licenses
+terminated so long as such parties remain in full compliance.
+
+  9. You are not required to accept this License, since you have not
+signed it.  However, nothing else grants you permission to modify or
+distribute the Library or its derivative works.  These actions are
+prohibited by law if you do not accept this License.  Therefore, by
+modifying or distributing the Library (or any work based on the
+Library), you indicate your acceptance of this License to do so, and
+all its terms and conditions for copying, distributing or modifying
+the Library or works based on it.
+
+  10. Each time you redistribute the Library (or any work based on the
+Library), the recipient automatically receives a license from the
+original licensor to copy, distribute, link with or modify the Library
+subject to these terms and conditions.  You may not impose any further
+restrictions on the recipients' exercise of the rights granted herein.
+You are not responsible for enforcing compliance by third parties with
+this License.
+
+  11. If, as a consequence of a court judgment or allegation of patent
+infringement or for any other reason (not limited to patent issues),
+conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot
+distribute so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you
+may not distribute the Library at all.  For example, if a patent
+license would not permit royalty-free redistribution of the Library by
+all those who receive copies directly or indirectly through you, then
+the only way you could satisfy both it and this License would be to
+refrain entirely from distribution of the Library.
+
+If any portion of this section is held invalid or unenforceable under any
+particular circumstance, the balance of the section is intended to apply,
+and the section as a whole is intended to apply in other circumstances.
+
+It is not the purpose of this section to induce you to infringe any
+patents or other property right claims or to contest validity of any
+such claims; this section has the sole purpose of protecting the
+integrity of the free software distribution system which is
+implemented by public license practices.  Many people have made
+generous contributions to the wide range of software distributed
+through that system in reliance on consistent application of that
+system; it is up to the author/donor to decide if he or she is willing
+to distribute software through any other system and a licensee cannot
+impose that choice.
+
+This section is intended to make thoroughly clear what is believed to
+be a consequence of the rest of this License.
+
+  12. If the distribution and/or use of the Library is restricted in
+certain countries either by patents or by copyrighted interfaces, the
+original copyright holder who places the Library under this License may add
+an explicit geographical distribution limitation excluding those countries,
+so that distribution is permitted only in or among countries not thus
+excluded.  In such case, this License incorporates the limitation as if
+written in the body of this License.
+
+  13. The Free Software Foundation may publish revised and/or new
+versions of the Lesser General Public License from time to time.
+Such new versions will be similar in spirit to the present version,
+but may differ in detail to address new problems or concerns.
+
+Each version is given a distinguishing version number.  If the Library
+specifies a version number of this License which applies to it and
+"any later version", you have the option of following the terms and
+conditions either of that version or of any later version published by
+the Free Software Foundation.  If the Library does not specify a
+license version number, you may choose any version ever published by
+the Free Software Foundation.
+
+  14. If you wish to incorporate parts of the Library into other free
+programs whose distribution conditions are incompatible with these,
+write to the author to ask for permission.  For software which is
+copyrighted by the Free Software Foundation, write to the Free
+Software Foundation; we sometimes make exceptions for this.  Our
+decision will be guided by the two goals of preserving the free status
+of all derivatives of our free software and of promoting the sharing
+and reuse of software generally.
+
+			    NO WARRANTY
+
+  15. BECAUSE THE LIBRARY IS LICENSED FREE OF CHARGE, THERE IS NO
+WARRANTY FOR THE LIBRARY, TO THE EXTENT PERMITTED BY APPLICABLE LAW.
+EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
+OTHER PARTIES PROVIDE THE LIBRARY "AS IS" WITHOUT WARRANTY OF ANY
+KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE
+LIBRARY IS WITH YOU.  SHOULD THE LIBRARY PROVE DEFECTIVE, YOU ASSUME
+THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+  16. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN
+WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY
+AND/OR REDISTRIBUTE THE LIBRARY AS PERMITTED ABOVE, BE LIABLE TO YOU
+FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR
+CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE
+LIBRARY (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+FAILURE OF THE LIBRARY TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGES.
+
+		     END OF TERMS AND CONDITIONS
+
+           How to Apply These Terms to Your New Libraries
+
+  If you develop a new library, and you want it to be of the greatest
+possible use to the public, we recommend making it free software that
+everyone can redistribute and change.  You can do so by permitting
+redistribution under these terms (or, alternatively, under the terms of the
+ordinary General Public License).
+
+  To apply these terms, attach the following notices to the library.  It is
+safest to attach them to the start of each source file to most effectively
+convey the exclusion of warranty; and each file should have at least the
+"copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the library's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+Also add information on how to contact you by electronic and paper mail.
+
+You should also get your employer (if you work as a programmer) or your
+school, if any, to sign a "copyright disclaimer" for the library, if
+necessary.  Here is a sample; alter the names:
+
+  Yoyodyne, Inc., hereby disclaims all copyright interest in the
+  library `Frob' (a library for tweaking knobs) written by James Random Hacker.
+
+  <signature of Ty Coon>, 1 April 1990
+  Ty Coon, President of Vice
+
+That's all there is to it!
+
+

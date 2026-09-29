@@ -5,6 +5,7 @@ kind: Service
 metadata:
   name: ops-keycloak
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     app.kubernetes.io/name: ops-keycloak
     ops.platform.io/component: keycloak
     ops.platform.io/mode: bundled
@@ -22,6 +23,7 @@ kind: Deployment
 metadata:
   name: ops-keycloak
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     app.kubernetes.io/name: ops-keycloak
     ops.platform.io/component: keycloak
     ops.platform.io/mode: bundled
@@ -33,6 +35,7 @@ spec:
   template:
     metadata:
       labels:
+        ops.platform.io/release: {{ $.Release.Name | quote }}
         app.kubernetes.io/name: ops-keycloak
         ops.platform.io/component: keycloak
         ops.platform.io/mode: bundled
@@ -42,16 +45,45 @@ spec:
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 0
+        fsGroup: 1000
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: prepare-keycloak
+          image: {{ $component.image | quote }}
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          command: ["/bin/bash", "-ec"]
+          args:
+            - >-
+              shopt -s dotglob && cp -R /opt/keycloak/* /work/ &&
+              /work/bin/kc.sh build --db=postgres --health-enabled=true
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: distribution
+              mountPath: /work
+            - name: tmp
+              mountPath: /tmp
       containers:
         - name: keycloak
           image: {{ $component.image | quote }}
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
-          args: ["start", "--hostname-strict=false"]
+          args: ["start", "--optimized", "--hostname-strict=false"]
           ports:
             - name: http
               containerPort: 8080
+            - name: management
+              containerPort: 9000
           env:
             - name: KC_HTTP_ENABLED
               value: "true"
@@ -82,7 +114,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /health/ready
-              port: http
+              port: management
             initialDelaySeconds: 20
             periodSeconds: 5
           resources:
@@ -98,11 +130,16 @@ spec:
             capabilities:
               drop: ["ALL"]
           volumeMounts:
+            - name: distribution
+              mountPath: /opt/keycloak
+              readOnly: true
             - name: data
               mountPath: /opt/keycloak/data
             - name: tmp
               mountPath: /tmp
       volumes:
+        - name: distribution
+          emptyDir: {}
         - name: data
           emptyDir: {}
         - name: tmp

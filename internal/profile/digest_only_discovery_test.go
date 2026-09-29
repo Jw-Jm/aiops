@@ -83,3 +83,28 @@ esac
 		t.Fatalf("mismatched digest was assigned catalog version: %#v", got)
 	}
 }
+
+func TestDigestOnlyVictoriaCandidateUsesObservedVersionAndCapability(t *testing.T) {
+	const digest = "sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311"
+	components := map[string][]ComponentCandidate{"vmalert": {{
+		Version: "v1.116.0", Digest: digest, Image: "docker.io/victoriametrics/vmalert@" + digest,
+		Endpoint: "http://ops-vmalert.ops-system.svc.cluster.local:8880",
+		Evidence: []string{"image version or runtime digest is unavailable", "read-only capability alertRules=available"},
+	}}}
+	locks := map[string]ComponentLock{"vmalert": {Version: "v1.116.0", Digest: digest, Image: "docker.io/victoriametrics/vmalert@" + digest}}
+	completeDigestOnlyCandidateVersions(components, locks)
+	candidate := components["vmalert"][0]
+	if !candidate.Compatible || candidate.Version != locks["vmalert"].Version {
+		t.Fatalf("observed, locked vmalert candidate = %#v; want compatible locked candidate", candidate)
+	}
+	if strings.Contains(strings.Join(candidate.Evidence, "\n"), "image version or runtime digest is unavailable") {
+		t.Fatalf("stale missing-version evidence was retained: %#v", candidate.Evidence)
+	}
+
+	components["vmalert"][0].Evidence = []string{"image version or runtime digest is unavailable"}
+	components["vmalert"][0].Compatible = false
+	completeDigestOnlyCandidateVersions(components, locks)
+	if components["vmalert"][0].Compatible {
+		t.Fatal("vmalert without its required alertRules capability was marked compatible")
+	}
+}

@@ -73,6 +73,31 @@ func TestVerifyAcceptsExactPrereleaseVersionContainingX(t *testing.T) {
 	}
 }
 
+func TestBundleAcceptsExactUpstreamReleaseVersions(t *testing.T) {
+	for _, version := range []string{"17.11", "4.47", "v17.11", "4.47-rc.1", "4.47+build.1", "1.2.3", strings.Repeat("a", 40)} {
+		t.Run(version, func(t *testing.T) {
+			manifest, trust, _ := signedFixture(t, func(m *fixtureManifest) { m.Materials[0].Version = version })
+			if _, err := ParseManifest(manifest.CanonicalJSON); err != nil {
+				t.Fatalf("Schema rejected exact version: %v", err)
+			}
+			if _, err := Verify(context.Background(), manifest, trust); err != nil {
+				t.Fatalf("Go verifier rejected exact version: %v", err)
+			}
+		})
+	}
+	for _, version := range []string{"17", "17.11.x", "17.*", "17.11.", "17.11.0.1", "01.2", "1.02", "^17.11", ">=17.11", "latest", "v1.2..3", "pending"} {
+		t.Run("reject-"+version, func(t *testing.T) {
+			manifest, _, _ := signedFixture(t, func(m *fixtureManifest) { m.Materials[0].Version = version })
+			if err := contract.Validate(ManifestSchemaID, manifest.CanonicalJSON); err == nil {
+				t.Fatal("Schema accepted non-exact version")
+			}
+			if isExactBundleVersion(version) {
+				t.Fatal("Go validator accepted non-exact version")
+			}
+		})
+	}
+}
+
 func TestVerifyRejectsTamperedPayloadByte(t *testing.T) {
 	manifest, trustRoot, payloadPath := signedFixture(t, nil)
 	if err := os.WriteFile(payloadPath, []byte("tampered payload"), 0o600); err != nil {
@@ -265,6 +290,28 @@ firstPartyKernels: []
 
 	if err := validateCatalogAdmissionWithEvidence([]Material{{Name: "demo"}}, catalog, evidence); err != nil {
 		t.Fatalf("validateCatalogAdmissionWithEvidence(qualified): %v", err)
+	}
+	sourceDigest := "sha256:" + strings.Repeat("b", 64)
+	withSource := bytes.Replace(catalog, []byte("    sourceSnapshot: false"), []byte("    sourceSnapshot: false\n    correspondingSourceBundleSHA256: "+sourceDigest), 1)
+	if err := validateCatalogAdmissionWithEvidence([]Material{{Name: "demo"}}, withSource, evidence); err == nil || !strings.Contains(err.Error(), "missing its locked corresponding-source") {
+		t.Fatalf("missing corresponding-source error: %v", err)
+	}
+	source := Material{Name: "demo-source", Version: "1.2.3", Kind: "source", Digest: sourceDigest}
+	if err := validateCatalogAdmissionWithEvidence([]Material{{Name: "demo"}, source}, withSource, evidence); err != nil {
+		t.Fatal(err)
+	}
+	for _, invalid := range []Material{
+		{Name: "demo-source", Version: "1.2.3", Kind: "source", Digest: "sha256:" + strings.Repeat("c", 64)},
+		{Name: "demo-source", Version: "1.2.4", Kind: "source", Digest: sourceDigest},
+		{Name: "demo-source", Version: "1.2.3", Kind: "container-image", Digest: sourceDigest},
+	} {
+		if err := validateCatalogAdmissionWithEvidence([]Material{{Name: "demo"}, invalid}, withSource, evidence); err == nil {
+			t.Fatal("changed source artifact admitted")
+		}
+	}
+	candidate := bytes.Replace(withSource, []byte("state: qualified"), []byte("state: candidate"), 1)
+	if err := validateCatalogAdmissionWithEvidence([]Material{source}, candidate, evidence); err == nil || !strings.Contains(err.Error(), "candidate") {
+		t.Fatalf("candidate source admission: %v", err)
 	}
 }
 

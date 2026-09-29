@@ -61,7 +61,7 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 256,
-          "pattern": "^(v?(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?|[A-Fa-f0-9]{40,64})$",
+          "pattern": "^(v?(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*))?(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?|[A-Fa-f0-9]{40,64})$",
           "allOf": [
             {"not": {"enum": ["latest", "main", "master", "develop", "trunk", "stable", "nightly", "edge", "release", "dev", "unstable", "canary", "pending"]}},
             {"not": {"pattern": "[*?]"}}

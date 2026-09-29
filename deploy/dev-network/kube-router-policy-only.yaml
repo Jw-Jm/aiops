@@ -1,0 +1,112 @@
+# OrbStack development environment prerequisite, outside the core Bundle.
+# Upstream v2.11.1, commit 61066dc66a535f94761f447a90874d0a6839d0d3.
+# No CNI installer, routing controller or service proxy is enabled.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ops-dev-network
+  labels:
+    ops.platform.io/release: ops-dev-network
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-dev-network
+  namespace: ops-dev-network
+  labels:
+    ops.platform.io/release: ops-dev-network
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ops-dev-network-read
+  labels:
+    ops.platform.io/release: ops-dev-network
+rules:
+  - apiGroups: [""]
+    resources: [pods, namespaces, nodes, services, endpoints]
+    verbs: [get, list, watch]
+  - apiGroups: [networking.k8s.io]
+    resources: [networkpolicies]
+    verbs: [get, list, watch]
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ops-dev-network-read
+  labels:
+    ops.platform.io/release: ops-dev-network
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ops-dev-network-read
+subjects:
+  - kind: ServiceAccount
+    name: ops-dev-network
+    namespace: ops-dev-network
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ops-dev-network
+  namespace: ops-dev-network
+  labels:
+    ops.platform.io/release: ops-dev-network
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ops-dev-network
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ops-dev-network
+        ops.platform.io/release: ops-dev-network
+    spec:
+      serviceAccountName: ops-dev-network
+      hostNetwork: true
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: kube-router
+          image: docker.io/cloudnativelabs/kube-router@sha256:fec5ac13d36a812636d545263fda75e5b729ac9dac624f1f19f1170d3372324b
+          imagePullPolicy: IfNotPresent
+          args:
+            - --run-router=false
+            - --run-service-proxy=false
+            - --run-loadbalancer=false
+            - --run-firewall=true
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+              add: [NET_ADMIN, NET_RAW]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 20244
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: xtables-lock
+              mountPath: /run/xtables.lock
+      volumes:
+        - name: xtables-lock
+          hostPath:
+            path: /run/xtables.lock
+            type: FileOrCreate

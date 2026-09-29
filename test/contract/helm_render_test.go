@@ -21,6 +21,34 @@ import (
 var immutableImage = regexp.MustCompile(`^[^\s@]+@sha256:[a-f0-9]{64}$`)
 var immutableTaggedDigestImage = regexp.MustCompile(`^[^\s@]+:[^\s@]+@sha256:[a-f0-9]{64}$`)
 
+func TestCoreNetworkBootstrapContainsNoWorkloads(t *testing.T) {
+	command := exec.Command("helm", "template", "ops-platform", "../../deploy/charts/ops-platform", "--namespace", "ops-system", "--set", "networkPolicyOnly=true", "--set", "workloadsEnabled=true")
+	output, err := command.CombinedOutput()
+	if err != nil {
+		t.Fatalf("render network bootstrap: %v: %s", err, output)
+	}
+	decoder := yaml.NewDecoder(bytes.NewReader(output))
+	policies := map[string]bool{}
+	for {
+		var resource renderedResource
+		if err := decoder.Decode(&resource); err == io.EOF {
+			break
+		} else if err != nil {
+			t.Fatal(err)
+		}
+		if resource.Kind == "" {
+			continue
+		}
+		if resource.Kind != "NetworkPolicy" || resource.Metadata.Labels["ops.platform.io/release"] != "ops-platform" {
+			t.Fatalf("bootstrap contains a workload or unowned resource: %s/%s", resource.Kind, resource.Metadata.Name)
+		}
+		policies[resource.Metadata.Name] = true
+	}
+	if !policies["ops-default-deny"] || !policies["ops-allow-internal-platform-traffic"] {
+		t.Fatal("bootstrap is missing the deny or internal-traffic policy")
+	}
+}
+
 type renderedResource struct {
 	Kind                         string `yaml:"kind"`
 	AutomountServiceAccountToken *bool  `yaml:"automountServiceAccountToken"`
@@ -47,7 +75,8 @@ type renderedResource struct {
 					RunAsNonRoot bool `yaml:"runAsNonRoot"`
 				} `yaml:"securityContext"`
 				Containers []struct {
-					Image string `yaml:"image"`
+					Image string   `yaml:"image"`
+					Args  []string `yaml:"args"`
 					Env   []struct {
 						Name      string `yaml:"name"`
 						Value     string `yaml:"value"`
@@ -106,6 +135,9 @@ func TestHelmRenderComponentModesAreExclusive(t *testing.T) {
 			}
 			assertImagesPinned(t, resources)
 			assertWorkloadsHardened(t, resources)
+			if profile.modes["seaweedfs"] == "bundled" {
+				assertSeaweedDevelopmentVolumeBounds(t, resources)
+			}
 		})
 	}
 }
@@ -115,7 +147,7 @@ func TestVictoriaAddonChartsAndImagesAreDigestLocked(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	catalog, err := supplychain.LoadCatalog(bytes.NewReader(catalogBytes))
+	catalog, err := supplychain.LoadCatalogWithEvidence(bytes.NewReader(catalogBytes), os.DirFS(filepath.Join("..", "..")))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -334,6 +366,62 @@ func TestHelmRenderPlatformSecuritySkeleton(t *testing.T) {
 	assertDockerfilesPinnedAndNonRoot(t)
 }
 
+// The same namespace can contain a protected external OpenBao release. A
+// component label alone must never make that existing workload a policy target.
+func TestHelmNetworkPoliciesSelectOnlyManagedReleases(t *testing.T) {
+	cmd := exec.Command("helm", "template", "ops-platform", filepath.Join("..", "..", "deploy", "charts", "ops-platform"), "--namespace", "ops-system")
+	output, err := cmd.Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	decoder := yaml.NewDecoder(bytes.NewReader(output))
+	policies := 0
+	for {
+		var resource struct {
+			Kind string `yaml:"kind"`
+			Spec struct {
+				PodSelector struct {
+					MatchExpressions []struct {
+						Key      string   `yaml:"key"`
+						Operator string   `yaml:"operator"`
+						Values   []string `yaml:"values"`
+					} `yaml:"matchExpressions"`
+				} `yaml:"podSelector"`
+			} `yaml:"spec"`
+		}
+		if err := decoder.Decode(&resource); err == io.EOF {
+			break
+		} else if err != nil {
+			t.Fatal(err)
+		}
+		if resource.Kind != "NetworkPolicy" {
+			continue
+		}
+		policies++
+		for _, release := range []string{"ops-platform", "ops-dependencies", "ops-core", "", "someone-else"} {
+			selected := true
+			for _, expression := range resource.Spec.PodSelector.MatchExpressions {
+				value := map[string]string{"ops.platform.io/component": "openbao", "ops.platform.io/release": release}[expression.Key]
+				if expression.Operator != "In" {
+					t.Fatalf("unexpected selector operator %q", expression.Operator)
+				}
+				found := false
+				for _, allowed := range expression.Values {
+					found = found || allowed == value
+				}
+				selected = selected && found
+			}
+			want := release == "ops-platform" || release == "ops-dependencies"
+			if selected != want {
+				t.Errorf("NetworkPolicy selects release %q = %v, want %v", release, selected, want)
+			}
+		}
+	}
+	if policies != 2 {
+		t.Fatalf("rendered %d policies, want deny and allow", policies)
+	}
+}
+
 func renderDependencies(t *testing.T, selectedModes map[string]string) []renderedResource {
 	t.Helper()
 	args := []string{"template", "ops", filepath.Join("..", "..", "deploy", "charts", "ops-dependencies"), "--namespace", "default"}
@@ -464,13 +552,13 @@ func assertKindSnapshot(t *testing.T, resources []renderedResource, profile stri
 	want := map[string]int{}
 	switch profile {
 	case "all-bundled":
-		want = map[string]int{"Service": 4, "StatefulSet": 3, "Deployment": 1, "ConfigMap": 1, "ServiceAccount": 1, "ClusterRoleBinding": 1}
+		want = map[string]int{"Service": 4, "StatefulSet": 3, "Deployment": 1, "ConfigMap": 2, "ServiceAccount": 1, "ClusterRoleBinding": 1}
 	case "all-external":
 		want = map[string]int{"ConfigMap": 4, "Secret": 4}
 	case "external-postgresql-bundled-keycloak":
 		want = map[string]int{"Service": 2, "StatefulSet": 1, "Deployment": 1, "ConfigMap": 3, "Secret": 2, "ServiceAccount": 1, "ClusterRoleBinding": 1}
 	case "bundled-postgresql-external-keycloak":
-		want = map[string]int{"Service": 2, "StatefulSet": 2, "ConfigMap": 2, "Secret": 2}
+		want = map[string]int{"Service": 2, "StatefulSet": 2, "ConfigMap": 3, "Secret": 2}
 	default:
 		t.Fatalf("no resource snapshot is defined for %q", profile)
 	}
@@ -485,6 +573,36 @@ func assertKindSnapshot(t *testing.T, resources []renderedResource, profile stri
 		if got[kind] != count {
 			t.Errorf("rendered %s count = %d, want snapshot %d", kind, got[kind], count)
 		}
+	}
+}
+
+func assertSeaweedDevelopmentVolumeBounds(t *testing.T, resources []renderedResource) {
+	t.Helper()
+	foundConfig, foundStatefulSet := false, false
+	for _, resource := range resources {
+		if resource.Kind == "ConfigMap" && resource.Metadata.Name == "ops-seaweedfs-master-config" {
+			foundConfig = true
+			if resource.Data["master.toml"] != "[master.volume_growth]\ncopy_1 = 1\n" {
+				t.Errorf("SeaweedFS development volume growth config = %q", resource.Data["master.toml"])
+			}
+		}
+		if resource.Kind != "StatefulSet" || resource.Metadata.Name != "ops-seaweedfs" {
+			continue
+		}
+		foundStatefulSet = true
+		if len(resource.Spec.Template.Spec.Containers) != 1 {
+			t.Errorf("SeaweedFS containers = %d, want one", len(resource.Spec.Template.Spec.Containers))
+			continue
+		}
+		args := strings.Join(resource.Spec.Template.Spec.Containers[0].Args, " ")
+		for _, required := range []string{"-config_dir=/etc/seaweedfs", "-volume.max=12", "-master.volumeSizeLimitMB=128", "-master.telemetry=false"} {
+			if !strings.Contains(args, required) {
+				t.Errorf("SeaweedFS args %q do not contain %q", args, required)
+			}
+		}
+	}
+	if !foundConfig || !foundStatefulSet {
+		t.Errorf("SeaweedFS config/statefulset rendered: config=%v statefulset=%v", foundConfig, foundStatefulSet)
 	}
 }
 

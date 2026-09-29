@@ -104,6 +104,10 @@ func TestResolveKeepsUnqualifiedComponentsNonInstallable(t *testing.T) {
 		t.Fatal(err)
 	}
 	discovery.Locks = locks
+	// Keep a real candidate-state negative fixture after repository admission.
+	postgresql := discovery.Locks["postgresql"]
+	postgresql.State = "candidate"
+	discovery.Locks["postgresql"] = postgresql
 	resolved, err := Resolve(context.Background(), input, discovery)
 	if err != nil {
 		t.Fatal(err)
@@ -132,8 +136,8 @@ func TestComponentLocksResolveVictoriaCatalogNamesAndCharts(t *testing.T) {
 		if !ok || lock.Version != expected.version || lock.ChartName != expected.chartName || lock.ChartVersion != expected.chartVersion || lock.ChartDigest != expected.chartDigest {
 			t.Fatalf("%s Component Catalog lock = %#v, want %#v", component, lock, expected)
 		}
-		if lock.State != "candidate" {
-			t.Fatalf("%s state = %q, candidate admission must remain explicit", component, lock.State)
+		if lock.State != "qualified" {
+			t.Fatalf("%s state = %q, want reviewed qualified development material", component, lock.State)
 		}
 	}
 }

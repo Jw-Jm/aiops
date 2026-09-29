@@ -3,13 +3,21 @@ kind: NetworkPolicy
 metadata:
   name: ops-default-deny
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     ops.platform.io/policy: default-deny
 spec:
   podSelector:
     matchExpressions:
+      - key: ops.platform.io/release
+        operator: In
+        values:
+          - {{ $.Release.Name | quote }}
+          {{- range $.Values.networkPolicy.managedDependencyReleases }}
+          - {{ . | quote }}
+          {{- end }}
       - key: ops.platform.io/component
         operator: In
-        values: [api, worker, web, investigator, command-runner, postgresql, keycloak, seaweedfs, openbao]
+        values: [api, worker, web, investigator, command-runner, postgresql, keycloak, seaweedfs, openbao, victoria-metrics, victoria-logs, vmalert]
   policyTypes:
     - Ingress
     - Egress
@@ -19,13 +27,21 @@ kind: NetworkPolicy
 metadata:
   name: ops-allow-internal-platform-traffic
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     ops.platform.io/policy: allow-internal
 spec:
   podSelector:
     matchExpressions:
+      - key: ops.platform.io/release
+        operator: In
+        values:
+          - {{ $.Release.Name | quote }}
+          {{- range $.Values.networkPolicy.managedDependencyReleases }}
+          - {{ . | quote }}
+          {{- end }}
       - key: ops.platform.io/component
         operator: In
-        values: [api, worker, web, investigator, command-runner, postgresql, keycloak, seaweedfs, openbao]
+        values: [api, worker, web, investigator, command-runner, postgresql, keycloak, seaweedfs, openbao, victoria-metrics, victoria-logs, vmalert]
   policyTypes:
     - Ingress
     - Egress
@@ -45,6 +61,12 @@ spec:
           port: 8200
         - protocol: TCP
           port: 8333
+        - protocol: TCP
+          port: 8428
+        - protocol: TCP
+          port: 9428
+        - protocol: TCP
+          port: 8880
   egress:
     - to:
         - namespaceSelector:
@@ -62,3 +84,15 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
+    {{- range $.Values.networkPolicy.externalServices }}
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .namespace | quote }}
+          podSelector:
+            matchLabels:
+              {{- toYaml .podLabels | nindent 14 }}
+      ports:
+        - protocol: TCP
+          port: {{ .port | toJson }}
+    {{- end }}

@@ -5,6 +5,7 @@ kind: Service
 metadata:
   name: ops-openbao
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     app.kubernetes.io/name: ops-openbao
     ops.platform.io/component: openbao
     ops.platform.io/mode: bundled
@@ -25,6 +26,7 @@ kind: ServiceAccount
 metadata:
   name: ops-openbao-tokenreview
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     app.kubernetes.io/name: ops-openbao
     ops.platform.io/component: openbao
     ops.platform.io/mode: bundled
@@ -35,6 +37,7 @@ kind: ClusterRoleBinding
 metadata:
   name: ops-openbao-tokenreview-{{ .Release.Name | trunc 40 | trimSuffix "-" }}
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     app.kubernetes.io/name: ops-openbao
     ops.platform.io/component: openbao
     ops.platform.io/mode: bundled
@@ -52,6 +55,7 @@ kind: ConfigMap
 metadata:
   name: ops-openbao-config
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     app.kubernetes.io/name: ops-openbao
     ops.platform.io/component: openbao
     ops.platform.io/mode: bundled
@@ -77,6 +81,7 @@ kind: StatefulSet
 metadata:
   name: ops-openbao
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     app.kubernetes.io/name: ops-openbao
     ops.platform.io/component: openbao
     ops.platform.io/mode: bundled
@@ -89,6 +94,7 @@ spec:
   template:
     metadata:
       labels:
+        ops.platform.io/release: {{ $.Release.Name | quote }}
         app.kubernetes.io/name: ops-openbao
         ops.platform.io/component: openbao
         ops.platform.io/mode: bundled
@@ -159,6 +165,7 @@ spec:
     - metadata:
         name: data
         labels:
+          ops.platform.io/release: {{ $.Release.Name | quote }}
           ops.platform.io/component: openbao
       spec:
         accessModes: ["ReadWriteOnce"]

@@ -210,11 +210,14 @@ func completeDigestOnlyCandidateVersions(components map[string][]ComponentCandid
 		}
 		for index := range candidates {
 			candidate := &candidates[index]
-			if candidate.Version != "" || candidate.Digest != lock.Digest || !strings.Contains(candidate.Image, "@") {
+			if candidate.Digest != lock.Digest || !strings.Contains(candidate.Image, "@") {
 				continue
 			}
 			image, _, hasDigest := strings.Cut(candidate.Image, "@")
 			if !hasDigest || image != lockImage {
+				continue
+			}
+			if candidate.Version != "" && candidate.Version != lock.Version {
 				continue
 			}
 			missingVersion := false
@@ -229,8 +232,21 @@ func completeDigestOnlyCandidateVersions(components map[string][]ComponentCandid
 			if !missingVersion {
 				continue
 			}
-			candidate.Evidence = append(remainingEvidence, fmt.Sprintf("exact version %s resolved from Component Catalog by runtime image digest %s", lock.Version, lock.Digest))
-			candidate.Version = lock.Version
+			if capability := map[string]string{"victoriaMetrics": "metrics", "victoriaLogs": "logs", "vmalert": "alertRules"}[name]; capability != "" {
+				available := false
+				for _, evidence := range remainingEvidence {
+					available = available || evidence == "read-only capability "+capability+"=available"
+				}
+				if !available {
+					continue
+				}
+			}
+			if candidate.Version == "" {
+				candidate.Evidence = append(remainingEvidence, fmt.Sprintf("exact version %s resolved from Component Catalog by runtime image digest %s", lock.Version, lock.Digest))
+				candidate.Version = lock.Version
+			} else {
+				candidate.Evidence = append(remainingEvidence, fmt.Sprintf("runtime version %s and image digest match Component Catalog", lock.Version))
+			}
 			candidate.Compatible = candidate.Endpoint != "" && digestPattern.MatchString(candidate.Digest)
 		}
 		components[name] = candidates

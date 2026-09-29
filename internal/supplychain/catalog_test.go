@@ -39,6 +39,50 @@ components:
 firstPartyKernels: []
 `
 
+func TestNativeSourceArchivesPreservePublisherVersionsAndAdmissionGates(t *testing.T) {
+	dependency := `dependencyClosure:
+      - name: native-package
+        version: "2:3.0.8-1+deb13u1"
+        sourceType: archive
+        source: https://example.org/native-package_3.0.8.orig.tar.xz
+        sourceArchiveSHA256: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        digest: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+        license: MIT`
+	document := strings.Replace(qualifiedCatalog, "dependencyClosure: []", dependency, 1)
+	evidence := fstest.MapFS{
+		"reports/demo-poc.md":     &fstest.MapFile{Data: []byte("PoC report\n")},
+		"test/fixtures/demo.json": &fstest.MapFile{Data: []byte(`{"fixture":true}`)},
+	}
+	catalog, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(document), evidence)
+	if err != nil {
+		t.Fatal(err)
+	}
+	component, _ := catalog.Component("demo")
+	if component.DependencyClosure[0].Version != "2:3.0.8-1+deb13u1" || component.DependencyClosure[0].Commit != "" {
+		t.Fatal("native source identity was rewritten")
+	}
+	for name, invalid := range map[string]string{
+		"missing archive checksum":   strings.Replace(document, "        sourceArchiveSHA256: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n", "", 1),
+		"floating version":           strings.Replace(document, `version: "2:3.0.8-1+deb13u1"`, "version: latest", 1),
+		"version range":              strings.Replace(document, `version: "2:3.0.8-1+deb13u1"`, `version: "^3.0.8"`, 1),
+		"unknown license":            strings.Replace(document, "license: MIT", "license: unknown", 1),
+		"archive checksum as commit": strings.Replace(document, "        sourceType: archive", "        sourceType: archive\n        commit: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", 1),
+		"unknown field":              strings.Replace(document, "        sourceType: archive", "        sourceType: archive\n        sourceTyppo: archive", 1),
+		"OCI source archive":         strings.Replace(document, "https://example.org/native-package_3.0.8.orig.tar.xz", "oci://example.org/native-package", 1),
+		"GPL without ADR":            strings.Replace(document, "license: MIT", "license: GPL-2.0-only", 1),
+	} {
+		t.Run(name, func(t *testing.T) {
+			if _, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(invalid), evidence); err == nil {
+				t.Fatal("invalid native source admitted")
+			}
+		})
+	}
+	git := strings.Replace(document, "        sourceType: archive", "        sourceType: git", 1)
+	if _, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(git), evidence); err == nil {
+		t.Fatal("archive identity replaced a Git commit")
+	}
+}
+
 func TestLoadCatalogRejectsUnpinnedOrUnverifiedQualifiedComponents(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -178,7 +222,23 @@ func TestVictoriaArtifactsRemainBlockedFromBundleWhileCandidate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	catalog, err := supplychain.LoadCatalog(strings.NewReader(string(contents)))
+	// Explicitly turn the three reviewed entries back into candidates; admission
+	// must reject them even when all their source and PoC evidence remains present.
+	var document map[string]any
+	if err := yaml.Unmarshal(contents, &document); err != nil {
+		t.Fatal(err)
+	}
+	for _, value := range document["components"].([]any) {
+		component := value.(map[string]any)
+		if component["name"] == "victoria-metrics" || component["name"] == "victoria-logs" || component["name"] == "vmalert" {
+			component["state"] = "candidate"
+		}
+	}
+	contents, err = yaml.Marshal(document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	catalog, err := supplychain.LoadCatalogWithEvidence(strings.NewReader(string(contents)), os.DirFS(filepath.Join("..", "..")))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -353,7 +413,7 @@ func TestComponentCatalogCoversApprovedScopeWithoutQualifyingCandidates(t *testi
 	}
 	defer file.Close()
 
-	catalog, err := supplychain.LoadCatalog(file)
+	catalog, err := supplychain.LoadCatalogWithEvidence(file, os.DirFS(filepath.Join("..", "..")))
 	if err != nil {
 		t.Fatalf("LoadCatalog: %v", err)
 	}

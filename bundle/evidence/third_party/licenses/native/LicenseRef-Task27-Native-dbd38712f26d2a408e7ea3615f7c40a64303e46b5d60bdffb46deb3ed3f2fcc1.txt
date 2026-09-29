@@ -1,0 +1,2442 @@
+
+===== Original publisher notice: source-rpm/bash.spec =====
+#% define beta_tag rc2
+%define patchleveltag .8
+%define baseversion 5.1
+%bcond_without tests
+
+Version: %{baseversion}%{patchleveltag}
+Name: bash
+Summary: The GNU Bourne Again shell
+Release: 9%{?dist}
+License: GPLv3+
+Url: https://www.gnu.org/software/bash
+Source0: https://ftp.gnu.org/gnu/bash/bash-%{baseversion}.tar.gz
+
+# For now there isn't any doc
+#Source2: ftp://ftp.gnu.org/gnu/bash/bash-doc-%%{version}.tar.gz
+
+Source1: dot-bashrc
+Source2: dot-bash_profile
+Source3: dot-bash_logout
+
+# Official upstream patches
+# Patches are converted to apply with '-p1'
+%{lua:for i=1,8 do print(string.format("Patch%u: bash-5.1-patch-%u.patch\n", i, i)) end}
+
+# Other patches
+# We don't want to add '/etc:/usr/etc' in standard utils path.
+Patch101: bash-2.03-paths.patch
+# Non-interactive shells beginning with argv[0][0] == '-' should run the startup files when not in posix mode.
+Patch102: bash-2.03-profile.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=60870
+Patch103: bash-2.05a-interpreter.patch
+# Generate info for debuginfo files.
+Patch104: bash-2.05b-debuginfo.patch
+# Pid passed to setpgrp() can not be pid of a zombie process.
+Patch105: bash-2.05b-pgrp_sync.patch
+# Source bashrc file when bash is run under ssh.
+Patch107: bash-3.2-ssh_source_bash.patch
+# Use makeinfo to generate .texi file
+Patch108: bash-infotags.patch
+# Try to pick up latest `--rpm-requires` patch from http://git.altlinux.org/gears/b/bash4.git
+Patch109: bash-requires.patch
+Patch110: bash-setlocale.patch
+# Disable tty tests while doing bash builds
+Patch111: bash-tty-tests.patch
+
+# 484809, check if interp section is NOBITS
+Patch116: bash-4.0-nobits.patch
+
+# Do the same CFLAGS in generated Makefile in examples
+Patch117: bash-4.1-examples.patch
+
+# Builtins like echo and printf won't report errors
+# when output does not succeed due to EPIPE
+Patch118: bash-4.1-broken_pipe.patch
+
+# # Enable system-wide .bash_logout for login shells
+Patch119: bash-4.2-rc2-logout.patch
+
+# Static analyzis shows some issues in bash-2.05a-interpreter.patch
+Patch120: bash-4.2-coverity.patch
+
+# 799958, updated info about trap
+# This patch should be upstreamed.
+Patch122: bash-4.2-manpage_trap.patch
+
+# https://www.securecoding.cert.org/confluence/display/seccode/INT32-C.+Ensure+that+operations+on+signed+integers+do+not+result+in+overflow
+# This patch should be upstreamed.
+Patch123: bash-4.2-size_type.patch
+
+# 1112710 - mention ulimit -c and -f POSIX block size
+# This patch should be upstreamed.
+Patch124: bash-4.3-man-ulimit.patch
+
+# 1102815 - fix double echoes in vi visual mode
+Patch125: bash-4.3-noecho.patch
+
+#1241533,1224855 - bash leaks memory when LC_ALL set
+Patch126: bash-4.3-memleak-lc_all.patch
+
+# bash-4.4 builds loadable builtin examples by default
+# this patch disables it
+Patch127: bash-4.4-no-loadable-builtins.patch
+
+# 2020519 - [Regression] Add a runtime option to enable history logging to syslog
+# This option is undocumented in upstream and is documented by this patch
+Patch128: bash-5.0-syslog-history.patch
+
+# 2115206 - String matching behaves differently on aarch64
+Patch129: bash-5.1-mbrtowc.patch
+
+# 2141576 - CVE-2022-3715 bash: a heap-buffer-overflow in valid_parameter_transform
+Patch130: bash-5.2-check-xform.patch
+
+# Enable audit logs
+Patch131: bash-4.3-audit.patch
+
+# Fix an issue with adding newline in bracketed paste mode
+Patch132: bash-5.2-add-newline.patch
+
+# RHEL-20020 - Fix a performance regression while using large number of environment variables
+Patch133: bash-5.2-pipeline-exec.patch
+
+BuildRequires:  gcc
+BuildRequires: texinfo bison
+BuildRequires: ncurses-devel
+BuildRequires: autoconf, gettext
+# Required for bash tests
+BuildRequires: glibc-all-langpacks
+BuildRequires: make
+BuildRequires: audit-libs-devel
+Requires: filesystem >= 3
+Provides: /bin/sh
+Provides: /bin/bash
+
+%description
+The GNU Bourne Again shell (Bash) is a shell or command language
+interpreter that is compatible with the Bourne shell (sh). Bash
+incorporates useful features from the Korn shell (ksh) and the C shell
+(csh). Most sh scripts can be run by bash without modification.
+
+%package devel
+Summary: Development headers for %{name}
+Requires: %{name}%{?_isa} = %{version}-%{release}
+
+%description devel
+This package contains development headers for %{name}.
+
+%package doc
+Summary: Documentation files for %{name}
+Requires: %{name} = %{version}-%{release}
+
+%description doc
+This package contains documentation files for %{name}.
+
+%prep
+%autosetup -n %{name}-%{baseversion} -p1
+
+echo %{version} > _distribution
+echo %{release} > _patchlevel
+
+# force refreshing the generated files
+rm y.tab.*
+
+%build
+autoconf
+%configure --with-bash-malloc=no --with-afs
+
+# Recycles pids is neccessary. When bash's last fork's pid was X
+# and new fork's pid is also X, bash has to wait for this same pid.
+# Without Recycles pids bash will not wait.
+MFLAGS="CPPFLAGS=-D_GNU_SOURCE -DRECYCLES_PIDS -DDEFAULT_PATH_VALUE='\"/usr/local/bin:/usr/bin\"' `getconf LFS_CFLAGS` -DSYSLOG_HISTORY -DSYSLOG_SHOPT=0"
+
+# work around missing deps in Makefiles
+make "$MFLAGS" version.h
+make "$MFLAGS" %{?_smp_mflags} -C builtins
+make "$MFLAGS" %{?_smp_mflags}
+
+%install
+if [ -e autoconf ]; then
+  # Yuck. We're using autoconf 2.1x.
+  export PATH=.:$PATH
+fi
+
+# Fix bug #83776
+sed -i -e 's,bashref\.info,bash.info,' doc/bashref.info
+
+%make_install install-headers
+
+mkdir -p %{buildroot}/%{_sysconfdir}
+
+# make manpages for bash builtins as per suggestion in DOC/README
+pushd doc
+sed -e '
+/^\.SH NAME/, /\\- bash built-in commands, see \\fBbash\\fR(1)$/{
+/^\.SH NAME/d
+s/^bash, //
+s/\\- bash built-in commands, see \\fBbash\\fR(1)$//
+s/,//g
+b
+}
+d
+' builtins.1 > man.pages
+for i in echo pwd test kill; do
+  sed -i -e "s,$i,,g" man.pages
+  sed -i -e "s,  , ,g" man.pages
+done
+
+install -p -m 644 builtins.1 %{buildroot}%{_mandir}/man1/builtins.1
+
+for i in `cat man.pages` ; do
+  echo .so man1/builtins.1 > %{buildroot}%{_mandir}/man1/$i.1
+  chmod 0644 %{buildroot}%{_mandir}/man1/$i.1
+done
+popd
+
+# Link bash man page to sh so that man sh works.
+ln -s bash.1 %{buildroot}%{_mandir}/man1/sh.1
+
+# Not for printf, true and false (conflict with coreutils)
+rm -f %{buildroot}/%{_mandir}/man1/printf.1
+rm -f %{buildroot}/%{_mandir}/man1/true.1
+rm -f %{buildroot}/%{_mandir}/man1/false.1
+
+ln -sf bash %{buildroot}%{_bindir}/sh
+rm -f %{buildroot}%{_infodir}/dir
+mkdir -p %{buildroot}%{_sysconfdir}/skel
+install -p -m644 %SOURCE1 %{buildroot}/etc/skel/.bashrc
+install -p -m644 %SOURCE2 %{buildroot}/etc/skel/.bash_profile
+install -p -m644 %SOURCE3 %{buildroot}/etc/skel/.bash_logout
+LONG_BIT=$(getconf LONG_BIT)
+mv %{buildroot}%{_bindir}/bashbug \
+   %{buildroot}%{_bindir}/bashbug-"${LONG_BIT}"
+ln -s bashbug-"${LONG_BIT}" %{buildroot}%{_bindir}/bashbug
+ln -s bashbug.1 %{buildroot}/%{_mandir}/man1/bashbug-"$LONG_BIT".1
+
+# Fix missing sh-bangs in example scripts (bug #225609).
+for script in \
+  examples/scripts/shprompt
+# I don't know why these are gone in 4.3
+  #examples/scripts/krand.bash \
+  #examples/scripts/bcsh.sh \
+  #examples/scripts/precedence \
+do
+  cp "$script" "$script"-orig
+  echo '#!/bin/bash' > "$script"
+  cat "$script"-orig >> "$script"
+  rm -f "$script"-orig
+done
+
+# bug #820192, need to add execable alternatives for regular built-ins
+for ea in alias bg cd command fc fg getopts hash jobs read type ulimit umask unalias wait
+do
+  cat <<EOF > "%{buildroot}"/%{_bindir}/"$ea"
+#!/bin/sh
+builtin $ea "\$@"
+EOF
+chmod +x "%{buildroot}"/%{_bindir}/"$ea"
+done
+
+%find_lang %{name}
+
+# copy doc to /usr/share/doc
+cat /dev/null > %{name}-doc.files
+mkdir -p %{buildroot}/%{_pkgdocdir}/doc
+# loadables aren't buildable
+rm -rf examples/loadables
+for file in CHANGES COMPAT NEWS NOTES POSIX RBASH README examples
+do
+  cp -rp "$file" %{buildroot}%{_pkgdocdir}/"$file"
+  echo "%%doc %{_pkgdocdir}/$file" >> %{name}-doc.files
+done
+echo "%%doc %{_pkgdocdir}/doc" >> %{name}-doc.files
+
+
+
+%if %{with tests}
+%check
+make check
+%endif
+
+# post is in lua so that we can run it without any external deps.  Helps
+# for bootstrapping a new install.
+# Jesse Keating 2009-01-29 (code from Ignacio Vazquez-Abrams)
+# Roman Rakus 2011-11-07 (code from Sergey Romanov) #740611
+%post -p <lua>
+nl        = '\n'
+sh        = '/bin/sh'..nl
+bash      = '/bin/bash'..nl
+f = io.open('/etc/shells', 'a+')
+if f then
+  local shells = nl..f:read('*all')..nl
+  if not shells:find(nl..sh) then f:write(sh) end
+  if not shells:find(nl..bash) then f:write(bash) end
+  f:close()
+end
+
+%postun -p <lua>
+-- Run it only if we are uninstalling
+if arg[2] == 0
+then
+  t={}
+  for line in io.lines("/etc/shells")
+  do
+    if line ~= "/bin/bash" and line ~= "/bin/sh"
+    then
+      table.insert(t,line)
+    end
+  end
+
+  f = io.open("/etc/shells", "w+")
+  for n,line in pairs(t)
+  do
+    f:write(line.."\n")
+  end
+  f:close()
+end
+
+%files -f %{name}.lang
+%config(noreplace) /etc/skel/.b*
+%{_bindir}/sh
+%{_bindir}/bash
+%{_bindir}/alias
+%{_bindir}/bg
+%{_bindir}/cd
+%{_bindir}/command
+%{_bindir}/fc
+%{_bindir}/fg
+%{_bindir}/hash
+%{_bindir}/getopts
+%{_bindir}/jobs
+%{_bindir}/read
+%{_bindir}/type
+%{_bindir}/ulimit
+%{_bindir}/umask
+%{_bindir}/unalias
+%{_bindir}/wait
+%dir %{_pkgdocdir}/
+%license COPYING
+%attr(0755,root,root) %{_bindir}/bashbug[-.]*
+%{_bindir}/bashbug
+%{_infodir}/bash.info*
+%{_mandir}/*/*
+%{_mandir}/*/..1*
+%doc RBASH README
+%doc doc/{FAQ,INTRO,README,bash{,ref}.html}
+
+%files doc -f %{name}-doc.files
+%doc doc/*.ps doc/*.0 doc/*.html doc/article.txt
+
+%files devel
+%{_includedir}/%{name}
+%{_libdir}/pkgconfig/%{name}.pc
+
+%changelog
+* Tue Feb 13 2024 Siteshwar Vashisht <svashisht@redhat.com> - 5.1.8-9
+- Fix a performance regression while using large number of environment variables
+  Resolves: RHEL-20020
+
+* Mon Feb 12 2024 Siteshwar Vashisht <svashisht@redhat.com> - 5.1.8-8
+- Fix an issue with adding newline in bracketed paste mode
+  Resolves: #2168963
+
+* Wed Jan 24 2024 Siteshwar Vashisht <svashisht@redhat.com> - 5.1.8-7
+- Restore audit logs in bash-4.3 or newer versions
+  Resolves: RHEL-22619
+
+* Tue Nov 22 2022 Siteshwar Vashisht <svashisht@redhat.com> - 5.1.8-6
+- Add a null check in parameter_brace_transform() function
+  Resolves: CVE-2022-3715
+
+* Mon Aug 08 2022 Siteshwar Vashisht <svashisht@redhat.com> - 5.1.8-5
+- Fix an off by one error while calling mbrtowc()
+  Resolves: #2115206
+
+* Fri Nov 05 2021 Siteshwar Vashisht <svashisht@redhat.com> - 5.1.8-4
+- Fix runtime option to enable history logging to syslog
+  Resolves: #2020519
+
+* Thu Sep 30 2021 Siteshwar Vashisht <svashisht@redhat.com> - 5.1.8-3
+- Bump version number
+  Resolves: #2006138
+
+* Mon Aug 09 2021 Mohan Boddu <mboddu@redhat.com> - 5.1.8-2
+- Rebuilt for IMA sigs, glibc 2.34, aarch64 flags
+  Related: rhbz#1991688
+
+* Fri Jul 23 2021 Siteshwar Vashisht <svashisht@redhat.com> - 5.1.8-1
+- Update to bash-5.1 patchlevel 8
+
+* Thu Apr 15 2021 Mohan Boddu <mboddu@redhat.com> - 5.1.0-3
+- Rebuilt for RHEL 9 BETA on Apr 15th 2021. Related: rhbz#1947937
+
+* Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 5.1.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Wed Jan  6 10:40:25 CET 2021 Siteshwar Vashisht <svashisht@redhat.com> - 5.1.0-1
+- Rebase to bash 5.1
+  Resolves: #1904866
+
+* Fri Dec  4 14:44:06 CET 2020 Siteshwar Vashisht <svashisht@redhat.com> - 5.0.17-3
+- Enable sourcing files from ~/.bashrc.d
+  Resolves: #1726397
+
+* Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.17-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Mon Jun 01 2020 Siteshwar Vashisht <svashisht@redhat.com> - 5.0.17-1
+- Update to bash-5.0 patchlevel 17
+
+* Tue Jan 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.11-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Fri Dec 06 2019 Siteshwar Vashisht <svashisht@redhat.com> - 5.0.11-1
+- Update to bash-5.0 patchlevel 11
+  Resolves: #1745602
+
+* Fri Aug 02 2019 Kamil Dudka <kdudka@redhat.com> - 5.0.7-3
+- Sanitize public header file <shell.h>
+  Resolves: #1736676
+
+* Wed Jul 24 2019 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.7-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
+* Tue May 07 2019 Siteshwar Vashisht <svashisht@redhat.com> - 5.0.7-1
+- Update to bash-5.0 patchlevel 7
+
+* Thu Feb 14 2019 Siteshwar Vashisht <svashisht@redhat.com> - 5.0.2-1
+- Rebase to bash 5.0
+  Resolves: #1675080
+
+* Thu Jan 31 2019 Fedora Release Engineering <releng@fedoraproject.org> - 4.4.23-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Thu Jan 10 2019 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.23-6
+- Avoid duplicating user path entries
+  Resolves: #1652639
+
+* Mon Oct 08 2018 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.23-5
+- Fix some issues identified by coverity
+
+* Mon Sep 10 2018 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.23-4
+- Set custom PATH in non-login shells
+  Resolves: #1615131
+
+* Thu Jul 12 2018 Fedora Release Engineering <releng@fedoraproject.org> - 4.4.23-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Mon Jun 25 2018 Miro Hrončok <mhroncok@redhat.com> - 4.4.23-2
+- Move user bin directories in front of the PATH
+  See: https://fedoraproject.org/wiki/Changes/UserPathPrioritization
+  Resolves: #1595098
+
+* Tue Jun 12 2018 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.23-1
+- Update to bash-4.4 patchlevel 23
+  Resolves: #1585510
+
+* Thu Mar 15 2018 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.19-2
+- Fix handling case statement in command subsitution
+  Resolves: #1556867
+
+* Mon Feb 12 2018 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.19-1
+- Update to bash-4.4 patchlevel 19
+  Resolves: #1540383
+
+* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 4.4.12-14
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
+* Wed Nov 08 2017 Christoph Junghans <junghans@votca.org> - 4.4.12-13
+- Package headers in devel package, in prep for MPI-bash
+
+* Mon Oct 30 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.12-12
+- Revert change to always source from /etc/bashrc
+
+* Tue Aug 29 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.12-11
+- Always source from /etc/bashrc
+  Resolves: #1193590
+
+* Tue Aug 22 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.12-10
+- Enable parallel builds
+
+* Tue Aug 08 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.12-9
+- command should not be treated as special builtin
+  Resolves: #1479220
+
+* Wed Aug 02 2017 Fedora Release Engineering <releng@fedoraproject.org> - 4.4.12-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
+
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 4.4.12-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Fri Jun 30 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.12-6
+- Fix test for comparing file modification times when they differ by subsecond
+  Resolves: #1458008
+
+* Tue May 30 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.12-5
+- command builtin should not abort on variable assignment errors
+  Resolves: #1389838
+
+* Wed Apr 26 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.12-4
+- Explicitly unset nonblocking mode while reading from stdin
+  Resolves: #1068697
+
+* Wed Apr 26 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.12-3
+- Fix heredoc file descriptor leak
+  Resolves: #1413676
+
+* Tue Apr 18 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.12-2
+- Document 'bashbug' for reporting bugs
+  Resolves: #1255886
+
+* Mon Apr 10 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.12-1
+- Update to bash-4.4 patchlevel 12
+
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 4.4.11-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Sat Jan 21 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.11-1
+- Update to bash-4.4 patchlevel 11
+
+* Mon Jan 16 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.5-1
+- Update to bash-4.4 patchlevel 5
+
+* Fri Jan 06 2017 Siteshwar Vashisht <svashisht@redhat.com> - 4.4.0-1
+- Rebase to bash-4.4
+  Resolves: #1376609
+
+* Fri Sep 30 2016 Siteshwar Vashisht <svashisht@redhat.com> - 4.3.43-4
+- CVE-2016-7543: Fix for arbitrary code execution via SHELLOPTS+PS4 variables
+  Resolves: #1379634
+
+* Wed Sep 21 2016 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 4.3.43-3
+- CVE-2016-0634 - Fix for arbitrary code execution via malicious hostname
+  Resolves: #1377614
+
+* Tue Sep  6 2016 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 4.3.43-2
+- Inverted the condition for UsrMove safeguard check, so we comply with:
+  https://fedoraproject.org/wiki/Packaging:Conflicts
+
+* Thu Jun 23 2016 Siteshwar Vashisht <svashisht@redhat.com> - 4.3.43-1
+- Fix a crash in nested pipeline in lastpipe mode
+  Resolves: #1349430
+
+* Tue May 17 2016 Siteshwar Vashisht <svashisht@redhat.com> - 4.3.42-5
+- Do not set terminate_immediately and interrupt_immediately while expanding tilda
+  Resolves: #1336800
+
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 4.3.42-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Mon Jan 11 2016 Ondrej Oprala <ooprala@redhat.com> - 4.3.42-3
+- Actually do it properly this time
+  Related: #1297166
+
+* Mon Jan 11 2016 Ondrej Oprala <ooprala@redhat.com> - 4.3.42-2
+- Provide exec-able alternatives to hash, type and ulimit
+  Resolves: #1297166
+
+* Tue Aug 18 2015 Ondrej Oprala - 4.3.42-1
+- Patchlevel 42
+
+* Mon Aug 03 2015 Ondrej Oprala - 4.3.39-6
+- #1245233 - fixed memleak
+
+* Wed Jul 15 2015 Ondrej Oprala - 4.3.39-5
+- #1182278 - bash crashes on `select' if REPLY is readonly
+- #1241533,1224855 - bash memleak when LC_ALL set
+
+* Tue Jun 30 2015 Ondrej Oprala - 4.3.39-4
+- Fix a leak introduced by plevel39
+
+* Tue Jun 30 2015 Ondrej Oprala - 4.3.39-3
+- Fix --rpm-requires
+
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.3.39-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Thu May 21 2015 Ondrej Oprala <ooprala@redhat.com> - 4.3.39-1
+- Patchlevel 39
+
+* Mon Mar 16 2015 Than Ngo <than@redhat.com> 4.3.33-3
+- rebuild against new gcc
+
+* Fri Jan 23 2015 Elad Alfassa <elad@fedoraproject.org> - 4.3.25-3
+- Enable PIE (hardened build)
+
+* Tue Dec 30 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.33-1
+- Patchlevel 33
+
+* Wed Oct 08 2014 Dan Horák <dan[at]danny.cz> - 4.3.30-2
+- force refreshing generated files, fixes build on s390
+
+* Mon Oct 06 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.30-1
+- Patchlevel 30
+
+* Mon Oct 06 2014  Ondrej Oprala <ooprala@redhat.com> - 4.3.28-1
+- RedHat's patchlevel 28
+
+* Thu Sep 25 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.25-2
+- CVE-2014-7169
+  Resolves: #1146319
++
+* Thu Sep 25 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.25-1
+- Patchlevel 25
+
+* Wed Sep 24 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.24-2
+- Inhibit code injection - patch by Stephane Chazelas
+
+* Wed Aug 20 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.24-1
+- Patchlevel 24
+
+* Fri Aug 15 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.3.22-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Mon Aug 04 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.22-1
+- Patchlevel 22
+
+* Wed Jul 30 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.18-7
+- #1102815 - fix double echo in vi visual mode
+
+* Thu Jul 24 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.18-6
+- Apply all upstream patches since 4.3-18-1 up to this date
+
+* Thu Jul 24 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.18-5
+- Array name expansion - apply upstream quickfix
+
+* Mon Jul 21 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.18-4
+- Mention ulimit -c and -f block size in POSIX mode
+
+* Fri Jul 11 2014 Tom Callaway <spot@fedoraproject.org> - 4.3.18-3
+- fix license handling
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.3.18-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Mon Apr 14 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.18-1
+- Patchlevel 18
+
+* Mon Apr 14 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.11-2
+- And let the build system know...
+
+* Mon Apr 14 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.11-1
+- Patchlevel 11
+
+* Tue Apr 01 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.8-1
+- Patchlevel 8
+
+* Thu Feb 27 2014 Ondrej Oprala <ooprala@redhat.com> - 4.3.0-1
+- Update to bash-4.3
+
+* Wed Dec 04 2013 Ondrej Oprala <ooprala@redhat.com> - 4.2.45-6
+- Change the paths for format-security patch
+
+* Wed Dec 04 2013 Ondrej Oprala <ooprala@redhat.com> - 4.2.45-5
+- bash FTBFS if -Werror=format-string is used (#1036998)
+
+* Fri Aug 09 2013 Roman Rakus <rrakus@redhat.com> - 4.2.45-4
+- Added suggestion to .bashrc how to disable autopaging in systemctl
+
+* Fri Jul 26 2013 Ville Skyttä <ville.skytta@iki.fi> - 4.2.45-3
+- Install docs to %%{_pkgdocdir} where available.
+- Fix bogus dates in %%changelog.
+
+* Thu Jun 27 2013 Roman Rakus <rrakus@redhat.com> - 4.2.45-2
+- Fixed a bug that caused trap handlers to be executed recursively,
+  corrupting internal data structures.
+
+* Mon Mar 11 2013 Roman Rakus <rrakus@redhat.com> - 4.2.45-1
+- Patchlevel 45
+
+* Thu Jan 31 2013 Roman Rakus <rrakus@redhat.com> - 4.2.42-3
+- Fix usage of partial unitialized structure
+  Resolves: #857948
+
+* Thu Jan 31 2013 Roman Rakus <rrakus@redhat.com> - 4.2.42-2
+- Fix fd leaks
+  Resolves: #903833
+
+* Thu Jan 03 2013 Roman Rakus <rrakus@redhat.com> - 4.2.42-1
+- Patchlevel 42
+
+* Thu Nov 29 2012 Roman Rakus <rrakus@redhat.com> - 4.2.39-3
+- Use unsigned type for size
+
+* Tue Nov 27 2012 Roman Rakus <rrakus@redhat.com> - 4.2.39-2
+- Create bashbug symlink
+
+* Fri Nov 02 2012 Roman Rakus <rrakus@redhat.com> - 4.2.39-1
+- Patchlevel 39
+
+* Tue Aug 28 2012 Roman Rakus <rrakus@redhat.com> - 4.2.37-8
+- Fix a comments in rpm changelog
+
+* Tue Aug 28 2012 Roman Rakus <rrakus@redhat.com> - 4.2.37-7
+- Update info about trap in man page
+  Resolves: #799958
+- instead of setting the signal handler to SIG_IGN while installing
+  the new trap handler, block the signal and unblock it after the new handler
+  is installed
+  Resolves: #695656
+
+* Wed Aug 22 2012 Ondrej Oprala <ooprala@redhat.com> - 4.2.37-6
+- Revert revision 4.2.37-5 - already fixed upstream
+
+* Tue Aug 21 2012 Ondrej Oprala <ooprala@redhat.com> - 4.2.37-5
+- Don't filter out environmental variables with
+  a dot in the name
+  Resolves: #819995
+
+* Wed Aug 08 2012 Roman Rakus <rrakus@redhat.com> - 4.2.37-4
+- Added doc subdir to bash-doc ownership list
+  Resolves: #846734
+
+* Tue Jul 24 2012 Roman Rakus <rrakus@redhat.com> - 4.2.37-3
+- Increment patchlevel tag
+
+* Tue Jul 24 2012 Roman Rakus <rrakus@redhat.com> - 4.2.36-3
+- Patchlevel 37
+
+* Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.2.36-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Tue Jul 10 2012 Roman Rakus <rrakus@redhat.com> - 4.2.36-1
+- Patchlevel 36
+
+* Sat Jun 23 2012 Roman Rakus <rrakus@redhat.com> - 4.2.29-3
+- Remove /bin from DEFAULT_PATH_VALUE
+  Resolves: #834571
+
+* Thu May 31 2012 Roman Rakus <rrakus@redhat.com> - 4.2.29-2
+- Patchlevel 29
+- Also keep release at -2, so we are newer then f16 and f17
+
+* Tue May 29 2012 Roman Rakus <rrakus@redhat.com> - 4.2.28-2
+- Provide exec-able alternatives to some builtins
+  Resolves #820192
+
+* Wed May 09 2012 Roman Rakus <rrakus@redhat.com> - 4.2.28-1
+- Patchlevel 28
+
+* Mon Apr 23 2012 Roman Rakus <rrakus@redhat.com> - 4.2.24-2
+- Don't call malloc in signal handler
+
+* Tue Mar 13 2012 Roman Rakus <rrakus@redhat.com> - 4.2.24-1
+- Patchlevel 24
+
+* Wed Jan 25 2012 Harald Hoyer <harald@redhat.com> 4.2.20-4
+- install everything in /usr
+  https://fedoraproject.org/wiki/Features/UsrMove
+
+* Thu Jan 12 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.2.20-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Thu Nov 24 2011 Roman Rakus <rrakus@redhat.com> - 4.2.20-2
+- Add missing f:close() in postun
+- Patchlevel 20
+
+* Thu Nov 10 2011 Roman Rakus <rrakus@redhat.com> - 4.2.10-7
+- erase /bin/bash and /bin/sh in postun only if we are uninstalling (#752827)
+
+* Mon Nov 07 2011 Roman Rakus <rrakus@redhat.com> - 4.2.10-6
+- Simplified lua post script (#740611)
+
+* Fri Jul 29 2011 Roman Rakus <rrakus@redhat.com> - 4.2.10-5
+- Clean up unneeded bash-doc files (Ville Skyttä) (#721116)
+
+* Wed Jun 22 2011 Roman Rakus <rrakus@redhat.com> - 4.2.10-4
+- Don't crash when use `read' with associative array (#715050)
+
+* Tue Jun 07 2011 Roman Rakus <rrakus@redhat.com> - 4.2.10-3
+- Added $HOME/.local/bin to PATH in .bash_profile (#699812)
+
+* Thu May 05 2011 Roman Rakus <rrakus@redhat.com> - 4.2.10-2
+- Inc. a release no.
+
+* Thu May 05 2011 Roman Rakus <rrakus@redhat.com> - 4.2.10-1
+- Patchlevel 10
+
+* Thu Mar 31 2011 Roman Rakus <rrakus@redhat.com> - 4.2.8-2
+- Remove bash-4.2-xdupmbstowcs2-patch, which introduced another bugs
+
+* Tue Mar 15 2011 Roman Rakus <rrakus@redhat.com> - 4.2.8-1
+- Patchlevel 8
+
+* Tue Mar 15 2011 Roman Rakus <rrakus@redhat.com> - 4.2.7-3
+- #684293, fix the infinite loop with invalid wide char
+
+* Mon Mar 14 2011 Roman Rakus <rrakus@redhat.com> - 4.2.7-2
+- Use lua script in postun
+
+* Mon Mar 07 2011 Roman Rakus <rrakus@redhat.com> - 4.2.7-1
+- Patchlevel 7
+
+* Wed Mar 02 2011 Roman Rakus <rrakus@redhat.com> - 4.2.6-1
+- Patchlevel 6
+
+* Tue Mar 01 2011 Roman Rakus <rrakus@redhat.com> - 4.2.5-1
+- Patchlevel 5
+- Static analyzis show some issues in some patches
+- Some cleanup
+
+* Wed Feb 16 2011 Roman Rakus <rrakus@redhat.com> - 4.2.0-2
+- pattern matching glitch, patch from upstream
+
+* Wed Feb 16 2011 Roman Rakus <rrakus@redhat.com> - 4.2.0-1
+- Release bash-4.2
+
+* Mon Feb 14 2011 Roman Rakus <rrakus@redhat.com> - 4.2.0-0.2.rc2
+- Enable system-wide .bash_logout for login shells
+
+* Wed Feb 09 2011 Roman Rakus <rrakus@redhat.com> - 4.2.0-0.1.rc2
+- Update to bash-4.2-rc2
+
+* Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.1.9-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Thu Jan 06 2011 Roman Rakus <rrakus@redhat.com> - 4.1.9-5
+- Builtins like echo and printf won't report errors
+  when output does not succeed due to EPIPE
+
+* Thu Dec 16 2010 Roman Rakus <rrakus@redhat.com> - 4.1.9-4
+- Drop doc/examples/loadables
+
+* Wed Dec 01 2010 Roman Rakus <rrakus@redhat.com> - 4.1.9-3
+- don't segfault when trying to bind int variable to array
+  with bad array subsrcipt
+  Resolves: #618289
+
+* Fri Oct 15 2010 Ville Skyttä <ville.skytta@iki.fi> - 4.1.9-2
+- Move doc dir ownership to main package.
+- Preserve doc timestamps.
+- Add --without tests option for building without running the test suite.
+
+* Thu Oct 14 2010 Roman Rakus <rrakus@redhat.com> - 4.1.9-1
+- Patch level 9
+
+* Mon Aug 02 2010 Roman Rakus <rrakus@redhat.com> - 4.1.7-4
+- Use better nomenclature for --rpm-requires bash option (#557134)
+
+* Tue Jun 22 2010 Roman Rakus <rrakus@redhat.com> - 4.1.7-3
+- Added missing patch
+
+* Tue Jun 22 2010 Roman Rakus <rrakus@redhat.com> - 4.1.7-2
+- Do the same CFLAGS in generated Makefile in examples
+
+* Fri May 21 2010 Roman Rakus <rrakus@redhat.com> - 4.1.7-1
+- Patch level 7
+
+* Mon Apr 12 2010 Roman Rakus <rrakus@redhat.com> - 4.1.5-1
+- Patch level 5
+- There's no more need for Requires(post) ncurses-libs
+
+* Tue Mar 30 2010 Roman Rakus <rrakus@redhat.com> - 4.1.2-4
+- Corrected requires patch (#563301)
+
+* Fri Jan 22 2010 rrakus@redhat.com 4.1.2-3
+- Don't use cond-rmatch patch
+- Use manso patch
+- Include COPYING in base bash rpm
+
+* Fri Jan 22 2010 rrakus@redhat.com 4.1.2-2
+- Correct patchlevel 2
+
+* Fri Jan 22 2010 Roman Rakus rrakus@redhat.com 4.1.2-1
+- Patchlevel 4.2
+- Removed old patch
+- Returned back manso patch
+
+* Fri Jan 08 2010 Roman Rakus rrakus@redhat.com 4.1.0-2
+- Include COPYING in doc dir
+
+* Mon Jan 04 2010 Roman Rakus <rrakus@redhat.com> - 4.1.0-1
+- Upstream 4.1
+
+* Sun Dec 27 2009 Roman Rakus <rrakus@redhat.com> - 4.1-0.2.rc1
+- Fixed patch for fuzz=0
+
+* Sun Dec 27 2009 Roman Rakus <rrakus@redhat.com> - 4.1-0.1.rc1
+- Upstream 4.1.rc1
+
+* Fri Dec 11 2009 Roman Rakus <rrakus@redhat.com> - 4.0.35-2
+- Don't segfault when TERM=eterm* and EMACS is unset (#530911)
+
+* Thu Oct 29 2009 Roman Rakus <rrakus@redhat.com> - 4.0.35-1
+- Patch level 35
+
+* Mon Oct 05 2009 Roman Rakus <rrakus@redhat.com> - 4.0.33-2
+- Make symlink from bashbug-suffix to bashbug man pages
+
+* Wed Sep 16 2009 Roman Rakus <rrakus@redhat.com> - 4.0.33-1
+- Patch level 33
+- spec file cleanup
+
+* Fri Sep 04 2009 Roman Rakus <rrakus@redhat.com> - 4.0.28-3
+- check if interp section is NOBITS
+- define Recycles pids
+
+* Wed Aug 26 2009 Roman Rakus <rrakus@redhat.com> - 4.0.28-2
+- alloc memory for key in creation associative array (#518644)
+
+* Tue Jul 28 2009 Roman Rakus <rrakus@redhat.com> - 4.0.28-1
+- Upstream patch level 28
+
+* Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.0.24-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
+
+* Tue May 19 2009 Roman Rakus <rrakus@redhat.com> - 4.0.24-1
+- Upstream patch level 24
+
+* Wed Apr 22 2009 Roman Rakus <rrakus@redhat.com> - 4.0.16-1
+- better to use patch level in version tag like vim do
+
+* Tue Apr 21 2009 Roman Rakus <rrakus@redhat.com> - 4.0-7.16
+- Use patch level in Release tag
+
+* Wed Apr 08 2009 Roman Rakus <rrakus@redhat.com> - 4.0-6
+- Official upstream patch level 16
+
+* Mon Mar 30 2009 Roman Rakus <rrakus@redhat.com> - 4.0-5
+- Split documentation, use bash-doc package
+  Resolves: #492447
+
+* Sat Mar 21 2009 Lubomir Rintel <lkundrak@v3.sk> - 4.0-4
+- Add full URLs to upstream patches
+- Don't uselessly use %%version macro
+
+* Wed Mar 11 2009 Roman Rakus <rrakus@redhat.com> - 4.0-3
+- Official upstream patch level 10
+
+* Wed Feb 25 2009 Roman Rakus <rrakus@redhat.com> - 4.0-2
+- Save parser state in pcomplete.
+  Resolves: #487257
+
+* Tue Feb 24 2009 Roman Rakus <rrakus@redhat.com> - 4.0-1
+- Release of bash-4.0
+
+* Mon Feb 23 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.0-0.5.rc1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
+
+* Wed Feb 11 2009 Roman Rakus <rrakus@redhat.com> - 4.0-0.4.rc1
+- Fix handling pipelines with `set -e'
+  Resolves: #483385
+
+* Thu Jan 29 2009 Roman Rakus <rrakus@redhat.com> - 4.0-0.3.rc1
+- No more debug output
+  Resolves: #483002
+
+* Wed Jan 28 2009 Jesse Keating <jkeating@redhat.com> - 4.0-0.2.rc1
+- Replace post code with lua to be able to not have external deps
+
+* Mon Jan 26 2009 Roman Rakus <rrakus@redhat.com> - 4.0-0.1.rc1
+- Fixed release tag
+
+* Wed Jan 21 2009 Roman Rakus <rrakus@redhat.com> - 4.0-rc1.1
+- Bump to upstream bash-4.0-rc1
+
+* Mon Dec 15 2008 Roman Rakus <rrakus@redhat.com> - 3.2-33
+- fc builtin fix
+  Resolves: #438841
+
+* Mon Dec 15 2008 Roman Rakus <rrakus@redhat.com> - 3.2-32
+- Enabling auditing
+  Resolves: #476216
+
+* Tue Dec 09 2008 Roman Rakus <rrakus@redhat.com> - 3.2-31
+- Patchlevel 48
+
+* Thu Dec 04 2008 Roman Rakus <rrakus@redhat.com> - 3.2-30
+- Added check for `command_not_found_handler' shell function
+  Resolves: #432579
+
+* Tue Oct 28 2008 Jesse Keating <jkeating@redhat.com> - 3.2-29
+- Add the Requires(post) back for ncurses-libs, so that rpm knows
+  where to break the loop.  The post actually does require the curses
+  libs for the sh calls.  Could consider doing this in LUA and not have
+  any external deps.
+
+* Thu Oct 23 2008 Roman Rakus <rrakus@redhat.com> - 3.2-28
+- Removing Requires for mktemp and ncurses, which cause
+  dependencing loop
+- Enabling #define SSH_SOURCE_BASHRC, because ssh changed.
+  Resolves: #458839
+- Catch signals right after calling execve()
+  Resolves: #455548
+
+* Thu Jul 17 2008 Roman Rakus <rrakus@redhat.com> - 3.2-27
+- Changes in man page - #442018, #445692, #446625, #453409
+- Changed patches to satisfy fuzz=0
+
+* Thu Jun  5 2008 Roman Rakus <rrakus@redhat.com> - 3.2-26
+- Patchlevel 39
+
+* Tue Jun  3 2008 Roman Rakus <rrakus@redhat.com> - 3.2-25
+- #449512 - reverting back last change - don't use glob library
+
+* Wed May 28 2008 Roman Rakus <rrakus@redhat.com> - 3.2-24
+- #217359 - use posix glob library
+
+* Thu May 22 2008 Roman Rakus <rrakus@redhat.com> - 3.2-23
+- #446420 - COMP_WORDBREAKS settings now works
+
+* Fri Feb 29 2008 Tomas Janousek <tjanouse@redhat.com> - 3.2-22
+- drop /usr/bin/clear from /etc/skel/.bash_logout as suggested by #429406
+
+* Wed Feb 20 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 3.2-21
+- Autorebuild for GCC 4.3
+
+* Mon Jan 14 2008 Tomas Janousek <tjanouse@redhat.com> - 3.2-20
+- Added bash32-026 upstream official patch
+- Added bash32-027 upstream official patch (#249987)
+- Added bash32-028 upstream official patch
+- Added bash32-029 upstream official patch (#286861)
+- Added bash32-030 upstream official patch
+- Added bash32-031 upstream official patch (#358231)
+- Added bash32-032 upstream official patch
+- Added bash32-033 upstream official patch
+- Fix insert command repeating in vi mode (#190350)
+
+* Tue Nov 06 2007 Tomas Janousek <tjanouse@redhat.com> - 3.2-19
+- fix cursor position when prompt has one invisible character (#358231)
+- dropped examples/loadables/ from docs, since it wasn't possible to build them
+  anyway (#174380)
+- fix #286861: Wrong input confuses bash's arithmetic unit permanently
+- fix #344411: $RANDOM stays the same when job executed in the background
+
+* Fri Aug 31 2007 Pete Graner <pgraner@redhat.com> - 3.2-18
+- Added bash32-021 upstream official patch
+- Added bash32-025 upstream official patch
+- Added bash32-024 upstream official patch
+- Added bash32-023 upstream official patch
+- Added bash32-022 upstream official patch
+
+* Wed Aug 29 2007 Pete Graner <pgraner@redhat.com> - 3.2-17
+- Added bash32-018 upstream official patch
+- Added bash32-020 upstream official patch
+- Added bash32-019 upstream official patch
+
+* Thu Aug 23 2007 Pete Graner <pgraner@redhat.com> - 3.2-16
+- Rebuild
+
+* Mon Aug 20 2007 Pete Graner <pgraner@redhat.com> - 3.2-15
+- Update to the Improve bash $RANDOM pseudo RNG (bug #234906)
+  now works with subshells and make $RANDOM on demand thus reducing the
+  amount of AVCs thrown.
+
+* Thu Aug 16 2007 Pete Graner <pgraner@redhat.com> - 3.2-15
+- Changed spec file License to GPLv2+
+
+* Wed Aug 15 2007 Pete Graner <pgraner@redhat.com> - 3.2-13
+- Improve bash $RANDOM pseudo RNG (bug #234906)
+
+* Fri Jul 20 2007 Tim Waugh <twaugh@redhat.com> 3.2-12
+- Quote environment variables in the post scriptlet to prevent upgrade
+  failures (bug #249005).
+
+* Thu Jul  5 2007 Tim Waugh <twaugh@redhat.com> 3.2-11
+- Patchlevel 17 (bug #241647).
+
+* Wed Jul  4 2007 Tim Waugh <twaugh@redhat.com> 3.2-10
+- Clarification in the ulimit man page (bug #220657).
+
+* Mon Feb 12 2007 Tim Waugh <twaugh@redhat.com> 3.2-9
+- Rebuild to link with libtinfo instead of libncurses.
+
+* Wed Feb  7 2007 Tim Waugh <twaugh@redhat.com> 3.2-8
+- Avoid %%makeinstall (bug #225609).
+
+* Tue Feb  6 2007 Tim Waugh <twaugh@redhat.com> 3.2-7
+- Reinstated this change:
+  - Post requires ncurses (bug #224567).
+- Reverted this change:
+  - Added triggers for install-info (bug #225609).
+
+* Tue Feb  6 2007 Tim Waugh <twaugh@redhat.com> 3.2-6
+- Reverted this change:
+  - Post requires ncurses (bug #224567).
+
+* Mon Feb  5 2007 Tim Waugh <twaugh@redhat.com> 3.2-5
+- Added triggers for install-info (bug #225609).
+- Use full path to utilities in scriptlets (bug #225609).
+- Fix missing sh-bangs in example scripts (bug #225609).
+- Post requires ncurses (bug #224567).
+- Removed Prefix tag (bug #225609).
+- Fixed BuildRoot tag (bug #225609).
+- Removed trailing full-stop from summary (bug #225609).
+- Spec file is now UTF-8 (bug #225609).
+- Removed obsolete Obsoletes (bug #225609).
+- Moved 'make check' to new 'check' section (bug #225609).
+- Removed uses of RPM_SOURCE_DIR (bug #225609).
+- Fixed macros in changelog (bug #225609).
+- Changed tabs to spaces (bug #225609).
+
+* Tue Jan 23 2007 Tim Waugh <twaugh@redhat.com> 3.2-4
+- Slightly better .bash_logout (bug #223960).
+
+* Fri Jan 19 2007 Tim Waugh <twaugh@redhat.com> 3.2-3
+- Back out rmatch change introduced in 3.2 (bug #220087).
+
+* Tue Jan 16 2007 Miroslav Lichvar <mlichvar@redhat.com> 3.2-2
+- Link with ncurses.
+
+* Fri Dec 15 2006 Tim Waugh <twaugh@redhat.com> 3.2-1
+- Build requires autoconf and gettext.
+- 3.2.  No longer need aq, login, ulimit, sighandler or read-memleak
+  patches.
+
+* Wed Jul 12 2006 Tim Waugh <twaugh@redhat.com> 3.1-17
+- Fixed 'tags out of date' problem with 'info bash' (bug #150118).
+
+* Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 3.1-16.1
+- rebuild
+
+* Wed Jun 28 2006 Tim Waugh <twaugh@redhat.com> 3.1-16
+- Removed 'unset USERNAME' from default .bash_profile (bug #196735).
+
+* Thu Jun 15 2006 Tim Waugh <twaugh@redhat.com> 3.1-15
+- Updated requires patch to the ALT version.
+
+* Wed May 31 2006 Tim Waugh <twaugh@redhat.com> 3.1-14
+- More sighandler fixes, this time hypothetical.
+
+* Thu May 25 2006 Tim Waugh <twaugh@redhat.com> 3.1-13
+- Another fix for the sighandler patch (bug #192297).
+
+* Thu Apr 13 2006 Tim Waugh <twaugh@redhat.com> 3.1-12
+- Patchlevel 17.
+
+* Tue Apr  4 2006 Tim Waugh <twaugh@redhat.com> 3.1-11
+- Patchlevel 16.
+
+* Thu Mar 23 2006 Tim Waugh <twaugh@redhat.com> 3.1-10
+- Patchlevel 14.
+
+* Thu Mar  2 2006 Tim Waugh <twaugh@redhat.com> 3.1-9
+- Fixed duplicate documentation of ulimit '-x' option introduced by
+  ulimit patch (bug #183596).
+
+* Tue Feb 21 2006 Tim Waugh <twaugh@redhat.com> 3.1-8
+- Patchlevel 10.
+
+* Thu Feb 16 2006 Tim Waugh <twaugh@redhat.com> 3.1-7
+- Patchlevel 8.
+
+* Fri Feb 10 2006 Jesse Keating <jkeating@redhat.com> - 3.1-6.2
+- bump again for double-long bug on ppc(64)
+
+* Tue Feb 07 2006 Jesse Keating <jkeating@redhat.com> - 3.1-6.1
+- rebuilt for new gcc4.1 snapshot and glibc changes
+
+* Sun Feb  5 2006 Tim Waugh <twaugh@redhat.com> 3.1-6
+- Patchlevel 7.
+
+* Wed Jan 18 2006 Tim Waugh <twaugh@redhat.com>
+- Removed inaccuracies from %%description (bug #178189).
+
+* Fri Jan 13 2006 Tim Waugh <twaugh@redhat.com> 3.1-5
+- Fix 'exec -l /bin/bash'.
+
+* Thu Jan 12 2006 Tim Waugh <twaugh@redhat.com> 3.1-4
+- Fix sighandler patch bug (bug #177545).
+
+* Tue Jan 10 2006 Tim Waugh <twaugh@redhat.com> 3.1-3
+- Patchlevel 5.
+
+* Fri Jan  6 2006 Tim Waugh <twaugh@redhat.com> 3.1-2
+- No longer need loadables, mbinc or shellfunc patches.
+- Use literal single-quote in bash man page where appropriate (bug #177051).
+
+* Mon Jan  2 2006 Tim Waugh <twaugh@redhat.com> 3.1-1
+- 3.1.
+- No longer need ia64, utf8, multibyteifs, jobs, sigpipe,
+  read-e-segfault, manpage, crash, pwd, afs, subshell patches.
+- Remove wrap patch for now.
+- Use upstream patch to fix arrays.
+
+* Thu Dec 15 2005 Tim Waugh <twaugh@redhat.com> 3.0-41
+- Missed another loop for improved sighandler patch (bug #169231).
+
+* Fri Dec 09 2005 Jesse Keating <jkeating@redhat.com>
+- rebuilt
+
+* Thu Dec  8 2005 Tim Waugh <twaugh@redhat.com> 3.0-40
+- Fix read memleak when reading from non-blocking fd (bug #173283).
+- Missed another loop for improved sighandler patch (bug #169231).
+
+* Wed Dec  7 2005 Tim Waugh <twaugh@redhat.com> 3.0-39
+- Missed a loop for improved sighandler patch (bug #169231).
+
+* Tue Dec  6 2005 Tim Waugh <twaugh@redhat.com> 3.0-38
+- Test out improved sighandler patch (bug #169231).
+
+* Tue Nov 22 2005 Tim Waugh <twaugh@redhat.com> 3.0-37
+- Applied patch from upstream to fix parsing problem (bug #146638).
+
+* Wed Nov  9 2005 Tim Waugh <twaugh@redhat.com> 3.0-36
+- Added Url: tag (bug #172770).
+- Do not explicitly gzip info pages (bug #172770).
+- Fix permissions on bashbug (bug #172770).
+
+* Thu Oct  6 2005 Tim Waugh <twaugh@redhat.com> 3.0-35
+- Fixed memory allocation bug in multibyteifs patch (bug #169996).
+
+* Fri Sep 23 2005 Tim Waugh <twaugh@redhat.com>
+- Use 'volatile' in sighandler patch.
+
+* Wed Sep 21 2005 Tim Waugh <twaugh@redhat.com> 3.0-34
+- Avoid writing history files during signal handling (bug #163235).
+
+* Mon Aug  8 2005 Tim Waugh <twaugh@redhat.com> 3.0-33
+- Fixed multibyte IFS handling for invalid input (bug #165243).
+
+* Mon Aug  8 2005 Tim Waugh <twaugh@redhat.com> 3.0-32
+- Fixed 'LC_ALL=C export LC_ALL' behaviour (bug #165249).
+
+* Thu Jun 23 2005 Tim Waugh <twaugh@redhat.com>
+- Added ulimit support for RLIMIT_NICE and RLIMIT_RTPRIO (bug #157049).
+
+* Wed Jun  8 2005 Tim Waugh <twaugh@redhat.com>
+- Move a comment in dot-bashrc (bug #159522).
+
+* Tue May 10 2005 Tim Waugh <twaugh@redhat.com> 3.0-31
+- Small fix for multibyteifs patch to prevent segfault (bug #157260).
+
+* Wed Apr 20 2005 Tim Waugh <twaugh@redhat.com>
+- Fixed AFS support for output redirection, so that the correct errors
+  are reported for other filesystems (bug #155373).
+
+* Tue Mar 15 2005 Tim Waugh <twaugh@redhat.com> 3.0-30
+- Fix PS1 expansion crash when PWD is unset (bg #151116).
+
+* Wed Mar  2 2005 Tim Waugh <twaugh@redhat.com> 3.0-29
+- Rebuild for new GCC.
+
+* Thu Feb 17 2005 Tim Waugh <twaugh@redhat.com> 3.0-28
+- Define _GNU_SOURCE in CPPFLAGS (bug #147573).
+
+* Mon Feb 14 2005 Tim Waugh <twaugh@redhat.com>
+- Reverted this change:
+  - Added code to /etc/skel/.bash_logout to support the gpm selection buffer
+    invalidation on virtual terminals (bug #115493).
+
+* Mon Jan 31 2005 Tim Waugh <twaugh@redhat.com> 3.0-27
+- Applied upstream patch to fix a potential NULL dereference.
+
+* Fri Jan 28 2005 Tim Waugh <twaugh@redhat.com> 3.0-26
+- Fixed job handling bug (bug #145124).
+
+* Sun Dec  5 2004 Tim Waugh <twaugh@redhat.com> 3.0-25
+- Applied patch from Florian La Roche to fix CPPFLAGS quoting in spec file.
+
+* Tue Nov 30 2004 Tim Waugh <twaugh@redhat.com>
+- Fixed typo in man page (spotted on bug-bash).
+
+* Thu Nov 18 2004 Tim Waugh <twaugh@redhat.com> 3.0-24
+- Use upstream patch to fix bug #139575 and bug #139306.
+
+* Thu Nov 18 2004 Tim Waugh <twaugh@redhat.com> 3.0-23
+- Fixed last patch to avoid regressions (bug #139575).
+
+* Mon Nov 15 2004 Tim Waugh <twaugh@redhat.com> 3.0-22
+- Fixed prompt wrapping code to cope with zero-length prompts (bug #139306).
+
+* Thu Nov 11 2004 Tim Waugh <twaugh@redhat.com> 3.0-21
+- Added code to /etc/skel/.bash_logout to support the gpm selection buffer
+  invalidation on virtual terminals (bug #115493).
+
+* Wed Nov 10 2004 Tim Waugh <twaugh@redhat.com> 3.0-20
+- Patchlevel 16.
+
+* Mon Nov  1 2004 Tim Waugh <twaugh@redhat.com>
+- Patchlevel 15.
+
+* Tue Oct 19 2004 Tim Waugh <twaugh@redhat.com> 3.0-17
+- Patchlevel 14.
+- No longer need brace patch.
+
+* Wed Sep 29 2004 Tim Waugh <twaugh@redhat.com> 3.0-16
+- Apply patch from Chet Ramey to fix brace expansion.
+
+* Fri Sep 24 2004 Tim Waugh <twaugh@redhat.com> 3.0-15
+- Minor fix for job handling.
+
+* Mon Sep 13 2004 Tim Waugh <twaugh@redhat.com>
+- Add bashbug back in (with suffix).
+
+* Mon Sep 13 2004 Tim Waugh <twaugh@redhat.com>
+- Remove bash2.
+
+* Fri Sep 10 2004 Tim Waugh <twaugh@redhat.com> 3.0-14
+- Don't run tests that read from /dev/tty.
+- Patchlevel 13.
+
+* Wed Sep  8 2004 Tim Waugh <twaugh@redhat.com> 3.0-13
+- Check for EINVAL from waitpid() and avoid WCONTINUED in that case.
+- Fixed jobs4 test.
+- Applied experimental upstream patch for trap compatibility.
+- Re-make documentation to reflect source changes.
+
+* Tue Sep  7 2004 Tim Waugh <twaugh@redhat.com> 3.0-12
+- Remove 'bashbug' from the documentation, because we don't ship it due
+  to biarch concerns.
+
+* Thu Sep  2 2004 Tim Waugh <twaugh@redhat.com> 3.0-11
+- Fixed multibyte parameter length expansion.
+
+* Tue Aug 31 2004 Tim Waugh <twaugh@redhat.com> 3.0-9
+- Fix ulimits patch from Ulrich Drepper (bug #129800).
+
+* Fri Aug 27 2004 Tim Waugh <twaugh@redhat.com> 3.0-8
+- Provide support for new limits (bug #129800).
+
+* Thu Aug 26 2004 Tim Waugh <twaugh@redhat.com> 3.0-7
+- Use upstream patch for last fix.
+
+* Thu Aug 26 2004 Tim Waugh <twaugh@redhat.com> 3.0-6
+- Fixed history saved-line handling.
+
+* Tue Aug 24 2004 Tim Waugh <twaugh@redhat.com>
+- Fixed multibyte IFS handling.
+
+* Wed Aug 18 2004 Tim Waugh <twaugh@redhat.com>
+- Applied bug-bash list patch to fix pipefail.
+
+* Tue Aug 17 2004 Tim Waugh <twaugh@redhat.com> 3.0-5
+- Make trap usage string show POSIX usage (bug #128938).
+- Updated ${x[@]:1} expansion fix from bug-bash list.
+- Updated patch to fix unset array crash (from bug-bash list).
+
+* Sun Aug 15 2004 Tim Waugh <twaugh@redhat.com>
+- Fix ${x[@]:1} expansion (William Park, bug-bash list).
+
+* Tue Aug 10 2004 Tim Waugh <twaugh@redhat.com> 3.0-4
+- Fix vi-change-char behaviour at EOL (bug #129526).
+
+* Mon Aug  9 2004 Tim Waugh <twaugh@redhat.com> 3.0-3
+- Applied bug-bash list patch to fix multiline PS1 prompting (bug #129382).
+
+* Wed Aug  4 2004 Tim Waugh <twaugh@redhat.com> 3.0-2
+- Fixed brace expansion (bug #129128).
+- Build with AFS support again, since bug #86514 seems fixed upstream
+  (bug #129094).
+
+* Tue Aug  3 2004 Tim Waugh <twaugh@redhat.com>
+- Fixed crash when unsetting an unset array (from bug-bash list).
+
+* Wed Jul 28 2004 Tim Waugh <twaugh@redhat.com> 3.0-1
+- 3.0.
+
+* Wed Jul 21 2004 Tim Waugh <twaugh@redhat.com> 2.05b-44
+- Don't report SIGPIPE errors (bug #128274).
+
+* Thu Jul  8 2004 Tim Waugh <twaugh@redhat.com> 2.05b-43
+- Fixed command substitution problem (bug #127242).
+
+* Mon Jun 28 2004 Tim Waugh <twaugh@redhat.com> 2.05b-42
+- Fixed multibyte variable substitution patch (bug #126399).
+
+* Thu Jun 17 2004 Karsten Hopp <karsten@redhat.de> 2.05b-41
+- remove bashbug script/docs to avoid conflicting files in
+  biarch installs.
+
+* Tue Jun 15 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
+* Fri Jun  4 2004 Tim Waugh <twaugh@redhat.com>
+- Build requires bison (bug #125307).
+
+* Wed Jun  2 2004 Tim Waugh <twaugh@redhat.com> 2.05b-39
+- Build requires libtermcap-devel (bug #125068).
+
+* Wed May 19 2004 Tim Waugh <twaugh@redhat.com>
+- Don't ship empty %%{_libdir}/bash (bug #123556).
+
+* Thu Mar 11 2004 Tim Waugh <twaugh@redhat.com> 2.05b-38
+- Apply patch from Nalin Dahyabhai fixing an overread.
+
+* Tue Mar 02 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
+* Fri Feb 13 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
+* Thu Jan 22 2004 Tim Waugh <twaugh@redhat.com> 2.05b-36
+- Fix the bug causing bindings to need reparsing .inputrc (bug #114101).
+
+* Mon Jan  5 2004 Tim Waugh <twaugh@redhat.com> 2.05b-35
+- Fix parameter expansion in multibyte locales (bug #112657).
+- Run 'make check'.
+
+* Tue Dec  9 2003 Tim Waugh <twaugh@redhat.com> 2.05b-34
+- Build requires texinfo (bug #111171).
+
+* Fri Nov 28 2003 Tim Waugh <twaugh@redhat.com> 2.05b-33
+- Speed up UTF-8 command-line redrawing in the common case (bug #102353,
+  bug #110777).
+
+* Thu Nov  6 2003 Tim Waugh <twaugh@redhat.com> 2.05b-32
+- Apply upstream patches (bug #109269 among others).
+
+* Fri Oct 31 2003 Tim Waugh <twaugh@redhat.com>
+- Fix bash.info (bug #83776).
+
+* Tue Oct 28 2003 Tim Waugh <twaugh@redhat.com> 2.05b-31
+- Add bash205b-007 patch to fix bug #106876.
+
+* Thu Oct 23 2003 Tim Waugh <twaugh@redhat.com> 2.05b-30
+- Rebuilt.
+
+* Thu Sep 18 2003 Tim Waugh <twaugh@redhat.com> 2.05b-29.1
+- Rebuilt.
+
+* Thu Sep 18 2003 Tim Waugh <twaugh@redhat.com> 2.05b-29
+- Avoid crashing on multibyte input when locale is set incorrectly
+  (bug #74266).
+
+* Fri Sep  5 2003 Tim Waugh <twaugh@redhat.com> 2.05b-28.1
+- Rebuilt.
+
+* Fri Sep  5 2003 Tim Waugh <twaugh@redhat.com> 2.05b-28
+- Avoid built-in malloc implementation (bug #103768).
+
+* Wed Sep  3 2003 Tim Waugh <twaugh@redhat.com> 2.05b-27.1
+- Rebuilt.
+
+* Wed Sep  3 2003 Tim Waugh <twaugh@redhat.com> 2.05b-27
+- LFS support (bug #103627).
+
+* Thu Jul 31 2003 Tim Waugh <twaugh@redhat.com> 2.05b-26.1
+- Rebuilt.
+
+* Thu Jul 31 2003 Tim Waugh <twaugh@redhat.com> 2.05b-26
+- Merge bash-doc into main package (bug #100632).
+
+* Wed Jun 04 2003 Elliot Lee <sopwith@redhat.com> 2.05b-25
+- rebuilt
+
+* Mon May 12 2003 Tim Waugh <twaugh@redhat.com> 2.05b-24
+- Fix completion display when multibyte or control characters are to be
+  shown (bug #90201).
+
+* Wed Mar 26 2003 Tim Waugh <twaugh@redhat.com> 2.05b-23
+- Fix a warning message (bug #79629).
+- Don't remove generated source during build, for debuginfo package.
+- Don't build with AFS support (bug #86514).
+
+* Tue Mar 25 2003 Tim Waugh <twaugh@redhat.com> 2.05b-22
+- Really fix bug #78455.
+
+* Tue Mar 11 2003 Tim Waugh <twaugh@redhat.com> 2.05b-21
+- Don't explicitly strip binaries (bug #85995).
+
+* Tue Feb 11 2003 Tim Waugh <twaugh@redhat.com> 2.05b-20
+- Really fix bug #83331 for good.
+
+* Mon Feb 10 2003 Tim Waugh <twaugh@redhat.com> 2.05b-19
+- Fix builtins.1.
+
+* Fri Feb  7 2003 Tim Waugh <twaugh@redhat.com> 2.05b-18
+- Actually apply the patch (bug #83331).
+
+* Wed Feb  5 2003 Tim Waugh <twaugh@redhat.com> 2.05b-17
+- Fix history/UTF-8 bug (bug #83331).
+
+* Sun Jan 26 2003 Tim Waugh <twaugh@redhat.com> 2.05b-16
+- More tab-completion fixing (bug #72512).
+
+* Wed Jan 22 2003 Tim Powers <timp@redhat.com> 2.05b-15
+- rebuilt
+
+* Wed Jan 15 2003 Tim Waugh <twaugh@redhat.com> 2.05b-14
+- Force pgrp synchronization (bug #81653).
+
+* Thu Dec 05 2002 Elliot Lee <sopwith@redhat.com> 2.05b-13
+- (patch26) Don't call 'size' in makefile. Pointless, and interferes with
+  cross compiles.
+
+* Tue Dec  3 2002 Tim Waugh <twaugh@redhat.com> 2.05b-12
+- Prevent prompt overwriting output (bug #74383).
+
+* Wed Nov 27 2002 Tim Waugh <twaugh@redhat.com> 2.05b-11
+- Fix '-rbash' (bug #78455).
+
+* Thu Nov 21 2002 Tim Waugh <twaugh@redhat.com> 2.05b-10
+- Rebuild.
+
+* Wed Nov 20 2002 Elliot Lee <sopwith@redhat.com>
+- Use the configure macro instead of calling ./configure directly
+
+* Wed Nov 13 2002 Tim Waugh <twaugh@redhat.com>
+- Revert previous change.
+
+* Wed Nov 13 2002 Tim Waugh <twaugh@redhat.com> 2.05b-8
+- PreReq libtermcap.
+
+* Fri Oct 18 2002 Tim Waugh <twaugh@redhat.com> 2.05b-7
+- Add readline-init patch (bug #74925).
+
+* Wed Oct 16 2002 Tim Waugh <twaugh@redhat.com> 2.05b-6
+- Add the (4) patches from ftp.gnu.org (bug #75888, bug #72512).
+- Ship '.' man page, which doesn't get picked up by glob.
+- Don't install files not shipped when building.
+- Locale shell variables fix (bug #74701).
+
+* Fri Aug 23 2002 Tim Powers <timp@redhat.com> 2.05b-5
+- re-bzip the docs, something was corrupted
+
+* Thu Aug 22 2002 Tim Waugh <twaugh@redhat.com> 2.05b-4
+- Fix history substitution modifiers in UTF-8 (bug #70294, bug #71186).
+- Fix ADVANCE_CHAR at end of string (bug #70819).
+- docs: CWRU/POSIX.NOTES no longer exists, but ship POSIX.
+
+* Wed Aug 07 2002 Phil Knirsch <pknirsch@redhat.com> 2.05b-3
+- Fixed out of memory problem with readline.
+
+* Tue Jul 23 2002 Phil Knirsch <pknirsch@redhat.com> 2.05b-2
+- Added symlink for sh.1 in man1 section so that man sh works (#44039).
+
+* Mon Jul 22 2002 Phil Knirsch <pknirsch@redhat.com> 2.05b-1
+- Update to 2.05b
+
+* Wed Jul 10 2002 Phil Knirsch <pknirsch@redhat.com> 2.05a-16
+- Fixed readline utf8 problem (#68313).
+
+* Fri Jun 21 2002 Tim Powers <timp@redhat.com> 2.05a-15
+- automated rebuild
+
+* Thu May 23 2002 Tim Powers <timp@redhat.com> 2.05a-14
+- automated rebuild
+
+* Fri Apr 12 2002 Tim Powers <timp@redhat.com> 2.05a-13
+- don't build the stuff in examples/loadables. It breaks FHS
+  compliance
+
+* Fri Apr  5 2002 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-12
+- Fix the fix for #62418
+
+* Thu Apr  4 2002 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-11
+- Fix kill builtin (#62418)
+
+* Mon Mar 25 2002 Trond Eivind Glomsrød <teg@redhat.com> 2.0.5a-10
+- Get rid of completion subpackage
+- Use %%{_tmppath}
+
+* Mon Mar 11 2002 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-9
+- Add patch from Ulrich Drepper to get better error messages when trying
+  to launch an application with a bad ELF interpreter (e.g. libc5 ld.so)
+  (#60870)
+
+* Fri Feb 22 2002 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-8
+- Update completion
+
+* Wed Jan 30 2002 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-7
+- Update completion stuff and move it to a separate package
+
+* Sat Jan 26 2002 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-6
+- Add patches from Ian Macdonald <ian@caliban.org>
+
+* Wed Jan 23 2002 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-5
+- Add programmable completion (optional)
+
+* Thu Jan 17 2002 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-4
+- Fix mailcheck (#57792)
+
+* Tue Jan 15 2002 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-3
+- Fix autoconf mess
+- Build --with-afs, some users may be using it
+
+* Wed Jan 09 2002 Tim Powers <timp@redhat.com>
+- automated rebuild
+
+* Thu Nov 22 2001 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-2
+- Fix conflict with sh-utils (printf builtin manpage vs. printf binary manpage)
+  (#56590)
+
+* Tue Nov 20 2001 Bernhard Rosenkraenzer <bero@redhat.com> 2.05a-1
+- 2.05a
+
+* Wed Oct 10 2001 Florian La Roche <Florian.LaRoche@redhat.de>
+- disable s390x fix, not needed anymore
+
+* Mon Oct  1 2001 Bernhard Rosenkraenzer <bero@redhat.com> 2.05-9
+- Add patch from readline 4.2-3 to bash's internal libreadline
+
+* Mon Jul  9 2001 Bernhard Rosenkraenzer <bero@redhat.com> 2.05-8
+- Merge Pekka Savola's patch (RFE#47762)
+
+* Mon Jul  2 2001 Pekka Savola <pekkas@netcore.fi>
+- Add IPv6 patch from PLD (only redirection to /dev/{tcp,udp}/host/port
+  support)
+
+* Sun Jun 24 2001 Bernhard Rosenkraenzer <bero@redhat.com> 2.05-7
+- Add some bugfix patches from the maintainer
+
+* Mon Jun 11 2001 Florian La Roche <Florian.LaRoche@redhat.de>
+- added patch for s390x from <oliver.paukstadt@millenux.com>
+
+* Wed May 23 2001 Bernhard Rosenkraenzer <bero@redhat.com> 2.05-5
+- Don't set BASH_ENV in .bash_profile, it causes .bashrc to be sourced
+  twice in interactive non-login shells.
+- s/Copyright/License/
+
+* Sat May  5 2001 Bernhard Rosenkraenzer <bero@redhat.com> 2.05-4
+- Fix tempfile creation in bashbug
+
+* Wed May  2 2001 Preston Brown <pbrown@redhat.com> 2.05-3
+- bashrc moved to setup package
+
+* Tue Apr 24 2001 Bernhard Rosenkraenzer <bero@redhat.com> 2.05-2
+- bash comes with its own copy of readline... Add the patches we're
+  applying in the readline package.
+
+* Tue Apr 24 2001 Bernhard Rosenkraenzer <bero@redhat.com> 2.05-1
+- Update to 2.05
+- Change PROMPT_COMMAND in bashrc for xterms
+  to something less space consuming (#24159)
+- Provide plugs for alternate prompt commands (#30634), but don't
+  default to them
+
+* Mon Mar 19 2001 Preston Brown <pbrown@redhat.com>
+- add default aliases for 'dir' and 'df' to have human readable output
+
+* Wed Feb 28 2001 Matt Wilson <msw@redhat.com>
+- don't Prereq: /sbin/install-info!
+
+* Tue Feb 27 2001 Preston Brown <pbrown@redhat.com>
+- noreplace config files
+- don't own /etc/skel directory
+
+* Thu Feb 22 2001 Harald Hoyer <harald@redhat.de>
+- changed /etc/bashrc to work with backspace = 0177 (rxvt)
+
+* Wed Feb 07 2001 Florian La Roche <Florian.LaRoche@redhat.de>
+- changed /etc/skel/.bash_profile to "unset USERNAME"
+
+* Mon Feb  5 2001 Yukihiro Nakai <ynakai@redhat.com>
+- Delete Japanese resources from dot-bashrc
+  and move them to each package.
+
+* Fri Dec 15 2000 Yukihiro Nakai <ynakai@redhat.com>
+- Add Japanese resource to dot-bashrc
+
+* Mon Dec 11 2000 Bernhard Rosenkraenzer <bero@redhat.com>
+- rebuild to get rid of 0777 doc dirs
+
+* Thu Nov 16 2000 Bernhard Rosenkraenzer <bero@redhat.com>
+- restore the ^Hs in documentation, they're highlighting sequences
+  for less (#20654)
+
+* Fri Sep 15 2000 Florian La Roche <Florian.LaRoche@redhat.de>
+- bash-2.04-export.patch is reported to fix compilation
+  of older glibc-2.1 sources
+
+* Tue Aug 22 2000 Matt Wilson <msw@redhat.com>
+- fixed the summary of bash-doc to use %%{version} instead of "2.03"
+
+* Tue Aug  8 2000 Bill Nottingham <notting@redhat.com>
+- 'exit' in bashrc is very bad.
+
+* Tue Aug  8 2000 Bernhard Rosenkraenzer <bero@redhat.com>
+- minor bashrc fix (Bug #8518)
+
+* Mon Jul 17 2000 Bernhard Rosenkraenzer <bero@redhat.com>
+- Don't use tput etc. in bashrc if /usr isn't available (Bug #14116)
+
+* Wed Jul 12 2000 Prospector <bugzilla@redhat.com>
+- automatic rebuild
+
+* Thu Jun 22 2000 Bill Nottingham <notting@redhat.com>
+- fix for some IA-64 issues from Stephane Eranian
+
+* Thu Jun 15 2000 Bernhard Rosenkraenzer <bero@redhat.com>
+- Fix summary and description, they had old version numbers (Bug #12092)
+
+* Tue Jun  6 2000 Bill Nottingham <notting@redhat.com>
+- add /etc/skel/.bash* ; obsolete etcskel
+
+* Tue May  2 2000 Bill Nottingham <notting@redhat.com>
+- fix for shell functions on 64-bit architectures...
+
+* Wed Mar 29 2000 Bernhard Rosenkraenzer <bero@redhat.com>
+- Add some backwards compatibility (for i in ; do something; done)
+
+* Tue Mar 21 2000 Bernhard Rosenkraenzer <bero@redhat.com>
+- 2.04 final
+- remove the echo, pwd, test and kill man pages from the package,
+  we're getting them from sh-utils
+
+* Sun Mar 19 2000 Bernhard Rosenkraenzer <bero@redhat.com>
+- 2.04beta5
+- adapt patches
+- Fix up bashrc
+- Don't put in bashrc1, this should be done by the bash1 package
+- use install -c instead of plain install to work on *BSD
+- remove the collected patches - they're now in the base version.
+- make compressed man pages optional
+
+* Thu Mar 16 2000 Florian La Roche <Florian.LaRoche@redhat.com>
+- add some collected patches for bash2
+- change it over to be the main bash package
+- install man-pages root:root
+- obsolete bash2, bash2-doc
+
+* Wed Feb 02 2000 Cristian Gafton <gafton@redhat.com>
+- man pages are compressed
+- fix description
+
+* Thu Dec  2 1999 Ken Estes <kestes@staff.mail.com>
+- updated patch to detect what executables are required by a script.
+
+* Tue Sep 14 1999 Dale Lovelace <dale@redhat.com>
+- Remove annoying ^H's from documentation
+
+* Fri Jul 16 1999 Ken Estes <kestes@staff.mail.com>
+- patch to detect what executables are required by a script.
+
+* Sun Mar 21 1999 Cristian Gafton <gafton@redhat.com>
+- auto rebuild in the new build environment (release 4)
+
+* Fri Mar 19 1999 Jeff Johnson <jbj@redhat.com>
+- strip binaries.
+- include bash-doc correctly.
+
+* Thu Mar 18 1999 Preston Brown <pbrown@redhat.com>
+- fixed post/postun /etc/shells work.
+
+* Thu Mar 18 1999 Cristian Gafton <gafton@redhat.com>
+- updated again text in the spec file
+
+* Mon Feb 22 1999 Jeff Johnson <jbj@redhat.com>
+- updated text in spec file.
+- update to 2.03.
+
+* Fri Feb 12 1999 Cristian Gafton <gafton@redhat.com>
+- build it as bash2 instead of bash
+
+* Tue Feb  9 1999 Bill Nottingham <notting@redhat.com>
+- set 'NON_INTERACTIVE_LOGIN_SHELLS' so profile gets read
+
+* Thu Jan 14 1999 Jeff Johnson <jbj@redhat.com>
+- rename man pages in bash-doc to avoid packaging conflicts (#606).
+
+* Wed Dec 02 1998 Cristian Gafton <gafton@redhat.com>
+- patch for the arm
+- use $RPM_ARCH-redhat-linux as the build target
+
+* Tue Oct  6 1998 Bill Nottingham <notting@redhat.com>
+- rewrite %%pre, axe %%postun (to avoid prereq loops)
+
+* Wed Aug 19 1998 Jeff Johnson <jbj@redhat.com>
+- resurrect for RH 6.0.
+
+* Sun Jul 26 1998 Jeff Johnson <jbj@redhat.com>
+- update to 2.02.1
+
+* Thu Jun 11 1998 Jeff Johnson <jbj@redhat.com>
+- Package for 5.2.
+
+* Mon Apr 20 1998 Ian Macdonald <ianmacd@xs4all.nl>
+- added POSIX.NOTES doc file
+- some extraneous doc files removed
+- minor .spec file changes
+
+* Sun Apr 19 1998 Ian Macdonald <ianmacd@xs4all.nl>
+- upgraded to version 2.02
+- Alpha, MIPS & Sparc patches removed due to lack of test platforms
+- glibc & signal patches no longer required
+- added documentation subpackage (doc)
+
+* Fri Nov 07 1997 Donnie Barnes <djb@redhat.com>
+- added signal handling patch from Dean Gaudet <dgaudet@arctic.org> that
+  is based on a change made in bash 2.0.  Should fix some early exit
+  problems with suspends and fg.
+
+* Mon Oct 20 1997 Donnie Barnes <djb@redhat.com>
+- added %%clean
+
+* Mon Oct 20 1997 Erik Troan <ewt@redhat.com>
+- added comment explaining why install-info isn't used
+- added mips patch
+
+* Fri Oct 17 1997 Donnie Barnes <djb@redhat.com>
+- added BuildRoot
+
+* Tue Jun 03 1997 Erik Troan <ewt@redhat.com>
+- built against glibc
+
+===== Original publisher notice: /usr/share/licenses/bash/COPYING =====
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+
+ Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+                            Preamble
+
+  The GNU General Public License is a free, copyleft license for
+software and other kinds of works.
+
+  The licenses for most software and other practical works are designed
+to take away your freedom to share and change the works.  By contrast,
+the GNU General Public License is intended to guarantee your freedom to
+share and change all versions of a program--to make sure it remains free
+software for all its users.  We, the Free Software Foundation, use the
+GNU General Public License for most of our software; it applies also to
+any other work released this way by its authors.  You can apply it to
+your programs, too.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+them if you wish), that you receive source code or can get it if you
+want it, that you can change the software or use pieces of it in new
+free programs, and that you know you can do these things.
+
+  To protect your rights, we need to prevent others from denying you
+these rights or asking you to surrender the rights.  Therefore, you have
+certain responsibilities if you distribute copies of the software, or if
+you modify it: responsibilities to respect the freedom of others.
+
+  For example, if you distribute copies of such a program, whether
+gratis or for a fee, you must pass on to the recipients the same
+freedoms that you received.  You must make sure that they, too, receive
+or can get the source code.  And you must show them these terms so they
+know their rights.
+
+  Developers that use the GNU GPL protect your rights with two steps:
+(1) assert copyright on the software, and (2) offer you this License
+giving you legal permission to copy, distribute and/or modify it.
+
+  For the developers' and authors' protection, the GPL clearly explains
+that there is no warranty for this free software.  For both users' and
+authors' sake, the GPL requires that modified versions be marked as
+changed, so that their problems will not be attributed erroneously to
+authors of previous versions.
+
+  Some devices are designed to deny users access to install or run
+modified versions of the software inside them, although the manufacturer
+can do so.  This is fundamentally incompatible with the aim of
+protecting users' freedom to change the software.  The systematic
+pattern of such abuse occurs in the area of products for individuals to
+use, which is precisely where it is most unacceptable.  Therefore, we
+have designed this version of the GPL to prohibit the practice for those
+products.  If such problems arise substantially in other domains, we
+stand ready to extend this provision to those domains in future versions
+of the GPL, as needed to protect the freedom of users.
+
+  Finally, every program is threatened constantly by software patents.
+States should not allow patents to restrict development and use of
+software on general-purpose computers, but in those that do, we wish to
+avoid the special danger that patents applied to a free program could
+make it effectively proprietary.  To prevent this, the GPL assures that
+patents cannot be used to render the program non-free.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.
+
+                       TERMS AND CONDITIONS
+
+  0. Definitions.
+
+  "This License" refers to version 3 of the GNU General Public License.
+
+  "Copyright" also means copyright-like laws that apply to other kinds of
+works, such as semiconductor masks.
+
+  "The Program" refers to any copyrightable work licensed under this
+License.  Each licensee is addressed as "you".  "Licensees" and
+"recipients" may be individuals or organizations.
+
+  To "modify" a work means to copy from or adapt all or part of the work
+in a fashion requiring copyright permission, other than the making of an
+exact copy.  The resulting work is called a "modified version" of the
+earlier work or a work "based on" the earlier work.
+
+  A "covered work" means either the unmodified Program or a work based
+on the Program.
+
+  To "propagate" a work means to do anything with it that, without
+permission, would make you directly or secondarily liable for
+infringement under applicable copyright law, except executing it on a
+computer or modifying a private copy.  Propagation includes copying,
+distribution (with or without modification), making available to the
+public, and in some countries other activities as well.
+
+  To "convey" a work means any kind of propagation that enables other
+parties to make or receive copies.  Mere interaction with a user through
+a computer network, with no transfer of a copy, is not conveying.
+
+  An interactive user interface displays "Appropriate Legal Notices"
+to the extent that it includes a convenient and prominently visible
+feature that (1) displays an appropriate copyright notice, and (2)
+tells the user that there is no warranty for the work (except to the
+extent that warranties are provided), that licensees may convey the
+work under this License, and how to view a copy of this License.  If
+the interface presents a list of user commands or options, such as a
+menu, a prominent item in the list meets this criterion.
+
+  1. Source Code.
+
+  The "source code" for a work means the preferred form of the work
+for making modifications to it.  "Object code" means any non-source
+form of a work.
+
+  A "Standard Interface" means an interface that either is an official
+standard defined by a recognized standards body, or, in the case of
+interfaces specified for a particular programming language, one that
+is widely used among developers working in that language.
+
+  The "System Libraries" of an executable work include anything, other
+than the work as a whole, that (a) is included in the normal form of
+packaging a Major Component, but which is not part of that Major
+Component, and (b) serves only to enable use of the work with that
+Major Component, or to implement a Standard Interface for which an
+implementation is available to the public in source code form.  A
+"Major Component", in this context, means a major essential component
+(kernel, window system, and so on) of the specific operating system
+(if any) on which the executable work runs, or a compiler used to
+produce the work, or an object code interpreter used to run it.
+
+  The "Corresponding Source" for a work in object code form means all
+the source code needed to generate, install, and (for an executable
+work) run the object code and to modify the work, including scripts to
+control those activities.  However, it does not include the work's
+System Libraries, or general-purpose tools or generally available free
+programs which are used unmodified in performing those activities but
+which are not part of the work.  For example, Corresponding Source
+includes interface definition files associated with source files for
+the work, and the source code for shared libraries and dynamically
+linked subprograms that the work is specifically designed to require,
+such as by intimate data communication or control flow between those
+subprograms and other parts of the work.
+
+  The Corresponding Source need not include anything that users
+can regenerate automatically from other parts of the Corresponding
+Source.
+
+  The Corresponding Source for a work in source code form is that
+same work.
+
+  2. Basic Permissions.
+
+  All rights granted under this License are granted for the term of
+copyright on the Program, and are irrevocable provided the stated
+conditions are met.  This License explicitly affirms your unlimited
+permission to run the unmodified Program.  The output from running a
+covered work is covered by this License only if the output, given its
+content, constitutes a covered work.  This License acknowledges your
+rights of fair use or other equivalent, as provided by copyright law.
+
+  You may make, run and propagate covered works that you do not
+convey, without conditions so long as your license otherwise remains
+in force.  You may convey covered works to others for the sole purpose
+of having them make modifications exclusively for you, or provide you
+with facilities for running those works, provided that you comply with
+the terms of this License in conveying all material for which you do
+not control copyright.  Those thus making or running the covered works
+for you must do so exclusively on your behalf, under your direction
+and control, on terms that prohibit them from making any copies of
+your copyrighted material outside their relationship with you.
+
+  Conveying under any other circumstances is permitted solely under
+the conditions stated below.  Sublicensing is not allowed; section 10
+makes it unnecessary.
+
+  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
+
+  No covered work shall be deemed part of an effective technological
+measure under any applicable law fulfilling obligations under article
+11 of the WIPO copyright treaty adopted on 20 December 1996, or
+similar laws prohibiting or restricting circumvention of such
+measures.
+
+  When you convey a covered work, you waive any legal power to forbid
+circumvention of technological measures to the extent such circumvention
+is effected by exercising rights under this License with respect to
+the covered work, and you disclaim any intention to limit operation or
+modification of the work as a means of enforcing, against the work's
+users, your or third parties' legal rights to forbid circumvention of
+technological measures.
+
+  4. Conveying Verbatim Copies.
+
+  You may convey verbatim copies of the Program's source code as you
+receive it, in any medium, provided that you conspicuously and
+appropriately publish on each copy an appropriate copyright notice;
+keep intact all notices stating that this License and any
+non-permissive terms added in accord with section 7 apply to the code;
+keep intact all notices of the absence of any warranty; and give all
+recipients a copy of this License along with the Program.
+
+  You may charge any price or no price for each copy that you convey,
+and you may offer support or warranty protection for a fee.
+
+  5. Conveying Modified Source Versions.
+
+  You may convey a work based on the Program, or the modifications to
+produce it from the Program, in the form of source code under the
+terms of section 4, provided that you also meet all of these conditions:
+
+    a) The work must carry prominent notices stating that you modified
+    it, and giving a relevant date.
+
+    b) The work must carry prominent notices stating that it is
+    released under this License and any conditions added under section
+    7.  This requirement modifies the requirement in section 4 to
+    "keep intact all notices".
+
+    c) You must license the entire work, as a whole, under this
+    License to anyone who comes into possession of a copy.  This
+    License will therefore apply, along with any applicable section 7
+    additional terms, to the whole of the work, and all its parts,
+    regardless of how they are packaged.  This License gives no
+    permission to license the work in any other way, but it does not
+    invalidate such permission if you have separately received it.
+
+    d) If the work has interactive user interfaces, each must display
+    Appropriate Legal Notices; however, if the Program has interactive
+    interfaces that do not display Appropriate Legal Notices, your
+    work need not make them do so.
+
+  A compilation of a covered work with other separate and independent
+works, which are not by their nature extensions of the covered work,
+and which are not combined with it such as to form a larger program,
+in or on a volume of a storage or distribution medium, is called an
+"aggregate" if the compilation and its resulting copyright are not
+used to limit the access or legal rights of the compilation's users
+beyond what the individual works permit.  Inclusion of a covered work
+in an aggregate does not cause this License to apply to the other
+parts of the aggregate.
+
+  6. Conveying Non-Source Forms.
+
+  You may convey a covered work in object code form under the terms
+of sections 4 and 5, provided that you also convey the
+machine-readable Corresponding Source under the terms of this License,
+in one of these ways:
+
+    a) Convey the object code in, or embodied in, a physical product
+    (including a physical distribution medium), accompanied by the
+    Corresponding Source fixed on a durable physical medium
+    customarily used for software interchange.
+
+    b) Convey the object code in, or embodied in, a physical product
+    (including a physical distribution medium), accompanied by a
+    written offer, valid for at least three years and valid for as
+    long as you offer spare parts or customer support for that product
+    model, to give anyone who possesses the object code either (1) a
+    copy of the Corresponding Source for all the software in the
+    product that is covered by this License, on a durable physical
+    medium customarily used for software interchange, for a price no
+    more than your reasonable cost of physically performing this
+    conveying of source, or (2) access to copy the
+    Corresponding Source from a network server at no charge.
+
+    c) Convey individual copies of the object code with a copy of the
+    written offer to provide the Corresponding Source.  This
+    alternative is allowed only occasionally and noncommercially, and
+    only if you received the object code with such an offer, in accord
+    with subsection 6b.
+
+    d) Convey the object code by offering access from a designated
+    place (gratis or for a charge), and offer equivalent access to the
+    Corresponding Source in the same way through the same place at no
+    further charge.  You need not require recipients to copy the
+    Corresponding Source along with the object code.  If the place to
+    copy the object code is a network server, the Corresponding Source
+    may be on a different server (operated by you or a third party)
+    that supports equivalent copying facilities, provided you maintain
+    clear directions next to the object code saying where to find the
+    Corresponding Source.  Regardless of what server hosts the
+    Corresponding Source, you remain obligated to ensure that it is
+    available for as long as needed to satisfy these requirements.
+
+    e) Convey the object code using peer-to-peer transmission, provided
+    you inform other peers where the object code and Corresponding
+    Source of the work are being offered to the general public at no
+    charge under subsection 6d.
+
+  A separable portion of the object code, whose source code is excluded
+from the Corresponding Source as a System Library, need not be
+included in conveying the object code work.
+
+  A "User Product" is either (1) a "consumer product", which means any
+tangible personal property which is normally used for personal, family,
+or household purposes, or (2) anything designed or sold for incorporation
+into a dwelling.  In determining whether a product is a consumer product,
+doubtful cases shall be resolved in favor of coverage.  For a particular
+product received by a particular user, "normally used" refers to a
+typical or common use of that class of product, regardless of the status
+of the particular user or of the way in which the particular user
+actually uses, or expects or is expected to use, the product.  A product
+is a consumer product regardless of whether the product has substantial
+commercial, industrial or non-consumer uses, unless such uses represent
+the only significant mode of use of the product.
+
+  "Installation Information" for a User Product means any methods,
+procedures, authorization keys, or other information required to install
+and execute modified versions of a covered work in that User Product from
+a modified version of its Corresponding Source.  The information must
+suffice to ensure that the continued functioning of the modified object
+code is in no case prevented or interfered with solely because
+modification has been made.
+
+  If you convey an object code work under this section in, or with, or
+specifically for use in, a User Product, and the conveying occurs as
+part of a transaction in which the right of possession and use of the
+User Product is transferred to the recipient in perpetuity or for a
+fixed term (regardless of how the transaction is characterized), the
+Corresponding Source conveyed under this section must be accompanied
+by the Installation Information.  But this requirement does not apply
+if neither you nor any third party retains the ability to install
+modified object code on the User Product (for example, the work has
+been installed in ROM).
+
+  The requirement to provide Installation Information does not include a
+requirement to continue to provide support service, warranty, or updates
+for a work that has been modified or installed by the recipient, or for
+the User Product in which it has been modified or installed.  Access to a
+network may be denied when the modification itself materially and
+adversely affects the operation of the network or violates the rules and
+protocols for communication across the network.
+
+  Corresponding Source conveyed, and Installation Information provided,
+in accord with this section must be in a format that is publicly
+documented (and with an implementation available to the public in
+source code form), and must require no special password or key for
+unpacking, reading or copying.
+
+  7. Additional Terms.
+
+  "Additional permissions" are terms that supplement the terms of this
+License by making exceptions from one or more of its conditions.
+Additional permissions that are applicable to the entire Program shall
+be treated as though they were included in this License, to the extent
+that they are valid under applicable law.  If additional permissions
+apply only to part of the Program, that part may be used separately
+under those permissions, but the entire Program remains governed by
+this License without regard to the additional permissions.
+
+  When you convey a copy of a covered work, you may at your option
+remove any additional permissions from that copy, or from any part of
+it.  (Additional permissions may be written to require their own
+removal in certain cases when you modify the work.)  You may place
+additional permissions on material, added by you to a covered work,
+for which you have or can give appropriate copyright permission.
+
+  Notwithstanding any other provision of this License, for material you
+add to a covered work, you may (if authorized by the copyright holders of
+that material) supplement the terms of this License with terms:
+
+    a) Disclaiming warranty or limiting liability differently from the
+    terms of sections 15 and 16 of this License; or
+
+    b) Requiring preservation of specified reasonable legal notices or
+    author attributions in that material or in the Appropriate Legal
+    Notices displayed by works containing it; or
+
+    c) Prohibiting misrepresentation of the origin of that material, or
+    requiring that modified versions of such material be marked in
+    reasonable ways as different from the original version; or
+
+    d) Limiting the use for publicity purposes of names of licensors or
+    authors of the material; or
+
+    e) Declining to grant rights under trademark law for use of some
+    trade names, trademarks, or service marks; or
+
+    f) Requiring indemnification of licensors and authors of that
+    material by anyone who conveys the material (or modified versions of
+    it) with contractual assumptions of liability to the recipient, for
+    any liability that these contractual assumptions directly impose on
+    those licensors and authors.
+
+  All other non-permissive additional terms are considered "further
+restrictions" within the meaning of section 10.  If the Program as you
+received it, or any part of it, contains a notice stating that it is
+governed by this License along with a term that is a further
+restriction, you may remove that term.  If a license document contains
+a further restriction but permits relicensing or conveying under this
+License, you may add to a covered work material governed by the terms
+of that license document, provided that the further restriction does
+not survive such relicensing or conveying.
+
+  If you add terms to a covered work in accord with this section, you
+must place, in the relevant source files, a statement of the
+additional terms that apply to those files, or a notice indicating
+where to find the applicable terms.
+
+  Additional terms, permissive or non-permissive, may be stated in the
+form of a separately written license, or stated as exceptions;
+the above requirements apply either way.
+
+  8. Termination.
+
+  You may not propagate or modify a covered work except as expressly
+provided under this License.  Any attempt otherwise to propagate or
+modify it is void, and will automatically terminate your rights under
+this License (including any patent licenses granted under the third
+paragraph of section 11).
+
+  However, if you cease all violation of this License, then your
+license from a particular copyright holder is reinstated (a)
+provisionally, unless and until the copyright holder explicitly and
+finally terminates your license, and (b) permanently, if the copyright
+holder fails to notify you of the violation by some reasonable means
+prior to 60 days after the cessation.
+
+  Moreover, your license from a particular copyright holder is
+reinstated permanently if the copyright holder notifies you of the
+violation by some reasonable means, this is the first time you have
+received notice of violation of this License (for any work) from that
+copyright holder, and you cure the violation prior to 30 days after
+your receipt of the notice.
+
+  Termination of your rights under this section does not terminate the
+licenses of parties who have received copies or rights from you under
+this License.  If your rights have been terminated and not permanently
+reinstated, you do not qualify to receive new licenses for the same
+material under section 10.
+
+  9. Acceptance Not Required for Having Copies.
+
+  You are not required to accept this License in order to receive or
+run a copy of the Program.  Ancillary propagation of a covered work
+occurring solely as a consequence of using peer-to-peer transmission
+to receive a copy likewise does not require acceptance.  However,
+nothing other than this License grants you permission to propagate or
+modify any covered work.  These actions infringe copyright if you do
+not accept this License.  Therefore, by modifying or propagating a
+covered work, you indicate your acceptance of this License to do so.
+
+  10. Automatic Licensing of Downstream Recipients.
+
+  Each time you convey a covered work, the recipient automatically
+receives a license from the original licensors, to run, modify and
+propagate that work, subject to this License.  You are not responsible
+for enforcing compliance by third parties with this License.
+
+  An "entity transaction" is a transaction transferring control of an
+organization, or substantially all assets of one, or subdividing an
+organization, or merging organizations.  If propagation of a covered
+work results from an entity transaction, each party to that
+transaction who receives a copy of the work also receives whatever
+licenses to the work the party's predecessor in interest had or could
+give under the previous paragraph, plus a right to possession of the
+Corresponding Source of the work from the predecessor in interest, if
+the predecessor has it or can get it with reasonable efforts.
+
+  You may not impose any further restrictions on the exercise of the
+rights granted or affirmed under this License.  For example, you may
+not impose a license fee, royalty, or other charge for exercise of
+rights granted under this License, and you may not initiate litigation
+(including a cross-claim or counterclaim in a lawsuit) alleging that
+any patent claim is infringed by making, using, selling, offering for
+sale, or importing the Program or any portion of it.
+
+  11. Patents.
+
+  A "contributor" is a copyright holder who authorizes use under this
+License of the Program or a work on which the Program is based.  The
+work thus licensed is called the contributor's "contributor version".
+
+  A contributor's "essential patent claims" are all patent claims
+owned or controlled by the contributor, whether already acquired or
+hereafter acquired, that would be infringed by some manner, permitted
+by this License, of making, using, or selling its contributor version,
+but do not include claims that would be infringed only as a
+consequence of further modification of the contributor version.  For
+purposes of this definition, "control" includes the right to grant
+patent sublicenses in a manner consistent with the requirements of
+this License.
+
+  Each contributor grants you a non-exclusive, worldwide, royalty-free
+patent license under the contributor's essential patent claims, to
+make, use, sell, offer for sale, import and otherwise run, modify and
+propagate the contents of its contributor version.
+
+  In the following three paragraphs, a "patent license" is any express
+agreement or commitment, however denominated, not to enforce a patent
+(such as an express permission to practice a patent or covenant not to
+sue for patent infringement).  To "grant" such a patent license to a
+party means to make such an agreement or commitment not to enforce a
+patent against the party.
+
+  If you convey a covered work, knowingly relying on a patent license,
+and the Corresponding Source of the work is not available for anyone
+to copy, free of charge and under the terms of this License, through a
+publicly available network server or other readily accessible means,
+then you must either (1) cause the Corresponding Source to be so
+available, or (2) arrange to deprive yourself of the benefit of the
+patent license for this particular work, or (3) arrange, in a manner
+consistent with the requirements of this License, to extend the patent
+license to downstream recipients.  "Knowingly relying" means you have
+actual knowledge that, but for the patent license, your conveying the
+covered work in a country, or your recipient's use of the covered work
+in a country, would infringe one or more identifiable patents in that
+country that you have reason to believe are valid.
+
+  If, pursuant to or in connection with a single transaction or
+arrangement, you convey, or propagate by procuring conveyance of, a
+covered work, and grant a patent license to some of the parties
+receiving the covered work authorizing them to use, propagate, modify
+or convey a specific copy of the covered work, then the patent license
+you grant is automatically extended to all recipients of the covered
+work and works based on it.
+
+  A patent license is "discriminatory" if it does not include within
+the scope of its coverage, prohibits the exercise of, or is
+conditioned on the non-exercise of one or more of the rights that are
+specifically granted under this License.  You may not convey a covered
+work if you are a party to an arrangement with a third party that is
+in the business of distributing software, under which you make payment
+to the third party based on the extent of your activity of conveying
+the work, and under which the third party grants, to any of the
+parties who would receive the covered work from you, a discriminatory
+patent license (a) in connection with copies of the covered work
+conveyed by you (or copies made from those copies), or (b) primarily
+for and in connection with specific products or compilations that
+contain the covered work, unless you entered into that arrangement,
+or that patent license was granted, prior to 28 March 2007.
+
+  Nothing in this License shall be construed as excluding or limiting
+any implied license or other defenses to infringement that may
+otherwise be available to you under applicable patent law.
+
+  12. No Surrender of Others' Freedom.
+
+  If conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot convey a
+covered work so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you may
+not convey it at all.  For example, if you agree to terms that obligate you
+to collect a royalty for further conveying from those to whom you convey
+the Program, the only way you could satisfy both those terms and this
+License would be to refrain entirely from conveying the Program.
+
+  13. Use with the GNU Affero General Public License.
+
+  Notwithstanding any other provision of this License, you have
+permission to link or combine any covered work with a work licensed
+under version 3 of the GNU Affero General Public License into a single
+combined work, and to convey the resulting work.  The terms of this
+License will continue to apply to the part which is the covered work,
+but the special requirements of the GNU Affero General Public License,
+section 13, concerning interaction through a network will apply to the
+combination as such.
+
+  14. Revised Versions of this License.
+
+  The Free Software Foundation may publish revised and/or new versions of
+the GNU General Public License from time to time.  Such new versions will
+be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+  Each version is given a distinguishing version number.  If the
+Program specifies that a certain numbered version of the GNU General
+Public License "or any later version" applies to it, you have the
+option of following the terms and conditions either of that numbered
+version or of any later version published by the Free Software
+Foundation.  If the Program does not specify a version number of the
+GNU General Public License, you may choose any version ever published
+by the Free Software Foundation.
+
+  If the Program specifies that a proxy can decide which future
+versions of the GNU General Public License can be used, that proxy's
+public statement of acceptance of a version permanently authorizes you
+to choose that version for the Program.
+
+  Later license versions may give you additional or different
+permissions.  However, no additional obligations are imposed on any
+author or copyright holder as a result of your choosing to follow a
+later version.
+
+  15. Disclaimer of Warranty.
+
+  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
+APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
+HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY
+OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
+IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF
+ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+  16. Limitation of Liability.
+
+  IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS
+THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY
+GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
+USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF
+DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
+PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),
+EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
+
+  17. Interpretation of Sections 15 and 16.
+
+  If the disclaimer of warranty and limitation of liability provided
+above cannot be given local legal effect according to their terms,
+reviewing courts shall apply local law that most closely approximates
+an absolute waiver of all civil liability in connection with the
+Program, unless a warranty or assumption of liability accompanies a
+copy of the Program in return for a fee.
+
+                     END OF TERMS AND CONDITIONS
+
+            How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these terms.
+
+  To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+state the exclusion of warranty; and each file should have at least
+the "copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Also add information on how to contact you by electronic and paper mail.
+
+  If the program does terminal interaction, make it output a short
+notice like this when it starts in an interactive mode:
+
+    <program>  Copyright (C) <year>  <name of author>
+    This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions; type `show c' for details.
+
+The hypothetical commands `show w' and `show c' should show the appropriate
+parts of the General Public License.  Of course, your program's commands
+might be different; for a GUI interface, you would use an "about box".
+
+  You should also get your employer (if you work as a programmer) or school,
+if any, to sign a "copyright disclaimer" for the program, if necessary.
+For more information on this, and how to apply and follow the GNU GPL, see
+<http://www.gnu.org/licenses/>.
+
+  The GNU General Public License does not permit incorporating your program
+into proprietary programs.  If your program is a subroutine library, you
+may consider it more useful to permit linking proprietary applications with
+the library.  If this is what you want to do, use the GNU Lesser General
+Public License instead of this License.  But first, please read
+<http://www.gnu.org/philosophy/why-not-lgpl.html>.

@@ -337,7 +337,7 @@ func isFloatingVersion(value string) bool {
 	}
 }
 
-var exactBundleVersionPattern = regexp.MustCompile(`^(v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?|[A-Fa-f0-9]{40,64})$`)
+var exactBundleVersionPattern = regexp.MustCompile(`^(v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?|[A-Fa-f0-9]{40,64})$`)
 
 func isExactBundleVersion(value string) bool {
 	return exactBundleVersionPattern.MatchString(value)

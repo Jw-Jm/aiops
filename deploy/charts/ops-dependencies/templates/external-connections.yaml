@@ -4,8 +4,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ops-{{ $name }}-connection
+  name: {{ $.Release.Name }}-{{ $name }}-connection
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     ops.platform.io/component: {{ $name }}
     ops.platform.io/mode: external
 data:
@@ -14,8 +15,9 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ops-{{ $name }}-external-credential-reference
+  name: {{ $.Release.Name }}-{{ $name }}-external-credential-reference
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     ops.platform.io/component: {{ $name }}
     ops.platform.io/mode: external
   annotations:

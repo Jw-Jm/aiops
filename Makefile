@@ -72,11 +72,19 @@ test-contract:
 		echo "No Contract tests are defined yet."; \
 	fi
 
-test-integration test-replay test-e2e test-security:
+test-e2e:
+	@mkdir -p artifacts/test-reports
+	@set +e; $(GO) test ./test/e2e -count=1 -v -timeout=20m > artifacts/test-reports/e2e.txt 2>&1; status=$$?; cat artifacts/test-reports/e2e.txt; exit $$status
+
+test-integration test-replay test-security:
 	@echo "$@ suite is not implemented yet."
 
-bundle-dev-arm64 verify-bundle:
-	@echo "$@ is not implemented yet." >&2
-	@exit 1
+verify-bundle:
+	@test -n "$(BUNDLE_DIR)" && test -n "$(TRUST_KEY)" || { echo "BUNDLE_DIR and TRUST_KEY are required" >&2; exit 1; }
+	$(GO) run ./cmd/opsctl bundle verify --manifest "$(BUNDLE_DIR)/bundle.lock.json" --signature "$(BUNDLE_DIR)/bundle.lock.sig" --payload "$(BUNDLE_DIR)/payload.tar.zst" --key "$(TRUST_KEY)"
+
+bundle-dev-arm64: check-toolchain
+	@test -n "$(BUNDLE_SPEC)" && test -n "$(BUNDLE_DIR)" && test -n "$(SIGNING_KEY)" || { echo "BUNDLE_SPEC, BUNDLE_DIR and external SIGNING_KEY are required; inputs must already be qualified" >&2; exit 1; }
+	$(GO) run ./cmd/opsctl bundle build --architecture linux/arm64 --spec "$(BUNDLE_SPEC)" --output "$(BUNDLE_DIR)" --signing-key "$(SIGNING_KEY)"
 
 check: check-generated lint test-unit test-contract

@@ -1,0 +1,84 @@
+{{- if and .Values.workloadsEnabled (not .Values.networkPolicyOnly) }}
+{{- range $name := list "api" "worker" "web" }}
+{{- $component := index $.Values.components $name }}
+{{- if $component.enabled }}
+{{- $image := required (printf "components.%s.image is required" $name) $component.image }}
+{{- if not (regexMatch "^.+@sha256:[0-9a-f]{64}$" $image) }}{{ fail "platform images must be digest pinned" }}{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ops-{{ $name }}
+  labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
+    ops.platform.io/component: {{ $name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      ops.platform.io/component: {{ $name }}
+  template:
+    metadata:
+      labels:
+        ops.platform.io/release: {{ $.Release.Name | quote }}
+        ops.platform.io/component: {{ $name }}
+    spec:
+      serviceAccountName: ops-{{ $name }}
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: {{ $name }}
+          image: {{ $image | quote }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ops-platform-runtime
+                  key: databaseURL
+            - name: OIDC_ISSUER_URL
+              value: {{ required "runtime.oidcIssuerURL is required" $.Values.runtime.oidcIssuerURL | quote }}
+            - name: PLATFORM_PROFILE
+              value: /etc/ops/profile.yaml
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: profile
+              mountPath: /etc/ops
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: profile
+          configMap:
+            name: ops-core-profile
+        - name: tmp
+          emptyDir: {}
+---
+{{- end }}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-core-profile
+  labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
+data:
+  profile.yaml: |
+{{ required "runtime.profile is required" .Values.runtime.profile | indent 4 }}
+{{- end }}

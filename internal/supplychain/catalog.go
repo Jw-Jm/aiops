@@ -19,13 +19,22 @@ var (
 	exactVersionPattern      = regexp.MustCompile(`^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$`)
 	exactReleasePattern      = regexp.MustCompile(`^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z][0-9A-Za-z.-]*)?$`)
 	exactChartVersionPattern = regexp.MustCompile(`^v?[0-9]+\.[0-9]+(\.[0-9]+)?(-[0-9A-Za-z][0-9A-Za-z.-]*)?(\+[0-9A-Za-z.-]+)?$`)
+	nativeVersionPattern     = regexp.MustCompile(`^(v|go)?[0-9][0-9A-Za-z.+:~_-]*$`)
 )
 
 var knownLicenses = map[string]struct{}{
 	"0BSD": {}, "Apache-2.0": {}, "BSD-2-Clause": {}, "BSD-3-Clause": {},
 	"GPL-2.0-only": {}, "GPL-2.0-or-later": {}, "GPL-3.0-only": {}, "GPL-3.0-or-later": {},
 	"ISC": {}, "MIT": {}, "MPL-2.0": {},
+	"PostgreSQL":    {},
 	"AGPL-3.0-only": {}, "AGPL-3.0-or-later": {},
+	"BSD-2-Clause-Views": {}, "BSD-4-Clause": {}, "MIT-0": {},
+	"EPL-1.0": {}, "EPL-2.0": {}, "CC0-1.0": {}, "Unicode-DFS-2016": {},
+	"LGPL-2.0-only": {}, "LGPL-2.0-or-later": {}, "LGPL-2.1-only": {},
+	"LGPL-2.1-or-later": {}, "LGPL-3.0-only": {}, "LGPL-3.0-or-later": {},
+	"Zlib": {}, "curl": {}, "NCSA": {}, "Artistic-1.0": {}, "Artistic-2.0": {},
+	"BSL-1.0": {}, "OLDAP-2.8": {}, "Sleepycat": {}, "X11": {}, "MS-PL": {},
+	"FSFAP": {},
 }
 
 type Catalog struct {
@@ -36,34 +45,35 @@ type Catalog struct {
 }
 
 type Component struct {
-	Name                      string
-	State                     string
-	Version                   string
-	Source                    string
-	Commit                    string
-	Digest                    string
-	License                   string
-	SpecialLicenseADR         string
-	Usage                     string
-	ReuseMode                 string
-	LinkageMode               string
-	SourceSnapshot            bool
-	SourceArchiveSHA256       string
-	DependencyClosureVerified bool
-	RequiredFor1_0            bool
-	OfficialSupportSources    []string
-	ChartLock                 *ChartLock
-	FileLicenses              []FileLicense
-	Architectures             []string
-	ImportedPaths             []string
-	DependencyClosure         []Dependency
-	Patches                   []Patch
-	ForkPolicy                any
-	Owner                     string
-	POCReport                 string
-	ConformanceFixtures       []string
-	ExitPlan                  string
-	PendingFields             map[string]bool
+	Name                            string
+	State                           string
+	Version                         string
+	Source                          string
+	Commit                          string
+	Digest                          string
+	License                         string
+	SpecialLicenseADR               string
+	Usage                           string
+	ReuseMode                       string
+	LinkageMode                     string
+	SourceSnapshot                  bool
+	SourceArchiveSHA256             string
+	CorrespondingSourceBundleSHA256 string
+	DependencyClosureVerified       bool
+	RequiredFor1_0                  bool
+	OfficialSupportSources          []string
+	ChartLock                       *ChartLock
+	FileLicenses                    []FileLicense
+	Architectures                   []string
+	ImportedPaths                   []string
+	DependencyClosure               []Dependency
+	Patches                         []Patch
+	ForkPolicy                      any
+	Owner                           string
+	POCReport                       string
+	ConformanceFixtures             []string
+	ExitPlan                        string
+	PendingFields                   map[string]bool
 }
 
 type ChartLock struct {
@@ -80,12 +90,14 @@ type FileLicense struct {
 }
 
 type Dependency struct {
-	Name    string
-	Version string
-	Source  string
-	Commit  string
-	Digest  string
-	License string
+	Name                string
+	Version             string
+	Source              string
+	Commit              string
+	Digest              string
+	License             string
+	SourceType          string
+	SourceArchiveSHA256 string
 }
 
 type Patch struct {
@@ -238,6 +250,18 @@ func (c Catalog) validateQualifiedEvidence(evidence fs.FS) error {
 				return fmt.Errorf("component %q: %w", component.Name, err)
 			}
 		}
+		if component.SpecialLicenseADR != "" && component.SpecialLicenseADR != "pending" {
+			if err := validateEvidenceFile(evidence, "specialized license ADR", component.SpecialLicenseADR); err != nil {
+				return err
+			}
+			contents, err := fs.ReadFile(evidence, component.SpecialLicenseADR)
+			if err != nil || !regexp.MustCompile(`(?m)^Status: Accepted\s*$`).Match(contents) {
+				return fmt.Errorf("specialized license ADR %q must be Accepted", component.SpecialLicenseADR)
+			}
+		}
+		if err := validateNativeLicenseEvidence(component, evidence); err != nil {
+			return fmt.Errorf("component %q: %w", component.Name, err)
+		}
 	}
 	return nil
 }
@@ -286,8 +310,9 @@ func parseComponent(values map[string]any) (Component, error) {
 		"dependencyClosureVerified": true, "patches": true, "forkPolicy": true, "owner": true,
 		"pocReport": true, "conformanceFixtures": true, "exitPlan": true,
 		"requiredFor1_0": true, "officialSupportSources": true, "candidateNote": true,
-		"specialLicenseADR": true,
-		"chartLock":         true,
+		"specialLicenseADR":               true,
+		"chartLock":                       true,
+		"correspondingSourceBundleSHA256": true,
 	}
 	for key := range values {
 		if !allowed[key] {
@@ -295,6 +320,16 @@ func parseComponent(values map[string]any) (Component, error) {
 		}
 	}
 	component := Component{PendingFields: make(map[string]bool)}
+	if _, present := values["correspondingSourceBundleSHA256"]; present {
+		var err error
+		component.CorrespondingSourceBundleSHA256, err = requiredString(values, "correspondingSourceBundleSHA256")
+		if err != nil {
+			return Component{}, err
+		}
+		if !digestPattern.MatchString(component.CorrespondingSourceBundleSHA256) {
+			return Component{}, fmt.Errorf("corresponding source bundle requires a sha256 digest")
+		}
+	}
 	if rawChart, exists := values["chartLock"]; exists {
 		chart, err := parseChartLock(rawChart)
 		if err != nil {
@@ -408,7 +443,7 @@ func validateComponent(component Component) error {
 		}
 	}
 	if component.License != "pending" {
-		if _, known := knownLicenses[component.License]; !known {
+		if !validLicenseExpression(component.License) || strings.Contains(component.License, "LicenseRef-") {
 			return fmt.Errorf("unknown SPDX license %q", component.License)
 		}
 	}
@@ -487,18 +522,21 @@ func validateComponent(component Component) error {
 		if file.Path == "" || path.IsAbs(file.Path) || path.Clean(file.Path) != file.Path || file.Path == ".." || strings.HasPrefix(file.Path, "../") {
 			return fmt.Errorf("file-level license path %q must be a clean relative path", file.Path)
 		}
-		if _, known := knownLicenses[file.License]; !known {
+		if !validLicenseExpression(file.License) {
 			return fmt.Errorf("file %q has unknown SPDX license %q", file.Path, file.License)
 		}
 		if !digestPattern.MatchString(file.Digest) {
 			return fmt.Errorf("file %q requires a sha256 digest", file.Path)
 		}
+		if err := validateNativeFile(component, file); err != nil {
+			return err
+		}
 	}
 	for _, dependency := range component.DependencyClosure {
-		if dependency.Name == "" || !isExactVersion(dependency.Version) || dependency.Source == "" || !commitPattern.MatchString(dependency.Commit) || !digestPattern.MatchString(dependency.Digest) {
+		if dependency.Name == "" || dependency.Source == "" || !digestPattern.MatchString(dependency.Digest) || !validDependencySource(dependency) {
 			return fmt.Errorf("dependency closure contains an unpinned dependency")
 		}
-		if _, known := knownLicenses[dependency.License]; !known {
+		if !validLicenseExpression(dependency.License) {
 			return fmt.Errorf("dependency %q has unknown SPDX license %q", dependency.Name, dependency.License)
 		}
 		parsed, err := url.Parse(dependency.Source)
@@ -508,8 +546,26 @@ func validateComponent(component Component) error {
 		if requiresSpecialLicenseADR(dependency.License) && (component.SpecialLicenseADR == "" || component.SpecialLicenseADR == "pending") {
 			return fmt.Errorf("dependency %q requires a specialized GPL or AGPL license ADR", dependency.Name)
 		}
+		if err := validateNativeDependency(component, dependency); err != nil {
+			return err
+		}
 	}
 	return nil
+}
+
+func validDependencySource(dependency Dependency) bool {
+	switch dependency.SourceType {
+	case "", "git":
+		return isExactVersion(dependency.Version) && commitPattern.MatchString(dependency.Commit) && dependency.SourceArchiveSHA256 == ""
+	case "archive":
+		parsed, err := url.Parse(dependency.Source)
+		return err == nil && parsed.Scheme == "https" && parsed.Host != "" &&
+			dependency.Commit == "" && digestPattern.MatchString(dependency.SourceArchiveSHA256) &&
+			dependency.Version != "pending" && !isFloating(dependency.Version) &&
+			nativeVersionPattern.MatchString(dependency.Version)
+	default:
+		return false
+	}
 }
 
 func parseChartLock(raw any) (*ChartLock, error) {
@@ -736,8 +792,35 @@ func dependencies(values map[string]any, name string) ([]Dependency, bool, error
 		}
 		fields := []*string{}
 		dependency := Dependency{}
+		for field := range mapping {
+			switch field {
+			case "name", "version", "source", "commit", "digest", "license", "sourceType", "sourceArchiveSHA256":
+			default:
+				return nil, false, fmt.Errorf("dependency has unknown field %q", field)
+			}
+		}
+		if _, exists := mapping["sourceType"]; exists {
+			var err error
+			dependency.SourceType, err = requiredString(mapping, "sourceType")
+			if err != nil {
+				return nil, false, err
+			}
+		}
+		if _, exists := mapping["sourceArchiveSHA256"]; exists {
+			var err error
+			dependency.SourceArchiveSHA256, err = requiredString(mapping, "sourceArchiveSHA256")
+			if err != nil {
+				return nil, false, err
+			}
+		}
 		fields = append(fields, &dependency.Name, &dependency.Version, &dependency.Source, &dependency.Commit, &dependency.Digest, &dependency.License)
 		for fieldIndex, field := range []string{"name", "version", "source", "commit", "digest", "license"} {
+			if field == "commit" && dependency.SourceType == "archive" {
+				if _, exists := mapping[field]; exists {
+					return nil, false, fmt.Errorf("archive dependency must omit commit")
+				}
+				continue
+			}
 			value, err := requiredString(mapping, field)
 			if err != nil {
 				return nil, false, err
@@ -815,11 +898,11 @@ func validForkPolicy(value any) bool {
 }
 
 func isAGPL(license string) bool {
-	return strings.HasPrefix(license, "AGPL-")
+	return licenseContains(license, "AGPL-")
 }
 
 func requiresSpecialLicenseADR(license string) bool {
-	return strings.HasPrefix(license, "GPL-") || isAGPL(license)
+	return licenseContains(license, "GPL-") || isAGPL(license) || licenseContains(license, "LGPL-") || licenseContains(license, "EPL-") || licenseContains(license, "Sleepycat") || strings.Contains(license, "LicenseRef-")
 }
 
 func isFloating(version string) bool {

@@ -1,10 +1,24 @@
 {{- $component := .Values.components.seaweedfs -}}
 {{- if eq $component.mode "bundled" }}
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-seaweedfs-master-config
+  labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
+    ops.platform.io/component: seaweedfs
+    ops.platform.io/mode: bundled
+data:
+  master.toml: |
+    [master.volume_growth]
+    copy_1 = 1
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: ops-seaweedfs-s3
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     app.kubernetes.io/name: ops-seaweedfs
     ops.platform.io/component: seaweedfs
     ops.platform.io/mode: bundled
@@ -25,6 +39,7 @@ kind: StatefulSet
 metadata:
   name: ops-seaweedfs
   labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
     app.kubernetes.io/name: ops-seaweedfs
     ops.platform.io/component: seaweedfs
     ops.platform.io/mode: bundled
@@ -37,6 +52,7 @@ spec:
   template:
     metadata:
       labels:
+        ops.platform.io/release: {{ $.Release.Name | quote }}
         app.kubernetes.io/name: ops-seaweedfs
         ops.platform.io/component: seaweedfs
         ops.platform.io/mode: bundled
@@ -54,7 +70,18 @@ spec:
           image: {{ $component.image | quote }}
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
           command: ["weed"]
-          args: ["server", "-dir=/data", "-s3", "-volume.max=5"]
+          args: ["-config_dir=/etc/seaweedfs", "server", "-dir=/data", "-s3", "-volume.max=12", "-master.volumeSizeLimitMB=128", "-master.telemetry=false"]
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $component.auth.existingSecret | quote }}
+                  key: {{ $component.auth.usernameKey | quote }}
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $component.auth.existingSecret | quote }}
+                  key: {{ $component.auth.passwordKey | quote }}
           ports:
             - name: s3
               containerPort: 8333
@@ -81,15 +108,22 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: master-config
+              mountPath: /etc/seaweedfs
+              readOnly: true
             - name: tmp
               mountPath: /tmp
       volumes:
+        - name: master-config
+          configMap:
+            name: ops-seaweedfs-master-config
         - name: tmp
           emptyDir: {}
   volumeClaimTemplates:
     - metadata:
         name: data
         labels:
+          ops.platform.io/release: {{ $.Release.Name | quote }}
           ops.platform.io/component: seaweedfs
       spec:
         accessModes: ["ReadWriteOnce"]

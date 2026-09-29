@@ -40,7 +40,7 @@ func TestDeepFlowPOC(t *testing.T) {
 		t.Fatalf("open Component Catalog: %v", err)
 	}
 	defer catalogFile.Close()
-	catalog, err := supplychain.LoadCatalog(catalogFile)
+	catalog, err := supplychain.LoadCatalogWithEvidence(catalogFile, os.DirFS(root))
 	if err != nil {
 		t.Fatalf("load Component Catalog: %v", err)
 	}

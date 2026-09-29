@@ -1,0 +1,1591 @@
+{
+  "schemaVersion": 1,
+  "scope": "Task 2.7 pinned arm64 core image preparation",
+  "syftVersion": "v1.52.0",
+  "syftArchiveSHA256": "014d561b6d13059124155f74a6c5a9a99501f5e209313638dd884f39eb418ee6",
+  "syftSource": "https://github.com/anchore/syft/releases/tag/v1.52.0",
+  "runtimeNetworkDependency": false,
+  "qualificationPassed": false,
+  "note": "Scanner gaps are not conclusions about legal permission. Raw SBOMs are preparation evidence; file-level license mapping, source/notice obligations, closure and matching runtime qualification remain mandatory. reedsolomon v1.0.0 is supplemented by third_party/licenses/openbao/reedsolomon-license-lock.json; this does not rewrite the raw scan or qualify the image.",
+  "components": [
+    {
+      "component": "postgresql",
+      "admissionState": "candidate",
+      "packageCount": 148,
+      "packageTypes": {
+        "deb": 144,
+        "go-module": 4
+      },
+      "syftFile": "artifacts/task27-materials/sbom/postgresql.syft.json",
+      "syftSHA256": "5621bc175b34af045f118195ab1611a65b6b706370e11492b3fcd44268018c7d",
+      "spdxFile": "artifacts/task27-materials/sbom/postgresql.spdx.json",
+      "spdxSHA256": "683fe5507908a5f657af1ed9b4b7cfd2ddb01b7291668695b165773e52917ff4",
+      "packagesWithoutScannerLicenseMetadata": [
+        {
+          "name": "github.com/moby/sys/user",
+          "version": "v0.1.0",
+          "type": "go-module",
+          "purl": "pkg:golang/github.com/moby/sys/user@v0.1.0",
+          "locations": [
+            "/usr/local/bin/gosu"
+          ]
+        },
+        {
+          "name": "github.com/tianon/gosu",
+          "version": "v1.19.0",
+          "type": "go-module",
+          "purl": "pkg:golang/github.com/tianon/gosu@v1.19.0",
+          "locations": [
+            "/usr/local/bin/gosu"
+          ]
+        },
+        {
+          "name": "golang.org/x/sys",
+          "version": "v0.1.0",
+          "type": "go-module",
+          "purl": "pkg:golang/golang.org/x/sys@v0.1.0",
+          "locations": [
+            "/usr/local/bin/gosu"
+          ]
+        }
+      ],
+      "dependencyClosureVerified": false
+    },
+    {
+      "component": "keycloak",
+      "admissionState": "candidate",
+      "packageCount": 555,
+      "packageTypes": {
+        "java-archive": 511,
+        "rpm": 44
+      },
+      "syftFile": "artifacts/task27-materials/sbom/keycloak.enriched.syft.json",
+      "syftSHA256": "34f05baee005c03ee6b07700456d866a1992fc6c27987b361ae6e86a2ef755b7",
+      "spdxFile": "artifacts/task27-materials/sbom/keycloak.enriched.spdx.json",
+      "spdxSHA256": "67468001b3ddb940147da15cc5e97aa87be7c4be3a97a90798237e0c99e3dc59",
+      "packagesWithoutScannerLicenseMetadata": [
+        {
+          "name": "angus-core",
+          "version": "2.0.5",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.eclipse.angus/angus-core@2.0.5",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.eclipse.angus.angus-mail-2.0.5.jar"
+          ]
+        },
+        {
+          "name": "arjuna",
+          "version": "7.3.3.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jboss.narayana.arjunacore/arjuna@7.3.3.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.jboss.narayana.jta.narayana-jta-7.3.3.Final.jar"
+          ]
+        },
+        {
+          "name": "bcpkix-jdk18on",
+          "version": "1.84",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.bouncycastle/bcpkix-jdk18on@1.84",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.bouncycastle.bcpkix-jdk18on-1.84.jar"
+          ]
+        },
+        {
+          "name": "bcutil-jdk18on",
+          "version": "1.84",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.bouncycastle/bcutil-jdk18on@1.84",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.bouncycastle.bcutil-jdk18on-1.84.jar"
+          ]
+        },
+        {
+          "name": "brotli4j",
+          "version": "1.23.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/com.aayushatharva.brotli4j/brotli4j@1.23.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/com.aayushatharva.brotli4j.brotli4j-1.23.0.jar"
+          ]
+        },
+        {
+          "name": "cdi",
+          "version": "7.3.3.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jboss.narayana.jta/cdi@7.3.3.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.jboss.narayana.jta.narayana-jta-7.3.3.Final.jar"
+          ]
+        },
+        {
+          "name": "common",
+          "version": "7.3.3.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jboss.narayana/common@7.3.3.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.jboss.narayana.jta.narayana-jta-7.3.3.Final.jar"
+          ]
+        },
+        {
+          "name": "dbus-java-core",
+          "version": "5.2.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/com.github.hypfvieh/dbus-java-core@5.2.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/com.github.hypfvieh.dbus-java-core-5.2.0.jar"
+          ]
+        },
+        {
+          "name": "dbus-java-core",
+          "version": "5.2.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/com.github.hypfvieh/dbus-java-core@5.2.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-sssd-federation-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "dbus-java-transport-native-unixsocket",
+          "version": "5.2.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/com.github.hypfvieh/dbus-java-transport-native-unixsocket@5.2.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/com.github.hypfvieh.dbus-java-transport-native-unixsocket-5.2.0.jar"
+          ]
+        },
+        {
+          "name": "dbus-java-transport-native-unixsocket",
+          "version": "5.2.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/com.github.hypfvieh/dbus-java-transport-native-unixsocket@5.2.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-sssd-federation-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "grpc-api",
+          "version": "1.81.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.grpc/grpc-api@1.81.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.grpc.grpc-api-1.81.0.jar"
+          ]
+        },
+        {
+          "name": "grpc-context",
+          "version": "1.81.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/grpc-context/grpc-context@1.81.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.grpc.grpc-context-1.81.0.jar"
+          ]
+        },
+        {
+          "name": "grpc-core",
+          "version": "1.81.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.grpc.internal/grpc-core@1.81.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.grpc.grpc-core-1.81.0.jar"
+          ]
+        },
+        {
+          "name": "grpc-netty",
+          "version": "1.81.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.grpc.netty/grpc-netty@1.81.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.grpc.grpc-netty-1.81.0.jar"
+          ]
+        },
+        {
+          "name": "grpc-protobuf",
+          "version": "1.81.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.grpc.protobuf/grpc-protobuf@1.81.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.grpc.grpc-protobuf-1.81.0.jar"
+          ]
+        },
+        {
+          "name": "grpc-protobuf-lite",
+          "version": "1.81.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.grpc.protobuf.lite/grpc-protobuf-lite@1.81.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.grpc.grpc-protobuf-lite-1.81.0.jar"
+          ]
+        },
+        {
+          "name": "grpc-stub",
+          "version": "1.81.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.grpc.stub/grpc-stub@1.81.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.grpc.grpc-stub-1.81.0.jar"
+          ]
+        },
+        {
+          "name": "grpc-util",
+          "version": "1.81.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.grpc.util/grpc-util@1.81.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.grpc.grpc-util-1.81.0.jar"
+          ]
+        },
+        {
+          "name": "hibernate-models",
+          "version": "1.0.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.hibernate.models/hibernate-models@1.0.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.hibernate.models.hibernate-models-1.0.1.jar"
+          ]
+        },
+        {
+          "name": "imap",
+          "version": "2.0.5",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.eclipse.angus/imap@2.0.5",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.eclipse.angus.angus-mail-2.0.5.jar"
+          ]
+        },
+        {
+          "name": "jansi-core",
+          "version": "4.2.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jline/jansi-core@4.2.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/deployment/org.jline.jansi-4.2.1.jar"
+          ]
+        },
+        {
+          "name": "java10-shim",
+          "version": "20260101.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/com.googlecode.owasp-java-html-sanitizer/java10-shim@20260101.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/com.googlecode.owasp-java-html-sanitizer.java10-shim-20260101.1.jar"
+          ]
+        },
+        {
+          "name": "java8-shim",
+          "version": "20260101.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/com.googlecode.owasp-java-html-sanitizer/java8-shim@20260101.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/com.googlecode.owasp-java-html-sanitizer.java8-shim-20260101.1.jar"
+          ]
+        },
+        {
+          "name": "javase",
+          "version": "3.4.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/com.google.zxing/javase@3.4.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/com.google.zxing.javase-3.4.0.jar"
+          ]
+        },
+        {
+          "name": "jboss-transaction-spi",
+          "version": "8.0.0.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jboss/jboss-transaction-spi@8.0.0.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.jboss.jboss-transaction-spi-8.0.0.Final.jar"
+          ]
+        },
+        {
+          "name": "jdbc",
+          "version": "7.3.3.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jboss.narayana.jta/jdbc@7.3.3.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.jboss.narayana.jta.narayana-jta-7.3.3.Final.jar"
+          ]
+        },
+        {
+          "name": "jline-native",
+          "version": "4.2.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jline/jline-native@4.2.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/deployment/org.jline.jansi-4.2.1.jar"
+          ]
+        },
+        {
+          "name": "jline-terminal",
+          "version": "4.2.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jline/jline-terminal@4.2.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/deployment/org.jline.jansi-4.2.1.jar"
+          ]
+        },
+        {
+          "name": "jline-terminal-jni",
+          "version": "4.2.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jline/jline-terminal-jni@4.2.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/deployment/org.jline.jansi-4.2.1.jar"
+          ]
+        },
+        {
+          "name": "jms",
+          "version": "7.3.3.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jboss.narayana.jta/jms@7.3.3.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.jboss.narayana.jta.narayana-jta-7.3.3.Final.jar"
+          ]
+        },
+        {
+          "name": "jrt-fs",
+          "version": "21.0.12.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/jrt-fs/jrt-fs@21.0.12.1",
+          "locations": [
+            "/usr/lib/jvm/java-21-openjdk-21.0.12.1.1-1.2.el9.aarch64/lib/jrt-fs.jar"
+          ]
+        },
+        {
+          "name": "jta",
+          "version": "7.3.3.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jboss.narayana.jta/jta@7.3.3.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.jboss.narayana.jta.narayana-jta-7.3.3.Final.jar"
+          ]
+        },
+        {
+          "name": "keycloak-account-ui",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-account-ui@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-account-ui-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-admin-ui",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-admin-ui@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-admin-ui-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-admin-v2-api",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-admin-v2-api@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-admin-v2-api-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-admin-v2-services",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-admin-v2-services@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-admin-v2-services-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-authz-policy-common",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-authz-policy-common@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-authz-policy-common-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-model-infinispan",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-model-infinispan@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-model-infinispan-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-model-jpa",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-model-jpa@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-model-jpa-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-model-storage",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-model-storage@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-model-storage-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-model-storage-private",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-model-storage-private@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-model-storage-private-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-model-storage-services",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-model-storage-services@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-model-storage-services-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-rest-admin-ui-ext",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-rest-admin-ui-ext@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-rest-admin-ui-ext-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "keycloak-themes-vendor",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.keycloak/keycloak-themes-vendor@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.keycloak.keycloak-themes-vendor-26.7.4.jar"
+          ]
+        },
+        {
+          "name": "logging-mailhandler",
+          "version": "2.0.5",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.eclipse.angus/logging-mailhandler@2.0.5",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.eclipse.angus.angus-mail-2.0.5.jar"
+          ]
+        },
+        {
+          "name": "mutiny",
+          "version": "3.1.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/mutiny@3.1.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.mutiny-3.1.1.jar"
+          ]
+        },
+        {
+          "name": "mutiny-smallrye-context-propagation",
+          "version": "3.1.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/mutiny-smallrye-context-propagation@3.1.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.mutiny-smallrye-context-propagation-3.1.1.jar"
+          ]
+        },
+        {
+          "name": "mutiny-zero-flow-adapters",
+          "version": "1.1.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/mutiny-zero-flow-adapters@1.1.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.mutiny-zero-flow-adapters-1.1.1.jar"
+          ]
+        },
+        {
+          "name": "narayana-jta",
+          "version": "7.3.3.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jboss.narayana.jta/narayana-jta@7.3.3.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.jboss.narayana.jta.narayana-jta-7.3.3.Final.jar"
+          ]
+        },
+        {
+          "name": "narayana-jts-integration",
+          "version": "7.3.3.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jboss.narayana.jts/narayana-jts-integration@7.3.3.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.jboss.narayana.jts.narayana-jts-integration-7.3.3.Final.jar"
+          ]
+        },
+        {
+          "name": "nashorn-core",
+          "version": "15.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/nashorn-core/nashorn-core@15.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.openjdk.nashorn.nashorn-core-15.4.jar"
+          ]
+        },
+        {
+          "name": "native-linux-x86_64",
+          "version": "1.23.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/com.aayushatharva.brotli4j/native-linux-x86_64@1.23.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/com.aayushatharva.brotli4j.native-linux-x86_64-1.23.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-apache-httpclient",
+          "version": "4.3-2.23.0-alpha",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.instrumentation.apache_httpclient_4_3/opentelemetry-apache-httpclient@4.3-2.23.0-alpha",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.instrumentation.opentelemetry-apache-httpclient-4.3-2.23.0-alpha.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-api",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.api/opentelemetry-api@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-api-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-api-incubator",
+          "version": "1.57.0-alpha",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.api.incubator/opentelemetry-api-incubator@1.57.0-alpha",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-api-incubator-1.57.0-alpha.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-common",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/common/opentelemetry-common@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-common-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-context",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.context/opentelemetry-context@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-context-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-exporter-common",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/common/opentelemetry-exporter-common@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-exporter-common-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-exporter-otlp",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.exporter.otlp/opentelemetry-exporter-otlp@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-exporter-otlp-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-exporter-otlp-common",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/common/opentelemetry-exporter-otlp-common@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-exporter-otlp-common-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-instrumentation-annotations",
+          "version": "2.23.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.instrumentation_annotations/opentelemetry-instrumentation-annotations@2.23.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.instrumentation.opentelemetry-instrumentation-annotations-2.23.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-instrumentation-annotations-support",
+          "version": "2.23.0-alpha",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.instrumentation_annotations_support/opentelemetry-instrumentation-annotations-support@2.23.0-alpha",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.instrumentation.opentelemetry-instrumentation-annotations-support-2.23.0-alpha.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-instrumentation-api",
+          "version": "2.23.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.instrumentation_api/opentelemetry-instrumentation-api@2.23.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.instrumentation.opentelemetry-instrumentation-api-2.23.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-instrumentation-api-incubator",
+          "version": "2.23.0-alpha",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.instrumentation_api_incubator/opentelemetry-instrumentation-api-incubator@2.23.0-alpha",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.instrumentation.opentelemetry-instrumentation-api-incubator-2.23.0-alpha.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-jdbc",
+          "version": "2.23.0-alpha",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.instrumentation.jdbc/opentelemetry-jdbc@2.23.0-alpha",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.instrumentation.opentelemetry-jdbc-2.23.0-alpha.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-micrometer",
+          "version": "1.5-2.23.0-alpha",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.instrumentation.micrometer_1_5/opentelemetry-micrometer@1.5-2.23.0-alpha",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.instrumentation.opentelemetry-micrometer-1.5-2.23.0-alpha.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-runtime-telemetry-java17",
+          "version": "2.23.0-alpha",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.instrumentation.runtime_telemetry_java17/opentelemetry-runtime-telemetry-java17@2.23.0-alpha",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.instrumentation.opentelemetry-runtime-telemetry-java17-2.23.0-alpha.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-runtime-telemetry-java8",
+          "version": "2.23.0-alpha",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.instrumentation.runtime_telemetry_java8/opentelemetry-runtime-telemetry-java8@2.23.0-alpha",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.instrumentation.opentelemetry-runtime-telemetry-java8-2.23.0-alpha.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-sdk",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.sdk/opentelemetry-sdk@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-sdk-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-sdk-common",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/common/opentelemetry-sdk-common@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-sdk-common-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-sdk-extension-autoconfigure",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.sdk.autoconfigure/opentelemetry-sdk-extension-autoconfigure@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-sdk-extension-autoconfigure-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-sdk-extension-autoconfigure-spi",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.sdk.autoconfigure.spi/opentelemetry-sdk-extension-autoconfigure-spi@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-sdk-extension-autoconfigure-spi-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-sdk-logs",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.sdk.logs/opentelemetry-sdk-logs@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-sdk-logs-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-sdk-metrics",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.sdk.metrics/opentelemetry-sdk-metrics@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-sdk-metrics-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-sdk-trace",
+          "version": "1.57.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.sdk.trace/opentelemetry-sdk-trace@1.57.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.opentelemetry-sdk-trace-1.57.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-semconv",
+          "version": "1.37.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.semconv/opentelemetry-semconv@1.37.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.semconv.opentelemetry-semconv-1.37.0.jar"
+          ]
+        },
+        {
+          "name": "opentelemetry-semconv-incubating",
+          "version": "1.37.0-alpha",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.opentelemetry.semconv.incubating/opentelemetry-semconv-incubating@1.37.0-alpha",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.opentelemetry.semconv.opentelemetry-semconv-incubating-1.37.0-alpha.jar"
+          ]
+        },
+        {
+          "name": "perfmark-api",
+          "version": "0.27.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.perfmark/perfmark-api@0.27.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.perfmark.perfmark-api-0.27.0.jar"
+          ]
+        },
+        {
+          "name": "picocli",
+          "version": "4.7.7",
+          "type": "java-archive",
+          "purl": "pkg:maven/picocli/picocli@4.7.7",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/info.picocli.picocli-4.7.7.jar"
+          ]
+        },
+        {
+          "name": "pop3",
+          "version": "2.0.5",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.eclipse.angus/pop3@2.0.5",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.eclipse.angus.angus-mail-2.0.5.jar"
+          ]
+        },
+        {
+          "name": "protostream",
+          "version": "6.0.7",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.infinispan.protostream/protostream@6.0.7",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.infinispan.protostream.protostream-6.0.7.jar"
+          ]
+        },
+        {
+          "name": "protostream-types",
+          "version": "6.0.7",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.infinispan.protostream/protostream-types@6.0.7",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.infinispan.protostream.protostream-types-6.0.7.jar"
+          ]
+        },
+        {
+          "name": "quarkus-run",
+          "version": "26.7.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.quarkus.bootstrap.runner.QuarkusEntryPoint/quarkus-run@26.7.4",
+          "locations": [
+            "/opt/keycloak/lib/quarkus-run.jar"
+          ]
+        },
+        {
+          "name": "rdf-urdna",
+          "version": "1.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/rdf-urdna/rdf-urdna@1.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.setl.rdf-urdna-1.1.jar"
+          ]
+        },
+        {
+          "name": "reactive-streams",
+          "version": "1.0.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.reactivestreams/reactive-streams@1.0.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.reactivestreams.reactive-streams-1.0.4.jar"
+          ]
+        },
+        {
+          "name": "service",
+          "version": "1.23.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/com.aayushatharva.brotli4j/service@1.23.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/com.aayushatharva.brotli4j.service-1.23.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-config",
+          "version": "3.16.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.config/smallrye-config@3.16.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.config.smallrye-config-3.16.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-config-common",
+          "version": "3.16.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.config/smallrye-config-common@3.16.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.config.smallrye-config-common-3.16.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-config-core",
+          "version": "3.16.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.config/smallrye-config-core@3.16.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.config.smallrye-config-core-3.16.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-config-source-keystore",
+          "version": "3.16.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.config/smallrye-config-source-keystore@3.16.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.config.smallrye-config-source-keystore-3.16.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-config-validator",
+          "version": "3.16.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.config/smallrye-config-validator@3.16.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.config.smallrye-config-validator-3.16.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-context-propagation",
+          "version": "2.3.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye/smallrye-context-propagation@2.3.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.smallrye-context-propagation-2.3.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-context-propagation-api",
+          "version": "2.3.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye/smallrye-context-propagation-api@2.3.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.smallrye-context-propagation-api-2.3.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-context-propagation-jta",
+          "version": "2.3.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye/smallrye-context-propagation-jta@2.3.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.smallrye-context-propagation-jta-2.3.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-context-propagation-storage",
+          "version": "2.3.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye/smallrye-context-propagation-storage@2.3.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.smallrye-context-propagation-storage-2.3.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-fault-tolerance-vertx",
+          "version": "6.10.1",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye/smallrye-fault-tolerance-vertx@6.10.1",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.smallrye-fault-tolerance-vertx-6.10.1.jar"
+          ]
+        },
+        {
+          "name": "smallrye-health",
+          "version": "4.3.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye/smallrye-health@4.3.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.smallrye-health-4.3.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-health-api",
+          "version": "4.3.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye/smallrye-health-api@4.3.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.smallrye-health-api-4.3.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-health-provided-checks",
+          "version": "4.3.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye/smallrye-health-provided-checks@4.3.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.smallrye-health-provided-checks-4.3.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-health-ui",
+          "version": "4.3.0",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye/smallrye-health-ui@4.3.0",
+          "locations": [
+            "/opt/keycloak/lib/lib/deployment/io.smallrye.smallrye-health-ui-4.3.0.jar"
+          ]
+        },
+        {
+          "name": "smallrye-mutiny-vertx-auth-common",
+          "version": "3.21.6",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-auth-common@3.21.6",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.smallrye-mutiny-vertx-auth-common-3.21.6.jar"
+          ]
+        },
+        {
+          "name": "smallrye-mutiny-vertx-bridge-common",
+          "version": "3.21.6",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-bridge-common@3.21.6",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.smallrye-mutiny-vertx-bridge-common-3.21.6.jar"
+          ]
+        },
+        {
+          "name": "smallrye-mutiny-vertx-core",
+          "version": "3.21.6",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-core@3.21.6",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.smallrye-mutiny-vertx-core-3.21.6.jar"
+          ]
+        },
+        {
+          "name": "smallrye-mutiny-vertx-runtime",
+          "version": "3.21.6",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-runtime@3.21.6",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.smallrye-mutiny-vertx-runtime-3.21.6.jar"
+          ]
+        },
+        {
+          "name": "smallrye-mutiny-vertx-uri-template",
+          "version": "3.21.6",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-uri-template@3.21.6",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.smallrye-mutiny-vertx-uri-template-3.21.6.jar"
+          ]
+        },
+        {
+          "name": "smallrye-mutiny-vertx-web",
+          "version": "3.21.6",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-web@3.21.6",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.smallrye-mutiny-vertx-web-3.21.6.jar"
+          ]
+        },
+        {
+          "name": "smallrye-mutiny-vertx-web-common",
+          "version": "3.21.6",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-web-common@3.21.6",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.smallrye-mutiny-vertx-web-common-3.21.6.jar"
+          ]
+        },
+        {
+          "name": "smallrye-open-api-ui",
+          "version": "4.2.4",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye/smallrye-open-api-ui@4.2.4",
+          "locations": [
+            "/opt/keycloak/lib/lib/deployment/io.smallrye.smallrye-open-api-ui-4.2.4.jar"
+          ]
+        },
+        {
+          "name": "smallrye-private-key-pem-parser",
+          "version": "0.9.3",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.certs/smallrye-private-key-pem-parser@0.9.3",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.certs.smallrye-private-key-pem-parser-0.9.3.jar"
+          ]
+        },
+        {
+          "name": "smallrye-reactive-converter-api",
+          "version": "3.0.3",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/smallrye-reactive-converter-api@3.0.3",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.smallrye-reactive-converter-api-3.0.3.jar"
+          ]
+        },
+        {
+          "name": "smallrye-reactive-converter-mutiny",
+          "version": "3.0.3",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/smallrye-reactive-converter-mutiny@3.0.3",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.smallrye-reactive-converter-mutiny-3.0.3.jar"
+          ]
+        },
+        {
+          "name": "smtp",
+          "version": "2.0.5",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.eclipse.angus/smtp@2.0.5",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.eclipse.angus.angus-mail-2.0.5.jar"
+          ]
+        },
+        {
+          "name": "txoj",
+          "version": "7.3.3.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.jboss.narayana.arjunacore/txoj@7.3.3.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.jboss.narayana.jta.narayana-jta-7.3.3.Final.jar"
+          ]
+        },
+        {
+          "name": "vertx-auth-common",
+          "version": "4.5.31",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.vertx/vertx-auth-common@4.5.31",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.vertx.vertx-auth-common-4.5.31.jar"
+          ]
+        },
+        {
+          "name": "vertx-bridge-common",
+          "version": "4.5.31",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.vertx/vertx-bridge-common@4.5.31",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.vertx.vertx-bridge-common-4.5.31.jar"
+          ]
+        },
+        {
+          "name": "vertx-codegen",
+          "version": "4.5.31",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.vertx/vertx-codegen@4.5.31",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.vertx.vertx-codegen-4.5.31.jar"
+          ]
+        },
+        {
+          "name": "vertx-grpc",
+          "version": "4.5.31",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.vertx/vertx-grpc@4.5.31",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.vertx.vertx-grpc-4.5.31.jar"
+          ]
+        },
+        {
+          "name": "vertx-grpc-client",
+          "version": "4.5.31",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.vertx/vertx-grpc-client@4.5.31",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.vertx.vertx-grpc-client-4.5.31.jar"
+          ]
+        },
+        {
+          "name": "vertx-grpc-common",
+          "version": "4.5.31",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.vertx/vertx-grpc-common@4.5.31",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.vertx.vertx-grpc-common-4.5.31.jar"
+          ]
+        },
+        {
+          "name": "vertx-grpc-server",
+          "version": "4.5.31",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.vertx/vertx-grpc-server@4.5.31",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.vertx.vertx-grpc-server-4.5.31.jar"
+          ]
+        },
+        {
+          "name": "vertx-mutiny-generator",
+          "version": "3.21.6",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.smallrye.reactive/vertx-mutiny-generator@3.21.6",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.smallrye.reactive.vertx-mutiny-generator-3.21.6.jar"
+          ]
+        },
+        {
+          "name": "vertx-web-common",
+          "version": "4.5.31",
+          "type": "java-archive",
+          "purl": "pkg:maven/io.vertx/vertx-web-common@4.5.31",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/io.vertx.vertx-web-common-4.5.31.jar"
+          ]
+        },
+        {
+          "name": "webauthn4j-core",
+          "version": "0.30.3.RELEASE",
+          "type": "java-archive",
+          "purl": "pkg:maven/webauthn4j-core/webauthn4j-core@0.30.3.RELEASE",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/com.webauthn4j.webauthn4j-core-0.30.3.RELEASE.jar"
+          ]
+        },
+        {
+          "name": "webauthn4j-util",
+          "version": "0.30.3.RELEASE",
+          "type": "java-archive",
+          "purl": "pkg:maven/webauthn4j-util/webauthn4j-util@0.30.3.RELEASE",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/com.webauthn4j.webauthn4j-util-0.30.3.RELEASE.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-asn1",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-asn1@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-asn1-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-auth",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-auth@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-auth-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-auth-server",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-auth-server@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-auth-server-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-base",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-base@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-base-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-credential",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-credential@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-credential-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-http",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-http@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-http-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-keystore",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-keystore@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-keystore-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-mechanism",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-mechanism@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-mechanism-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-mechanism-digest",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-mechanism-digest@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-mechanism-digest-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-mechanism-gssapi",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-mechanism-gssapi@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-mechanism-gssapi-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-mechanism-oauth2",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-mechanism-oauth2@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-mechanism-oauth2-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-mechanism-scram",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-mechanism-scram@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-mechanism-scram-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-password-impl",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-password-impl@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-password-impl-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-permission",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-permission@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-permission-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-provider-util",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-provider-util@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-provider-util-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-sasl",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-sasl@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-sasl-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-sasl-digest",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-sasl-digest@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-sasl-digest-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-sasl-external",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-sasl-external@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-sasl-external-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-sasl-gs2",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-sasl-gs2@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-sasl-gs2-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-sasl-gssapi",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-sasl-gssapi@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-sasl-gssapi-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-sasl-oauth2",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-sasl-oauth2@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-sasl-oauth2-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-sasl-plain",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-sasl-plain@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-sasl-plain-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-sasl-scram",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-sasl-scram@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-sasl-scram-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-security-manager-action",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-security-manager-action@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-security-manager-action-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-ssl",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-ssl@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-ssl-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-util",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-util@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-util-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-x500",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-x500@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-x500-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-x500-cert",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-x500-cert@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-x500-cert-2.8.4.Final.jar"
+          ]
+        },
+        {
+          "name": "wildfly-elytron-x500-cert-util",
+          "version": "2.8.4.Final",
+          "type": "java-archive",
+          "purl": "pkg:maven/org.wildfly.security/wildfly-elytron-x500-cert-util@2.8.4.Final",
+          "locations": [
+            "/opt/keycloak/lib/lib/main/org.wildfly.security.wildfly-elytron-x500-cert-util-2.8.4.Final.jar"
+          ]
+        }
+      ],
+      "dependencyClosureVerified": false
+    },
+    {
+      "component": "openbao",
+      "admissionState": "candidate",
+      "packageCount": 320,
+      "packageTypes": {
+        "apk": 28,
+        "go-module": 292
+      },
+      "syftFile": "artifacts/task27-materials/sbom/openbao.enriched.syft.json",
+      "syftSHA256": "8bcf231cb687bcff44b0aa81f25242abdb68754d34b0e1a4b281412487cf9133",
+      "spdxFile": "artifacts/task27-materials/sbom/openbao.enriched.spdx.json",
+      "spdxSHA256": "af5e4dd9f0a94aa042d183c1008b38aac5b46995cee945ff1a691876a02e1afd",
+      "packagesWithoutScannerLicenseMetadata": [
+        {
+          "name": "github.com/yeqown/reedsolomon",
+          "version": "v1.0.0",
+          "type": "go-module",
+          "purl": "pkg:golang/github.com/yeqown/reedsolomon@v1.0.0",
+          "locations": [
+            "/usr/bin/bao"
+          ]
+        }
+      ],
+      "dependencyClosureVerified": false
+    },
+    {
+      "component": "seaweedfs",
+      "admissionState": "candidate",
+      "packageCount": 284,
+      "packageTypes": {
+        "apk": 29,
+        "go-module": 255
+      },
+      "syftFile": "artifacts/task27-materials/sbom/seaweedfs.enriched.syft.json",
+      "syftSHA256": "2badd6445bdd98fc9d2bdd49206780183f42af1cd27a60cd3bca2cfaf9c8dc1e",
+      "spdxFile": "artifacts/task27-materials/sbom/seaweedfs.enriched.spdx.json",
+      "spdxSHA256": "4250ee65a7bf4d5e5364ebe1f8f4e01635d2172c8e906d97357cd9a4fba56ccd",
+      "packagesWithoutScannerLicenseMetadata": [
+        {
+          "name": "github.com/google/flatbuffers/go",
+          "version": "v0.0.0-20230108230133-3b8644d32c50",
+          "type": "go-module",
+          "purl": "pkg:golang/github.com/google/flatbuffers/go@v0.0.0-20230108230133-3b8644d32c50",
+          "locations": [
+            "/usr/bin/weed"
+          ]
+        }
+      ],
+      "dependencyClosureVerified": false
+    },
+    {
+      "component": "victoria-metrics",
+      "admissionState": "candidate",
+      "packageCount": 36,
+      "packageTypes": {
+        "apk": 15,
+        "go-module": 21
+      },
+      "syftFile": "artifacts/task27-materials/sbom/victoria-metrics.enriched.syft.json",
+      "syftSHA256": "0fa5374b3ee2d9abaa09611d1218419fe325c7655be6823a5d68253f5e03ba7d",
+      "spdxFile": "artifacts/task27-materials/sbom/victoria-metrics.enriched.spdx.json",
+      "spdxSHA256": "e48cd23e9fd14c531b4f18fca10d533479f78b9c2867e7c148bd9fe34612c8f4",
+      "packagesWithoutScannerLicenseMetadata": [
+        {
+          "name": "github.com/VictoriaMetrics/VictoriaMetrics",
+          "version": "UNKNOWN",
+          "type": "go-module",
+          "purl": "pkg:golang/github.com/VictoriaMetrics/VictoriaMetrics",
+          "locations": [
+            "/victoria-metrics-prod"
+          ]
+        }
+      ],
+      "dependencyClosureVerified": false
+    },
+    {
+      "component": "victoria-logs",
+      "admissionState": "candidate",
+      "packageCount": 24,
+      "packageTypes": {
+        "deb": 6,
+        "go-module": 18
+      },
+      "syftFile": "artifacts/task27-materials/sbom/victoria-logs.enriched.syft.json",
+      "syftSHA256": "c000c36147dc82cb96a95f8bc461d2d5fe1aab9639d8625285c57b614614bea3",
+      "spdxFile": "artifacts/task27-materials/sbom/victoria-logs.enriched.spdx.json",
+      "spdxSHA256": "eb7cd9afdce5491305fe7ec332c55bf803fc7f3ca31a4cfb8ff8cf6bf9bf4b77",
+      "packagesWithoutScannerLicenseMetadata": [
+        {
+          "name": "cross-toolchain-base",
+          "version": "77",
+          "type": "deb",
+          "purl": "pkg:deb/debian/cross-toolchain-base@77?distro=debian",
+          "locations": [
+            "/victoria-logs-prod"
+          ]
+        },
+        {
+          "name": "github.com/VictoriaMetrics/VictoriaLogs",
+          "version": "UNKNOWN",
+          "type": "go-module",
+          "purl": "pkg:golang/github.com/VictoriaMetrics/VictoriaLogs",
+          "locations": [
+            "/victoria-logs-prod"
+          ]
+        }
+      ],
+      "dependencyClosureVerified": false
+    },
+    {
+      "component": "vmalert",
+      "admissionState": "candidate",
+      "packageCount": 41,
+      "packageTypes": {
+        "apk": 15,
+        "go-module": 26
+      },
+      "syftFile": "artifacts/task27-materials/sbom/vmalert.enriched.syft.json",
+      "syftSHA256": "770d1dcd133829a61440989f44275be4480f697beb665f369efc1c5113f285fd",
+      "spdxFile": "artifacts/task27-materials/sbom/vmalert.enriched.spdx.json",
+      "spdxSHA256": "43221ed32aff07e5a3903971b90124b8e05f77395f21c0c0d7e744021da2d9b9",
+      "packagesWithoutScannerLicenseMetadata": [
+        {
+          "name": "github.com/VictoriaMetrics/VictoriaMetrics",
+          "version": "UNKNOWN",
+          "type": "go-module",
+          "purl": "pkg:golang/github.com/VictoriaMetrics/VictoriaMetrics",
+          "locations": [
+            "/vmalert-prod"
+          ]
+        }
+      ],
+      "dependencyClosureVerified": false
+    }
+  ]
+}

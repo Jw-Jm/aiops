@@ -60,8 +60,14 @@ func TestVictoriaBundledSmoke(t *testing.T) {
 	if resolved.Components["vmalert"].Mode != "bundled" {
 		t.Fatalf("missing vmalert mode = %q, want bundled recommendation", resolved.Components["vmalert"].Mode)
 	}
-	if resolved.Installable {
-		t.Fatal("candidate bundled vmalert must keep the profile non-installable until catalog admission")
+	wantInstallable := true
+	for _, component := range resolved.Components {
+		if component.Mode == "bundled" && component.AdmissionState != "qualified" {
+			wantInstallable = false
+		}
+	}
+	if resolved.Installable != wantInstallable {
+		t.Fatalf("installable=%v, want %v from actual bundled component admission", resolved.Installable, wantInstallable)
 	}
 	if after := monitoringWorkloadCount(t); after != before {
 		t.Fatalf("monitoring workload count changed during read-only discovery: %d -> %d", before, after)

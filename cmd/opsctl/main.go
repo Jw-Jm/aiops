@@ -19,11 +19,12 @@ import (
 
 	"gopkg.in/yaml.v3"
 	"ops-platform/internal/bundle"
+	"ops-platform/internal/bundle/drivers"
 	"ops-platform/internal/integrations/openbao"
 	"ops-platform/internal/profile"
 )
 
-const usage = "usage: opsctl bundle verify --manifest <file> --signature <file> --payload <archive> --key <pubkey> | opsctl profile detect --context <name> -o <file> | opsctl profile resolve -f <file> -o <file> | opsctl openbao status|init|unseal|configure --profile <resolved>"
+const usage = "usage: opsctl bundle build --spec <json> --output <new-dir> --signing-key <external-private-key> | opsctl bundle verify --manifest <file> --signature <file> --payload <archive> --key <pubkey> | opsctl bundle import --profile <resolved> --bundle <dir> --key <pubkey> | opsctl install --profile core --resolved <file> --bundle <dir> --key <pubkey> --offline | opsctl profile detect --context <name> -o <file> | opsctl profile resolve -f <file> -o <file> | opsctl openbao status|init|unseal|configure --profile <resolved>"
 
 func main() {
 	if err := run(context.Background(), os.Args[1:], os.Stdout, os.Stderr); err != nil {
@@ -33,6 +34,18 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
+	if len(args) > 0 && args[0] == "helm-render-owned" {
+		return runHelmRenderer(args[1:], os.Stdin, stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bundle" && args[1] == "build" {
+		return runBuildBundle(ctx, args[2:], stdout, stderr)
+	}
+	if len(args) > 0 && args[0] == "install" {
+		return runOffline(ctx, args[1:], true, stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bundle" && args[1] == "import" {
+		return runOffline(ctx, args[2:], false, stdout, stderr)
+	}
 	if len(args) > 0 && args[0] == "openbao" {
 		return runOpenBao(ctx, args[1:], stdout, stderr)
 	}
@@ -176,6 +189,13 @@ func runProfile(ctx context.Context, args []string, stdout, stderr io.Writer) er
 		resolved, err := profile.Resolve(ctx, input, discovery)
 		if err != nil {
 			return err
+		}
+		if resolved.Kubernetes.Distribution == "orbstack" {
+			driver, err := (drivers.OrbStackSharedStore{}).Probe(ctx, resolved)
+			if err != nil {
+				return err
+			}
+			resolved.Runtime.ImageImporter = driver
 		}
 		if err := profile.WriteYAML(*outputPath, resolved); err != nil {
 			return err
