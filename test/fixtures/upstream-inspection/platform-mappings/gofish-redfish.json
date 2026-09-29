@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "gofish-redfish",
+  "input": "Gofish Redfish ComputerSystem and LogEntry response models",
+  "target": "platform normalized HardwareFact and hardware diagnostic evidence",
+  "fieldMap": {
+    "ComputerSystem.UUID/SerialNumber/Manufacturer/Model": "hardware.identity",
+    "ComputerSystem.ProcessorSummary/MemorySummary": "hardware.capacity",
+    "ComputerSystem.PowerState": "hardware.powerState",
+    "LogEntry.Created/EventTimestamp/Severity/Message": "evidence.timestamp/severity/message",
+    "LogEntry.OriginOfCondition": "resource.reference"
+  },
+  "sourceFixture": {
+    "path": "test/fixtures/upstream-inspection/gofish-redfish/schemas/computersystem_test.go.fixture",
+    "sha256": "b17298d9714e94605a0e285641d44ea9bf676533d76063d3a6051ef795d6d409"
+  },
+  "conformanceFixture": {
+    "path": "test/fixtures/upstream-inspection/gofish-redfish/schemas/logentry_test.go.fixture",
+    "sha256": "cc92d8602c349164a5517f37c976facbaea51b62e9d514a6e14f2eca587d6b76"
+  },
+  "consumerBoundary": "Read-only Redfish representation and value decoding. Network credentials, write operations, and a resident exporter are excluded.",
+  "disabledReason": "Selected schema tests pass; no product Redfish source registration or trust policy is implemented in SP-02."
+}

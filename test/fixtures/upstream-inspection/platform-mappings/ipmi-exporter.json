@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "ipmi-exporter",
+  "input": "ipmimonitoring CSV sensor result through upstream IPMICollector Prometheus metrics",
+  "target": "platform HardwareSensorSample and health evidence; target-to-resource identity comes from the inventory association",
+  "fieldMap": {
+    "ipmi_temperature_celsius{id,name}": "hardware.sensor.value(unit=celsius)",
+    "ipmi_fan_speed_rpm{id,name}": "hardware.sensor.value(unit=rpm)",
+    "ipmi_temperature_state|ipmi_fan_speed_state{id,name}": "evidence.condition(0=nominal,1=warning,2=critical)",
+    "scrape target association": "resource.identity; never infer a host from sensor labels"
+  },
+  "sourceFixture": {
+    "path": "test/fixtures/upstream-inspection/ipmi-exporter/collector_ipmi.go.fixture",
+    "sha256": "90df4451a8e0c3a5c8b81a52b3d876dc6c9aa5936384d532baad2fc1a94abdfb"
+  },
+  "conformanceFixture": {
+    "path": "test/fixtures/upstream-inspection/ipmi-exporter/ipmi-sensors.csv",
+    "sha256": "292d64fbf63489323edacced15f6210e6e3e046f3bec5bb812f55309d358e6e6"
+  },
+  "consumerBoundary": "Uses a deterministic mock executable and no BMC, credentials, host device, or installed ipmimonitoring package.",
+  "disabledReason": "Fixture collector metrics pass; native FreeIPMI process, target privilege, and profile admission remain unverified."
+}

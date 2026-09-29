@@ -1,0 +1,7 @@
+image: python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+network: none; pull: never; standard-library AST only; no dependency installs or imports executed
+command: python /fixtures/verify-keep-community-model.py --source-root /fixtures/keep-community-model
+parsed 6 selected Keep Community model files with Python AST
+external import roots: pydantic, pytz, retry, sqlalchemy, sqlalchemy_utils, sqlmodel
+no Keep ee/ files present; runtime imports were not executed
+exit_code=0

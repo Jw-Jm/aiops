@@ -1,0 +1,9 @@
+source: smartctl_exporter v0.14.0 locked commit ef5c03de02cb793e6a1540bef943fe6a167de635
+image: golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414
+network: none; pull: never; readonly module cache; upstream fake JSON fixture only; no block-device scan or smartctl binary
+command: go test -p 1 -count=1 -v -timeout=5m . -run TestTask29SMARTctlFixture
+=== RUN   TestTask29SMARTctlFixture
+--- PASS: TestTask29SMARTctlFixture (0.00s)
+PASS
+ok  	github.com/prometheus-community/smartctl_exporter	0.003s
+exit_code=0

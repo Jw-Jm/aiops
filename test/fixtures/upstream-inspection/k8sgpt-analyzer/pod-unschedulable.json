@@ -1,0 +1,15 @@
+{
+  "apiVersion": "v1",
+  "kind": "PodList",
+  "metadata": {"resourceVersion": "1"},
+  "items": [{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {"name": "unschedulable", "namespace": "fixture", "uid": "fixture-pod"},
+    "spec": {"containers": [{"name": "fixture", "image": "fixture.invalid/never-run"}]},
+    "status": {
+      "phase": "Pending",
+      "conditions": [{"type": "PodScheduled", "status": "False", "reason": "Unschedulable", "message": "fixture: insufficient memory"}]
+    }
+  }]
+}

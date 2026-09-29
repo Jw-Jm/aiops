@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+config=''
+while [ "$#" -gt 0 ]; do
+  if [ "$1" = '--config-file' ] && [ "$#" -gt 1 ]; then config=$2; shift 2; else shift; fi
+done
+if [ -n "$config" ]; then cat "$config" >/dev/null; fi
+cat "${OPS_TASK29_FIXTURES}/ipmi-exporter/ipmi-sensors.csv"

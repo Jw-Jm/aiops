@@ -1,0 +1,48 @@
+"""Offline SQLite contract PoC for the pinned Keep Community incident model."""
+
+import json
+
+from sqlmodel import Session, SQLModel, create_engine, select
+
+from keep.api.models.db.incident import Incident, IncidentSeverity
+from keep.api.models.db.tenant import Tenant
+from keep.api.models.incident import IncidentDto
+
+
+def main() -> None:
+    engine = create_engine("sqlite://")
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as session:
+        session.add(Tenant(id="tenant-fixture", name="Fixture tenant"))
+        session.add(
+            Incident(
+                tenant_id="tenant-fixture",
+                running_number=7,
+                user_generated_name="fixture incident",
+                ai_generated_name=None,
+                user_summary="node pressure",
+                generated_summary="node pressure evidence",
+                severity=IncidentSeverity.HIGH.order,
+                status="firing",
+                alerts_count=2,
+                sources=["npd"],
+                affected_services=["node-a"],
+            )
+        )
+        session.commit()
+        incident = session.exec(select(Incident)).one()
+        projected = IncidentDto.from_db_incident(incident)
+
+    result = json.loads(projected.json())
+    assert result["id"] == str(incident.id)
+    assert result["severity"] == "high"
+    assert result["status"] == "firing"
+    assert result["alert_sources"] == ["npd"]
+    assert result["services"] == ["node-a"]
+    assert "tenant_id" not in result
+    print("Keep Community Incident SQLModel persisted and projected to IncidentDto")
+    print("tenant identity excluded from public DTO; consumer must enforce tenant equality")
+
+
+if __name__ == "__main__":
+    main()

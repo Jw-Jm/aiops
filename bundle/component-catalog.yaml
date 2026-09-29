@@ -1913,57 +1913,80 @@ components:
     officialSupportSources: []
   - name: k8sgpt
     state: candidate
-    version: pending
+    version: "v0.4.36"
     source: "https://github.com/k8sgpt-ai/k8sgpt"
-    commit: pending
-    digest: pending
-    license: pending
-    specialLicenseADR: pending
-    fileLicenses: pending
+    commit: d33935a7b6f7039ec649925420d6b29c9b119567
+    digest: sha256:fc69aa617eb0f2d2f4f0f57e1cc5bfaff80c694181d535ff472ff368302abb5a
+    license: Apache-2.0
+    specialLicenseADR: not-applicable
+    fileLicenses:
+      - path: third_party/licenses/k8sgpt/LICENSE
+        license: Apache-2.0
+        digest: sha256:f4484f16a9742bbfdd6f42880a7ff667a65561c3b15b183d6a939de88f66d8bb
     sourceSnapshot: false
-    sourceArchiveSHA256: pending
-    architectures: pending
-    usage: "Kubernetes inspection/analyzer"
+    sourceArchiveSHA256: sha256:fc69aa617eb0f2d2f4f0f57e1cc5bfaff80c694181d535ff472ff368302abb5a
+    architectures: ["linux/arm64"]
+    usage: "K8sGPT Analyzer Result and deterministic CLI JSON (Pod analyzer only) -> platform FindingCandidate"
     reuseMode: process-isolated
-    linkageMode: pending
-    importedPaths: pending
-    dependencyClosure: pending
+    linkageMode: test-only-cli-json
+    importedPaths:
+      - "pkg/analyzer/analyzer.go"
+      - "pkg/analyzer/pod_test.go"
+    dependencyClosure: []
     dependencyClosureVerified: false
-    patches: pending
-    forkPolicy: pending
-    owner: pending
-    pocReport: pending
-    conformanceFixtures: pending
-    exitPlan: pending
+    patches: []
+    forkPolicy: not-applicable
+    owner: "SP-02 Task 2.9 reuse boundary"
+    pocReport: docs/poc/inspection-reuse.md
+    conformanceFixtures:
+      - "test/fixtures/upstream-inspection/k8sgpt-analyzer/pkg/analyzer/analyzer.go.fixture"
+      - "test/fixtures/upstream-inspection/k8sgpt-analyzer/pkg/analyzer/pod_test.go.fixture"
+      - "test/fixtures/upstream-inspection/k8sgpt-analyzer/pod-unschedulable.json"
+      - "test/fixtures/upstream-inspection/verify-k8sgpt-cli.py"
+      - "test/fixtures/upstream-inspection/platform-mappings/k8sgpt-analyzer.json"
+    exitPlan: "Keep candidate and runtime disabled; any later runtime admission requires a separately scoped implementation task and a target-specific licensed closure/PoC."
     requiredFor1_0: true
-    candidateNote: "Consume deterministic analyzer output without enabling --explain or an LLM in the deterministic chain."
+    candidateNote: "Task 2.9 source/model/rule evidence only; runtime admission and Bundle inclusion remain disabled. Read-only analyzer output. LLM, --explain, provider calls, mutation, and automatic remediation are excluded. Future consumer must apply the platform finding contract and redaction. dependency inventory has 268 exact artifacts; license review=false; unknown licenses=5; see test/fixtures/upstream-inspection/dependency-closures.json record k8sgpt-analyzer. Lock: docs/poc/inspection-reuse-lock.yaml#k8sgpt-analyzer."
     officialSupportSources: []
   - name: coroot-community
     state: candidate
-    version: pending
+    version: "v1.26.8"
     source: "https://github.com/coroot/coroot"
-    commit: pending
-    digest: pending
-    license: pending
-    specialLicenseADR: pending
-    fileLicenses: pending
+    commit: 76fa0cff31c530d1a2b0e8adc662433eea2bfeef
+    digest: sha256:f64a0ec8fc56398048496c66e39eb6a39a156818db3892511e9eac5ac56039db
+    license: Apache-2.0
+    specialLicenseADR: not-applicable
+    fileLicenses:
+      - path: third_party/licenses/coroot/LICENSE
+        license: Apache-2.0
+        digest: sha256:ddfc19491fa48f6e59c652295f315ebce48d75a302b93b6bc910ef1e4107affc
     sourceSnapshot: false
-    sourceArchiveSHA256: pending
-    architectures: pending
-    usage: "selective Community Check/Audit reuse"
-    reuseMode: vendor
-    linkageMode: pending
-    importedPaths: pending
-    dependencyClosure: pending
+    sourceArchiveSHA256: sha256:f64a0ec8fc56398048496c66e39eb6a39a156818db3892511e9eac5ac56039db
+    architectures: ["linux/arm64"]
+    usage: "Coroot model.Check and AuditReport metadata -> platform FindingCandidate and audit evidence projection"
+    reuseMode: selective-source
+    linkageMode: check-audit-model-slice
+    importedPaths:
+      - "model/check.go"
+      - "model/check_test.go"
+      - "model/audit_report.go"
+      - "model/application_deployment.go"
+    dependencyClosure: []
     dependencyClosureVerified: false
-    patches: pending
-    forkPolicy: pending
-    owner: pending
-    pocReport: pending
-    conformanceFixtures: pending
-    exitPlan: pending
+    patches: []
+    forkPolicy: not-applicable
+    owner: "SP-02 Task 2.9 reuse boundary"
+    pocReport: docs/poc/inspection-reuse.md
+    conformanceFixtures:
+      - "test/fixtures/upstream-inspection/coroot-community-check/model/check.go.fixture"
+      - "test/fixtures/upstream-inspection/coroot-community-check/model/check_test.go.fixture"
+      - "test/fixtures/upstream-inspection/coroot-community-check/model/audit_report.go.fixture"
+      - "test/fixtures/upstream-inspection/coroot-community-check/model/application_deployment.go.fixture"
+      - "test/fixtures/upstream-inspection/coroot-community-check/model/coroot-boundary-poc_test.go.fixture"
+      - "test/fixtures/upstream-inspection/platform-mappings/coroot-community-check.json"
+    exitPlan: "Keep candidate and runtime disabled; any later runtime admission requires a separately scoped implementation task and a target-specific licensed closure/PoC."
     requiredFor1_0: true
-    candidateNote: "Only low-coupling Community files may be considered after file-level license and dependency review."
+    candidateNote: "Task 2.9 source/model/rule evidence only; runtime admission and Bundle inclusion remain disabled. Reuse only model.Check, AuditReport value shape, and selected Check evaluation logic. No watcher, storage, collector, UI, or complete Coroot runtime. dependency inventory has 24 exact artifacts; license review=true; unknown licenses=0; see test/fixtures/upstream-inspection/dependency-closures.json record coroot-community-check. Lock: docs/poc/inspection-reuse-lock.yaml#coroot-community-check."
     officialSupportSources: []
   - name: kubevirt-observability-controller
     state: candidate
@@ -2021,111 +2044,146 @@ components:
     officialSupportSources: []
   - name: node-problem-detector
     state: candidate
-    version: pending
+    version: "v1.35.3"
     source: "https://github.com/kubernetes/node-problem-detector"
-    commit: pending
-    digest: pending
-    license: pending
-    specialLicenseADR: pending
-    fileLicenses: pending
+    commit: e2b57e2f42052e4cf62cd2be1eb882f6a71a7804
+    digest: sha256:6c5c21c2b2d2c62e014998bb962ad9465b1c1a0d2ada5f173210beff3ecf78a3
+    license: Apache-2.0
+    specialLicenseADR: not-applicable
+    fileLicenses:
+      - path: third_party/licenses/node-problem-detector/LICENSE
+        license: Apache-2.0
+        digest: sha256:b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1
     sourceSnapshot: false
-    sourceArchiveSHA256: pending
-    architectures: pending
-    usage: "node/kernel problem rules"
+    sourceArchiveSHA256: sha256:6c5c21c2b2d2c62e014998bb962ad9465b1c1a0d2ada5f173210beff3ecf78a3
+    architectures: ["linux/arm64"]
+    usage: "NPD kernel-monitor JSON rule and one kernel log message -> VictoriaLogs _msg filter plus a platform NodeCondition/FindingCandidate projection"
     reuseMode: selective-rules
-    linkageMode: pending
-    importedPaths: pending
-    dependencyClosure: pending
+    linkageMode: victorialogs-rule-mapping
+    importedPaths:
+      - "config/kernel-monitor.json"
+    dependencyClosure: []
     dependencyClosureVerified: false
-    patches: pending
-    forkPolicy: pending
-    owner: pending
-    pocReport: pending
-    conformanceFixtures: pending
-    exitPlan: pending
+    patches: []
+    forkPolicy: not-applicable
+    owner: "SP-02 Task 2.9 reuse boundary"
+    pocReport: docs/poc/inspection-reuse.md
+    conformanceFixtures:
+      - "test/fixtures/upstream-inspection/node-problem-detector-rules/config/kernel-monitor.json"
+      - "test/fixtures/upstream-inspection/npd-victorialogs-cases.json"
+      - "test/fixtures/upstream-inspection/verify-npd-victorialogs.go"
+      - "test/fixtures/upstream-inspection/platform-mappings/node-problem-detector-rules.json"
+    exitPlan: "Keep candidate and runtime disabled; any later runtime admission requires a separately scoped implementation task and a target-specific licensed closure/PoC."
     requiredFor1_0: true
-    candidateNote: "Prefer reviewed rule reuse after result-equivalence validation."
+    candidateNote: "Task 2.9 source/model/rule evidence only; runtime admission and Bundle inclusion remain disabled. Only individual log-line matching is mapped. No NPD daemon deployment or automatic host privilege is authorized. dependency inventory has 0 exact artifacts; license review=true; unknown licenses=0; see test/fixtures/upstream-inspection/dependency-closures.json record node-problem-detector-rules. Lock: docs/poc/inspection-reuse-lock.yaml#node-problem-detector-rules."
     officialSupportSources: []
   - name: gofish
     state: candidate
-    version: pending
+    version: "v0.26.0"
     source: "https://github.com/stmcginnis/gofish"
-    commit: pending
-    digest: pending
-    license: pending
-    specialLicenseADR: pending
-    fileLicenses: pending
+    commit: af1cf20386d538767ed9b6dd3a770736ab90e2d0
+    digest: sha256:9461b77dc75a84212a49af49a736c3ebbf9e6ddb488af068f1ac6d62f5bd55e8
+    license: BSD-3-Clause
+    specialLicenseADR: not-applicable
+    fileLicenses:
+      - path: third_party/licenses/gofish/LICENSE
+        license: BSD-3-Clause
+        digest: sha256:0f7fa9decdf253238afdddf06281006e7808a9426369f58f36cda1e2fbee5b51
     sourceSnapshot: false
-    sourceArchiveSHA256: pending
-    architectures: pending
-    usage: "Redfish Go SDK"
-    reuseMode: direct-dependency
-    linkageMode: pending
-    importedPaths: pending
-    dependencyClosure: pending
+    sourceArchiveSHA256: sha256:9461b77dc75a84212a49af49a736c3ebbf9e6ddb488af068f1ac6d62f5bd55e8
+    architectures: ["linux/arm64"]
+    usage: "Gofish Redfish ComputerSystem and LogEntry response models -> platform normalized HardwareFact and hardware diagnostic evidence"
+    reuseMode: reference-only
+    linkageMode: redfish-schema-readonly
+    importedPaths:
+      - "schemas/computersystem_test.go"
+      - "schemas/logentry_test.go"
+    dependencyClosure: []
     dependencyClosureVerified: false
-    patches: pending
-    forkPolicy: pending
-    owner: pending
-    pocReport: pending
-    conformanceFixtures: pending
-    exitPlan: pending
+    patches: []
+    forkPolicy: not-applicable
+    owner: "SP-02 Task 2.9 reuse boundary"
+    pocReport: docs/poc/inspection-reuse.md
+    conformanceFixtures:
+      - "test/fixtures/upstream-inspection/gofish-redfish/schemas/computersystem_test.go.fixture"
+      - "test/fixtures/upstream-inspection/gofish-redfish/schemas/logentry_test.go.fixture"
+      - "test/fixtures/upstream-inspection/platform-mappings/gofish-redfish.json"
+    exitPlan: "Keep candidate and runtime disabled; any later runtime admission requires a separately scoped implementation task and a target-specific licensed closure/PoC."
     requiredFor1_0: true
-    candidateNote: "Read-only BMC fact source; no IPMI raw command or arbitrary Redfish write proxy."
+    candidateNote: "Task 2.9 source/model/rule evidence only; runtime admission and Bundle inclusion remain disabled. Read-only Redfish representation and value decoding. Network credentials, write operations, and a resident exporter are excluded. dependency inventory has 0 exact artifacts; license review=true; unknown licenses=0; see test/fixtures/upstream-inspection/dependency-closures.json record gofish-redfish. Lock: docs/poc/inspection-reuse-lock.yaml#gofish-redfish."
     officialSupportSources: []
   - name: ipmi-exporter
     state: candidate
-    version: pending
+    version: "v1.10.1"
     source: "https://github.com/prometheus-community/ipmi_exporter"
-    commit: pending
-    digest: pending
-    license: pending
-    specialLicenseADR: pending
-    fileLicenses: pending
+    commit: 291d0107bdab44df5a7ff50ce552ee3ccc23b52a
+    digest: sha256:ce7581355c5758851af9ebf8fc44bd546cbb66bb5504bb8cfa4daca9a37aa811
+    license: Apache-2.0
+    specialLicenseADR: not-applicable
+    fileLicenses:
+      - path: third_party/licenses/ipmi_exporter/LICENSE
+        license: Apache-2.0
+        digest: sha256:c360c4e7084170d4f941317716c41fdda76c4119a08ee47f68115774b2269294
     sourceSnapshot: false
-    sourceArchiveSHA256: pending
-    architectures: pending
-    usage: "IPMI metrics exporter"
-    reuseMode: external-service
-    linkageMode: pending
-    importedPaths: pending
-    dependencyClosure: pending
+    sourceArchiveSHA256: sha256:ce7581355c5758851af9ebf8fc44bd546cbb66bb5504bb8cfa4daca9a37aa811
+    architectures: ["linux/arm64"]
+    usage: "ipmimonitoring CSV sensor result through upstream IPMICollector Prometheus metrics -> platform HardwareSensorSample and health evidence; target-to-resource identity comes from the inventory association"
+    reuseMode: fixture-only
+    linkageMode: synthetic-ipmi-collector
+    importedPaths:
+      - "collector_ipmi.go"
+    dependencyClosure: []
     dependencyClosureVerified: false
-    patches: pending
-    forkPolicy: pending
-    owner: pending
-    pocReport: pending
-    conformanceFixtures: pending
-    exitPlan: pending
+    patches: []
+    forkPolicy: not-applicable
+    owner: "SP-02 Task 2.9 reuse boundary"
+    pocReport: docs/poc/inspection-reuse.md
+    conformanceFixtures:
+      - "test/fixtures/upstream-inspection/ipmi-exporter/collector_ipmi.go.fixture"
+      - "test/fixtures/upstream-inspection/ipmi-exporter/ipmi-collector-poc_test.go.fixture"
+      - "test/fixtures/upstream-inspection/ipmi-exporter/ipmi-sensors.csv"
+      - "test/fixtures/upstream-inspection/ipmi-exporter/mock-bin/ipmimonitoring"
+      - "test/fixtures/upstream-inspection/platform-mappings/ipmi-exporter.json"
+    exitPlan: "Keep candidate and runtime disabled; any later runtime admission requires a separately scoped implementation task and a target-specific licensed closure/PoC."
     requiredFor1_0: true
-    candidateNote: "Reuse a controlled existing exporter where available; no platform-managed BMC write access."
+    candidateNote: "Task 2.9 source/model/rule evidence only; runtime admission and Bundle inclusion remain disabled. Uses a deterministic mock executable and no BMC, credentials, host device, or installed ipmimonitoring package. dependency inventory has 32 exact artifacts; license review=true; unknown licenses=0; see test/fixtures/upstream-inspection/dependency-closures.json record ipmi-exporter. Lock: docs/poc/inspection-reuse-lock.yaml#ipmi-exporter."
     officialSupportSources: []
   - name: smartctl-exporter
     state: candidate
-    version: pending
+    version: "v0.14.0"
     source: "https://github.com/prometheus-community/smartctl_exporter"
-    commit: pending
-    digest: pending
-    license: pending
-    specialLicenseADR: pending
-    fileLicenses: pending
+    commit: ef5c03de02cb793e6a1540bef943fe6a167de635
+    digest: sha256:d087fdc38912a6cc94a9e0a30f0bcde9a40e153c92075bda8614cdba7c05f40f
+    license: Apache-2.0
+    specialLicenseADR: not-applicable
+    fileLicenses:
+      - path: third_party/licenses/smartctl_exporter/LICENSE
+        license: Apache-2.0
+        digest: sha256:cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
     sourceSnapshot: false
-    sourceArchiveSHA256: pending
-    architectures: pending
-    usage: "disk health exporter"
-    reuseMode: external-service
-    linkageMode: pending
-    importedPaths: pending
-    dependencyClosure: pending
+    sourceArchiveSHA256: sha256:d087fdc38912a6cc94a9e0a30f0bcde9a40e153c92075bda8614cdba7c05f40f
+    architectures: ["linux/arm64"]
+    usage: "smartctl --json device response through upstream SMARTctl parser/collector -> platform HardwareFact and storage health evidence"
+    reuseMode: fixture-only
+    linkageMode: smartctl-json-fixture
+    importedPaths:
+      - "smartctl_test.go"
+      - "device_filter_test.go"
+    dependencyClosure: []
     dependencyClosureVerified: false
-    patches: pending
-    forkPolicy: pending
-    owner: pending
-    pocReport: pending
-    conformanceFixtures: pending
-    exitPlan: pending
+    patches: []
+    forkPolicy: not-applicable
+    owner: "SP-02 Task 2.9 reuse boundary"
+    pocReport: docs/poc/inspection-reuse.md
+    conformanceFixtures:
+      - "test/fixtures/upstream-inspection/smartctl-exporter/smartctl_test.go.fixture"
+      - "test/fixtures/upstream-inspection/smartctl-exporter/device_filter_test.go.fixture"
+      - "test/fixtures/upstream-inspection/smartctl-exporter/smartctl-fixture-poc_test.go.fixture"
+      - "test/fixtures/upstream-inspection/smartctl-exporter/sat-Hitachi_Ultrastar_A7K2000-Hitachi_HUA722010CLA330-sdr.json"
+      - "test/fixtures/upstream-inspection/platform-mappings/smartctl-exporter.json"
+    exitPlan: "Keep candidate and runtime disabled; any later runtime admission requires a separately scoped implementation task and a target-specific licensed closure/PoC."
     requiredFor1_0: true
-    candidateNote: "Exporter deployment and exact target compatibility remain subject to admission."
+    candidateNote: "Task 2.9 source/model/rule evidence only; runtime admission and Bundle inclusion remain disabled. Uses upstream --smartctl.fake-data fixture path; no block device, host scan, or smartctl executable is invoked. dependency inventory has 28 exact artifacts; license review=true; unknown licenses=0; see test/fixtures/upstream-inspection/dependency-closures.json record smartctl-exporter. Lock: docs/poc/inspection-reuse-lock.yaml#smartctl-exporter."
     officialSupportSources: []
   - name: kubernetes-ontology
     state: candidate
@@ -2227,57 +2285,83 @@ components:
     officialSupportSources: []
   - name: keep-community
     state: candidate
-    version: pending
+    version: "v0.54.3"
     source: "https://github.com/keephq/keep"
-    commit: pending
-    digest: pending
+    commit: 118b2dc0c7a45f8a22b6317b983cdba6f5b54b5e
+    digest: sha256:2281c727adc9e662c9971caa582659ddefceb11207dfc89fdb5375c2681550dc
     license: MIT
-    specialLicenseADR: pending
-    fileLicenses: pending
+    specialLicenseADR: not-applicable
+    fileLicenses:
+      - path: third_party/licenses/keep/LICENSE
+        license: MIT
+        digest: sha256:2fcc30d214f74aa3145f0e8c2ddaead78ad0d92b43322ef0639cdabba80f330c
     sourceSnapshot: false
-    sourceArchiveSHA256: pending
-    architectures: pending
-    usage: "selective Incident/correlation rules or models"
-    reuseMode: reference-only
-    linkageMode: pending
-    importedPaths: pending
-    dependencyClosure: pending
+    sourceArchiveSHA256: sha256:2281c727adc9e662c9971caa582659ddefceb11207dfc89fdb5375c2681550dc
+    architectures: ["linux/arm64"]
+    usage: "Keep Community Incident SQLModel and Incident DTO -> platform Incident candidate projection"
+    reuseMode: selective-source
+    linkageMode: community-model-slice
+    importedPaths:
+      - "keep/api/models/db/incident.py"
+      - "keep/api/models/incident.py"
+      - "keep/api/models/db/rule.py"
+      - "keep/api/models/db/tenant.py"
+      - "keep/api/models/alert.py"
+      - "keep/api/models/severity_base.py"
+    dependencyClosure: []
     dependencyClosureVerified: false
-    patches: pending
-    forkPolicy: pending
-    owner: pending
-    pocReport: pending
-    conformanceFixtures: pending
-    exitPlan: pending
+    patches: []
+    forkPolicy: not-applicable
+    owner: "SP-02 Task 2.9 reuse boundary"
+    pocReport: docs/poc/inspection-reuse.md
+    conformanceFixtures:
+      - "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/db/incident.py"
+      - "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/incident.py"
+      - "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/db/rule.py"
+      - "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/db/tenant.py"
+      - "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/alert.py"
+      - "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/severity_base.py"
+      - "test/fixtures/upstream-inspection/keep-community-model/keep-model-poc.py.fixture"
+      - "test/fixtures/upstream-inspection/verify-keep-community-model.py"
+      - "test/fixtures/upstream-inspection/platform-mappings/keep-community-model.json"
+    exitPlan: "Keep candidate and runtime disabled; any later runtime admission requires a separately scoped implementation task and a target-specific licensed closure/PoC."
     requiredFor1_0: true
-    candidateNote: "Continue PoC; never import ee/; only file-reviewed Community code may be extracted."
+    candidateNote: "Task 2.9 source/model/rule evidence only; runtime admission and Bundle inclusion remain disabled. Community model only; import closure includes Keep alert/rule/tenant modules and SQLModel/SQLAlchemy. Exclude ee/, providers, database runtime, API server, and UI. dependency inventory has 9 exact artifacts; license review=true; unknown licenses=0; see test/fixtures/upstream-inspection/dependency-closures.json record keep-community-model. Lock: docs/poc/inspection-reuse-lock.yaml#keep-community-model."
     officialSupportSources: []
   - name: metal3-bmo
     state: candidate
-    version: pending
+    version: "v0.14.1"
     source: "https://github.com/metal3-io/baremetal-operator"
-    commit: pending
-    digest: pending
-    license: pending
-    specialLicenseADR: pending
-    fileLicenses: pending
+    commit: 767846c3f3a8b2426cbc5d5fc3b0f4a8565fa440
+    digest: sha256:5c2cbddb982997dc1fa686ea314876a2d3af07e1a1e157519054cbe37b4f39a0
+    license: Apache-2.0
+    specialLicenseADR: not-applicable
+    fileLicenses:
+      - path: third_party/licenses/baremetal-operator/LICENSE
+        license: Apache-2.0
+        digest: sha256:c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4
     sourceSnapshot: false
-    sourceArchiveSHA256: pending
-    architectures: pending
-    usage: "hardware resource model baseline"
+    sourceArchiveSHA256: sha256:5c2cbddb982997dc1fa686ea314876a2d3af07e1a1e157519054cbe37b4f39a0
+    architectures: ["linux/arm64"]
+    usage: "Metal3 BareMetalHost spec/status hardware model -> platform normalized HardwareFact plus Kubernetes resource identity"
     reuseMode: reference-only
-    linkageMode: pending
-    importedPaths: pending
-    dependencyClosure: pending
+    linkageMode: hardware-api-model
+    importedPaths:
+      - "apis/metal3.io/v1alpha1/baremetalhost_types.go"
+      - "apis/metal3.io/v1alpha1/baremetalhost_types_test.go"
+    dependencyClosure: []
     dependencyClosureVerified: false
-    patches: pending
-    forkPolicy: pending
-    owner: pending
-    pocReport: pending
-    conformanceFixtures: pending
-    exitPlan: pending
+    patches: []
+    forkPolicy: not-applicable
+    owner: "SP-02 Task 2.9 reuse boundary"
+    pocReport: docs/poc/inspection-reuse.md
+    conformanceFixtures:
+      - "test/fixtures/upstream-inspection/metal3-bmo-model/apis/metal3.io/v1alpha1/baremetalhost_types.go.fixture"
+      - "test/fixtures/upstream-inspection/metal3-bmo-model/apis/metal3.io/v1alpha1/baremetalhost_types_test.go.fixture"
+      - "test/fixtures/upstream-inspection/platform-mappings/metal3-bmo-model.json"
+    exitPlan: "Keep candidate and runtime disabled; any later runtime admission requires a separately scoped implementation task and a target-specific licensed closure/PoC."
     requiredFor1_0: true
-    candidateNote: "Reuse model/code only; do not deploy the complete Metal3 stack."
+    candidateNote: "Task 2.9 source/model/rule evidence only; runtime admission and Bundle inclusion remain disabled. Model and CRD value shapes only; no BMO controller, Ironic services, provisioning, or Secret values. dependency inventory has 19 exact artifacts; license review=true; unknown licenses=0; see test/fixtures/upstream-inspection/dependency-closures.json record metal3-bmo-model. Lock: docs/poc/inspection-reuse-lock.yaml#metal3-bmo-model."
     officialSupportSources: []
   - name: keycloak
     state: qualified

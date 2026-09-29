@@ -1,0 +1,359 @@
+command: docker run --rm --network none --pull=never -v /tmp/ops-sp02-upstream/k8sgpt:/src:ro -v /Users/mssc/go/pkg/mod:/gomodcache:ro golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414 go test ./pkg/analyzer
+=== RUN   TestCatalogSourceAnalyzer_UnhealthyState_ReturnsResult
+--- PASS: TestCatalogSourceAnalyzer_UnhealthyState_ReturnsResult (0.00s)
+=== RUN   TestCatalogSourceAnalyzer_HealthyOrNoState_Ignored
+--- PASS: TestCatalogSourceAnalyzer_HealthyOrNoState_Ignored (0.00s)
+=== RUN   TestClusterCatalogAnalyzer
+ClusterCatalog: Invalid availabilityMode | Source: registry.redhat.io/redhat/community-operator-index:v4.19
+ClusterCatalog: Invalid image reference | Source: quay.io/test/community-operator-index:v4.19
+ClusterCatalog: Invalid pollIntervalMinutes | Source: registry.redhat.io/redhat/community-operator-index:v4.19
+ClusterCatalog: Valid ClusterCatalog | Source: registry.redhat.io/redhat/community-operator-index:v4.19
+Result: Invalid pollIntervalMinutes | Failures: 1
+  - {OLMv1 ClusterCatalog: Invalid pollIntervalMinutes has condition of type Progressing, reason Retrying:   [{Invalid pollIntervalMinutes VTNGdVZ4TXIqJWQtUjlnMjQ4aVc0fSNVdW0m}]}
+Result: Invalid availabilityMode | Failures: 1
+  - {OLMv1 ClusterCatalog: Invalid availabilityMode has condition of type Progressing, reason Retrying:   [{Invalid availabilityMode UmZkKEcjfC17Kmk0TkpoWTljIiNYdmt0}]}
+Result: Invalid image reference | Failures: 1
+  - {OLMv1 ClusterCatalog: Invalid image reference has condition of type Progressing, reason Retrying:   [{Invalid image reference ZVVnKWlDUVI6UGt0JERhJmFETDouKks=}]}
+--- PASS: TestClusterCatalogAnalyzer (0.00s)
+=== RUN   TestClusterExtensionAnalyzer
+ClusterExtension: Invalid SourceType | Source: 
+ClusterExtension: Invalid UpgradeConstraintPolicy | Source: 
+ClusterExtension: Valid CatalogProvided ClusterExtension | Source: 
+ClusterExtension: Valid SelfCertified ClusterExtension | Source: 
+Result: Invalid SourceType | Failures: 3
+  - {Invalid SourceType has error: invalid or missing spec.source.sourceType (expecting 'Catalog')  [{Invalid SourceType IUI4QUdLZyRFKmNZZF0kbEBs}]}
+  - {OLMv1 ClusterExtension: Invalid SourceType has condition of type Progressing, reason Retrying:   [{Invalid SourceType JnoiVURETU1CMWZTS2J9XWVW}]}
+  - {OLMv1 ClusterExtension: Invalid SourceType has condition of type Installed, reason Failed:   [{Invalid SourceType Y25xSkFyLFpbRUg2S3NVViVY}]}
+Result: Invalid UpgradeConstraintPolicy | Failures: 3
+  - {Invalid UpgradeConstraintPolicy has error: invalid or missing extension.Spec.Source.Catalog.UpgradeConstraintPolicy (expecting 'SelfCertified' or 'CatalogProvided')  [{Invalid UpgradeConstraintPolicy KkVHKFEsQWwkRk0+NGVJPSNSUHFuLltGQHkzfGFpfA==}]}
+  - {OLMv1 ClusterExtension: Invalid UpgradeConstraintPolicy has condition of type Progressing, reason Retrying:   [{Invalid UpgradeConstraintPolicy SHAhWllzJ3JFVmhAQzxWcCpAOWU4JTljV0MrVVRAcg==}]}
+  - {OLMv1 ClusterExtension: Invalid UpgradeConstraintPolicy has condition of type Installed, reason Failed:   [{Invalid UpgradeConstraintPolicy OzhUZ3xkSW9iKjR3eU1WJjlQTWpiJSd1QXlNZFE4cw==}]}
+--- PASS: TestClusterExtensionAnalyzer (0.00s)
+=== RUN   TestClusterServiceVersionAnalyzer
+--- PASS: TestClusterServiceVersionAnalyzer (0.00s)
+=== RUN   TestConfigMapAnalyzer
+=== RUN   TestConfigMapAnalyzer/unused_configmap
+=== RUN   TestConfigMapAnalyzer/empty_configmap
+=== RUN   TestConfigMapAnalyzer/large_configmap
+=== RUN   TestConfigMapAnalyzer/used_configmap
+--- PASS: TestConfigMapAnalyzer (0.00s)
+    --- PASS: TestConfigMapAnalyzer/unused_configmap (0.00s)
+    --- PASS: TestConfigMapAnalyzer/empty_configmap (0.00s)
+    --- PASS: TestConfigMapAnalyzer/large_configmap (0.00s)
+    --- PASS: TestConfigMapAnalyzer/used_configmap (0.00s)
+=== RUN   TestConfigMapAnalyzer_SidecarPatterns
+=== RUN   TestConfigMapAnalyzer_SidecarPatterns/grafana_dashboard_configmap_should_not_be_flagged_as_unused
+=== RUN   TestConfigMapAnalyzer_SidecarPatterns/configmap_with_skip_annotation_should_be_ignored
+=== RUN   TestConfigMapAnalyzer_SidecarPatterns/normal_unused_configmap_should_still_be_flagged
+=== RUN   TestConfigMapAnalyzer_SidecarPatterns/prometheus_rule_configmap_should_not_be_flagged
+=== RUN   TestConfigMapAnalyzer_SidecarPatterns/custom_dynamically-loaded_label_should_work
+--- PASS: TestConfigMapAnalyzer_SidecarPatterns (0.00s)
+    --- PASS: TestConfigMapAnalyzer_SidecarPatterns/grafana_dashboard_configmap_should_not_be_flagged_as_unused (0.00s)
+    --- PASS: TestConfigMapAnalyzer_SidecarPatterns/configmap_with_skip_annotation_should_be_ignored (0.00s)
+    --- PASS: TestConfigMapAnalyzer_SidecarPatterns/normal_unused_configmap_should_still_be_flagged (0.00s)
+    --- PASS: TestConfigMapAnalyzer_SidecarPatterns/prometheus_rule_configmap_should_not_be_flagged (0.00s)
+    --- PASS: TestConfigMapAnalyzer_SidecarPatterns/custom_dynamically-loaded_label_should_work (0.00s)
+=== RUN   TestCronJobAnalyzer
+=== RUN   TestCronJobAnalyzer/Suspended_CronJob
+=== RUN   TestCronJobAnalyzer/Invalid_schedule_format
+=== RUN   TestCronJobAnalyzer/Negative_starting_deadline
+=== RUN   TestCronJobAnalyzer/Valid_CronJob
+=== RUN   TestCronJobAnalyzer/Multiple_issues
+--- PASS: TestCronJobAnalyzer (0.00s)
+    --- PASS: TestCronJobAnalyzer/Suspended_CronJob (0.00s)
+    --- PASS: TestCronJobAnalyzer/Invalid_schedule_format (0.00s)
+    --- PASS: TestCronJobAnalyzer/Negative_starting_deadline (0.00s)
+    --- PASS: TestCronJobAnalyzer/Valid_CronJob (0.00s)
+    --- PASS: TestCronJobAnalyzer/Multiple_issues (0.00s)
+=== RUN   TestCronJobAnalyzerLabelSelector
+--- PASS: TestCronJobAnalyzerLabelSelector (0.00s)
+=== RUN   TestCheckCronScheduleIsValid
+=== RUN   TestCheckCronScheduleIsValid/Valid_schedule_-_every_5_minutes
+=== RUN   TestCheckCronScheduleIsValid/Valid_schedule_-_specific_time
+=== RUN   TestCheckCronScheduleIsValid/Valid_schedule_-_complex
+=== RUN   TestCheckCronScheduleIsValid/Invalid_schedule_-_wrong_format
+=== RUN   TestCheckCronScheduleIsValid/Invalid_schedule_-_too_many_fields
+=== RUN   TestCheckCronScheduleIsValid/Invalid_schedule_-_empty_string
+--- PASS: TestCheckCronScheduleIsValid (0.00s)
+    --- PASS: TestCheckCronScheduleIsValid/Valid_schedule_-_every_5_minutes (0.00s)
+    --- PASS: TestCheckCronScheduleIsValid/Valid_schedule_-_specific_time (0.00s)
+    --- PASS: TestCheckCronScheduleIsValid/Valid_schedule_-_complex (0.00s)
+    --- PASS: TestCheckCronScheduleIsValid/Invalid_schedule_-_wrong_format (0.00s)
+    --- PASS: TestCheckCronScheduleIsValid/Invalid_schedule_-_too_many_fields (0.00s)
+    --- PASS: TestCheckCronScheduleIsValid/Invalid_schedule_-_empty_string (0.00s)
+=== RUN   TestDaemonSetAnalyzer
+--- PASS: TestDaemonSetAnalyzer (0.00s)
+=== RUN   TestDaemonSetAnalyzerNoReadyReplicas
+--- PASS: TestDaemonSetAnalyzerNoReadyReplicas (0.00s)
+=== RUN   TestDaemonSetAnalyzerImagePullSecretNotFound
+--- PASS: TestDaemonSetAnalyzerImagePullSecretNotFound (0.00s)
+=== RUN   TestDeploymentAnalyzer
+--- PASS: TestDeploymentAnalyzer (0.00s)
+=== RUN   TestDeploymentAnalyzerNamespaceFiltering
+--- PASS: TestDeploymentAnalyzerNamespaceFiltering (0.00s)
+=== RUN   TestDeploymentAnalyzerLabelSelectorFiltering
+--- PASS: TestDeploymentAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestGatewayAnalyzer
+--- PASS: TestGatewayAnalyzer (0.00s)
+=== RUN   TestEmptyConditionsGatewayAnalyzer
+--- PASS: TestEmptyConditionsGatewayAnalyzer (0.00s)
+=== RUN   TestMissingClassGatewayAnalyzer
+--- PASS: TestMissingClassGatewayAnalyzer (0.00s)
+=== RUN   TestStatusGatewayAnalyzer
+--- PASS: TestStatusGatewayAnalyzer (0.00s)
+=== RUN   TestGatewayAnalyzerLabelSelectorFiltering
+--- PASS: TestGatewayAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestGatewayClassAnalyzer
+--- PASS: TestGatewayClassAnalyzer (0.00s)
+=== RUN   TestEmptyConditionsGatewayClassAnalyzer
+--- PASS: TestEmptyConditionsGatewayClassAnalyzer (0.00s)
+=== RUN   TestGatewayClassAnalyzerLabelSelectorFiltering
+--- PASS: TestGatewayClassAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestHPAAnalyzer
+--- PASS: TestHPAAnalyzer (0.00s)
+=== RUN   TestHPAAnalyzerWithMultipleHPA
+--- PASS: TestHPAAnalyzerWithMultipleHPA (0.00s)
+=== RUN   TestHPAAnalyzerWithUnsuportedScaleTargetRef
+--- PASS: TestHPAAnalyzerWithUnsuportedScaleTargetRef (0.00s)
+=== RUN   TestHPAAnalyzerWithNonExistentScaleTargetRef
+--- PASS: TestHPAAnalyzerWithNonExistentScaleTargetRef (0.00s)
+=== RUN   TestHPAAnalyzerWithExistingScaleTargetRefAsDeployment
+--- PASS: TestHPAAnalyzerWithExistingScaleTargetRefAsDeployment (0.00s)
+=== RUN   TestHPAAnalyzerWithExistingScaleTargetRefAsReplicationController
+--- PASS: TestHPAAnalyzerWithExistingScaleTargetRefAsReplicationController (0.00s)
+=== RUN   TestHPAAnalyzerWithExistingScaleTargetRefAsReplicaSet
+--- PASS: TestHPAAnalyzerWithExistingScaleTargetRefAsReplicaSet (0.00s)
+=== RUN   TestHPAAnalyzerWithExistingScaleTargetRefAsStatefulSet
+--- PASS: TestHPAAnalyzerWithExistingScaleTargetRefAsStatefulSet (0.00s)
+=== RUN   TestHPAAnalyzerWithExistingScaleTargetRefWithoutSpecifyingResources
+--- PASS: TestHPAAnalyzerWithExistingScaleTargetRefWithoutSpecifyingResources (0.00s)
+=== RUN   TestHPAAnalyzerNamespaceFiltering
+--- PASS: TestHPAAnalyzerNamespaceFiltering (0.00s)
+=== RUN   TestHPAAnalyzerLabelSelectorFiltering
+--- PASS: TestHPAAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestHPAAnalyzerStatusFieldAbleToScale
+--- PASS: TestHPAAnalyzerStatusFieldAbleToScale (0.00s)
+=== RUN   TestHPAAnalyzerStatusFieldScalingActive
+--- PASS: TestHPAAnalyzerStatusFieldScalingActive (0.00s)
+=== RUN   TestHPAAnalyzerStatusFieldScalingLimited
+--- PASS: TestHPAAnalyzerStatusFieldScalingLimited (0.00s)
+=== RUN   TestHPAAnalyzerStatusField
+--- PASS: TestHPAAnalyzerStatusField (0.00s)
+=== RUN   TestHPAAnalyzerStatusScalingLimitedError
+--- PASS: TestHPAAnalyzerStatusScalingLimitedError (0.00s)
+=== RUN   TestGWMissiningHTTRouteAnalyzer
+--- PASS: TestGWMissiningHTTRouteAnalyzer (0.00s)
+=== RUN   TestGWConfigSameHTTRouteAnalyzer
+--- PASS: TestGWConfigSameHTTRouteAnalyzer (0.00s)
+=== RUN   TestGWConfigSelectorHTTRouteAnalyzer
+--- PASS: TestGWConfigSelectorHTTRouteAnalyzer (0.00s)
+=== RUN   TestSvcMissingHTTRouteAnalyzer
+--- PASS: TestSvcMissingHTTRouteAnalyzer (0.00s)
+=== RUN   TestSvcDifferentPortHTTRouteAnalyzer
+--- PASS: TestSvcDifferentPortHTTRouteAnalyzer (0.00s)
+=== RUN   TestIngressAnalyzer
+=== RUN   TestIngressAnalyzer/Non-existent_backend_service
+=== RUN   TestIngressAnalyzer/Non-existent_TLS_secret
+=== RUN   TestIngressAnalyzer/Multiple_issues
+--- PASS: TestIngressAnalyzer (0.00s)
+    --- PASS: TestIngressAnalyzer/Non-existent_backend_service (0.00s)
+    --- PASS: TestIngressAnalyzer/Non-existent_TLS_secret (0.00s)
+    --- PASS: TestIngressAnalyzer/Multiple_issues (0.00s)
+=== RUN   TestIngressAnalyzerLabelSelector
+--- PASS: TestIngressAnalyzerLabelSelector (0.00s)
+=== RUN   TestIngressAnalyzerSkipsEmptyTLSSecretName
+--- PASS: TestIngressAnalyzerSkipsEmptyTLSSecretName (0.00s)
+=== RUN   TestIsGKEBuiltInIngressClass
+=== RUN   TestIsGKEBuiltInIngressClass/gce_class_is_GKE_built-in
+=== RUN   TestIsGKEBuiltInIngressClass/gce-internal_class_is_GKE_built-in
+=== RUN   TestIsGKEBuiltInIngressClass/nginx_class_is_not_GKE_built-in
+=== RUN   TestIsGKEBuiltInIngressClass/empty_class_is_not_GKE_built-in
+=== RUN   TestIsGKEBuiltInIngressClass/custom_class_is_not_GKE_built-in
+--- PASS: TestIsGKEBuiltInIngressClass (0.00s)
+    --- PASS: TestIsGKEBuiltInIngressClass/gce_class_is_GKE_built-in (0.00s)
+    --- PASS: TestIsGKEBuiltInIngressClass/gce-internal_class_is_GKE_built-in (0.00s)
+    --- PASS: TestIsGKEBuiltInIngressClass/nginx_class_is_not_GKE_built-in (0.00s)
+    --- PASS: TestIsGKEBuiltInIngressClass/empty_class_is_not_GKE_built-in (0.00s)
+    --- PASS: TestIsGKEBuiltInIngressClass/custom_class_is_not_GKE_built-in (0.00s)
+=== RUN   TestIngressAnalyzerGKEIngressClass
+=== RUN   TestIngressAnalyzerGKEIngressClass/GKE_gce_ingress_class_should_not_report_error
+=== RUN   TestIngressAnalyzerGKEIngressClass/GKE_gce-internal_ingress_class_should_not_report_error
+=== RUN   TestIngressAnalyzerGKEIngressClass/GKE_gce_ingress_class_via_annotation_should_not_report_error
+=== RUN   TestIngressAnalyzerGKEIngressClass/Non-existent_ingress_class_should_report_error
+--- PASS: TestIngressAnalyzerGKEIngressClass (0.00s)
+    --- PASS: TestIngressAnalyzerGKEIngressClass/GKE_gce_ingress_class_should_not_report_error (0.00s)
+    --- PASS: TestIngressAnalyzerGKEIngressClass/GKE_gce-internal_ingress_class_should_not_report_error (0.00s)
+    --- PASS: TestIngressAnalyzerGKEIngressClass/GKE_gce_ingress_class_via_annotation_should_not_report_error (0.00s)
+    --- PASS: TestIngressAnalyzerGKEIngressClass/Non-existent_ingress_class_should_report_error (0.00s)
+=== RUN   TestInstallPlanAnalyzer
+--- PASS: TestInstallPlanAnalyzer (0.00s)
+=== RUN   TestJobAnalyzer
+=== RUN   TestJobAnalyzer/Suspended_Job
+=== RUN   TestJobAnalyzer/Failed_Job
+=== RUN   TestJobAnalyzer/Valid_Job
+=== RUN   TestJobAnalyzer/Multiple_issues
+--- PASS: TestJobAnalyzer (0.00s)
+    --- PASS: TestJobAnalyzer/Suspended_Job (0.00s)
+    --- PASS: TestJobAnalyzer/Failed_Job (0.00s)
+    --- PASS: TestJobAnalyzer/Valid_Job (0.00s)
+    --- PASS: TestJobAnalyzer/Multiple_issues (0.00s)
+=== RUN   TestJobAnalyzerEventFailure
+=== RUN   TestJobAnalyzerEventFailure/Failed_Job_with_BackoffLimitExceeded_Event
+--- PASS: TestJobAnalyzerEventFailure (0.00s)
+    --- PASS: TestJobAnalyzerEventFailure/Failed_Job_with_BackoffLimitExceeded_Event (0.00s)
+=== RUN   TestJobAnalyzerLabelSelector
+--- PASS: TestJobAnalyzerLabelSelector (0.00s)
+=== RUN   TestLogAnalyzer
+--- PASS: TestLogAnalyzer (0.00s)
+=== RUN   TestLogAnalyzerLabelSelectorFiltering
+--- PASS: TestLogAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestLogAnalyzerReadsPreviousLogsForRestartedContainers
+--- PASS: TestLogAnalyzerReadsPreviousLogsForRestartedContainers (0.00s)
+=== RUN   TestMutatingWebhookAnalyzer
+--- PASS: TestMutatingWebhookAnalyzer (0.00s)
+=== RUN   TestMutatingWebhookAnalyzerLabelSelectorFiltering
+--- PASS: TestMutatingWebhookAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestNetpolNoPods
+--- PASS: TestNetpolNoPods (0.00s)
+=== RUN   TestNetpolWithPod
+--- PASS: TestNetpolWithPod (0.00s)
+=== RUN   TestNetpolNoPodsNamespaceFiltering
+--- PASS: TestNetpolNoPodsNamespaceFiltering (0.00s)
+=== RUN   TestNetpolLabelSelectorFiltering
+--- PASS: TestNetpolLabelSelectorFiltering (0.00s)
+=== RUN   TestNodeAnalyzer
+--- PASS: TestNodeAnalyzer (0.00s)
+=== RUN   TestNodeAnalyzerLabelSelectorFiltering
+--- PASS: TestNodeAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestOperatorGroupAnalyzer
+--- PASS: TestOperatorGroupAnalyzer (0.00s)
+=== RUN   TestPodDisruptionBudgetAnalyzer
+--- PASS: TestPodDisruptionBudgetAnalyzer (0.00s)
+=== RUN   TestPodDisruptionBudgetAnalyzerLabelSelectorFiltering
+--- PASS: TestPodDisruptionBudgetAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestPodAnalyzer
+=== RUN   TestPodAnalyzer/Pending_pods,_namespace_filtering_and_readiness_probe_failure
+=== RUN   TestPodAnalyzer/SchedulingGated_pods_with_and_without_a_message
+=== RUN   TestPodAnalyzer/Evicted_pod_with_message
+=== RUN   TestPodAnalyzer/Evicted_pod_without_message
+=== RUN   TestPodAnalyzer/readiness_probe_failure_without_any_event
+=== RUN   TestPodAnalyzer/Init_container_status_state_waiting
+=== RUN   TestPodAnalyzer/Container_status_state_waiting_but_no_event_reported
+=== RUN   TestPodAnalyzer/Container_status_state_waiting
+=== RUN   TestPodAnalyzer/Terminated_container_with_non-zero_exit_code
+--- PASS: TestPodAnalyzer (0.00s)
+    --- PASS: TestPodAnalyzer/Pending_pods,_namespace_filtering_and_readiness_probe_failure (0.00s)
+    --- PASS: TestPodAnalyzer/SchedulingGated_pods_with_and_without_a_message (0.00s)
+    --- PASS: TestPodAnalyzer/Evicted_pod_with_message (0.00s)
+    --- PASS: TestPodAnalyzer/Evicted_pod_without_message (0.00s)
+    --- PASS: TestPodAnalyzer/readiness_probe_failure_without_any_event (0.00s)
+    --- PASS: TestPodAnalyzer/Init_container_status_state_waiting (0.00s)
+    --- PASS: TestPodAnalyzer/Container_status_state_waiting_but_no_event_reported (0.00s)
+    --- PASS: TestPodAnalyzer/Container_status_state_waiting (0.00s)
+    --- PASS: TestPodAnalyzer/Terminated_container_with_non-zero_exit_code (0.00s)
+=== RUN   TestPersistentVolumeClaimAnalyzer
+=== RUN   TestPersistentVolumeClaimAnalyzer/PV1_and_PVC5_report_failures
+=== RUN   TestPersistentVolumeClaimAnalyzer/no_event
+=== RUN   TestPersistentVolumeClaimAnalyzer/event_other_than_provision_failure
+=== RUN   TestPersistentVolumeClaimAnalyzer/event_without_error_message
+--- PASS: TestPersistentVolumeClaimAnalyzer (0.00s)
+    --- PASS: TestPersistentVolumeClaimAnalyzer/PV1_and_PVC5_report_failures (0.00s)
+    --- PASS: TestPersistentVolumeClaimAnalyzer/no_event (0.00s)
+    --- PASS: TestPersistentVolumeClaimAnalyzer/event_other_than_provision_failure (0.00s)
+    --- PASS: TestPersistentVolumeClaimAnalyzer/event_without_error_message (0.00s)
+=== RUN   TestPvcAnalyzerLabelSelectorFiltering
+--- PASS: TestPvcAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestReplicaSetAnalyzer
+--- PASS: TestReplicaSetAnalyzer (0.00s)
+=== RUN   TestReplicaSetAnalyzerLabelSelectorFiltering
+--- PASS: TestReplicaSetAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestSecurityAnalyzer
+=== RUN   TestSecurityAnalyzer/default_service_account_usage
+    security_test.go:158: Got 2 results:
+    security_test.go:160:   Kind: Security/ServiceAccount, Name: default/default
+    security_test.go:162:     Failure: Default service account is being used by pods: [test-pod]
+    security_test.go:160:   Kind: Security/Pod, Name: default/test-pod
+    security_test.go:162:     Failure: Pod test-pod does not have a security context defined which may pose security risks
+=== RUN   TestSecurityAnalyzer/privileged_container
+    security_test.go:158: Got 1 results:
+    security_test.go:160:   Kind: Security/Pod, Name: default/privileged-pod
+    security_test.go:162:     Failure: Container privileged-container in pod privileged-pod is running as privileged which poses security risks
+=== RUN   TestSecurityAnalyzer/wildcard_permissions_in_role
+    security_test.go:158: Got 1 results:
+    security_test.go:160:   Kind: Security/RoleBinding, Name: default/test-binding
+    security_test.go:162:     Failure: RoleBinding test-binding references Role wildcard-role which contains wildcard permissions - this is not recommended for security best practices
+--- PASS: TestSecurityAnalyzer (0.00s)
+    --- PASS: TestSecurityAnalyzer/default_service_account_usage (0.00s)
+    --- PASS: TestSecurityAnalyzer/privileged_container (0.00s)
+    --- PASS: TestSecurityAnalyzer/wildcard_permissions_in_role (0.00s)
+=== RUN   TestServiceAnalyzer
+=== RUN   TestServiceAnalyzer/Service_with_no_endpoints
+=== RUN   TestServiceAnalyzer/Service_with_not_ready_endpoints
+=== RUN   TestServiceAnalyzer/Service_with_not_ready_endpoints_with_nil_TargetRef
+=== RUN   TestServiceAnalyzer/Service_with_warning_events
+=== RUN   TestServiceAnalyzer/Service_with_leader_election_annotation
+=== RUN   TestServiceAnalyzer/Service_with_non-existent_service
+Service default/test-service does not exist
+--- PASS: TestServiceAnalyzer (0.00s)
+    --- PASS: TestServiceAnalyzer/Service_with_no_endpoints (0.00s)
+    --- PASS: TestServiceAnalyzer/Service_with_not_ready_endpoints (0.00s)
+    --- PASS: TestServiceAnalyzer/Service_with_not_ready_endpoints_with_nil_TargetRef (0.00s)
+    --- PASS: TestServiceAnalyzer/Service_with_warning_events (0.00s)
+    --- PASS: TestServiceAnalyzer/Service_with_leader_election_annotation (0.00s)
+    --- PASS: TestServiceAnalyzer/Service_with_non-existent_service (0.00s)
+=== RUN   TestServiceAnalyzerLabelSelectorFiltering
+--- PASS: TestServiceAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestStatefulSetAnalyzer
+--- PASS: TestStatefulSetAnalyzer (0.00s)
+=== RUN   TestStatefulSetAnalyzerWithoutService
+--- PASS: TestStatefulSetAnalyzerWithoutService (0.00s)
+=== RUN   TestStatefulSetAnalyzerMissingStorageClass
+--- PASS: TestStatefulSetAnalyzerMissingStorageClass (0.00s)
+=== RUN   TestStatefulSetAnalyzerNamespaceFiltering
+--- PASS: TestStatefulSetAnalyzerNamespaceFiltering (0.00s)
+=== RUN   TestStatefulSetAnalyzerLabelSelectorFiltering
+--- PASS: TestStatefulSetAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestStatefulSetAnalyzerReplica
+--- PASS: TestStatefulSetAnalyzerReplica (0.00s)
+=== RUN   TestStatefulSetAnalyzerUnavailableReplicas
+--- PASS: TestStatefulSetAnalyzerUnavailableReplicas (0.00s)
+=== RUN   TestStatefulSetAnalyzerUnavailableReplicaWithPodInitialized
+--- PASS: TestStatefulSetAnalyzerUnavailableReplicaWithPodInitialized (0.00s)
+=== RUN   TestStorageAnalyzer
+=== RUN   TestStorageAnalyzer/Deprecated_StorageClass
+=== RUN   TestStorageAnalyzer/Multiple_Default_StorageClasses
+=== RUN   TestStorageAnalyzer/Released_PV
+=== RUN   TestStorageAnalyzer/Failed_PV
+=== RUN   TestStorageAnalyzer/Small_PV
+=== RUN   TestStorageAnalyzer/Pending_PVC
+=== RUN   TestStorageAnalyzer/Lost_PVC
+=== RUN   TestStorageAnalyzer/Small_PVC
+=== RUN   TestStorageAnalyzer/PVC_without_StorageClass
+--- PASS: TestStorageAnalyzer (0.00s)
+    --- PASS: TestStorageAnalyzer/Deprecated_StorageClass (0.00s)
+    --- PASS: TestStorageAnalyzer/Multiple_Default_StorageClasses (0.00s)
+    --- PASS: TestStorageAnalyzer/Released_PV (0.00s)
+    --- PASS: TestStorageAnalyzer/Failed_PV (0.00s)
+    --- PASS: TestStorageAnalyzer/Small_PV (0.00s)
+    --- PASS: TestStorageAnalyzer/Pending_PVC (0.00s)
+    --- PASS: TestStorageAnalyzer/Lost_PVC (0.00s)
+    --- PASS: TestStorageAnalyzer/Small_PVC (0.00s)
+    --- PASS: TestStorageAnalyzer/PVC_without_StorageClass (0.00s)
+=== RUN   TestSubscriptionAnalyzer
+--- PASS: TestSubscriptionAnalyzer (0.00s)
+=== RUN   TestValidatingWebhookAnalyzer
+--- PASS: TestValidatingWebhookAnalyzer (0.00s)
+=== RUN   TestValidatingWebhookAnalyzerLabelSelectorFiltering
+--- PASS: TestValidatingWebhookAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestFetchLatestEvent
+=== RUN   TestFetchLatestEvent/Valid_case_-_fetch_the_latest_event
+=== RUN   TestFetchLatestEvent/Nonexistent_event
+=== RUN   TestFetchLatestEvent/Nonexistent_namespace
+--- PASS: TestFetchLatestEvent (0.00s)
+    --- PASS: TestFetchLatestEvent/Valid_case_-_fetch_the_latest_event (0.00s)
+    --- PASS: TestFetchLatestEvent/Nonexistent_event (0.00s)
+    --- PASS: TestFetchLatestEvent/Nonexistent_namespace (0.00s)
+PASS
+ok  	github.com/k8sgpt-ai/k8sgpt/pkg/analyzer	0.056s
+
+exit_code=0

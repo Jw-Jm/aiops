@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "k8sgpt-analyzer",
+  "input": "K8sGPT Analyzer Result and deterministic CLI JSON (Pod analyzer only)",
+  "target": "platform FindingCandidate",
+  "fieldMap": {
+    "Result.Kind": "resource.type",
+    "Result.Name": "resource.name",
+    "Result.ParentObject": "resource.parentRef",
+    "Result.Error[].Text": "message",
+    "Result.Details": "evidence.summary",
+    "Result.Error[].KubernetesDoc": "evidence.reference",
+    "severity": "leave unset unless an independent platform rule assigns it"
+  },
+  "sourceFixture": {
+    "path": "test/fixtures/upstream-inspection/k8sgpt-analyzer/pkg/analyzer/analyzer.go.fixture",
+    "sha256": "6200fcf3502a594622436405ed38da3e52f9d03a02ceb04c4126e1fd5a2a1db8"
+  },
+  "conformanceFixture": {
+    "path": "test/fixtures/upstream-inspection/k8sgpt-analyzer/pod-unschedulable.json",
+    "sha256": "42be3b1589e1bc4caa01da1490d5d49c386caff44783fd6f0d327c6ad7a42c18"
+  },
+  "consumerBoundary": "Read-only analyzer output. LLM, --explain, provider calls, mutation, and automatic remediation are excluded. Future consumer must apply the platform finding contract and redaction.",
+  "disabledReason": "CLI/Analyzer path works, but platform FindingCandidate adapter and runtime admission are not part of SP-02."
+}

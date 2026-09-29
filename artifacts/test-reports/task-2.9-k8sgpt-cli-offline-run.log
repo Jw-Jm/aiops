@@ -1,0 +1,42 @@
+image: python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f; CLI: locked K8sGPT v0.4.36 linux/arm64
+network: none; pull: never; no module/package downloads; script asserts interface list is only lo
+command: python /repo/test/fixtures/upstream-inspection/verify-k8sgpt-cli.py --binary /bin/k8sgpt
+{
+  "status": "fixture-pass",
+  "runs": 2,
+  "llmRequested": false,
+  "liveCluster": false,
+  "networkIsolationVerified": true,
+  "interfaces": [
+    "lo"
+  ],
+  "requests": [
+    "/version",
+    "/api/v1/namespaces/fixture/pods",
+    "/version",
+    "/api/v1/namespaces/fixture/pods"
+  ],
+  "result": {
+    "provider": "",
+    "errors": null,
+    "status": "ProblemDetected",
+    "problems": 1,
+    "results": [
+      {
+        "kind": "Pod",
+        "name": "fixture/unschedulable",
+        "error": [
+          {
+            "Text": "fixture: insufficient memory",
+            "KubernetesDoc": "",
+            "Sensitive": []
+          }
+        ],
+        "details": "",
+        "parentObject": ""
+      }
+    ]
+  }
+}
+
+exit_code=0

@@ -1,0 +1,19 @@
+image: python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+network: none; pull: never; exact Poetry-locked wheelhouse mounted read-only; no runtime downloads
+command: pip install --no-index --find-links=/prep/wheelhouse --require-hashes --no-deps -r /prep/requirements.txt; then run keep-model-poc.py.fixture
+Looking in links: /prep/wheelhouse
+Processing /prep/wheelhouse/decorator-5.1.1-py3-none-any.whl (from -r /prep/requirements.txt (line 1))
+Processing /prep/wheelhouse/greenlet-3.1.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (from -r /prep/requirements.txt (line 2))
+Processing /prep/wheelhouse/pydantic-1.10.19-py3-none-any.whl (from -r /prep/requirements.txt (line 3))
+Processing /prep/wheelhouse/pytz-2024.2-py2.py3-none-any.whl (from -r /prep/requirements.txt (line 4))
+Processing /prep/wheelhouse/retry2-0.9.5-py2.py3-none-any.whl (from -r /prep/requirements.txt (line 5))
+Processing /prep/wheelhouse/SQLAlchemy-2.0.36-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (from -r /prep/requirements.txt (line 6))
+Processing /prep/wheelhouse/SQLAlchemy_Utils-0.41.2-py3-none-any.whl (from -r /prep/requirements.txt (line 7))
+Processing /prep/wheelhouse/sqlmodel-0.0.22-py3-none-any.whl (from -r /prep/requirements.txt (line 8))
+Processing /prep/wheelhouse/typing_extensions-4.12.2-py3-none-any.whl (from -r /prep/requirements.txt (line 9))
+Installing collected packages: pytz, typing-extensions, sqlmodel, sqlalchemy-utils, sqlalchemy, retry2, pydantic, greenlet, decorator
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+Successfully installed decorator-5.1.1 greenlet-3.1.1 pydantic-1.10.19 pytz-2024.2 retry2-0.9.5 sqlalchemy-2.0.36 sqlalchemy-utils-0.41.2 sqlmodel-0.0.22 typing-extensions-4.12.2
+Keep Community Incident SQLModel persisted and projected to IncidentDto
+tenant identity excluded from public DTO; consumer must enforce tenant equality
+exit_code=0

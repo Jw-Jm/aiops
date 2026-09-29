@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "node-problem-detector-rules",
+  "input": "NPD kernel-monitor JSON rule and one kernel log message",
+  "target": "VictoriaLogs _msg filter plus a platform NodeCondition/FindingCandidate projection",
+  "fieldMap": {
+    "rule.reason": "finding.ruleId",
+    "rule.type=temporary|permanent": "finding.conditionLifetime",
+    "rule.pattern": "LogsQL _msg:~ with the same RE2 expression plus \\z",
+    "log.message": "evidence.message",
+    "rule.condition": "NodeCondition.type when present"
+  },
+  "sourceFixture": {
+    "path": "test/fixtures/upstream-inspection/node-problem-detector-rules/config/kernel-monitor.json",
+    "sha256": "ff258f99954306042785c869e86f30b6ebf91e6e63c491050794bddc40f965b8"
+  },
+  "conformanceFixture": {
+    "path": "test/fixtures/upstream-inspection/npd-victorialogs-cases.json",
+    "sha256": "3baaefa39d468549bd48b39808252391e959529b31c3f13e1c6b4911ea4c3263"
+  },
+  "consumerBoundary": "Only individual log-line matching is mapped. No NPD daemon deployment or automatic host privilege is authorized.",
+  "disabledReason": "Rule and LogsQL fixture equivalence is verified; NPD runtime remains disabled until profile admission and source-to-platform mapping are implemented."
+}

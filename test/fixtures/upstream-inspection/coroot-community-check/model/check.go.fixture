@@ -1,0 +1,1016 @@
+package model
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"reflect"
+	"text/template"
+
+	"github.com/coroot/coroot/timeseries"
+	"github.com/coroot/coroot/utils"
+	"github.com/dustin/go-humanize/english"
+	"k8s.io/klog"
+)
+
+type CheckId string
+
+type CheckType int
+
+const (
+	CheckTypeEventBased CheckType = iota
+	CheckTypeItemBased
+	CheckTypeValueBased
+	CheckTypeManual
+)
+
+type CheckUnit string
+
+const (
+	CheckUnitPercent          = "percent"
+	CheckUnitSecond           = "second"
+	CheckUnitByte             = "byte"
+	CheckUnitSecondsPerSecond = "seconds/second"
+)
+
+func (u CheckUnit) FormatValue(v float32) string {
+	switch u {
+	case CheckUnitSecond:
+		return utils.FormatDuration(timeseries.Duration(v), 1)
+	case CheckUnitSecondsPerSecond:
+		return utils.FormatDuration(timeseries.Duration(v), 1) + "/second"
+	case CheckUnitByte:
+		value, unit := utils.FormatBytes(v)
+		return value + unit
+	case CheckUnitPercent:
+		return utils.FormatPercentage(v)
+	}
+	return utils.FormatFloat(v)
+}
+
+type CheckConfig struct {
+	Id       CheckId
+	Category AuditReportName
+	Type     CheckType
+	Title    string
+
+	DefaultThreshold        float32
+	Unit                    CheckUnit
+	MessageTemplate         string
+	ConditionFormatTemplate string
+}
+
+var Checks = struct {
+	index map[CheckId]*CheckConfig
+
+	SLOAvailability            CheckConfig
+	SLOLatency                 CheckConfig
+	CPUNode                    CheckConfig
+	CPUContainer               CheckConfig
+	MemoryOOM                  CheckConfig
+	MemoryLeakPercent          CheckConfig
+	MemoryPressure             CheckConfig
+	StorageSpace               CheckConfig
+	StorageIOLoad              CheckConfig
+	NetworkRTT                 CheckConfig
+	NetworkRTTExternal         CheckConfig
+	NetworkRTTOtherClusters    CheckConfig
+	NetworkConnectivity        CheckConfig
+	NetworkTCPConnections      CheckConfig
+	InstanceAvailability       CheckConfig
+	DeploymentStatus           CheckConfig
+	InstanceRestarts           CheckConfig
+	RedisAvailability          CheckConfig
+	RedisLatency               CheckConfig
+	MongodbAvailability        CheckConfig
+	MongodbReplicationLag      CheckConfig
+	MongodbLatency             CheckConfig
+	MongodbOplogWindow         CheckConfig
+	MongodbConnections         CheckConfig
+	MongodbSaturation          CheckConfig
+	MongodbFragmentation       CheckConfig
+	MongodbBackups             CheckConfig
+	MemcachedAvailability      CheckConfig
+	PostgresAvailability       CheckConfig
+	PostgresLatency            CheckConfig
+	PostgresReplicationLag     CheckConfig
+	PostgresConnections        CheckConfig
+	PostgresCheckpoint         CheckConfig
+	PostgresWalArchiving       CheckConfig
+	PostgresWraparound         CheckConfig
+	PostgresBloat              CheckConfig
+	PostgresAutovacuum         CheckConfig
+	PostgresStaleStatistics    CheckConfig
+	PostgresBackups            CheckConfig
+	LogErrors                  CheckConfig
+	JvmAvailability            CheckConfig
+	JvmSafepointTime           CheckConfig
+	DotNetAvailability         CheckConfig
+	PythonGILWaitingTime       CheckConfig
+	NodejsEventLoopBlockedTime CheckConfig
+	DnsLatency                 CheckConfig
+	DnsServerErrors            CheckConfig
+	DnsNxdomainErrors          CheckConfig
+	MysqlAvailability          CheckConfig
+	MysqlReplicationStatus     CheckConfig
+	MysqlReplicationLag        CheckConfig
+	MysqlConnections           CheckConfig
+	MysqlConnectionErrors      CheckConfig
+	MysqlGaleraReplication     CheckConfig
+	MysqlGroupReplication      CheckConfig
+	MysqlLatency               CheckConfig
+	MysqlBackups               CheckConfig
+}{
+	index: map[CheckId]*CheckConfig{},
+
+	SLOAvailability: CheckConfig{
+		Category:                AuditReportSLO,
+		Type:                    CheckTypeManual,
+		Title:                   "Availability",
+		MessageTemplate:         `the app is serving errors`,
+		DefaultThreshold:        99,
+		Unit:                    CheckUnitPercent,
+		ConditionFormatTemplate: "the successful request percentage < <threshold>",
+	},
+	SLOLatency: CheckConfig{
+		Category:                AuditReportSLO,
+		Type:                    CheckTypeManual,
+		Title:                   "Latency",
+		MessageTemplate:         `the app is performing slowly`,
+		DefaultThreshold:        99,
+		Unit:                    CheckUnitPercent,
+		ConditionFormatTemplate: "the percentage of requests served faster than <bucket> < <threshold>",
+	},
+	CPUNode: CheckConfig{
+		Category:                AuditReportCPU,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Node CPU utilization",
+		MessageTemplate:         `high CPU utilization of {{.Items "node"}}`,
+		DefaultThreshold:        80,
+		Unit:                    CheckUnitPercent,
+		ConditionFormatTemplate: "the CPU usage of a node > <threshold>",
+	},
+	CPUContainer: CheckConfig{
+		Category:                AuditReportCPU,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Container CPU utilization",
+		DefaultThreshold:        80,
+		Unit:                    CheckUnitPercent,
+		MessageTemplate:         `high CPU utilization of {{.Items "container"}}`,
+		ConditionFormatTemplate: "the CPU usage of a container > <threshold> of its CPU limit",
+	},
+	MemoryOOM: CheckConfig{
+		Category:                AuditReportMemory,
+		Type:                    CheckTypeEventBased,
+		Title:                   "Out of Memory",
+		DefaultThreshold:        0,
+		MessageTemplate:         `application has been restarted {{.Count "time"}} by the OOM killer`,
+		ConditionFormatTemplate: "the number of container terminations due to Out of Memory > <threshold>",
+	},
+	MemoryLeakPercent: CheckConfig{
+		Category:                AuditReportMemory,
+		Type:                    CheckTypeValueBased,
+		Title:                   "Memory leak",
+		DefaultThreshold:        10,
+		MessageTemplate:         `memory usage is growing by {{.Value}}% per hour`,
+		ConditionFormatTemplate: "memory usage is growing by > <threshold> % per hour",
+	},
+	MemoryPressure: CheckConfig{
+		Category:                AuditReportMemory,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Memory pressure",
+		DefaultThreshold:        0.02,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `high memory stall time on {{.Items "instances"}}`,
+		ConditionFormatTemplate: "memory stall time > <threshold> per second",
+	},
+	StorageIOLoad: CheckConfig{
+		Category:                AuditReportStorage,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Disk I/O load",
+		DefaultThreshold:        5,
+		Unit:                    CheckUnitSecondsPerSecond,
+		MessageTemplate:         `high I/O load of {{.Items "volume"}}`,
+		ConditionFormatTemplate: "the I/O load of a volume > <threshold>",
+	},
+	StorageSpace: CheckConfig{
+		Category:                AuditReportStorage,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Disk space",
+		DefaultThreshold:        80,
+		Unit:                    CheckUnitPercent,
+		MessageTemplate:         `{{.ItemsWithToBe "volume"}} over {{.ThresholdPercent}} full, max usage: {{.ValuePercent}}`,
+		ConditionFormatTemplate: "the space usage of a volume > <threshold>",
+	},
+	NetworkRTT: CheckConfig{
+		Category:                AuditReportNetwork,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Network RTT within the cluster",
+		DefaultThreshold:        0.01,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `high in-cluster network latency: {{.Items "service"}} affected, max RTT: {{.ValueDuration}}`,
+		ConditionFormatTemplate: "RTT between services within the cluster exceeds <threshold>",
+	},
+	NetworkRTTExternal: CheckConfig{
+		Category:                AuditReportNetwork,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Network RTT to external services",
+		DefaultThreshold:        0.2,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `high network latency to external services: {{.Items "service"}} affected, max RTT: {{.ValueDuration}}`,
+		ConditionFormatTemplate: "RTT to an external service exceeds <threshold>",
+	},
+	NetworkRTTOtherClusters: CheckConfig{
+		Category:                AuditReportNetwork,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Network RTT to services in other clusters",
+		DefaultThreshold:        0.1,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `high cross-cluster network latency: {{.Items "service"}} affected, max RTT: {{.ValueDuration}}`,
+		ConditionFormatTemplate: "RTT to a service in another cluster exceeds <threshold>",
+	},
+	NetworkConnectivity: CheckConfig{
+		Category:                AuditReportNetwork,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Network connectivity",
+		DefaultThreshold:        0,
+		MessageTemplate:         `no connectivity with {{.Items "upstream service"}}`,
+		ConditionFormatTemplate: "the number of unavailable upstream services > <threshold>",
+	},
+	NetworkTCPConnections: CheckConfig{
+		Category:                AuditReportNetwork,
+		Type:                    CheckTypeItemBased,
+		Title:                   "TCP connections",
+		DefaultThreshold:        0,
+		MessageTemplate:         `failed to connect to {{.Items "upstream service"}}`,
+		ConditionFormatTemplate: "the number of upstream services to which the app failed to connect > <threshold>",
+	},
+	InstanceAvailability: CheckConfig{
+		Category:                AuditReportInstances,
+		Type:                    CheckTypeManual,
+		Title:                   "Instance availability",
+		DefaultThreshold:        75,
+		Unit:                    CheckUnitPercent,
+		MessageTemplate:         `{{.ItemsWithToBe "instance"}} unavailable`,
+		ConditionFormatTemplate: "the number of available instances < <threshold> of the desired",
+	},
+	InstanceRestarts: CheckConfig{
+		Category:                AuditReportInstances,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Restarts",
+		DefaultThreshold:        1,
+		MessageTemplate:         `application restarted {{.Count "time"}}`,
+		ConditionFormatTemplate: "the number of container restarts > <threshold>",
+	},
+	DeploymentStatus: CheckConfig{
+		Category:                AuditReportDeployments,
+		Type:                    CheckTypeValueBased,
+		Title:                   "Deployment status",
+		DefaultThreshold:        180,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `the rollout has already been in progress for {{.Value}}`,
+		ConditionFormatTemplate: "a rollout is in progress > <threshold>",
+	},
+	RedisAvailability: CheckConfig{
+		Category:                AuditReportRedis,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Redis availability",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.ItemsWithToBe "redis instance"}} unavailable`,
+		ConditionFormatTemplate: "the number of unavailable redis instances > <threshold>",
+	},
+	RedisLatency: CheckConfig{
+		Category:                AuditReportRedis,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Redis latency",
+		DefaultThreshold:        0.005,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `{{.ItemsWithToBe "redis instance"}} performing slowly`,
+		ConditionFormatTemplate: "the average command execution time of a redis instance > <threshold>",
+	},
+	MongodbAvailability: CheckConfig{
+		Category:                AuditReportMongodb,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mongodb availability",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.ItemsWithToBe "mongodb instance"}} unavailable`,
+		ConditionFormatTemplate: "the number of unavailable mongodb instances > <threshold>",
+	},
+	MongodbReplicationLag: CheckConfig{
+		Category:                AuditReportMongodb,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mongodb replication lag",
+		DefaultThreshold:        30,
+		MessageTemplate:         `{{.ItemsWithToBe "mongodb replica"}} far behind the primary`,
+		ConditionFormatTemplate: "replication lag > <threshold>",
+		Unit:                    CheckUnitSecond,
+	},
+	MongodbLatency: CheckConfig{
+		Category:                AuditReportMongodb,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mongodb latency",
+		DefaultThreshold:        0.1,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `{{.ItemsWithToBe "mongodb instance"}} performing slowly`,
+		ConditionFormatTemplate: "the average operation latency of a mongodb instance > <threshold>",
+	},
+	MongodbOplogWindow: CheckConfig{
+		Category:                AuditReportMongodb,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mongodb oplog window",
+		DefaultThreshold:        3600,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `{{.ItemsWithToBe "mongodb instance"}} at risk of a full resync: the oplog window is too small`,
+		ConditionFormatTemplate: "the oplog window of a mongodb instance < <threshold>",
+	},
+	MongodbConnections: CheckConfig{
+		Category:                AuditReportMongodb,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mongodb connections",
+		DefaultThreshold:        90,
+		Unit:                    CheckUnitPercent,
+		MessageTemplate:         `{{.ItemsWithToBe "mongodb instance"}} approaching the connection limit`,
+		ConditionFormatTemplate: "the number of connections of a mongodb instance > <threshold> of the limit",
+	},
+	MongodbSaturation: CheckConfig{
+		Category:                AuditReportMongodb,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mongodb saturation",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.ItemsWithToBe "mongodb instance"}} saturated: operations are queuing (waiting for a lock or a WiredTiger ticket)`,
+		ConditionFormatTemplate: "the number of queued operations > <threshold>",
+	},
+	MongodbFragmentation: CheckConfig{
+		Category:                AuditReportMongodb,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mongodb storage fragmentation",
+		DefaultThreshold:        50,
+		Unit:                    CheckUnitPercent,
+		MessageTemplate:         `{{.ItemsWithToBe "collection"}} fragmented`,
+		ConditionFormatTemplate: "reclaimable collection storage > <threshold> of the allocated storage",
+	},
+	MongodbBackups: CheckConfig{
+		Category:                AuditReportMongodb,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mongodb backups",
+		DefaultThreshold:        86400,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `backups are failing or stale on {{.Items "mongodb cluster"}}`,
+		ConditionFormatTemplate: "no successful backup within <threshold>, the last backup failed, or the scheduled backup is overdue",
+	},
+	MemcachedAvailability: CheckConfig{
+		Category:                AuditReportMemcached,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Memcached availability",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.ItemsWithToBe "memcached instance"}} unavailable`,
+		ConditionFormatTemplate: "the number of unavailable memcached instances > <threshold>",
+	},
+	PostgresAvailability: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres availability",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.ItemsWithToBe "postgres instance"}} unavailable`,
+		ConditionFormatTemplate: "the number of unavailable postgres instances > <threshold>",
+	},
+	PostgresLatency: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres latency",
+		DefaultThreshold:        0.1,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `{{.ItemsWithToBe "postgres instance"}} performing slowly`,
+		ConditionFormatTemplate: "the average query execution time of a postgres instance > <threshold>",
+	},
+	PostgresReplicationLag: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres replication lag",
+		DefaultThreshold:        30,
+		MessageTemplate:         `{{.ItemsWithToBe "postgres replica"}} far behind the primary`,
+		ConditionFormatTemplate: "replication lag > <threshold>",
+		Unit:                    CheckUnitSecond,
+	},
+	PostgresConnections: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres connections",
+		DefaultThreshold:        90,
+		MessageTemplate:         `{{.ItemsWithHave "postgres instance"}} too many connections`,
+		ConditionFormatTemplate: "the number of connections > <threshold> of `max_connections`",
+		Unit:                    CheckUnitPercent,
+	},
+	PostgresCheckpoint: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres checkpoints",
+		DefaultThreshold:        3,
+		MessageTemplate:         `too long since the last checkpoint on {{.Items "postgres instance"}}`,
+		ConditionFormatTemplate: "time since the last checkpoint > <threshold> * `checkpoint_timeout`",
+	},
+	PostgresWalArchiving: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres WAL archiving",
+		DefaultThreshold:        0,
+		MessageTemplate:         `WAL archiving is failing on {{.Items "postgres instance"}}`,
+		ConditionFormatTemplate: "the most recent WAL archive attempt has failed",
+	},
+	PostgresWraparound: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres transaction ID wraparound",
+		DefaultThreshold:        50,
+		Unit:                    CheckUnitPercent,
+		MessageTemplate:         `transaction ID wraparound risk on {{.Items "postgres instance"}}`,
+		ConditionFormatTemplate: "the transaction ID age > <threshold> of the wraparound limit",
+	},
+	PostgresBloat: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres bloat",
+		DefaultThreshold:        50,
+		Unit:                    CheckUnitPercent,
+		MessageTemplate:         `{{.ItemsWithToBe "database"}} bloated`,
+		ConditionFormatTemplate: "the estimated wasted space of a database > <threshold> of its size",
+	},
+	PostgresAutovacuum: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres autovacuum",
+		DefaultThreshold:        2,
+		MessageTemplate:         `autovacuum is falling behind on {{.Items "postgres instance"}}`,
+		ConditionFormatTemplate: "a table sits above <threshold>x its autovacuum trigger threshold with a material amount of dead rows",
+	},
+	PostgresStaleStatistics: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres stale statistics",
+		DefaultThreshold:        2,
+		MessageTemplate:         `planner statistics are stale on {{.Items "postgres instance"}}`,
+		ConditionFormatTemplate: "a large table sits above <threshold>x its autoanalyze trigger threshold",
+	},
+	PostgresBackups: CheckConfig{
+		Category:                AuditReportPostgres,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Postgres backups",
+		DefaultThreshold:        86400,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `backups are failing or stale on {{.Items "postgres cluster"}}`,
+		ConditionFormatTemplate: "no successful backup within <threshold>, the last backup failed, or WAL archiving is broken",
+	},
+	LogErrors: CheckConfig{
+		Category:                AuditReportLogs,
+		Type:                    CheckTypeEventBased,
+		Title:                   "Errors",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.Count "error"}} occurred`,
+		ConditionFormatTemplate: "the number of messages with the ERROR and CRITICAL severity levels > <threshold>",
+	},
+	JvmAvailability: CheckConfig{
+		Category:                AuditReportJvm,
+		Type:                    CheckTypeItemBased,
+		Title:                   "JVM availability",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.ItemsWithToBe "JVM instance"}} unavailable`,
+		ConditionFormatTemplate: "the number of unavailable JVM instances > <threshold>",
+	},
+	JvmSafepointTime: CheckConfig{
+		Category:                AuditReportJvm,
+		Type:                    CheckTypeItemBased,
+		Title:                   "JVM safepoints",
+		DefaultThreshold:        0.05,
+		MessageTemplate:         `high safepoint time on {{.Items "JVM instance"}}`,
+		ConditionFormatTemplate: "the time application have been stopped for safepoint operations > <threshold>",
+		Unit:                    CheckUnitSecond,
+	},
+	DotNetAvailability: CheckConfig{
+		Category:                AuditReportDotNet,
+		Type:                    CheckTypeItemBased,
+		Title:                   ".NET runtime availability",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.ItemsWithToBe ".NET instance"}} unavailable`,
+		ConditionFormatTemplate: "the number of unavailable .NET instances > <threshold>",
+	},
+	PythonGILWaitingTime: CheckConfig{
+		Category:                AuditReportPython,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Python GIL (Global Interpreter Lock) waiting time",
+		DefaultThreshold:        0.05,
+		MessageTemplate:         `high GIL waiting times on {{.Items "Python instance"}}`,
+		ConditionFormatTemplate: "the time Python threads have been waiting for acquiring the GIL (Global Interpreter Lock) > <threshold>",
+		Unit:                    CheckUnitSecond,
+	},
+	NodejsEventLoopBlockedTime: CheckConfig{
+		Category:                AuditReportNodejs,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Node.js event loop blocked time",
+		DefaultThreshold:        0.7,
+		MessageTemplate:         `high Node.js event loop blocked times on {{.Items "Node.js instance"}}`,
+		ConditionFormatTemplate: "the time Node.js event loop executes blocking code > <threshold>",
+		Unit:                    CheckUnitSecond,
+	},
+	DnsLatency: CheckConfig{
+		Category:                AuditReportDNS,
+		Type:                    CheckTypeValueBased,
+		Title:                   "DNS latency",
+		DefaultThreshold:        0.1,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `high latency`,
+		ConditionFormatTemplate: "the 95th percentile of DNS response times > <threshold>",
+	},
+	DnsServerErrors: CheckConfig{
+		Category:                AuditReportDNS,
+		Type:                    CheckTypeEventBased,
+		Title:                   "DNS server errors",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.Count "server DNS error"}} occurred`,
+		ConditionFormatTemplate: "the number of server DNS errors (excluding NXDOMAIN) > <threshold>",
+	},
+	DnsNxdomainErrors: CheckConfig{
+		Category:                AuditReportDNS,
+		Type:                    CheckTypeEventBased,
+		Title:                   "DNS NXDOMAIN errors",
+		DefaultThreshold:        0,
+		MessageTemplate:         `the app received an empty DNS response {{.Count "time"}}`,
+		ConditionFormatTemplate: "the number of the NXDOMAIN DNS errors (for previously valid requests) > <threshold>",
+	},
+	MysqlAvailability: CheckConfig{
+		Category:                AuditReportMysql,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mysql availability",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.ItemsWithToBe "mysql instance"}} unavailable`,
+		ConditionFormatTemplate: "the number of unavailable mysql instances > <threshold>",
+	},
+	MysqlReplicationStatus: CheckConfig{
+		Category:                AuditReportMysql,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mysql replication status",
+		DefaultThreshold:        0,
+		MessageTemplate:         `{{.ItemsWithHave "mysql replica"}} issues with IO or SQL replication threads`,
+		ConditionFormatTemplate: "IO or SQL replication thread is not running ",
+		Unit:                    CheckUnitSecond,
+	},
+	MysqlReplicationLag: CheckConfig{
+		Category:                AuditReportMysql,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mysql replication lag",
+		DefaultThreshold:        30,
+		MessageTemplate:         `{{.ItemsWithToBe "mysql replica"}} far behind the primary`,
+		ConditionFormatTemplate: "replication lag > <threshold>",
+		Unit:                    CheckUnitSecond,
+	},
+	MysqlConnections: CheckConfig{
+		Category:                AuditReportMysql,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mysql connections",
+		DefaultThreshold:        90,
+		MessageTemplate:         `{{.ItemsWithHave "mysql instance"}} too many connections`,
+		ConditionFormatTemplate: "the number of connections > <threshold> of `max_connections`",
+		Unit:                    CheckUnitPercent,
+	},
+	MysqlConnectionErrors: CheckConfig{
+		Category:                AuditReportMysql,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mysql connection errors",
+		DefaultThreshold:        1,
+		MessageTemplate:         `{{.ItemsWithHave "mysql instance"}} clients failing to connect`,
+		ConditionFormatTemplate: "the rate of aborted connection attempts > <threshold> per second",
+	},
+	MysqlGaleraReplication: CheckConfig{
+		Category:                AuditReportMysql,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mysql Galera replication",
+		DefaultThreshold:        10,
+		MessageTemplate:         `{{.ItemsWithHave "mysql instance"}} Galera replication problems`,
+		ConditionFormatTemplate: "a Galera node is throttled by flow control (> <threshold> of the time) or hitting certification conflicts",
+		Unit:                    CheckUnitPercent,
+	},
+	MysqlGroupReplication: CheckConfig{
+		Category:                AuditReportMysql,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mysql Group Replication",
+		DefaultThreshold:        1000,
+		MessageTemplate:         `{{.ItemsWithHave "mysql instance"}} Group Replication problems`,
+		ConditionFormatTemplate: "a member is not ONLINE, or its applier queue exceeds <threshold> transactions",
+	},
+	MysqlLatency: CheckConfig{
+		Category:                AuditReportMysql,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mysql latency",
+		DefaultThreshold:        0.1,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `{{.ItemsWithToBe "mysql instance"}} performing slowly`,
+		ConditionFormatTemplate: "the average query latency of a mysql instance > <threshold>",
+	},
+	MysqlBackups: CheckConfig{
+		Category:                AuditReportMysql,
+		Type:                    CheckTypeItemBased,
+		Title:                   "Mysql backups",
+		DefaultThreshold:        86400,
+		Unit:                    CheckUnitSecond,
+		MessageTemplate:         `backups are failing or stale on {{.Items "mysql cluster"}}`,
+		ConditionFormatTemplate: "no successful backup within <threshold>, the last backup failed, or the scheduled backup is overdue",
+	},
+}
+
+func init() {
+	cs := reflect.ValueOf(&Checks).Elem()
+	for i := 0; i < cs.NumField(); i++ {
+		if !cs.Type().Field(i).IsExported() {
+			continue
+		}
+		ch := cs.Field(i).Addr().Interface().(*CheckConfig)
+		ch.Id = CheckId(cs.Type().Field(i).Name)
+		Checks.index[ch.Id] = ch
+	}
+}
+
+func GetCheckConfigs() map[CheckId]*CheckConfig {
+	return Checks.index
+}
+
+type CheckContext struct {
+	items     *utils.StringSet
+	count     int64
+	value     float32
+	unit      CheckUnit
+	threshold float32
+}
+
+func (c CheckContext) Items(singular string) string {
+	return english.Plural(c.items.Len(), singular, "")
+}
+
+func (c CheckContext) ItemsWithToBe(singular string) string {
+	verb := "is"
+	if c.items.Len() > 1 {
+		verb = "are"
+	}
+	return c.Items(singular) + " " + verb
+}
+
+func (c CheckContext) ItemsWithHave(singular string) string {
+	verb := "has"
+	if c.items.Len() > 1 {
+		verb = "have"
+	}
+	return c.Items(singular) + " " + verb
+}
+
+func (c CheckContext) Count(singular string) string {
+	return english.Plural(int(c.count), singular, "")
+}
+
+func (c CheckContext) Value() string {
+	return c.unit.FormatValue(c.value)
+}
+
+func (c CheckContext) ValuePercent() string {
+	return fmt.Sprintf("%.0f%%", c.value)
+}
+
+func (c CheckContext) ValueDuration() string {
+	return utils.FormatLatency(c.value)
+}
+
+func (c CheckContext) ThresholdPercent() string {
+	return fmt.Sprintf("%.0f%%", c.threshold)
+}
+
+type Check struct {
+	Id                      CheckId          `json:"id"`
+	Title                   string           `json:"title"`
+	Status                  Status           `json:"status"`
+	Message                 string           `json:"message"`
+	Threshold               float32          `json:"threshold"`
+	Unit                    CheckUnit        `json:"unit"`
+	ConditionFormatTemplate string           `json:"condition_format_template"`
+	Details                 *utils.StringSet `json:"details,omitempty"`
+	Widgets                 []*Widget        `json:"-"`
+
+	typ             CheckType
+	messageTemplate string
+	items           *utils.StringSet
+	count           int64
+	desired         int64
+	value           float32
+	values          *timeseries.TimeSeries
+	fired           bool
+}
+
+func (ch *Check) AddWidget(w *Widget) {
+	if w != nil {
+		ch.Widgets = append(ch.Widgets, w)
+	}
+}
+
+func (ch *Check) Value() float32 {
+	return ch.value
+}
+
+func (ch *Check) SetValue(v float32) {
+	ch.value = v
+}
+
+func (ch *Check) Values() *timeseries.TimeSeries {
+	return ch.values
+}
+func (ch *Check) SetValues(vs *timeseries.TimeSeries) {
+	ch.values = vs
+}
+
+func (ch *Check) Fire() {
+	ch.fired = true
+}
+
+func (ch *Check) SetStatus(status Status, format string, a ...any) {
+	ch.Status = status
+	ch.Message = fmt.Sprintf(format, a...)
+}
+
+func (ch *Check) AddDetail(format string, a ...any) {
+	if format == "" {
+		return
+	}
+	if ch.Details == nil {
+		ch.Details = utils.NewStringSet()
+	}
+	ch.Details.Add(fmt.Sprintf(format, a...))
+}
+
+func (ch *Check) AddItem(format string, a ...any) {
+	if len(a) == 0 {
+		ch.items.Add(format)
+		return
+	}
+	ch.items.Add(fmt.Sprintf(format, a...))
+}
+
+func (ch *Check) Count() int64 {
+	return ch.count
+}
+
+func (ch *Check) Inc(amount int64) {
+	ch.count += amount
+}
+
+func (ch *Check) ResetCounter() {
+	ch.count = 0
+}
+
+func (ch *Check) Desired() int64 {
+	return ch.desired
+}
+
+func (ch *Check) SetDesired(desired int64) {
+	ch.desired = desired
+}
+
+func (ch *Check) Items() *utils.StringSet {
+	return ch.items
+}
+
+func (ch *Check) Calc() {
+	switch ch.typ {
+	case CheckTypeEventBased:
+		if ch.count <= int64(ch.Threshold) {
+			return
+		}
+	case CheckTypeItemBased:
+		if ch.items.Len() == 0 {
+			return
+		}
+	case CheckTypeValueBased:
+		if ch.value <= ch.Threshold {
+			return
+		}
+	case CheckTypeManual:
+		if !ch.fired {
+			return
+		}
+	default:
+		return
+	}
+	t, err := template.New("").Parse(ch.messageTemplate)
+	if err != nil {
+		ch.SetStatus(UNKNOWN, "invalid template: %s", err)
+		return
+	}
+	buf := &bytes.Buffer{}
+	if err := t.Execute(buf, CheckContext{items: ch.items, count: ch.count, value: ch.value, unit: ch.Unit, threshold: ch.Threshold}); err != nil {
+		ch.SetStatus(UNKNOWN, "failed to render message: %s", err)
+		return
+	}
+	ch.SetStatus(WARNING, "%s", buf.String())
+}
+
+type CheckConfigSource string
+
+const (
+	CheckConfigSourceKubernetesAnnotations CheckConfigSource = "kubernetes-annotations"
+)
+
+type CheckConfigSimple struct {
+	Threshold float32 `json:"threshold"`
+}
+
+type CheckConfigSLOAvailability struct {
+	Custom              bool    `json:"custom"`
+	TotalRequestsQuery  string  `json:"total_requests_query"`
+	FailedRequestsQuery string  `json:"failed_requests_query"`
+	ObjectivePercentage float32 `json:"objective_percentage"`
+
+	Source CheckConfigSource `json:"source,omitempty"`
+	Error  string            `json:"error,omitempty"`
+}
+
+func (cfg *CheckConfigSLOAvailability) Total() string {
+	return fmt.Sprintf(`sum(rate(%s[$RANGE]))`, cfg.TotalRequestsQuery)
+}
+
+func (cfg *CheckConfigSLOAvailability) Failed() string {
+	return fmt.Sprintf(`sum(rate(%s[$RANGE]))`, cfg.FailedRequestsQuery)
+}
+
+type CheckConfigSLOLatency struct {
+	Custom              bool    `json:"custom"`
+	HistogramQuery      string  `json:"histogram_query"`
+	ObjectiveBucket     float32 `json:"objective_bucket"`
+	ObjectivePercentage float32 `json:"objective_percentage"`
+
+	Source CheckConfigSource `json:"source,omitempty"`
+	Error  string            `json:"error,omitempty"`
+}
+
+func (cfg *CheckConfigSLOLatency) Histogram() string {
+	return fmt.Sprintf("sum by(le)(rate(%s[$RANGE]))", cfg.HistogramQuery)
+}
+
+type CheckConfigs map[ApplicationId]map[CheckId]json.RawMessage
+
+func (cc CheckConfigs) getRaw(appId ApplicationId, checkId CheckId) (json.RawMessage, bool) {
+	appIdStr := appId.StringWithoutClusterId()
+
+	if appConfigs, ok := cc[appId]; ok {
+		if cfg, ok := appConfigs[checkId]; ok {
+			return cfg, false
+		}
+	}
+
+	for configAppId, appConfigs := range cc {
+		if configAppId.IsZero() {
+			continue
+		}
+		configAppIdStr := configAppId.StringWithoutClusterId()
+		if utils.GlobMatch(appIdStr, configAppIdStr) {
+			if cfg, ok := appConfigs[checkId]; ok {
+				return cfg, false
+			}
+		}
+	}
+
+	if appConfigs, ok := cc[ApplicationId{}]; ok {
+		if cfg, ok := appConfigs[checkId]; ok {
+			return cfg, true
+		}
+	}
+
+	return nil, false
+}
+
+func (cc CheckConfigs) GetSimple(checkId CheckId, appId ApplicationId) CheckConfigSimple {
+	cfg := CheckConfigSimple{Threshold: Checks.index[checkId].DefaultThreshold}
+	raw, _ := cc.getRaw(appId, checkId)
+	if raw == nil {
+		return cfg
+	}
+	v, err := unmarshal[CheckConfigSimple](raw)
+	if err != nil {
+		klog.Warningln("failed to unmarshal check config:", err)
+		return cfg
+	}
+	return v
+}
+
+func (cc CheckConfigs) GetSimpleAll(checkId CheckId, appId ApplicationId) []*CheckConfigSimple {
+	def := Checks.index[checkId]
+	if def == nil {
+		klog.Warningln("unknown check:", checkId)
+		return nil
+	}
+	res := []*CheckConfigSimple{{Threshold: Checks.index[checkId].DefaultThreshold}}
+	ids := []ApplicationId{ApplicationIdZero}
+	if !appId.IsZero() {
+		ids = append(ids, appId)
+	}
+	for _, id := range ids {
+		if appConfigs, ok := cc[id]; ok {
+			if raw, ok := appConfigs[checkId]; ok {
+				if cfg, err := unmarshal[CheckConfigSimple](raw); err != nil {
+					klog.Warningln("failed to unmarshal check config:", err)
+				} else {
+					res = append(res, &cfg)
+					continue
+				}
+			}
+		}
+		res = append(res, nil)
+	}
+	return res
+}
+
+func (cc CheckConfigs) GetByCheck(id CheckId) map[ApplicationId][]any {
+	res := map[ApplicationId][]any{}
+	for appId, appConfigs := range cc {
+		for checkId, raw := range appConfigs {
+			if checkId != id {
+				continue
+			}
+			var cfg any
+			var err error
+			switch id {
+			case Checks.SLOAvailability.Id:
+				cfg, err = unmarshal[[]CheckConfigSLOAvailability](raw)
+			case Checks.SLOLatency.Id:
+				cfg, err = unmarshal[[]CheckConfigSLOLatency](raw)
+			default:
+				cfg, err = unmarshal[CheckConfigSimple](raw)
+			}
+			if err != nil {
+				klog.Warningln("failed to unmarshal check config:", err)
+				continue
+			}
+			res[appId] = append(res[appId], cfg)
+		}
+	}
+	return res
+}
+
+func (cc CheckConfigs) GetAvailability(appId ApplicationId) (CheckConfigSLOAvailability, bool) {
+	defaultCfg := CheckConfigSLOAvailability{
+		Custom:              false,
+		ObjectivePercentage: Checks.SLOAvailability.DefaultThreshold,
+	}
+
+	raw, _ := cc.getRaw(appId, Checks.SLOAvailability.Id)
+	if raw == nil {
+		if appId.Kind == ApplicationKindExternalService {
+			defaultCfg.ObjectivePercentage = 0
+		}
+		return defaultCfg, true
+	}
+	res, err := unmarshal[[]CheckConfigSLOAvailability](raw)
+	if err != nil {
+		klog.Warningln("failed to unmarshal check config:", err)
+		return defaultCfg, true
+	}
+	if len(res) == 0 {
+		return defaultCfg, true
+	}
+	return res[0], false
+}
+
+func (cc CheckConfigs) GetLatency(appId ApplicationId, category ApplicationCategory) (CheckConfigSLOLatency, bool) {
+	objectiveBucket := float32(0.5)
+	auxObjectiveBucket := float32(5)
+	if category.Auxiliary() {
+		objectiveBucket = auxObjectiveBucket
+	}
+	defaultCfg := CheckConfigSLOLatency{
+		Custom:              false,
+		ObjectivePercentage: Checks.SLOLatency.DefaultThreshold,
+		ObjectiveBucket:     objectiveBucket,
+	}
+	raw, projectDefault := cc.getRaw(appId, Checks.SLOLatency.Id)
+	if raw == nil {
+		if appId.Kind == ApplicationKindExternalService {
+			defaultCfg.ObjectivePercentage = 0
+		}
+		return defaultCfg, true
+	}
+	res, err := unmarshal[[]CheckConfigSLOLatency](raw)
+	if err != nil {
+		klog.Warningln("failed to unmarshal check config:", err)
+		return defaultCfg, true
+	}
+	if len(res) == 0 {
+		return defaultCfg, true
+	}
+	if projectDefault && category.Auxiliary() {
+		v := res[0]
+		v.ObjectiveBucket = auxObjectiveBucket
+		return v, false
+	}
+	return res[0], false
+}
+
+func unmarshal[T any](raw json.RawMessage) (T, error) {
+	var cfg T
+	if err := json.Unmarshal(raw, &cfg); err != nil {
+		return cfg, err
+	}
+	return cfg, nil
+}

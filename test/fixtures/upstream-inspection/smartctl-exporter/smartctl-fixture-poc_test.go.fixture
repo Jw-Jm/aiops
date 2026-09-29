@@ -1,0 +1,56 @@
+package main
+
+import (
+	"io"
+	"log/slog"
+	"strings"
+	"testing"
+
+	"github.com/prometheus/client_golang/prometheus"
+	dto "github.com/prometheus/client_model/go"
+)
+
+func TestTask29SMARTctlFixture(t *testing.T) {
+	enabled := true
+	smartctlFakeData = &enabled
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+	device := Device{Name: "/dev/sdr", Type: "sat"}
+	data := readFakeSMARTctl(logger, device)
+	if !data.Get("smartctl.version").Exists() || data.Get("model_name").String() != "Hitachi HUA722010CLA330" {
+		t.Fatalf("unexpected selected smartctl fixture: model=%q version=%v", data.Get("model_name").String(), data.Get("smartctl.version").Raw)
+	}
+	metrics := make(chan prometheus.Metric, 512)
+	collector := NewSMARTctl(logger, data, metrics)
+	if collector.device.device != "sdr" || collector.device.model != "Hitachi HUA722010CLA330" {
+		t.Fatalf("unexpected normalized device mapping: %+v", collector.device)
+	}
+	collector.Collect()
+	close(metrics)
+	var deviceLabel, modelLabel, smartStatus, capacity bool
+	for metric := range metrics {
+		var sample dto.Metric
+		if err := metric.Write(&sample); err != nil {
+			t.Fatal(err)
+		}
+		description := metric.Desc().String()
+		if strings.Contains(description, `fqName: "smartctl_device"`) {
+			for _, label := range sample.Label {
+				if label.GetName() == "device" && label.GetValue() == "sdr" {
+					deviceLabel = true
+				}
+				if label.GetName() == "model_name" && label.GetValue() == "Hitachi HUA722010CLA330" {
+					modelLabel = true
+				}
+			}
+		}
+		if strings.Contains(description, `fqName: "smartctl_device_smart_status"`) && sample.GetGauge().GetValue() == 1 {
+			smartStatus = true
+		}
+		if strings.Contains(description, `fqName: "smartctl_device_capacity_bytes"`) && sample.GetGauge().GetValue() > 0 {
+			capacity = true
+		}
+	}
+	if !deviceLabel || !modelLabel || !smartStatus || !capacity {
+		t.Fatalf("fixture metrics missing normalized device/model, SMART status, or capacity: device=%t model=%t status=%t capacity=%t", deviceLabel, modelLabel, smartStatus, capacity)
+	}
+}

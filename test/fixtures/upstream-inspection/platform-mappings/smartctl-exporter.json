@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "smartctl-exporter",
+  "input": "smartctl --json device response through upstream SMARTctl parser/collector",
+  "target": "platform HardwareFact and storage health evidence",
+  "fieldMap": {
+    "smartctl_device{device,serial_number}": "hardware.disk.identity through inventory association",
+    "smartctl_device{model_name,model_family}": "hardware.disk.model",
+    "smartctl_device_smart_status{device}": "hardware.disk.health",
+    "smartctl_device_capacity_bytes{device}": "hardware.disk.capacity",
+    "smartctl_device_attribute{device,...}": "evidence.smartAttributes"
+  },
+  "sourceFixture": {
+    "path": "test/fixtures/upstream-inspection/smartctl-exporter/smartctl_test.go.fixture",
+    "sha256": "8084f21c79b3362fdcf33f2563f130779f919c26582edd3b57849dab78424f8e"
+  },
+  "conformanceFixture": {
+    "path": "test/fixtures/upstream-inspection/smartctl-exporter/sat-Hitachi_Ultrastar_A7K2000-Hitachi_HUA722010CLA330-sdr.json",
+    "sha256": "26f6ea4b7933c63766d4d097cf1c030727b7e7acf21701732770d282fead442b"
+  },
+  "consumerBoundary": "Uses upstream --smartctl.fake-data fixture path; no block device, host scan, or smartctl executable is invoked.",
+  "disabledReason": "Fixture parser and normalized metric path pass; hardware access and source-profile admission remain disabled."
+}

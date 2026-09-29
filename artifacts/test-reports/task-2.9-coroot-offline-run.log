@@ -1,0 +1,7 @@
+command: docker run --rm --network none --pull=never -v /tmp/ops-sp02-upstream/coroot:/src:ro -v /Users/mssc/go/pkg/mod:/gomodcache:ro golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414 go test ./model -run ^TestCheckConfigs_getRaw$
+=== RUN   TestCheckConfigs_getRaw
+--- PASS: TestCheckConfigs_getRaw (0.00s)
+PASS
+ok  	github.com/coroot/coroot/model	0.004s
+
+exit_code=0

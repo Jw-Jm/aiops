@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "keep-community-model",
+  "input": "Keep Community Incident SQLModel and Incident DTO",
+  "target": "platform Incident candidate projection",
+  "fieldMap": {
+    "Incident.id": "incident.sourceId",
+    "Incident.tenant_id": "tenantID after authenticated tenant equality check",
+    "Incident.severity": "incident.severity",
+    "Incident.status": "incident.status",
+    "Incident.creation_time": "incident.createdAt",
+    "Incident.start_time/end_time/last_seen_time": "incident.timeline",
+    "Incident.alerts_count/sources/affected_services": "incident.context"
+  },
+  "sourceFixture": {
+    "path": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/db/incident.py",
+    "sha256": "491374046880eab359bc30525b0c0546f980a5f8da65d9162165c9c576c833eb"
+  },
+  "conformanceFixture": {
+    "path": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/incident.py",
+    "sha256": "8dc0891cee1a933b497e542b1dc78c89ff0973dcbd8fa488f5892f4a47703bcc"
+  },
+  "consumerBoundary": "Community model only; import closure includes Keep alert/rule/tenant modules and SQLModel/SQLAlchemy. Exclude ee/, providers, database runtime, API server, and UI.",
+  "disabledReason": "The selected Community model files pass the offline SQLite/IncidentDto PoC. No platform adapter, tenant-enforcement integration, or runtime admission is included in Task 2.9; exclude Keep API/database/UI and ee/."
+}

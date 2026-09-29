@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "matchSemantics": "NPD logBuffer appends \\z to each configured expression; VictoriaLogs RE2 mapping uses the same expression plus \\z on the _msg field. This fixture is scoped to individual log messages, not NPD multi-line buffer aggregation.",
+  "cases": [
+    {
+      "id": "rule-01-positive",
+      "reason": "OOMKilling",
+      "pattern": "Killed process \\d+ (.+) total-vm:\\d+kB, anon-rss:\\d+kB, file-rss:\\d+kB.*",
+      "message": "Killed process 123 (nginx) total-vm:100kB, anon-rss:20kB, file-rss:5kB",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-01-negative",
+      "reason": "OOMKilling",
+      "pattern": "Killed process \\d+ (.+) total-vm:\\d+kB, anon-rss:\\d+kB, file-rss:\\d+kB.*",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-02-positive",
+      "reason": "TaskHung",
+      "pattern": "task [\\S ]+:\\w+ blocked for more than \\w+ seconds\\.",
+      "message": "task worker/0:123 blocked for more than 120 seconds.",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-02-negative",
+      "reason": "TaskHung",
+      "pattern": "task [\\S ]+:\\w+ blocked for more than \\w+ seconds\\.",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-03-positive",
+      "reason": "UnregisterNetDevice",
+      "pattern": "unregister_netdevice: waiting for \\w+ to become free. Usage count = \\d+",
+      "message": "unregister_netdevice: waiting for eth0 to become free. Usage count = 1",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-03-negative",
+      "reason": "UnregisterNetDevice",
+      "pattern": "unregister_netdevice: waiting for \\w+ to become free. Usage count = \\d+",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-04-positive",
+      "reason": "KernelOops",
+      "pattern": "BUG: unable to handle kernel NULL pointer dereference at .*",
+      "message": "BUG: unable to handle kernel NULL pointer dereference at 0x1234",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-04-negative",
+      "reason": "KernelOops",
+      "pattern": "BUG: unable to handle kernel NULL pointer dereference at .*",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-05-positive",
+      "reason": "KernelOops",
+      "pattern": "divide error: 0000 \\[#\\d+\\] SMP",
+      "message": "divide error: 0000 [#1] SMP",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-05-negative",
+      "reason": "KernelOops",
+      "pattern": "divide error: 0000 \\[#\\d+\\] SMP",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-06-positive",
+      "reason": "Ext4Error",
+      "pattern": "EXT4-fs error .*",
+      "message": "EXT4-fs error (device sda1): ext4_find_entry:1456: inode #2: comm app: bad entry",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-06-negative",
+      "reason": "Ext4Error",
+      "pattern": "EXT4-fs error .*",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-07-positive",
+      "reason": "Ext4Warning",
+      "pattern": "EXT4-fs warning .*",
+      "message": "EXT4-fs warning (device sda1): ext4 warning",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-07-negative",
+      "reason": "Ext4Warning",
+      "pattern": "EXT4-fs warning .*",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-08-positive",
+      "reason": "IOError",
+      "pattern": "Buffer I/O error .*",
+      "message": "Buffer I/O error on dev sda1, logical block 0, async page read",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-08-negative",
+      "reason": "IOError",
+      "pattern": "Buffer I/O error .*",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-09-positive",
+      "reason": "XfsHasShutdown",
+      "pattern": "XFS .* Shutting down filesystem.?",
+      "message": "XFS (sda1): metadata I/O error: Shutting down filesystem",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-09-negative",
+      "reason": "XfsHasShutdown",
+      "pattern": "XFS .* Shutting down filesystem.?",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-10-positive",
+      "reason": "MemoryReadError",
+      "pattern": "CE memory read error .*",
+      "message": "CE memory read error at 0x1234",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-10-negative",
+      "reason": "MemoryReadError",
+      "pattern": "CE memory read error .*",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-11-positive",
+      "reason": "CperHardwareErrorCorrected",
+      "pattern": ".*\\[Hardware Error\\]: event severity: corrected$",
+      "message": "[Hardware Error]: event severity: corrected",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-11-negative",
+      "reason": "CperHardwareErrorCorrected",
+      "pattern": ".*\\[Hardware Error\\]: event severity: corrected$",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-12-positive",
+      "reason": "CperHardwareErrorRecoverable",
+      "pattern": ".*\\[Hardware Error\\]: event severity: recoverable$",
+      "message": "[Hardware Error]: event severity: recoverable",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-12-negative",
+      "reason": "CperHardwareErrorRecoverable",
+      "pattern": ".*\\[Hardware Error\\]: event severity: recoverable$",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-13-positive",
+      "reason": "CperHardwareErrorFatal",
+      "pattern": ".*\\[Hardware Error\\]: event severity: fatal$",
+      "message": "[Hardware Error]: event severity: fatal",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-13-negative",
+      "reason": "CperHardwareErrorFatal",
+      "pattern": ".*\\[Hardware Error\\]: event severity: fatal$",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    },
+    {
+      "id": "rule-14-positive",
+      "reason": "DockerHung",
+      "pattern": "task docker:\\w+ blocked for more than \\w+ seconds\\.",
+      "message": "task docker:123 blocked for more than 120 seconds.",
+      "expectedMatch": true
+    },
+    {
+      "id": "rule-14-negative",
+      "reason": "DockerHung",
+      "pattern": "task docker:\\w+ blocked for more than \\w+ seconds\\.",
+      "message": "ordinary kernel message: no failure reported",
+      "expectedMatch": false
+    }
+  ]
+}

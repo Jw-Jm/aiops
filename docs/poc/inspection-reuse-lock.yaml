@@ -1,0 +1,3835 @@
+{
+  "schemaVersion": 1,
+  "status": "nonvirtual-review-ready",
+  "task": "SP-02 Task 2.9",
+  "capabilities": [
+    {
+      "id": "k8sgpt-analyzer",
+      "source": "https://github.com/k8sgpt-ai/k8sgpt",
+      "version": "v0.4.36",
+      "commit": "d33935a7b6f7039ec649925420d6b29c9b119567",
+      "sourceArchiveSHA256": "fc69aa617eb0f2d2f4f0f57e1cc5bfaff80c694181d535ff472ff368302abb5a",
+      "license": "Apache-2.0",
+      "licenseEvidence": "third_party/licenses/k8sgpt/LICENSE",
+      "licenseEvidenceSHA256": "f4484f16a9742bbfdd6f42880a7ff667a65561c3b15b183d6a939de88f66d8bb",
+      "state": "disabled",
+      "disabledReason": "Five exact Buf generated modules in the 268-module Linux CLI closure have no file-level license evidence. No LLM/--explain was invoked and CLI JSON is deterministic; keep capability disabled until those licenses are resolved.",
+      "fixture": "test/fixtures/upstream-inspection/k8sgpt-analyzer/pkg/analyzer/pod_test.go.fixture",
+      "fixtureSHA256": "048e498f8fd3350245d2c9896963d4bd7d6249502cc167bf838f2c14b96c2588",
+      "selectedFiles": [
+        {
+          "sourcePath": "pkg/analyzer/analyzer.go",
+          "path": "test/fixtures/upstream-inspection/k8sgpt-analyzer/pkg/analyzer/analyzer.go.fixture",
+          "sha256": "6200fcf3502a594622436405ed38da3e52f9d03a02ceb04c4126e1fd5a2a1db8",
+          "license": "Apache-2.0"
+        },
+        {
+          "sourcePath": "pkg/analyzer/pod_test.go",
+          "path": "test/fixtures/upstream-inspection/k8sgpt-analyzer/pkg/analyzer/pod_test.go.fixture",
+          "sha256": "048e498f8fd3350245d2c9896963d4bd7d6249502cc167bf838f2c14b96c2588",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencies": [
+        {
+          "name": "atomicgo.dev/cursor",
+          "version": "v0.2.0",
+          "digest": "e721b9f3d02387d043f41b6865d2f3ebb803f3de425054c156d61e9e96d239ed",
+          "license": "MIT"
+        },
+        {
+          "name": "atomicgo.dev/keyboard",
+          "version": "v0.2.9",
+          "digest": "909d99915516d1c4067b2706de7d98aee5736003f63eb64b6866e9c87ca1d2c4",
+          "license": "MIT"
+        },
+        {
+          "name": "atomicgo.dev/schedule",
+          "version": "v0.1.0",
+          "digest": "2536385b784060a12ebe6c8a50d1196952fab4dca17142d55c2e4a3acbe0f675",
+          "license": "MIT"
+        },
+        {
+          "name": "cel.dev/expr",
+          "version": "v0.25.1",
+          "digest": "12652bea2461aa29004d23052d3a08cb5911ab0a652469ef5da6efb37c12ee87",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go",
+          "version": "v0.120.0",
+          "digest": "3deae69ea4544e0028faa49fdc8011f4209e26ed4e79d9ee88d4b5c771bb78ab",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go/ai",
+          "version": "v0.8.0",
+          "digest": "e0c4fb29c271e8cabea74f9a2b9649e263cd542f6ebb5abceae7b00de51bc4df",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go/aiplatform",
+          "version": "v1.85.0",
+          "digest": "2939ddf1e3b80468213831bfee31cb89b756b58803cebe4c68bfef4c45e0519e",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go/auth",
+          "version": "v0.16.2",
+          "digest": "38f4f9fb94b864bff2e7852c826ae6605a9fda6510cc6b6b3e02a047dd4243cd",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go/auth/oauth2adapt",
+          "version": "v0.2.8",
+          "digest": "4cd64264bafc4dd05f645452d6e1485adf92309130bd82b4c595db10cd534963",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go/compute/metadata",
+          "version": "v0.9.0",
+          "digest": "f97e35d1c96239b8574054a77e312c95d2c82a89c21daf46ffeaea6d5fc59eca",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go/iam",
+          "version": "v1.5.2",
+          "digest": "5ef0d3a00d72b44c498688551616bce430386bbfc99b5a7f76c0788a92733984",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go/longrunning",
+          "version": "v0.6.7",
+          "digest": "9714afb957286188b2dd56a00530936198a309970200a3cde1b95697575507f9",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go/monitoring",
+          "version": "v1.24.2",
+          "digest": "d93cb9138747418f2e2731c2312c4dc1a75daf3c2a35be7a337901c5c7251381",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go/storage",
+          "version": "v1.51.0",
+          "digest": "65aad2f1c9712b304a63cffa36899ed9af0726d94a645deec16eef2523d4edb2",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cloud.google.com/go/vertexai",
+          "version": "v0.13.2",
+          "digest": "2e7e44ab3597bba8f6b2d3727c0f688d2804a90d8bb35770153690725499dc2a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "dario.cat/mergo",
+          "version": "v1.0.1",
+          "digest": "a89da45788ad1e04b55efe19388f470446bf1d67fdc9358547314561650f3388",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/Azure/azure-sdk-for-go/sdk/azcore",
+          "version": "v1.18.0",
+          "digest": "94d8a2c930dab5b1b17879c0047c6969acd6d9cd5eee4a8d77681da244fdb5e8",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/Azure/azure-sdk-for-go/sdk/azidentity",
+          "version": "v1.10.1",
+          "digest": "788ab08d4228fdf68b0b7e9222134c9429a6f01c981627e87aaef57d116055c3",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/Azure/azure-sdk-for-go/sdk/internal",
+          "version": "v1.11.1",
+          "digest": "de3f442e7d9697e1658b99976d46b883cc2ca7cdfc57377487a7c72177ddb689",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/Azure/azure-sdk-for-go/sdk/storage/azblob",
+          "version": "v1.6.0",
+          "digest": "60da0582a89e037797120bc065936d3dc49141b39507a606295d83ca76d91e5d",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/AzureAD/microsoft-authentication-library-for-go",
+          "version": "v1.4.2",
+          "digest": "fac45e46444a67927badf5747e1a761561d1f08f6bcd3f97e6609062769bc295",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/BurntSushi/toml",
+          "version": "v1.4.1-0.20240526193622-a339e1f7089c",
+          "digest": "f15f0ca7a3c5a4275d3d560236f178e9d735a084534bf3b685ec5f676806230a",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp",
+          "version": "v1.30.0",
+          "digest": "d74de494fd880eac405aa1cdc136f032c8c3c1732ac6f1e3b73898113e544c85",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric",
+          "version": "v0.51.0",
+          "digest": "fd2beac8357a05c967aeb9523d19084077a075bca69c0dea84293b66acbc1e20",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping",
+          "version": "v0.51.0",
+          "digest": "10363070f377d7fa073d5b672c43faa17a603aa0964d0b3f8845776b26f2cca3",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/IBM/watsonx-go",
+          "version": "v1.0.1",
+          "digest": "85797cc99516e90f73d819bd8d431bf267aca4a23dd22ee71b58ca198c3af1b5",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/MakeNowJust/heredoc",
+          "version": "v1.0.0",
+          "digest": "062afe6e11aa3c3ac0035d08907b80d5e5b7563905603391ee774bda440abf16",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/Masterminds/goutils",
+          "version": "v1.1.1",
+          "digest": "ef8778a20c37e98a92e3b1db5ab027cc201743a2f5bfb26ba228bf0515e20b48",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/Masterminds/semver/v3",
+          "version": "v3.3.0",
+          "digest": "b492e8f6fa4c8240234a6d5095521f75d9e2e7c52672b90b5afde533281b540f",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/Masterminds/sprig/v3",
+          "version": "v3.3.0",
+          "digest": "c731370f7601711d1df9b4b0c9bb8488fc381b32fd3e7de97a03673e8287b719",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/Masterminds/squirrel",
+          "version": "v1.5.4",
+          "digest": "80037554049a4750a1219114eb843363c74887b3c3b2fd6700d0ae07d35674b4",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/adrg/xdg",
+          "version": "v0.5.3",
+          "digest": "52847b48afcd46cfd312bc857a8df08643cfffc4103d59a40c3ce648e0196c13",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/alecthomas/units",
+          "version": "v0.0.0-20240927000941-0f3dac36c52b",
+          "digest": "9a275dbb1454d52d2b868b990be424c7d31c0acf2c4a99850faf18ecb9f48b91",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/anthropics/anthropic-sdk-go",
+          "version": "v1.44.0",
+          "digest": "388f33e6154289c623184158504586620aba37c3a030b8828477dc8ba0434e6e",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/asaskevich/govalidator",
+          "version": "v0.0.0-20230301143203-a9d515a09cc2",
+          "digest": "0f8ec67bbc585d29ec115c0885cef6f2431a422cc1cc10008e466ebe8be5dc37",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go",
+          "version": "v1.55.7",
+          "digest": "c1cd94e343142198dd51601ada20340cd81d6c24d4d7931772ec43dc43dffac1",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2",
+          "version": "v1.41.5",
+          "digest": "22b9ff3e315bbe36a1661152091c4849118b9b92b5f9dcdc4e180d27dbb72508",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream",
+          "version": "v1.7.8",
+          "digest": "7a64a43ec12976b292c20179ecc1ec7318aabc2c33ccab13a3cc927969b6c8bd",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/config",
+          "version": "v1.29.14",
+          "digest": "e40d28f15177dea5f5893f99872808c2bbf4e6e1fb28b335c5a66bc0c2a81b7f",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/credentials",
+          "version": "v1.17.67",
+          "digest": "3c315048d99d696d28c32949360a0d0c2b095f0832b7b3af608336047f5e9107",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/feature/ec2/imds",
+          "version": "v1.16.30",
+          "digest": "256798b4e7bab8df8ecd95ca8ac74ac7cec2a1a68f6c682cd8cb548cfbd5913d",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/internal/configsources",
+          "version": "v1.4.21",
+          "digest": "e322e8240d136642caf5644b41a2689aa35b34b8918f1f4611b0a04a21bdc492",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/internal/endpoints/v2",
+          "version": "v2.7.21",
+          "digest": "551146eb72605fb130bcc451673d445ef4877de69cdbf3a8c452acb07e1c448d",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/internal/ini",
+          "version": "v1.8.3",
+          "digest": "7c134d09366b976ea1362c3dca8a394e130182af739a792d7b16089eefa8a514",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/service/bedrock",
+          "version": "v1.33.0",
+          "digest": "d3b46344c18a009ae24c56cdc79c8960ca5146725650696838f0d4e2818c7616",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/service/bedrockruntime",
+          "version": "v1.50.4",
+          "digest": "8cb71d6e6c600eb6f007ac57df6b48dcf63f5794d019e85141941db7ed4b953c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding",
+          "version": "v1.12.3",
+          "digest": "c4605b963ed7b77ab800d90ef0db179c5e96b3d34b0fc58b737adbc16c4fbf8e",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/service/internal/presigned-url",
+          "version": "v1.12.15",
+          "digest": "7cd35b9ff404c7f8254c5b26200aed7d9a93a68bc30b6671441dd270130918bf",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/service/sso",
+          "version": "v1.25.3",
+          "digest": "28c36c8675a1cca9feb7018abe2d0a8b36592632199c91291fb92ba5c4176331",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/service/ssooidc",
+          "version": "v1.30.1",
+          "digest": "928419de361ba4ca4bd66ab503371ee55929c2400a2f45c2003b795a27bf451b",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/aws-sdk-go-v2/service/sts",
+          "version": "v1.33.19",
+          "digest": "1906acd3699b2369a558eb5076015e1ca29a4ffc567689de49cb48905f258a54",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/aws/smithy-go",
+          "version": "v1.24.2",
+          "digest": "24861720feaa5169b5d3d2e1911386255b991ac6dca8972205f0d824edb8a51c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/bahlo/generic-list-go",
+          "version": "v0.2.0",
+          "digest": "e773fa812176a62f1d27d7a1e7589683f5e5af2d36628fa6a5a522e59474c504",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/beorn7/perks",
+          "version": "v1.0.1",
+          "digest": "25bd9e2d94aca770e6dbc1f53725f84f6af4432f631d35dd2c46f96ef0512f1a",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/blang/semver/v4",
+          "version": "v4.0.0",
+          "digest": "96a2bbe11960f3a3c16db0da822c69ce9ac4b738ee731a0476031bbb71987504",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/buger/jsonparser",
+          "version": "v1.1.2",
+          "digest": "07495b55fbdae886bcc970b6f5d5073435b5980291dc92674c53ab31d1ad298f",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/cespare/xxhash/v2",
+          "version": "v2.3.0",
+          "digest": "145a26cdc7c49db566017b807c4989ee7f7ddeb569423e9cb99f995fac3621d3",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/chai2010/gettext-go",
+          "version": "v1.0.3",
+          "digest": "c1c6a88906c7c51fc56d0ca8486b691713ab440b32cdad69d6b5a7e4090ad2af",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/clipperhouse/displaywidth",
+          "version": "v0.10.0",
+          "digest": "53f240c44559409eab60062f4fcc66cb78ed34d7fd8a6fab998853e43205ef94",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/clipperhouse/uax29/v2",
+          "version": "v2.6.0",
+          "digest": "684a37e245cd36c7a2bfa184ea339dfa1dda3dc828a58e0057147ad8c5531691",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/cncf/xds/go",
+          "version": "v0.0.0-20251210132809-ee656c7534f5",
+          "digest": "cca4463a6b46441356c204b8580aed55a0df97e8289cfc04be7986cdf3a8011c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/cohere-ai/cohere-go/v2",
+          "version": "v2.12.2",
+          "digest": "9a3f0846d387d2fd023500c7f1fb20f7b86a6fb52f87caf9bff7ecc38448c77b",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/containerd/console",
+          "version": "v1.0.4",
+          "digest": "80c4b1f54a9d827803e9206923b3738baab47ea82e0e2d26b303056ea69d0cf2",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/containerd/containerd",
+          "version": "v1.7.29",
+          "digest": "99a272125190f4297e5aa8363b57a6e082900a5d307de6fda3594e1e4f41baa5",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/containerd/errdefs",
+          "version": "v1.0.0",
+          "digest": "b4ef42c38d00f2c81cf3e69646549b7f5dc8fb72de9402d7b391963dc0ac9162",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/containerd/log",
+          "version": "v0.1.0",
+          "digest": "2008faf206ec820e7fc3d40baba924936c21347dafad4a7ff122fa90e26e57d7",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/containerd/platforms",
+          "version": "v0.2.1",
+          "digest": "a83feefbb9ecb6d612cfe574a9c850bfa311804d56b034850ca41575e9cf44a2",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/cyphar/filepath-securejoin",
+          "version": "v0.3.6",
+          "digest": "0a487568ea5a58a2b7fddc1aefc2541ceca65992825028711aa09c19ca98aec4",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/davecgh/go-spew",
+          "version": "v1.1.2-0.20180830191138-d8f796af33cc",
+          "digest": "b4d0923b169b194f0016ec46f3df1ab0c68e27999743e43fe2de59ecb2484128",
+          "license": "ISC"
+        },
+        {
+          "name": "github.com/distribution/reference",
+          "version": "v0.6.0",
+          "digest": "08232852a7a908263599777daab50e4306bd877e2467df036206367496122bcc",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/docker/cli",
+          "version": "v26.1.4+incompatible",
+          "digest": "df679737f61f2a79ddbe3fa76caf8c7a7385972a4e80964a80c1a5fb98eb75bc",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/docker/distribution",
+          "version": "v2.8.3+incompatible",
+          "digest": "8f08722c5459cb4d9aa006e1fae094997da372098f4e14a59215b1ed3d48738a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/docker/docker",
+          "version": "v28.3.0+incompatible",
+          "digest": "9a3f3327d0647a565aafc6b265d271e412799118c9b551f6d67d9f0057ff6e01",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/docker/docker-credential-helpers",
+          "version": "v0.8.2",
+          "digest": "c39e3005a0f6c767be4a9a917b46df97f16bdefe0693b6374113eacb36188507",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/docker/go-connections",
+          "version": "v0.5.0",
+          "digest": "697ae616b50387a10b441375f3c6782e7b1e179e57649d71b8565eed4a78eda9",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/docker/go-metrics",
+          "version": "v0.0.1",
+          "digest": "4efab3706215f5b2d29ba823d3991fd6e2f81c02ce45ef0c73c019ebc90e020b",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/emicklei/go-restful/v3",
+          "version": "v3.12.1",
+          "digest": "f41bc569bf1d0c932f6ed641e10355e10d5c2faf3f4234510a4ce6d1aa6f5db2",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/envoyproxy/go-control-plane/envoy",
+          "version": "v1.36.0",
+          "digest": "dc628978da6002143e63a5bfe042c2b50e27bc3a40216f1d443548985f0f6b5a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/envoyproxy/protoc-gen-validate",
+          "version": "v1.3.0",
+          "digest": "d91626b3a9a6b6a3b90dd85e92d922444f0a6c225c0caf9395f0abe49fad2aee",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/evanphx/json-patch",
+          "version": "v5.9.0+incompatible",
+          "digest": "b9d29c4ac9c4d89a54c6370b43337d05db05ed848e967c4e58f94609907d697c",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/evanphx/json-patch/v5",
+          "version": "v5.9.11",
+          "digest": "3f0d0d6f000bafd2c65d2e7a10b14ea0c6cb999ed3712e30758648dacc9d1ba0",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/exponent-io/jsonpath",
+          "version": "v0.0.0-20210407135951-1de76d718b3f",
+          "digest": "f098188e5f2dba09d62f43a8c7c08f4510bdaf29d6d57fcebb155adb3e755fde",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/expr-lang/expr",
+          "version": "v1.17.7",
+          "digest": "9b0cbf9e267d26edde2e5b50a2b33fbfe5c0db5b70a528915e46fe2cae27abcd",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/fatih/color",
+          "version": "v1.18.0",
+          "digest": "4dc6907b7f6807b37c21ad527d966437d398f03472115f471eaa8fe5875363d3",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/felixge/httpsnoop",
+          "version": "v1.0.4",
+          "digest": "75aa471311265e9860df0e523400b4650ed0c1a33262786a421f07226792e494",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/fsnotify/fsnotify",
+          "version": "v1.9.0",
+          "digest": "94e64824b23591b7aa504e3321d5ec3f57de88f4d49882eaefbbf6820dab746e",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/fxamacker/cbor/v2",
+          "version": "v2.7.0",
+          "digest": "b48771460405bab6896c85e21ebc5ff287d4018c6db5c8d822c55769c80dde03",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/go-errors/errors",
+          "version": "v1.5.1",
+          "digest": "9630a42ecb17920a5f9ce332356f8a28ad4aaff529e2ecb676b4a1d11d3149c0",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/go-gorp/gorp/v3",
+          "version": "v3.1.0",
+          "digest": "0d9fd6db8c466235cc1b44c9762883c1be538506dae27189ef85b16356545d88",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/go-jose/go-jose/v4",
+          "version": "v4.1.3",
+          "digest": "ec019b110f6cdc3f55f067f52573be4474d5051b9b7c7fc11eb846b13c56beb4",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/go-logr/logr",
+          "version": "v1.4.3",
+          "digest": "523d7a3587fe73f61ef41c8bc627f7d7f38de8104d46278154b307e60770ad70",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/go-logr/stdr",
+          "version": "v1.2.2",
+          "digest": "9dd6893bf700198485ae699640b49bc1efbc6c73b37cb5792a0476e1fd8f7fef",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/go-logr/zapr",
+          "version": "v1.3.0",
+          "digest": "378cb0074990c9822fdf9e5b77a41985cf614f95275662add604d09855768dbd",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/go-openapi/jsonpointer",
+          "version": "v0.21.0",
+          "digest": "8a36ba84f6f6148834875fff96da79fcc2b383ace69cc34d71756b3fa84b9952",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/go-openapi/jsonreference",
+          "version": "v0.21.0",
+          "digest": "53b9b8491e1791f5c561a5325e0e167bed2ae421b18bb798524c11cad5afe5c4",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/go-openapi/swag",
+          "version": "v0.23.0",
+          "digest": "a604425d0d3ff6936ffd056e86cd776c80e06874ef026e53da528208a986df94",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/gobwas/glob",
+          "version": "v0.2.3",
+          "digest": "0cfe486cd63d45ed4cb5863ff1cbd14b15e4b9380dcbf80ff26991b4049f4fdf",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/gofrs/flock",
+          "version": "v0.12.1",
+          "digest": "fe8242a48c3109148d988433301bd8ab3cd1d0430a21af07e601f9b0671923e8",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/gogo/protobuf",
+          "version": "v1.3.2",
+          "digest": "dd2b73f163c8183941626360196c8f844addd95423d341a0412e1b22d0104ff7",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/golang-jwt/jwt/v5",
+          "version": "v5.2.2",
+          "digest": "278980d9e52498b7c54baf21fed203b942aa1d08b7f62eec494110b61b6fd3c9",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/golang/protobuf",
+          "version": "v1.5.4",
+          "digest": "9a2f43d3eac8ceda506ebbeb4f229254b87235ce90346692a0e233614182190b",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/google/btree",
+          "version": "v1.1.2",
+          "digest": "faee8550c5fffb4ae1dadde5ccaccb13298726f9fad226bb4eed0c03c90a481d",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/google/generative-ai-go",
+          "version": "v0.19.0",
+          "digest": "df8f30e7400dc1287799ab917e50909fe27879bff2f9d5a0590c2b217bf66d03",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/google/gnostic",
+          "version": "v0.7.0",
+          "digest": "a762ba496ee14785091ea22755f9b49cc2c94407353a981369e7762e0ec8d122",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/google/gnostic-models",
+          "version": "v0.6.9",
+          "digest": "2bac85ada81b04acb424adf0fb4ea4444538544d0d7c06d1335ada396388ca3c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/google/go-cmp",
+          "version": "v0.7.0",
+          "digest": "64a9ce046f2c320e3783fba0d1f4a15f8a18f0b009b67bf27f7630919db3f539",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/google/gofuzz",
+          "version": "v1.2.0",
+          "digest": "5948f40af1923d8f98dc1d4191311030e40e0057fb255df19ebc0360f2faac16",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/google/s2a-go",
+          "version": "v0.1.9",
+          "digest": "bf8f4b159d3fc201477822ed2514e4f05f58c764b78ffed73ec0accce5fb7f07",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/google/shlex",
+          "version": "v0.0.0-20191202100458-e7afc7fbc510",
+          "digest": "1bf70bdb4c889b47b1976370832da79060c36cad282f278f279603200623775c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/google/uuid",
+          "version": "v1.6.0",
+          "digest": "d0f02f377217f42702e259684e06441edbf5140dddcc34ba9bea56038b38a6ed",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/googleapis/enterprise-certificate-proxy",
+          "version": "v0.3.6",
+          "digest": "6c44108f588c97a6a08b5ed907c3cc47dce31913f219a6d02b13e463d355603c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/googleapis/gax-go/v2",
+          "version": "v2.14.2",
+          "digest": "1cd109cf4d1a81363f956885d1f7e7086bf9805122dbcf9382ca0c54a21979d5",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/gookit/color",
+          "version": "v1.5.4",
+          "digest": "c5295c810538f77bebb2cf9e34cdfa92adfdec75486234358956ebe877e685f9",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/gorilla/mux",
+          "version": "v1.8.1",
+          "digest": "728243623caa67f64e4a0b6c59dde3f762918d9e729266167ba46d8df56c193a",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/gorilla/websocket",
+          "version": "v1.5.3",
+          "digest": "dbbd31dd0f08548c5dc43e4c2f12bbba66abff5252b224b1cd06afbb72783a76",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "name": "github.com/gosuri/uitable",
+          "version": "v0.0.4",
+          "digest": "184f29fefcf7a6e979e41c07765475297d72ff83e7f42553347edb35a104cfa0",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/grafana/regexp",
+          "version": "v0.0.0-20240518133315-a468a5bfb3bc",
+          "digest": "0834c0727a787e26ea060eaca46a8ecafb719aca0fd6860d69d98211acd22c00",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/gregjones/httpcache",
+          "version": "v0.0.0-20190611155906-901d90724c79",
+          "digest": "73d773791d582cad0d90942e7d92f52d82f13119dd78e849bbd77fae2acc0276",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/grpc-ecosystem/grpc-gateway/v2",
+          "version": "v2.26.3",
+          "digest": "c330a95ca20bf6c52af5474ebb58eb5c034925731e111a32c25e260f69075fb0",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/hashicorp/errwrap",
+          "version": "v1.1.0",
+          "digest": "209ae99bc039443e28e4d6bb66517d1756d9468b7578d31f1b63a28103d8e18c",
+          "license": "MPL-2.0"
+        },
+        {
+          "name": "github.com/hashicorp/go-multierror",
+          "version": "v1.1.1",
+          "digest": "972cd841ee51fdeac69c5a301e57f8ea27aebf15fddd7f621d5c240f28c3000c",
+          "license": "MPL-2.0"
+        },
+        {
+          "name": "github.com/hashicorp/hcl",
+          "version": "v1.0.0",
+          "digest": "54149a2e5121b3e81f961c79210e63d6798eb63de28d2599ee59ade1fa76c82b",
+          "license": "MPL-2.0"
+        },
+        {
+          "name": "github.com/huandu/xstrings",
+          "version": "v1.5.0",
+          "digest": "74bd0e897e5c35b1fd0e598cb8d9dfcebcb820b6edf3abf850d5404bfaaca6a2",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/hupe1980/go-huggingface",
+          "version": "v0.0.15",
+          "digest": "5a4c9f0fcdcc2cf4477898a43656764a94ce6d37c4d147fbdd22932562e3a27d",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/invopop/jsonschema",
+          "version": "v0.13.0",
+          "digest": "43eb8b97636e7f7c17441db165e9c624c38033c9fca44c57db46b202e8841875",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/jmespath/go-jmespath",
+          "version": "v0.4.0",
+          "digest": "d1f77b6790d7c4321a74260f3675683d3ac06b0a614b5f83e870beae0a8b2867",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/jmoiron/sqlx",
+          "version": "v1.4.0",
+          "digest": "992ac9b6a33b12bd8e411ce9c9699231f8ac8550812805660b7ee06676bdc3ad",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/josharian/intern",
+          "version": "v1.0.0",
+          "digest": "5679bfd11c14adccdb45bd1a0f9cf4b445b95caeed6fb507ba96ecced11c248d",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/jpillora/backoff",
+          "version": "v1.0.0",
+          "digest": "f856692c725143c49b9cceabfbca8bc93d3dbde84a0aaa53fb26ed3774c220cc",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/json-iterator/go",
+          "version": "v1.1.12",
+          "digest": "d001ea57081afd0e378467c8f4a9b6a51259996bb8bb763f78107eaf12f99501",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/kedacore/keda/v2",
+          "version": "v2.17.3",
+          "digest": "832a8552f658991b7e78b36d947f2397486e55439046fae5b7bc320dd0ac6ae3",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/klauspost/compress",
+          "version": "v1.18.3",
+          "digest": "b78fdb69a9cb8f2b7111ceacb397fe9a2af85f5fd98481025ab2b7d8febf8115",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/kylelemons/godebug",
+          "version": "v1.1.0",
+          "digest": "dbbd0ce8c2f4932bb03704d73026b21af12bd68d5b8f4798dbf10a487a2b6d13",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/kyverno/policy-reporter-kyverno-plugin",
+          "version": "v1.6.4",
+          "digest": "d698d144beedf3f3b380c8fcee5b4f9e184c1fae0c940a12bd0818b568abf795",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/lann/builder",
+          "version": "v0.0.0-20180802200727-47ae307949d0",
+          "digest": "1fe7a88079ff2bbe90fb4724fb5c353ecb6af4cd7e011440354c804f678895ee",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/lann/ps",
+          "version": "v0.0.0-20150810152359-62de8c46ede0",
+          "digest": "76756d46634f44edd3facdb01e7271ddf23a1b51a8423de55d3a2bf685ff032a",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/lib/pq",
+          "version": "v1.10.9",
+          "digest": "6791a7af67f846a86335350012c4efadd0850096ebf22350b7b20e01e216e6f2",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/liggitt/tabwriter",
+          "version": "v0.0.0-20181228230101-89fcab3d43de",
+          "digest": "41b6869255915ffdfd32575ba14d52732d62d34b47d904df4890e165489ec77d",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/lithammer/fuzzysearch",
+          "version": "v1.1.8",
+          "digest": "5995cacd727f57f87ec8f55345458f23c0fdb44722a9729134171bb7b5c79dcc",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/magiconair/properties",
+          "version": "v1.8.9",
+          "digest": "8361b76b967090e33192173d91fb3de5f5ea43f6b8d23e927bf6d698fc8a0250",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "name": "github.com/mailru/easyjson",
+          "version": "v0.9.0",
+          "digest": "090087778afa675a863f7f6c9c7e5dff41523639a72235c5a9014811dfd0a4bc",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mark3labs/mcp-go",
+          "version": "v0.36.0",
+          "digest": "66cbf22137ca470c1a5043e6b5fdb7bd15244294bfcb441bdd182e211819256b",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mattn/go-colorable",
+          "version": "v0.1.14",
+          "digest": "5e0e7925a070bb5bd11b4097e1a7b608167f0217ee83901b44c135f6e5e85c78",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mattn/go-isatty",
+          "version": "v0.0.20",
+          "digest": "f2d5f89ca451577e17464b9bb596dc0d0ecececb5eaa63622c41b57cd0b7b8cc",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mattn/go-runewidth",
+          "version": "v0.0.19",
+          "digest": "4a99857860b6c26557e6d275d737df8bc29a542cc28fb041d47a417515906876",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mitchellh/colorstring",
+          "version": "v0.0.0-20190213212951-d06e56a500db",
+          "digest": "d0733284b20567055e374b420373f5508fa47e95204e59e4b8a66834e7e3964d",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mitchellh/copystructure",
+          "version": "v1.2.0",
+          "digest": "4a1ce1f3c66bf99883e55da50fe1b3122299b79ad1d11c5407abbd74ace12550",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mitchellh/go-wordwrap",
+          "version": "v1.0.1",
+          "digest": "5f96426c4b3b3e90a9b7471568cb1d61d6a306744f5d4765a30fa8a61e1c0b47",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mitchellh/mapstructure",
+          "version": "v1.5.0",
+          "digest": "118d5b2cb65c50dba967fb6d708f450a9caf93f321f8fc99080675b2ee374199",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mitchellh/reflectwalk",
+          "version": "v1.0.2",
+          "digest": "c96eed6b50f00b1acdc79224e8e55f66ef3e98e3f7c6373afa3e3b8c6ef440d1",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mittwald/go-helm-client",
+          "version": "v0.12.14",
+          "digest": "804620b14eca1b20b4f5363089bccd3fb44213af68f01b028b8102586f840147",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/moby/locker",
+          "version": "v1.0.1",
+          "digest": "f07361346d12a24e168db7fb2f21281883bee6060f1aedf7507bccf20c4a793f",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/moby/spdystream",
+          "version": "v0.5.0",
+          "digest": "0919457a3bba34fb4ee5eff1645830648e26ea9757f27b293f1f7bb9f1ec65a2",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/moby/term",
+          "version": "v0.5.0",
+          "digest": "c4a97a1c5137f97f13985cf0a95267a47e52e749bcc4fa6b1ccd5595bed7a6f1",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/modern-go/concurrent",
+          "version": "v0.0.0-20180306012644-bacd9c7ef1dd",
+          "digest": "91ef49599bec459869d94ff3dec128871ab66bd2dfa61041f1e1169f9b4a8073",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/modern-go/reflect2",
+          "version": "v1.0.2",
+          "digest": "f46f41409c2e74293f82cfe6c70b5d582bff8ada0106a7d3ff5706520c50c21c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/monochromegane/go-gitignore",
+          "version": "v0.0.0-20200626010858-205db1a8cc00",
+          "digest": "459b98c031b259b1a73c8225a63210f0b9973456824fd1f69cf12c41e8d461f0",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/munnerz/goautoneg",
+          "version": "v0.0.0-20191010083416-a7dc8b61c822",
+          "digest": "3d7ce17916779890be02ea6b3dd6345c3c30c1df502ad9d8b5b9b310e636afd9",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/mwitkow/go-conntrack",
+          "version": "v0.0.0-20190716064945-2f068394615f",
+          "digest": "d6fc513490d5c73e3f64ede3cf18ba973a4f8ef4c39c9816cc6080e39c8c480a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/mxk/go-flowrate",
+          "version": "v0.0.0-20140419014527-cca7078d478f",
+          "digest": "bd0701ef9115469a661c07a3e9c2e572114126eb2d098b01eda34ebf62548492",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/olekukonko/cat",
+          "version": "v0.0.0-20250911104152-50322a0618f6",
+          "digest": "46c56f6186f41d9fac1caf5ab0574d4ef03477ef25ae65250f509947539bde9c",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/olekukonko/errors",
+          "version": "v1.2.0",
+          "digest": "9a22e180e093f4097d84b012395ca315420ae6c8703e4aa93b6684c9e948ce6c",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/olekukonko/ll",
+          "version": "v0.1.6",
+          "digest": "d5243fb9874173e37b9d9c736c107c4498dde2d187985d21aaf758e1600e9242",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/olekukonko/tablewriter",
+          "version": "v1.1.4",
+          "digest": "e5a779693c4ce8aa0ada775409c590f6d1ee39b02e13bdc3d68d698dd6e97942",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/ollama/ollama",
+          "version": "v0.17.1",
+          "digest": "1141dd3e4bbe28a304e05c87e7eab438cbb01a09aaa6171135631352a013d561",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/opencontainers/go-digest",
+          "version": "v1.0.0",
+          "digest": "615efb31ff6cd71035b8aa38c3659d8b4da46f3cd92ac807cb50449adfe37c86",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/opencontainers/image-spec",
+          "version": "v1.1.0",
+          "digest": "4bb4674e093ea82bce69a0ee111cda35a4e3722200740d5ec319466dc66b4879",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/oracle/oci-go-sdk/v65",
+          "version": "v65.79.0",
+          "digest": "f4d24f22a08f188c5146608766f86f60eee7d4317767a9048ee5f27653d50e8a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/pelletier/go-toml/v2",
+          "version": "v2.2.3",
+          "digest": "a51f4dc7b62bd7c26b387d912dfae87ca1449082f26574c9f614ae640318b092",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/peterbourgon/diskv",
+          "version": "v2.0.1+incompatible",
+          "digest": "1eeff260bd1ad71cd1611078995db99e1c7eba28628e7d6f24c79039536ea1cb",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/pkg/browser",
+          "version": "v0.0.0-20240102092130-5ac0b6a4141c",
+          "digest": "8524ae36d809564d1f218978593b5c565cf3ee8dccd035d66b336ad0c56e60d1",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "name": "github.com/pkg/errors",
+          "version": "v0.9.1",
+          "digest": "d4c36b8bcd0616290a3913215e0f53b931bd6e00670596f2960df1b44af2bd07",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "name": "github.com/prometheus/client_golang",
+          "version": "v1.23.0-rc.1",
+          "digest": "7ea6860888769f4536eb9f49abcb0c31628e77e9ad5f4049a1b70236d4a0c240",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/client_model",
+          "version": "v0.6.2",
+          "digest": "67017b19f220c6ab91ecfdd10a93824e2a8b09fcb6390054dbdc49df3354a9ca",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/common",
+          "version": "v0.65.1-0.20250703115700-7f8b2a0d32d3",
+          "digest": "7236c8405b30c339731819a376e5e2149d19e021b6ab487bc5cca6c78385d59c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/procfs",
+          "version": "v0.16.1",
+          "digest": "e4b74815566cbf5aa372d23e1de32f16ac5c3c4c80bc94a31fdee60a1de6074a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/prometheus",
+          "version": "v0.306.0",
+          "digest": "4db2371490afbc994db9c07fcbd60d310f8d4ba4c8da7818b12d519321fd49f8",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/sigv4",
+          "version": "v0.2.0",
+          "digest": "2221c8dd98ffa1a19580a7c8219e376bb0c2b506edeff0a3eeb33447a88a5059",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/pterm/pterm",
+          "version": "v0.12.80",
+          "digest": "554982c41b67e503e5e8d504bcffd2d44a0453481bae3ab9a36d35a56aec1d04",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/rivo/uniseg",
+          "version": "v0.4.7",
+          "digest": "b995e4aa0cc1e5779cc61138ac925cb8c1e963e40c80e4b93ee8553812ebb792",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/robfig/cron/v3",
+          "version": "v3.0.1",
+          "digest": "ebe6454642220832a451b8cc50eae5f9150fd8d36b90b242a5de27676be86c70",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/rubenv/sql-migrate",
+          "version": "v1.7.1",
+          "digest": "6b23f3cdf6cd8cd27ce8d8744135fac141325d6de03b19bee845edeb70246684",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/russross/blackfriday/v2",
+          "version": "v2.1.0",
+          "digest": "7852750d58a053ce38b01f2c203208817564f552ebf371b2b630081d7004c6ae",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "name": "github.com/sagikazarmark/slog-shim",
+          "version": "v0.1.0",
+          "digest": "20b764879fb481aebdcef5eb9ce044fec48e3414d256571b632f1adb1778bfef",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/sashabaranov/go-openai",
+          "version": "v1.36.0",
+          "digest": "e2cc960970b8ca7c7db6b830cebce569d269510c299ef6cd3432a748fc56053b",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/schollz/progressbar/v3",
+          "version": "v3.17.1",
+          "digest": "e178953bd198499ba78d7461d55838a12f644d291cda4b7be0c9213d720d7360",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/segmentio/fasthash",
+          "version": "v1.0.3",
+          "digest": "fe6b87a2841eac3670539d105692d39f67155955202145dc78f3a29c866b8cb6",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/shopspring/decimal",
+          "version": "v1.4.0",
+          "digest": "751d4cd3460984afc72973d2a0df56ed9b10499c5cd0508d7f2207245d9e3315",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/sirupsen/logrus",
+          "version": "v1.9.3",
+          "digest": "4501f4e6b858bfdd997671fcdd2f647a3178b29b6b4d1344caa7c07517121dd0",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/sony/gobreaker",
+          "version": "v0.5.0",
+          "digest": "9b4fe3991963f409116289a0d9830896096da7dd8a090bf404348904737ba833",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/spf13/afero",
+          "version": "v1.11.0",
+          "digest": "70ae59086db6bfb64b509f597c8eff3d7ab56f8f0052f947f67b68899da3491c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/spf13/cast",
+          "version": "v1.7.1",
+          "digest": "ff1732498075dcb9da29be52202f3d7c8561e559480586f5e08617daf8d514f6",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/spf13/cobra",
+          "version": "v1.8.1",
+          "digest": "bf27a276f87257c93bc057309df30265a19beefc3d5fc887cbd8fc99ad35466a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/spf13/pflag",
+          "version": "v1.0.6",
+          "digest": "d8dac1115c17fa667a93d50f34ddf37648eeb6b92446f429c6120777aa839678",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/spf13/viper",
+          "version": "v1.19.0",
+          "digest": "5b773a712a646ff2f1bca4c45d50853e881ad8f6c363ca30fab1c4a9b19e59b2",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/spiffe/go-spiffe/v2",
+          "version": "v2.6.0",
+          "digest": "b90f378c70e2c985f61893ca20bf3e8258bb4f66920af759276d330513d0d7d6",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/standard-webhooks/standard-webhooks/libraries",
+          "version": "v0.0.1",
+          "digest": "6e0328fa67dd6dd95cc6e11b4f7cd3107466e8e6eccda35e7d84fa91a7597b46",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/subosito/gotenv",
+          "version": "v1.6.0",
+          "digest": "142db3dd2328e744c157e85cf3291d027013b79f92a45984f860fe38bc0f1f8d",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/tidwall/gjson",
+          "version": "v1.18.0",
+          "digest": "ab8092b3e42f83f003466757c63ec819a45d1e83caa63c6c131cebbe760f1df2",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/tidwall/match",
+          "version": "v1.1.1",
+          "digest": "2ba41f7f27330d49e0e432cbf96bf90720a33e4a97be58fe53f63a7e66f04d37",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/tidwall/pretty",
+          "version": "v1.2.1",
+          "digest": "9327579bf9e610de753eeb7c35c8cf1e3f56e6e5623cbf65e47bc8076023d1ab",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/tidwall/sjson",
+          "version": "v1.2.5",
+          "digest": "fc40fda87c7de55362f6386e069d674772f25c9d76411ee823acb9ac78b20565",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/wk8/go-ordered-map/v2",
+          "version": "v2.1.8",
+          "digest": "c1781435c64e4cd92dd3ca585d5075eda12c0bb719a0c5f9e6ed272b65282e38",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/x448/float16",
+          "version": "v0.8.4",
+          "digest": "73b24a41037ea999ab66851e3798a0973dbb1f214925915b01f0820f7b2f1500",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/xeipuuv/gojsonpointer",
+          "version": "v0.0.0-20190905194746-02993c407bfb",
+          "digest": "11b54f0bc358b09261075c3e15cd14d57102f3ab1ba88c345c53eab6aaf228de",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/xeipuuv/gojsonreference",
+          "version": "v0.0.0-20180127040603-bd5ef7bd5415",
+          "digest": "7ec98f4df894413f4dc58c8df330ca8b24ff425b05a8e1074c3028c99f7e45e7",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/xeipuuv/gojsonschema",
+          "version": "v1.2.0",
+          "digest": "55c8ce068257aa0d263aad7470113dafcd50f955ee754fc853c2fdcd31ad096f",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/xlab/treeprint",
+          "version": "v1.2.0",
+          "digest": "3270bc1e24fc2e2030f7c5214439573c12c07a7250635371a3d2b0ee14b22a0e",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/xo/terminfo",
+          "version": "v0.0.0-20220910002029-abceb7e1c41e",
+          "digest": "b8f4270191e08e135e932dfe168769046a4268ec7f3892593b1d773b2c5fa4cf",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/yosida95/uritemplate/v3",
+          "version": "v3.0.2",
+          "digest": "65a29b6ab759cd30a1ed496a8a77b144a5683b89d505cfde51f907cb7ab9b8bd",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "go.opentelemetry.io/auto/sdk",
+          "version": "v1.2.1",
+          "digest": "a08a16fc0a7041cdb875f47a260a56000632212c85f65a302a043c76380c8335",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "go.opentelemetry.io/contrib/detectors/gcp",
+          "version": "v1.39.0",
+          "digest": "861471f5354793616a1bf86f40f6bf9e96dd85189e68c7d67cb72332a031b7bd",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+          "version": "v0.61.0",
+          "digest": "9812bf570350cd1377bf458b71ea5d9fffe44733fc2dccbcfd1f5c564a6b27b7",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp",
+          "version": "v0.61.0",
+          "digest": "0009120ed94c4279573eea0f01841f7c9ff51cafd1c9559fc09820c9f870f399",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "go.opentelemetry.io/otel",
+          "version": "v1.39.0",
+          "digest": "bc050a9c5e07e09a8dba7dd70fdc31c821114bc87910e9d027218cf25ef62a72",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "go.opentelemetry.io/otel/metric",
+          "version": "v1.39.0",
+          "digest": "75c1ba2a79f0b556d16a818591d199d8c82804c7b78a4b4f675985470420000d",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "go.opentelemetry.io/otel/sdk",
+          "version": "v1.39.0",
+          "digest": "6bde5d32bc909ae2c3eaf4277b43ee811c007df71681609e73704b587b7b5a9f",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "go.opentelemetry.io/otel/sdk/metric",
+          "version": "v1.39.0",
+          "digest": "02b7d5149b6ed090eaa2e65a9e40de7a093c85342af5e9214e8b5bcac7882695",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "go.opentelemetry.io/otel/trace",
+          "version": "v1.39.0",
+          "digest": "da9a3bda6281f72c041e00c76e794156cdb43228255650c2f323ee04ba9f632c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "go.uber.org/multierr",
+          "version": "v1.11.0",
+          "digest": "2249b5d2fdce61f6ee661a679d8552599af084a761cbbc871da77641bddce0c3",
+          "license": "MIT"
+        },
+        {
+          "name": "go.uber.org/zap",
+          "version": "v1.27.0",
+          "digest": "b994b96ff0bb504a3d58288ab88b9f3c6604689ea1afb69d25b509769705a6c2",
+          "license": "MIT"
+        },
+        {
+          "name": "golang.org/x/crypto",
+          "version": "v0.51.0",
+          "digest": "a28a63b8a6abbbfcbf9fecf8417ce734c50dd988564cadf301c72c2a944f3a6a",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/exp",
+          "version": "v0.0.0-20250218142911-aa4b98e5adaa",
+          "digest": "0dda110993870254e92af009e49b6e9224da87cac0dcfdffa7e501b3bd365d3e",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/net",
+          "version": "v0.55.0",
+          "digest": "21c29cd58b7a02de60a3cb5122d8f59bc3c96d4750f9c1bb77a270a64eb42e61",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/oauth2",
+          "version": "v0.34.0",
+          "digest": "a854cbb047b8fdb0849b8c266e798189e63f42515035d239027a0849e88b11b8",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/sync",
+          "version": "v0.20.0",
+          "digest": "7179d4d68800f6fdcadb9d4bbf11cbb5df9b40360c89305c203fe20723cbd375",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/sys",
+          "version": "v0.45.0",
+          "digest": "e51c1c88045b4edbe48ad810122131381ff541c89edbd97ef833ed6653b59e6a",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/term",
+          "version": "v0.43.0",
+          "digest": "0d12dd77f2c620f236e59421d604f6bcd1f9212a4083a1c0ec13425c67bc6e81",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/text",
+          "version": "v0.37.0",
+          "digest": "b8d475c17835ab602b91f1147684ceb5dbf4060e72e5dfb2e0e33efc9312a982",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/time",
+          "version": "v0.12.0",
+          "digest": "cdcb04c43b112919c5e0d0fa1d90769124ad56918a44e6cb0747876ed7e5015c",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "gomodules.xyz/jsonpatch/v2",
+          "version": "v2.4.0",
+          "digest": "509f953d25c5552e07efaa029335c3f8d4efbeebb8f08db3630e67befda69edb",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "google.golang.org/api",
+          "version": "v0.239.0",
+          "digest": "ae2fc6b93efcf99fab3f7476d28357d6fb9b44e2836452bfe80479507975061c",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "google.golang.org/genproto",
+          "version": "v0.0.0-20250505200425-f936aa4a68b2",
+          "digest": "48042e428a20a54867efc34a76f0dda3484c6db86974c04aeb4f5077a4bac1ff",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "google.golang.org/genproto/googleapis/api",
+          "version": "v0.0.0-20251202230838-ff82c1b0f217",
+          "digest": "b4372ac21c7316d4885e04d9fe5110277edb58a3b8ab6345ccfef23e1e972544",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "google.golang.org/genproto/googleapis/rpc",
+          "version": "v0.0.0-20251202230838-ff82c1b0f217",
+          "digest": "29f02d8e0e2f6e9cc0ee24abc29989e5e44d168eec35c12046efee3fea201aef",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "google.golang.org/grpc",
+          "version": "v1.79.3",
+          "digest": "91e4c27a4c29ed867049d1eadbb29fb7cc6cd58c364ca2004d22bbaaafcafb9f",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "google.golang.org/protobuf",
+          "version": "v1.36.10",
+          "digest": "9265fbe7d073ca8571f1a9c4b8e8f20b244c35ad913346892d688e58fe4b1f22",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "gopkg.in/evanphx/json-patch.v4",
+          "version": "v4.12.0",
+          "digest": "eccb52c37cbf4a38d392101f2b31d424eca68bfebab3de4265d0cf595ca07b51",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "gopkg.in/inf.v0",
+          "version": "v0.9.1",
+          "digest": "08abac18c95cc43b725d4925f63309398d618beab68b4669659b61255e5374a0",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "gopkg.in/ini.v1",
+          "version": "v1.67.0",
+          "digest": "bd845dfc762a87a56e5a32a07770dc83e86976db7705d7f89c5dbafdc60b06c6",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "gopkg.in/yaml.v2",
+          "version": "v2.4.0",
+          "digest": "ede49e27c4cca6cdd2ec719aed8ea4d363710cceb3d411e7a786fbdec0d391fd",
+          "license": "Apache-2.0 AND MIT"
+        },
+        {
+          "name": "gopkg.in/yaml.v3",
+          "version": "v3.0.1",
+          "digest": "aab8fbc4e6300ea08e6afe1caea18a21c90c79f489f52c53e2f20431f1a9a015",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "helm.sh/helm/v3",
+          "version": "v3.17.4",
+          "digest": "44c00d4619ec126318ee2176e04eb704e4d76b9e64483bb6d8a93d1a12a08268",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/api",
+          "version": "v0.32.3",
+          "digest": "649689e30730c65a1ecfef5da339bfdebd9678f6c053c274cedec1923c3b1dcd",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/apiextensions-apiserver",
+          "version": "v0.32.2",
+          "digest": "613de7306acd66a7c5103e872ecc87195c606aedd2f382af96a4629bce63ae1a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/apimachinery",
+          "version": "v0.32.3",
+          "digest": "2deacae4f8299eb194c465935d016226dbf88c65e1d5e51778b6d3add0a6f7d9",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/apiserver",
+          "version": "v0.32.2",
+          "digest": "e6005511454d9316c75475c621bfb1eff0b00fceaca37911954a80246a270695",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/cli-runtime",
+          "version": "v0.32.2",
+          "digest": "c21023bd0af899f82eee10544d54f2d1855c351c71a229fe7443c2a5aa41e5bd",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/client-go",
+          "version": "v0.32.3",
+          "digest": "bb5c24908df4dc2b65918635a7cde6709545e5a8c4b36398622050acac880929",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/component-base",
+          "version": "v0.32.2",
+          "digest": "02527641359c3c55a52a4ccaa5e4231c9e06217e3d1d05240c058981ff549e28",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/klog/v2",
+          "version": "v2.130.1",
+          "digest": "262b961175bbe8cf6ecf227d06303df2eb47bfb890e19d516846422f7d406cb9",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/kube-openapi",
+          "version": "v0.0.0-20241212222426-2c72e554b1e7",
+          "digest": "32bd2557cf07adaf954874851854513c65ebacc01d5368142b7e037e31886863",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/kubectl",
+          "version": "v0.32.2",
+          "digest": "cd8a62607b2479d48d198892bc8bf1366f81167c759c51b4379e3ef04abe577d",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/utils",
+          "version": "v0.0.0-20260626114624-be93311217bd",
+          "digest": "11b292d2a6f02494c4d543c726426c307ad3901a7a781ab3fabeae40fd647840",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "knative.dev/pkg",
+          "version": "v0.0.0-20250326102644-9f3e60a9244c",
+          "digest": "da09bbb3baa7017f57395df62ce999b998059ce9b01a9c0c51baf3705d792587",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "oras.land/oras-go",
+          "version": "v1.2.5",
+          "digest": "1ca3107d60067566a1a083d533b8d0e54113c05a169b9e6a68e9cb2be3f18af1",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/controller-runtime",
+          "version": "v0.19.7",
+          "digest": "9bdcd3124d1f964abf760d09abffc0fe5162ebf40c99d00e03e71b947740fa0e",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/gateway-api",
+          "version": "v1.2.1",
+          "digest": "7357b0597a4e35ae09ce3aff09bf0bbc62ae0b61720dc142385e436be0c3a879",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/json",
+          "version": "v0.0.0-20241014173422-cfa47c3a1cc8",
+          "digest": "4a5cb30c1b7406bd9684b3dbe118308cb565ba57157f7242b06a4815fbc24ed7",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/kustomize/api",
+          "version": "v0.19.0",
+          "digest": "db8fcb5fdeb743d605900a16c9dfbe7a0e5a4a4b5ad9e85f64dfe45738497f9a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/kustomize/kyaml",
+          "version": "v0.19.0",
+          "digest": "a51fdeed2861d749b22a286d4fe8dcb57b405b1c4eb46e776e862f40a2dd0c15",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/structured-merge-diff/v4",
+          "version": "v4.5.0",
+          "digest": "c237944a5619672dd5bf5f3e3f6040a9395f06e93464e80011a6d208214b880f",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/yaml",
+          "version": "v1.4.0",
+          "digest": "ef031ff78ff9b7036e174eef49dfbd77468dc4f0afb73a639b61f8ab3a1cc425",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencyClosureVerified": true,
+      "dependencyClosureFiles": [
+        {
+          "path": "go.mod",
+          "sha256": "17f0586e63685121116d6cb732c611ea4b62598783265f3f913ba958109f33a3"
+        },
+        {
+          "path": "go.sum",
+          "sha256": "f7647cab231a142a420bfd11f1f4d7a9bd78135b330addaeabe35d4e37902b8d"
+        }
+      ],
+      "verification": {
+        "status": "upstream-tests-pass",
+        "packages": [
+          "./pkg/analyzer"
+        ],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": true,
+        "sourceCheckoutDirectory": "k8sgpt",
+        "exitCode": 0,
+        "command": [
+          "python",
+          "verify-k8sgpt-cli.py",
+          "--binary",
+          "/bin/k8sgpt"
+        ],
+        "log": "artifacts/test-reports/task-2.9-k8sgpt-cli-offline-run.log",
+        "logSHA256": "c64d4eba7bd9908ca30c3fe7c42100031ea08cec071516fa086b55dc5ba6eda5",
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          },
+          {
+            "name": "python",
+            "version": "3.12.14-slim",
+            "digest": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f"
+          }
+        ],
+        "closureEvidenceSHA256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca"
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false,
+        "llmEnabled": false,
+        "explainEnabled": false,
+        "output": "json",
+        "runtimeEnabled": false
+      },
+      "cliJSONVerification": {
+        "status": "fixture-pass",
+        "binaryBuildTarget": "linux/arm64",
+        "goVersion": "1.27.1",
+        "sourceCommit": "d33935a7b6f7039ec649925420d6b29c9b119567",
+        "moduleDownloadsAllowed": false,
+        "liveCluster": false,
+        "networkIsolationVerified": true,
+        "runs": 2,
+        "command": [
+          "python",
+          "verify-k8sgpt-cli.py",
+          "--binary",
+          "/bin/k8sgpt"
+        ],
+        "log": "artifacts/test-reports/task-2.9-k8sgpt-cli-offline-run.log",
+        "logSHA256": "c64d4eba7bd9908ca30c3fe7c42100031ea08cec071516fa086b55dc5ba6eda5",
+        "binaryBuildLog": "artifacts/test-reports/task-2.9-k8sgpt-build-offline.log"
+      },
+      "conformanceFiles": [
+        {
+          "path": "test/fixtures/upstream-inspection/k8sgpt-analyzer/pod-unschedulable.json",
+          "sha256": "42be3b1589e1bc4caa01da1490d5d49c386caff44783fd6f0d327c6ad7a42c18"
+        },
+        {
+          "path": "test/fixtures/upstream-inspection/verify-k8sgpt-cli.py",
+          "sha256": "7415c001f8ce2d839635589e18eacb863bab1c84d055d1807f3de47563ede579"
+        }
+      ],
+      "qualificationScope": "Read-only analyzer output. LLM, --explain, provider calls, mutation, and automatic remediation are excluded. Future consumer must apply the platform finding contract and redaction.",
+      "runtimeState": "disabled",
+      "runtimeDisabledReason": "Five exact Buf generated modules in the 268-module Linux CLI closure have no file-level license evidence; CLI JSON is deterministic but remains disabled until those licenses are resolved.",
+      "dependencyClosureEvidence": {
+        "path": "test/fixtures/upstream-inspection/dependency-closures.json",
+        "sha256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca",
+        "complete": true,
+        "licenseReviewComplete": false,
+        "scope": "built CLI production import closure; excludes test-only dependencies",
+        "moduleCount": 268,
+        "unknownLicenses": 5
+      },
+      "platformMapping": {
+        "input": "K8sGPT Analyzer Result and deterministic CLI JSON (Pod analyzer only)",
+        "target": "platform FindingCandidate",
+        "fieldMap": {
+          "Result.Kind": "resource.type",
+          "Result.Name": "resource.name",
+          "Result.ParentObject": "resource.parentRef",
+          "Result.Error[].Text": "message",
+          "Result.Details": "evidence.summary",
+          "Result.Error[].KubernetesDoc": "evidence.reference",
+          "severity": "leave unset unless an independent platform rule assigns it"
+        },
+        "fixture": "test/fixtures/upstream-inspection/platform-mappings/k8sgpt-analyzer.json",
+        "fixtureSHA256": "524a2d60ffee62fb38c6ee48aa7be91034baaf535d924d59341a04196c123c96",
+        "sourceFixture": {
+          "path": "test/fixtures/upstream-inspection/k8sgpt-analyzer/pkg/analyzer/analyzer.go.fixture",
+          "sha256": "6200fcf3502a594622436405ed38da3e52f9d03a02ceb04c4126e1fd5a2a1db8"
+        },
+        "conformanceFixture": {
+          "path": "test/fixtures/upstream-inspection/k8sgpt-analyzer/pod-unschedulable.json",
+          "sha256": "42be3b1589e1bc4caa01da1490d5d49c386caff44783fd6f0d327c6ad7a42c18"
+        },
+        "consumerBoundary": "Read-only analyzer output. LLM, --explain, provider calls, mutation, and automatic remediation are excluded. Future consumer must apply the platform finding contract and redaction.",
+        "disabledReason": "CLI/Analyzer path works, but platform FindingCandidate adapter and runtime admission are not part of SP-02."
+      },
+      "offlineReplay": {
+        "status": "pass",
+        "networkMode": "docker-network-none",
+        "pullPolicy": "never",
+        "dependencyDownloads": false,
+        "exitCode": 0,
+        "command": [
+          "python",
+          "verify-k8sgpt-cli.py",
+          "--binary",
+          "/bin/k8sgpt"
+        ],
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          },
+          {
+            "name": "python",
+            "version": "3.12.14-slim",
+            "digest": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f"
+          }
+        ],
+        "log": "artifacts/test-reports/task-2.9-k8sgpt-cli-offline-run.log",
+        "logSHA256": "c64d4eba7bd9908ca30c3fe7c42100031ea08cec071516fa086b55dc5ba6eda5",
+        "additionalLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-k8sgpt-build-offline.log",
+            "sha256": "9f95fd78dd37afa439e3fe211e55b6608496e65a9f8242611e4f0d47303ee996"
+          },
+          {
+            "path": "artifacts/test-reports/task-2.9-k8sgpt-offline-run.log",
+            "sha256": "7464196f8169e1eb5ca6deaad6396e8d362ba7871ff95926aa887bd1478e8b15"
+          }
+        ],
+        "closureLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-dependency-closure-offline.log",
+            "sha256": "fe2bae43dd5c394745a7f695394808aecf052bbaf42a13ba0c71e96da83ab996"
+          }
+        ]
+      },
+      "evidenceLogs": [
+        {
+          "path": "artifacts/test-reports/task-2.9-k8sgpt.log",
+          "sha256": "7efeb7b07a607d558bac7b5f9ce157e2792962a426aae48e832d37d54606d7dc"
+        }
+      ]
+    },
+    {
+      "id": "kubevirt-observability-rules",
+      "source": "https://github.com/kubevirt/kubevirt-observability-controller",
+      "version": "v0.0.6",
+      "commit": "21e331e8b8dd06f478ffd33182a362b2ff268d63",
+      "sourceArchiveSHA256": "41dc7912d3a9a9ef5273c7a74b4aef16dfe4d0811a1606cfd66982c25431a65b",
+      "license": "Apache-2.0",
+      "licenseEvidence": "third_party/licenses/kubevirt-observability-controller/LICENSE",
+      "licenseEvidenceSHA256": "2dbc3aba66b21612a547117c5b86e00e0e587eb34267c1d6060ab2f4cd2f47cb",
+      "state": "disabled",
+      "disabledReason": "Selected upstream fixture tests passed; VM runtime acceptance and platform Gateway/target metrics validation remain deferred",
+      "fixture": "test/fixtures/upstream-inspection/kubevirt-observability-rules/pkg/monitoring/rules/rules_test.go.fixture",
+      "fixtureSHA256": "101b2cb326a14dce24295f59aa5fee7c5fc9f2168a681f920db474629ca2c3b4",
+      "selectedFiles": [
+        {
+          "sourcePath": "pkg/monitoring/rules/rules_test.go",
+          "path": "test/fixtures/upstream-inspection/kubevirt-observability-rules/pkg/monitoring/rules/rules_test.go.fixture",
+          "sha256": "101b2cb326a14dce24295f59aa5fee7c5fc9f2168a681f920db474629ca2c3b4",
+          "license": "Apache-2.0"
+        },
+        {
+          "sourcePath": "pkg/monitoring/rules/alerts/virt-api.go",
+          "path": "test/fixtures/upstream-inspection/kubevirt-observability-rules/pkg/monitoring/rules/alerts/virt-api.go.fixture",
+          "sha256": "01069e31aefa48469f45a7d5d16e7031c8d10e82f506225480c811501ea3845e",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencies": [],
+      "dependencyClosureVerified": false,
+      "dependencyClosureFiles": [
+        {
+          "path": "go.mod",
+          "sha256": "373ad16ebd295566e27187ac308f0ed40d2a7b125502b430ef4091f7298f10f4"
+        },
+        {
+          "path": "go.sum",
+          "sha256": "8db6eefd3fcf746277674d80534cdb8c8806b3a5c69fb3bb41510f0d391ee568"
+        }
+      ],
+      "verification": {
+        "status": "upstream-tests-pass",
+        "packages": [
+          "./pkg/monitoring/rules"
+        ],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": false,
+        "sourceCheckoutDirectory": "kubevirt-observability-controller",
+        "exitCode": 0,
+        "command": [
+          "/Users/mssc/.local/share/mise/installs/go/1.27.1/bin/go",
+          "test",
+          "-p",
+          "1",
+          "-v",
+          "-count=1",
+          "-timeout=3m",
+          "./pkg/monitoring/rules"
+        ],
+        "log": "artifacts/test-reports/task-2.9-kubevirt-rules.log",
+        "logSHA256": "a7799708890d92e121f9540ce25e19fccca3158250df7ed3b70b90d931fd8cfc"
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false
+      }
+    },
+    {
+      "id": "kubevirt-must-gather",
+      "source": "https://github.com/kubevirt/must-gather",
+      "version": "v4.2.0",
+      "commit": "9f60dc4e0a7bcf47ba402e8330ea0acec3f17937",
+      "sourceArchiveSHA256": "82259dc0a307385614910adc5669ef69305f54761aabf9e621f45f5958fa104d",
+      "license": "Apache-2.0",
+      "licenseEvidence": "third_party/licenses/kubevirt-must-gather/LICENSE",
+      "licenseEvidenceSHA256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "state": "disabled",
+      "disabledReason": "VM runtime acceptance deferred; no privileged collector was executed",
+      "fixture": "test/fixtures/upstream-inspection/kubevirt-must-gather/collection-scripts/gather_cdi",
+      "fixtureSHA256": "38bbd38459c35ba46cbbc3759e2b769fd1c13429cfd48bbb1efbd4066843c263",
+      "selectedFiles": [
+        {
+          "sourcePath": "collection-scripts/gather_cdi",
+          "path": "test/fixtures/upstream-inspection/kubevirt-must-gather/collection-scripts/gather_cdi",
+          "sha256": "38bbd38459c35ba46cbbc3759e2b769fd1c13429cfd48bbb1efbd4066843c263",
+          "license": "Apache-2.0"
+        },
+        {
+          "sourcePath": "collection-scripts/gather_vms_details",
+          "path": "test/fixtures/upstream-inspection/kubevirt-must-gather/collection-scripts/gather_vms_details",
+          "sha256": "79359210e3a0433df3842004910dc4366eaf92e6b8629e08d1549c9eb32969df",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencies": [],
+      "dependencyClosureVerified": false,
+      "dependencyClosureFiles": [],
+      "verification": {
+        "status": "syntax-only",
+        "packages": [],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": false,
+        "sourceCheckoutDirectory": "kubevirt-must-gather",
+        "command": [
+          "bash",
+          "-n",
+          "/tmp/ops-sp02-task29/kubevirt-must-gather/collection-scripts/gather_cdi"
+        ],
+        "exitCode": 0
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false,
+        "automaticNativeKubernetes": false,
+        "privilegedCollector": false,
+        "manualOnly": true
+      }
+    },
+    {
+      "id": "kubernetes-mcp-kubevirt-toolset",
+      "source": "https://github.com/containers/kubernetes-mcp-server",
+      "version": "v0.0.67",
+      "commit": "fcd9bbe672c98bb81c2ce93da8c0add548023672",
+      "sourceArchiveSHA256": "165017799840f709c094ebb760639ecaa59e86b2a519ffeef900313e20109bff",
+      "license": "Apache-2.0",
+      "licenseEvidence": "third_party/licenses/kubernetes-mcp-server/LICENSE",
+      "licenseEvidenceSHA256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "state": "disabled",
+      "disabledReason": "Selected upstream fixture tests passed; VM runtime acceptance and platform Gateway/target metrics validation remain deferred",
+      "fixture": "test/fixtures/upstream-inspection/kubernetes-mcp-kubevirt-toolset/pkg/toolsets/kubevirt/vm/troubleshoot/analysis_test.go.fixture",
+      "fixtureSHA256": "23305f1082d09f4da0d1f112c95d7bd5663f0a17abfe578f68cbf175a5919f0e",
+      "selectedFiles": [
+        {
+          "sourcePath": "pkg/toolsets/kubevirt/vm/troubleshoot/analysis_test.go",
+          "path": "test/fixtures/upstream-inspection/kubernetes-mcp-kubevirt-toolset/pkg/toolsets/kubevirt/vm/troubleshoot/analysis_test.go.fixture",
+          "sha256": "23305f1082d09f4da0d1f112c95d7bd5663f0a17abfe578f68cbf175a5919f0e",
+          "license": "Apache-2.0"
+        },
+        {
+          "sourcePath": "pkg/toolsets/kubevirt/vm/troubleshoot/tool.go",
+          "path": "test/fixtures/upstream-inspection/kubernetes-mcp-kubevirt-toolset/pkg/toolsets/kubevirt/vm/troubleshoot/tool.go.fixture",
+          "sha256": "5e7a3de836562ca0dc58fdff1e82468c66bb16596166d3bfdf8cb03fac589644",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencies": [],
+      "dependencyClosureVerified": false,
+      "dependencyClosureFiles": [
+        {
+          "path": "go.mod",
+          "sha256": "bf9957f216b4d93e08fa24d109fc79eaf9a0975880682c97f7864c3e658dbf2e"
+        },
+        {
+          "path": "go.sum",
+          "sha256": "a07c3ad5c783706f99ea47e2aa20df783a8ef9a057bfa6e008f9d15fc29c9bec"
+        }
+      ],
+      "verification": {
+        "status": "upstream-tests-pass",
+        "packages": [
+          "./pkg/toolsets/kubevirt/internal/defaults",
+          "./pkg/toolsets/kubevirt/vm/troubleshoot"
+        ],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": false,
+        "sourceCheckoutDirectory": "kubernetes-mcp-server",
+        "exitCode": 0,
+        "command": [
+          "/Users/mssc/.local/share/mise/installs/go/1.27.1/bin/go",
+          "test",
+          "-p",
+          "1",
+          "-v",
+          "-count=1",
+          "-timeout=3m",
+          "./pkg/toolsets/kubevirt/internal/defaults",
+          "./pkg/toolsets/kubevirt/vm/troubleshoot"
+        ],
+        "log": "artifacts/test-reports/task-2.9-kubevirt-mcp.log",
+        "logSHA256": "13ce24d8397c7ef4543f0efd7c47826c6c6da67e9ede838ced54ceedb2c99a27"
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false,
+        "directCredentials": false,
+        "writeEnabled": false,
+        "requiresPlatformGateway": true
+      }
+    },
+    {
+      "id": "node-problem-detector-rules",
+      "source": "https://github.com/kubernetes/node-problem-detector",
+      "version": "v1.35.3",
+      "commit": "e2b57e2f42052e4cf62cd2be1eb882f6a71a7804",
+      "sourceArchiveSHA256": "6c5c21c2b2d2c62e014998bb962ad9465b1c1a0d2ada5f173210beff3ecf78a3",
+      "license": "Apache-2.0",
+      "licenseEvidence": "third_party/licenses/node-problem-detector/LICENSE",
+      "licenseEvidenceSHA256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "state": "qualified",
+      "disabledReason": "",
+      "fixture": "test/fixtures/upstream-inspection/node-problem-detector-rules/config/kernel-monitor.json",
+      "fixtureSHA256": "ff258f99954306042785c869e86f30b6ebf91e6e63c491050794bddc40f965b8",
+      "selectedFiles": [
+        {
+          "sourcePath": "config/kernel-monitor.json",
+          "path": "test/fixtures/upstream-inspection/node-problem-detector-rules/config/kernel-monitor.json",
+          "sha256": "ff258f99954306042785c869e86f30b6ebf91e6e63c491050794bddc40f965b8",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencies": [],
+      "dependencyClosureVerified": true,
+      "dependencyClosureFiles": [
+        {
+          "path": "go.mod",
+          "sha256": "fb95373080909c015f4c0710606dc44f76a6516cc508d5c6899197b393591687"
+        },
+        {
+          "path": "go.sum",
+          "sha256": "b2de9fa3fd97713d220ecac78f9273139b16e84fd0638839cad53d2b7374bc08"
+        }
+      ],
+      "verification": {
+        "status": "fixture-pass",
+        "packages": [
+          "./pkg/systemlogmonitor"
+        ],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": true,
+        "sourceCheckoutDirectory": "node-problem-detector",
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "run",
+          "verify-npd-victorialogs.go"
+        ],
+        "log": "artifacts/test-reports/task-2.9-npd-victorialogs-final-offline-run.log",
+        "logSHA256": "b05899d049f9803117af8fcfa2de59edd3e6c97c4a0157130d5b0cefcb0412ba",
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          },
+          {
+            "name": "victoriametrics/victoria-logs",
+            "version": "v1.52.0",
+            "digest": "sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e"
+          }
+        ],
+        "closureEvidenceSHA256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca"
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false,
+        "runtimeEnabled": false,
+        "daemonEnabled": false,
+        "ruleMapping": "victorialogs-logsql"
+      },
+      "qualificationScope": "Only individual log-line matching is mapped. No NPD daemon deployment or automatic host privilege is authorized.",
+      "runtimeState": "disabled",
+      "runtimeDisabledReason": "Only selected static rule-to-LogsQL contract is qualified; the NPD daemon remains disabled because no daemon deployment or host privilege was validated.",
+      "dependencyClosureEvidence": {
+        "path": "test/fixtures/upstream-inspection/dependency-closures.json",
+        "sha256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca",
+        "complete": true,
+        "licenseReviewComplete": true,
+        "scope": "pinned kernel-monitor.json rules only; NPD daemon not selected after LogsQL equivalence passed",
+        "moduleCount": 0,
+        "unknownLicenses": 0
+      },
+      "platformMapping": {
+        "input": "NPD kernel-monitor JSON rule and one kernel log message",
+        "target": "VictoriaLogs _msg filter plus a platform NodeCondition/FindingCandidate projection",
+        "fieldMap": {
+          "rule.reason": "finding.ruleId",
+          "rule.type=temporary|permanent": "finding.conditionLifetime",
+          "rule.pattern": "LogsQL _msg:~ with the same RE2 expression plus \\z",
+          "log.message": "evidence.message",
+          "rule.condition": "NodeCondition.type when present"
+        },
+        "fixture": "test/fixtures/upstream-inspection/platform-mappings/node-problem-detector-rules.json",
+        "fixtureSHA256": "98b085aab72b2bfd00bf994fd566f8ade191179b85e4d7e2058a77a6583ef5fd",
+        "sourceFixture": {
+          "path": "test/fixtures/upstream-inspection/node-problem-detector-rules/config/kernel-monitor.json",
+          "sha256": "ff258f99954306042785c869e86f30b6ebf91e6e63c491050794bddc40f965b8"
+        },
+        "conformanceFixture": {
+          "path": "test/fixtures/upstream-inspection/npd-victorialogs-cases.json",
+          "sha256": "3baaefa39d468549bd48b39808252391e959529b31c3f13e1c6b4911ea4c3263"
+        },
+        "consumerBoundary": "Only individual log-line matching is mapped. No NPD daemon deployment or automatic host privilege is authorized.",
+        "disabledReason": "Rule and LogsQL fixture equivalence is verified; NPD runtime remains disabled until profile admission and source-to-platform mapping are implemented."
+      },
+      "offlineReplay": {
+        "status": "pass",
+        "networkMode": "docker-network-none",
+        "pullPolicy": "never",
+        "dependencyDownloads": false,
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "run",
+          "verify-npd-victorialogs.go"
+        ],
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          },
+          {
+            "name": "victoriametrics/victoria-logs",
+            "version": "v1.52.0",
+            "digest": "sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e"
+          }
+        ],
+        "log": "artifacts/test-reports/task-2.9-npd-victorialogs-final-offline-run.log",
+        "logSHA256": "b05899d049f9803117af8fcfa2de59edd3e6c97c4a0157130d5b0cefcb0412ba",
+        "additionalLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-npd-offline-run.log",
+            "sha256": "cbf91d1f1e3bb2e24280fd50ec81e4df22cc5c0bd6dc5c0c6d92031c3b631ba8"
+          }
+        ],
+        "closureLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-dependency-closure-offline.log",
+            "sha256": "fe2bae43dd5c394745a7f695394808aecf052bbaf42a13ba0c71e96da83ab996"
+          }
+        ]
+      },
+      "conformanceFiles": [
+        {
+          "path": "test/fixtures/upstream-inspection/npd-victorialogs-cases.json",
+          "sha256": "3baaefa39d468549bd48b39808252391e959529b31c3f13e1c6b4911ea4c3263"
+        },
+        {
+          "path": "test/fixtures/upstream-inspection/verify-npd-victorialogs.go",
+          "sha256": "cb37fbe73640e03a53bba6a5c6961cf66b9cc1ce9c7bdb4f11b49b772ebd930b"
+        }
+      ],
+      "evidenceLogs": [
+        {
+          "path": "artifacts/test-reports/task-2.9-npd-victorialogs-red.log",
+          "sha256": "610c4128d8287eab495bedaaa6971f58aef9719905fd9bd4141abea6b81acbaa"
+        }
+      ]
+    },
+    {
+      "id": "coroot-community-check",
+      "source": "https://github.com/coroot/coroot",
+      "version": "v1.26.8",
+      "commit": "76fa0cff31c530d1a2b0e8adc662433eea2bfeef",
+      "sourceArchiveSHA256": "f64a0ec8fc56398048496c66e39eb6a39a156818db3892511e9eac5ac56039db",
+      "license": "Apache-2.0",
+      "licenseEvidence": "third_party/licenses/coroot/LICENSE",
+      "licenseEvidenceSHA256": "ddfc19491fa48f6e59c652295f315ebce48d75a302b93b6bc910ef1e4107affc",
+      "state": "qualified",
+      "disabledReason": "",
+      "fixture": "test/fixtures/upstream-inspection/coroot-community-check/model/check.go.fixture",
+      "fixtureSHA256": "017d0fa10747c6500dd969d5742f3f3484f026dc82e793254e292f9b14835775",
+      "selectedFiles": [
+        {
+          "sourcePath": "model/check.go",
+          "path": "test/fixtures/upstream-inspection/coroot-community-check/model/check.go.fixture",
+          "sha256": "017d0fa10747c6500dd969d5742f3f3484f026dc82e793254e292f9b14835775",
+          "license": "Apache-2.0"
+        },
+        {
+          "sourcePath": "model/check_test.go",
+          "path": "test/fixtures/upstream-inspection/coroot-community-check/model/check_test.go.fixture",
+          "sha256": "0eb64919d8dee0bc4a111c695becf3ebe854c6174aa75e2e086b880e64e14b58",
+          "license": "Apache-2.0"
+        },
+        {
+          "sourcePath": "model/audit_report.go",
+          "path": "test/fixtures/upstream-inspection/coroot-community-check/model/audit_report.go.fixture",
+          "sha256": "f62e3ba673e1c9d907e8c69e5d58c06eaca81aaee4919edcad30dbfc8e96d166",
+          "license": "Apache-2.0"
+        },
+        {
+          "sourcePath": "model/application_deployment.go",
+          "path": "test/fixtures/upstream-inspection/coroot-community-check/model/application_deployment.go.fixture",
+          "sha256": "6e15d6a745741c8e550ba8067ce4e938e5e324025b12661ecb0ba75ee8b62e84",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencies": [
+        {
+          "name": "github.com/alecthomas/template",
+          "version": "v0.0.0-20190718012654-fb15b899a751",
+          "digest": "25e3be7192932d130d0af31ce5bcddae887647ba4afcfb32009c3b9b79dbbdb3",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/alecthomas/units",
+          "version": "v0.0.0-20240927000941-0f3dac36c52b",
+          "digest": "9a275dbb1454d52d2b868b990be424c7d31c0acf2c4a99850faf18ecb9f48b91",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/buger/jsonparser",
+          "version": "v1.1.2",
+          "digest": "07495b55fbdae886bcc970b6f5d5073435b5980291dc92674c53ab31d1ad298f",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/coroot/logparser",
+          "version": "v1.1.4",
+          "digest": "dd55d5cc8b4af576e26524b1accbe4d9694c7fd9cf0a2b83841cc7448f498ebc",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/dustin/go-humanize",
+          "version": "v1.0.1",
+          "digest": "319404ea84c8a4e2d3d83f30988b006e7dd04976de3e1a1a90484ad94679fa46",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/google/uuid",
+          "version": "v1.6.0",
+          "digest": "d0f02f377217f42702e259684e06441edbf5140dddcc34ba9bea56038b38a6ed",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/hako/durafmt",
+          "version": "v0.0.0-20210608085754-5c1018a4e16b",
+          "digest": "5501986c6e3662ea3e588ed52679ad1548a78bcc8cead1aae13c2e5ab5c55c10",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/matoous/go-nanoid",
+          "version": "v1.5.0",
+          "digest": "ea3783fa85838559c073774cc9f2e5892ddf0a448a94f7beb5a9e232853424a6",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/prometheus/client_model",
+          "version": "v0.6.2",
+          "digest": "67017b19f220c6ab91ecfdd10a93824e2a8b09fcb6390054dbdc49df3354a9ca",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/common",
+          "version": "v0.67.5",
+          "digest": "9baf08bc138d7097af80f61572b32eeac40727d91e29ea447cb059d0ce57e1a6",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/vmihailenco/msgpack/v5",
+          "version": "v5.4.1",
+          "digest": "f966b8091c59efce1b44e265097f239be5d4174a827be0a5debebae09517d2b8",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "name": "github.com/vmihailenco/tagparser/v2",
+          "version": "v2.0.0",
+          "digest": "70096ead331b4ac4efc0bf740674cbe55772beee6eace39507a610c5652aa8b5",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "name": "github.com/xhit/go-str2duration/v2",
+          "version": "v2.1.0",
+          "digest": "907db1bdf362568191e659f82339c21a4031d433bc5ac52f36de23eeceb8cb26",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "go.yaml.in/yaml/v2",
+          "version": "v2.4.4",
+          "digest": "1b98a6a498cf255c5f2982d32c74633bc7969770957e98103ac1e14345aa4576",
+          "license": "Apache-2.0 AND MIT"
+        },
+        {
+          "name": "go4.org/intern",
+          "version": "v0.0.0-20211027215823-ae77deb06f29",
+          "digest": "1902db8a9e2508f873c708f7b776b040bb4e515451dc6ef77a1450cb5170d15b",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "go4.org/unsafe/assume-no-moving-gc",
+          "version": "v0.0.0-20230525183740-e7c30c78aeb2",
+          "digest": "483c9b29d12567e79622b59156086e0ed92b7cc3537b3cc26b6e13d2269870f5",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/exp",
+          "version": "v0.0.0-20260218203240-3dfff04db8fa",
+          "digest": "5f3c7eb1e584454c2cce4f4aeb521fd2f194be3d79871aaa3ef665afb9f25068",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/net",
+          "version": "v0.56.0",
+          "digest": "bbc975b3ec9cd86892cfc515badc125657e135c00162d0da5de33f6d07930464",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/text",
+          "version": "v0.39.0",
+          "digest": "cbfa33111dfa6cbafef63103b82c544d35df425824ac94ea19629a12bdbf0523",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "google.golang.org/protobuf",
+          "version": "v1.36.11",
+          "digest": "14983d36c56a814ed91b6d652f2b8f895baba1b84eb43b28a0b132c8637cd274",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "gopkg.in/alecthomas/kingpin.v2",
+          "version": "v2.2.6",
+          "digest": "638080591aefe7d2642f2575b627d534c692606f02ea54ba89f42db112ba8839",
+          "license": "MIT"
+        },
+        {
+          "name": "gopkg.in/yaml.v3",
+          "version": "v3.0.1",
+          "digest": "aab8fbc4e6300ea08e6afe1caea18a21c90c79f489f52c53e2f20431f1a9a015",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "inet.af/netaddr",
+          "version": "v0.0.0-20230525184311-b8eac61e914a",
+          "digest": "cc6ef1516765344473a67ac9c43d056e3c9a4fc5e34a2ae43ece10325df6f389",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "k8s.io/klog",
+          "version": "v1.0.0",
+          "digest": "a564b06078ddf014c5b793a7d36643d6fda31fc131e36b95cdea94ff838b99be",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencyClosureVerified": true,
+      "dependencyClosureFiles": [
+        {
+          "path": "go.mod",
+          "sha256": "940d3bb797117addf47830834431d6909d02cfac4d485c28764b03d94d2fd045"
+        },
+        {
+          "path": "go.sum",
+          "sha256": "474bb84823adc3bde3f6357ecbcf7111ed7d098da133059d0a180ab2e94ee0a5"
+        }
+      ],
+      "verification": {
+        "status": "upstream-tests-pass",
+        "packages": [
+          "./model"
+        ],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": true,
+        "sourceCheckoutDirectory": "coroot",
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "test",
+          "-p",
+          "1",
+          "./model",
+          "-run",
+          "TestCheckConfigs_getRaw|TestTask29CorootCheckAuditBoundary"
+        ],
+        "log": "artifacts/test-reports/task-2.9-coroot-final-offline-run.log",
+        "logSHA256": "ff1e6934064bf1a1c09ee0a81e5b27f62c04b6b85004f954b12ff4a0029f5fdf",
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          }
+        ],
+        "closureEvidenceSHA256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca"
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false,
+        "runtimeEnabled": false,
+        "checkAuditSliceOnly": true
+      },
+      "qualificationScope": "Reuse only model.Check, AuditReport value shape, and selected Check evaluation logic. No watcher, storage, collector, UI, or complete Coroot runtime.",
+      "runtimeState": "disabled",
+      "runtimeDisabledReason": "Only Check/Audit model fields, threshold behavior, and serialized report projection are qualified; full Coroot runtime remains disabled.",
+      "dependencyClosureEvidence": {
+        "path": "test/fixtures/upstream-inspection/dependency-closures.json",
+        "sha256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca",
+        "complete": true,
+        "licenseReviewComplete": true,
+        "scope": "Coroot model package production import closure; selected Check/Audit slice upper bound",
+        "moduleCount": 24,
+        "unknownLicenses": 0
+      },
+      "platformMapping": {
+        "input": "Coroot model.Check and AuditReport metadata",
+        "target": "platform FindingCandidate and audit evidence projection",
+        "fieldMap": {
+          "Check.Id": "finding.ruleId",
+          "Check.Status": "finding.status",
+          "Check.Message": "finding.message",
+          "Check.Details": "evidence.details",
+          "AuditReport.Name": "evidence.category",
+          "AuditReport.Status": "evidence.status",
+          "AuditReport.Checks": "evidence.items"
+        },
+        "fixture": "test/fixtures/upstream-inspection/platform-mappings/coroot-community-check.json",
+        "fixtureSHA256": "02ac03a72c065f9c081588957a43b1f167857146b07a64de75c0e1e25fb9780d",
+        "sourceFixture": {
+          "path": "test/fixtures/upstream-inspection/coroot-community-check/model/check.go.fixture",
+          "sha256": "017d0fa10747c6500dd969d5742f3f3484f026dc82e793254e292f9b14835775"
+        },
+        "conformanceFixture": {
+          "path": "test/fixtures/upstream-inspection/coroot-community-check/model/check_test.go.fixture",
+          "sha256": "0eb64919d8dee0bc4a111c695becf3ebe854c6174aa75e2e086b880e64e14b58"
+        },
+        "consumerBoundary": "Reuse only model.Check, AuditReport value shape, and selected Check evaluation logic. No watcher, storage, collector, UI, or complete Coroot runtime.",
+        "disabledReason": "Selected model tests pass; production Check/Audit behavior remains tied to Coroot model dependencies and is not admitted as a platform runtime."
+      },
+      "offlineReplay": {
+        "status": "pass",
+        "networkMode": "docker-network-none",
+        "pullPolicy": "never",
+        "dependencyDownloads": false,
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "test",
+          "-p",
+          "1",
+          "./model",
+          "-run",
+          "TestCheckConfigs_getRaw|TestTask29CorootCheckAuditBoundary"
+        ],
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          }
+        ],
+        "log": "artifacts/test-reports/task-2.9-coroot-final-offline-run.log",
+        "logSHA256": "ff1e6934064bf1a1c09ee0a81e5b27f62c04b6b85004f954b12ff4a0029f5fdf",
+        "additionalLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-coroot-offline-run.log",
+            "sha256": "b6883dd209c9bbbcf5621a162e0f4a8f343b115231babd938426a8c263a8f3a8"
+          }
+        ],
+        "closureLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-dependency-closure-offline.log",
+            "sha256": "fe2bae43dd5c394745a7f695394808aecf052bbaf42a13ba0c71e96da83ab996"
+          }
+        ]
+      },
+      "conformanceFiles": [
+        {
+          "path": "test/fixtures/upstream-inspection/coroot-community-check/model/coroot-boundary-poc_test.go.fixture",
+          "sha256": "bdc1e5c35190a6bb83ec0fccc48d5eb033c732bac8656c36fdfbd1ff0aaa8629"
+        }
+      ],
+      "evidenceLogs": []
+    },
+    {
+      "id": "keep-community-model",
+      "source": "https://github.com/keephq/keep",
+      "version": "v0.54.3",
+      "commit": "118b2dc0c7a45f8a22b6317b983cdba6f5b54b5e",
+      "sourceArchiveSHA256": "2281c727adc9e662c9971caa582659ddefceb11207dfc89fdb5375c2681550dc",
+      "license": "MIT",
+      "licenseEvidence": "third_party/licenses/keep/LICENSE",
+      "licenseEvidenceSHA256": "2fcc30d214f74aa3145f0e8c2ddaead78ad0d92b43322ef0639cdabba80f330c",
+      "state": "qualified",
+      "disabledReason": "The selected Community model files pass the offline SQLite/IncidentDto PoC. No platform adapter, tenant-enforcement integration, or runtime admission is included in Task 2.9; exclude Keep API/database/UI and ee/.",
+      "fixture": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/db/incident.py",
+      "fixtureSHA256": "491374046880eab359bc30525b0c0546f980a5f8da65d9162165c9c576c833eb",
+      "selectedFiles": [
+        {
+          "sourcePath": "keep/api/models/db/incident.py",
+          "path": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/db/incident.py",
+          "sha256": "491374046880eab359bc30525b0c0546f980a5f8da65d9162165c9c576c833eb",
+          "license": "MIT"
+        },
+        {
+          "sourcePath": "keep/api/models/incident.py",
+          "path": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/incident.py",
+          "sha256": "8dc0891cee1a933b497e542b1dc78c89ff0973dcbd8fa488f5892f4a47703bcc",
+          "license": "MIT"
+        },
+        {
+          "sourcePath": "keep/api/models/db/rule.py",
+          "path": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/db/rule.py",
+          "sha256": "ef7caad55e5619d16427649170b2e61278eb83681795c0136a2a2afac15149e3",
+          "license": "MIT"
+        },
+        {
+          "sourcePath": "keep/api/models/db/tenant.py",
+          "path": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/db/tenant.py",
+          "sha256": "f8490398e4ae24e1738aa3822ac0939ce1ed2c72034f3014adaa1e5340d862b0",
+          "license": "MIT"
+        },
+        {
+          "sourcePath": "keep/api/models/alert.py",
+          "path": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/alert.py",
+          "sha256": "97b3b6bd64ffe6dbae5a04ad1ac9e4fa4ec0ce878f540acec810038ee32496fe",
+          "license": "MIT"
+        },
+        {
+          "sourcePath": "keep/api/models/severity_base.py",
+          "path": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/severity_base.py",
+          "sha256": "7b044f787cbf2771381119a8606f1727ff28f5b46a2dd674ac351341b92a17d4",
+          "license": "MIT"
+        }
+      ],
+      "dependencies": [
+        {
+          "name": "decorator",
+          "version": "5.1.1",
+          "digest": "b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "name": "greenlet",
+          "version": "3.1.1",
+          "digest": "f406b22b7c9a9b4f8aa9d2ab13d6ae0ac3e85c9a809bd590ad53fed2bf70dc79",
+          "license": "MIT; PSF-2.0"
+        },
+        {
+          "name": "pydantic",
+          "version": "1.10.19",
+          "digest": "2206a1752d9fac011e95ca83926a269fb0ef5536f7e053966d058316e24d929f",
+          "license": "MIT"
+        },
+        {
+          "name": "pytz",
+          "version": "2024.2",
+          "digest": "31c7c1817eb7fae7ca4b8c7ee50c72f93aa2dd863de768e1ef4245d426aa0725",
+          "license": "MIT"
+        },
+        {
+          "name": "retry2",
+          "version": "0.9.5",
+          "digest": "f7fee13b1e15d0611c462910a6aa72a8919823988dd0412152bc3719c89a4e55",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sqlalchemy",
+          "version": "2.0.36",
+          "digest": "fdf3386a801ea5aba17c6410dd1dc8d39cf454ca2565541b5ac42a84e1e28f53",
+          "license": "MIT"
+        },
+        {
+          "name": "sqlalchemy-utils",
+          "version": "0.41.2",
+          "digest": "85cf3842da2bf060760f955f8467b87983fb2e30f1764fd0e24a48307dc8ec6e",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "sqlmodel",
+          "version": "0.0.22",
+          "digest": "a1ed13e28a1f4057cbf4ff6cdb4fc09e85702621d3259ba17b3c230bfb2f941b",
+          "license": "MIT"
+        },
+        {
+          "name": "typing-extensions",
+          "version": "4.12.2",
+          "digest": "04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d",
+          "license": "PSF-2.0"
+        }
+      ],
+      "dependencyClosureVerified": true,
+      "dependencyClosureFiles": [
+        {
+          "path": "pyproject.toml",
+          "sha256": "9e0ff793570eb45be78130b715f0cb021fd93c26175919e7a1660309c2b1034a"
+        }
+      ],
+      "verification": {
+        "status": "fixture-pass",
+        "packages": [],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": true,
+        "sourceCheckoutDirectory": "keep",
+        "exitCode": 0,
+        "log": "artifacts/test-reports/task-2.9-keep-model-final-offline-run.log",
+        "logSHA256": "464f68a262dbe87ea4c7749ad6913c570bcc7427c5a6ef29430dc67ef6a4db69",
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "pip",
+          "install",
+          "--no-index",
+          "--require-hashes",
+          "--no-deps"
+        ],
+        "containerImages": [
+          {
+            "name": "python",
+            "version": "3.12.14-slim",
+            "digest": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f"
+          }
+        ],
+        "closureEvidenceSHA256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca"
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false,
+        "eeIncluded": false,
+        "runtimeEnabled": false,
+        "selectedModelFilesOnly": true
+      },
+      "qualificationScope": "Community model only; import closure includes Keep alert/rule/tenant modules and SQLModel/SQLAlchemy. Exclude ee/, providers, database runtime, API server, and UI.",
+      "runtimeState": "disabled",
+      "runtimeDisabledReason": "Only selected Community Incident SQLModel/DTO semantics are qualified; Keep server, database runtime, providers, and ee/ remain excluded. The consumer must enforce tenant equality.",
+      "dependencyClosureEvidence": {
+        "path": "test/fixtures/upstream-inspection/dependency-closures.json",
+        "sha256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca",
+        "complete": true,
+        "licenseReviewComplete": true,
+        "scope": "Python 3.12.14 arm64 import roots of six selected Community model files and conservative Poetry-lock transitive closure",
+        "moduleCount": 9,
+        "unknownLicenses": 0
+      },
+      "platformMapping": {
+        "input": "Keep Community Incident SQLModel and Incident DTO",
+        "target": "platform Incident candidate projection",
+        "fieldMap": {
+          "Incident.id": "incident.sourceId",
+          "Incident.tenant_id": "tenantID after authenticated tenant equality check",
+          "Incident.severity": "incident.severity",
+          "Incident.status": "incident.status",
+          "Incident.creation_time": "incident.createdAt",
+          "Incident.start_time/end_time/last_seen_time": "incident.timeline",
+          "Incident.alerts_count/sources/affected_services": "incident.context"
+        },
+        "fixture": "test/fixtures/upstream-inspection/platform-mappings/keep-community-model.json",
+        "fixtureSHA256": "d5c70f7d2a3212c7d26879fbd2e582a6e8fefa359077b3db4d7d741f97fa45f6",
+        "sourceFixture": {
+          "path": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/db/incident.py",
+          "sha256": "491374046880eab359bc30525b0c0546f980a5f8da65d9162165c9c576c833eb"
+        },
+        "conformanceFixture": {
+          "path": "test/fixtures/upstream-inspection/keep-community-model/keep/api/models/incident.py",
+          "sha256": "8dc0891cee1a933b497e542b1dc78c89ff0973dcbd8fa488f5892f4a47703bcc"
+        },
+        "consumerBoundary": "Community model only; import closure includes Keep alert/rule/tenant modules and SQLModel/SQLAlchemy. Exclude ee/, providers, database runtime, API server, and UI.",
+        "disabledReason": "The selected Community model files pass the offline SQLite/IncidentDto PoC. No platform adapter, tenant-enforcement integration, or runtime admission is included in Task 2.9; exclude Keep API/database/UI and ee/."
+      },
+      "offlineReplay": {
+        "status": "pass",
+        "networkMode": "docker-network-none",
+        "pullPolicy": "never",
+        "dependencyDownloads": false,
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "pip",
+          "install",
+          "--no-index",
+          "--require-hashes",
+          "--no-deps"
+        ],
+        "containerImages": [
+          {
+            "name": "python",
+            "version": "3.12.14-slim",
+            "digest": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f"
+          }
+        ],
+        "log": "artifacts/test-reports/task-2.9-keep-model-final-offline-run.log",
+        "logSHA256": "464f68a262dbe87ea4c7749ad6913c570bcc7427c5a6ef29430dc67ef6a4db69",
+        "additionalLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-keep-model-syntax-offline-run.log",
+            "sha256": "4067cf01fd069704c05e70d137eb164c6a300dd49849d70b1537555b38d1202a"
+          }
+        ],
+        "closureLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-dependency-closure-offline.log",
+            "sha256": "fe2bae43dd5c394745a7f695394808aecf052bbaf42a13ba0c71e96da83ab996"
+          }
+        ]
+      },
+      "conformanceFiles": [
+        {
+          "path": "test/fixtures/upstream-inspection/keep-community-model/keep-model-poc.py.fixture",
+          "sha256": "cebf50ae919bbd77a8f71da5d3fa5df2af9c1dac2d6ee9f1d8e54778d93db60e"
+        },
+        {
+          "path": "test/fixtures/upstream-inspection/verify-keep-community-model.py",
+          "sha256": "ccc54f1825b34072a42e84f664228539527fde3024f296d8789e7bb89a2d0349"
+        }
+      ],
+      "evidenceLogs": []
+    },
+    {
+      "id": "metal3-bmo-model",
+      "source": "https://github.com/metal3-io/baremetal-operator",
+      "version": "v0.14.1",
+      "commit": "767846c3f3a8b2426cbc5d5fc3b0f4a8565fa440",
+      "sourceArchiveSHA256": "5c2cbddb982997dc1fa686ea314876a2d3af07e1a1e157519054cbe37b4f39a0",
+      "license": "Apache-2.0",
+      "licenseEvidence": "third_party/licenses/baremetal-operator/LICENSE",
+      "licenseEvidenceSHA256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "state": "qualified",
+      "disabledReason": "",
+      "fixture": "test/fixtures/upstream-inspection/metal3-bmo-model/apis/metal3.io/v1alpha1/baremetalhost_types.go.fixture",
+      "fixtureSHA256": "1db12c624e4ab7a82639a40e7e04bc859cb5ff44f6590bf8ddb8ac2e531dae65",
+      "selectedFiles": [
+        {
+          "sourcePath": "apis/metal3.io/v1alpha1/baremetalhost_types.go",
+          "path": "test/fixtures/upstream-inspection/metal3-bmo-model/apis/metal3.io/v1alpha1/baremetalhost_types.go.fixture",
+          "sha256": "1db12c624e4ab7a82639a40e7e04bc859cb5ff44f6590bf8ddb8ac2e531dae65",
+          "license": "Apache-2.0"
+        },
+        {
+          "sourcePath": "apis/metal3.io/v1alpha1/baremetalhost_types_test.go",
+          "path": "test/fixtures/upstream-inspection/metal3-bmo-model/apis/metal3.io/v1alpha1/baremetalhost_types_test.go.fixture",
+          "sha256": "197c004666fcb255e3e2872b11e6fb0a7fb4158555b89168fb80c82a83bda99d",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencies": [
+        {
+          "name": "github.com/fxamacker/cbor/v2",
+          "version": "v2.9.0",
+          "digest": "5b0ec6424bd522aeeeab30cbdcad6f40bf976a9a2ddf125ab27b97826140d97a",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/go-logr/logr",
+          "version": "v1.4.3",
+          "digest": "523d7a3587fe73f61ef41c8bc627f7d7f38de8104d46278154b307e60770ad70",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/json-iterator/go",
+          "version": "v1.1.12",
+          "digest": "d001ea57081afd0e378467c8f4a9b6a51259996bb8bb763f78107eaf12f99501",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/modern-go/concurrent",
+          "version": "v0.0.0-20180306012644-bacd9c7ef1dd",
+          "digest": "91ef49599bec459869d94ff3dec128871ab66bd2dfa61041f1e1169f9b4a8073",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/modern-go/reflect2",
+          "version": "v1.0.3-0.20250322232337-35a7c28c31ee",
+          "digest": "49f3fb0f76b1b98b52b5e6e8eab2a48454eab33904b937625941c28138a7fea4",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/x448/float16",
+          "version": "v0.8.4",
+          "digest": "73b24a41037ea999ab66851e3798a0973dbb1f214925915b01f0820f7b2f1500",
+          "license": "MIT"
+        },
+        {
+          "name": "go.yaml.in/yaml/v2",
+          "version": "v2.4.3",
+          "digest": "bacc1ac9ed600be2df58f88b88d5c1b6f6473526fa4069f61549f64b81b09f41",
+          "license": "Apache-2.0 AND MIT"
+        },
+        {
+          "name": "golang.org/x/net",
+          "version": "v0.56.0",
+          "digest": "bbc975b3ec9cd86892cfc515badc125657e135c00162d0da5de33f6d07930464",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/text",
+          "version": "v0.40.0",
+          "digest": "07757384728d0f52dd85c1f3f163405e6396b2b0fb7eb7d6b610f2a711d69ee3",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "gopkg.in/inf.v0",
+          "version": "v0.9.1",
+          "digest": "08abac18c95cc43b725d4925f63309398d618beab68b4669659b61255e5374a0",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "k8s.io/api",
+          "version": "v0.36.4",
+          "digest": "4717c63ea25d52475fac529257a9ebf069f36b96560987245ccc8ad8f8e0e110",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/apimachinery",
+          "version": "v0.36.4",
+          "digest": "26530b1f4fb78d63165992c9b05f456a0bc58c6f863c10af57f217773411fb4f",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/klog/v2",
+          "version": "v2.140.0",
+          "digest": "46fab8686139b04c42f1b44e84c5a162667fbf22628216d5061d95206625a886",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/kube-openapi",
+          "version": "v0.0.0-20260317180543-43fb72c5454a",
+          "digest": "49a6e8055e90d55f798310e57a8163422d0b5694c44e4eb61e1d24397d8b1ca4",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "k8s.io/utils",
+          "version": "v0.0.0-20260210185600-b8788abfbbc2",
+          "digest": "4a6e86eb266821be9840c95c0ef3a00441a436c1406d6d48dcc5ca928e7e37e3",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/controller-runtime",
+          "version": "v0.24.1",
+          "digest": "8b0383d6842b4dc0bdd35e5417e2fe997417066fc59439bfe1ec0972b8df29b0",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/json",
+          "version": "v0.0.0-20250730193827-2d320260d730",
+          "digest": "7cec6eae3e4e4c9c1e0a009eef200740990fafbcb9cab081eb18ce32f6e7a7b9",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/randfill",
+          "version": "v1.0.0",
+          "digest": "31dbbfc44ce12f78f1b68d6bbeed8526aa73c53243353d44d50b2532c828f5f1",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "sigs.k8s.io/structured-merge-diff/v6",
+          "version": "v6.3.3",
+          "digest": "cc7604660434c50e1ca34529ea9b395af5333ba4521bfd463161d6db838e8966",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencyClosureVerified": true,
+      "dependencyClosureFiles": [
+        {
+          "path": "go.mod",
+          "sha256": "308b30b2a18420a18c142170e3f76087835833b3954ada48ab808c0e0cba6397"
+        },
+        {
+          "path": "go.sum",
+          "sha256": "8bfcdd95705fcd5e9df202e6a3ca8f6441bfb92775889962cf9bf5d24324227f"
+        },
+        {
+          "path": "apis/go.mod",
+          "sha256": "42808eba453693caaa48651c17c0688c90ce627656a3969f5f9baf797cdc077c"
+        },
+        {
+          "path": "apis/go.sum",
+          "sha256": "b4a586a1da5569c959654fe54b2cee624c237d5053bd7af257ae5feefba5f6fb"
+        }
+      ],
+      "verification": {
+        "status": "upstream-tests-pass",
+        "packages": [
+          "./metal3.io/v1alpha1"
+        ],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": true,
+        "sourceCheckoutDirectory": "baremetal-operator",
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "test",
+          "./metal3.io/v1alpha1"
+        ],
+        "log": "artifacts/test-reports/task-2.9-metal3-offline-run.log",
+        "logSHA256": "cbdcf23c95467322585bf22a9071113c35ce91f8bdf57abfeaac5b3fb272e170",
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          }
+        ],
+        "closureEvidenceSHA256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca"
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false,
+        "runtimeEnabled": false,
+        "controllerDeployed": false,
+        "ironicDeployed": false
+      },
+      "qualificationScope": "Model and CRD value shapes only; no BMO controller, Ironic services, provisioning, or Secret values.",
+      "runtimeState": "disabled",
+      "runtimeDisabledReason": "Only BareMetalHost API data model is qualified; BMO controller, Ironic, provisioning, and hardware access remain disabled.",
+      "dependencyClosureEvidence": {
+        "path": "test/fixtures/upstream-inspection/dependency-closures.json",
+        "sha256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca",
+        "complete": true,
+        "licenseReviewComplete": true,
+        "scope": "Metal3 API package production import closure; excludes controller and Ironic",
+        "moduleCount": 19,
+        "unknownLicenses": 0
+      },
+      "platformMapping": {
+        "input": "Metal3 BareMetalHost spec/status hardware model",
+        "target": "platform normalized HardwareFact plus Kubernetes resource identity",
+        "fieldMap": {
+          "metadata.uid/name/namespace": "resource.identity",
+          "status.operationalStatus": "hardware.operationalState",
+          "status.conditions": "hardware.conditions",
+          "status.hardware.systemVendor/productName/serialNumber": "hardware.identity",
+          "status.hardware.cpu/memory/storage": "hardware.capacity",
+          "spec.bmc.address": "management.endpoint reference only; credentials excluded",
+          "spec.hardwareProfile": "ignore deprecated field"
+        },
+        "fixture": "test/fixtures/upstream-inspection/platform-mappings/metal3-bmo-model.json",
+        "fixtureSHA256": "242fed703a51093bd09fb326c3affc7abd64e7af3d5e5bbadbfdf74588e0e457",
+        "sourceFixture": {
+          "path": "test/fixtures/upstream-inspection/metal3-bmo-model/apis/metal3.io/v1alpha1/baremetalhost_types.go.fixture",
+          "sha256": "1db12c624e4ab7a82639a40e7e04bc859cb5ff44f6590bf8ddb8ac2e531dae65"
+        },
+        "conformanceFixture": {
+          "path": "test/fixtures/upstream-inspection/metal3-bmo-model/apis/metal3.io/v1alpha1/baremetalhost_types_test.go.fixture",
+          "sha256": "197c004666fcb255e3e2872b11e6fb0a7fb4158555b89168fb80c82a83bda99d"
+        },
+        "consumerBoundary": "Model and CRD value shapes only; no BMO controller, Ironic services, provisioning, or Secret values.",
+        "disabledReason": "Selected API type tests pass; there is no authorized Metal3 control-plane profile in this phase."
+      },
+      "offlineReplay": {
+        "status": "pass",
+        "networkMode": "docker-network-none",
+        "pullPolicy": "never",
+        "dependencyDownloads": false,
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "test",
+          "./metal3.io/v1alpha1"
+        ],
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          }
+        ],
+        "log": "artifacts/test-reports/task-2.9-metal3-offline-run.log",
+        "logSHA256": "cbdcf23c95467322585bf22a9071113c35ce91f8bdf57abfeaac5b3fb272e170",
+        "additionalLogs": [],
+        "closureLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-dependency-closure-offline.log",
+            "sha256": "fe2bae43dd5c394745a7f695394808aecf052bbaf42a13ba0c71e96da83ab996"
+          }
+        ]
+      },
+      "conformanceFiles": [
+        {
+          "path": "test/fixtures/upstream-inspection/metal3-bmo-model/apis/metal3.io/v1alpha1/baremetalhost_types_test.go.fixture",
+          "sha256": "197c004666fcb255e3e2872b11e6fb0a7fb4158555b89168fb80c82a83bda99d"
+        }
+      ],
+      "evidenceLogs": [
+        {
+          "path": "artifacts/test-reports/task-2.9-metal3-model.log",
+          "sha256": "95f4e8c4844434d37a174b2240a311afd9a979d7b7d13856bebe3f177bb82c88"
+        }
+      ]
+    },
+    {
+      "id": "gofish-redfish",
+      "source": "https://github.com/stmcginnis/gofish",
+      "version": "v0.26.0",
+      "commit": "af1cf20386d538767ed9b6dd3a770736ab90e2d0",
+      "sourceArchiveSHA256": "9461b77dc75a84212a49af49a736c3ebbf9e6ddb488af068f1ac6d62f5bd55e8",
+      "license": "BSD-3-Clause",
+      "licenseEvidence": "third_party/licenses/gofish/LICENSE",
+      "licenseEvidenceSHA256": "0f7fa9decdf253238afdddf06281006e7808a9426369f58f36cda1e2fbee5b51",
+      "state": "qualified",
+      "disabledReason": "",
+      "fixture": "test/fixtures/upstream-inspection/gofish-redfish/schemas/computersystem_test.go.fixture",
+      "fixtureSHA256": "b17298d9714e94605a0e285641d44ea9bf676533d76063d3a6051ef795d6d409",
+      "selectedFiles": [
+        {
+          "sourcePath": "schemas/computersystem_test.go",
+          "path": "test/fixtures/upstream-inspection/gofish-redfish/schemas/computersystem_test.go.fixture",
+          "sha256": "b17298d9714e94605a0e285641d44ea9bf676533d76063d3a6051ef795d6d409",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "sourcePath": "schemas/logentry_test.go",
+          "path": "test/fixtures/upstream-inspection/gofish-redfish/schemas/logentry_test.go.fixture",
+          "sha256": "cc92d8602c349164a5517f37c976facbaea51b62e9d514a6e14f2eca587d6b76",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "dependencies": [],
+      "dependencyClosureVerified": true,
+      "dependencyClosureFiles": [
+        {
+          "path": "go.mod",
+          "sha256": "6b4c681dc47bd4581bf92ed3eeb4a6e64109cdc9208261538b996e99e7392262"
+        },
+        {
+          "path": "go.sum",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "verification": {
+        "status": "upstream-tests-pass",
+        "packages": [
+          "./schemas"
+        ],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": true,
+        "sourceCheckoutDirectory": "gofish",
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "test",
+          "./schemas",
+          "-run",
+          "Test(Chassis|ComputerSystem|Manager|LogEntry)"
+        ],
+        "log": "artifacts/test-reports/task-2.9-gofish-offline-run.log",
+        "logSHA256": "8bb93ec50f26415a815e3cc808b8696ea5fa221d1614eb17f811e2ef4f7c8171",
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          }
+        ],
+        "closureEvidenceSHA256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca"
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false,
+        "runtimeEnabled": false,
+        "writeOperations": false
+      },
+      "qualificationScope": "Read-only Redfish representation and value decoding. Network credentials, write operations, and a resident exporter are excluded.",
+      "runtimeState": "disabled",
+      "runtimeDisabledReason": "Only read-only Redfish schema decoding is qualified; no BMC connection credentials or write path are implemented.",
+      "dependencyClosureEvidence": {
+        "path": "test/fixtures/upstream-inspection/dependency-closures.json",
+        "sha256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca",
+        "complete": true,
+        "licenseReviewComplete": true,
+        "scope": "Gofish schemas package production import closure; excludes client/server runtime",
+        "moduleCount": 0,
+        "unknownLicenses": 0
+      },
+      "platformMapping": {
+        "input": "Gofish Redfish ComputerSystem and LogEntry response models",
+        "target": "platform normalized HardwareFact and hardware diagnostic evidence",
+        "fieldMap": {
+          "ComputerSystem.UUID/SerialNumber/Manufacturer/Model": "hardware.identity",
+          "ComputerSystem.ProcessorSummary/MemorySummary": "hardware.capacity",
+          "ComputerSystem.PowerState": "hardware.powerState",
+          "LogEntry.Created/EventTimestamp/Severity/Message": "evidence.timestamp/severity/message",
+          "LogEntry.OriginOfCondition": "resource.reference"
+        },
+        "fixture": "test/fixtures/upstream-inspection/platform-mappings/gofish-redfish.json",
+        "fixtureSHA256": "f14df08c289faa3f6ab6a322bdac0a9dffe506d603d0f6142e3d0f36851efc89",
+        "sourceFixture": {
+          "path": "test/fixtures/upstream-inspection/gofish-redfish/schemas/computersystem_test.go.fixture",
+          "sha256": "b17298d9714e94605a0e285641d44ea9bf676533d76063d3a6051ef795d6d409"
+        },
+        "conformanceFixture": {
+          "path": "test/fixtures/upstream-inspection/gofish-redfish/schemas/logentry_test.go.fixture",
+          "sha256": "cc92d8602c349164a5517f37c976facbaea51b62e9d514a6e14f2eca587d6b76"
+        },
+        "consumerBoundary": "Read-only Redfish representation and value decoding. Network credentials, write operations, and a resident exporter are excluded.",
+        "disabledReason": "Selected schema tests pass; no product Redfish source registration or trust policy is implemented in SP-02."
+      },
+      "offlineReplay": {
+        "status": "pass",
+        "networkMode": "docker-network-none",
+        "pullPolicy": "never",
+        "dependencyDownloads": false,
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "test",
+          "./schemas",
+          "-run",
+          "Test(Chassis|ComputerSystem|Manager|LogEntry)"
+        ],
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          }
+        ],
+        "log": "artifacts/test-reports/task-2.9-gofish-offline-run.log",
+        "logSHA256": "8bb93ec50f26415a815e3cc808b8696ea5fa221d1614eb17f811e2ef4f7c8171",
+        "additionalLogs": [],
+        "closureLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-dependency-closure-offline.log",
+            "sha256": "fe2bae43dd5c394745a7f695394808aecf052bbaf42a13ba0c71e96da83ab996"
+          }
+        ]
+      },
+      "conformanceFiles": [
+        {
+          "path": "test/fixtures/upstream-inspection/gofish-redfish/schemas/computersystem_test.go.fixture",
+          "sha256": "b17298d9714e94605a0e285641d44ea9bf676533d76063d3a6051ef795d6d409"
+        },
+        {
+          "path": "test/fixtures/upstream-inspection/gofish-redfish/schemas/logentry_test.go.fixture",
+          "sha256": "cc92d8602c349164a5517f37c976facbaea51b62e9d514a6e14f2eca587d6b76"
+        }
+      ],
+      "evidenceLogs": []
+    },
+    {
+      "id": "ipmi-exporter",
+      "source": "https://github.com/prometheus-community/ipmi_exporter",
+      "version": "v1.10.1",
+      "commit": "291d0107bdab44df5a7ff50ce552ee3ccc23b52a",
+      "sourceArchiveSHA256": "ce7581355c5758851af9ebf8fc44bd546cbb66bb5504bb8cfa4daca9a37aa811",
+      "license": "Apache-2.0",
+      "licenseEvidence": "third_party/licenses/ipmi_exporter/LICENSE",
+      "licenseEvidenceSHA256": "c360c4e7084170d4f941317716c41fdda76c4119a08ee47f68115774b2269294",
+      "state": "qualified",
+      "disabledReason": "",
+      "fixture": "test/fixtures/upstream-inspection/ipmi-exporter/collector_ipmi.go.fixture",
+      "fixtureSHA256": "90df4451a8e0c3a5c8b81a52b3d876dc6c9aa5936384d532baad2fc1a94abdfb",
+      "selectedFiles": [
+        {
+          "sourcePath": "collector_ipmi.go",
+          "path": "test/fixtures/upstream-inspection/ipmi-exporter/collector_ipmi.go.fixture",
+          "sha256": "90df4451a8e0c3a5c8b81a52b3d876dc6c9aa5936384d532baad2fc1a94abdfb",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencies": [
+        {
+          "name": "github.com/alecthomas/kingpin/v2",
+          "version": "v2.4.0",
+          "digest": "ef1ea6fead21e5fcc9e1532187888c8c7c4f3ebbdb00587ab67a19245206ca66",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/alecthomas/units",
+          "version": "v0.0.0-20240626203959-61d1e3462e30",
+          "digest": "5e76be34c341e8e67999f2ffa1c5c0746867e99e7481342e792d1550fa773bc0",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/beorn7/perks",
+          "version": "v1.0.1",
+          "digest": "25bd9e2d94aca770e6dbc1f53725f84f6af4432f631d35dd2c46f96ef0512f1a",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/bougou/go-ipmi",
+          "version": "v0.7.6",
+          "digest": "098e2698ed7e9d7577182c066b073e75c051c333fd6cf9934e7bfb590e988529",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/cespare/xxhash/v2",
+          "version": "v2.3.0",
+          "digest": "145a26cdc7c49db566017b807c4989ee7f7ddeb569423e9cb99f995fac3621d3",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/coreos/go-systemd/v22",
+          "version": "v22.5.0",
+          "digest": "4c44e3a6b84de4db393e341537c7124031fa98d5f98860ad31b32b4890f2234c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/google/uuid",
+          "version": "v1.6.0",
+          "digest": "d0f02f377217f42702e259684e06441edbf5140dddcc34ba9bea56038b38a6ed",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/jpillora/backoff",
+          "version": "v1.0.0",
+          "digest": "f856692c725143c49b9cceabfbca8bc93d3dbde84a0aaa53fb26ed3774c220cc",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/kr/pretty",
+          "version": "v0.3.1",
+          "digest": "ecf5a4af24826c3ad758ce06410ca08e2d58e4d95053be3b9dde2e14852c0cdc",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/kr/text",
+          "version": "v0.2.0",
+          "digest": "368eb318f91a5b67be905c47032ab5c31a1d49a97848b1011a0d0a2122b30ba4",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mattn/go-runewidth",
+          "version": "v0.0.16",
+          "digest": "179d2d900c76ee3560fbeda60d0237a3be6acb734d0cb7423b55e5ccb0cedbca",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mdlayher/socket",
+          "version": "v0.4.1",
+          "digest": "7abaafd520ac63f73b4d639b7e4ef9fdd311f6a4125a113f5127d752a3746666",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mdlayher/vsock",
+          "version": "v1.2.1",
+          "digest": "cd25f9f33aa4fb945502351caeeed6994e1f34824cc826ca2daa1b21c45bc0d1",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/munnerz/goautoneg",
+          "version": "v0.0.0-20191010083416-a7dc8b61c822",
+          "digest": "3d7ce17916779890be02ea6b3dd6345c3c30c1df502ad9d8b5b9b310e636afd9",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/mwitkow/go-conntrack",
+          "version": "v0.0.0-20190716064945-2f068394615f",
+          "digest": "d6fc513490d5c73e3f64ede3cf18ba973a4f8ef4c39c9816cc6080e39c8c480a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/olekukonko/tablewriter",
+          "version": "v0.0.5",
+          "digest": "ba678c0fddd0645293afc2ac50a5943730d755e31059f588f4b4a8c581b65dad",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/prometheus/client_golang",
+          "version": "v1.22.0",
+          "digest": "ab84ebfcbae87a0cbecc01b537f73eec6047d4f016c29719feb922470f086aa2",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/client_model",
+          "version": "v0.6.2",
+          "digest": "67017b19f220c6ab91ecfdd10a93824e2a8b09fcb6390054dbdc49df3354a9ca",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/common",
+          "version": "v0.65.0",
+          "digest": "c97b1ab4d2c723923b367dbe48c283eafc0b94eb14faf8c98d81746b015242a9",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/exporter-toolkit",
+          "version": "v0.14.0",
+          "digest": "c6a04013df732abc860d6033fdc23a8db9ee099729769d95fd95adaf2141c33a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/procfs",
+          "version": "v0.15.1",
+          "digest": "d31ad13f1ae121d842ff0f243d029c247e68710edab8a358d6366a67b7feaa6d",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/rivo/uniseg",
+          "version": "v0.4.7",
+          "digest": "b995e4aa0cc1e5779cc61138ac925cb8c1e963e40c80e4b93ee8553812ebb792",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/rogpeppe/go-internal",
+          "version": "v1.13.1",
+          "digest": "cc0746bf67c2d5d536d305db9f7c5cbe8ffa84928fd90262fb447685db0f1bc2",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/xhit/go-str2duration/v2",
+          "version": "v2.1.0",
+          "digest": "907db1bdf362568191e659f82339c21a4031d433bc5ac52f36de23eeceb8cb26",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/crypto",
+          "version": "v0.38.0",
+          "digest": "02824dd62fa3241946a2ac14fdadbd393514d76cebbfbd8bddcddbfc80c7f94b",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/net",
+          "version": "v0.40.0",
+          "digest": "388e4a624f48990057f1a2a2cc5f3e0f81e41b99dd2036247d98c931c59d44d4",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/oauth2",
+          "version": "v0.30.0",
+          "digest": "1e1028d0b190948f0cd44229bfa298440cb2481f601f992e12424bc6fa1f183c",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/sync",
+          "version": "v0.14.0",
+          "digest": "8b19a2aa2162ec8fa1cba4762eb06b089ef8d2dbddf4e64ef51334e722b83a7f",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/sys",
+          "version": "v0.33.0",
+          "digest": "182df79c87135f6dbd0d45656b6527e9221e28899ee44cc6cc7e7a396aedaef9",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/text",
+          "version": "v0.25.0",
+          "digest": "3f218b1dd9a690036d1226f46f142fc7ae3cc9cd4f28610b96bb8080b7e194c9",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "google.golang.org/protobuf",
+          "version": "v1.36.6",
+          "digest": "3294ac8ea5089b3c231351afaea4f012e8027a9beeb523bbf31dcb383cc0ab99",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "gopkg.in/yaml.v2",
+          "version": "v2.4.0",
+          "digest": "ede49e27c4cca6cdd2ec719aed8ea4d363710cceb3d411e7a786fbdec0d391fd",
+          "license": "Apache-2.0 AND MIT"
+        }
+      ],
+      "dependencyClosureVerified": true,
+      "dependencyClosureFiles": [
+        {
+          "path": "go.mod",
+          "sha256": "11c49f299e94541e74387f3b65de5843d8fc00ffdfe3b0886b5002d6255c2993"
+        },
+        {
+          "path": "go.sum",
+          "sha256": "3f5383c84eabfe6d417097bfce24c85aea74623990233a38fef9cbcb4513c89f"
+        }
+      ],
+      "verification": {
+        "status": "fixture-pass",
+        "packages": [],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": true,
+        "sourceCheckoutDirectory": "ipmi_exporter",
+        "exitCode": 0,
+        "log": "artifacts/test-reports/task-2.9-ipmi-fixture-final-offline-run.log",
+        "logSHA256": "cbeb8cb99ce37772ef1715dbc8f3e78cc82d6273223251e08ca504ec4bc27804",
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "test",
+          "-run",
+          "TestTask29IPMICollectorFixture"
+        ],
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          }
+        ],
+        "closureEvidenceSHA256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca"
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false,
+        "runtimeEnabled": false,
+        "liveHardwareValidated": false
+      },
+      "qualificationScope": "Uses a deterministic mock executable and no BMC, credentials, host device, or installed ipmimonitoring package.",
+      "runtimeState": "disabled",
+      "runtimeDisabledReason": "Prometheus collector mapping is qualified against synthetic sensors and a fake executable only; IPMI daemon, BMC access, target privilege, and profile admission remain disabled.",
+      "dependencyClosureEvidence": {
+        "path": "test/fixtures/upstream-inspection/dependency-closures.json",
+        "sha256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca",
+        "complete": true,
+        "licenseReviewComplete": true,
+        "scope": "IPMI exporter production import closure; fake ipmimonitoring validation only",
+        "moduleCount": 32,
+        "unknownLicenses": 0
+      },
+      "platformMapping": {
+        "input": "ipmimonitoring CSV sensor result through upstream IPMICollector Prometheus metrics",
+        "target": "platform HardwareSensorSample and health evidence; target-to-resource identity comes from the inventory association",
+        "fieldMap": {
+          "ipmi_temperature_celsius{id,name}": "hardware.sensor.value(unit=celsius)",
+          "ipmi_fan_speed_rpm{id,name}": "hardware.sensor.value(unit=rpm)",
+          "ipmi_temperature_state|ipmi_fan_speed_state{id,name}": "evidence.condition(0=nominal,1=warning,2=critical)",
+          "scrape target association": "resource.identity; never infer a host from sensor labels"
+        },
+        "fixture": "test/fixtures/upstream-inspection/platform-mappings/ipmi-exporter.json",
+        "fixtureSHA256": "7c1c328e7493ff6c3b502cc59b37971793e5eb7bde29ce05db943c7f9adaa2d7",
+        "sourceFixture": {
+          "path": "test/fixtures/upstream-inspection/ipmi-exporter/collector_ipmi.go.fixture",
+          "sha256": "90df4451a8e0c3a5c8b81a52b3d876dc6c9aa5936384d532baad2fc1a94abdfb"
+        },
+        "conformanceFixture": {
+          "path": "test/fixtures/upstream-inspection/ipmi-exporter/ipmi-sensors.csv",
+          "sha256": "292d64fbf63489323edacced15f6210e6e3e046f3bec5bb812f55309d358e6e6"
+        },
+        "consumerBoundary": "Uses a deterministic mock executable and no BMC, credentials, host device, or installed ipmimonitoring package.",
+        "disabledReason": "Fixture collector metrics pass; native FreeIPMI process, target privilege, and profile admission remain unverified."
+      },
+      "offlineReplay": {
+        "status": "pass",
+        "networkMode": "docker-network-none",
+        "pullPolicy": "never",
+        "dependencyDownloads": false,
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "test",
+          "-run",
+          "TestTask29IPMICollectorFixture"
+        ],
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          }
+        ],
+        "log": "artifacts/test-reports/task-2.9-ipmi-fixture-final-offline-run.log",
+        "logSHA256": "cbeb8cb99ce37772ef1715dbc8f3e78cc82d6273223251e08ca504ec4bc27804",
+        "additionalLogs": [],
+        "closureLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-dependency-closure-offline.log",
+            "sha256": "fe2bae43dd5c394745a7f695394808aecf052bbaf42a13ba0c71e96da83ab996"
+          }
+        ]
+      },
+      "conformanceFiles": [
+        {
+          "path": "test/fixtures/upstream-inspection/ipmi-exporter/ipmi-collector-poc_test.go.fixture",
+          "sha256": "326b3168a53f2d3311c77a68b8a0b98b11c5e420aadf39a1eb619e01128cb90d"
+        },
+        {
+          "path": "test/fixtures/upstream-inspection/ipmi-exporter/ipmi-sensors.csv",
+          "sha256": "292d64fbf63489323edacced15f6210e6e3e046f3bec5bb812f55309d358e6e6"
+        },
+        {
+          "path": "test/fixtures/upstream-inspection/ipmi-exporter/mock-bin/ipmimonitoring",
+          "sha256": "1172ba5f90a6504491283f76221f980655762ad9ecb1a335eb4ac0af65cb5d74"
+        }
+      ],
+      "evidenceLogs": []
+    },
+    {
+      "id": "smartctl-exporter",
+      "source": "https://github.com/prometheus-community/smartctl_exporter",
+      "version": "v0.14.0",
+      "commit": "ef5c03de02cb793e6a1540bef943fe6a167de635",
+      "sourceArchiveSHA256": "d087fdc38912a6cc94a9e0a30f0bcde9a40e153c92075bda8614cdba7c05f40f",
+      "license": "Apache-2.0",
+      "licenseEvidence": "third_party/licenses/smartctl_exporter/LICENSE",
+      "licenseEvidenceSHA256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "state": "qualified",
+      "disabledReason": "",
+      "fixture": "test/fixtures/upstream-inspection/smartctl-exporter/smartctl_test.go.fixture",
+      "fixtureSHA256": "8084f21c79b3362fdcf33f2563f130779f919c26582edd3b57849dab78424f8e",
+      "selectedFiles": [
+        {
+          "sourcePath": "smartctl_test.go",
+          "path": "test/fixtures/upstream-inspection/smartctl-exporter/smartctl_test.go.fixture",
+          "sha256": "8084f21c79b3362fdcf33f2563f130779f919c26582edd3b57849dab78424f8e",
+          "license": "Apache-2.0"
+        },
+        {
+          "sourcePath": "device_filter_test.go",
+          "path": "test/fixtures/upstream-inspection/smartctl-exporter/device_filter_test.go.fixture",
+          "sha256": "db797fe46c62ee9e7f16f097a8a9357bdd3446ed4818c2fb50fbd5aeebade4eb",
+          "license": "Apache-2.0"
+        }
+      ],
+      "dependencies": [
+        {
+          "name": "github.com/alecthomas/kingpin/v2",
+          "version": "v2.4.0",
+          "digest": "ef1ea6fead21e5fcc9e1532187888c8c7c4f3ebbdb00587ab67a19245206ca66",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/alecthomas/units",
+          "version": "v0.0.0-20211218093645-b94a6e3cc137",
+          "digest": "b62437d74a523089af46ba0115ece1ce11bca5e321fe1e1d4c976ecca6ee78aa",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/beorn7/perks",
+          "version": "v1.0.1",
+          "digest": "25bd9e2d94aca770e6dbc1f53725f84f6af4432f631d35dd2c46f96ef0512f1a",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/cespare/xxhash/v2",
+          "version": "v2.3.0",
+          "digest": "145a26cdc7c49db566017b807c4989ee7f7ddeb569423e9cb99f995fac3621d3",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/coreos/go-systemd/v22",
+          "version": "v22.5.0",
+          "digest": "4c44e3a6b84de4db393e341537c7124031fa98d5f98860ad31b32b4890f2234c",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/jpillora/backoff",
+          "version": "v1.0.0",
+          "digest": "f856692c725143c49b9cceabfbca8bc93d3dbde84a0aaa53fb26ed3774c220cc",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/klauspost/compress",
+          "version": "v1.17.11",
+          "digest": "88dea800cc6a11ccb9dd2f0dd487f30e8701870abdfc11245e41dcfc9f3d428e",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/mdlayher/socket",
+          "version": "v0.4.1",
+          "digest": "7abaafd520ac63f73b4d639b7e4ef9fdd311f6a4125a113f5127d752a3746666",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/mdlayher/vsock",
+          "version": "v1.2.1",
+          "digest": "cd25f9f33aa4fb945502351caeeed6994e1f34824cc826ca2daa1b21c45bc0d1",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/munnerz/goautoneg",
+          "version": "v0.0.0-20191010083416-a7dc8b61c822",
+          "digest": "3d7ce17916779890be02ea6b3dd6345c3c30c1df502ad9d8b5b9b310e636afd9",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "github.com/mwitkow/go-conntrack",
+          "version": "v0.0.0-20190716064945-2f068394615f",
+          "digest": "d6fc513490d5c73e3f64ede3cf18ba973a4f8ef4c39c9816cc6080e39c8c480a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/client_golang",
+          "version": "v1.21.1",
+          "digest": "52ecedceb4115da627e276faed60f2bfcd3c69cca0639bdcac4a7bc2c472ff61",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/client_model",
+          "version": "v0.6.1",
+          "digest": "8cd4703b4f1ab7eaa4b925c06a174bc84c93514d0969ac2a20ba51120cd4cab7",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/common",
+          "version": "v0.63.0",
+          "digest": "8f7ceb4d12a165e6b4533dc994937b936717daa3c2b231a499f8189372cfc843",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/exporter-toolkit",
+          "version": "v0.14.0",
+          "digest": "c6a04013df732abc860d6033fdc23a8db9ee099729769d95fd95adaf2141c33a",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/prometheus/procfs",
+          "version": "v0.15.1",
+          "digest": "d31ad13f1ae121d842ff0f243d029c247e68710edab8a358d6366a67b7feaa6d",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "github.com/tidwall/gjson",
+          "version": "v1.18.0",
+          "digest": "ab8092b3e42f83f003466757c63ec819a45d1e83caa63c6c131cebbe760f1df2",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/tidwall/match",
+          "version": "v1.1.1",
+          "digest": "2ba41f7f27330d49e0e432cbf96bf90720a33e4a97be58fe53f63a7e66f04d37",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/tidwall/pretty",
+          "version": "v1.2.0",
+          "digest": "8a7050340a6d97d00e3ae41b4be167b9ef35d4df5596ecd59106e1aaf8774b48",
+          "license": "MIT"
+        },
+        {
+          "name": "github.com/xhit/go-str2duration/v2",
+          "version": "v2.1.0",
+          "digest": "907db1bdf362568191e659f82339c21a4031d433bc5ac52f36de23eeceb8cb26",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/crypto",
+          "version": "v0.33.0",
+          "digest": "3b0c19c1d259e93464f540165470de872721e5fc66ce3f0d36ffd27d307ec5bb",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/net",
+          "version": "v0.35.0",
+          "digest": "9c746c215d695e80d6f4d1b1f1d55deaae5e451b4c031223af25f2b2f0757215",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/oauth2",
+          "version": "v0.25.0",
+          "digest": "09cda3779f2cab3558ad0da94f4c4ccfb56fe52a6f6cb54ac2edea94edf819c7",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/sync",
+          "version": "v0.11.0",
+          "digest": "0906a8026217a4e31c30ea5fc2514f18fc13480c62fe6bfae7a57e7ce0313de9",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/sys",
+          "version": "v0.30.0",
+          "digest": "f5214bfec98f00e5432da68bbece03e98600fa41594ed026556cbde8fcb6f7c9",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "golang.org/x/text",
+          "version": "v0.22.0",
+          "digest": "939cb4c202aa8fa302f2ba6f9d29165ce82fce9c665d9a1a0bb0d9e51b79e6f5",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "google.golang.org/protobuf",
+          "version": "v1.36.5",
+          "digest": "bef3555844d24e73f06b2c2e653bfd4ab4e3c79f4150def6ee9be45f0e2e81b5",
+          "license": "BSD-3-Clause"
+        },
+        {
+          "name": "gopkg.in/yaml.v2",
+          "version": "v2.4.0",
+          "digest": "ede49e27c4cca6cdd2ec719aed8ea4d363710cceb3d411e7a786fbdec0d391fd",
+          "license": "Apache-2.0 AND MIT"
+        }
+      ],
+      "dependencyClosureVerified": true,
+      "dependencyClosureFiles": [
+        {
+          "path": "go.mod",
+          "sha256": "d13cf6aa5dc1f53e903fe0e57424c1dd75e7a256036fc0dd4981a7a21ebefdb5"
+        },
+        {
+          "path": "go.sum",
+          "sha256": "1447cf796c561bfbebe0523f9b6f74f5d40f67b544809113228a4714f757af23"
+        }
+      ],
+      "verification": {
+        "status": "fixture-pass",
+        "packages": [
+          "."
+        ],
+        "goVersion": "1.27.1",
+        "moduleDownloadsAllowed": false,
+        "networkIsolationVerified": true,
+        "sourceCheckoutDirectory": "smartctl_exporter",
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "test",
+          "-run",
+          "TestTask29SMARTctlFixture"
+        ],
+        "log": "artifacts/test-reports/task-2.9-smartctl-fixture-offline-run.log",
+        "logSHA256": "f58345f032eeab796b6a3904ad3241fb282fa3974955e57f839ae2d5a1f313e2",
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          }
+        ],
+        "closureEvidenceSHA256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca"
+      },
+      "policy": {
+        "enabledByDefault": false,
+        "fullRuntimeDeployed": false,
+        "runtimeEnabled": false,
+        "liveHardwareValidated": false
+      },
+      "qualificationScope": "Uses upstream --smartctl.fake-data fixture path; no block device, host scan, or smartctl executable is invoked.",
+      "runtimeState": "disabled",
+      "runtimeDisabledReason": "Only upstream fake-data parser and metric mapping are qualified; hardware scan, smartctl executable, and profile admission remain disabled.",
+      "dependencyClosureEvidence": {
+        "path": "test/fixtures/upstream-inspection/dependency-closures.json",
+        "sha256": "097ef8132453ee67be0556eb95d475c705ba0d593dc93308030df15343f8fdca",
+        "complete": true,
+        "licenseReviewComplete": true,
+        "scope": "smartctl exporter production import closure; fake-data validation only",
+        "moduleCount": 28,
+        "unknownLicenses": 0
+      },
+      "platformMapping": {
+        "input": "smartctl --json device response through upstream SMARTctl parser/collector",
+        "target": "platform HardwareFact and storage health evidence",
+        "fieldMap": {
+          "smartctl_device{device,serial_number}": "hardware.disk.identity through inventory association",
+          "smartctl_device{model_name,model_family}": "hardware.disk.model",
+          "smartctl_device_smart_status{device}": "hardware.disk.health",
+          "smartctl_device_capacity_bytes{device}": "hardware.disk.capacity",
+          "smartctl_device_attribute{device,...}": "evidence.smartAttributes"
+        },
+        "fixture": "test/fixtures/upstream-inspection/platform-mappings/smartctl-exporter.json",
+        "fixtureSHA256": "34b4f9c72ad82d65eb5df1cb92cfb95649aa18df06d1c976a460221d3c0ba0a9",
+        "sourceFixture": {
+          "path": "test/fixtures/upstream-inspection/smartctl-exporter/smartctl_test.go.fixture",
+          "sha256": "8084f21c79b3362fdcf33f2563f130779f919c26582edd3b57849dab78424f8e"
+        },
+        "conformanceFixture": {
+          "path": "test/fixtures/upstream-inspection/smartctl-exporter/sat-Hitachi_Ultrastar_A7K2000-Hitachi_HUA722010CLA330-sdr.json",
+          "sha256": "26f6ea4b7933c63766d4d097cf1c030727b7e7acf21701732770d282fead442b"
+        },
+        "consumerBoundary": "Uses upstream --smartctl.fake-data fixture path; no block device, host scan, or smartctl executable is invoked.",
+        "disabledReason": "Fixture parser and normalized metric path pass; hardware access and source-profile admission remain disabled."
+      },
+      "offlineReplay": {
+        "status": "pass",
+        "networkMode": "docker-network-none",
+        "pullPolicy": "never",
+        "dependencyDownloads": false,
+        "exitCode": 0,
+        "command": [
+          "docker",
+          "run",
+          "--network",
+          "none",
+          "--pull=never",
+          "go",
+          "test",
+          "-run",
+          "TestTask29SMARTctlFixture"
+        ],
+        "containerImages": [
+          {
+            "name": "golang",
+            "version": "1.27.1-alpine",
+            "digest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+          }
+        ],
+        "log": "artifacts/test-reports/task-2.9-smartctl-fixture-offline-run.log",
+        "logSHA256": "f58345f032eeab796b6a3904ad3241fb282fa3974955e57f839ae2d5a1f313e2",
+        "additionalLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-smartctl-offline-run.log",
+            "sha256": "43e5e037795f5bd966ed21e95c9e27125b760ec55c195d795514877cb1f9abff"
+          }
+        ],
+        "closureLogs": [
+          {
+            "path": "artifacts/test-reports/task-2.9-dependency-closure-offline.log",
+            "sha256": "fe2bae43dd5c394745a7f695394808aecf052bbaf42a13ba0c71e96da83ab996"
+          }
+        ]
+      },
+      "conformanceFiles": [
+        {
+          "path": "test/fixtures/upstream-inspection/smartctl-exporter/smartctl-fixture-poc_test.go.fixture",
+          "sha256": "50fb6ffc3ea03691ce75226efa4adacd0f9f449c53cb813d3d8655022fe0d25d"
+        },
+        {
+          "path": "test/fixtures/upstream-inspection/smartctl-exporter/sat-Hitachi_Ultrastar_A7K2000-Hitachi_HUA722010CLA330-sdr.json",
+          "sha256": "26f6ea4b7933c63766d4d097cf1c030727b7e7acf21701732770d282fead442b"
+        }
+      ],
+      "evidenceLogs": []
+    }
+  ],
+  "deferredCapabilities": [
+    "kubevirt-observability-rules",
+    "kubevirt-must-gather",
+    "kubernetes-mcp-kubevirt-toolset"
+  ],
+  "capabilityStateMeaning": "qualified means only the selected source/model/rule/fixture scope is reviewed; component runtime remains disabled and Component Catalog state stays candidate."
+}

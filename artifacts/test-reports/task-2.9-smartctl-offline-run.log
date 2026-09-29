@@ -1,0 +1,11 @@
+image: golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414
+network: none; pull: never; module cache: read-only; GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off
+command: go test -p 1 -count=1 -v -timeout=5m . -run TestDeviceFilter|TestBuildDeviceLabel
+=== RUN   TestDeviceFilter
+--- PASS: TestDeviceFilter (0.00s)
+=== RUN   TestBuildDeviceLabel
+--- PASS: TestBuildDeviceLabel (0.00s)
+PASS
+ok  	github.com/prometheus-community/smartctl_exporter	0.002s
+
+exit_code=0

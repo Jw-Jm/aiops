@@ -1,0 +1,69 @@
+package main
+
+import (
+	"io"
+	"log/slog"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/prometheus-community/ipmi_exporter/freeipmi"
+	"github.com/prometheus/client_golang/prometheus"
+	dto "github.com/prometheus/client_model/go"
+)
+
+func TestTask29IPMICollectorFixture(t *testing.T) {
+	fixtureRoot := os.Getenv("OPS_TASK29_FIXTURES")
+	if fixtureRoot == "" {
+		t.Fatal("OPS_TASK29_FIXTURES is required")
+	}
+	mockBin := filepath.Join(fixtureRoot, "ipmi-exporter", "mock-bin")
+	t.Setenv("PATH", mockBin+string(os.PathListSeparator)+os.Getenv("PATH"))
+	testLogger := slog.New(slog.NewTextHandler(io.Discard, nil))
+	logger = testLogger
+	result := freeipmi.Execute("ipmimonitoring", nil, "", "fixture-host", testLogger)
+	metrics := make(chan prometheus.Metric, 16)
+	count, err := (IPMICollector{}).Collect(result, metrics, ipmiTarget{
+		host:   "fixture-host",
+		config: IPMIConfig{},
+	})
+	if err != nil {
+		t.Fatalf("collect fixture sensors: %v", err)
+	}
+	if count != 1 {
+		t.Fatalf("collector count=%d, want 1", count)
+	}
+	close(metrics)
+	values := map[string]float64{}
+	for metric := range metrics {
+		var dtoMetric dto.Metric
+		if err := metric.Write(&dtoMetric); err != nil {
+			t.Fatal(err)
+		}
+		name := ""
+		for _, label := range dtoMetric.Label {
+			if label.GetName() == "name" {
+				name = label.GetValue()
+			}
+		}
+		if dtoMetric.Gauge != nil {
+			values[name+":"+metric.Desc().String()] = dtoMetric.Gauge.GetValue()
+		}
+	}
+	var cpu, fan, warning bool
+	for key, value := range values {
+		if strings.Contains(key, "CPU Temp") && strings.Contains(key, `fqName: "ipmi_temperature_celsius"`) && value == 42 {
+			cpu = true
+		}
+		if strings.Contains(key, "Fan 1") && strings.Contains(key, `fqName: "ipmi_fan_speed_rpm"`) && value == 3000 {
+			fan = true
+		}
+		if strings.Contains(key, "Fan 1") && strings.Contains(key, `fqName: "ipmi_fan_speed_state"`) && value == 1 {
+			warning = true
+		}
+	}
+	if !cpu || !fan || !warning {
+		t.Fatalf("fixture metrics missing temperature/fan/state mappings: %+v", values)
+	}
+}

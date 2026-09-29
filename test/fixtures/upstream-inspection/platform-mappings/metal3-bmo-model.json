@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "metal3-bmo-model",
+  "input": "Metal3 BareMetalHost spec/status hardware model",
+  "target": "platform normalized HardwareFact plus Kubernetes resource identity",
+  "fieldMap": {
+    "metadata.uid/name/namespace": "resource.identity",
+    "status.operationalStatus": "hardware.operationalState",
+    "status.conditions": "hardware.conditions",
+    "status.hardware.systemVendor/productName/serialNumber": "hardware.identity",
+    "status.hardware.cpu/memory/storage": "hardware.capacity",
+    "spec.bmc.address": "management.endpoint reference only; credentials excluded",
+    "spec.hardwareProfile": "ignore deprecated field"
+  },
+  "sourceFixture": {
+    "path": "test/fixtures/upstream-inspection/metal3-bmo-model/apis/metal3.io/v1alpha1/baremetalhost_types.go.fixture",
+    "sha256": "1db12c624e4ab7a82639a40e7e04bc859cb5ff44f6590bf8ddb8ac2e531dae65"
+  },
+  "conformanceFixture": {
+    "path": "test/fixtures/upstream-inspection/metal3-bmo-model/apis/metal3.io/v1alpha1/baremetalhost_types_test.go.fixture",
+    "sha256": "197c004666fcb255e3e2872b11e6fb0a7fb4158555b89168fb80c82a83bda99d"
+  },
+  "consumerBoundary": "Model and CRD value shapes only; no BMO controller, Ironic services, provisioning, or Secret values.",
+  "disabledReason": "Selected API type tests pass; there is no authorized Metal3 control-plane profile in this phase."
+}

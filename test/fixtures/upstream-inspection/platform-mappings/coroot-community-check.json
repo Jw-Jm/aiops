@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "coroot-community-check",
+  "input": "Coroot model.Check and AuditReport metadata",
+  "target": "platform FindingCandidate and audit evidence projection",
+  "fieldMap": {
+    "Check.Id": "finding.ruleId",
+    "Check.Status": "finding.status",
+    "Check.Message": "finding.message",
+    "Check.Details": "evidence.details",
+    "AuditReport.Name": "evidence.category",
+    "AuditReport.Status": "evidence.status",
+    "AuditReport.Checks": "evidence.items"
+  },
+  "sourceFixture": {
+    "path": "test/fixtures/upstream-inspection/coroot-community-check/model/check.go.fixture",
+    "sha256": "017d0fa10747c6500dd969d5742f3f3484f026dc82e793254e292f9b14835775"
+  },
+  "conformanceFixture": {
+    "path": "test/fixtures/upstream-inspection/coroot-community-check/model/check_test.go.fixture",
+    "sha256": "0eb64919d8dee0bc4a111c695becf3ebe854c6174aa75e2e086b880e64e14b58"
+  },
+  "consumerBoundary": "Reuse only model.Check, AuditReport value shape, and selected Check evaluation logic. No watcher, storage, collector, UI, or complete Coroot runtime.",
+  "disabledReason": "Selected model tests pass; production Check/Audit behavior remains tied to Coroot model dependencies and is not admitted as a platform runtime."
+}

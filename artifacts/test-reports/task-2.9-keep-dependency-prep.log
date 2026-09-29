@@ -1,0 +1,37 @@
+Preparation only: fetch exact Poetry-locked Keep model wheels; later PoC runs with --network none.
+image: python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+command: python -m pip download --no-deps --require-hashes -r requirements.txt -d wheelhouse
+Collecting decorator==5.1.1 (from -r requirements.txt (line 1))
+  Downloading decorator-5.1.1-py3-none-any.whl (9.1 kB)
+Collecting greenlet==3.1.1 (from -r requirements.txt (line 2))
+  Downloading greenlet-3.1.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (649 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 649.1/649.1 kB 3.1 MB/s eta 0:00:00
+Collecting pydantic==1.10.19 (from -r requirements.txt (line 3))
+  Downloading pydantic-1.10.19-py3-none-any.whl (165 kB)
+Collecting pytz==2024.2 (from -r requirements.txt (line 4))
+  Downloading pytz-2024.2-py2.py3-none-any.whl (508 kB)
+Collecting retry2==0.9.5 (from -r requirements.txt (line 5))
+  Downloading retry2-0.9.5-py2.py3-none-any.whl (6.0 kB)
+Collecting sqlalchemy==2.0.36 (from -r requirements.txt (line 6))
+  Downloading SQLAlchemy-2.0.36-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (3.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.2/3.2 MB 7.6 MB/s eta 0:00:00
+Collecting sqlalchemy-utils==0.41.2 (from -r requirements.txt (line 7))
+  Downloading SQLAlchemy_Utils-0.41.2-py3-none-any.whl (93 kB)
+Collecting sqlmodel==0.0.22 (from -r requirements.txt (line 8))
+  Downloading sqlmodel-0.0.22-py3-none-any.whl (28 kB)
+Collecting typing-extensions==4.12.2 (from -r requirements.txt (line 9))
+  Downloading typing_extensions-4.12.2-py3-none-any.whl (37 kB)
+Saved ./wheelhouse/decorator-5.1.1-py3-none-any.whl
+Saved ./wheelhouse/greenlet-3.1.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
+Saved ./wheelhouse/pydantic-1.10.19-py3-none-any.whl
+Saved ./wheelhouse/pytz-2024.2-py2.py3-none-any.whl
+Saved ./wheelhouse/retry2-0.9.5-py2.py3-none-any.whl
+Saved ./wheelhouse/SQLAlchemy-2.0.36-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
+Saved ./wheelhouse/SQLAlchemy_Utils-0.41.2-py3-none-any.whl
+Saved ./wheelhouse/sqlmodel-0.0.22-py3-none-any.whl
+Saved ./wheelhouse/typing_extensions-4.12.2-py3-none-any.whl
+Successfully downloaded decorator greenlet pydantic pytz retry2 sqlalchemy sqlalchemy-utils sqlmodel typing-extensions
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+exit_code=0

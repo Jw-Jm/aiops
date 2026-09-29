@@ -1,0 +1,48 @@
+package model
+
+import (
+	"encoding/json"
+	"testing"
+
+	"github.com/coroot/coroot/timeseries"
+)
+
+func TestTask29CorootCheckAuditBoundary(t *testing.T) {
+	checkID := Checks.CPUNode.Id
+	configs := CheckConfigs{
+		ApplicationId{}: {
+			checkID: json.RawMessage(`{"threshold":91}`),
+		},
+	}
+	app := &Application{}
+	report := NewAuditReport(app, timeseries.Context{}, configs, AuditReportCPU, false)
+	check := report.CreateCheck(Checks.CPUNode)
+	if check.Id != checkID || check.Threshold != 91 {
+		t.Fatalf("check id/threshold = %q/%v, want %q/91", check.Id, check.Threshold, checkID)
+	}
+
+	raw, err := json.Marshal(report)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var projected map[string]any
+	if err := json.Unmarshal(raw, &projected); err != nil {
+		t.Fatal(err)
+	}
+	if projected["name"] != string(AuditReportCPU) {
+		t.Fatalf("audit name = %v, want %q", projected["name"], AuditReportCPU)
+	}
+	checks, ok := projected["checks"].([]any)
+	if !ok || len(checks) != 1 {
+		t.Fatalf("serialized checks = %#v, want one check", projected["checks"])
+	}
+	checkJSON := checks[0].(map[string]any)
+	if checkJSON["id"] != string(checkID) || checkJSON["threshold"] != float64(91) {
+		t.Fatalf("serialized check projection = %#v", checkJSON)
+	}
+	for _, internal := range []string{"app", "ctx", "checkConfigs", "detailed"} {
+		if _, exists := projected[internal]; exists {
+			t.Errorf("upstream internal field %q leaked into report projection", internal)
+		}
+	}
+}
