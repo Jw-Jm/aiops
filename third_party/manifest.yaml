@@ -1,2 +1,41 @@
 schemaVersion: 1
-sources: []
+sources:
+  - name: ariadne
+    status: candidate
+    source: https://github.com/aalpar/ariadne
+    version: v0.1.3-0.20260310221605-fa2232ce45c4
+    commit: fa2232ce45c4c869e47ddae1c57e8886830cfb6c
+    gitArchiveSHA256: 641737135cb62446d0eefd27add051fd2be2f7843bcacdaaf3e2b05f7ea375ba
+    license: Apache-2.0
+    licenseEvidence: third_party/licenses/ariadne/LICENSE
+    licenseEvidenceSHA256: 3e9de7803ceaf486a87b3d34fdcf77763777f5befbdbc77d53ad3854a9f7e5f7
+    use: test-only direct Go dependency for the non-virtual 20,000-object resolver and single-graph ontology adapter PoC; not admitted to production runtime
+    lock: docs/poc/graph-reuse-lock.yaml#sources.ariadne
+    report: docs/poc/ariadne.md
+    fixtures:
+      - test/fixtures/upstream-graph/nonvirtual-golden-input.json
+      - test/fixtures/upstream-graph/ariadne-ontology-adapter-poc_test.go.fixture
+    patch: none
+  - name: kubernetes-ontology
+    status: candidate
+    source: https://github.com/Colvin-Y/kubernetes-ontology
+    version: v0.1.8+commit.346236312685a2e2e824c46b9ecdb3e8e8a10c76
+    commit: 346236312685a2e2e824c46b9ecdb3e8e8a10c76
+    gitArchiveSHA256: 7b579f52dacdbc2f3bb44c4a6c0623dc499de9d59ea1cc22fad562e0b5982e9f
+    license: Apache-2.0
+    licenseEvidence: third_party/licenses/kubernetes-ontology/LICENSE
+    licenseEvidenceSHA256: 215191e6c2217c6922e3b911e2fedb0fa5578d8326ae13f7228bef251285856c
+    noticeEvidence: third_party/licenses/kubernetes-ontology/NOTICE
+    noticeEvidenceSHA256: 25b2612bb666e9dc21549bb5feab59fd4648e0ecdd3c7499c40fb697208d2350
+    use: isolated upstream source and test-only Ariadne graph-reader adapter PoC; no ontology runtime or Kernel enters the platform
+    lock: docs/poc/graph-reuse-lock.yaml#sources.kubernetesOntology
+    report: docs/poc/kubernetes-ontology.md
+    fixtures:
+      - test/fixtures/upstream-graph/ontology-pod-image-pull-failure.golden.json
+      - test/fixtures/upstream-graph/ontology-workload-rollout-blocked.golden.json
+      - test/fixtures/upstream-graph/ariadne-ontology-adapter-poc_test.go.fixture
+      - test/fixtures/upstream-graph/ontology-ariadne-diagnostic.golden.json
+      - test/fixtures/upstream-graph/ontology-adapter-go-dependency-closure.json
+    patch:
+      path: test/fixtures/upstream-graph/ontology-ariadne-reader.patch
+      sha256: ce57342fd94dbbdaf04e38d93eaf00f927aa89072a75cd99accc1db4b2657b86

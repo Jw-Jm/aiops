@@ -1,0 +1,195 @@
+diff --git a/go.mod b/go.mod
+index 0b47257..5cf3ad4 100644
+--- a/go.mod
++++ b/go.mod
+@@ -3 +3 @@ module github.com/Colvin-Y/kubernetes-ontology
+-go 1.22.0
++go 1.26.1
+@@ -7,3 +7,3 @@ require (
+-	k8s.io/api v0.30.1
+-	k8s.io/apimachinery v0.30.1
+-	k8s.io/client-go v0.30.1
++	k8s.io/api v0.35.2
++	k8s.io/apimachinery v0.35.2
++	k8s.io/client-go v0.35.2
+@@ -12,0 +13,12 @@ require (
++	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
++	github.com/pmezard/go-difflib v1.0.0 // indirect
++	github.com/x448/float16 v0.8.4 // indirect
++	go.yaml.in/yaml/v2 v2.4.3 // indirect
++	go.yaml.in/yaml/v3 v3.0.4 // indirect
++	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
++	sigs.k8s.io/randfill v1.0.0 // indirect
++	sigs.k8s.io/structured-merge-diff/v6 v6.3.0 // indirect
++)
++
++require (
++	github.com/aalpar/ariadne v0.1.3-0.20260310221605-fa2232ce45c4
+@@ -14 +26 @@ require (
+-	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
++	github.com/emicklei/go-restful/v3 v3.12.2 // indirect
+@@ -16,2 +28,2 @@ require (
+-	github.com/go-logr/logr v1.4.1 // indirect
+-	github.com/go-openapi/jsonpointer v0.19.6 // indirect
++	github.com/go-logr/logr v1.4.3 // indirect
++	github.com/go-openapi/jsonpointer v0.21.0 // indirect
+@@ -19 +31 @@ require (
+-	github.com/go-openapi/swag v0.22.3 // indirect
++	github.com/go-openapi/swag v0.23.0 // indirect
+@@ -22,2 +34,2 @@ require (
+-	github.com/google/gnostic-models v0.6.8 // indirect
+-	github.com/google/go-cmp v0.6.0 // indirect
++	github.com/google/gnostic-models v0.7.0 // indirect
++	github.com/google/go-cmp v0.7.0 // indirect
+@@ -25 +37 @@ require (
+-	github.com/google/uuid v1.3.0 // indirect
++	github.com/google/uuid v1.6.0 // indirect
+@@ -31 +43 @@ require (
+-	github.com/modern-go/reflect2 v1.0.2 // indirect
++	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
+@@ -34,7 +46,7 @@ require (
+-	github.com/spf13/pflag v1.0.5 // indirect
+-	golang.org/x/net v0.23.0 // indirect
+-	golang.org/x/oauth2 v0.10.0 // indirect
+-	golang.org/x/sys v0.18.0 // indirect
+-	golang.org/x/term v0.18.0 // indirect
+-	golang.org/x/text v0.14.0 // indirect
+-	golang.org/x/time v0.3.0 // indirect
++	github.com/spf13/pflag v1.0.9 // indirect
++	golang.org/x/net v0.47.0 // indirect
++	golang.org/x/oauth2 v0.30.0 // indirect
++	golang.org/x/sys v0.38.0 // indirect
++	golang.org/x/term v0.37.0 // indirect
++	golang.org/x/text v0.31.0 // indirect
++	golang.org/x/time v0.9.0 // indirect
+@@ -42 +54 @@ require (
+-	google.golang.org/protobuf v1.33.0 // indirect
++	google.golang.org/protobuf v1.36.8 // indirect
+@@ -45,4 +57,4 @@ require (
+-	k8s.io/klog/v2 v2.120.1 // indirect
+-	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340 // indirect
+-	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
+-	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
++	k8s.io/klog/v2 v2.130.1 // indirect
++	k8s.io/kube-openapi v0.0.0-20250910181357-589584f1c912 // indirect
++	k8s.io/utils v0.0.0-20251002143259-bc988d571ff4 // indirect
++	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
+@@ -50 +62 @@ require (
+-	sigs.k8s.io/yaml v1.3.0 // indirect
++	sigs.k8s.io/yaml v1.6.0 // indirect
+diff --git a/go.sum b/go.sum
+index fdacf4d..28e21d7 100644
+--- a/go.sum
++++ b/go.sum
+@@ -0,0 +1,2 @@
++github.com/aalpar/ariadne v0.1.3-0.20260310221605-fa2232ce45c4 h1:0d3nmJFOCitRNLw2HLTQTSwv9+ThdQoOUNAvd2re9gw=
++github.com/aalpar/ariadne v0.1.3-0.20260310221605-fa2232ce45c4/go.mod h1:WGla3K4UVgrnFX9seAFQDpmyTyu2MbY3RDW4p5tUij0=
+@@ -6,0 +9,2 @@ github.com/emicklei/go-restful/v3 v3.11.0/go.mod h1:6n3XBCmQQb25CM2LCACGz8ukIrRr
++github.com/emicklei/go-restful/v3 v3.12.2 h1:DhwDP0vY3k8ZzE0RunuJy8GhNpPL6zqLkDf9B/a0/xU=
++github.com/emicklei/go-restful/v3 v3.12.2/go.mod h1:6n3XBCmQQb25CM2LCACGz8ukIrRry+4bhvbpWn3mrbc=
+@@ -8,0 +13,2 @@ github.com/evanphx/json-patch v4.12.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQL
++github.com/fxamacker/cbor/v2 v2.9.0 h1:NpKPmjDBgUfBms6tr6JZkTHtfFGcMKsw3eGcmD/sapM=
++github.com/fxamacker/cbor/v2 v2.9.0/go.mod h1:vM4b+DJCtHn+zz7h3FFp/hDAI9WNWCsZj23V5ytsSxQ=
+@@ -10,0 +17,2 @@ github.com/go-logr/logr v1.4.1/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ4
++github.com/go-logr/logr v1.4.3 h1:CjnDlHq8ikf6E492q6eKboGOC0T8CDaOvkHCIg8idEI=
++github.com/go-logr/logr v1.4.3/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=
+@@ -12,0 +21,2 @@ github.com/go-openapi/jsonpointer v0.19.6/go.mod h1:osyAmYz/mB/C3I+WsTTSgw1ONzaL
++github.com/go-openapi/jsonpointer v0.21.0 h1:YgdVicSA9vH5RiHs9TZW5oyafXZFc6+2Vc1rr/O9oNQ=
++github.com/go-openapi/jsonpointer v0.21.0/go.mod h1:IUyH9l/+uyhIYQ/PXVA41Rexl+kOkAPDdXEYns6fzUY=
+@@ -16,0 +27,2 @@ github.com/go-openapi/swag v0.22.3/go.mod h1:UzaqsxGiab7freDnrUUra0MwWfN/q7tE4j+
++github.com/go-openapi/swag v0.23.0 h1:vsEVJDUo2hPJ2tu0/Xc+4noaxyEffXNIs3cOULZ+GrE=
++github.com/go-openapi/swag v0.23.0/go.mod h1:esZ8ITTYEsH1V2trKHjAN8Ai7xHb8RV+YSZ577vPjgQ=
+@@ -25,0 +38,2 @@ github.com/google/gnostic-models v0.6.8/go.mod h1:5n7qKqH0f5wFt+aWF8CW6pZLLNOfYu
++github.com/google/gnostic-models v0.7.0 h1:qwTtogB15McXDaNqTZdzPJRHvaVJlAl+HVQnLmJEJxo=
++github.com/google/gnostic-models v0.7.0/go.mod h1:whL5G0m6dmc5cPxKc5bdKdEN3UjI7OUGxBlw57miDrQ=
+@@ -28,0 +43,2 @@ github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeN
++github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
++github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=
+@@ -35,0 +52,2 @@ github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+
++github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
++github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+@@ -57,0 +76,2 @@ github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjY
++github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee h1:W5t00kpgFdJifH4BDsTlE89Zl93FEloxaWZfGcifgq8=
++github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
+@@ -71,0 +92 @@ github.com/spf13/pflag v1.0.5/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An
++github.com/spf13/pflag v1.0.9/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
+@@ -80,0 +102,2 @@ github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXl
++github.com/x448/float16 v0.8.4 h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=
++github.com/x448/float16 v0.8.4/go.mod h1:14CWIYCyZA/cWjXOioeEpHeN/83MdbZDRQHoFcYsOfg=
+@@ -82,0 +106,4 @@ github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9dec
++go.yaml.in/yaml/v2 v2.4.3 h1:6gvOSjQoTB3vt1l+CU+tSyi/HOjfOjRLJ4YwYZGwRO0=
++go.yaml.in/yaml/v2 v2.4.3/go.mod h1:zSxWcmIDjOzPXpjlTTbAsKokqkDNAVtZO0WOMiT90s8=
++go.yaml.in/yaml/v3 v3.0.4 h1:tfq32ie2Jv2UxXFdLJdh3jXuOzWiL1fo0bu/FbuKpbc=
++go.yaml.in/yaml/v3 v3.0.4/go.mod h1:DhzuOOF2ATzADvBadXxruRBLzYTpT36CKvDb3+aBEFg=
+@@ -94,0 +122,2 @@ golang.org/x/net v0.23.0/go.mod h1:JKghWKKOSdJwpW2GEx0Ja7fmaKnMsbu+MWVZTokSYmg=
++golang.org/x/net v0.47.0 h1:Mx+4dIFzqraBXUugkia1OOvlD6LemFo1ALMHjrXDOhY=
++golang.org/x/net v0.47.0/go.mod h1:/jNxtkgq5yWUGYkaZGqo27cfGZ1c5Nen03aYrrKpVRU=
+@@ -96,0 +126,2 @@ golang.org/x/oauth2 v0.10.0/go.mod h1:kTpgurOux7LqtuxjuyZa4Gj2gdezIt/jQtGnNFfypQ
++golang.org/x/oauth2 v0.30.0 h1:dnDm7JmhM45NNpd8FDDeLhK6FwqbOf4MLCM9zb1BOHI=
++golang.org/x/oauth2 v0.30.0/go.mod h1:B++QgG3ZKulg6sRPGD/mqlHQs5rB3Ml9erfeDY7xKlU=
+@@ -104,0 +136,2 @@ golang.org/x/sys v0.18.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
++golang.org/x/sys v0.38.0 h1:3yZWxaJjBmCWXqhN1qh02AkOnCQ1poK6oF+a7xWL6Gc=
++golang.org/x/sys v0.38.0/go.mod h1:OgkHotnGiDImocRcuBABYBEXf8A9a87e/uXjp9XT3ks=
+@@ -106,0 +140,2 @@ golang.org/x/term v0.18.0/go.mod h1:ILwASektA3OnRv7amZ1xhE/KTR+u50pbXfZ03+6Nx58=
++golang.org/x/term v0.37.0 h1:8EGAD0qCmHYZg6J17DvsMy9/wJ7/D/4pV/wfnld5lTU=
++golang.org/x/term v0.37.0/go.mod h1:5pB4lxRNYYVZuTLmy8oR2BH8dflOR+IbTYFD8fi3254=
+@@ -111,0 +147,2 @@ golang.org/x/text v0.14.0/go.mod h1:18ZOQIKpY8NJVqYksKHtTdi31H5itFRjB5/qKTNYzSU=
++golang.org/x/text v0.31.0 h1:aC8ghyu4JhP8VojJ2lEHBnochRno1sgL6nEi9WGFGMM=
++golang.org/x/text v0.31.0/go.mod h1:tKRAlv61yKIjGGHX/4tP1LTbc13YSec1pxVEWXzfoeM=
+@@ -113,0 +151,2 @@ golang.org/x/time v0.3.0/go.mod h1:tRJNPiyCQ0inRvYxbN9jk5I+vvW/OXSQhTDSoE431IQ=
++golang.org/x/time v0.9.0 h1:EsRrnYcQiGH+5FfbgvV4AP7qEZstoyrHB0DzarOQ4ZY=
++golang.org/x/time v0.9.0/go.mod h1:3BpzKBy/shNhVucY/MWOyx10tF3SFh9QdLuxbVysPQM=
+@@ -127,0 +167,2 @@ google.golang.org/protobuf v1.33.0/go.mod h1:c6P6GXX6sHbq/GpV6MGZEdwhWPcYBgnhAHh
++google.golang.org/protobuf v1.36.8 h1:xHScyCOEuuwZEc6UtSOvPbAT4zRh0xcNRYekJwfqyMc=
++google.golang.org/protobuf v1.36.8/go.mod h1:fuxRtAxBytpl4zzqUh6/eyUujkJdNiuEkXntxiD/uRU=
+@@ -130,0 +172,2 @@ gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EV
++gopkg.in/evanphx/json-patch.v4 v4.13.0 h1:czT3CmqEaQ1aanPc5SdlgQrrEIb8w/wwCvWWnfEbYzo=
++gopkg.in/evanphx/json-patch.v4 v4.13.0/go.mod h1:p8EYWUEYMpynmqDbY58zCKCFZw8pRWMG4EsWvDvM72M=
+@@ -140,0 +184,2 @@ k8s.io/api v0.30.1/go.mod h1:ddbN2C0+0DIiPntan/bye3SW3PdwLa11/0yqwvuRrJM=
++k8s.io/api v0.35.2 h1:tW7mWc2RpxW7HS4CoRXhtYHSzme1PN1UjGHJ1bdrtdw=
++k8s.io/api v0.35.2/go.mod h1:7AJfqGoAZcwSFhOjcGM7WV05QxMMgUaChNfLTXDRE60=
+@@ -142,0 +188,2 @@ k8s.io/apimachinery v0.30.1/go.mod h1:iexa2somDaxdnj7bha06bhb43Zpa6eWH8N8dbqVjTU
++k8s.io/apimachinery v0.35.2 h1:NqsM/mmZA7sHW02JZ9RTtk3wInRgbVxL8MPfzSANAK8=
++k8s.io/apimachinery v0.35.2/go.mod h1:jQCgFZFR1F4Ik7hvr2g84RTJSZegBc8yHgFWKn//hns=
+@@ -144,0 +192,2 @@ k8s.io/client-go v0.30.1/go.mod h1:wrAqLNs2trwiCH/wxxmT/x3hKVH9PuV0GGW0oDoHVqc=
++k8s.io/client-go v0.35.2 h1:YUfPefdGJA4aljDdayAXkc98DnPkIetMl4PrKX97W9o=
++k8s.io/client-go v0.35.2/go.mod h1:4QqEwh4oQpeK8AaefZ0jwTFJw/9kIjdQi0jpKeYvz7g=
+@@ -146,0 +196,2 @@ k8s.io/klog/v2 v2.120.1/go.mod h1:3Jpz1GvMt720eyJH1ckRHK1EDfpxISzJ7I9OYgaDtPE=
++k8s.io/klog/v2 v2.130.1 h1:n9Xl7H1Xvksem4KFG4PYbdQCQxqc/tTUyrgXaOhHSzk=
++k8s.io/klog/v2 v2.130.1/go.mod h1:3Jpz1GvMt720eyJH1ckRHK1EDfpxISzJ7I9OYgaDtPE=
+@@ -148,0 +200,2 @@ k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340/go.mod h1:yD4MZYeKMBwQKVh
++k8s.io/kube-openapi v0.0.0-20250910181357-589584f1c912 h1:Y3gxNAuB0OBLImH611+UDZcmKS3g6CthxToOb37KgwE=
++k8s.io/kube-openapi v0.0.0-20250910181357-589584f1c912/go.mod h1:kdmbQkyfwUagLfXIad1y2TdrjPFWp2Q89B3qkRwf/pQ=
+@@ -150,0 +204,2 @@ k8s.io/utils v0.0.0-20230726121419-3b25d923346b/go.mod h1:OLgZIPagt7ERELqWJFomSt
++k8s.io/utils v0.0.0-20251002143259-bc988d571ff4 h1:SjGebBtkBqHFOli+05xYbK8YF1Dzkbzn+gDM4X9T4Ck=
++k8s.io/utils v0.0.0-20251002143259-bc988d571ff4/go.mod h1:OLgZIPagt7ERELqWJFomSt595RzquPNLL48iOWgYOg0=
+@@ -152,0 +208,4 @@ sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd/go.mod h1:B8JuhiUyNFVKdsE8h6
++sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 h1:IpInykpT6ceI+QxKBbEflcR5EXP7sU1kvOlxwZh5txg=
++sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730/go.mod h1:mdzfpAEoE6DHQEN0uh9ZbOCuHbLK5wOm7dK4ctXE9Tg=
++sigs.k8s.io/randfill v1.0.0 h1:JfjMILfT8A6RbawdsK2JXGBR5AQVfd+9TbzrlneTyrU=
++sigs.k8s.io/randfill v1.0.0/go.mod h1:XeLlZ/jmk4i1HRopwe7/aU3H5n1zNUcX6TM94b3QxOY=
+@@ -154,0 +214,2 @@ sigs.k8s.io/structured-merge-diff/v4 v4.4.1/go.mod h1:N8hJocpFajUSSeSJ9bOZ77Vzej
++sigs.k8s.io/structured-merge-diff/v6 v6.3.0 h1:jTijUJbW353oVOd9oTlifJqOGEkUw2jB/fXCbTiQEco=
++sigs.k8s.io/structured-merge-diff/v6 v6.3.0/go.mod h1:M3W8sfWvn2HhQDIbGWj3S099YozAsymCo/wrT5ohRUE=
+@@ -156,0 +218,2 @@ sigs.k8s.io/yaml v1.3.0/go.mod h1:GeOyir5tyXNByN85N/dRIT9es5UQNerPYEKK56eTBm8=
++sigs.k8s.io/yaml v1.6.0 h1:G8fkbMSAFqgEFgh4b1wmtzDnioxFCUgTZhlbj5P9QYs=
++sigs.k8s.io/yaml v1.6.0/go.mod h1:796bPqUfzR/0jLAl6XjHl3Ck7MiyVv8dbTdyT3/pMf4=
+diff --git a/internal/service/diagnostic/service.go b/internal/service/diagnostic/service.go
+index 30e5b80..32c0dc0 100644
+--- a/internal/service/diagnostic/service.go
++++ b/internal/service/diagnostic/service.go
+@@ -12 +11,0 @@ import (
+-	"github.com/Colvin-Y/kubernetes-ontology/internal/graph"
+@@ -15,0 +15,6 @@ import (
++type graphReader interface {
++	GetNode(model.CanonicalID) (model.Node, bool)
++	ListNodes() []model.Node
++	Neighbors(model.CanonicalID) []model.Edge
++}
++
+@@ -17 +22 @@ type Service struct {
+-	kernel *graph.Kernel
++	kernel graphReader
+@@ -26 +31 @@ const (
+-func NewService(kernel *graph.Kernel) *Service {
++func NewService(kernel graphReader) *Service {

@@ -1,0 +1,152 @@
+{
+  "entry": {
+    "kind": "Pod",
+    "canonicalId": "cluster-a/core/Pod/default/frontend-abc123/pod-uid/_",
+    "namespace": "default",
+    "name": "frontend-abc123"
+  },
+  "nodes": [
+    {
+      "canonicalId": "cluster-a/apps/Workload/default/Deployment:frontend/workload-uid/_",
+      "kind": "Workload",
+      "sourceKind": "Deployment",
+      "name": "frontend",
+      "namespace": "default",
+      "attributes": {
+        "rolloutStatus": "Progressing"
+      }
+    },
+    {
+      "canonicalId": "cluster-a/core/Pod/default/frontend-abc123/pod-uid/_",
+      "kind": "Pod",
+      "sourceKind": "Pod",
+      "name": "frontend-abc123",
+      "namespace": "default",
+      "attributes": {
+        "phase": "Pending",
+        "reason": "ImagePullBackOff"
+      }
+    },
+    {
+      "canonicalId": "cluster-a/core/Node/_/node-a/node-uid/_",
+      "kind": "Node",
+      "sourceKind": "Node",
+      "name": "node-a",
+      "attributes": {
+        "zone": "az1"
+      }
+    },
+    {
+      "canonicalId": "cluster-a/core/Service/default/frontend-svc/service-uid/_",
+      "kind": "Service",
+      "sourceKind": "Service",
+      "name": "frontend-svc",
+      "namespace": "default"
+    },
+    {
+      "canonicalId": "cluster-a/core/ConfigMap/default/frontend-config/configmap-uid/_",
+      "kind": "ConfigMap",
+      "sourceKind": "ConfigMap",
+      "name": "frontend-config",
+      "namespace": "default"
+    },
+    {
+      "canonicalId": "cluster-a/core/Image/_/registry.example.com_frontend:v2/_/_",
+      "kind": "Image",
+      "sourceKind": "Image",
+      "name": "registry.example.com/frontend:v2",
+      "attributes": {
+        "repo": "registry.example.com/frontend",
+        "tag": "v2",
+        "digest": "sha256:deadbeef"
+      }
+    },
+    {
+      "canonicalId": "cluster-a/core/Event/default/frontend-abc123.12345/event-uid/_",
+      "kind": "Event",
+      "sourceKind": "Event",
+      "name": "frontend-abc123.12345",
+      "namespace": "default",
+      "attributes": {
+        "reason": "Failed",
+        "message": "Failed to pull image"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "cluster-a/core/Pod/default/frontend-abc123/pod-uid/_",
+      "to": "cluster-a/apps/Workload/default/Deployment:frontend/workload-uid/_",
+      "kind": "managed_by",
+      "provenance": {
+        "sourceType": "inference_rule",
+        "state": "inferred",
+        "resolver": "owner-chain/v1"
+      }
+    },
+    {
+      "from": "cluster-a/apps/Workload/default/Deployment:frontend/workload-uid/_",
+      "to": "cluster-a/core/Pod/default/frontend-abc123/pod-uid/_",
+      "kind": "owns_pod",
+      "provenance": {
+        "sourceType": "inference_rule",
+        "state": "inferred",
+        "resolver": "owner-chain/v1"
+      }
+    },
+    {
+      "from": "cluster-a/core/Pod/default/frontend-abc123/pod-uid/_",
+      "to": "cluster-a/core/Node/_/node-a/node-uid/_",
+      "kind": "scheduled_on",
+      "provenance": {
+        "sourceType": "explicit_ref",
+        "state": "asserted",
+        "resolver": "pod-spec-node/v1"
+      }
+    },
+    {
+      "from": "cluster-a/core/Service/default/frontend-svc/service-uid/_",
+      "to": "cluster-a/core/Pod/default/frontend-abc123/pod-uid/_",
+      "kind": "selects_pod",
+      "provenance": {
+        "sourceType": "selector_match",
+        "state": "asserted",
+        "resolver": "service-selector/v1"
+      }
+    },
+    {
+      "from": "cluster-a/core/Pod/default/frontend-abc123/pod-uid/_",
+      "to": "cluster-a/core/ConfigMap/default/frontend-config/configmap-uid/_",
+      "kind": "uses_config_map",
+      "provenance": {
+        "sourceType": "explicit_ref",
+        "state": "asserted",
+        "resolver": "pod-config/v1"
+      }
+    },
+    {
+      "from": "cluster-a/core/Pod/default/frontend-abc123/pod-uid/_",
+      "to": "cluster-a/core/Image/_/registry.example.com_frontend:v2/_/_",
+      "kind": "uses_image",
+      "provenance": {
+        "sourceType": "explicit_ref",
+        "state": "asserted",
+        "resolver": "container-image/v1"
+      }
+    },
+    {
+      "from": "cluster-a/core/Event/default/frontend-abc123.12345/event-uid/_",
+      "to": "cluster-a/core/Pod/default/frontend-abc123/pod-uid/_",
+      "kind": "reported_by_event",
+      "provenance": {
+        "sourceType": "explicit_ref",
+        "state": "asserted",
+        "resolver": "event-involved-object/v1"
+      }
+    }
+  ],
+  "explanation": [
+    "pod image pull failure detected",
+    "workload ownership and service selection included"
+  ]
+}

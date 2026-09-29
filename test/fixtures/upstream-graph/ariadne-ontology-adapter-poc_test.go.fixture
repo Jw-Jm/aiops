@@ -1,0 +1,446 @@
+package diagnostic
+
+import (
+	"context"
+	"encoding/json"
+	"os"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/Colvin-Y/kubernetes-ontology/internal/api"
+	"github.com/Colvin-Y/kubernetes-ontology/internal/model"
+	"github.com/aalpar/ariadne"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+)
+
+// ariadneReader exposes the ontology diagnostic service over Ariadne's one
+// graph. It intentionally contains no node/edge/adjacency cache of its own.
+type ariadneReader struct{ graph *ariadne.Graph }
+
+func (r ariadneReader) GetNode(id model.CanonicalID) (model.Node, bool) {
+	ref, ok := refForID(id)
+	if !ok {
+		return model.Node{}, false
+	}
+	obj, ok := r.graph.Get(ref)
+	if !ok {
+		return model.Node{}, false
+	}
+	return nodeFor(ref, obj), true
+}
+
+func (r ariadneReader) ListNodes() []model.Node {
+	refs := r.graph.Nodes()
+	out := make([]model.Node, 0, len(refs))
+	for _, ref := range refs {
+		if obj, ok := r.graph.Get(ref); ok {
+			out = append(out, nodeFor(ref, obj))
+		}
+	}
+	return out
+}
+
+func (r ariadneReader) Neighbors(id model.CanonicalID) []model.Edge {
+	ref, ok := refForID(id)
+	if !ok {
+		return nil
+	}
+	upstream := r.graph.DependenciesOf(ref)
+	downstream := r.graph.DependentsOf(ref)
+	out := make([]model.Edge, 0, len(upstream)+len(downstream))
+	for _, edge := range append(upstream, downstream...) {
+		out = append(out, edgeFor(r.graph, edge))
+	}
+	return out
+}
+
+func TestAriadneBacksOntologyDiagnosticServiceWithoutSecondIndex(t *testing.T) {
+	graph := newNonVirtualGraph()
+	reader := ariadneReader{graph: graph}
+	service := NewService(reader)
+	podRef := ariadne.ObjectRef{Kind: "Pod", Namespace: "apps", Name: "web-0"}
+	podObj, ok := graph.Get(podRef)
+	if !ok {
+		t.Fatal("fixture Pod not found")
+	}
+	podID := idFor(podRef, podObj)
+	result, err := service.GetDiagnosticSubgraphContext(context.Background(), api.EntryRef{
+		Kind: api.NodeKindPod, CanonicalID: podID.String(), Namespace: "apps", Name: "web-0",
+	}, api.ExpansionPolicy{MaxDepth: 1, StorageMaxDepth: 4, MaxNodes: 32, MaxEdges: 64, IncludeStorage: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if output := os.Getenv("ONTOLOGY_ADAPTER_FIXTURE_OUT"); output != "" {
+		encoded, marshalErr := json.Marshal(result)
+		if marshalErr != nil {
+			t.Fatal(marshalErr)
+		}
+		var normalized any
+		if err := json.Unmarshal(encoded, &normalized); err != nil {
+			t.Fatal(err)
+		}
+		normalizeFixtureTimes(normalized)
+		encoded, marshalErr = json.Marshal(normalized)
+		if marshalErr != nil {
+			t.Fatal(marshalErr)
+		}
+		if writeErr := os.WriteFile(output, encoded, 0600); writeErr != nil {
+			t.Fatal(writeErr)
+		}
+	}
+	if !hasNodeKind(result.Nodes, api.NodeKindCSIDriver) || !hasNodeName(result.Nodes, "fast-csi") {
+		t.Fatalf("ontology diagnostic traversal did not preserve the PVC/CSI path: %#v", result.Nodes)
+	}
+	if !hasEdgeKind(result.Edges, api.EdgeKindMountsPVC) || !hasEdgeKind(result.Edges, api.EdgeKindBoundToPV) || !hasEdgeKind(result.Edges, api.EdgeKindUsesStorageClass) || !hasEdgeKind(result.Edges, api.EdgeKindProvisionedByCSIDriver) {
+		t.Fatalf("ontology diagnostic output lost storage semantics: %#v", result.Edges)
+	}
+	if !hasEdgeKind(result.Edges, api.EdgeKindManagedBy) || !hasEdgeKind(result.Edges, api.EdgeKindSelectsPod) || !hasEdgeKind(result.Edges, api.EdgeKindScheduledOn) {
+		t.Fatalf("ontology diagnostic output lost ownerReference, selector or node-binding semantics: %#v", result.Edges)
+	}
+
+	bounded, err := service.GetDiagnosticSubgraphContext(context.Background(), api.EntryRef{Kind: api.NodeKindPod, CanonicalID: podID.String()}, api.ExpansionPolicy{
+		MaxDepth: 1, StorageMaxDepth: 1, MaxNodes: 32, MaxEdges: 64, IncludeStorage: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hasNodeKind(bounded.Nodes, api.NodeKindCSIDriver) {
+		t.Fatalf("one-hop storage query exceeded its configured depth: %#v", bounded.Nodes)
+	}
+	if result.Budgets.MaxNodes != 32 || result.Budgets.MaxEdges != 64 || len(result.Nodes) > 32 || len(result.Edges) > 64 {
+		t.Fatalf("diagnostic budget not preserved: %+v nodes=%d edges=%d", result.Budgets, len(result.Nodes), len(result.Edges))
+	}
+	degraded, err := service.GetDiagnosticSubgraphContext(context.Background(), api.EntryRef{
+		Kind: api.NodeKindPod, CanonicalID: podID.String(), Namespace: "apps", Name: "web-0",
+	}, api.ExpansionPolicy{MaxDepth: 4, StorageMaxDepth: 4, MaxNodes: 2, MaxEdges: 2, IncludeStorage: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !degraded.Partial || len(degraded.Nodes) > 2 || !strings.Contains(strings.Join(degraded.Budgets.TruncationReasons, ","), "maxNodes") {
+		t.Fatalf("ontology adapter failed to return a bounded partial result: %+v", degraded)
+	}
+
+	// Ariadne update removes stale references and selector matches before
+	// resolving the revised object; removal clears all remaining relationships.
+	updatedPod := podObj.DeepCopy()
+	if err := unstructured.SetNestedStringMap(updatedPod.Object, map[string]string{"app": "changed"}, "metadata", "labels"); err != nil {
+		t.Fatal(err)
+	}
+	if err := unstructured.SetNestedSlice(updatedPod.Object, []any{map[string]any{"name": "data", "persistentVolumeClaim": map[string]any{"claimName": "missing-data"}}}, "spec", "volumes"); err != nil {
+		t.Fatal(err)
+	}
+	graph.Add(*updatedPod)
+	if hasAriadneEdge(graph.DependenciesOf(ariadne.ObjectRef{Kind: "Pod", Namespace: "apps", Name: "web-0"}), "PersistentVolumeClaim", "web-data", "ref") {
+		t.Fatal("Pod update retained its stale PVC edge")
+	}
+	if hasAriadneEdge(graph.DependentsOf(ariadne.ObjectRef{Kind: "Pod", Namespace: "apps", Name: "web-0"}), "Service", "web", "label_selector") {
+		t.Fatal("Pod update retained its stale Service selector edge")
+	}
+
+	// Expiring a DeepFlow observation uses Ariadne.Remove; there is no parallel
+	// graph index or persistent dynamic-edge store.
+	flow := ariadne.ObjectRef{Group: "deepflow.example", Kind: "FlowEndpoint", Namespace: "apps", Name: "web-flow"}
+	if len(graph.DependenciesOf(flow)) != 1 {
+		t.Fatal("fixture did not resolve the temporary DeepFlow edge")
+	}
+	expireObservedOverlays(graph, time.Date(2026, 9, 29, 10, 0, 0, 0, time.UTC))
+	if graph.Has(flow) || len(graph.DependenciesOf(flow)) != 0 {
+		t.Fatal("expired DeepFlow edge remains queryable")
+	}
+	if len(graph.DependenciesOf(ariadne.ObjectRef{Group: "example.hardware", Kind: "HardwareNode", Namespace: "apps", Name: "rack-1"})) != 1 {
+		t.Fatal("hardware fact edge was removed with the expiring flow overlay")
+	}
+
+	// Same cluster identifiers in separate tenant instances stay independent.
+	otherTenant := newNonVirtualGraph()
+	otherPod := ariadne.ObjectRef{Kind: "Pod", Namespace: "apps", Name: "web-0"}
+	graph.Remove(otherPod)
+	if _, ok := (ariadneReader{graph: graph}).GetNode(podID); ok {
+		t.Fatal("removed object remains in the first tenant graph")
+	}
+	if _, ok := (ariadneReader{graph: otherTenant}).GetNode(podID); !ok {
+		t.Fatal("mutation leaked to another tenant graph")
+	}
+
+	// Rebuild is replacement by a fresh Ariadne graph, since Load is additive.
+	replacement := newNonVirtualGraphWithoutPod()
+	if _, ok := (ariadneReader{graph: replacement}).GetNode(podID); ok {
+		t.Fatal("fresh snapshot retained a deleted Pod")
+	}
+}
+
+func normalizeFixtureTimes(value any) {
+	const fixed = "2026-09-29T00:00:00Z"
+	switch item := value.(type) {
+	case map[string]any:
+		for key, child := range item {
+			switch key {
+			case "collectedAt", "lastSeenAt", "firstObservedAt", "lastObservedAt":
+				if _, ok := child.(string); ok {
+					item[key] = fixed
+					continue
+				}
+			}
+			normalizeFixtureTimes(child)
+		}
+	case []any:
+		for _, child := range item {
+			normalizeFixtureTimes(child)
+		}
+	}
+}
+
+func newNonVirtualGraph() *ariadne.Graph {
+	g := ariadne.New(ariadne.WithResolver(ariadne.NewStructuralResolver()), ariadne.WithResolver(ariadne.NewRuleResolver("nonvirtual-poc/v1",
+		ariadne.LabelSelectorRule{FromKind: "Service", ToKind: "Pod", SelectorFieldPath: "spec.selector"},
+		ariadne.RefRule{FromGroup: "example.hardware", FromKind: "HardwareNode", ToKind: "Node", FieldPath: "spec.nodeName", ClusterScoped: true},
+		ariadne.RefRule{FromGroup: "deepflow.example", FromKind: "FlowEndpoint", ToKind: "Pod", FieldPath: "spec.podName"},
+	)))
+	g.Load(nonVirtualObjects(true))
+	return g
+}
+
+func newNonVirtualGraphWithoutPod() *ariadne.Graph {
+	g := ariadne.New(ariadne.WithResolver(ariadne.NewStructuralResolver()))
+	g.Load(nonVirtualObjects(false))
+	return g
+}
+
+func nonVirtualObjects(includePod bool) []unstructured.Unstructured {
+	objects := []unstructured.Unstructured{
+		object("apps/v1", "Deployment", "apps", "web", "web-deploy", nil, nil, nil),
+		object("apps/v1", "ReplicaSet", "apps", "web-rs", "web-rs", nil, nil, []map[string]string{{"apiVersion": "apps/v1", "kind": "Deployment", "name": "web", "uid": "web-deploy"}}),
+		object("v1", "PersistentVolumeClaim", "apps", "web-data", "pvc-1", map[string]any{"storageClassName": "fast", "volumeName": "pv-web-data"}, nil, nil),
+		object("v1", "PersistentVolume", "", "pv-web-data", "pv-1", map[string]any{"storageClassName": "fast", "csi": map[string]any{"driver": "fast-csi"}}, nil, nil),
+		object("storage.k8s.io/v1", "StorageClass", "", "fast", "sc-1", nil, nil, nil),
+		object("storage.k8s.io/v1", "CSIDriver", "", "fast-csi", "csi-1", nil, nil, nil),
+		object("v1", "Service", "apps", "web", "svc-1", map[string]any{"selector": map[string]any{"app": "web"}}, nil, nil),
+		object("v1", "Node", "", "node-a", "node-1", nil, nil, nil),
+		object("example.hardware/v1", "HardwareNode", "apps", "rack-1", "hw-1", map[string]any{"nodeName": "node-a"}, nil, nil),
+		object("deepflow.example/v1", "FlowEndpoint", "apps", "web-flow", "flow-1", map[string]any{"podName": "web-0", "expiresAt": "2026-09-29T09:59:00Z"}, nil, nil),
+	}
+	if includePod {
+		objects = append(objects, object("v1", "Pod", "apps", "web-0", "pod-1", map[string]any{
+			"nodeName": "node-a", "volumes": []any{map[string]any{"name": "data", "persistentVolumeClaim": map[string]any{"claimName": "web-data"}}},
+		}, map[string]string{"app": "web"}, []map[string]string{{"apiVersion": "apps/v1", "kind": "ReplicaSet", "name": "web-rs", "uid": "web-rs"}}))
+	}
+	return objects
+}
+
+func object(apiVersion, kind, namespace, name, uid string, spec map[string]any, labels map[string]string, owners []map[string]string) unstructured.Unstructured {
+	metadata := map[string]any{"name": name, "uid": uid}
+	if namespace != "" {
+		metadata["namespace"] = namespace
+	}
+	if labels != nil {
+		labelMap := map[string]any{}
+		for k, v := range labels {
+			labelMap[k] = v
+		}
+		metadata["labels"] = labelMap
+	}
+	if owners != nil {
+		refs := make([]any, 0, len(owners))
+		for _, owner := range owners {
+			ref := map[string]any{}
+			for k, v := range owner {
+				ref[k] = v
+			}
+			refs = append(refs, ref)
+		}
+		metadata["ownerReferences"] = refs
+	}
+	obj := map[string]any{"apiVersion": apiVersion, "kind": kind, "metadata": metadata}
+	if spec != nil {
+		obj["spec"] = spec
+	}
+	return unstructured.Unstructured{Object: obj}
+}
+
+func idFor(ref ariadne.ObjectRef, obj *unstructured.Unstructured) model.CanonicalID {
+	group := ref.Group
+	if group == "" {
+		group = "core"
+	}
+	return model.NewCanonicalID(model.ResourceRef{Cluster: "cluster-a", Group: group, Kind: ref.Kind, Namespace: ref.Namespace, Name: ref.Name, UID: string(obj.GetUID())})
+}
+
+func refForID(id model.CanonicalID) (ariadne.ObjectRef, bool) {
+	parts := strings.Split(id.String(), "/")
+	if len(parts) != 7 {
+		return ariadne.ObjectRef{}, false
+	}
+	group := parts[1]
+	if group == "core" || group == "_" {
+		group = ""
+	}
+	for i := range parts {
+		if parts[i] == "_" {
+			parts[i] = ""
+		}
+	}
+	return ariadne.ObjectRef{Group: group, Kind: parts[2], Namespace: parts[3], Name: parts[4]}, true
+}
+
+func nodeFor(ref ariadne.ObjectRef, obj *unstructured.Unstructured) model.Node {
+	group := ref.Group
+	if group == "" {
+		group = "core"
+	}
+	kind := model.NodeKind(ref.Kind)
+	switch ref.Kind {
+	case "PersistentVolumeClaim":
+		kind = model.NodeKindPVC
+	case "PersistentVolume":
+		kind = model.NodeKindPV
+	case "Deployment", "ReplicaSet":
+		kind = model.NodeKindWorkload
+	}
+	attrs := map[string]any{}
+	if value, found, _ := unstructured.NestedString(obj.Object, "spec", "nodeName"); found {
+		attrs["nodeName"] = value
+	}
+	if value, found, _ := unstructured.NestedString(obj.Object, "spec", "podName"); found {
+		attrs["podName"] = value
+	}
+	return model.Node{ID: idFor(ref, obj), Kind: kind, SourceKind: ref.Kind, Name: ref.Name, Namespace: ref.Namespace, Attributes: attrs}
+}
+
+func edgeFor(g *ariadne.Graph, edge ariadne.Edge) model.Edge {
+	kind := model.EdgeKindRelatedTo
+	source := model.EdgeSourceTypeExplicitRef
+	state := model.EdgeStateAsserted
+	fromObj, _ := g.Get(edge.From)
+	toObj, _ := g.Get(edge.To)
+	field := edge.Field
+	if edge.Type == ariadne.EdgeLabelSelector {
+		kind = model.EdgeKindSelectsPod
+		source = model.EdgeSourceTypeSelectorMatch
+		state = model.EdgeStateInferred
+	} else if edge.Resolver == "structural" && isOwnerReference(fromObj, toObj) {
+		kind = model.EdgeKindManagedBy
+		source = model.EdgeSourceTypeOwnerReference
+		state = model.EdgeStateInferred
+	} else {
+		if edge.Resolver == "structural" {
+			field = structuralField(edge.From.Kind, edge.To.Kind)
+		}
+		switch {
+		case strings.Contains(field, "persistentVolumeClaim.claimName"):
+			kind = model.EdgeKindMountsPVC
+		case strings.Contains(field, "volumeName"):
+			kind = model.EdgeKindBoundToPV
+		case strings.Contains(field, "storageClassName"):
+			kind = model.EdgeKindUsesStorageClass
+		case strings.Contains(field, "csi.driver"):
+			kind = model.EdgeKindProvisionedByCSIDriver
+		case strings.Contains(field, "nodeName"):
+			if edge.From.Kind == "Pod" {
+				kind = model.EdgeKindScheduledOn
+			} else {
+				kind = model.EdgeKindRelatedTo
+			}
+			source = model.EdgeSourceTypeObserved
+			state = model.EdgeStateObserved
+		case strings.Contains(field, "podName"):
+			kind = model.EdgeKindRelatedTo
+			source = model.EdgeSourceTypeObserved
+			state = model.EdgeStateObserved
+		}
+	}
+	return model.Edge{From: idFor(edge.From, fromObj), To: idFor(edge.To, toObj), Kind: kind, Provenance: model.EdgeProvenance{SourceType: source, State: state, Resolver: edge.Resolver}}
+}
+
+func isOwnerReference(from, to *unstructured.Unstructured) bool {
+	refs, found, _ := unstructured.NestedSlice(from.Object, "metadata", "ownerReferences")
+	if !found {
+		return false
+	}
+	for _, item := range refs {
+		owner, ok := item.(map[string]any)
+		if !ok {
+			continue
+		}
+		if owner["name"] == to.GetName() && owner["kind"] == to.GetKind() && (owner["uid"] == nil || owner["uid"] == string(to.GetUID())) {
+			return true
+		}
+	}
+	return false
+}
+
+func structuralField(fromKind, toKind string) string {
+	switch {
+	case fromKind == "Pod" && toKind == "PersistentVolumeClaim":
+		return "spec.volumes[*].persistentVolumeClaim.claimName"
+	case fromKind == "Pod" && toKind == "Node":
+		return "spec.nodeName"
+	case fromKind == "PersistentVolumeClaim" && toKind == "PersistentVolume":
+		return "spec.volumeName"
+	case fromKind == "PersistentVolumeClaim" && toKind == "StorageClass":
+		return "spec.storageClassName"
+	case fromKind == "PersistentVolume" && toKind == "StorageClass":
+		return "spec.storageClassName"
+	case fromKind == "PersistentVolume" && toKind == "CSIDriver":
+		return "spec.csi.driver"
+	default:
+		return ""
+	}
+}
+
+func expireObservedOverlays(g *ariadne.Graph, now time.Time) {
+	for _, ref := range g.Nodes() {
+		if ref.Group != "deepflow.example" || ref.Kind != "FlowEndpoint" {
+			continue
+		}
+		obj, ok := g.Get(ref)
+		if !ok {
+			continue
+		}
+		value, found, _ := unstructured.NestedString(obj.Object, "spec", "expiresAt")
+		if !found {
+			continue
+		}
+		expires, err := time.Parse(time.RFC3339, value)
+		if err == nil && !now.Before(expires) {
+			g.Remove(ref)
+		}
+	}
+}
+
+func hasNodeKind(nodes []api.DiagnosticNode, kind api.NodeKind) bool {
+	for _, node := range nodes {
+		if node.Kind == kind {
+			return true
+		}
+	}
+	return false
+}
+func hasNodeName(nodes []api.DiagnosticNode, name string) bool {
+	for _, node := range nodes {
+		if node.Name == name {
+			return true
+		}
+	}
+	return false
+}
+func hasEdgeKind(edges []api.DiagnosticEdge, kind api.EdgeKind) bool {
+	for _, edge := range edges {
+		if edge.Kind == kind {
+			return true
+		}
+	}
+	return false
+}
+
+func hasAriadneEdge(edges []ariadne.Edge, kind, name, edgeType string) bool {
+	for _, edge := range edges {
+		if edge.Type.String() != edgeType {
+			continue
+		}
+		if (edge.From.Kind == kind && edge.From.Name == name) || (edge.To.Kind == kind && edge.To.Name == name) {
+			return true
+		}
+	}
+	return false
+}

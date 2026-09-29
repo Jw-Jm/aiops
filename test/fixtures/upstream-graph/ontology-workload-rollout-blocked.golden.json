@@ -1,0 +1,105 @@
+{
+  "entry": {
+    "kind": "Workload",
+    "canonicalId": "cluster-a/apps/Workload/payments/StatefulSet:ledger/workload-uid/_",
+    "namespace": "payments",
+    "name": "ledger"
+  },
+  "nodes": [
+    {
+      "canonicalId": "cluster-a/apps/Workload/payments/StatefulSet:ledger/workload-uid/_",
+      "kind": "Workload",
+      "sourceKind": "StatefulSet",
+      "name": "ledger",
+      "namespace": "payments",
+      "attributes": {
+        "rolloutStatus": "Blocked",
+        "reason": "FailedCreate"
+      }
+    },
+    {
+      "canonicalId": "cluster-a/core/Pod/payments/ledger-0/pod-uid/_",
+      "kind": "Pod",
+      "sourceKind": "Pod",
+      "name": "ledger-0",
+      "namespace": "payments",
+      "attributes": {
+        "phase": "Pending",
+        "reason": "Unschedulable"
+      }
+    },
+    {
+      "canonicalId": "cluster-a/core/PVC/payments/data-ledger-0/pvc-uid/_",
+      "kind": "PVC",
+      "sourceKind": "PersistentVolumeClaim",
+      "name": "data-ledger-0",
+      "namespace": "payments",
+      "attributes": {
+        "status": "Pending"
+      }
+    },
+    {
+      "canonicalId": "cluster-a/core/Event/payments/ledger.67890/event-uid/_",
+      "kind": "Event",
+      "sourceKind": "Event",
+      "name": "ledger.67890",
+      "namespace": "payments",
+      "attributes": {
+        "reason": "FailedCreate",
+        "message": "admission webhook denied the request"
+      }
+    },
+    {
+      "canonicalId": "cluster-a/core/WebhookConfig/_/mutating-payments/webhook-uid/_",
+      "kind": "WebhookConfig",
+      "sourceKind": "MutatingWebhookConfiguration",
+      "name": "mutating-payments"
+    }
+  ],
+  "edges": [
+    {
+      "from": "cluster-a/apps/Workload/payments/StatefulSet:ledger/workload-uid/_",
+      "to": "cluster-a/core/Pod/payments/ledger-0/pod-uid/_",
+      "kind": "owns_pod",
+      "provenance": {
+        "sourceType": "inference_rule",
+        "state": "inferred",
+        "resolver": "owner-chain/v1"
+      }
+    },
+    {
+      "from": "cluster-a/core/Pod/payments/ledger-0/pod-uid/_",
+      "to": "cluster-a/core/PVC/payments/data-ledger-0/pvc-uid/_",
+      "kind": "mounts_pvc",
+      "provenance": {
+        "sourceType": "explicit_ref",
+        "state": "asserted",
+        "resolver": "pod-volumes/v1"
+      }
+    },
+    {
+      "from": "cluster-a/core/Event/payments/ledger.67890/event-uid/_",
+      "to": "cluster-a/apps/Workload/payments/StatefulSet:ledger/workload-uid/_",
+      "kind": "reported_by_event",
+      "provenance": {
+        "sourceType": "explicit_ref",
+        "state": "asserted",
+        "resolver": "event-involved-object/v1"
+      }
+    },
+    {
+      "from": "cluster-a/apps/Workload/payments/StatefulSet:ledger/workload-uid/_",
+      "to": "cluster-a/core/WebhookConfig/_/mutating-payments/webhook-uid/_",
+      "kind": "affected_by_webhook",
+      "provenance": {
+        "sourceType": "observed",
+        "state": "observed",
+        "resolver": "webhook-evidence/v1"
+      }
+    }
+  ],
+  "explanation": [
+    "workload rollout blocked by admission and storage-related evidence",
+    "helm-style upgrade failure should be diagnosable through workload and event state"
+  ]
+}
