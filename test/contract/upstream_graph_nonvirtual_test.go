@@ -55,28 +55,28 @@ func TestAriadneNonVirtualGolden20K(t *testing.T) {
 	}
 
 	pod := ariadne.ObjectRef{Kind: "Pod", Namespace: "apps", Name: "web-0"}
-	if !hasAriadneEdge(graph.DependenciesOf(pod), "PersistentVolumeClaim", "web-data", "ref") || !hasAriadneEdge(graph.DependenciesOf(pod), "Node", "node-a", "ref") {
+	if !hasNonVirtualAriadneEdge(graph.DependenciesOf(pod), "PersistentVolumeClaim", "web-data", "ref") || !hasNonVirtualAriadneEdge(graph.DependenciesOf(pod), "Node", "node-a", "ref") {
 		t.Fatalf("Pod resource references missing: %#v", graph.DependenciesOf(pod))
 	}
 	if !hasAriadneSource(graph.DependentsOf(pod), "Service", "web", "label_selector") || !hasAriadneSource(graph.DependentsOf(pod), "FlowEndpoint", "web-flow", "ref") {
 		t.Fatalf("selector or temporary external edge missing: %#v", graph.DependentsOf(pod))
 	}
 	pvc := ariadne.ObjectRef{Kind: "PersistentVolumeClaim", Namespace: "apps", Name: "web-data"}
-	if !hasAriadneEdge(graph.DependenciesOf(pvc), "PersistentVolume", "pv-web-data", "ref") || !hasAriadneEdge(graph.DependenciesOf(pvc), "StorageClass", "fast", "ref") {
+	if !hasNonVirtualAriadneEdge(graph.DependenciesOf(pvc), "PersistentVolume", "pv-web-data", "ref") || !hasNonVirtualAriadneEdge(graph.DependenciesOf(pvc), "StorageClass", "fast", "ref") {
 		t.Fatalf("PVC storage references missing: %#v", graph.DependenciesOf(pvc))
 	}
 	pv := ariadne.ObjectRef{Kind: "PersistentVolume", Name: "pv-web-data"}
-	if !hasAriadneEdge(graph.DependenciesOf(pv), "CSIDriver", "fast-csi", "ref") {
+	if !hasNonVirtualAriadneEdge(graph.DependenciesOf(pv), "CSIDriver", "fast-csi", "ref") {
 		t.Fatal("PV to CSI driver reference missing")
 	}
 	hardware := ariadne.ObjectRef{Group: "example.hardware", Kind: "HardwareNode", Namespace: "apps", Name: "rack-1"}
-	if !hasAriadneEdge(graph.DependenciesOf(hardware), "Node", "node-a", "ref") {
+	if !hasNonVirtualAriadneEdge(graph.DependenciesOf(hardware), "Node", "node-a", "ref") {
 		t.Fatal("external hardware edge missing")
 	}
 
 	updated := graphObject(t, "v1", "Pod", "apps", "web-0", "pod-1", map[string]any{"volumes": []any{map[string]any{"name": "data", "persistentVolumeClaim": map[string]any{"claimName": "missing-data"}}}}, map[string]string{"app": "changed"}, nil)
 	graph.Add(updated)
-	if hasAriadneEdge(graph.DependenciesOf(pod), "PersistentVolumeClaim", "web-data", "ref") || hasAriadneSource(graph.DependentsOf(pod), "Service", "web", "label_selector") {
+	if hasNonVirtualAriadneEdge(graph.DependenciesOf(pod), "PersistentVolumeClaim", "web-data", "ref") || hasAriadneSource(graph.DependentsOf(pod), "Service", "web", "label_selector") {
 		t.Fatal("updated Pod retained a stale reference or selector edge")
 	}
 	graph.Remove(pod)
@@ -142,6 +142,15 @@ func graphObject(t *testing.T, apiVersion, kind, namespace, name, uid string, sp
 func hasAriadneSource(edges []ariadne.Edge, kind, name, edgeType string) bool {
 	for _, edge := range edges {
 		if edge.Type.String() == edgeType && edge.From.Kind == kind && edge.From.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+func hasNonVirtualAriadneEdge(edges []ariadne.Edge, kind, name, edgeType string) bool {
+	for _, edge := range edges {
+		if edge.To.Kind == kind && edge.To.Name == name && edge.Type.String() == edgeType {
 			return true
 		}
 	}
