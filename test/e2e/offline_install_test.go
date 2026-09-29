@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -46,6 +47,7 @@ func TestCoreOfflineInstallation(t *testing.T) {
 	if !p.Installable || p.Selected != "core" {
 		t.Fatal("core Profile is not installable; candidate admission must be completed first")
 	}
+	t.Logf("resolved core profile accepted: id=%s architecture=%s server=%s cluster_uid=%s", p.ProfileID, p.Architecture, p.Kubernetes.ServerVersion, p.Kubernetes.ClusterUID)
 	run := func(program string, args ...string) []byte {
 		t.Helper()
 		command := exec.CommandContext(t.Context(), program, args...)
@@ -94,11 +96,13 @@ func TestCoreOfflineInstallation(t *testing.T) {
 	if len(imagePlan) == 0 {
 		t.Fatal("signed Bundle contains no OCI images")
 	}
+	t.Logf("signed Bundle verified: id=%s architecture=%s payload_digest=%s files=%d max_bytes=%d", manifest.BundleID, manifest.Architecture, manifest.Payload.Digest, len(manifest.Payload.Files), manifest.Payload.MaxBytes)
 	if p.Components["openbao"].Mode == "external" {
 		// A stale resolved Profile must not permit mutation while the reused
 		// trust service is sealed or its independent CA no longer verifies it.
 		verifyOpenBaoReadiness(t, p, bundleDir)
 	}
+	absentImages := make([]string, 0, len(imagePlan))
 	for _, image := range imagePlan {
 		// Also inspect the manifest digest, so removing or changing a repository
 		// alias cannot disguise an image that remains registered in the store.
@@ -111,7 +115,10 @@ func TestCoreOfflineInstallation(t *testing.T) {
 				t.Fatalf("cannot establish absence of Bundle image %s: %v: %s", image.Name, err, output)
 			}
 		}
+		absentImages = append(absentImages, image.Name+"="+image.Reference)
 	}
+	sort.Strings(absentImages)
+	t.Logf("empty-cache precondition passed for %d selected images: %s", len(absentImages), strings.Join(absentImages, ", "))
 	releases := coreReleases(p)
 	acceptanceComplete := false
 	defer func() {
@@ -120,10 +127,12 @@ func TestCoreOfflineInstallation(t *testing.T) {
 		}
 	}()
 	run("go", "run", "./cmd/opsctl", "bundle", "import", "--profile", profileFile, "--bundle", bundleDir, "--key", key)
+	t.Logf("signed Bundle imported offline through %s", p.Runtime.ImageImporter)
 	protectedBefore := snapshotProtectedResources(t, run)
 	run("go", "run", "./cmd/opsctl", "install", "--profile", "core", "--resolved", profileFile, "--bundle", bundleDir, "--key", key, "--offline")
 	verifyProcessAvailability(t, p.Kubernetes.Context, run)
 	verifyCoreCapabilities(t, p, bundleDir, run)
+	t.Log("initial offline core install and health/capability checks passed")
 	// The new dependency PVCs must also survive cleanup and reinstall with the
 	// same identity, alongside the pre-existing external trust/data resources.
 	protectedWithDependencies := snapshotProtectedResources(t, run)
@@ -134,13 +143,16 @@ func TestCoreOfflineInstallation(t *testing.T) {
 			t.Fatalf("clean test-owned release %s: %v", release, err)
 		}
 	}
+	t.Logf("release-scoped cleanup passed for %s", strings.Join(releases, ","))
 	verifyProtectedResources(t, protectedBefore, snapshotProtectedResources(t, run))
 	run("go", "run", "./cmd/opsctl", "install", "--profile", "core", "--resolved", profileFile, "--bundle", bundleDir, "--key", key, "--offline")
 	verifyProcessAvailability(t, p.Kubernetes.Context, run)
 	verifyCoreCapabilities(t, p, bundleDir, run)
+	t.Log("clean reinstall and post-reinstall health/capability checks passed")
 	runCoreNetworkProbe(t, p, imagePlan, run, root)
 	verifyProtectedResources(t, protectedBefore, snapshotProtectedResources(t, run))
 	acceptanceComplete = true
+	t.Log("Task 2.7 live offline installation acceptance passed")
 }
 
 func runCoreNetworkProbe(t *testing.T, p profile.ResolvedProfile, images []bundle.ImageArtifact, run func(string, ...string) []byte, root string) {
@@ -214,6 +226,7 @@ func runCoreNetworkProbe(t *testing.T, p profile.ResolvedProfile, images []bundl
 	if !strings.HasSuffix(strings.TrimSpace(string(output)), "INTERNAL_SERVICE_REACHABLE_PUBLIC_EGRESS_DENIED") {
 		t.Fatalf("in-cluster egress probe did not prove both controls: %s", output)
 	}
+	t.Log("in-cluster egress probe passed: internal DNS reachable; public IPv4/IPv6 TCP destinations denied")
 }
 
 func removeBundleImages(t *testing.T, images []bundle.ImageArtifact) {
@@ -304,6 +317,16 @@ func verifyProtectedResources(t *testing.T, before, after map[string]string) {
 			t.Fatalf("protected resource %s changed identity or disappeared: before=%s after=%s", resource, uid, after[resource])
 		}
 	}
+	keys := make([]string, 0, len(before))
+	for resource := range before {
+		keys = append(keys, resource)
+	}
+	sort.Strings(keys)
+	identities := make([]string, 0, len(keys))
+	for _, resource := range keys {
+		identities = append(identities, resource+"="+before[resource])
+	}
+	t.Logf("protected resource identities unchanged: %s", strings.Join(identities, ", "))
 }
 
 func verifyProcessAvailability(t *testing.T, contextName string, run func(string, ...string) []byte) {
