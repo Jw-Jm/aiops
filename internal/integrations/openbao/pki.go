@@ -315,11 +315,13 @@ func readProjectedServiceAccountToken(path string) (string, error) {
 	if strings.TrimSpace(path) == "" {
 		return "", errors.New("projected ServiceAccount token path is required")
 	}
-	info, err := os.Lstat(path)
+	// Kubernetes AtomicWriter exposes projected tokens through read-only symlinks.
+	// Inspect the target and compare the opened inode to detect rotation races.
+	info, err := os.Stat(path)
 	if err != nil {
 		return "", errors.New("PROJECTED_SERVICE_ACCOUNT_TOKEN_UNAVAILABLE")
 	}
-	if !info.Mode().IsRegular() || info.Mode()&os.ModeSymlink != 0 || info.Size() <= 0 || info.Size() > 1<<20 || info.Mode().Perm()&0o022 != 0 {
+	if !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > 1<<20 || info.Mode().Perm()&0o022 != 0 {
 		return "", errors.New("PROJECTED_SERVICE_ACCOUNT_TOKEN_INVALID")
 	}
 	file, err := os.Open(path)
