@@ -176,6 +176,63 @@ func (e InvestigationEventEventType) Valid() bool {
 	}
 }
 
+// Defines values for SourceRegistrationRequestSourceType.
+const (
+	Deepflow        SourceRegistrationRequestSourceType = "deepflow"
+	Ipmi            SourceRegistrationRequestSourceType = "ipmi"
+	Kubernetes      SourceRegistrationRequestSourceType = "kubernetes"
+	Model           SourceRegistrationRequestSourceType = "model"
+	ObjectStorage   SourceRegistrationRequestSourceType = "object_storage"
+	Redfish         SourceRegistrationRequestSourceType = "redfish"
+	Smart           SourceRegistrationRequestSourceType = "smart"
+	Victorialogs    SourceRegistrationRequestSourceType = "victorialogs"
+	Victoriametrics SourceRegistrationRequestSourceType = "victoriametrics"
+)
+
+// Valid indicates whether the value is a known member of the SourceRegistrationRequestSourceType enum.
+func (e SourceRegistrationRequestSourceType) Valid() bool {
+	switch e {
+	case Deepflow:
+		return true
+	case Ipmi:
+		return true
+	case Kubernetes:
+		return true
+	case Model:
+		return true
+	case ObjectStorage:
+		return true
+	case Redfish:
+		return true
+	case Smart:
+		return true
+	case Victorialogs:
+		return true
+	case Victoriametrics:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SourceRegistrationUpdateRequestStatus.
+const (
+	Active   SourceRegistrationUpdateRequestStatus = "active"
+	Disabled SourceRegistrationUpdateRequestStatus = "disabled"
+)
+
+// Valid indicates whether the value is a known member of the SourceRegistrationUpdateRequestStatus enum.
+func (e SourceRegistrationUpdateRequestStatus) Valid() bool {
+	switch e {
+	case Active:
+		return true
+	case Disabled:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GetResourcesParamsOrder.
 const (
 	Asc  GetResourcesParamsOrder = "asc"
@@ -217,6 +274,12 @@ func (e GetResourceNeighborsParamsDirection) Valid() bool {
 
 // CanonicalID RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
 type CanonicalID = string
+
+// ClusterRegistrationRequest defines model for ClusterRegistrationRequest.
+type ClusterRegistrationRequest struct {
+	ClusterUid  string `json:"clusterUid"`
+	DisplayName string `json:"displayName"`
+}
 
 // CommandExecutionEvent defines model for CommandExecutionEvent.
 type CommandExecutionEvent struct {
@@ -334,6 +397,40 @@ type PageEnvelope_Meta struct {
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
 
+// SourceCredentialRotationRequest defines model for SourceCredentialRotationRequest.
+type SourceCredentialRotationRequest struct {
+	AuthRef          string `json:"authRef"`
+	ExpectedRevision int64  `json:"expectedRevision"`
+}
+
+// SourceRegistrationRequest defines model for SourceRegistrationRequest.
+type SourceRegistrationRequest struct {
+	AuthRef     string                              `json:"authRef"`
+	ClusterId   *Identifier                         `json:"clusterId,omitempty"`
+	InstanceKey string                              `json:"instanceKey"`
+	SourceType  SourceRegistrationRequestSourceType `json:"sourceType"`
+}
+
+// SourceRegistrationRequestSourceType defines model for SourceRegistrationRequest.SourceType.
+type SourceRegistrationRequestSourceType string
+
+// SourceRegistrationUpdateRequest defines model for SourceRegistrationUpdateRequest.
+type SourceRegistrationUpdateRequest struct {
+	ClusterId        *Identifier                            `json:"clusterId,omitempty"`
+	ExpectedRevision int64                                  `json:"expectedRevision"`
+	Status           *SourceRegistrationUpdateRequestStatus `json:"status,omitempty"`
+	union            json.RawMessage
+}
+
+// SourceRegistrationUpdateRequestStatus defines model for SourceRegistrationUpdateRequest.Status.
+type SourceRegistrationUpdateRequestStatus string
+
+// SourceRegistrationUpdateRequest0 defines model for SourceRegistrationUpdateRequest.0.
+type SourceRegistrationUpdateRequest0 = interface{}
+
+// SourceRegistrationUpdateRequest1 defines model for SourceRegistrationUpdateRequest.1.
+type SourceRegistrationUpdateRequest1 = interface{}
+
 // SuccessEnvelope defines model for SuccessEnvelope.
 type SuccessEnvelope struct {
 	Data      interface{}             `json:"data"`
@@ -440,6 +537,18 @@ type GetSourceRegistrationsParams struct {
 
 // CreateSourceRegistrationParams defines parameters for CreateSourceRegistration.
 type CreateSourceRegistrationParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// UpdateSourceRegistrationParams defines parameters for UpdateSourceRegistration.
+type UpdateSourceRegistrationParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// RotateSourceCredentialParams defines parameters for RotateSourceCredential.
+type RotateSourceCredentialParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
@@ -672,7 +781,7 @@ type AcceptActionPlanJSONRequestBody = JSONRequest
 type DismissActionPlanJSONRequestBody = JSONRequest
 
 // CreateClusterJSONRequestBody defines body for CreateCluster for application/json ContentType.
-type CreateClusterJSONRequestBody = JSONRequest
+type CreateClusterJSONRequestBody = ClusterRegistrationRequest
 
 // CreateExecutionProfileJSONRequestBody defines body for CreateExecutionProfile for application/json ContentType.
 type CreateExecutionProfileJSONRequestBody = JSONRequest
@@ -687,7 +796,13 @@ type PublishPolicyBundleJSONRequestBody = JSONRequest
 type CreateRoleBindingJSONRequestBody = JSONRequest
 
 // CreateSourceRegistrationJSONRequestBody defines body for CreateSourceRegistration for application/json ContentType.
-type CreateSourceRegistrationJSONRequestBody = JSONRequest
+type CreateSourceRegistrationJSONRequestBody = SourceRegistrationRequest
+
+// UpdateSourceRegistrationJSONRequestBody defines body for UpdateSourceRegistration for application/json ContentType.
+type UpdateSourceRegistrationJSONRequestBody = SourceRegistrationUpdateRequest
+
+// RotateSourceCredentialJSONRequestBody defines body for RotateSourceCredential for application/json ContentType.
+type RotateSourceCredentialJSONRequestBody = SourceCredentialRotationRequest
 
 // CreateTenantJSONRequestBody defines body for CreateTenant for application/json ContentType.
 type CreateTenantJSONRequestBody = JSONRequest
@@ -790,6 +905,128 @@ func (a PageEnvelope_Meta) MarshalJSON() ([]byte, error) {
 	return json.Marshal(object)
 }
 
+// AsSourceRegistrationUpdateRequest0 returns the union data inside the SourceRegistrationUpdateRequest as a SourceRegistrationUpdateRequest0
+func (t SourceRegistrationUpdateRequest) AsSourceRegistrationUpdateRequest0() (SourceRegistrationUpdateRequest0, error) {
+	var body SourceRegistrationUpdateRequest0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSourceRegistrationUpdateRequest0 overwrites any union data inside the SourceRegistrationUpdateRequest as the provided SourceRegistrationUpdateRequest0
+func (t *SourceRegistrationUpdateRequest) FromSourceRegistrationUpdateRequest0(v SourceRegistrationUpdateRequest0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSourceRegistrationUpdateRequest0 performs a merge with any union data inside the SourceRegistrationUpdateRequest, using the provided SourceRegistrationUpdateRequest0
+func (t *SourceRegistrationUpdateRequest) MergeSourceRegistrationUpdateRequest0(v SourceRegistrationUpdateRequest0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSourceRegistrationUpdateRequest1 returns the union data inside the SourceRegistrationUpdateRequest as a SourceRegistrationUpdateRequest1
+func (t SourceRegistrationUpdateRequest) AsSourceRegistrationUpdateRequest1() (SourceRegistrationUpdateRequest1, error) {
+	var body SourceRegistrationUpdateRequest1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSourceRegistrationUpdateRequest1 overwrites any union data inside the SourceRegistrationUpdateRequest as the provided SourceRegistrationUpdateRequest1
+func (t *SourceRegistrationUpdateRequest) FromSourceRegistrationUpdateRequest1(v SourceRegistrationUpdateRequest1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSourceRegistrationUpdateRequest1 performs a merge with any union data inside the SourceRegistrationUpdateRequest, using the provided SourceRegistrationUpdateRequest1
+func (t *SourceRegistrationUpdateRequest) MergeSourceRegistrationUpdateRequest1(v SourceRegistrationUpdateRequest1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SourceRegistrationUpdateRequest) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	object := make(map[string]json.RawMessage)
+	if t.union != nil {
+		err = json.Unmarshal(b, &object)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if t.ClusterId != nil {
+		object["clusterId"], err = json.Marshal(t.ClusterId)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'clusterId': %w", err)
+		}
+	}
+
+	object["expectedRevision"], err = json.Marshal(t.ExpectedRevision)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'expectedRevision': %w", err)
+	}
+
+	if t.Status != nil {
+		object["status"], err = json.Marshal(t.Status)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'status': %w", err)
+		}
+	}
+	b, err = json.Marshal(object)
+	return b, err
+}
+
+func (t *SourceRegistrationUpdateRequest) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	if err != nil {
+		return err
+	}
+	object := make(map[string]json.RawMessage)
+	err = json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["clusterId"]; found {
+		err = json.Unmarshal(raw, &t.ClusterId)
+		if err != nil {
+			return fmt.Errorf("error reading 'clusterId': %w", err)
+		}
+	}
+
+	if raw, found := object["expectedRevision"]; found {
+		err = json.Unmarshal(raw, &t.ExpectedRevision)
+		if err != nil {
+			return fmt.Errorf("error reading 'expectedRevision': %w", err)
+		}
+	}
+
+	if raw, found := object["status"]; found {
+		err = json.Unmarshal(raw, &t.Status)
+		if err != nil {
+			return fmt.Errorf("error reading 'status': %w", err)
+		}
+	}
+
+	return err
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// CreateActionPlan createActionPlan
@@ -843,6 +1080,12 @@ type ServerInterface interface {
 	// CreateSourceRegistration createSourceRegistration
 	// (POST /api/v1/admin/source-registrations)
 	CreateSourceRegistration(w http.ResponseWriter, r *http.Request, params CreateSourceRegistrationParams)
+	// UpdateSourceRegistration updateSourceRegistration
+	// (PATCH /api/v1/admin/source-registrations/{sourceId})
+	UpdateSourceRegistration(w http.ResponseWriter, r *http.Request, sourceId Identifier, params UpdateSourceRegistrationParams)
+	// RotateSourceCredential rotateSourceCredential
+	// (POST /api/v1/admin/source-registrations/{sourceId}/rotate-credential)
+	RotateSourceCredential(w http.ResponseWriter, r *http.Request, sourceId Identifier, params RotateSourceCredentialParams)
 	// GetTenants getTenants
 	// (GET /api/v1/admin/tenants)
 	GetTenants(w http.ResponseWriter, r *http.Request, params GetTenantsParams)
@@ -1065,6 +1308,18 @@ func (_ Unimplemented) GetSourceRegistrations(w http.ResponseWriter, r *http.Req
 // CreateSourceRegistration createSourceRegistration
 // (POST /api/v1/admin/source-registrations)
 func (_ Unimplemented) CreateSourceRegistration(w http.ResponseWriter, r *http.Request, params CreateSourceRegistrationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateSourceRegistration updateSourceRegistration
+// (PATCH /api/v1/admin/source-registrations/{sourceId})
+func (_ Unimplemented) UpdateSourceRegistration(w http.ResponseWriter, r *http.Request, sourceId Identifier, params UpdateSourceRegistrationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RotateSourceCredential rotateSourceCredential
+// (POST /api/v1/admin/source-registrations/{sourceId}/rotate-credential)
+func (_ Unimplemented) RotateSourceCredential(w http.ResponseWriter, r *http.Request, sourceId Identifier, params RotateSourceCredentialParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2073,6 +2328,114 @@ func (siw *ServerInterfaceWrapper) CreateSourceRegistration(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateSourceRegistration(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateSourceRegistration operation middleware
+func (siw *ServerInterfaceWrapper) UpdateSourceRegistration(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "sourceId" -------------
+	var sourceId Identifier
+
+	err = runtime.BindStyledParameterWithOptions("simple", "sourceId", chi.URLParam(r, "sourceId"), &sourceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sourceId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateSourceRegistrationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateSourceRegistration(w, r, sourceId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RotateSourceCredential operation middleware
+func (siw *ServerInterfaceWrapper) RotateSourceCredential(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "sourceId" -------------
+	var sourceId Identifier
+
+	err = runtime.BindStyledParameterWithOptions("simple", "sourceId", chi.URLParam(r, "sourceId"), &sourceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sourceId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RotateSourceCredentialParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RotateSourceCredential(w, r, sourceId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4276,6 +4639,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/api/v1/admin/source-registrations", wrapper.CreateSourceRegistration)
 	})
 	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/admin/source-registrations/{sourceId}", wrapper.UpdateSourceRegistration)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/source-registrations/{sourceId}/rotate-credential", wrapper.RotateSourceCredential)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/admin/tenants", wrapper.GetTenants)
 	})
 	r.Group(func(r chi.Router) {
@@ -5059,6 +5428,88 @@ type CreateSourceRegistrationdefaultJSONResponse struct {
 }
 
 func (response CreateSourceRegistrationdefaultJSONResponse) VisitCreateSourceRegistrationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSourceRegistrationRequestObject struct {
+	SourceId Identifier `json:"sourceId"`
+	Params   UpdateSourceRegistrationParams
+	Body     *UpdateSourceRegistrationJSONRequestBody
+}
+
+type UpdateSourceRegistrationResponseObject interface {
+	VisitUpdateSourceRegistrationResponse(w http.ResponseWriter) error
+}
+
+type UpdateSourceRegistration200JSONResponse SuccessEnvelope
+
+func (response UpdateSourceRegistration200JSONResponse) VisitUpdateSourceRegistrationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSourceRegistrationdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response UpdateSourceRegistrationdefaultJSONResponse) VisitUpdateSourceRegistrationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RotateSourceCredentialRequestObject struct {
+	SourceId Identifier `json:"sourceId"`
+	Params   RotateSourceCredentialParams
+	Body     *RotateSourceCredentialJSONRequestBody
+}
+
+type RotateSourceCredentialResponseObject interface {
+	VisitRotateSourceCredentialResponse(w http.ResponseWriter) error
+}
+
+type RotateSourceCredential200JSONResponse SuccessEnvelope
+
+func (response RotateSourceCredential200JSONResponse) VisitRotateSourceCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RotateSourceCredentialdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response RotateSourceCredentialdefaultJSONResponse) VisitRotateSourceCredentialResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -6721,6 +7172,12 @@ type StrictServerInterface interface {
 	// CreateSourceRegistration createSourceRegistration
 	// (POST /api/v1/admin/source-registrations)
 	CreateSourceRegistration(ctx context.Context, request CreateSourceRegistrationRequestObject) (CreateSourceRegistrationResponseObject, error)
+	// UpdateSourceRegistration updateSourceRegistration
+	// (PATCH /api/v1/admin/source-registrations/{sourceId})
+	UpdateSourceRegistration(ctx context.Context, request UpdateSourceRegistrationRequestObject) (UpdateSourceRegistrationResponseObject, error)
+	// RotateSourceCredential rotateSourceCredential
+	// (POST /api/v1/admin/source-registrations/{sourceId}/rotate-credential)
+	RotateSourceCredential(ctx context.Context, request RotateSourceCredentialRequestObject) (RotateSourceCredentialResponseObject, error)
 	// GetTenants getTenants
 	// (GET /api/v1/admin/tenants)
 	GetTenants(ctx context.Context, request GetTenantsRequestObject) (GetTenantsResponseObject, error)
@@ -7379,6 +7836,74 @@ func (sh *strictHandler) CreateSourceRegistration(w http.ResponseWriter, r *http
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CreateSourceRegistrationResponseObject); ok {
 		if err := validResponse.VisitCreateSourceRegistrationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateSourceRegistration operation middleware
+func (sh *strictHandler) UpdateSourceRegistration(w http.ResponseWriter, r *http.Request, sourceId Identifier, params UpdateSourceRegistrationParams) {
+	var request UpdateSourceRegistrationRequestObject
+
+	request.SourceId = sourceId
+	request.Params = params
+
+	var body UpdateSourceRegistrationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateSourceRegistration(ctx, request.(UpdateSourceRegistrationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateSourceRegistration")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateSourceRegistrationResponseObject); ok {
+		if err := validResponse.VisitUpdateSourceRegistrationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RotateSourceCredential operation middleware
+func (sh *strictHandler) RotateSourceCredential(w http.ResponseWriter, r *http.Request, sourceId Identifier, params RotateSourceCredentialParams) {
+	var request RotateSourceCredentialRequestObject
+
+	request.SourceId = sourceId
+	request.Params = params
+
+	var body RotateSourceCredentialJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RotateSourceCredential(ctx, request.(RotateSourceCredentialRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RotateSourceCredential")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RotateSourceCredentialResponseObject); ok {
+		if err := validResponse.VisitRotateSourceCredentialResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

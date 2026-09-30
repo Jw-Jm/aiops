@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
+  ClusterRegistrationRequest,
   CommandExecutionRequest,
   DiagnosticGraphBuildRequest,
   ErrorEnvelope,
@@ -30,9 +31,13 @@ import type {
   GetSourceRegistrationsParams,
   GetTenantsParams,
   GetToolsParams,
+  Identifier,
   IncidentTransitionRequest,
   JSONRequest,
   PageEnvelope,
+  SourceCredentialRotationRequest,
+  SourceRegistrationRequest,
+  SourceRegistrationUpdateRequest,
   SuccessEnvelope
 } from './models';
 
@@ -374,7 +379,7 @@ export const getCreateClusterUrl = () => {
 /**
  * @summary createCluster
  */
-export const createCluster = async (jSONRequest: JSONRequest, options?: RequestInit): Promise<createClusterResponse> => {
+export const createCluster = async (clusterRegistrationRequest: ClusterRegistrationRequest, options?: RequestInit): Promise<createClusterResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -395,7 +400,7 @@ const res = await fetch(getCreateClusterUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(jSONRequest)
+    body: JSON.stringify(clusterRegistrationRequest)
   }
 )
 
@@ -1036,7 +1041,7 @@ export const getCreateSourceRegistrationUrl = () => {
 /**
  * @summary createSourceRegistration
  */
-export const createSourceRegistration = async (jSONRequest: JSONRequest, options?: RequestInit): Promise<createSourceRegistrationResponse> => {
+export const createSourceRegistration = async (sourceRegistrationRequest: SourceRegistrationRequest, options?: RequestInit): Promise<createSourceRegistrationResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -1057,7 +1062,7 @@ const res = await fetch(getCreateSourceRegistrationUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(jSONRequest)
+    body: JSON.stringify(sourceRegistrationRequest)
   }
 )
 
@@ -1066,6 +1071,136 @@ const res = await fetch(getCreateSourceRegistrationUrl(),
 
   const data: createSourceRegistrationResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as createSourceRegistrationResponse
+}
+
+
+
+export type updateSourceRegistrationResponse200 = {
+  data: SuccessEnvelope
+  status: 200
+}
+
+export type updateSourceRegistrationResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type updateSourceRegistrationResponseSuccess = (updateSourceRegistrationResponse200) & {
+  headers: Headers;
+};
+export type updateSourceRegistrationResponseError = (updateSourceRegistrationResponseDefault) & {
+  headers: Headers;
+};
+
+export type updateSourceRegistrationResponse = (updateSourceRegistrationResponseSuccess | updateSourceRegistrationResponseError)
+
+export const getUpdateSourceRegistrationUrl = (sourceId: Identifier,) => {
+
+
+
+
+  return `/api/v1/admin/source-registrations/${sourceId}`
+}
+
+/**
+ * @summary updateSourceRegistration
+ */
+export const updateSourceRegistration = async (sourceId: Identifier,
+    sourceRegistrationUpdateRequest: SourceRegistrationUpdateRequest, options?: RequestInit): Promise<updateSourceRegistrationResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getUpdateSourceRegistrationUrl(sourceId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(sourceRegistrationUpdateRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: updateSourceRegistrationResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as updateSourceRegistrationResponse
+}
+
+
+
+export type rotateSourceCredentialResponse200 = {
+  data: SuccessEnvelope
+  status: 200
+}
+
+export type rotateSourceCredentialResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type rotateSourceCredentialResponseSuccess = (rotateSourceCredentialResponse200) & {
+  headers: Headers;
+};
+export type rotateSourceCredentialResponseError = (rotateSourceCredentialResponseDefault) & {
+  headers: Headers;
+};
+
+export type rotateSourceCredentialResponse = (rotateSourceCredentialResponseSuccess | rotateSourceCredentialResponseError)
+
+export const getRotateSourceCredentialUrl = (sourceId: Identifier,) => {
+
+
+
+
+  return `/api/v1/admin/source-registrations/${sourceId}/rotate-credential`
+}
+
+/**
+ * @summary rotateSourceCredential
+ */
+export const rotateSourceCredential = async (sourceId: Identifier,
+    sourceCredentialRotationRequest: SourceCredentialRotationRequest, options?: RequestInit): Promise<rotateSourceCredentialResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getRotateSourceCredentialUrl(sourceId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(sourceCredentialRotationRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: rotateSourceCredentialResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as rotateSourceCredentialResponse
 }
 
 

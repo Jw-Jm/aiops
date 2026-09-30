@@ -6,6 +6,7 @@
  */
 
 export * from './canonicalID';
+export * from './clusterRegistrationRequest';
 export * from './commandExecutionEvent';
 export * from './commandExecutionRequest';
 export * from './diagnosticGraphBuildRequest';
@@ -47,5 +48,10 @@ export * from './investigationEventEventType';
 export * from './jSONRequest';
 export * from './pageEnvelope';
 export * from './pageEnvelopeMeta';
+export * from './sourceCredentialRotationRequest';
+export * from './sourceRegistrationRequest';
+export * from './sourceRegistrationRequestSourceType';
+export * from './sourceRegistrationUpdateRequest';
+export * from './sourceRegistrationUpdateRequestStatus';
 export * from './successEnvelope';
 export * from './successEnvelopeMeta';

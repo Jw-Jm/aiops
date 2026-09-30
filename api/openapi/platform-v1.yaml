@@ -196,6 +196,90 @@ components:
         Identifier:
             format: identifier
             type: string
+        ClusterRegistrationRequest:
+            additionalProperties: false
+            properties:
+                clusterUid:
+                    maxLength: 512
+                    minLength: 1
+                    type: string
+                displayName:
+                    maxLength: 200
+                    minLength: 1
+                    type: string
+            required:
+                - clusterUid
+                - displayName
+            type: object
+        SourceCredentialRotationRequest:
+            additionalProperties: false
+            properties:
+                authRef:
+                    pattern: '^openbao://[A-Za-z0-9_./-]+$'
+                    type: string
+                expectedRevision:
+                    format: int64
+                    minimum: 1
+                    type: integer
+            required:
+                - authRef
+                - expectedRevision
+            type: object
+        SourceRegistrationRequest:
+            additionalProperties: false
+            properties:
+                authRef:
+                    pattern: '^openbao://[A-Za-z0-9_./-]+$'
+                    type: string
+                clusterId:
+                    oneOf:
+                        - $ref: '#/components/schemas/Identifier'
+                        - type: 'null'
+                instanceKey:
+                    maxLength: 512
+                    minLength: 1
+                    type: string
+                sourceType:
+                    enum:
+                        - victoriametrics
+                        - victorialogs
+                        - deepflow
+                        - kubernetes
+                        - redfish
+                        - ipmi
+                        - smart
+                        - object_storage
+                        - model
+                    type: string
+            required:
+                - sourceType
+                - instanceKey
+                - authRef
+            type: object
+        SourceRegistrationUpdateRequest:
+            additionalProperties: false
+            anyOf:
+                - required:
+                    - clusterId
+                - required:
+                    - status
+            properties:
+                clusterId:
+                    oneOf:
+                        - $ref: '#/components/schemas/Identifier'
+                        - type: 'null'
+                expectedRevision:
+                    format: int64
+                    minimum: 1
+                    type: integer
+                status:
+                    enum:
+                        - active
+                        - disabled
+                    type: string
+            required:
+                - expectedRevision
+            type: object
         IncidentTransitionRequest:
             additionalProperties: false
             properties:
@@ -479,7 +563,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/JSONRequest'
+                            $ref: '#/components/schemas/ClusterRegistrationRequest'
                 required: true
             responses:
                 "201":
@@ -847,7 +931,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/JSONRequest'
+                            $ref: '#/components/schemas/SourceRegistrationRequest'
                 required: true
             responses:
                 "201":
@@ -865,6 +949,88 @@ paths:
             security:
                 - BearerAuth: []
             summary: createSourceRegistration
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/source-registrations/{sourceId}:
+        patch:
+            operationId: updateSourceRegistration
+            parameters:
+                - in: path
+                  name: sourceId
+                  required: true
+                  schema:
+                    $ref: '#/components/schemas/Identifier'
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SourceRegistrationUpdateRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: updateSourceRegistration
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/source-registrations/{sourceId}/rotate-credential:
+        post:
+            operationId: rotateSourceCredential
+            parameters:
+                - in: path
+                  name: sourceId
+                  required: true
+                  schema:
+                    $ref: '#/components/schemas/Identifier'
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SourceCredentialRotationRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: rotateSourceCredential
             tags:
                 - Admin
             x-idempotency: required
