@@ -69,6 +69,22 @@ type AuditSegment struct {
 	SignedAt          pgtype.Timestamptz `json:"signed_at"`
 }
 
+type AuditSignedSegment struct {
+	TenantID          pgtype.UUID        `json:"tenant_id"`
+	SegmentID         pgtype.UUID        `json:"segment_id"`
+	FirstAuditSeq     int64              `json:"first_audit_seq"`
+	LastAuditSeq      int64              `json:"last_audit_seq"`
+	RecordCount       int32              `json:"record_count"`
+	MerkleRoot        string             `json:"merkle_root"`
+	Signature         pgtype.Text        `json:"signature"`
+	SigningKeyVersion pgtype.Text        `json:"signing_key_version"`
+	ObjectRef         []byte             `json:"object_ref"`
+	ObjectDigest      pgtype.Text        `json:"object_digest"`
+	Status            string             `json:"status"`
+	CreatedAt         pgtype.Timestamptz `json:"created_at"`
+	SignedAt          pgtype.Timestamptz `json:"signed_at"`
+}
+
 type AuditTenantHead struct {
 	TenantID      pgtype.UUID `json:"tenant_id"`
 	LastTenantSeq int64       `json:"last_tenant_seq"`

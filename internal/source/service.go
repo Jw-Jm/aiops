@@ -87,7 +87,7 @@ RETURNING source_id`, actor.TenantID, sourceID, command.SourceType, command.Inst
 		EntityKind: "source_registration", EntityID: created.SourceID, Subject: actor.Subject,
 		Payload: map[string]any{
 			"source_type": created.SourceType, "instance_key": created.InstanceKey,
-			"cluster_id": nullableUUIDString(created.ClusterID), "credential_revision": created.CredentialRevision, "revision": created.Revision,
+			"cluster_id": nullableUUIDString(created.ClusterID), "auth_version": created.CredentialRevision, "revision": created.Revision,
 		},
 	}); err != nil {
 		return SourceRegistration{}, fmt.Errorf("audit source registration: %w", err)
@@ -214,8 +214,8 @@ func (service *Service) RotateCredential(ctx context.Context, tx pgx.Tx, actor a
 		TenantID: actor.TenantID, RecordID: uuid.Must(uuid.NewV7()), EventType: "source_registration.credential_rotated",
 		EntityKind: "source_registration", EntityID: result.SourceID, Subject: actor.Subject,
 		Payload: map[string]any{
-			"credential_revision":          result.CredentialRevision,
-			"previous_credential_revision": previous.CredentialRevision,
+			"auth_version":                 result.CredentialRevision,
+			"previous_auth_version":         previous.CredentialRevision,
 			"revision":                     result.Revision, "previous_revision": previous.Revision,
 		},
 	}); err != nil {
