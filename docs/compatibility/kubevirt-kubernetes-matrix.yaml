@@ -1,0 +1,31 @@
+schemaVersion: 1
+source:
+  url: "https://github.com/kubevirt/sig-release/blob/47f8f09611f29fa2596fd9875a5794a8388da948/releases/k8s-support-matrix.md"
+  commit: 47f8f09611f29fa2596fd9875a5794a8388da948
+  digest: sha256:0538f9446ffa897a02bdc917d0b130f5d11edbec40af978ce4257c1b61c4b26e
+kubernetesRows:
+  - kubevirtMinor: "1.9"
+    supportedKubernetesMinors: [34, 35, 36]
+  - kubevirtMinor: "1.8"
+    supportedKubernetesMinors: [34, 35]
+    eolKubernetesMinors: [33]
+  - kubevirtMinor: "1.7"
+    supportedKubernetesMinors: [34]
+    eolKubernetesMinors: [32, 33]
+  - kubevirtMinor: "1.6"
+    eolKubernetesMinors: [31, 32, 33]
+  - kubevirtMinor: "1.5"
+    eolKubernetesMinors: [31, 32]
+  - kubevirtMinor: "1.4"
+    eolKubernetesMinors: [31]
+selected:
+  kubevirtVersion: "1.9.0"
+  supportedKubernetesMinors: [34, 35, 36]
+  cdiVersion: "1.63.0"
+  cdiCommit: 7182037fa3ce5a4922f9bc471ef22f97662b4556
+  cdiDigest: sha256:e82318852aa9eae2174cdc3e7be9f2cfc6fbcc1375822597db1f5daf04f13d2b
+  cdiCompatibilitySource:
+    url: "https://github.com/kubevirt/kubevirt/blob/79d34c1762169e5b0370ec491cef5ca12e6b504c/kubevirtci/cluster-up/cluster/kind/common.sh"
+    commit: 79d34c1762169e5b0370ec491cef5ca12e6b504c
+    path: kubevirtci/cluster-up/cluster/kind/common.sh
+    digest: sha256:23911aa71f8f4ed37954a8497a2599c8ecbc404726ec1db42773b3b37e72610e

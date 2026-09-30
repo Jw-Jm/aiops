@@ -16,6 +16,8 @@ var componentImages = map[string]string{
 	"seaweedfs":        "docker.io/chrislusf/seaweedfs",
 	"openbao":          "ghcr.io/openbao/openbao",
 	"vmalert":          "docker.io/victoriametrics/vmalert",
+	"kubevirt":         "quay.io/kubevirt/virt-operator",
+	"cdi":              "quay.io/kubevirt/cdi-operator",
 }
 
 func loadComponentLocks(catalogPath, architecture string) (map[string]ComponentLock, error) {

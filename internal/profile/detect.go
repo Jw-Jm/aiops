@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -184,6 +185,36 @@ func Discover(ctx context.Context, contextName, kubectlPath, catalogPath string)
 		}
 		result.Kubernetes.CDIVersion = resourceVersion(instances, "observedVersion", "operatorVersion", "targetVersion")
 		result.Components["cdi"] = append(result.Components["cdi"], operatorCandidates(resources, instances, "cdi")...)
+	}
+	if result.Kubernetes.KubeVirtInstalled && result.Kubernetes.KubeVirtVersion == "" && len(result.Components["kubevirt"]) == 1 {
+		result.Kubernetes.KubeVirtVersion = result.Components["kubevirt"][0].Version
+	}
+	if result.Kubernetes.CDIInstalled && result.Kubernetes.CDIVersion == "" && len(result.Components["cdi"]) == 1 {
+		result.Kubernetes.CDIVersion = result.Components["cdi"][0].Version
+	}
+	matrix, matrixErr := LoadKubeVirtCompatibilityMatrix(compatibilityMatrixPath(catalogPath))
+	if matrixErr != nil && !errors.Is(matrixErr, os.ErrNotExist) {
+		return Discovery{}, matrixErr
+	}
+	if matrixErr == nil {
+		compatibility := DecideKubeVirtCompatibility(result.Kubernetes.ServerVersion, matrix)
+		if result.Kubernetes.KubeVirtInstalled || result.Kubernetes.CDIInstalled {
+			if compatibility.Decision == "supported" && result.Kubernetes.KubeVirtInstalled && !sameRelease(result.Kubernetes.KubeVirtVersion, compatibility.KubeVirtVersion) {
+				compatibility.Decision = "unverified"
+			}
+			if compatibility.Decision == "supported" && result.Kubernetes.CDIInstalled && !sameRelease(result.Kubernetes.CDIVersion, compatibility.CDIVersion) {
+				compatibility.Decision = "unverified"
+			}
+		}
+		result.Kubernetes.KubeVirt = compatibility.Decision
+		if compatibility.Decision == "supported" {
+			if !result.Kubernetes.KubeVirtInstalled {
+				result.Kubernetes.KubeVirtVersion = compatibility.KubeVirtVersion
+			}
+			if !result.Kubernetes.CDIInstalled {
+				result.Kubernetes.CDIVersion = compatibility.CDIVersion
+			}
+		}
 	}
 	locks, err := loadComponentLocks(catalogPath, result.Kubernetes.Architecture)
 	if err != nil {
