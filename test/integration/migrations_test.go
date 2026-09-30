@@ -84,7 +84,7 @@ func TestMigrationsAndRoles(t *testing.T) {
 			('platform', 'role_bindings'), ('platform', 'source_registrations'),
 			('platform', 'cluster_registrations'), ('platform', 'registry_versions'),
 			('finding', 'records'), ('incident', 'records'),
-			('investigation', 'jobs'), ('action', 'executions'), ('audit', 'records')
+			('investigation', 'jobs'), ('action', 'executions'), ('audit', 'records'), ('audit', 'signed_segments')
 		)
 		ORDER BY n.nspname, c.relname`)
 	if err != nil {
@@ -110,7 +110,7 @@ func TestMigrationsAndRoles(t *testing.T) {
 	for _, key := range []string{
 		"platform.role_bindings", "platform.source_registrations", "platform.cluster_registrations",
 		"platform.registry_versions", "finding.records", "incident.records",
-		"investigation.jobs", "action.executions", "audit.records",
+		"investigation.jobs", "action.executions", "audit.records", "audit.signed_segments",
 	} {
 		if !seen[key] {
 			t.Errorf("required tenant table %s does not exist", key)
@@ -173,8 +173,8 @@ func TestMigrationsAndRoles(t *testing.T) {
 
 	var updateAllowed, deleteAllowed bool
 	if err := db.QueryRowContext(ctx, `
-		SELECT has_table_privilege('api_runtime_role', 'audit.records', 'UPDATE'),
-		       has_table_privilege('worker_runtime_role', 'audit.records', 'DELETE')`).
+	SELECT has_table_privilege('api_runtime_role', 'audit.records', 'UPDATE'),
+	       has_table_privilege('worker_runtime_role', 'audit.records', 'DELETE')`).
 		Scan(&updateAllowed, &deleteAllowed); err != nil {
 		t.Fatal(err)
 	}

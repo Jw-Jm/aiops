@@ -206,6 +206,9 @@ func (c *Client) Configure(ctx context.Context) error {
 	if err := c.ensureTransitKey(ctx); err != nil {
 		return err
 	}
+	if err := c.ensureAuditSigningKey(ctx); err != nil {
+		return err
+	}
 	if err := c.ensurePKIRoot(ctx); err != nil {
 		return err
 	}
@@ -496,6 +499,14 @@ func (c *Client) verifyConfiguration(ctx context.Context) error {
 	if transit.Data["type"] != transitKeyType && transit.Data["key_type"] != transitKeyType {
 		return fmt.Errorf("%w: Transit evidence key has a different type", ErrConfigurationDrift)
 	}
+	var auditSigning dataResponse
+	if err := c.request(ctx, http.MethodGet, "/v1/transit/keys/audit-signing", nil, &auditSigning); err != nil {
+		return asDriftIfNotFound(err, "Transit audit signing key is missing")
+	}
+	if (auditSigning.Data["type"] != "ed25519" && auditSigning.Data["key_type"] != "ed25519") ||
+		auditSigning.Data["exportable"] == true || auditSigning.Data["allow_plaintext_backup"] == true {
+		return fmt.Errorf("%w: Transit audit signing key type or exportability has drifted", ErrConfigurationDrift)
+	}
 	if err := c.ensurePKIRootPresence(ctx, true); err != nil {
 		return err
 	}
@@ -617,7 +628,9 @@ var runtimePolicies = map[string]string{
 path "transit/decrypt/evidence-archive" { capabilities = ["update"] }
 path "pki/issue/platform-client" { capabilities = ["update"] }`,
 	"ops-worker": `path "transit/encrypt/evidence-archive" { capabilities = ["update"] }
-path "transit/decrypt/evidence-archive" { capabilities = ["update"] }`,
+path "transit/decrypt/evidence-archive" { capabilities = ["update"] }
+path "transit/sign/audit-signing" { capabilities = ["update"] }
+path "transit/verify/audit-signing" { capabilities = ["update"] }`,
 	"ops-command-runner": `path "ssh/sign/ops-command-runner" { capabilities = ["update"] }`,
 }
 
