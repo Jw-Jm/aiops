@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	generated "ops-platform/gen/api"
+	"ops-platform/internal/bundle"
 	"ops-platform/internal/persistence"
 )
 
@@ -93,7 +94,7 @@ func (m IdempotencyMiddleware) Wrap(next http.Handler) http.Handler {
 				output = capturedFromStored(decision.Response)
 				return nil
 			case persistence.DecisionConflict:
-				output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_CONFLICT", "the key was already used for a different request", false)
+				output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_KEY_REUSED", "the key was already used for a different request", false)
 				return nil
 			case persistence.DecisionInProgress:
 				if decision.ExecutionUnknown {
@@ -179,10 +180,24 @@ func canonicalRequestDigest(scope persistence.Scope, r *http.Request, body []byt
 		return "", err
 	}
 	canonicalQuery := query.Encode()
+	contentType := r.Header.Get("Content-Type")
+	if len(body) > 0 {
+		mediaType, _, parseErr := mime.ParseMediaType(contentType)
+		if parseErr != nil {
+			return "", parseErr
+		}
+		if mediaType == "application/json" || strings.HasSuffix(mediaType, "+json") {
+			body, err = bundle.CanonicalizeJSON(body)
+			if err != nil {
+				return "", err
+			}
+		}
+		contentType = mediaType
+	}
 	bodyHash := sha256.Sum256(body)
 	canonical := strings.Join([]string{
 		strings.ToUpper(r.Method), scope.Operation, r.URL.EscapedPath(), canonicalQuery,
-		r.Header.Get("Content-Type"), r.Header.Get("Accept"), hex.EncodeToString(bodyHash[:]),
+		contentType, r.Header.Get("Accept"), hex.EncodeToString(bodyHash[:]),
 	}, "\n")
 	digest := sha256.Sum256([]byte(canonical))
 	return persistence.Digest("sha256:" + hex.EncodeToString(digest[:])), nil

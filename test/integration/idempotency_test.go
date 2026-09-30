@@ -352,7 +352,7 @@ func TestIdempotencyHTTPMiddleware(t *testing.T) {
 		t.Fatalf("response replay did not preserve only safe headers: location=%q set-cookie=%q", second.Header().Get("Location"), second.Header().Get("Set-Cookie"))
 	}
 	conflict := request(`{"source":"two"}`)
-	if conflict.Code != http.StatusConflict || calls.Load() != 1 {
+	if conflict.Code != http.StatusConflict || calls.Load() != 1 || !strings.Contains(conflict.Body.String(), "IDEMPOTENCY_KEY_REUSED") {
 		t.Fatalf("same key with a different body was not rejected before dispatch: status=%d calls=%d body=%s", conflict.Code, calls.Load(), conflict.Body.String())
 	}
 
