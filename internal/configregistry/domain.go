@@ -34,17 +34,18 @@ const (
 )
 
 var (
-	ErrUnauthorized     = errors.New("configuration registry administrator is not authorized")
-	ErrInvalidInput     = errors.New("configuration registry input is invalid")
-	ErrNotFound         = errors.New("configuration registry resource was not found")
-	ErrRevisionConflict = errors.New("configuration registry revision is stale")
-	ErrScopeConflict    = errors.New("configuration registry scope is already activated")
-	ErrImmutable        = errors.New("published configuration is immutable")
-	ErrInvalidSignature = errors.New("configuration publication signature is invalid")
-	ErrVersionActive    = errors.New("an active configuration version cannot be retired")
-	ErrStateConflict    = errors.New("configuration registry state conflicts with this operation")
-	logicalNamePattern  = regexp.MustCompile(`^[a-z][a-z0-9._-]{0,199}$`)
-	namespacePattern    = regexp.MustCompile(`^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$`)
+	ErrUnauthorized              = errors.New("configuration registry administrator is not authorized")
+	ErrInvalidInput              = errors.New("configuration registry input is invalid")
+	ErrNotFound                  = errors.New("configuration registry resource was not found")
+	ErrRevisionConflict          = errors.New("configuration registry revision is stale")
+	ErrScopeConflict             = errors.New("configuration registry scope is already activated")
+	ErrImmutable                 = errors.New("published configuration is immutable")
+	ErrInvalidSignature          = errors.New("configuration publication signature is invalid")
+	ErrPolicyCompilerUnavailable = errors.New("policy bundle compiler is unavailable")
+	ErrVersionActive             = errors.New("an active configuration version cannot be retired")
+	ErrStateConflict             = errors.New("configuration registry state conflicts with this operation")
+	logicalNamePattern           = regexp.MustCompile(`^[a-z][a-z0-9._-]{0,199}$`)
+	namespacePattern             = regexp.MustCompile(`^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$`)
 )
 
 type Scope struct {
@@ -146,6 +147,12 @@ type Activation struct {
 
 type SignatureVerifier interface {
 	Verify(context.Context, string, []byte, []byte) error
+}
+
+// PolicyPublicationValidator compiles signed policy content before it can be
+// inserted as an immutable published version.
+type PolicyPublicationValidator interface {
+	ValidatePolicyPublication(context.Context, json.RawMessage) error
 }
 
 type Ed25519TrustStore struct {

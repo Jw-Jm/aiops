@@ -18,15 +18,16 @@ import (
 )
 
 type Service struct {
-	pool     persistence.TxBeginner
-	verifier SignatureVerifier
+	pool            persistence.TxBeginner
+	verifier        SignatureVerifier
+	policyValidator PolicyPublicationValidator
 }
 
-func NewService(pool persistence.TxBeginner, verifier SignatureVerifier) (*Service, error) {
-	if pool == nil || verifier == nil {
-		return nil, errors.New("configuration registry database pool and signature verifier are required")
+func NewService(pool persistence.TxBeginner, verifier SignatureVerifier, policyValidator PolicyPublicationValidator) (*Service, error) {
+	if pool == nil || verifier == nil || policyValidator == nil {
+		return nil, errors.New("configuration registry database pool, signature verifier, and policy compiler are required")
 	}
-	return &Service{pool: pool, verifier: verifier}, nil
+	return &Service{pool: pool, verifier: verifier, policyValidator: policyValidator}, nil
 }
 
 func (service *Service) CreateDraft(ctx context.Context, tx pgx.Tx, actor auth.RequestContext, command DraftCommand) (Draft, error) {
@@ -128,6 +129,14 @@ func (service *Service) Publish(ctx context.Context, tx pgx.Tx, actor auth.Reque
 	}
 	if err := service.verifier.Verify(ctx, signature.KeyID, message, signature.Signature); err != nil {
 		return PublishedVersion{}, ErrInvalidSignature
+	}
+	if draft.Kind == KindPolicy {
+		if service.policyValidator == nil {
+			return PublishedVersion{}, ErrPolicyCompilerUnavailable
+		}
+		if err := service.policyValidator.ValidatePolicyPublication(ctx, draft.Content); err != nil {
+			return PublishedVersion{}, fmt.Errorf("compile policy bundle before publication: %w", err)
+		}
 	}
 	if err := lockIdentity(ctx, tx, actor.TenantID.String()+"|"+string(draft.Kind)+"|"+draft.LogicalName); err != nil {
 		return PublishedVersion{}, err

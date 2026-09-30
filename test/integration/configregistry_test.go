@@ -23,6 +23,8 @@ import (
 	"ops-platform/internal/configregistry"
 	"ops-platform/internal/httpapi"
 	"ops-platform/internal/persistence"
+	"ops-platform/internal/policy"
+	"ops-platform/policies"
 )
 
 func TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory(t *testing.T) {
@@ -66,12 +68,17 @@ func TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory(t *testing
 	if err != nil {
 		t.Fatal(err)
 	}
-	service, err := configregistry.NewService(pool, configregistry.Ed25519TrustStore{Keys: map[string]ed25519.PublicKey{"integration-key": publicKey}})
+	trustStore := configregistry.Ed25519TrustStore{Keys: map[string]ed25519.PublicKey{"integration-key": publicKey}}
+	bundleCompiler, err := policy.NewBundleCompiler(trustStore)
+	if err != nil {
+		t.Fatal(err)
+	}
+	service, err := configregistry.NewService(pool, trustStore, bundleCompiler)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	firstContent := []byte(`{"schemaVersion":"policy-registry/v1","name":"safe-default","modules":[{"id":"baseline","content":"package ops.policy\ndefault allow := false"}]}`)
+	firstContent := policyRegistryContent(t, "safe-default", "revision-1")
 	firstDraft, err := createRegistryDraft(ctx, pool, service, actor, configregistry.DraftCommand{
 		Kind: configregistry.KindPolicy, LogicalName: "safe-default", Content: firstContent,
 	})
@@ -94,7 +101,7 @@ func TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory(t *testing
 		t.Fatal("policy registry accepted a recipe schema payload")
 	}
 
-	secondContent := []byte(`{"schemaVersion":"policy-registry/v1","name":"safe-default","modules":[{"id":"baseline","content":"package ops.policy\ndefault allow := false\n# revision 2"}]}`)
+	secondContent := policyRegistryContent(t, "safe-default", "revision-2")
 	secondDraft, err := createRegistryDraft(ctx, pool, service, actor, configregistry.DraftCommand{
 		Kind: configregistry.KindPolicy, LogicalName: "safe-default", Content: secondContent,
 	})
@@ -116,6 +123,33 @@ func TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory(t *testing
 	if err != nil || firstActivation.Revision != 1 {
 		t.Fatalf("activate first policy: activation=%#v err=%v", firstActivation, err)
 	}
+	invalidRegoContent, err := json.Marshal(map[string]any{
+		"schemaVersion": "policy-registry/v1", "name": "safe-default",
+		"modules": []map[string]string{{"id": "invalid.rego", "content": "package ops.policy\nthis is not valid rego"}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	invalidRegoDraft, err := createRegistryDraft(ctx, pool, service, actor, configregistry.DraftCommand{
+		Kind: configregistry.KindPolicy, LogicalName: "safe-default",
+		Content: invalidRegoContent,
+	})
+	if err != nil {
+		t.Fatalf("create invalid policy draft: %v", err)
+	}
+	if _, err := signAndPublish(ctx, pool, service, actor, invalidRegoDraft, 1, privateKey); !errors.Is(err, policy.ErrPolicyBundleInvalid) {
+		t.Fatalf("signed but invalid Rego bundle publish returned %v", err)
+	}
+	var safeDefaultVersionCount int
+	if err := persistence.WithTenantTx(ctx, pool, tenantID, func(tx pgx.Tx) error {
+		return tx.QueryRow(ctx, `SELECT count(*) FROM platform.registry_versions WHERE tenant_id = $1 AND kind = 'policy' AND logical_name = 'safe-default'`, tenantID).Scan(&safeDefaultVersionCount)
+	}); err != nil {
+		t.Fatal(err)
+	}
+	stillActive, err := service.ResolveActive(ctx, tenantID, configregistry.KindPolicy, "safe-default", tenantScope, time.Now().UTC())
+	if err != nil || stillActive.VersionID != first.VersionID || safeDefaultVersionCount != 2 {
+		t.Fatalf("failed compilation changed the active policy or published versions: active=%#v versions=%d err=%v", stillActive, safeDefaultVersionCount, err)
+	}
 	if _, err := activateRegistryVersion(ctx, pool, service, actor, second, configregistry.KindPolicy, "safe-default", tenantScope, 0); !errors.Is(err, configregistry.ErrScopeConflict) {
 		t.Fatalf("duplicate initial scope activation returned %v", err)
 	}
@@ -131,7 +165,7 @@ func TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory(t *testing
 	if err != nil || atSecond.VersionID != second.VersionID {
 		t.Fatalf("current resolution did not return second activation: version=%#v err=%v", atSecond, err)
 	}
-	thirdContent := []byte(`{"schemaVersion":"policy-registry/v1","name":"safe-default","modules":[{"id":"baseline","content":"package ops.policy\ndefault allow := false\n# revision 3"}]}`)
+	thirdContent := policyRegistryContent(t, "safe-default", "revision-3")
 	thirdDraft, err := createRegistryDraft(ctx, pool, service, actor, configregistry.DraftCommand{
 		Kind: configregistry.KindPolicy, LogicalName: "safe-default", Content: thirdContent,
 	})
@@ -174,18 +208,18 @@ func TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory(t *testing
 	if raceSuccess != 1 || raceConflicts != 1 {
 		t.Fatalf("concurrent activation results = success:%d conflict:%d, want one of each", raceSuccess, raceConflicts)
 	}
-	rollback, err := activateRegistryVersion(ctx, pool, service, actor, first, configregistry.KindPolicy, "safe-default", tenantScope, 3)
+	rollback, err := activateRegistryVersion(ctx, pool, service, actor, second, configregistry.KindPolicy, "safe-default", tenantScope, 3)
 	if err != nil || rollback.Revision != 4 {
 		t.Fatalf("rollback by reactivating immutable version failed: activation=%#v err=%v", rollback, err)
 	}
 	resolved, err := service.ResolveActive(ctx, tenantID, configregistry.KindPolicy, "safe-default", tenantScope, rollback.ActivatedAt.Add(time.Microsecond))
-	if err != nil || resolved.VersionID != first.VersionID {
+	if err != nil || resolved.VersionID != second.VersionID {
 		t.Fatalf("rollback did not resolve to original version: version=%#v err=%v", resolved, err)
 	}
-	if _, err := retireRegistryVersion(ctx, pool, service, actor, first, first.Digest); !errors.Is(err, configregistry.ErrVersionActive) {
+	if _, err := retireRegistryVersion(ctx, pool, service, actor, second, second.Digest); !errors.Is(err, configregistry.ErrVersionActive) {
 		t.Fatalf("active version retirement returned %v", err)
 	}
-	retired, err := retireRegistryVersion(ctx, pool, service, actor, second, second.Digest)
+	retired, err := retireRegistryVersion(ctx, pool, service, actor, first, first.Digest)
 	if err != nil || retired.RetiredAt == nil {
 		t.Fatalf("retire inactive version failed: version=%#v err=%v", retired, err)
 	}
@@ -299,7 +333,10 @@ func TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory(t *testing
 	if response := requestAs(http.MethodPost, "/api/v1/admin/registry-drafts", `{"kind":"policy","logicalName":"no-step-up","content":{}}`, "registry-http-no-step-up", actor); response.Code != http.StatusForbidden {
 		t.Fatalf("registry write without step-up was accepted: status=%d body=%s", response.Code, response.Body.String())
 	}
-	httpContent := map[string]interface{}{"schemaVersion": "policy-registry/v1", "name": "http-policy", "modules": []interface{}{map[string]interface{}{"id": "baseline", "content": "package ops.policy\ndefault allow := false"}}}
+	var httpContent map[string]interface{}
+	if err := json.Unmarshal(policyRegistryContent(t, "http-policy", "http-publication"), &httpContent); err != nil {
+		t.Fatal(err)
+	}
 	httpDraftBody, err := json.Marshal(api.RegistryDraftCreateRequest{Kind: api.RegistryDraftCreateRequestKind(configregistry.KindPolicy), LogicalName: "http-policy", Content: httpContent})
 	if err != nil {
 		t.Fatal(err)
@@ -371,6 +408,29 @@ func createRegistryDraft(ctx context.Context, pool *pgxpool.Pool, service *confi
 		return err
 	})
 	return result, err
+}
+
+func policyRegistryContent(t *testing.T, name, revision string) []byte {
+	t.Helper()
+	toolModule, err := policies.FS.ReadFile("tool/v1/tool.rego")
+	if err != nil {
+		t.Fatal(err)
+	}
+	actionModule, err := policies.FS.ReadFile("action/v1/action.rego")
+	if err != nil {
+		t.Fatal(err)
+	}
+	content, err := json.Marshal(map[string]any{
+		"schemaVersion": "policy-registry/v1", "name": name,
+		"modules": []map[string]string{
+			{"id": "tool/v1/tool.rego", "content": string(toolModule) + "\n# " + revision},
+			{"id": "action/v1/action.rego", "content": string(actionModule)},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return content
 }
 
 func updateRegistryDraft(ctx context.Context, pool *pgxpool.Pool, service *configregistry.Service, actor auth.RequestContext, draft configregistry.Draft, revision int64, content []byte) (configregistry.Draft, error) {
