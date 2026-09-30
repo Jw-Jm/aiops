@@ -215,6 +215,11 @@ func (c *Client) Configure(ctx context.Context) error {
 	if err := c.ensurePKIRole(ctx); err != nil {
 		return err
 	}
+	for _, serviceAccount := range workloadServiceAccounts {
+		if err := c.ensureWorkloadPKIRole(ctx, serviceAccount); err != nil {
+			return err
+		}
+	}
 	if err := c.ensureSSHCA(ctx); err != nil {
 		return err
 	}
@@ -231,7 +236,107 @@ func (c *Client) Configure(ctx context.Context) error {
 			return err
 		}
 	}
+	for _, serviceAccount := range workloadServiceAccounts {
+		role, err := WorkloadAuthRoleName(serviceAccount)
+		if err != nil {
+			return err
+		}
+		if err := c.ensureKubernetesWorkloadRole(ctx, role, serviceAccount); err != nil {
+			return err
+		}
+	}
 	return c.verifyConfiguration(ctx)
+}
+
+// ConfigureWorkloadPKI provisions short-lived, exact-SAN workload roles. It can
+// run independently in an isolated OpenBao instance where Kubernetes auth is
+// unavailable, while production Configure still performs the full setup.
+func (c *Client) ConfigureWorkloadPKI(ctx context.Context) error {
+	if c.token == "" {
+		return errors.New("OpenBao operator token is required to configure workload PKI")
+	}
+	seal, err := c.readSealStatus(ctx)
+	if err != nil {
+		return err
+	}
+	if !seal.Initialized || seal.Sealed {
+		return ErrSealed
+	}
+	if err := c.ensureMount(ctx, "pki", "pki"); err != nil {
+		return err
+	}
+	if err := c.ensurePKIMountTTL(ctx); err != nil {
+		return err
+	}
+	if err := c.ensurePKIRoot(ctx); err != nil {
+		return err
+	}
+	for _, serviceAccount := range workloadServiceAccounts {
+		if err := c.ensureWorkloadPKIRole(ctx, serviceAccount); err != nil {
+			return err
+		}
+	}
+	for _, serviceAccount := range workloadServiceAccounts {
+		role, expected, err := c.workloadPKIRoleConfig(serviceAccount)
+		if err != nil {
+			return err
+		}
+		if err := c.verifyObject(ctx, "/v1/pki/roles/"+role, expected); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// ConfigureWorkloadAuthentication installs dedicated Kubernetes auth roles
+// and least-privilege signing policies without configuring a cluster endpoint.
+// The full Configure operation also applies these roles after Kubernetes auth
+// has been configured for the OpenBao Pod.
+func (c *Client) ConfigureWorkloadAuthentication(ctx context.Context) error {
+	if c.token == "" {
+		return errors.New("OpenBao operator token is required to configure workload authentication")
+	}
+	seal, err := c.readSealStatus(ctx)
+	if err != nil {
+		return err
+	}
+	if !seal.Initialized || seal.Sealed {
+		return ErrSealed
+	}
+	if err := c.ensureAuthMethod(ctx); err != nil {
+		return err
+	}
+	for _, serviceAccount := range workloadServiceAccounts {
+		role, err := WorkloadAuthRoleName(serviceAccount)
+		if err != nil {
+			return err
+		}
+		policy, ok := runtimePolicies[role]
+		if !ok {
+			return ErrConfigurationDrift
+		}
+		if err := c.ensurePolicy(ctx, role, policy); err != nil {
+			return err
+		}
+		if err := c.ensureKubernetesWorkloadRole(ctx, role, serviceAccount); err != nil {
+			return err
+		}
+	}
+	for _, serviceAccount := range workloadServiceAccounts {
+		role, err := WorkloadAuthRoleName(serviceAccount)
+		if err != nil {
+			return err
+		}
+		if err := c.verifyObject(ctx, "/v1/auth/kubernetes/role/"+role, map[string]any{
+			"bound_service_account_names":      []any{serviceAccount},
+			"bound_service_account_namespaces": []any{namespaceFromServiceDomain(c.serviceDomain)},
+			"audience":                         "openbao", "policies": []any{role}, "token_policies": []any{role},
+			"token_ttl": "15m", "token_max_ttl": "1h",
+		}); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (c *Client) ensureMount(ctx context.Context, path, engineType string) error {
@@ -399,6 +504,42 @@ func (c *Client) ensurePKIRole(ctx context.Context) error {
 	return c.ensureObject(ctx, "/v1/pki/roles/"+pkiRoleName, expected)
 }
 
+func (c *Client) ensureWorkloadPKIRole(ctx context.Context, serviceAccount string) error {
+	role, expected, err := c.workloadPKIRoleConfig(serviceAccount)
+	if err != nil {
+		return err
+	}
+	return c.ensureObject(ctx, "/v1/pki/roles/"+role, expected)
+}
+
+func (c *Client) workloadPKIRoleConfig(serviceAccount string) (string, map[string]any, error) {
+	role, err := WorkloadRoleName(serviceAccount)
+	if err != nil {
+		return "", nil, err
+	}
+	dnsName := serviceAccount + "." + namespaceFromServiceDomain(c.serviceDomain) + ".svc.cluster.local"
+	uriSAN := "spiffe://ops.local/ns/" + namespaceFromServiceDomain(c.serviceDomain) + "/sa/" + serviceAccount
+	expected := map[string]any{
+		"allowed_domains":             []any{dnsName},
+		"allowed_uri_sans":            []any{uriSAN},
+		"allow_subdomains":            false,
+		"allow_bare_domains":          true,
+		"allow_any_name":              false,
+		"require_cn":                  false,
+		"use_csr_common_name":         false,
+		"allow_ip_sans":               false,
+		"allow_localhost":             false,
+		"allow_wildcard_certificates": false,
+		"server_flag":                 true,
+		"client_flag":                 true,
+		"use_csr_sans":                true,
+		"max_ttl":                     "1h",
+		"key_type":                    "ec",
+		"key_bits":                    float64(256),
+	}
+	return role, expected, nil
+}
+
 func (c *Client) ensureSSHCA(ctx context.Context) error {
 	var response dataResponse
 	if err := c.request(ctx, http.MethodGet, "/v1/ssh/config/ca", nil, &response); err == nil {
@@ -447,6 +588,19 @@ func (c *Client) ensureKubernetesRole(ctx context.Context, name, serviceAccount 
 	expected := map[string]any{
 		"bound_service_account_names":      []any{serviceAccount},
 		"bound_service_account_namespaces": []any{namespaceFromServiceDomain(c.serviceDomain)},
+		"policies":                         []any{name},
+		"token_policies":                   []any{name},
+		"token_ttl":                        "15m",
+		"token_max_ttl":                    "1h",
+	}
+	return c.ensureObject(ctx, "/v1/auth/kubernetes/role/"+name, expected)
+}
+
+func (c *Client) ensureKubernetesWorkloadRole(ctx context.Context, name, serviceAccount string) error {
+	expected := map[string]any{
+		"bound_service_account_names":      []any{serviceAccount},
+		"bound_service_account_namespaces": []any{namespaceFromServiceDomain(c.serviceDomain)},
+		"audience":                         "openbao",
 		"policies":                         []any{name},
 		"token_policies":                   []any{name},
 		"token_ttl":                        "15m",
@@ -548,6 +702,27 @@ func (c *Client) verifyConfiguration(ctx context.Context) error {
 			return err
 		}
 	}
+	for _, serviceAccount := range workloadServiceAccounts {
+		role, err := WorkloadAuthRoleName(serviceAccount)
+		if err != nil {
+			return err
+		}
+		if err := c.verifyObject(ctx, "/v1/auth/kubernetes/role/"+role, map[string]any{
+			"bound_service_account_names":      []any{serviceAccount},
+			"bound_service_account_namespaces": []any{namespaceFromServiceDomain(c.serviceDomain)},
+			"audience":                         "openbao", "policies": []any{role}, "token_policies": []any{role},
+			"token_ttl": "15m", "token_max_ttl": "1h",
+		}); err != nil {
+			return err
+		}
+		pkiRole, expectedPKI, err := c.workloadPKIRoleConfig(serviceAccount)
+		if err != nil {
+			return err
+		}
+		if err := c.verifyObject(ctx, "/v1/pki/roles/"+pkiRole, expectedPKI); err != nil {
+			return err
+		}
+	}
 	var sshCA dataResponse
 	if err := c.request(ctx, http.MethodGet, "/v1/ssh/config/ca", nil, &sshCA); err != nil {
 		return asDriftIfNotFound(err, "SSH signing CA is missing")
@@ -631,8 +806,14 @@ path "pki/issue/platform-client" { capabilities = ["update"] }`,
 path "transit/decrypt/evidence-archive" { capabilities = ["update"] }
 path "transit/sign/audit-signing" { capabilities = ["update"] }
 path "transit/verify/audit-signing" { capabilities = ["update"] }`,
-	"ops-command-runner": `path "ssh/sign/ops-command-runner" { capabilities = ["update"] }`,
+	"ops-command-runner":          `path "ssh/sign/ops-command-runner" { capabilities = ["update"] }`,
+	"ops-api-workload":            `path "pki/sign/platform-workload-ops-api" { capabilities = ["update"] }`,
+	"ops-worker-workload":         `path "pki/sign/platform-workload-ops-worker" { capabilities = ["update"] }`,
+	"ops-investigator-workload":   `path "pki/sign/platform-workload-ops-investigator" { capabilities = ["update"] }`,
+	"ops-command-runner-workload": `path "pki/sign/platform-workload-ops-command-runner" { capabilities = ["update"] }`,
 }
+
+var workloadServiceAccounts = []string{"ops-api", "ops-worker", "ops-investigator", "ops-command-runner"}
 
 func validateExternalPath(path, repositoryRoot, bundleDirectory string) error {
 	if strings.TrimSpace(path) == "" {

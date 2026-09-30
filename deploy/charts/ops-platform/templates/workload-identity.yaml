@@ -1,0 +1,20 @@
+{{- define "ops-platform.workloadIdentityMount" -}}
+{{- if and .enabled (has .name (list "api" "worker" "investigator" "command-runner")) }}
+- name: openbao-identity
+  mountPath: /var/run/secrets/ops-platform/openbao
+  readOnly: true
+{{- end }}
+{{- end }}
+
+{{- define "ops-platform.workloadIdentityVolume" -}}
+{{- if and .enabled (has .name (list "api" "worker" "investigator" "command-runner")) }}
+- name: openbao-identity
+  projected:
+    defaultMode: 0444
+    sources:
+      - serviceAccountToken:
+          path: token
+          audience: openbao
+          expirationSeconds: 3600
+{{- end }}
+{{- end }}

@@ -49,6 +49,69 @@ func TestCoreNetworkBootstrapContainsNoWorkloads(t *testing.T) {
 	}
 }
 
+func TestWorkloadsProjectOpenBaoTokenOnlyToServiceProcesses(t *testing.T) {
+	command := exec.Command("helm", "template", "ops-platform", "../../deploy/charts/ops-platform", "--namespace", "ops-system",
+		"--set", "workloadsEnabled=true",
+		"--set", "components.api.image=registry.example.invalid/platform/api@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+		"--set", "components.worker.image=registry.example.invalid/platform/worker@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+		"--set", "components.web.image=registry.example.invalid/platform/web@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+		"--set", "runtime.oidcIssuerURL=https://keycloak.example.invalid", "--set", "runtime.profile=core")
+	output, err := command.CombinedOutput()
+	if err != nil {
+		t.Fatalf("render service workload identities: %v: %s", err, output)
+	}
+	decoder := yaml.NewDecoder(bytes.NewReader(output))
+	workloads := map[string]renderedResource{}
+	for {
+		var resource renderedResource
+		if err := decoder.Decode(&resource); err == io.EOF {
+			break
+		} else if err != nil {
+			t.Fatal(err)
+		}
+		if resource.Kind == "Deployment" {
+			workloads[resource.Metadata.Labels["ops.platform.io/component"]] = resource
+		}
+	}
+	for _, name := range []string{"api", "worker"} {
+		resource, ok := workloads[name]
+		if !ok || resource.Spec.Template.Spec.AutomountServiceAccountToken == nil || *resource.Spec.Template.Spec.AutomountServiceAccountToken {
+			t.Fatalf("%s does not disable automatic ServiceAccount token mounting", name)
+		}
+		if !hasProjectedOpenBaoToken(resource) || !hasReadOnlyOpenBaoTokenMount(resource) {
+			t.Fatalf("%s lacks its read-only, audience-bound OpenBao token projection", name)
+		}
+	}
+	if hasProjectedOpenBaoToken(workloads["web"]) || hasReadOnlyOpenBaoTokenMount(workloads["web"]) {
+		t.Fatal("web workload received a ServiceAccount token it does not use")
+	}
+}
+
+func hasProjectedOpenBaoToken(resource renderedResource) bool {
+	for _, volume := range resource.Spec.Template.Spec.Volumes {
+		if volume.Projected == nil {
+			continue
+		}
+		for _, source := range volume.Projected.Sources {
+			if source.ServiceAccountToken != nil && source.ServiceAccountToken.Audience == "openbao" && source.ServiceAccountToken.Path == "token" && source.ServiceAccountToken.ExpirationSeconds == 3600 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasReadOnlyOpenBaoTokenMount(resource renderedResource) bool {
+	for _, container := range resource.Spec.Template.Spec.Containers {
+		for _, mount := range container.VolumeMounts {
+			if mount.Name == "openbao-identity" && mount.MountPath == "/var/run/secrets/ops-platform/openbao" && mount.ReadOnly {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 type renderedResource struct {
 	Kind                         string `yaml:"kind"`
 	AutomountServiceAccountToken *bool  `yaml:"automountServiceAccountToken"`
@@ -71,7 +134,8 @@ type renderedResource struct {
 		} `yaml:"volumeClaimTemplates"`
 		Template struct {
 			Spec struct {
-				SecurityContext struct {
+				AutomountServiceAccountToken *bool `yaml:"automountServiceAccountToken"`
+				SecurityContext              struct {
 					RunAsNonRoot bool `yaml:"runAsNonRoot"`
 				} `yaml:"securityContext"`
 				Containers []struct {
@@ -91,11 +155,22 @@ type renderedResource struct {
 						AllowPrivilegeEscalation bool `yaml:"allowPrivilegeEscalation"`
 					} `yaml:"securityContext"`
 					VolumeMounts []struct {
-						Name string `yaml:"name"`
+						Name      string `yaml:"name"`
+						MountPath string `yaml:"mountPath"`
+						ReadOnly  bool   `yaml:"readOnly"`
 					} `yaml:"volumeMounts"`
 				} `yaml:"containers"`
 				Volumes []struct {
-					Name string `yaml:"name"`
+					Name      string `yaml:"name"`
+					Projected *struct {
+						Sources []struct {
+							ServiceAccountToken *struct {
+								Path              string `yaml:"path"`
+								Audience          string `yaml:"audience"`
+								ExpirationSeconds int64  `yaml:"expirationSeconds"`
+							} `yaml:"serviceAccountToken"`
+						} `yaml:"sources"`
+					} `yaml:"projected"`
 				} `yaml:"volumes"`
 			} `yaml:"spec"`
 		} `yaml:"template"`

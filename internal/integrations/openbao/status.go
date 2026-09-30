@@ -201,6 +201,10 @@ func (s sealResponse) status() Status {
 }
 
 func (c *Client) request(ctx context.Context, method, path string, input any, output any) error {
+	return c.requestWithToken(ctx, method, path, input, output, c.token)
+}
+
+func (c *Client) requestWithToken(ctx context.Context, method, path string, input any, output any, token string) error {
 	var body io.Reader
 	if input != nil {
 		encoded, err := json.Marshal(input)
@@ -217,8 +221,8 @@ func (c *Client) request(ctx context.Context, method, path string, input any, ou
 	if input != nil {
 		request.Header.Set("Content-Type", "application/json")
 	}
-	if c.token != "" {
-		request.Header.Set("X-Vault-Token", c.token)
+	if token != "" {
+		request.Header.Set("X-Vault-Token", token)
 	}
 	response, err := c.http.Do(request)
 	if err != nil {

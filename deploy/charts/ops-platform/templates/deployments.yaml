@@ -62,12 +62,14 @@ spec:
               readOnly: true
             - name: tmp
               mountPath: /tmp
+{{ include "ops-platform.workloadIdentityMount" (dict "enabled" $.Values.workloadIdentity.enabled "name" $name) | indent 12 }}
       volumes:
         - name: profile
           configMap:
             name: ops-core-profile
         - name: tmp
           emptyDir: {}
+{{ include "ops-platform.workloadIdentityVolume" (dict "enabled" $.Values.workloadIdentity.enabled "name" $name) | indent 8 }}
 ---
 {{- end }}
 {{- end }}
