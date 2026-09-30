@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
+  ClusterRegistrationRequest,
   CommandExecutionRequest,
   DiagnosticGraphBuildRequest,
   ErrorEnvelope,
@@ -30,9 +31,20 @@ import type {
   GetSourceRegistrationsParams,
   GetTenantsParams,
   GetToolsParams,
+  Identifier,
   IncidentTransitionRequest,
   JSONRequest,
   PageEnvelope,
+  PolicyBundlePublishRequest,
+  RegistryActivationRequest,
+  RegistryDraftCreateRequest,
+  RegistryDraftUpdateRequest,
+  RegistryPublishRequest,
+  RegistryVersionRetireRequest,
+  SourceCredentialRotationRequest,
+  SourceRegistrationRequest,
+  SourceRegistrationRollbackRequest,
+  SourceRegistrationUpdateRequest,
   SuccessEnvelope
 } from './models';
 
@@ -374,7 +386,7 @@ export const getCreateClusterUrl = () => {
 /**
  * @summary createCluster
  */
-export const createCluster = async (jSONRequest: JSONRequest, options?: RequestInit): Promise<createClusterResponse> => {
+export const createCluster = async (clusterRegistrationRequest: ClusterRegistrationRequest, options?: RequestInit): Promise<createClusterResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -395,7 +407,7 @@ const res = await fetch(getCreateClusterUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(jSONRequest)
+    body: JSON.stringify(clusterRegistrationRequest)
   }
 )
 
@@ -737,7 +749,7 @@ export const getPublishPolicyBundleUrl = () => {
 /**
  * @summary publishPolicyBundle
  */
-export const publishPolicyBundle = async (jSONRequest: JSONRequest, options?: RequestInit): Promise<publishPolicyBundleResponse> => {
+export const publishPolicyBundle = async (policyBundlePublishRequest: PolicyBundlePublishRequest, options?: RequestInit): Promise<publishPolicyBundleResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -758,7 +770,7 @@ const res = await fetch(getPublishPolicyBundleUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(jSONRequest)
+    body: JSON.stringify(policyBundlePublishRequest)
   }
 )
 
@@ -824,6 +836,329 @@ export const getRecipes = async (params?: GetRecipesParams, options?: RequestIni
 
   const data: getRecipesResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getRecipesResponse
+}
+
+
+
+export type createRegistryDraftResponse201 = {
+  data: SuccessEnvelope
+  status: 201
+}
+
+export type createRegistryDraftResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type createRegistryDraftResponseSuccess = (createRegistryDraftResponse201) & {
+  headers: Headers;
+};
+export type createRegistryDraftResponseError = (createRegistryDraftResponseDefault) & {
+  headers: Headers;
+};
+
+export type createRegistryDraftResponse = (createRegistryDraftResponseSuccess | createRegistryDraftResponseError)
+
+export const getCreateRegistryDraftUrl = () => {
+
+
+
+
+  return `/api/v1/admin/registry-drafts`
+}
+
+/**
+ * @summary createRegistryDraft
+ */
+export const createRegistryDraft = async (registryDraftCreateRequest: RegistryDraftCreateRequest, options?: RequestInit): Promise<createRegistryDraftResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCreateRegistryDraftUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(registryDraftCreateRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createRegistryDraftResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createRegistryDraftResponse
+}
+
+
+
+export type updateRegistryDraftResponse200 = {
+  data: SuccessEnvelope
+  status: 200
+}
+
+export type updateRegistryDraftResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type updateRegistryDraftResponseSuccess = (updateRegistryDraftResponse200) & {
+  headers: Headers;
+};
+export type updateRegistryDraftResponseError = (updateRegistryDraftResponseDefault) & {
+  headers: Headers;
+};
+
+export type updateRegistryDraftResponse = (updateRegistryDraftResponseSuccess | updateRegistryDraftResponseError)
+
+export const getUpdateRegistryDraftUrl = (draftId: Identifier,) => {
+
+
+
+
+  return `/api/v1/admin/registry-drafts/${draftId}`
+}
+
+/**
+ * @summary updateRegistryDraft
+ */
+export const updateRegistryDraft = async (draftId: Identifier,
+    registryDraftUpdateRequest: RegistryDraftUpdateRequest, options?: RequestInit): Promise<updateRegistryDraftResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getUpdateRegistryDraftUrl(draftId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(registryDraftUpdateRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: updateRegistryDraftResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as updateRegistryDraftResponse
+}
+
+
+
+export type publishRegistryDraftResponse201 = {
+  data: SuccessEnvelope
+  status: 201
+}
+
+export type publishRegistryDraftResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type publishRegistryDraftResponseSuccess = (publishRegistryDraftResponse201) & {
+  headers: Headers;
+};
+export type publishRegistryDraftResponseError = (publishRegistryDraftResponseDefault) & {
+  headers: Headers;
+};
+
+export type publishRegistryDraftResponse = (publishRegistryDraftResponseSuccess | publishRegistryDraftResponseError)
+
+export const getPublishRegistryDraftUrl = (draftId: Identifier,) => {
+
+
+
+
+  return `/api/v1/admin/registry-drafts/${draftId}:publish`
+}
+
+/**
+ * @summary publishRegistryDraft
+ */
+export const publishRegistryDraft = async (draftId: Identifier,
+    registryPublishRequest: RegistryPublishRequest, options?: RequestInit): Promise<publishRegistryDraftResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getPublishRegistryDraftUrl(draftId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(registryPublishRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: publishRegistryDraftResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as publishRegistryDraftResponse
+}
+
+
+
+export type activateRegistryVersionResponse200 = {
+  data: SuccessEnvelope
+  status: 200
+}
+
+export type activateRegistryVersionResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type activateRegistryVersionResponseSuccess = (activateRegistryVersionResponse200) & {
+  headers: Headers;
+};
+export type activateRegistryVersionResponseError = (activateRegistryVersionResponseDefault) & {
+  headers: Headers;
+};
+
+export type activateRegistryVersionResponse = (activateRegistryVersionResponseSuccess | activateRegistryVersionResponseError)
+
+export const getActivateRegistryVersionUrl = () => {
+
+
+
+
+  return `/api/v1/admin/registry-activations`
+}
+
+/**
+ * @summary activateRegistryVersion
+ */
+export const activateRegistryVersion = async (registryActivationRequest: RegistryActivationRequest, options?: RequestInit): Promise<activateRegistryVersionResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getActivateRegistryVersionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(registryActivationRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: activateRegistryVersionResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as activateRegistryVersionResponse
+}
+
+
+
+export type retireRegistryVersionResponse200 = {
+  data: SuccessEnvelope
+  status: 200
+}
+
+export type retireRegistryVersionResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type retireRegistryVersionResponseSuccess = (retireRegistryVersionResponse200) & {
+  headers: Headers;
+};
+export type retireRegistryVersionResponseError = (retireRegistryVersionResponseDefault) & {
+  headers: Headers;
+};
+
+export type retireRegistryVersionResponse = (retireRegistryVersionResponseSuccess | retireRegistryVersionResponseError)
+
+export const getRetireRegistryVersionUrl = (versionId: Identifier,) => {
+
+
+
+
+  return `/api/v1/admin/registry-versions/${versionId}:retire`
+}
+
+/**
+ * @summary retireRegistryVersion
+ */
+export const retireRegistryVersion = async (versionId: Identifier,
+    registryVersionRetireRequest: RegistryVersionRetireRequest, options?: RequestInit): Promise<retireRegistryVersionResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getRetireRegistryVersionUrl(versionId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(registryVersionRetireRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: retireRegistryVersionResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as retireRegistryVersionResponse
 }
 
 
@@ -1036,7 +1371,7 @@ export const getCreateSourceRegistrationUrl = () => {
 /**
  * @summary createSourceRegistration
  */
-export const createSourceRegistration = async (jSONRequest: JSONRequest, options?: RequestInit): Promise<createSourceRegistrationResponse> => {
+export const createSourceRegistration = async (sourceRegistrationRequest: SourceRegistrationRequest, options?: RequestInit): Promise<createSourceRegistrationResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -1057,7 +1392,7 @@ const res = await fetch(getCreateSourceRegistrationUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(jSONRequest)
+    body: JSON.stringify(sourceRegistrationRequest)
   }
 )
 
@@ -1066,6 +1401,201 @@ const res = await fetch(getCreateSourceRegistrationUrl(),
 
   const data: createSourceRegistrationResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as createSourceRegistrationResponse
+}
+
+
+
+export type updateSourceRegistrationResponse200 = {
+  data: SuccessEnvelope
+  status: 200
+}
+
+export type updateSourceRegistrationResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type updateSourceRegistrationResponseSuccess = (updateSourceRegistrationResponse200) & {
+  headers: Headers;
+};
+export type updateSourceRegistrationResponseError = (updateSourceRegistrationResponseDefault) & {
+  headers: Headers;
+};
+
+export type updateSourceRegistrationResponse = (updateSourceRegistrationResponseSuccess | updateSourceRegistrationResponseError)
+
+export const getUpdateSourceRegistrationUrl = (sourceId: Identifier,) => {
+
+
+
+
+  return `/api/v1/admin/source-registrations/${sourceId}`
+}
+
+/**
+ * @summary updateSourceRegistration
+ */
+export const updateSourceRegistration = async (sourceId: Identifier,
+    sourceRegistrationUpdateRequest: SourceRegistrationUpdateRequest, options?: RequestInit): Promise<updateSourceRegistrationResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getUpdateSourceRegistrationUrl(sourceId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(sourceRegistrationUpdateRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: updateSourceRegistrationResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as updateSourceRegistrationResponse
+}
+
+
+
+export type rollbackSourceRegistrationResponse200 = {
+  data: SuccessEnvelope
+  status: 200
+}
+
+export type rollbackSourceRegistrationResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type rollbackSourceRegistrationResponseSuccess = (rollbackSourceRegistrationResponse200) & {
+  headers: Headers;
+};
+export type rollbackSourceRegistrationResponseError = (rollbackSourceRegistrationResponseDefault) & {
+  headers: Headers;
+};
+
+export type rollbackSourceRegistrationResponse = (rollbackSourceRegistrationResponseSuccess | rollbackSourceRegistrationResponseError)
+
+export const getRollbackSourceRegistrationUrl = (sourceId: Identifier,) => {
+
+
+
+
+  return `/api/v1/admin/source-registrations/${sourceId}/rollback`
+}
+
+/**
+ * @summary rollbackSourceRegistration
+ */
+export const rollbackSourceRegistration = async (sourceId: Identifier,
+    sourceRegistrationRollbackRequest: SourceRegistrationRollbackRequest, options?: RequestInit): Promise<rollbackSourceRegistrationResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getRollbackSourceRegistrationUrl(sourceId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(sourceRegistrationRollbackRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: rollbackSourceRegistrationResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as rollbackSourceRegistrationResponse
+}
+
+
+
+export type rotateSourceCredentialResponse200 = {
+  data: SuccessEnvelope
+  status: 200
+}
+
+export type rotateSourceCredentialResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type rotateSourceCredentialResponseSuccess = (rotateSourceCredentialResponse200) & {
+  headers: Headers;
+};
+export type rotateSourceCredentialResponseError = (rotateSourceCredentialResponseDefault) & {
+  headers: Headers;
+};
+
+export type rotateSourceCredentialResponse = (rotateSourceCredentialResponseSuccess | rotateSourceCredentialResponseError)
+
+export const getRotateSourceCredentialUrl = (sourceId: Identifier,) => {
+
+
+
+
+  return `/api/v1/admin/source-registrations/${sourceId}/rotate-credential`
+}
+
+/**
+ * @summary rotateSourceCredential
+ */
+export const rotateSourceCredential = async (sourceId: Identifier,
+    sourceCredentialRotationRequest: SourceCredentialRotationRequest, options?: RequestInit): Promise<rotateSourceCredentialResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getRotateSourceCredentialUrl(sourceId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(sourceCredentialRotationRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: rotateSourceCredentialResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as rotateSourceCredentialResponse
 }
 
 

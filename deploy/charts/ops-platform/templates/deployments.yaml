@@ -34,6 +34,15 @@ spec:
         - name: {{ $name }}
           image: {{ $image | quote }}
           imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ $component.port }}
+              protocol: TCP
+            {{ if has $name (list "api" "worker") }}
+            - name: metrics
+              containerPort: {{ $component.metricsPort | default 9090 }}
+              protocol: TCP
+            {{ end }}
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -62,12 +71,14 @@ spec:
               readOnly: true
             - name: tmp
               mountPath: /tmp
+{{ include "ops-platform.workloadIdentityMount" (dict "enabled" $.Values.workloadIdentity.enabled "name" $name) | indent 12 }}
       volumes:
         - name: profile
           configMap:
             name: ops-core-profile
         - name: tmp
           emptyDir: {}
+{{ include "ops-platform.workloadIdentityVolume" (dict "enabled" $.Values.workloadIdentity.enabled "name" $name) | indent 8 }}
 ---
 {{- end }}
 {{- end }}

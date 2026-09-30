@@ -6,6 +6,7 @@
  */
 
 export * from './canonicalID';
+export * from './clusterRegistrationRequest';
 export * from './commandExecutionEvent';
 export * from './commandExecutionRequest';
 export * from './diagnosticGraphBuildRequest';
@@ -47,5 +48,22 @@ export * from './investigationEventEventType';
 export * from './jSONRequest';
 export * from './pageEnvelope';
 export * from './pageEnvelopeMeta';
+export * from './policyBundlePublishRequest';
+export * from './registryActivationRequest';
+export * from './registryActivationRequestKind';
+export * from './registryActivationRequestScopeType';
+export * from './registryDraftCreateRequest';
+export * from './registryDraftCreateRequestContent';
+export * from './registryDraftCreateRequestKind';
+export * from './registryDraftUpdateRequest';
+export * from './registryDraftUpdateRequestContent';
+export * from './registryPublishRequest';
+export * from './registryVersionRetireRequest';
+export * from './sourceCredentialRotationRequest';
+export * from './sourceRegistrationRequest';
+export * from './sourceRegistrationRequestSourceType';
+export * from './sourceRegistrationRollbackRequest';
+export * from './sourceRegistrationUpdateRequest';
+export * from './sourceRegistrationUpdateRequestStatus';
 export * from './successEnvelope';
 export * from './successEnvelopeMeta';

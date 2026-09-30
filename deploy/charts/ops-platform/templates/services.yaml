@@ -16,6 +16,11 @@ spec:
     - name: http
       port: {{ $component.port }}
       targetPort: http
+    {{ if has $name (list "api" "worker") }}
+    - name: metrics
+      port: {{ $component.metricsPort | default 9090 }}
+      targetPort: metrics
+    {{ end }}
 ---
 {{- end }}
 {{- end }}
