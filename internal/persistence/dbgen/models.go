@@ -166,6 +166,17 @@ type PlatformClusterRegistration struct {
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 }
 
+type PlatformClusterRegistrationRevision struct {
+	TenantID     pgtype.UUID        `json:"tenant_id"`
+	ClusterID    pgtype.UUID        `json:"cluster_id"`
+	Revision     int64              `json:"revision"`
+	ClusterUid   string             `json:"cluster_uid"`
+	DisplayName  string             `json:"display_name"`
+	Status       string             `json:"status"`
+	ActorSubject string             `json:"actor_subject"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+}
+
 type PlatformExecutionProfileVersion struct {
 	TenantID         pgtype.UUID        `json:"tenant_id"`
 	ProfileVersionID pgtype.UUID        `json:"profile_version_id"`
@@ -180,6 +191,27 @@ type PlatformExecutionProfileVersion struct {
 	PublishedAt      pgtype.Timestamptz `json:"published_at"`
 }
 
+type PlatformIdempotencyRequestLedger struct {
+	TenantID             pgtype.UUID        `json:"tenant_id"`
+	LedgerID             pgtype.UUID        `json:"ledger_id"`
+	Subject              string             `json:"subject"`
+	Operation            string             `json:"operation"`
+	IdempotencyKeyDigest string             `json:"idempotency_key_digest"`
+	RequestDigest        string             `json:"request_digest"`
+	ExecutionOnce        bool               `json:"execution_once"`
+	State                string             `json:"state"`
+	LeaseToken           pgtype.UUID        `json:"lease_token"`
+	LeaseExpiresAt       pgtype.Timestamptz `json:"lease_expires_at"`
+	Attempt              int32              `json:"attempt"`
+	ResponseStatus       pgtype.Int4        `json:"response_status"`
+	ResponseContentType  pgtype.Text        `json:"response_content_type"`
+	ResponseHeaders      []byte             `json:"response_headers"`
+	ResponseBody         []byte             `json:"response_body"`
+	ResponseExpiresAt    pgtype.Timestamptz `json:"response_expires_at"`
+	CreatedAt            pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt            pgtype.Timestamptz `json:"updated_at"`
+}
+
 type PlatformRegistryActivation struct {
 	TenantID     pgtype.UUID        `json:"tenant_id"`
 	ActivationID pgtype.UUID        `json:"activation_id"`
@@ -190,6 +222,20 @@ type PlatformRegistryActivation struct {
 	Namespace    pgtype.Text        `json:"namespace"`
 	VersionID    pgtype.UUID        `json:"version_id"`
 	Revision     int64              `json:"revision"`
+	ActivatedBy  string             `json:"activated_by"`
+	ActivatedAt  pgtype.Timestamptz `json:"activated_at"`
+}
+
+type PlatformRegistryActivationHistory struct {
+	TenantID     pgtype.UUID        `json:"tenant_id"`
+	ActivationID pgtype.UUID        `json:"activation_id"`
+	Revision     int64              `json:"revision"`
+	Kind         string             `json:"kind"`
+	LogicalName  string             `json:"logical_name"`
+	ScopeType    string             `json:"scope_type"`
+	ClusterID    pgtype.UUID        `json:"cluster_id"`
+	Namespace    pgtype.Text        `json:"namespace"`
+	VersionID    pgtype.UUID        `json:"version_id"`
 	ActivatedBy  string             `json:"activated_by"`
 	ActivatedAt  pgtype.Timestamptz `json:"activated_at"`
 }

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/tool-registry/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "name", "readOnly", "inputSchema", "outputSchema"],
+  "properties": {
+    "schemaVersion": { "const": "tool-registry/v1" },
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9._-]{0,127}$" },
+    "readOnly": { "type": "boolean" },
+    "inputSchema": { "type": "object" },
+    "outputSchema": { "type": "object" }
+  }
+}

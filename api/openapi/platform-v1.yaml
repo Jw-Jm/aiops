@@ -280,6 +280,133 @@ components:
             required:
                 - expectedRevision
             type: object
+        PolicyBundlePublishRequest:
+            additionalProperties: false
+            properties:
+                draftId:
+                    $ref: '#/components/schemas/Identifier'
+                expectedRevision:
+                    format: int64
+                    minimum: 1
+                    type: integer
+                signature:
+                    contentEncoding: base64
+                    minLength: 1
+                    type: string
+                signerKeyId:
+                    maxLength: 200
+                    minLength: 1
+                    type: string
+            required:
+                - draftId
+                - expectedRevision
+                - signerKeyId
+                - signature
+            type: object
+        RegistryActivationRequest:
+            additionalProperties: false
+            properties:
+                clusterId:
+                    oneOf:
+                        - $ref: '#/components/schemas/Identifier'
+                        - type: 'null'
+                expectedRevision:
+                    format: int64
+                    minimum: 0
+                    type: integer
+                kind:
+                    enum:
+                        - policy
+                        - recipe
+                        - tool
+                    type: string
+                logicalName:
+                    maxLength: 200
+                    minLength: 1
+                    type: string
+                namespace:
+                    maxLength: 63
+                    minLength: 1
+                    type: string
+                scopeType:
+                    enum:
+                        - tenant
+                        - cluster
+                        - namespace
+                    type: string
+                versionId:
+                    $ref: '#/components/schemas/Identifier'
+            required:
+                - kind
+                - logicalName
+                - versionId
+                - scopeType
+                - expectedRevision
+            type: object
+        RegistryDraftCreateRequest:
+            additionalProperties: false
+            properties:
+                content:
+                    additionalProperties: true
+                    type: object
+                kind:
+                    enum:
+                        - policy
+                        - recipe
+                        - tool
+                    type: string
+                logicalName:
+                    maxLength: 200
+                    minLength: 1
+                    type: string
+            required:
+                - kind
+                - logicalName
+                - content
+            type: object
+        RegistryDraftUpdateRequest:
+            additionalProperties: false
+            properties:
+                content:
+                    additionalProperties: true
+                    type: object
+                expectedRevision:
+                    format: int64
+                    minimum: 1
+                    type: integer
+            required:
+                - expectedRevision
+                - content
+            type: object
+        RegistryPublishRequest:
+            additionalProperties: false
+            properties:
+                expectedRevision:
+                    format: int64
+                    minimum: 1
+                    type: integer
+                signature:
+                    contentEncoding: base64
+                    minLength: 1
+                    type: string
+                signerKeyId:
+                    maxLength: 200
+                    minLength: 1
+                    type: string
+            required:
+                - expectedRevision
+                - signerKeyId
+                - signature
+            type: object
+        RegistryVersionRetireRequest:
+            additionalProperties: false
+            properties:
+                expectedDigest:
+                    pattern: '^sha256:[0-9a-f]{64}$'
+                    type: string
+            required:
+                - expectedDigest
+            type: object
         IncidentTransitionRequest:
             additionalProperties: false
             properties:
@@ -765,7 +892,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/JSONRequest'
+                            $ref: '#/components/schemas/PolicyBundlePublishRequest'
                 required: true
             responses:
                 "200":
@@ -818,6 +945,201 @@ paths:
             summary: getRecipes
             tags:
                 - Admin
+    /api/v1/admin/registry-drafts:
+        post:
+            operationId: createRegistryDraft
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RegistryDraftCreateRequest'
+                required: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: createRegistryDraft
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/registry-drafts/{draftId}:
+        patch:
+            operationId: updateRegistryDraft
+            parameters:
+                - in: path
+                  name: draftId
+                  required: true
+                  schema:
+                    $ref: '#/components/schemas/Identifier'
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RegistryDraftUpdateRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: updateRegistryDraft
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/registry-drafts/{draftId}:publish:
+        post:
+            operationId: publishRegistryDraft
+            parameters:
+                - in: path
+                  name: draftId
+                  required: true
+                  schema:
+                    $ref: '#/components/schemas/Identifier'
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RegistryPublishRequest'
+                required: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: publishRegistryDraft
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/registry-activations:
+        post:
+            operationId: activateRegistryVersion
+            parameters:
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RegistryActivationRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: activateRegistryVersion
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/registry-versions/{versionId}:retire:
+        post:
+            operationId: retireRegistryVersion
+            parameters:
+                - in: path
+                  name: versionId
+                  required: true
+                  schema:
+                    $ref: '#/components/schemas/Identifier'
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RegistryVersionRetireRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: retireRegistryVersion
+            tags:
+                - Admin
+            x-idempotency: required
     /api/v1/admin/role-bindings:
         get:
             operationId: getRoleBindings

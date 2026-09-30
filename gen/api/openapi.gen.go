@@ -176,6 +176,69 @@ func (e InvestigationEventEventType) Valid() bool {
 	}
 }
 
+// Defines values for RegistryActivationRequestKind.
+const (
+	RegistryActivationRequestKindPolicy RegistryActivationRequestKind = "policy"
+	RegistryActivationRequestKindRecipe RegistryActivationRequestKind = "recipe"
+	RegistryActivationRequestKindTool   RegistryActivationRequestKind = "tool"
+)
+
+// Valid indicates whether the value is a known member of the RegistryActivationRequestKind enum.
+func (e RegistryActivationRequestKind) Valid() bool {
+	switch e {
+	case RegistryActivationRequestKindPolicy:
+		return true
+	case RegistryActivationRequestKindRecipe:
+		return true
+	case RegistryActivationRequestKindTool:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RegistryActivationRequestScopeType.
+const (
+	Cluster   RegistryActivationRequestScopeType = "cluster"
+	Namespace RegistryActivationRequestScopeType = "namespace"
+	Tenant    RegistryActivationRequestScopeType = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the RegistryActivationRequestScopeType enum.
+func (e RegistryActivationRequestScopeType) Valid() bool {
+	switch e {
+	case Cluster:
+		return true
+	case Namespace:
+		return true
+	case Tenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RegistryDraftCreateRequestKind.
+const (
+	RegistryDraftCreateRequestKindPolicy RegistryDraftCreateRequestKind = "policy"
+	RegistryDraftCreateRequestKindRecipe RegistryDraftCreateRequestKind = "recipe"
+	RegistryDraftCreateRequestKindTool   RegistryDraftCreateRequestKind = "tool"
+)
+
+// Valid indicates whether the value is a known member of the RegistryDraftCreateRequestKind enum.
+func (e RegistryDraftCreateRequestKind) Valid() bool {
+	switch e {
+	case RegistryDraftCreateRequestKindPolicy:
+		return true
+	case RegistryDraftCreateRequestKindRecipe:
+		return true
+	case RegistryDraftCreateRequestKindTool:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SourceRegistrationRequestSourceType.
 const (
 	Deepflow        SourceRegistrationRequestSourceType = "deepflow"
@@ -397,6 +460,59 @@ type PageEnvelope_Meta struct {
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
 
+// PolicyBundlePublishRequest defines model for PolicyBundlePublishRequest.
+type PolicyBundlePublishRequest struct {
+	DraftId          Identifier `json:"draftId"`
+	ExpectedRevision int64      `json:"expectedRevision"`
+	Signature        []byte     `json:"signature"`
+	SignerKeyId      string     `json:"signerKeyId"`
+}
+
+// RegistryActivationRequest defines model for RegistryActivationRequest.
+type RegistryActivationRequest struct {
+	ClusterId        *Identifier                        `json:"clusterId,omitempty"`
+	ExpectedRevision int64                              `json:"expectedRevision"`
+	Kind             RegistryActivationRequestKind      `json:"kind"`
+	LogicalName      string                             `json:"logicalName"`
+	Namespace        *string                            `json:"namespace,omitempty"`
+	ScopeType        RegistryActivationRequestScopeType `json:"scopeType"`
+	VersionId        Identifier                         `json:"versionId"`
+}
+
+// RegistryActivationRequestKind defines model for RegistryActivationRequest.Kind.
+type RegistryActivationRequestKind string
+
+// RegistryActivationRequestScopeType defines model for RegistryActivationRequest.ScopeType.
+type RegistryActivationRequestScopeType string
+
+// RegistryDraftCreateRequest defines model for RegistryDraftCreateRequest.
+type RegistryDraftCreateRequest struct {
+	Content     map[string]interface{}         `json:"content"`
+	Kind        RegistryDraftCreateRequestKind `json:"kind"`
+	LogicalName string                         `json:"logicalName"`
+}
+
+// RegistryDraftCreateRequestKind defines model for RegistryDraftCreateRequest.Kind.
+type RegistryDraftCreateRequestKind string
+
+// RegistryDraftUpdateRequest defines model for RegistryDraftUpdateRequest.
+type RegistryDraftUpdateRequest struct {
+	Content          map[string]interface{} `json:"content"`
+	ExpectedRevision int64                  `json:"expectedRevision"`
+}
+
+// RegistryPublishRequest defines model for RegistryPublishRequest.
+type RegistryPublishRequest struct {
+	ExpectedRevision int64  `json:"expectedRevision"`
+	Signature        []byte `json:"signature"`
+	SignerKeyId      string `json:"signerKeyId"`
+}
+
+// RegistryVersionRetireRequest defines model for RegistryVersionRetireRequest.
+type RegistryVersionRetireRequest struct {
+	ExpectedDigest string `json:"expectedDigest"`
+}
+
 // SourceCredentialRotationRequest defines model for SourceCredentialRotationRequest.
 type SourceCredentialRotationRequest struct {
 	AuthRef          string `json:"authRef"`
@@ -513,6 +629,36 @@ type GetRecipesParams struct {
 	// Cursor Opaque cursor for keyset pagination.
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// ActivateRegistryVersionParams defines parameters for ActivateRegistryVersion.
+type ActivateRegistryVersionParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// CreateRegistryDraftParams defines parameters for CreateRegistryDraft.
+type CreateRegistryDraftParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// UpdateRegistryDraftParams defines parameters for UpdateRegistryDraft.
+type UpdateRegistryDraftParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// PublishRegistryDraftParams defines parameters for PublishRegistryDraft.
+type PublishRegistryDraftParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// RetireRegistryVersionParams defines parameters for RetireRegistryVersion.
+type RetireRegistryVersionParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
 // GetRoleBindingsParams defines parameters for GetRoleBindings.
@@ -790,7 +936,22 @@ type CreateExecutionProfileJSONRequestBody = JSONRequest
 type CreateLegalHoldJSONRequestBody = JSONRequest
 
 // PublishPolicyBundleJSONRequestBody defines body for PublishPolicyBundle for application/json ContentType.
-type PublishPolicyBundleJSONRequestBody = JSONRequest
+type PublishPolicyBundleJSONRequestBody = PolicyBundlePublishRequest
+
+// ActivateRegistryVersionJSONRequestBody defines body for ActivateRegistryVersion for application/json ContentType.
+type ActivateRegistryVersionJSONRequestBody = RegistryActivationRequest
+
+// CreateRegistryDraftJSONRequestBody defines body for CreateRegistryDraft for application/json ContentType.
+type CreateRegistryDraftJSONRequestBody = RegistryDraftCreateRequest
+
+// UpdateRegistryDraftJSONRequestBody defines body for UpdateRegistryDraft for application/json ContentType.
+type UpdateRegistryDraftJSONRequestBody = RegistryDraftUpdateRequest
+
+// PublishRegistryDraftJSONRequestBody defines body for PublishRegistryDraft for application/json ContentType.
+type PublishRegistryDraftJSONRequestBody = RegistryPublishRequest
+
+// RetireRegistryVersionJSONRequestBody defines body for RetireRegistryVersion for application/json ContentType.
+type RetireRegistryVersionJSONRequestBody = RegistryVersionRetireRequest
 
 // CreateRoleBindingJSONRequestBody defines body for CreateRoleBinding for application/json ContentType.
 type CreateRoleBindingJSONRequestBody = JSONRequest
@@ -1068,6 +1229,21 @@ type ServerInterface interface {
 	// GetRecipes getRecipes
 	// (GET /api/v1/admin/recipes)
 	GetRecipes(w http.ResponseWriter, r *http.Request, params GetRecipesParams)
+	// ActivateRegistryVersion activateRegistryVersion
+	// (POST /api/v1/admin/registry-activations)
+	ActivateRegistryVersion(w http.ResponseWriter, r *http.Request, params ActivateRegistryVersionParams)
+	// CreateRegistryDraft createRegistryDraft
+	// (POST /api/v1/admin/registry-drafts)
+	CreateRegistryDraft(w http.ResponseWriter, r *http.Request, params CreateRegistryDraftParams)
+	// UpdateRegistryDraft updateRegistryDraft
+	// (PATCH /api/v1/admin/registry-drafts/{draftId})
+	UpdateRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier, params UpdateRegistryDraftParams)
+	// PublishRegistryDraft publishRegistryDraft
+	// (POST /api/v1/admin/registry-drafts/{draftId}:publish)
+	PublishRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier, params PublishRegistryDraftParams)
+	// RetireRegistryVersion retireRegistryVersion
+	// (POST /api/v1/admin/registry-versions/{versionId}:retire)
+	RetireRegistryVersion(w http.ResponseWriter, r *http.Request, versionId Identifier, params RetireRegistryVersionParams)
 	// GetRoleBindings getRoleBindings
 	// (GET /api/v1/admin/role-bindings)
 	GetRoleBindings(w http.ResponseWriter, r *http.Request, params GetRoleBindingsParams)
@@ -1284,6 +1460,36 @@ func (_ Unimplemented) PublishPolicyBundle(w http.ResponseWriter, r *http.Reques
 // GetRecipes getRecipes
 // (GET /api/v1/admin/recipes)
 func (_ Unimplemented) GetRecipes(w http.ResponseWriter, r *http.Request, params GetRecipesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ActivateRegistryVersion activateRegistryVersion
+// (POST /api/v1/admin/registry-activations)
+func (_ Unimplemented) ActivateRegistryVersion(w http.ResponseWriter, r *http.Request, params ActivateRegistryVersionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateRegistryDraft createRegistryDraft
+// (POST /api/v1/admin/registry-drafts)
+func (_ Unimplemented) CreateRegistryDraft(w http.ResponseWriter, r *http.Request, params CreateRegistryDraftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateRegistryDraft updateRegistryDraft
+// (PATCH /api/v1/admin/registry-drafts/{draftId})
+func (_ Unimplemented) UpdateRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier, params UpdateRegistryDraftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PublishRegistryDraft publishRegistryDraft
+// (POST /api/v1/admin/registry-drafts/{draftId}:publish)
+func (_ Unimplemented) PublishRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier, params PublishRegistryDraftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RetireRegistryVersion retireRegistryVersion
+// (POST /api/v1/admin/registry-versions/{versionId}:retire)
+func (_ Unimplemented) RetireRegistryVersion(w http.ResponseWriter, r *http.Request, versionId Identifier, params RetireRegistryVersionParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2146,6 +2352,258 @@ func (siw *ServerInterfaceWrapper) GetRecipes(w http.ResponseWriter, r *http.Req
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetRecipes(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ActivateRegistryVersion operation middleware
+func (siw *ServerInterfaceWrapper) ActivateRegistryVersion(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ActivateRegistryVersionParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ActivateRegistryVersion(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateRegistryDraft operation middleware
+func (siw *ServerInterfaceWrapper) CreateRegistryDraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateRegistryDraftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateRegistryDraft(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateRegistryDraft operation middleware
+func (siw *ServerInterfaceWrapper) UpdateRegistryDraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "draftId" -------------
+	var draftId Identifier
+
+	err = runtime.BindStyledParameterWithOptions("simple", "draftId", chi.URLParam(r, "draftId"), &draftId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "draftId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateRegistryDraftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateRegistryDraft(w, r, draftId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PublishRegistryDraft operation middleware
+func (siw *ServerInterfaceWrapper) PublishRegistryDraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "draftId" -------------
+	var draftId Identifier
+
+	err = runtime.BindStyledParameterWithOptions("simple", "draftId", chi.URLParam(r, "draftId"), &draftId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "draftId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PublishRegistryDraftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PublishRegistryDraft(w, r, draftId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RetireRegistryVersion operation middleware
+func (siw *ServerInterfaceWrapper) RetireRegistryVersion(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "versionId" -------------
+	var versionId Identifier
+
+	err = runtime.BindStyledParameterWithOptions("simple", "versionId", chi.URLParam(r, "versionId"), &versionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "versionId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RetireRegistryVersionParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RetireRegistryVersion(w, r, versionId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4627,6 +5085,21 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/api/v1/admin/recipes", wrapper.GetRecipes)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/registry-drafts", wrapper.CreateRegistryDraft)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/admin/registry-drafts/{draftId}", wrapper.UpdateRegistryDraft)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/registry-drafts/{draftId}:publish", wrapper.PublishRegistryDraft)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/registry-activations", wrapper.ActivateRegistryVersion)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/registry-versions/{versionId}:retire", wrapper.RetireRegistryVersion)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/admin/role-bindings", wrapper.GetRoleBindings)
 	})
 	r.Group(func(r chi.Router) {
@@ -5270,6 +5743,209 @@ type GetRecipesdefaultJSONResponse struct {
 }
 
 func (response GetRecipesdefaultJSONResponse) VisitGetRecipesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ActivateRegistryVersionRequestObject struct {
+	Params ActivateRegistryVersionParams
+	Body   *ActivateRegistryVersionJSONRequestBody
+}
+
+type ActivateRegistryVersionResponseObject interface {
+	VisitActivateRegistryVersionResponse(w http.ResponseWriter) error
+}
+
+type ActivateRegistryVersion200JSONResponse SuccessEnvelope
+
+func (response ActivateRegistryVersion200JSONResponse) VisitActivateRegistryVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ActivateRegistryVersiondefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response ActivateRegistryVersiondefaultJSONResponse) VisitActivateRegistryVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateRegistryDraftRequestObject struct {
+	Params CreateRegistryDraftParams
+	Body   *CreateRegistryDraftJSONRequestBody
+}
+
+type CreateRegistryDraftResponseObject interface {
+	VisitCreateRegistryDraftResponse(w http.ResponseWriter) error
+}
+
+type CreateRegistryDraft201JSONResponse SuccessEnvelope
+
+func (response CreateRegistryDraft201JSONResponse) VisitCreateRegistryDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateRegistryDraftdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response CreateRegistryDraftdefaultJSONResponse) VisitCreateRegistryDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateRegistryDraftRequestObject struct {
+	DraftId Identifier `json:"draftId"`
+	Params  UpdateRegistryDraftParams
+	Body    *UpdateRegistryDraftJSONRequestBody
+}
+
+type UpdateRegistryDraftResponseObject interface {
+	VisitUpdateRegistryDraftResponse(w http.ResponseWriter) error
+}
+
+type UpdateRegistryDraft200JSONResponse SuccessEnvelope
+
+func (response UpdateRegistryDraft200JSONResponse) VisitUpdateRegistryDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateRegistryDraftdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response UpdateRegistryDraftdefaultJSONResponse) VisitUpdateRegistryDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishRegistryDraftRequestObject struct {
+	DraftId Identifier `json:"draftId"`
+	Params  PublishRegistryDraftParams
+	Body    *PublishRegistryDraftJSONRequestBody
+}
+
+type PublishRegistryDraftResponseObject interface {
+	VisitPublishRegistryDraftResponse(w http.ResponseWriter) error
+}
+
+type PublishRegistryDraft201JSONResponse SuccessEnvelope
+
+func (response PublishRegistryDraft201JSONResponse) VisitPublishRegistryDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishRegistryDraftdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response PublishRegistryDraftdefaultJSONResponse) VisitPublishRegistryDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetireRegistryVersionRequestObject struct {
+	VersionId Identifier `json:"versionId"`
+	Params    RetireRegistryVersionParams
+	Body      *RetireRegistryVersionJSONRequestBody
+}
+
+type RetireRegistryVersionResponseObject interface {
+	VisitRetireRegistryVersionResponse(w http.ResponseWriter) error
+}
+
+type RetireRegistryVersion200JSONResponse SuccessEnvelope
+
+func (response RetireRegistryVersion200JSONResponse) VisitRetireRegistryVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetireRegistryVersiondefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response RetireRegistryVersiondefaultJSONResponse) VisitRetireRegistryVersionResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -7160,6 +7836,21 @@ type StrictServerInterface interface {
 	// GetRecipes getRecipes
 	// (GET /api/v1/admin/recipes)
 	GetRecipes(ctx context.Context, request GetRecipesRequestObject) (GetRecipesResponseObject, error)
+	// ActivateRegistryVersion activateRegistryVersion
+	// (POST /api/v1/admin/registry-activations)
+	ActivateRegistryVersion(ctx context.Context, request ActivateRegistryVersionRequestObject) (ActivateRegistryVersionResponseObject, error)
+	// CreateRegistryDraft createRegistryDraft
+	// (POST /api/v1/admin/registry-drafts)
+	CreateRegistryDraft(ctx context.Context, request CreateRegistryDraftRequestObject) (CreateRegistryDraftResponseObject, error)
+	// UpdateRegistryDraft updateRegistryDraft
+	// (PATCH /api/v1/admin/registry-drafts/{draftId})
+	UpdateRegistryDraft(ctx context.Context, request UpdateRegistryDraftRequestObject) (UpdateRegistryDraftResponseObject, error)
+	// PublishRegistryDraft publishRegistryDraft
+	// (POST /api/v1/admin/registry-drafts/{draftId}:publish)
+	PublishRegistryDraft(ctx context.Context, request PublishRegistryDraftRequestObject) (PublishRegistryDraftResponseObject, error)
+	// RetireRegistryVersion retireRegistryVersion
+	// (POST /api/v1/admin/registry-versions/{versionId}:retire)
+	RetireRegistryVersion(ctx context.Context, request RetireRegistryVersionRequestObject) (RetireRegistryVersionResponseObject, error)
 	// GetRoleBindings getRoleBindings
 	// (GET /api/v1/admin/role-bindings)
 	GetRoleBindings(ctx context.Context, request GetRoleBindingsRequestObject) (GetRoleBindingsResponseObject, error)
@@ -7718,6 +8409,174 @@ func (sh *strictHandler) GetRecipes(w http.ResponseWriter, r *http.Request, para
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetRecipesResponseObject); ok {
 		if err := validResponse.VisitGetRecipesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ActivateRegistryVersion operation middleware
+func (sh *strictHandler) ActivateRegistryVersion(w http.ResponseWriter, r *http.Request, params ActivateRegistryVersionParams) {
+	var request ActivateRegistryVersionRequestObject
+
+	request.Params = params
+
+	var body ActivateRegistryVersionJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ActivateRegistryVersion(ctx, request.(ActivateRegistryVersionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ActivateRegistryVersion")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ActivateRegistryVersionResponseObject); ok {
+		if err := validResponse.VisitActivateRegistryVersionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateRegistryDraft operation middleware
+func (sh *strictHandler) CreateRegistryDraft(w http.ResponseWriter, r *http.Request, params CreateRegistryDraftParams) {
+	var request CreateRegistryDraftRequestObject
+
+	request.Params = params
+
+	var body CreateRegistryDraftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateRegistryDraft(ctx, request.(CreateRegistryDraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateRegistryDraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateRegistryDraftResponseObject); ok {
+		if err := validResponse.VisitCreateRegistryDraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateRegistryDraft operation middleware
+func (sh *strictHandler) UpdateRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier, params UpdateRegistryDraftParams) {
+	var request UpdateRegistryDraftRequestObject
+
+	request.DraftId = draftId
+	request.Params = params
+
+	var body UpdateRegistryDraftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateRegistryDraft(ctx, request.(UpdateRegistryDraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateRegistryDraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateRegistryDraftResponseObject); ok {
+		if err := validResponse.VisitUpdateRegistryDraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PublishRegistryDraft operation middleware
+func (sh *strictHandler) PublishRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier, params PublishRegistryDraftParams) {
+	var request PublishRegistryDraftRequestObject
+
+	request.DraftId = draftId
+	request.Params = params
+
+	var body PublishRegistryDraftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PublishRegistryDraft(ctx, request.(PublishRegistryDraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PublishRegistryDraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PublishRegistryDraftResponseObject); ok {
+		if err := validResponse.VisitPublishRegistryDraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RetireRegistryVersion operation middleware
+func (sh *strictHandler) RetireRegistryVersion(w http.ResponseWriter, r *http.Request, versionId Identifier, params RetireRegistryVersionParams) {
+	var request RetireRegistryVersionRequestObject
+
+	request.VersionId = versionId
+	request.Params = params
+
+	var body RetireRegistryVersionJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RetireRegistryVersion(ctx, request.(RetireRegistryVersionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RetireRegistryVersion")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RetireRegistryVersionResponseObject); ok {
+		if err := validResponse.VisitRetireRegistryVersionResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
