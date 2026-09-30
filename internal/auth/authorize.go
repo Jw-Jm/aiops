@@ -31,12 +31,17 @@ func RequireRole(role Role) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			request, ok := RequestContextFromContext(r.Context())
+			requestID := RequestIDFromHeader(r.Header.Get("X-Request-ID"))
+			if ok {
+				requestID = request.RequestID
+			}
+			w.Header().Set("X-Request-ID", requestID)
 			if !ok {
-				writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "a verified request context is required", false, "")
+				writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "a verified request context is required", false, requestID)
 				return
 			}
 			if !HasRole(r.Context(), role) {
-				writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the required role is not assigned", false, request.RequestID)
+				writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the required role is not assigned", false, requestID)
 				return
 			}
 			next.ServeHTTP(w, r)
@@ -48,12 +53,17 @@ func RequireOperatorScope(clusterID uuid.UUID, namespace string) func(http.Handl
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			request, ok := RequestContextFromContext(r.Context())
+			requestID := RequestIDFromHeader(r.Header.Get("X-Request-ID"))
+			if ok {
+				requestID = request.RequestID
+			}
+			w.Header().Set("X-Request-ID", requestID)
 			if !ok {
-				writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "a verified request context is required", false, "")
+				writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "a verified request context is required", false, requestID)
 				return
 			}
 			if !containsRole(request.Roles, Operator) || !hasScope(request, clusterID, namespace) {
-				writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the operator grant does not cover this resource scope", false, request.RequestID)
+				writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the operator grant does not cover this resource scope", false, requestID)
 				return
 			}
 			next.ServeHTTP(w, r)

@@ -2,6 +2,10 @@ workloadsEnabled: false
 networkPolicyOnly: false
 workloadIdentity:
   enabled: true
+observability:
+  # auto resolves from the installed CRDs; explicit values are reserved for offline render checks.
+  scrapeKind: auto
+  scrapeInterval: 30s
 networkPolicy:
   managedDependencyReleases: [ops-dependencies]
   externalServices: []
@@ -9,9 +13,11 @@ components:
   api:
     enabled: true
     port: 8080
+    metricsPort: 9090
   worker:
     enabled: true
     port: 8081
+    metricsPort: 9090
   web:
     enabled: true
     port: 3000

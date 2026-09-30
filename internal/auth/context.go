@@ -39,7 +39,10 @@ type RequestContext struct {
 
 type requestContextKey struct{}
 
-var traceParentPattern = regexp.MustCompile(`^[\da-f]{2}-[\da-f]{32}-[\da-f]{16}-[\da-f]{2}$`)
+var (
+	traceParentPattern = regexp.MustCompile(`^[\da-f]{2}-[\da-f]{32}-[\da-f]{16}-[\da-f]{2}$`)
+	requestIDPattern   = regexp.MustCompile(`^[A-Za-z0-9_.:-]{1,128}$`)
+)
 
 func WithRequestContext(ctx context.Context, value RequestContext) context.Context {
 	value.RequestID = nonemptyRequestID(value.RequestID)
@@ -71,11 +74,13 @@ func ValidTraceParent(value string) string {
 }
 
 func nonemptyRequestID(value string) string {
-	if value != "" && len(value) <= 128 {
+	if requestIDPattern.MatchString(value) {
 		return value
 	}
 	return uuid.Must(uuid.NewV7()).String()
 }
+
+func RequestIDFromHeader(value string) string { return nonemptyRequestID(value) }
 
 func RequestID(ctx context.Context) (string, bool) {
 	value, ok := RequestContextFromContext(ctx)

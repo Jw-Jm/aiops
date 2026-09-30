@@ -34,6 +34,15 @@ spec:
         - name: {{ $name }}
           image: {{ $image | quote }}
           imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ $component.port }}
+              protocol: TCP
+            {{ if has $name (list "api" "worker") }}
+            - name: metrics
+              containerPort: {{ $component.metricsPort | default 9090 }}
+              protocol: TCP
+            {{ end }}
           env:
             - name: DATABASE_URL
               valueFrom:

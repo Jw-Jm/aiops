@@ -87,6 +87,65 @@ func TestWorkloadsProjectOpenBaoTokenOnlyToServiceProcesses(t *testing.T) {
 	}
 }
 
+func TestMetricsScrapeUsesResolvedCRDCapability(t *testing.T) {
+	for _, mode := range []struct {
+		name       string
+		apiVersion string
+		wantKind   string
+	}{
+		{name: "no-crd", wantKind: ""},
+		{name: "victoria-metrics-operator", apiVersion: "operator.victoriametrics.com/v1beta1/VMServiceScrape", wantKind: "VMServiceScrape"},
+		{name: "prometheus-operator", apiVersion: "monitoring.coreos.com/v1/ServiceMonitor", wantKind: "ServiceMonitor"},
+	} {
+		t.Run(mode.name, func(t *testing.T) {
+			command := exec.Command("helm", "template", "ops-platform", "../../deploy/charts/ops-platform", "--namespace", "ops-system",
+				"--set", "workloadsEnabled=true",
+				"--set", "components.api.image=registry.example.invalid/platform/api@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+				"--set", "components.worker.image=registry.example.invalid/platform/worker@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+				"--set", "components.web.image=registry.example.invalid/platform/web@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+				"--set", "runtime.oidcIssuerURL=https://keycloak.example.invalid", "--set", "runtime.profile=core")
+			if mode.apiVersion != "" {
+				command.Args = append(command.Args, "--api-versions", mode.apiVersion)
+			}
+			output, err := command.CombinedOutput()
+			if err != nil {
+				t.Fatalf("render metrics scrape resources: %v: %s", err, output)
+			}
+			decoder := yaml.NewDecoder(bytes.NewReader(output))
+			scrapeKinds := []string{}
+			apiMetricsService := false
+			for {
+				var resource renderedResource
+				if err := decoder.Decode(&resource); err == io.EOF {
+					break
+				} else if err != nil {
+					t.Fatal(err)
+				}
+				if resource.Kind == "VMServiceScrape" || resource.Kind == "ServiceMonitor" {
+					scrapeKinds = append(scrapeKinds, resource.Kind)
+					if resource.Spec.Endpoints == nil || len(resource.Spec.Endpoints) != 1 || resource.Spec.Endpoints[0].Port != "metrics" || resource.Spec.Endpoints[0].Path != "/metrics" {
+						t.Fatalf("scrape resource has an unexpected endpoint: %#v", resource.Spec.Endpoints)
+					}
+				}
+				if resource.Kind == "Service" && resource.Metadata.Labels["ops.platform.io/component"] == "api" {
+					for _, port := range resource.Spec.Ports {
+						if port.Name == "metrics" && port.Port == 9090 && port.TargetPort == "metrics" {
+							apiMetricsService = true
+						}
+					}
+				}
+			}
+			if !apiMetricsService {
+				t.Fatal("API Service does not expose its named metrics endpoint")
+			}
+			want := mode.wantKind
+			if want == "" && len(scrapeKinds) != 0 || want != "" && (len(scrapeKinds) != 1 || scrapeKinds[0] != want) {
+				t.Fatalf("scrape kinds = %v, want %q", scrapeKinds, want)
+			}
+		})
+	}
+}
+
 func hasProjectedOpenBaoToken(resource renderedResource) bool {
 	for _, volume := range resource.Spec.Template.Spec.Volumes {
 		if volume.Projected == nil {
@@ -120,8 +179,18 @@ type renderedResource struct {
 		Labels map[string]string `yaml:"labels"`
 	} `yaml:"metadata"`
 	Spec struct {
-		Type                 string `yaml:"type"`
-		Replicas             int32  `yaml:"replicas"`
+		Type     string `yaml:"type"`
+		Replicas int32  `yaml:"replicas"`
+		Ports    []struct {
+			Name       string `yaml:"name"`
+			Port       int32  `yaml:"port"`
+			TargetPort string `yaml:"targetPort"`
+		} `yaml:"ports"`
+		Endpoints []struct {
+			Port     string `yaml:"port"`
+			Path     string `yaml:"path"`
+			Interval string `yaml:"interval"`
+		} `yaml:"endpoints"`
 		VolumeClaimTemplates []struct {
 			Metadata struct {
 				Name string `yaml:"name"`

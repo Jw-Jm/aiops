@@ -1,0 +1,55 @@
+{{- if and .Values.workloadsEnabled (not .Values.networkPolicyOnly) -}}
+{{- $scrapeKind := lower (.Values.observability.scrapeKind | default "auto") -}}
+{{- if eq $scrapeKind "auto" -}}
+  {{- if .Capabilities.APIVersions.Has "operator.victoriametrics.com/v1beta1/VMServiceScrape" -}}
+    {{- $scrapeKind = "vmservicescrape" -}}
+  {{- else if .Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor" -}}
+    {{- $scrapeKind = "servicemonitor" -}}
+  {{- else -}}
+    {{- $scrapeKind = "none" -}}
+  {{- end -}}
+{{- end -}}
+{{- if eq $scrapeKind "vmservicescrape" }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: ops-platform
+  namespace: {{ .Release.Namespace }}
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
+spec:
+  namespaceSelector:
+    matchNames: [{{ .Release.Namespace | quote }}]
+  selector:
+    matchExpressions:
+      - key: ops.platform.io/component
+        operator: In
+        values: [api, worker]
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: {{ .Values.observability.scrapeInterval | default "30s" | quote }}
+{{- else if eq $scrapeKind "servicemonitor" }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ops-platform
+  namespace: {{ .Release.Namespace }}
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
+spec:
+  namespaceSelector:
+    matchNames: [{{ .Release.Namespace | quote }}]
+  selector:
+    matchExpressions:
+      - key: ops.platform.io/component
+        operator: In
+        values: [api, worker]
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: {{ .Values.observability.scrapeInterval | default "30s" | quote }}
+{{- else if ne $scrapeKind "none" }}
+{{- fail "observability.scrapeKind must be auto, none, vmservicescrape, or servicemonitor" }}
+{{- end }}
+{{- end }}

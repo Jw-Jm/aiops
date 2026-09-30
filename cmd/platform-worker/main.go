@@ -6,17 +6,37 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"ops-platform/internal/app"
+	"ops-platform/internal/observability"
 )
 
 func main() {
+	logger := observability.NewLogger(os.Stdout, slog.LevelInfo)
 	if _, err := app.NewWorker(app.ConfigFromEnv()); err != nil {
-		slog.Error("platform-worker bootstrap failed", "error", err)
+		logger.Error("platform-worker bootstrap failed", "error", err)
 		os.Exit(1)
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	runtime, err := observability.NewRuntime(ctx, "ops-platform-worker")
+	if err != nil {
+		logger.Error("platform-worker observability bootstrap failed")
+		os.Exit(1)
+	}
+	go func() {
+		if err := runtime.ServeMetrics(ctx, observability.MetricsListenAddress()); err != nil {
+			runtime.Metrics.SetComponentDegraded("metrics_listener", true)
+			runtime.Logger.ErrorContext(ctx, "platform-worker metrics listener unavailable", "signal", "metrics")
+		}
+	}()
+	runtime.Logger.InfoContext(ctx, "platform-worker started")
 	<-ctx.Done()
+	shutdownContext, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := runtime.Close(shutdownContext); err != nil {
+		runtime.Logger.WarnContext(ctx, "platform-worker trace shutdown failed", "signal", "traces")
+	}
 }

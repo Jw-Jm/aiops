@@ -77,7 +77,7 @@ func TestOIDCRejectsForgedTenantAndWrongAudienceAndRefreshesKeys(t *testing.T) {
 	var reached int
 	handler := authenticator.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		request, ok := RequestContextFromContext(r.Context())
-		if !ok || !containsTenantID(request.TenantIDs, request.TenantID) || len(request.TenantIDs) != 2 || request.Subject != "user-a" || !HasRole(r.Context(), Operator) {
+		if !ok || request.RequestID != "req-oidc-test" || !containsTenantID(request.TenantIDs, request.TenantID) || len(request.TenantIDs) != 2 || request.Subject != "user-a" || !HasRole(r.Context(), Operator) {
 			http.Error(w, "authenticated context is incomplete", http.StatusInternalServerError)
 			return
 		}
@@ -87,6 +87,7 @@ func TestOIDCRejectsForgedTenantAndWrongAudienceAndRefreshesKeys(t *testing.T) {
 	request := func(rawToken, tenantHeader string) *httptest.ResponseRecorder {
 		req := httptest.NewRequest(http.MethodGet, "/api/v1/admin/role-bindings", nil)
 		req.Header.Set("Authorization", "Bearer "+rawToken)
+		req.Header.Set("X-Request-ID", "req-oidc-test")
 		if tenantHeader != "" {
 			req.Header.Set("X-Tenant-ID", tenantHeader)
 		}
@@ -124,6 +125,12 @@ func TestOIDCRejectsForgedTenantAndWrongAudienceAndRefreshesKeys(t *testing.T) {
 	wrongAudience := request(testSignToken(t, testOIDCKey{kid: "key-old", key: oldKey}, validClaims("other-client")), "")
 	if wrongAudience.Code != http.StatusUnauthorized || reached != 2 {
 		t.Fatalf("token with wrong audience was accepted: status=%d reached=%d", wrongAudience.Code, reached)
+	}
+	var errorEnvelope struct {
+		RequestID string `json:"requestId"`
+	}
+	if err := json.Unmarshal(wrongAudience.Body.Bytes(), &errorEnvelope); err != nil || errorEnvelope.RequestID != "req-oidc-test" || wrongAudience.Header().Get("X-Request-ID") != "req-oidc-test" {
+		t.Fatalf("OIDC error did not return its request id: body=%s header=%q err=%v", wrongAudience.Body.String(), wrongAudience.Header().Get("X-Request-ID"), err)
 	}
 	mu.Lock()
 	currentKey = testOIDCKey{kid: "key-new", key: newKey}

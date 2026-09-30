@@ -72,18 +72,20 @@ func NewAuthenticator(verifier TokenVerifier, roleBindings RoleBindingSource) (*
 
 func (a *Authenticator) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestID := RequestIDFromHeader(r.Header.Get("X-Request-ID"))
+		w.Header().Set("X-Request-ID", requestID)
 		if a == nil || a.verifier == nil || a.roleBindings == nil || next == nil {
-			writeAuthorizationError(w, http.StatusInternalServerError, "INTERNAL", "authentication is not configured", false, "")
+			writeAuthorizationError(w, http.StatusInternalServerError, "INTERNAL", "authentication is not configured", false, requestID)
 			return
 		}
 		authorization := strings.Fields(r.Header.Get("Authorization"))
 		if len(authorization) != 2 || !strings.EqualFold(authorization[0], "Bearer") || authorization[1] == "" {
-			writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "a bearer token is required", false, "")
+			writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "a bearer token is required", false, requestID)
 			return
 		}
 		token, err := a.verifier.Verify(r.Context(), authorization[1])
 		if err != nil || token == nil || token.Subject == "" {
-			writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "the bearer token is invalid", false, "")
+			writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "the bearer token is invalid", false, requestID)
 			return
 		}
 		claims := struct {
@@ -94,42 +96,42 @@ func (a *Authenticator) Middleware(next http.Handler) http.Handler {
 			AuthTime  int64    `json:"auth_time"`
 		}{}
 		if err := token.Claims(&claims); err != nil {
-			writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "the bearer token is missing required claims", false, "")
+			writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "the bearer token is missing required claims", false, requestID)
 			return
 		}
 		tenantIDs, err := parseTenantIDs(claims.TenantID, claims.TenantIDs)
 		if err != nil || len(tenantIDs) == 0 {
-			writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "the bearer token has no valid tenant membership claim", false, "")
+			writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "the bearer token has no valid tenant membership claim", false, requestID)
 			return
 		}
 		tenantID := tenantIDs[0]
 		if selected := r.Header.Get("X-Tenant-ID"); selected != "" {
 			selectedID, parseErr := uuid.Parse(selected)
 			if parseErr != nil || !containsTenantID(tenantIDs, selectedID) {
-				writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the selected tenant is not in the verified tenant membership claim", false, "")
+				writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the selected tenant is not in the verified tenant membership claim", false, requestID)
 				return
 			}
 			tenantID = selectedID
 		}
 		bindings, err := a.roleBindings.LoadRoleBindings(r.Context(), tenantID, token.Subject)
 		if err != nil {
-			writeAuthorizationError(w, http.StatusInternalServerError, "INTERNAL", "tenant authorization could not be loaded", true, "")
+			writeAuthorizationError(w, http.StatusInternalServerError, "INTERNAL", "tenant authorization could not be loaded", true, requestID)
 			return
 		}
 		if len(bindings) == 0 {
-			writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the subject has no active role binding in this tenant", false, "")
+			writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the subject has no active role binding in this tenant", false, requestID)
 			return
 		}
-		requestContext, err := requestContextFromToken(token, tenantID, tenantIDs, bindings, r.Header.Get("traceparent"))
+		requestContext, err := requestContextFromToken(token, tenantID, tenantIDs, bindings, requestID, r.Header.Get("traceparent"))
 		if err != nil {
-			writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the tenant role binding is invalid", false, "")
+			writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the tenant role binding is invalid", false, requestID)
 			return
 		}
 		next.ServeHTTP(w, r.WithContext(WithRequestContext(r.Context(), requestContext)))
 	})
 }
 
-func requestContextFromToken(token *oidc.IDToken, tenantID uuid.UUID, tenantIDs []uuid.UUID, bindings []RoleBinding, traceParent string) (RequestContext, error) {
+func requestContextFromToken(token *oidc.IDToken, tenantID uuid.UUID, tenantIDs []uuid.UUID, bindings []RoleBinding, requestID, traceParent string) (RequestContext, error) {
 	claims := struct {
 		SID      string `json:"sid"`
 		ACR      string `json:"acr"`
@@ -139,7 +141,7 @@ func requestContextFromToken(token *oidc.IDToken, tenantID uuid.UUID, tenantIDs 
 		return RequestContext{}, err
 	}
 	result := RequestContext{
-		RequestID: uuid.Must(uuid.NewV7()).String(), Subject: token.Subject, TenantID: tenantID,
+		RequestID: nonemptyRequestID(requestID), Subject: token.Subject, TenantID: tenantID,
 		TenantIDs: tenantIDs, TraceContext: traceParent, KeycloakSID: claims.SID,
 		ACR: claims.ACR, AuthTime: time.Unix(claims.AuthTime, 0).UTC(),
 	}
