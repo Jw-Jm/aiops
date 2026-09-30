@@ -35,6 +35,7 @@ func NewSourceAdminRouter(service *source.Service, pool persistence.TxBeginner) 
 	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "create-source-registration"), requireTenantAdminStepUp).Post(adminSourcesPath, handlers.createSource)
 	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "update-source-registration"), requireTenantAdminStepUp).Patch(adminSourcesPath+"/{sourceId}", handlers.updateSource)
 	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "rotate-source-credential"), requireTenantAdminStepUp).Post(adminSourcesPath+"/{sourceId}/rotate-credential", handlers.rotateSourceCredential)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "rollback-source-registration"), requireTenantAdminStepUp).Post(adminSourcesPath+"/{sourceId}/rollback", handlers.rollbackSourceRegistration)
 	mountClusterAdminRoutes(router, service, pool)
 	return router, nil
 }
@@ -156,6 +157,26 @@ func (h SourceAdminHandlers) rotateSourceCredential(w http.ResponseWriter, r *ht
 		return
 	}
 	writeJSON(w, http.StatusOK, api.SuccessEnvelope{Data: sourceRegistrationJSON(updated), RequestId: request.RequestID})
+}
+
+func (h SourceAdminHandlers) rollbackSourceRegistration(w http.ResponseWriter, r *http.Request) {
+	request, tx, sourceID, ok := sourceWritePathContext(w, r)
+	if !ok {
+		return
+	}
+	var body api.SourceRegistrationRollbackRequest
+	if err := decodeSourceJSON(r, &body); err != nil || body.ExpectedRevision < 1 || body.TargetRevision < 1 {
+		writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "source registration rollback is invalid", false, request.RequestID)
+		return
+	}
+	rolledBack, err := h.service.RollbackRegistration(r.Context(), tx, request, sourceID, source.SourceRegistrationRollbackCommand{
+		ExpectedRevision: body.ExpectedRevision, TargetRevision: body.TargetRevision,
+	})
+	if err != nil {
+		writeSourceServiceError(w, err, request.RequestID)
+		return
+	}
+	writeJSON(w, http.StatusOK, api.SuccessEnvelope{Data: sourceRegistrationJSON(rolledBack), RequestId: request.RequestID})
 }
 
 func sourceWriteContext(w http.ResponseWriter, r *http.Request) (auth.RequestContext, pgx.Tx, bool) {

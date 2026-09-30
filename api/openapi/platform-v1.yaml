@@ -280,6 +280,21 @@ components:
             required:
                 - expectedRevision
             type: object
+        SourceRegistrationRollbackRequest:
+            additionalProperties: false
+            properties:
+                expectedRevision:
+                    format: int64
+                    minimum: 1
+                    type: integer
+                targetRevision:
+                    format: int64
+                    minimum: 1
+                    type: integer
+            required:
+                - expectedRevision
+                - targetRevision
+            type: object
         PolicyBundlePublishRequest:
             additionalProperties: false
             properties:
@@ -1312,6 +1327,47 @@ paths:
             security:
                 - BearerAuth: []
             summary: updateSourceRegistration
+            tags:
+                - Admin
+            x-idempotency: required
+    /api/v1/admin/source-registrations/{sourceId}/rollback:
+        post:
+            operationId: rollbackSourceRegistration
+            parameters:
+                - in: path
+                  name: sourceId
+                  required: true
+                  schema:
+                    $ref: '#/components/schemas/Identifier'
+                - description: Stable key for replay-safe write handling.
+                  in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema:
+                    minLength: 1
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SourceRegistrationRollbackRequest'
+                required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                    description: Successful response.
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+                    description: Unified API error.
+            security:
+                - BearerAuth: []
+            summary: rollbackSourceRegistration
             tags:
                 - Admin
             x-idempotency: required

@@ -62,6 +62,7 @@ export * from './registryVersionRetireRequest';
 export * from './sourceCredentialRotationRequest';
 export * from './sourceRegistrationRequest';
 export * from './sourceRegistrationRequestSourceType';
+export * from './sourceRegistrationRollbackRequest';
 export * from './sourceRegistrationUpdateRequest';
 export * from './sourceRegistrationUpdateRequestStatus';
 export * from './successEnvelope';

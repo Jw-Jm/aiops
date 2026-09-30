@@ -43,6 +43,7 @@ import type {
   RegistryVersionRetireRequest,
   SourceCredentialRotationRequest,
   SourceRegistrationRequest,
+  SourceRegistrationRollbackRequest,
   SourceRegistrationUpdateRequest,
   SuccessEnvelope
 } from './models';
@@ -1465,6 +1466,71 @@ const res = await fetch(getUpdateSourceRegistrationUrl(sourceId),
 
   const data: updateSourceRegistrationResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as updateSourceRegistrationResponse
+}
+
+
+
+export type rollbackSourceRegistrationResponse200 = {
+  data: SuccessEnvelope
+  status: 200
+}
+
+export type rollbackSourceRegistrationResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type rollbackSourceRegistrationResponseSuccess = (rollbackSourceRegistrationResponse200) & {
+  headers: Headers;
+};
+export type rollbackSourceRegistrationResponseError = (rollbackSourceRegistrationResponseDefault) & {
+  headers: Headers;
+};
+
+export type rollbackSourceRegistrationResponse = (rollbackSourceRegistrationResponseSuccess | rollbackSourceRegistrationResponseError)
+
+export const getRollbackSourceRegistrationUrl = (sourceId: Identifier,) => {
+
+
+
+
+  return `/api/v1/admin/source-registrations/${sourceId}/rollback`
+}
+
+/**
+ * @summary rollbackSourceRegistration
+ */
+export const rollbackSourceRegistration = async (sourceId: Identifier,
+    sourceRegistrationRollbackRequest: SourceRegistrationRollbackRequest, options?: RequestInit): Promise<rollbackSourceRegistrationResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getRollbackSourceRegistrationUrl(sourceId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(sourceRegistrationRollbackRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: rollbackSourceRegistrationResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as rollbackSourceRegistrationResponse
 }
 
 

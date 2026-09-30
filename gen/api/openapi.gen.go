@@ -530,6 +530,12 @@ type SourceRegistrationRequest struct {
 // SourceRegistrationRequestSourceType defines model for SourceRegistrationRequest.SourceType.
 type SourceRegistrationRequestSourceType string
 
+// SourceRegistrationRollbackRequest defines model for SourceRegistrationRollbackRequest.
+type SourceRegistrationRollbackRequest struct {
+	ExpectedRevision int64 `json:"expectedRevision"`
+	TargetRevision   int64 `json:"targetRevision"`
+}
+
 // SourceRegistrationUpdateRequest defines model for SourceRegistrationUpdateRequest.
 type SourceRegistrationUpdateRequest struct {
 	ClusterId        *Identifier                            `json:"clusterId,omitempty"`
@@ -689,6 +695,12 @@ type CreateSourceRegistrationParams struct {
 
 // UpdateSourceRegistrationParams defines parameters for UpdateSourceRegistration.
 type UpdateSourceRegistrationParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// RollbackSourceRegistrationParams defines parameters for RollbackSourceRegistration.
+type RollbackSourceRegistrationParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
@@ -961,6 +973,9 @@ type CreateSourceRegistrationJSONRequestBody = SourceRegistrationRequest
 
 // UpdateSourceRegistrationJSONRequestBody defines body for UpdateSourceRegistration for application/json ContentType.
 type UpdateSourceRegistrationJSONRequestBody = SourceRegistrationUpdateRequest
+
+// RollbackSourceRegistrationJSONRequestBody defines body for RollbackSourceRegistration for application/json ContentType.
+type RollbackSourceRegistrationJSONRequestBody = SourceRegistrationRollbackRequest
 
 // RotateSourceCredentialJSONRequestBody defines body for RotateSourceCredential for application/json ContentType.
 type RotateSourceCredentialJSONRequestBody = SourceCredentialRotationRequest
@@ -1259,6 +1274,9 @@ type ServerInterface interface {
 	// UpdateSourceRegistration updateSourceRegistration
 	// (PATCH /api/v1/admin/source-registrations/{sourceId})
 	UpdateSourceRegistration(w http.ResponseWriter, r *http.Request, sourceId Identifier, params UpdateSourceRegistrationParams)
+	// RollbackSourceRegistration rollbackSourceRegistration
+	// (POST /api/v1/admin/source-registrations/{sourceId}/rollback)
+	RollbackSourceRegistration(w http.ResponseWriter, r *http.Request, sourceId Identifier, params RollbackSourceRegistrationParams)
 	// RotateSourceCredential rotateSourceCredential
 	// (POST /api/v1/admin/source-registrations/{sourceId}/rotate-credential)
 	RotateSourceCredential(w http.ResponseWriter, r *http.Request, sourceId Identifier, params RotateSourceCredentialParams)
@@ -1520,6 +1538,12 @@ func (_ Unimplemented) CreateSourceRegistration(w http.ResponseWriter, r *http.R
 // UpdateSourceRegistration updateSourceRegistration
 // (PATCH /api/v1/admin/source-registrations/{sourceId})
 func (_ Unimplemented) UpdateSourceRegistration(w http.ResponseWriter, r *http.Request, sourceId Identifier, params UpdateSourceRegistrationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RollbackSourceRegistration rollbackSourceRegistration
+// (POST /api/v1/admin/source-registrations/{sourceId}/rollback)
+func (_ Unimplemented) RollbackSourceRegistration(w http.ResponseWriter, r *http.Request, sourceId Identifier, params RollbackSourceRegistrationParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2840,6 +2864,60 @@ func (siw *ServerInterfaceWrapper) UpdateSourceRegistration(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateSourceRegistration(w, r, sourceId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RollbackSourceRegistration operation middleware
+func (siw *ServerInterfaceWrapper) RollbackSourceRegistration(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "sourceId" -------------
+	var sourceId Identifier
+
+	err = runtime.BindStyledParameterWithOptions("simple", "sourceId", chi.URLParam(r, "sourceId"), &sourceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sourceId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RollbackSourceRegistrationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RollbackSourceRegistration(w, r, sourceId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5115,6 +5193,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Patch(options.BaseURL+"/api/v1/admin/source-registrations/{sourceId}", wrapper.UpdateSourceRegistration)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/source-registrations/{sourceId}/rollback", wrapper.RollbackSourceRegistration)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/admin/source-registrations/{sourceId}/rotate-credential", wrapper.RotateSourceCredential)
 	})
 	r.Group(func(r chi.Router) {
@@ -6145,6 +6226,47 @@ type UpdateSourceRegistrationdefaultJSONResponse struct {
 }
 
 func (response UpdateSourceRegistrationdefaultJSONResponse) VisitUpdateSourceRegistrationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RollbackSourceRegistrationRequestObject struct {
+	SourceId Identifier `json:"sourceId"`
+	Params   RollbackSourceRegistrationParams
+	Body     *RollbackSourceRegistrationJSONRequestBody
+}
+
+type RollbackSourceRegistrationResponseObject interface {
+	VisitRollbackSourceRegistrationResponse(w http.ResponseWriter) error
+}
+
+type RollbackSourceRegistration200JSONResponse SuccessEnvelope
+
+func (response RollbackSourceRegistration200JSONResponse) VisitRollbackSourceRegistrationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RollbackSourceRegistrationdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response RollbackSourceRegistrationdefaultJSONResponse) VisitRollbackSourceRegistrationResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -7866,6 +7988,9 @@ type StrictServerInterface interface {
 	// UpdateSourceRegistration updateSourceRegistration
 	// (PATCH /api/v1/admin/source-registrations/{sourceId})
 	UpdateSourceRegistration(ctx context.Context, request UpdateSourceRegistrationRequestObject) (UpdateSourceRegistrationResponseObject, error)
+	// RollbackSourceRegistration rollbackSourceRegistration
+	// (POST /api/v1/admin/source-registrations/{sourceId}/rollback)
+	RollbackSourceRegistration(ctx context.Context, request RollbackSourceRegistrationRequestObject) (RollbackSourceRegistrationResponseObject, error)
 	// RotateSourceCredential rotateSourceCredential
 	// (POST /api/v1/admin/source-registrations/{sourceId}/rotate-credential)
 	RotateSourceCredential(ctx context.Context, request RotateSourceCredentialRequestObject) (RotateSourceCredentialResponseObject, error)
@@ -8729,6 +8854,40 @@ func (sh *strictHandler) UpdateSourceRegistration(w http.ResponseWriter, r *http
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateSourceRegistrationResponseObject); ok {
 		if err := validResponse.VisitUpdateSourceRegistrationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RollbackSourceRegistration operation middleware
+func (sh *strictHandler) RollbackSourceRegistration(w http.ResponseWriter, r *http.Request, sourceId Identifier, params RollbackSourceRegistrationParams) {
+	var request RollbackSourceRegistrationRequestObject
+
+	request.SourceId = sourceId
+	request.Params = params
+
+	var body RollbackSourceRegistrationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RollbackSourceRegistration(ctx, request.(RollbackSourceRegistrationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RollbackSourceRegistration")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RollbackSourceRegistrationResponseObject); ok {
+		if err := validResponse.VisitRollbackSourceRegistrationResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

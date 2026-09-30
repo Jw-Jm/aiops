@@ -214,12 +214,110 @@ func (service *Service) RotateCredential(ctx context.Context, tx pgx.Tx, actor a
 		TenantID: actor.TenantID, RecordID: uuid.Must(uuid.NewV7()), EventType: "source_registration.credential_rotated",
 		EntityKind: "source_registration", EntityID: result.SourceID, Subject: actor.Subject,
 		Payload: map[string]any{
-			"auth_version":                 result.CredentialRevision,
-			"previous_auth_version":         previous.CredentialRevision,
-			"revision":                     result.Revision, "previous_revision": previous.Revision,
+			"auth_version":          result.CredentialRevision,
+			"previous_auth_version": previous.CredentialRevision,
+			"revision":              result.Revision, "previous_revision": previous.Revision,
 		},
 	}); err != nil {
 		return SourceRegistration{}, fmt.Errorf("audit source credential rotation: %w", err)
+	}
+	return result, nil
+}
+
+// RollbackRegistration creates a new source revision containing the selected
+// historical auth reference, status, and tenant-local cluster scope. The
+// credential generation remains monotonic so identities issued before the
+// rollback cannot become valid again.
+func (service *Service) RollbackRegistration(ctx context.Context, tx pgx.Tx, actor auth.RequestContext, sourceID uuid.UUID, command SourceRegistrationRollbackCommand) (SourceRegistration, error) {
+	if sourceID == uuid.Nil || command.ExpectedRevision < 1 || command.TargetRevision < 1 || command.TargetRevision >= command.ExpectedRevision {
+		return SourceRegistration{}, ErrInvalidInput
+	}
+	if err := authorizeAdmin(ctx, tx, actor); err != nil {
+		return SourceRegistration{}, err
+	}
+	current, err := loadSource(ctx, tx, actor.TenantID, sourceID, true)
+	if err != nil {
+		return SourceRegistration{}, err
+	}
+	if current.Revision != command.ExpectedRevision {
+		return SourceRegistration{}, ErrRevisionConflict
+	}
+	var authRef, status string
+	var targetCredentialRevision int64
+	var scopeJSON []byte
+	err = tx.QueryRow(ctx, `SELECT auth_ref, credential_revision, status, scope
+		FROM platform.source_registration_revisions
+		WHERE tenant_id = $1 AND source_id = $2 AND revision = $3`,
+		actor.TenantID, sourceID, command.TargetRevision).
+		Scan(&authRef, &targetCredentialRevision, &status, &scopeJSON)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return SourceRegistration{}, ErrResourceNotFound
+	}
+	if err != nil {
+		return SourceRegistration{}, fmt.Errorf("load source rollback revision: %w", err)
+	}
+	var scope struct {
+		SourceType  string  `json:"source_type"`
+		InstanceKey string  `json:"instance_key"`
+		ClusterID   *string `json:"cluster_id"`
+	}
+	if err := json.Unmarshal(scopeJSON, &scope); err != nil || scope.SourceType != current.SourceType || scope.InstanceKey != current.InstanceKey {
+		return SourceRegistration{}, fmt.Errorf("%w: source rollback revision scope is invalid", ErrInvalidInput)
+	}
+	clusterID := uuid.Nil
+	if scope.ClusterID != nil {
+		clusterID, err = uuid.Parse(*scope.ClusterID)
+		if err != nil || clusterID == uuid.Nil {
+			return SourceRegistration{}, fmt.Errorf("%w: source rollback revision cluster is invalid", ErrInvalidInput)
+		}
+	}
+	if status == "active" && clusterID != uuid.Nil {
+		var active bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM platform.cluster_registrations
+			WHERE tenant_id = $1 AND cluster_id = $2 AND status = 'active')`, actor.TenantID, clusterID).Scan(&active); err != nil {
+			return SourceRegistration{}, fmt.Errorf("validate rollback source cluster scope: %w", err)
+		}
+		if !active {
+			return SourceRegistration{}, fmt.Errorf("%w: rollback source cluster is not active in this tenant", ErrInvalidInput)
+		}
+	}
+	credentialRevision := current.CredentialRevision
+	if authRef != current.AuthRef {
+		credentialRevision = max(credentialRevision, targetCredentialRevision) + 1
+	}
+	var clusterValue any
+	if clusterID != uuid.Nil {
+		clusterValue = clusterID
+	}
+	tag, err := tx.Exec(ctx, `UPDATE platform.source_registrations
+		SET cluster_id = $1, auth_ref = $2, credential_revision = $3, status = $4,
+		    revision = revision + 1, updated_at = clock_timestamp()
+		WHERE tenant_id = $5 AND source_id = $6 AND revision = $7`,
+		clusterValue, authRef, credentialRevision, status, actor.TenantID, sourceID, command.ExpectedRevision)
+	if err != nil {
+		return SourceRegistration{}, fmt.Errorf("rollback source registration: %w", err)
+	}
+	if tag.RowsAffected() != 1 {
+		return SourceRegistration{}, ErrRevisionConflict
+	}
+	result, err := loadSource(ctx, tx, actor.TenantID, sourceID, false)
+	if err != nil {
+		return SourceRegistration{}, err
+	}
+	if err := appendSourceRevision(ctx, tx, result, actor.Subject); err != nil {
+		return SourceRegistration{}, err
+	}
+	if _, err := audit.Append(ctx, tx, audit.Entry{
+		TenantID: actor.TenantID, RecordID: uuid.Must(uuid.NewV7()), EventType: "source_registration.rolled_back",
+		EntityKind: "source_registration", EntityID: result.SourceID, Subject: actor.Subject,
+		Payload: map[string]any{
+			"restored_from_revision": command.TargetRevision,
+			"before":                 map[string]any{"cluster_id": nullableUUIDString(current.ClusterID), "status": current.Status, "revision": current.Revision},
+			"after":                  map[string]any{"cluster_id": nullableUUIDString(result.ClusterID), "status": result.Status, "revision": result.Revision},
+			"auth_ref_changed":       current.AuthRef != result.AuthRef, "auth_version": result.CredentialRevision,
+		},
+	}); err != nil {
+		return SourceRegistration{}, fmt.Errorf("audit source registration rollback: %w", err)
 	}
 	return result, nil
 }

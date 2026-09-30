@@ -177,13 +177,30 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 		t.Fatalf("concurrent source revision results = success:%d conflict:%d, want one of each", successes, conflicts)
 	}
 
-	if _, err := updateSourceInTenant(ctx, pool, service, actor, registration.SourceID, source.SourceUpdateCommand{
+	disabled, err := updateSourceInTenant(ctx, pool, service, actor, registration.SourceID, source.SourceUpdateCommand{
 		ExpectedRevision: updated.Revision + 1, Status: "disabled",
-	}); err != nil {
+	})
+	if err != nil {
 		t.Fatalf("disable source: %v", err)
 	}
 	if _, err := service.AuthenticateEnvelope(ctx, currentIdentity, envelope); !errors.Is(err, source.ErrUnauthorized) {
 		t.Fatalf("disabled source credential was accepted: %v", err)
+	}
+	rolledBack, err := rollbackSourceInTenant(ctx, pool, service, actor, registration.SourceID, source.SourceRegistrationRollbackCommand{
+		ExpectedRevision: disabled.Revision, TargetRevision: registration.Revision,
+	})
+	if err != nil || rolledBack.Revision != disabled.Revision+1 || rolledBack.Status != "active" ||
+		rolledBack.ClusterID != cluster.ClusterID || rolledBack.AuthRef != initialAuthRef ||
+		rolledBack.CredentialRevision != currentIdentity.CredentialRevision+1 {
+		t.Fatalf("source rollback did not append a safe active revision: source=%#v err=%v", rolledBack, err)
+	}
+	if _, err := service.AuthenticateEnvelope(ctx, currentIdentity, envelope); !errors.Is(err, source.ErrUnauthorized) {
+		t.Fatalf("pre-rollback credential generation was accepted: %v", err)
+	}
+	rolledBackIdentity := currentIdentity
+	rolledBackIdentity.CredentialRevision = rolledBack.CredentialRevision
+	if _, err := service.AuthenticateEnvelope(ctx, rolledBackIdentity, envelope); err != nil {
+		t.Fatalf("restored source auth_ref did not authenticate at its new generation: %v", err)
 	}
 	otherSources, err := service.ListSources(ctx, otherActor)
 	if err != nil || len(otherSources) != 0 {
@@ -200,7 +217,7 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	if err := db.QueryRowContext(dbctx, `SELECT count(*) FROM audit.records WHERE tenant_id = $1 AND entity_id IN ($2, $3)`, tenantID, registration.SourceID, cluster.ClusterID).Scan(&auditRecords); err != nil {
 		t.Fatal(err)
 	}
-	if sourceRevisions != 5 || clusterRevisions != 3 || auditRecords < 6 {
+	if sourceRevisions != 6 || clusterRevisions != 3 || auditRecords < 7 {
 		t.Fatalf("registration history was incomplete: source_revisions=%d cluster_revisions=%d audit_records=%d", sourceRevisions, clusterRevisions, auditRecords)
 	}
 	err = persistence.WithTenantTx(ctx, pool, tenantID, func(tx pgx.Tx) error {
@@ -284,6 +301,14 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	if updatedSource.Code != http.StatusOK {
 		t.Fatalf("step-up authorized source scope/status update failed: status=%d body=%s", updatedSource.Code, updatedSource.Body.String())
 	}
+	rollbackSource := requestWithActor(http.MethodPost, "/api/v1/admin/source-registrations/"+createdEnvelope.Data.SourceID+"/rollback", `{"expectedRevision":3,"targetRevision":1}`, "source-http-rollback", stepUpActor)
+	if rollbackSource.Code != http.StatusOK {
+		t.Fatalf("step-up authorized source rollback failed: status=%d body=%s", rollbackSource.Code, rollbackSource.Body.String())
+	}
+	rollbackReplay := requestWithActor(http.MethodPost, "/api/v1/admin/source-registrations/"+createdEnvelope.Data.SourceID+"/rollback", `{"expectedRevision":3,"targetRevision":1}`, "source-http-rollback", stepUpActor)
+	if rollbackReplay.Code != rollbackSource.Code || rollbackReplay.Body.String() != rollbackSource.Body.String() {
+		t.Fatalf("source rollback replay differed from committed response: first=%d replay=%d", rollbackSource.Code, rollbackReplay.Code)
+	}
 }
 
 func registerClusterInTenant(ctx context.Context, pool *pgxpool.Pool, service *source.Service, actor auth.RequestContext, command source.ClusterCommand) (source.ClusterRegistration, error) {
@@ -321,6 +346,16 @@ func updateSourceInTenant(ctx context.Context, pool *pgxpool.Pool, service *sour
 	err := persistence.WithTenantTx(ctx, pool, actor.TenantID, func(tx pgx.Tx) error {
 		var err error
 		result, err = service.UpdateRegistration(ctx, tx, actor, sourceID, command)
+		return err
+	})
+	return result, err
+}
+
+func rollbackSourceInTenant(ctx context.Context, pool *pgxpool.Pool, service *source.Service, actor auth.RequestContext, sourceID uuid.UUID, command source.SourceRegistrationRollbackCommand) (source.SourceRegistration, error) {
+	var result source.SourceRegistration
+	err := persistence.WithTenantTx(ctx, pool, actor.TenantID, func(tx pgx.Tx) error {
+		var err error
+		result, err = service.RollbackRegistration(ctx, tx, actor, sourceID, command)
 		return err
 	})
 	return result, err

@@ -101,6 +101,11 @@ type CredentialRotationCommand struct {
 	AuthRef          string
 }
 
+type SourceRegistrationRollbackCommand struct {
+	ExpectedRevision int64
+	TargetRevision   int64
+}
+
 func validOpaqueName(value string, limit int) bool {
 	return value != "" && value == strings.TrimSpace(value) && len(value) <= limit &&
 		!strings.ContainsAny(value, "\x00\r\n")
