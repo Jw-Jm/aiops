@@ -197,7 +197,7 @@ func (evaluator *PolicyEvaluator) Evaluate(ctx context.Context, input PolicyInpu
 	}
 	if !tenantMatched || !scopeAllowed || !principalTrusted ||
 		(input.RequestType == RequestTool && (!input.ToolReadOnly || !toolAllowed)) ||
-		(input.RequestType == RequestAction && (input.PrincipalType == PrincipalAgent || !actionAllowed || !commandMatched || (risk != RiskLow && !input.RiskAcknowledged))) {
+		(input.RequestType == RequestAction && (input.PrincipalType == PrincipalAgent || !actionAllowed || !commandMatched || (decision.Risk != RiskLow && !input.RiskAcknowledged))) {
 		decision.Allow = false
 		hardDenied = true
 		if !tenantMatched {

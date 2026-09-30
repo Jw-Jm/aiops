@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
+	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/open-policy-agent/opa/v1/rego"
 	"ops-platform/internal/configregistry"
 )
@@ -118,7 +119,16 @@ func (compiler *BundleCompiler) compile(ctx context.Context, bundle policyBundle
 		modules = append(modules, rego.Module(module.ID, module.Content))
 	}
 	prepare := func(query string) (rego.PreparedEvalQuery, error) {
-		options := []func(*rego.Rego){rego.Query(query), rego.StrictBuiltinErrors(true)}
+		capabilities := ast.CapabilitiesForThisVersion()
+		capabilities.AllowNet = []string{}
+		builtins := make([]*ast.Builtin, 0, len(capabilities.Builtins))
+		for _, builtin := range capabilities.Builtins {
+			if !builtin.IsNondeterministic() {
+				builtins = append(builtins, builtin)
+			}
+		}
+		capabilities.Builtins = builtins
+		options := []func(*rego.Rego){rego.Query(query), rego.StrictBuiltinErrors(true), rego.Capabilities(capabilities)}
 		options = append(options, modules...)
 		return rego.New(options...).PrepareForEval(ctx)
 	}
