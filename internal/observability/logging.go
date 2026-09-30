@@ -2,7 +2,7 @@ package observability
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"os"
@@ -96,7 +96,7 @@ func addCorrelationAttr(attrs *[]any, key, value string) {
 	*attrs = append(*attrs, key, value)
 }
 
-func NewRequestID() string { return uuid.NewString() }
+func NewRequestID() string { return uuid.Must(uuid.NewV7()).String() }
 
 func validRequestID(value string) bool {
 	if value == "" || len(value) > 128 {
@@ -169,9 +169,34 @@ func redactAttr(attr slog.Attr, groups []string) slog.Attr {
 		if value.Any() == nil {
 			return slog.String(attr.Key, "")
 		}
-		return slog.String(attr.Key, scrubText(fmt.Sprint(value.Any())))
+		encoded, err := json.Marshal(value.Any())
+		var structured any
+		if err != nil || json.Unmarshal(encoded, &structured) != nil {
+			return slog.String(attr.Key, RedactedValue)
+		}
+		return slog.Any(attr.Key, redactStructured(structured, key))
 	}
 	return slog.Attr{Key: attr.Key, Value: value}
+}
+
+func redactStructured(value any, path string) any {
+	switch typed := value.(type) {
+	case map[string]any:
+		for key, child := range typed {
+			if sensitiveKey(path + "." + key) {
+				typed[key] = RedactedValue
+			} else {
+				typed[key] = redactStructured(child, path+"."+key)
+			}
+		}
+	case []any:
+		for i, child := range typed {
+			typed[i] = redactStructured(child, path)
+		}
+	case string:
+		return scrubText(typed)
+	}
+	return value
 }
 
 func sensitiveKey(key string) bool {

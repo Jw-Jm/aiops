@@ -61,7 +61,9 @@ func ObservabilityMiddleware(logger *slog.Logger, metrics *observability.Metrics
 				observability.LoggerWithContext(ctx, logger).InfoContext(ctx, "http request complete",
 					"method", boundedHTTPMethod(request.Method), "status_code", status, "duration_ms", duration.Milliseconds())
 			}()
-			next.ServeHTTP(trackedWriter, request.WithContext(ctx))
+			request = request.Clone(ctx)
+			request.Header.Set("X-Request-ID", requestID)
+			next.ServeHTTP(trackedWriter, request)
 		})
 	}
 }

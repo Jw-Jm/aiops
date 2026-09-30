@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"ops-platform/internal/auth"
 	"ops-platform/internal/observability"
 )
 
@@ -25,6 +26,17 @@ func TestInstrumentedGeneratedHandlerExposesMetricsEndpoint(t *testing.T) {
 	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/metrics", nil))
 	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "platform_process_up 1") {
 		t.Fatalf("generated API handler did not expose its metrics registry: status=%d body=%s", response.Code, response.Body.String())
+	}
+}
+
+func TestRequestCorrelationReachesAuthenticationErrors(t *testing.T) {
+	var logs strings.Builder
+	handler := ObservabilityMiddleware(observability.NewLogger(&logs, slog.LevelInfo), nil, nil)(auth.RequireRole(auth.PlatformAdmin)(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})))
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/api/v1/admin/tenants", nil))
+	id := response.Header().Get("X-Request-ID")
+	if id == "" || !strings.Contains(logs.String(), `"request_id":"`+id+`"`) || !strings.Contains(response.Body.String(), `"requestId":"`+id+`"`) {
+		t.Fatal("authentication response and request log have different correlation IDs")
 	}
 }
 
