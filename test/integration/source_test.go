@@ -265,7 +265,9 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	stepUpActor := actor
 	stepUpActor.KeycloakSID = "source-admin-session"
 	stepUpActor.ACR = auth.StepUpACRLevel2
-	stepUpActor.AuthTime = time.Now().UTC()
+	// OIDC auth_time is a NumericDate in whole seconds. Match the actual
+	// verified-claim representation rather than an unrepresentable nanosecond.
+	stepUpActor.AuthTime = time.Now().UTC().Truncate(time.Second)
 	if err := persistence.WithTenantTx(ctx, pool, tenantID, func(tx pgx.Tx) error {
 		_, err := auth.RecordStepUpSession(ctx, tx, stepUpActor, uuid.Must(uuid.NewV7()), []string{auth.StepUpACRLevel2})
 		return err

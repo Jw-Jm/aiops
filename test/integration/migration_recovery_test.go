@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -20,8 +21,12 @@ func TestFailedForwardMigrationRollsBackAndCanRecover(t *testing.T) {
 	if err := db.QueryRowContext(ctx, `SELECT max(version_id) FROM public.goose_db_version`).Scan(&version); err != nil {
 		t.Fatal(err)
 	}
-	if version != 14 {
-		t.Fatalf("recovery test must track latest migration: %d", version)
+	migrations, err := goose.CollectMigrations(dir, 0, goose.MaxVersion)
+	if err != nil || len(migrations) == 0 {
+		t.Fatalf("collect delivered migrations: %v", err)
+	}
+	if latest := migrations[len(migrations)-1].Version; version != latest {
+		t.Fatalf("database has not applied the latest delivered migration: got %d want %d", version, latest)
 	}
 	scratch := t.TempDir()
 	entries, err := os.ReadDir(dir)
@@ -40,7 +45,7 @@ func TestFailedForwardMigrationRollsBackAndCanRecover(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	candidate := filepath.Join(scratch, "00015_review_failure.sql")
+	candidate := filepath.Join(scratch, fmt.Sprintf("%05d_review_failure.sql", version+1))
 	source := "-- +goose Up\nSET ROLE schema_owner;\nCREATE TABLE platform.review_failure(value integer);\nSELECT 1/0;\nRESET ROLE;\n"
 	if err := os.WriteFile(candidate, []byte(source), 0600); err != nil {
 		t.Fatal(err)
