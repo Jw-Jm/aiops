@@ -1,0 +1,507 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "meta.helm.sh/release-name": "ops-platform",
+                    "meta.helm.sh/release-namespace": "ops-system"
+                },
+                "creationTimestamp": "2026-09-29T12:40:34Z",
+                "labels": {
+                    "app.kubernetes.io/managed-by": "Helm",
+                    "ops.platform.io/component": "api",
+                    "ops.platform.io/release": "ops-platform"
+                },
+                "name": "ops-api",
+                "namespace": "ops-system",
+                "resourceVersion": "145980",
+                "uid": "84f51a81-7064-46db-8cf5-9f856238658c"
+            },
+            "spec": {
+                "clusterIP": "192.168.194.232",
+                "clusterIPs": [
+                    "192.168.194.232"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8080,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "ops.platform.io/component": "api"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "meta.helm.sh/release-name": "ops-dependencies",
+                    "meta.helm.sh/release-namespace": "ops-system"
+                },
+                "creationTimestamp": "2026-09-29T12:39:39Z",
+                "labels": {
+                    "app.kubernetes.io/managed-by": "Helm",
+                    "app.kubernetes.io/name": "ops-keycloak",
+                    "ops.platform.io/component": "keycloak",
+                    "ops.platform.io/mode": "bundled",
+                    "ops.platform.io/release": "ops-dependencies"
+                },
+                "name": "ops-keycloak",
+                "namespace": "ops-system",
+                "resourceVersion": "145821",
+                "uid": "bc1c7f03-9348-490a-a18b-bb45c13f3b22"
+            },
+            "spec": {
+                "clusterIP": "192.168.194.206",
+                "clusterIPs": [
+                    "192.168.194.206"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8080,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app.kubernetes.io/name": "ops-keycloak"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "meta.helm.sh/release-name": "ops-core",
+                    "meta.helm.sh/release-namespace": "ops-system"
+                },
+                "creationTimestamp": "2026-09-27T11:36:05Z",
+                "labels": {
+                    "app.kubernetes.io/managed-by": "Helm",
+                    "app.kubernetes.io/name": "ops-openbao",
+                    "ops.platform.io/component": "openbao",
+                    "ops.platform.io/mode": "bundled"
+                },
+                "name": "ops-openbao",
+                "namespace": "ops-system",
+                "resourceVersion": "58202",
+                "uid": "bb7a6f45-71ca-4cad-803f-a247d033fbc7"
+            },
+            "spec": {
+                "clusterIP": "192.168.194.151",
+                "clusterIPs": [
+                    "192.168.194.151"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "api",
+                        "port": 8200,
+                        "protocol": "TCP",
+                        "targetPort": "api"
+                    },
+                    {
+                        "name": "cluster",
+                        "port": 8201,
+                        "protocol": "TCP",
+                        "targetPort": "cluster"
+                    }
+                ],
+                "selector": {
+                    "app.kubernetes.io/name": "ops-openbao"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "meta.helm.sh/release-name": "ops-dependencies",
+                    "meta.helm.sh/release-namespace": "ops-system"
+                },
+                "creationTimestamp": "2026-09-29T12:39:39Z",
+                "labels": {
+                    "app.kubernetes.io/managed-by": "Helm",
+                    "app.kubernetes.io/name": "ops-postgresql",
+                    "ops.platform.io/component": "postgresql",
+                    "ops.platform.io/mode": "bundled",
+                    "ops.platform.io/release": "ops-dependencies"
+                },
+                "name": "ops-postgresql",
+                "namespace": "ops-system",
+                "resourceVersion": "145828",
+                "uid": "56dd8cf4-b527-4db6-a180-a0dc5c9b6408"
+            },
+            "spec": {
+                "clusterIP": "192.168.194.153",
+                "clusterIPs": [
+                    "192.168.194.153"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "postgres",
+                        "port": 5432,
+                        "protocol": "TCP",
+                        "targetPort": "postgres"
+                    }
+                ],
+                "selector": {
+                    "app.kubernetes.io/name": "ops-postgresql"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "meta.helm.sh/release-name": "ops-dependencies",
+                    "meta.helm.sh/release-namespace": "ops-system"
+                },
+                "creationTimestamp": "2026-09-29T12:39:39Z",
+                "labels": {
+                    "app.kubernetes.io/managed-by": "Helm",
+                    "app.kubernetes.io/name": "ops-seaweedfs",
+                    "ops.platform.io/component": "seaweedfs",
+                    "ops.platform.io/mode": "bundled",
+                    "ops.platform.io/release": "ops-dependencies"
+                },
+                "name": "ops-seaweedfs-s3",
+                "namespace": "ops-system",
+                "resourceVersion": "145823",
+                "uid": "08a87dc7-87bd-49a3-9e29-9f43a9ac4505"
+            },
+            "spec": {
+                "clusterIP": "192.168.194.152",
+                "clusterIPs": [
+                    "192.168.194.152"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "s3",
+                        "port": 8333,
+                        "protocol": "TCP",
+                        "targetPort": "s3"
+                    },
+                    {
+                        "name": "master",
+                        "port": 9333,
+                        "protocol": "TCP",
+                        "targetPort": "master"
+                    }
+                ],
+                "selector": {
+                    "app.kubernetes.io/name": "ops-seaweedfs"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "meta.helm.sh/release-name": "vmalert",
+                    "meta.helm.sh/release-namespace": "ops-system"
+                },
+                "creationTimestamp": "2026-09-29T12:40:15Z",
+                "labels": {
+                    "app": "server",
+                    "app.kubernetes.io/instance": "vmalert",
+                    "app.kubernetes.io/managed-by": "Helm",
+                    "app.kubernetes.io/name": "victoria-metrics-alert",
+                    "app.kubernetes.io/version": "v1.116.0",
+                    "helm.sh/chart": "victoria-metrics-alert-0.18.0",
+                    "ops.platform.io/component": "vmalert",
+                    "ops.platform.io/release": "vmalert"
+                },
+                "name": "ops-vmalert",
+                "namespace": "ops-system",
+                "resourceVersion": "145933",
+                "uid": "de8f02b6-be23-4247-8b63-5a280741978a"
+            },
+            "spec": {
+                "clusterIP": "192.168.194.158",
+                "clusterIPs": [
+                    "192.168.194.158"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8880,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "server",
+                    "app.kubernetes.io/instance": "vmalert",
+                    "app.kubernetes.io/name": "victoria-metrics-alert"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "meta.helm.sh/release-name": "ops-platform",
+                    "meta.helm.sh/release-namespace": "ops-system"
+                },
+                "creationTimestamp": "2026-09-29T12:40:34Z",
+                "labels": {
+                    "app.kubernetes.io/managed-by": "Helm",
+                    "ops.platform.io/component": "worker",
+                    "ops.platform.io/release": "ops-platform"
+                },
+                "name": "ops-worker",
+                "namespace": "ops-system",
+                "resourceVersion": "145984",
+                "uid": "1caf2cdb-bf16-44f9-8f52-e50fc67d6822"
+            },
+            "spec": {
+                "clusterIP": "192.168.194.212",
+                "clusterIPs": [
+                    "192.168.194.212"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8081,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "ops.platform.io/component": "worker"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "metadata": {
+                "annotations": {
+                    "pv.kubernetes.io/bind-completed": "yes",
+                    "pv.kubernetes.io/bound-by-controller": "yes",
+                    "volume.beta.kubernetes.io/storage-provisioner": "rancher.io/local-path",
+                    "volume.kubernetes.io/selected-node": "orbstack",
+                    "volume.kubernetes.io/storage-provisioner": "rancher.io/local-path"
+                },
+                "creationTimestamp": "2026-09-27T11:36:05Z",
+                "finalizers": [
+                    "kubernetes.io/pvc-protection"
+                ],
+                "labels": {
+                    "app.kubernetes.io/name": "ops-openbao",
+                    "ops.platform.io/component": "openbao"
+                },
+                "name": "data-ops-openbao-0",
+                "namespace": "ops-system",
+                "resourceVersion": "58236",
+                "uid": "c6d6fd30-b259-4edd-ab4d-457a86c9680f"
+            },
+            "spec": {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "resources": {
+                    "requests": {
+                        "storage": "2Gi"
+                    }
+                },
+                "storageClassName": "local-path",
+                "volumeMode": "Filesystem",
+                "volumeName": "pvc-c6d6fd30-b259-4edd-ab4d-457a86c9680f"
+            },
+            "status": {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "capacity": {
+                    "storage": "2Gi"
+                },
+                "phase": "Bound"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "metadata": {
+                "annotations": {
+                    "pv.kubernetes.io/bind-completed": "yes",
+                    "pv.kubernetes.io/bound-by-controller": "yes",
+                    "volume.beta.kubernetes.io/storage-provisioner": "rancher.io/local-path",
+                    "volume.kubernetes.io/selected-node": "orbstack",
+                    "volume.kubernetes.io/storage-provisioner": "rancher.io/local-path"
+                },
+                "creationTimestamp": "2026-09-29T01:32:53Z",
+                "finalizers": [
+                    "kubernetes.io/pvc-protection"
+                ],
+                "labels": {
+                    "app.kubernetes.io/name": "ops-postgresql",
+                    "ops.platform.io/component": "postgresql",
+                    "ops.platform.io/release": "ops-dependencies"
+                },
+                "name": "data-ops-postgresql-0",
+                "namespace": "ops-system",
+                "resourceVersion": "124432",
+                "uid": "fa694502-a948-4fa7-b072-46eb2f4ce8bb"
+            },
+            "spec": {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "resources": {
+                    "requests": {
+                        "storage": "2Gi"
+                    }
+                },
+                "storageClassName": "local-path",
+                "volumeMode": "Filesystem",
+                "volumeName": "pvc-fa694502-a948-4fa7-b072-46eb2f4ce8bb"
+            },
+            "status": {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "capacity": {
+                    "storage": "2Gi"
+                },
+                "phase": "Bound"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "metadata": {
+                "annotations": {
+                    "pv.kubernetes.io/bind-completed": "yes",
+                    "pv.kubernetes.io/bound-by-controller": "yes",
+                    "volume.beta.kubernetes.io/storage-provisioner": "rancher.io/local-path",
+                    "volume.kubernetes.io/selected-node": "orbstack",
+                    "volume.kubernetes.io/storage-provisioner": "rancher.io/local-path"
+                },
+                "creationTimestamp": "2026-09-29T01:32:53Z",
+                "finalizers": [
+                    "kubernetes.io/pvc-protection"
+                ],
+                "labels": {
+                    "app.kubernetes.io/name": "ops-seaweedfs",
+                    "ops.platform.io/component": "seaweedfs",
+                    "ops.platform.io/release": "ops-dependencies"
+                },
+                "name": "data-ops-seaweedfs-0",
+                "namespace": "ops-system",
+                "resourceVersion": "124429",
+                "uid": "cacf92e6-8352-47e0-913c-4f9ff641eb34"
+            },
+            "spec": {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "resources": {
+                    "requests": {
+                        "storage": "2Gi"
+                    }
+                },
+                "storageClassName": "local-path",
+                "volumeMode": "Filesystem",
+                "volumeName": "pvc-cacf92e6-8352-47e0-913c-4f9ff641eb34"
+            },
+            "status": {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "capacity": {
+                    "storage": "2Gi"
+                },
+                "phase": "Bound"
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}

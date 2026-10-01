@@ -1,0 +1,98 @@
+{
+  "authorization": "User explicitly authorized the concrete scope in sp010203-core-rerun-prerequisites-20261001.md; protected-instance and protected-image-consumer exceptions remain pending.",
+  "sourceHEAD": "cebaa09abb09480ecebdaf10d488b52794a1bca3",
+  "testedBundleSource": "6355c6863df74e357699ba5ec13cbeb613c3c258",
+  "bundlePath": "artifacts/bundles/sp010203-core-arm64-20261001-delivery",
+  "bundleLockSHA256": "0b47ca0248cb5f5c04dc958144065c05dfd8eaf4136da9e47cdd46ec3f9afb76",
+  "database": {
+    "newOwnedDatabase": "sp010203_core_2cd03be85085471bb1eac9be062cfdf1",
+    "roles": {
+      "api": "sp010203_core_2cd03be85085471bb1eac9be062cfdf1_api",
+      "worker": "sp010203_core_2cd03be85085471bb1eac9be062cfdf1_worker",
+      "migrate": "sp010203_core_2cd03be85085471bb1eac9be062cfdf1_migrate"
+    },
+    "forwardVersion": 16,
+    "existingUserDatabaseMigrated": false,
+    "realRuntimeLOGINAndDDLRejectionPassed": true
+  },
+  "archive": {
+    "newOwnedBucket": "sp010203-core-9ce6011221884414ad8305512e4055fe",
+    "objectLockVerified": true,
+    "versioningVerified": true,
+    "newTenantIDs": [
+      "f8258a76-2e3d-4d7a-b3da-fb32e3045728",
+      "cdf926b7-96a1-462d-9075-749afd078d9c"
+    ],
+    "runtimeTenantPrincipalCount": 2,
+    "tenantIAMLiveVerificationPending": true
+  },
+  "operatorMaterialsOutsideRepository": "/tmp/ops-sp010203-core-authorized-20261001",
+  "releaseUninstallPerformed": false,
+  "cacheEvictionPerformed": false,
+  "coreInstallPerformed": false,
+  "kubevirtCDIMutated": false,
+  "remainingGates": [
+    "OpenBao is initialized/sealed (HTTP 503); request only unseal and read-only configuration check.",
+    "Selected Keycloak image has two protected stopped consumers; request only temporary selected-image cache reference eviction preserving containers/data/stopped state.",
+    "After unseal verify current SP03 policies/keys; protected configuration changes require exact follow-up authorization.",
+    "Actual current Bundle offline install/reinstall, TLS/IAM/business health and public-deny/internal-allow remain unpassed."
+  ],
+  "recordedAtUTC": "2026-10-01T10:41:07.442564+00:00",
+  "operatorResourceMetadata": [
+    {
+      "kind": "Secret",
+      "name": "ops-keycloak-tls",
+      "uid": "009b42cc-3385-4af2-9df7-9dc4316d9760",
+      "resourceVersion": "202995",
+      "keyNames": [
+        "tls.crt",
+        "tls.key"
+      ]
+    },
+    {
+      "kind": "Secret",
+      "name": "ops-seaweedfs-tls",
+      "uid": "7efd2c1b-5b39-417d-93df-2f385ad17705",
+      "resourceVersion": "202996",
+      "keyNames": [
+        "tls.crt",
+        "tls.key"
+      ]
+    },
+    {
+      "kind": "Secret",
+      "name": "ops-seaweedfs-iam",
+      "uid": "64640078-e52e-42b3-a255-2962492c2b81",
+      "resourceVersion": "203257",
+      "keyNames": [
+        "s3.json"
+      ]
+    },
+    {
+      "kind": "Secret",
+      "name": "ops-platform-runtime",
+      "uid": "6af55d31-98e3-4784-b624-29cbdf3be13f",
+      "resourceVersion": "203256",
+      "keyNames": [
+        "apiDatabaseURL",
+        "archiveTenantCredentials",
+        "databaseURL",
+        "workerDatabaseURL"
+      ]
+    },
+    {
+      "kind": "ConfigMap",
+      "name": "ops-platform-bootstrap",
+      "uid": "4a0112e3-3515-4004-a61e-1d7f38489d00",
+      "resourceVersion": "203258",
+      "keyNames": [
+        "archive-bucket",
+        "archive-ca.pem",
+        "oidc-ca.pem",
+        "openbao-ca.pem",
+        "registry-trust.json"
+      ],
+      "publicDataSHA256": "1e4814a280f797a7e9a2d74843b8246233786f7509a432221eb6e33c1e52eb84"
+    }
+  ]
+}
