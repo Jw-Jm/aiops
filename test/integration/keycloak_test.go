@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"bytes"
 	"context"
 	"crypto/hmac"
 	"crypto/rand"
@@ -11,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net"
 	"net/http"
 	"net/http/cookiejar"
@@ -505,7 +507,11 @@ func verifyFoundationAPI(t *testing.T, ctx context.Context, dsn string, token ke
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Setenv("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT", "http://127.0.0.1:1/v1/traces")
+	t.Setenv("PLATFORM_TRACING_ENABLED", "true")
 	runtime, _ := observability.NewRuntime(ctx, "sp03-review-api")
+	var stdout bytes.Buffer
+	runtime.Logger = observability.NewLogger(io.MultiWriter(os.Stdout, &stdout), slog.LevelInfo)
 	defer runtime.Close(ctx)
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
@@ -527,6 +533,7 @@ func verifyFoundationAPI(t *testing.T, ctx context.Context, dsn string, token ke
 	for _, path := range []string{"/api/v1/admin/tenants", "/api/v1/admin/clusters", "/api/v1/admin/source-registrations", "/api/v1/admin/policy-bundles", "/api/v1/admin/recipes", "/api/v1/admin/tools"} {
 		request, _ := http.NewRequestWithContext(ctx, http.MethodGet, endpoint+path, nil)
 		request.Header.Set("Authorization", "Bearer "+token.AccessToken)
+		request.Header.Set("traceparent", "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01")
 		response, err := client.Do(request)
 		if err != nil {
 			t.Fatal("foundation HTTP request failed")
@@ -557,4 +564,66 @@ func verifyFoundationAPI(t *testing.T, ctx context.Context, dsn string, token ke
 		previous = string(body)
 	}
 	t.Log("actual APIApp served six management routes and replayed claim-bound step-up using real Keycloak JWT and distinct database login")
+	flush, finish := context.WithTimeout(ctx, 4*time.Second)
+	if err := runtime.Tracing.Flush(flush); err == nil {
+		t.Error("disconnected OTLP endpoint unexpectedly succeeded")
+	}
+	finish()
+	if !runtime.Metrics.Degraded() {
+		t.Error("actual trace connection refusal did not report degradation")
+	}
+	request, _ := http.NewRequestWithContext(ctx, http.MethodGet, endpoint+"/api/v1/admin/clusters", nil)
+	request.Header.Set("Authorization", "Bearer "+token.AccessToken)
+	response, err := client.Do(request)
+	if err != nil {
+		t.Fatal("API stopped after trace disconnect")
+	}
+	response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		t.Fatal("API read failed after trace disconnect")
+	}
+	t.Log("actual OTLP connection refusal reported degradation; authenticated management read continued")
+	if strings.Contains(stdout.String(), token.AccessToken) {
+		t.Fatal("actual API stdout contains a user token")
+	}
+	if endpoint := os.Getenv("SP03_TEST_VICTORIA_LOGS_URL"); endpoint != "" {
+		verifyCollectedAPIStdout(t, ctx, endpoint, stdout.Bytes())
+	}
+}
+
+func verifyCollectedAPIStdout(t *testing.T, ctx context.Context, endpoint string, lines []byte) {
+	t.Helper()
+	request, _ := http.NewRequestWithContext(ctx, http.MethodPost, strings.TrimRight(endpoint, "/")+"/insert/jsonline?_time_field=time&_msg_field=msg", bytes.NewReader(lines))
+	request.Header.Set("Content-Type", "application/stream+json")
+	client := &http.Client{Timeout: 5 * time.Second}
+	response, err := client.Do(request)
+	if err != nil {
+		t.Fatal("collect actual API stdout")
+	}
+	response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		t.Fatal("VictoriaLogs rejected actual API stdout")
+	}
+	var first map[string]any
+	if err := json.NewDecoder(bytes.NewReader(lines)).Decode(&first); err != nil {
+		t.Fatal(err)
+	}
+	id, ok := first["request_id"].(string)
+	if !ok {
+		t.Fatal("API stdout correlation missing")
+	}
+	query := url.Values{"query": {"request_id:" + id}}
+	for deadline := time.Now().Add(10 * time.Second); time.Now().Before(deadline); {
+		response, err := client.Get(strings.TrimRight(endpoint, "/") + "/select/logsql/query?" + query.Encode())
+		if err == nil {
+			body, err := io.ReadAll(io.LimitReader(response.Body, 1<<20))
+			response.Body.Close()
+			if err == nil && bytes.Contains(body, []byte(id)) && bytes.Contains(body, []byte("http request complete")) {
+				t.Log("actual authenticated API stdout collected and queried in isolated VictoriaLogs")
+				return
+			}
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+	t.Fatal("actual API stdout was not queryable in VictoriaLogs")
 }
