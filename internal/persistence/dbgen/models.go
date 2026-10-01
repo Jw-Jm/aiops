@@ -83,6 +83,8 @@ type AuditSignedSegment struct {
 	Status            string             `json:"status"`
 	CreatedAt         pgtype.Timestamptz `json:"created_at"`
 	SignedAt          pgtype.Timestamptz `json:"signed_at"`
+	FormatVersion     string             `json:"format_version"`
+	PreviousSegmentID pgtype.UUID        `json:"previous_segment_id"`
 }
 
 type AuditTenantHead struct {

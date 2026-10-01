@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/audit-segment-proof/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest", "signature", "keyVersion"],
+  "properties": {
+    "manifest": {"$ref": "https://ops.local/schemas/audit-segment/v2"},
+    "signature": {"type": "string", "pattern": "^vault:v[1-9][0-9]*:[A-Za-z0-9+/=]+$"},
+    "keyVersion": {"type": "string", "pattern": "^[1-9][0-9]*$"}
+  }
+}

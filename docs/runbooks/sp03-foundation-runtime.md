@@ -23,3 +23,9 @@ Every minute, the Worker retries pending segments and drains bounded batches per
 Initialize the dedicated S3 bucket using the controlled bootstrap adapter's Object Lock/versioning setup, then provision its runtime credentials. Do not call the bucket bootstrap operation on a shared bucket during review.
 
 KubeVirt/CDI remain deferred and unverified. This runtime does not install or enable virtualization profiles.
+
+## Signed audit proof format
+
+Migration 00014 preserves previously signed v1 manifests and uses v2 for new segments. The v2 Transit-signed manifest binds the previous segment ID (or null for the first segment). An immutable `audit-proof` S3 object archives the manifest, signature and key version beside the encrypted `audit-segment` object. A retry reuses an existing verified proof, including after signing-key rotation, before completing the database transition.
+
+`VerifyRange` requires its endpoints to be audit sequences belonging to the requested tenant. Empty/missing coverage is an error. It verifies the archived bytes, archived signature proof and signed predecessor chain; removing an entire middle segment cannot become an apparently valid range. Historical v1 manifests remain untouched but have no signed predecessor proof, so ranges relying on their chain fail closed. Do not rewrite historical signatures or report legacy verification as passing; migration of a historical proof boundary requires a separately approved design.

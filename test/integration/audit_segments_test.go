@@ -113,6 +113,9 @@ func TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped(t *testing.
 	if id.Version() != 7 {
 		t.Errorf("audit segment ID version=%d, expected UUIDv7", id.Version())
 	}
+	if _, exists, err := archiveStore.Find(ctx, tenantA, id, "audit-proof"); err != nil || !exists {
+		t.Errorf("signed manifest proof was not archived: exists=%v err=%v", exists, err)
+	}
 	if err := service.VerifyRange(ctx, tenantA, firstSeq, firstSeq); err != nil {
 		t.Fatalf("verify signed tenant segment: %v", err)
 	}
@@ -175,11 +178,111 @@ func TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped(t *testing.
 	backend.mu.Lock()
 	objectsAfter := backend.successfulPuts
 	backend.mu.Unlock()
-	if objectsAfter != objectsBefore+1 {
-		t.Fatalf("segment retry uploaded another object: successful uploads before=%d after=%d", objectsBefore, objectsAfter)
+	if objectsAfter != objectsBefore+2 {
+		t.Fatalf("segment retry must upload exactly one encrypted segment and one signed proof: successful uploads before=%d after=%d", objectsBefore, objectsAfter)
 	}
 	if err := service.VerifyRange(ctx, tenantA, thirdSeq, thirdSeq); err != nil {
 		t.Fatalf("verify segment recovered after sign outage: %v", err)
+	}
+	// The verifier must detect deletion of an entire signed segment, even when
+	// both its metadata and records disappear. Restore via INSERT after checking
+	// so later concurrency tests continue against the original signed history.
+	mutation, err := admin.Conn(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer mutation.Close()
+	for _, query := range []string{
+		`CREATE TEMP TABLE review_removed_segment AS SELECT * FROM audit.signed_segments WHERE tenant_id=$1 AND first_audit_seq=$2`,
+		`CREATE TEMP TABLE review_removed_record AS SELECT * FROM audit.records WHERE tenant_id=$1 AND audit_seq=$2`,
+	} {
+		if _, err := mutation.ExecContext(ctx, query, tenantA, secondSeq); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := mutation.ExecContext(ctx, `SET session_replication_role=replica`); err != nil {
+		t.Fatal(err)
+	}
+	for _, query := range []string{`DELETE FROM audit.signed_segments WHERE tenant_id=$1 AND first_audit_seq=$2`, `DELETE FROM audit.records WHERE tenant_id=$1 AND audit_seq=$2`} {
+		if _, err := mutation.ExecContext(ctx, query, tenantA, secondSeq); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := mutation.ExecContext(ctx, `SET session_replication_role=origin`); err != nil {
+		t.Fatal(err)
+	}
+	if err := service.VerifyRange(ctx, tenantA, firstSeq, thirdSeq); err == nil {
+		t.Error("complete signed segment deletion was accepted")
+	}
+	if _, err := mutation.ExecContext(ctx, `INSERT INTO audit.signed_segments SELECT * FROM review_removed_segment; INSERT INTO audit.records OVERRIDING SYSTEM VALUE SELECT * FROM review_removed_record`); err != nil {
+		t.Fatal(err)
+	}
+	// Exercise real PostgreSQL record mutation, insertion into an inter-tenant
+	// sequence gap, reordering, and forged signed metadata, then restore each.
+	if _, err := mutation.ExecContext(ctx, `UPDATE audit.records SET subject='tampered' WHERE tenant_id=$1 AND audit_seq=$2`, tenantA, firstSeq); err != nil {
+		t.Fatal(err)
+	}
+	if err := service.VerifyRange(ctx, tenantA, firstSeq, thirdSeq); err == nil {
+		t.Fatal("record modification verified")
+	}
+	if _, err := mutation.ExecContext(ctx, `UPDATE audit.records SET subject='integration-user' WHERE tenant_id=$1 AND audit_seq=$2`, tenantA, firstSeq); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mutation.ExecContext(ctx, `UPDATE audit.records SET tenant_id=$1 WHERE audit_seq=$2`, tenantA, otherTenantSeq); err != nil {
+		t.Fatal(err)
+	}
+	if err := service.VerifyRange(ctx, tenantA, firstSeq, thirdSeq); err == nil {
+		t.Fatal("record inserted into signed range verified")
+	}
+	if _, err := mutation.ExecContext(ctx, `UPDATE audit.records SET tenant_id=$1 WHERE audit_seq=$2`, tenantB, otherTenantSeq); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mutation.ExecContext(ctx, `CREATE TEMP TABLE review_swap AS SELECT * FROM audit.records WHERE tenant_id=$1 AND audit_seq IN($2,$3)`, tenantA, firstSeq, secondSeq); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mutation.ExecContext(ctx, `DELETE FROM audit.records WHERE tenant_id=$1 AND audit_seq IN($2,$3)`, tenantA, firstSeq, secondSeq); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mutation.ExecContext(ctx, `INSERT INTO audit.records(audit_seq,tenant_id,tenant_seq,record_id,event_type,entity_kind,entity_id,subject,record,canonical_digest,created_at) OVERRIDING SYSTEM VALUE SELECT CASE audit_seq WHEN $1 THEN $2 ELSE $1 END,tenant_id,tenant_seq,record_id,event_type,entity_kind,entity_id,subject,record,canonical_digest,created_at FROM review_swap`, firstSeq, secondSeq); err != nil {
+		t.Fatal(err)
+	}
+	if err := service.VerifyRange(ctx, tenantA, firstSeq, thirdSeq); err == nil {
+		t.Fatal("reordered records verified")
+	}
+	if _, err := mutation.ExecContext(ctx, `DELETE FROM audit.records WHERE tenant_id=$1 AND audit_seq IN($2,$3)`, tenantA, firstSeq, secondSeq); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mutation.ExecContext(ctx, `INSERT INTO audit.records OVERRIDING SYSTEM VALUE SELECT * FROM review_swap`); err != nil {
+		t.Fatal(err)
+	}
+
+	var originalRoot, originalSignature string
+	if err := mutation.QueryRowContext(ctx, `SELECT merkle_root,signature FROM audit.signed_segments WHERE tenant_id=$1 AND segment_id=$2`, tenantA, id).Scan(&originalRoot, &originalSignature); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mutation.ExecContext(ctx, `SET session_replication_role=replica`); err != nil {
+		t.Fatal(err)
+	}
+	for _, column := range []string{"merkle_root", "signature"} {
+		forged := "sha256:" + strings.Repeat("b", 64)
+		if column == "signature" {
+			forged = "vault:v1:" + base64.StdEncoding.EncodeToString(make([]byte, 64))
+		}
+		if _, err := mutation.ExecContext(ctx, `UPDATE audit.signed_segments SET `+column+`=$1 WHERE tenant_id=$2 AND segment_id=$3`, forged, tenantA, id); err != nil {
+			t.Fatal(err)
+		}
+		if err := service.VerifyRange(ctx, tenantA, firstSeq, thirdSeq); err == nil {
+			t.Fatalf("forged %s verified", column)
+		}
+		if _, err := mutation.ExecContext(ctx, `UPDATE audit.signed_segments SET merkle_root=$1,signature=$2 WHERE tenant_id=$3 AND segment_id=$4`, originalRoot, originalSignature, tenantA, id); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := mutation.ExecContext(ctx, `SET session_replication_role=origin`); err != nil {
+		t.Fatal(err)
+	}
+	if err := service.VerifyRange(ctx, tenantA, firstSeq, thirdSeq); err != nil {
+		t.Fatalf("restored original audit range: %v", err)
 	}
 
 	// Concurrent same-tenant append transactions use a shared lock and a

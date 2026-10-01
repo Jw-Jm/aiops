@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/audit-segment/v2",
+  "title": "Signed audit segment manifest v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "tenantId", "segmentId", "firstAuditSeq", "lastAuditSeq", "recordCount", "merkleRoot", "previousSegmentId", "object"],
+  "properties": {
+    "version": {"const": "audit-segment/v2"},
+    "tenantId": {"type": "string", "format": "uuid"},
+    "segmentId": {"type": "string", "format": "uuid"},
+    "firstAuditSeq": {"type": "integer", "minimum": 1},
+    "lastAuditSeq": {"type": "integer", "minimum": 1},
+    "recordCount": {"type": "integer", "minimum": 1, "maximum": 10000},
+    "merkleRoot": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "previousSegmentId": {"type": ["string", "null"], "format": "uuid"},
+    "object": {"type": "object", "required": ["tenantId", "objectId", "category", "key", "digest", "size", "contentType", "retainUntil"], "properties": {
+      "tenantId": {"type": "string", "format": "uuid"},
+      "objectId": {"type": "string", "format": "uuid"},
+      "category": {"const": "audit-segment"},
+      "key": {"type": "string"},
+      "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+      "size": {"type": "integer", "minimum": 1},
+      "contentType": {"const": "application/json"},
+      "retainUntil": {"type": "string", "format": "date-time"},
+      "versionId": {"type": "string"},
+      "etag": {"type": "string"}
+    }, "additionalProperties": false}
+  }
+}

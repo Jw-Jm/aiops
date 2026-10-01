@@ -55,17 +55,19 @@ func NewSegmentService(pool persistence.TxBeginner, archiveStore SegmentArchive,
 }
 
 type segmentDescriptor struct {
-	TenantID uuid.UUID
-	ID       uuid.UUID
-	First    int64
-	Last     int64
-	Count    int
-	Root     string
-	Status   string
-	Ref      archive.ObjectRef
-	Digest   string
-	Sig      string
-	KeyVer   string
+	FormatVersion string
+	PreviousID    *uuid.UUID
+	TenantID      uuid.UUID
+	ID            uuid.UUID
+	First         int64
+	Last          int64
+	Count         int
+	Root          string
+	Status        string
+	Ref           archive.ObjectRef
+	Digest        string
+	Sig           string
+	KeyVer        string
 }
 
 type recordRow struct {
@@ -186,17 +188,11 @@ func (s *SegmentService) SealNext(ctx context.Context, tenantID uuid.UUID) (uuid
 	if err != nil {
 		return segment.ID, false, err
 	}
-	signature, err := s.signer.TransitSign(ctx, s.key, manifest)
+	signature, err := s.sealProof(ctx, segment, manifest)
 	if err != nil {
-		return segment.ID, false, errors.New("audit segment signing unavailable")
+		return segment.ID, false, err
 	}
-	keyVersion, err := openbao.TransitVersion(signature.Signature)
-	if err != nil || keyVersion != signature.KeyVersion {
-		return segment.ID, false, errors.New("audit segment signer returned an invalid key version")
-	}
-	if err := s.signer.TransitVerify(ctx, s.key, manifest, signature.Signature); err != nil {
-		return segment.ID, false, errors.New("audit segment signature self-verification failed")
-	}
+	keyVersion := signature.KeyVersion
 	if err := persistence.WithTenantTx(ctx, s.pool, tenantID, func(tx pgx.Tx) error {
 		refJSON, err := json.Marshal(ref)
 		if err != nil {
@@ -212,7 +208,8 @@ func (s *SegmentService) SealNext(ctx context.Context, tenantID uuid.UUID) (uuid
 
 // VerifyRange verifies signed coverage for all tenant records whose global
 // audit sequence falls in [first,last], including the complete archived bytes
-// for every overlapping segment.
+// for every overlapping segment. Both boundaries must identify tenant records;
+// missing boundaries or legacy manifests without predecessor proofs fail closed.
 func (s *SegmentService) VerifyRange(ctx context.Context, tenantID uuid.UUID, first, last int64) error {
 	if tenantID == uuid.Nil || first <= 0 || last < first {
 		return errors.New("invalid audit verification range")
@@ -230,11 +227,18 @@ func (s *SegmentService) VerifyRange(ctx context.Context, tenantID uuid.UUID, fi
 	}); err != nil {
 		return err
 	}
+	if len(records) == 0 || len(segments) == 0 || records[0].EntrySeq() != first || records[len(records)-1].EntrySeq() != last {
+		return errors.New("audit range has missing tenant-record boundaries or signed coverage")
+	}
+	verified := map[uuid.UUID]bool{}
 	for _, segment := range segments {
 		if segment.Status != "signed" {
 			return errors.New("audit range contains an unsigned segment")
 		}
 		if err := s.verifySegment(ctx, tenantID, segment); err != nil {
+			return err
+		}
+		if err := s.verifyPredecessors(ctx, tenantID, segment, verified); err != nil {
 			return err
 		}
 	}
@@ -253,6 +257,111 @@ func (s *SegmentService) VerifyRange(ctx context.Context, tenantID uuid.UUID, fi
 	return nil
 }
 
+// A predecessor is covered by the Transit signature, so removing a complete
+// middle segment or rewriting its link cannot hide a gap between valid roots.
+func (s *SegmentService) verifyPredecessors(ctx context.Context, tenant uuid.UUID, segment segmentDescriptor, verified map[uuid.UUID]bool) error {
+	visited := map[uuid.UUID]bool{}
+	for {
+		if segment.FormatVersion != "audit-segment/v2" {
+			return errors.New("legacy audit manifest has no signed predecessor proof")
+		}
+		if verified[segment.ID] {
+			return nil
+		}
+		if visited[segment.ID] {
+			return errors.New("audit predecessor cycle")
+		}
+		visited[segment.ID] = true
+		if segment.PreviousID == nil {
+			break
+		}
+		var previous segmentDescriptor
+		if err := persistence.WithTenantTx(ctx, s.pool, tenant, func(tx pgx.Tx) error {
+			var err error
+			previous, err = loadSegment(ctx, tx, tenant, *segment.PreviousID)
+			return err
+		}); err != nil {
+			return errors.New("audit signed predecessor is missing")
+		}
+		if previous.Status != "signed" || previous.Last >= segment.First {
+			return errors.New("audit predecessor range is invalid")
+		}
+		manifest, err := manifestBytes(previous, previous.Ref)
+		if err != nil {
+			return err
+		}
+		if err := s.signer.TransitVerify(ctx, s.key, manifest, previous.Sig); err != nil {
+			return errors.New("audit predecessor signature verification failed")
+		}
+		segment = previous
+	}
+	for id := range visited {
+		verified[id] = true
+	}
+	return nil
+}
+
+type archivedProof struct {
+	Manifest   json.RawMessage `json:"manifest"`
+	Signature  string          `json:"signature"`
+	KeyVersion string          `json:"keyVersion"`
+}
+
+func (s *SegmentService) readProof(ctx context.Context, segment segmentDescriptor, manifest []byte) (openbao.TransitSignature, bool, error) {
+	ref, exists, err := s.archive.Find(ctx, segment.TenantID, segment.ID, "audit-proof")
+	if err != nil || !exists {
+		return openbao.TransitSignature{}, exists, err
+	}
+	encoded, err := s.archive.Get(ctx, segment.TenantID, ref)
+	if err != nil {
+		return openbao.TransitSignature{}, true, err
+	}
+	if _, err := bundle.CanonicalizeJSON(encoded); err != nil {
+		return openbao.TransitSignature{}, true, errors.New("audit proof JSON is invalid")
+	}
+	var proof archivedProof
+	if json.Unmarshal(encoded, &proof) != nil {
+		return openbao.TransitSignature{}, true, errors.New("audit proof is invalid")
+	}
+	canonical, err := bundle.CanonicalizeJSON(proof.Manifest)
+	version, versionErr := openbao.TransitVersion(proof.Signature)
+	if err != nil || versionErr != nil || version != proof.KeyVersion || !bytes.Equal(canonical, manifest) {
+		return openbao.TransitSignature{}, true, errors.New("archived audit proof differs from signed metadata")
+	}
+	if err := s.signer.TransitVerify(ctx, s.key, manifest, proof.Signature); err != nil {
+		return openbao.TransitSignature{}, true, errors.New("archived audit proof signature is invalid")
+	}
+	return openbao.TransitSignature{Signature: proof.Signature, KeyVersion: proof.KeyVersion}, true, nil
+}
+
+func (s *SegmentService) sealProof(ctx context.Context, segment segmentDescriptor, manifest []byte) (openbao.TransitSignature, error) {
+	if proof, exists, err := s.readProof(ctx, segment, manifest); err != nil {
+		return proof, err
+	} else if exists {
+		return proof, nil
+	}
+	signature, err := s.signer.TransitSign(ctx, s.key, manifest)
+	if err != nil {
+		return signature, errors.New("audit segment signing unavailable")
+	}
+	version, err := openbao.TransitVersion(signature.Signature)
+	if err != nil || version != signature.KeyVersion {
+		return signature, errors.New("audit segment signer returned an invalid key version")
+	}
+	if err := s.signer.TransitVerify(ctx, s.key, manifest, signature.Signature); err != nil {
+		return signature, errors.New("audit segment signature self-verification failed")
+	}
+	encoded, err := json.Marshal(archivedProof{manifest, signature.Signature, signature.KeyVersion})
+	if err != nil {
+		return signature, err
+	}
+	_, err = s.archive.Put(ctx, archive.ObjectDescriptor{TenantID: segment.TenantID, ObjectID: segment.ID, Category: "audit-proof", ContentType: "application/json", RetainUntil: s.now().Add(s.retention).UTC()}, bytes.NewReader(encoded))
+	if err != nil {
+		return signature, errors.New("signed audit proof archive unavailable")
+	}
+	return signature, nil
+}
+
 func (s *SegmentService) verifySegment(ctx context.Context, tenant uuid.UUID, segment segmentDescriptor) error {
 	manifest, err := manifestBytes(segment, segment.Ref)
 	if err != nil {
@@ -260,6 +369,12 @@ func (s *SegmentService) verifySegment(ctx context.Context, tenant uuid.UUID, se
 	}
 	if err := s.signer.TransitVerify(ctx, s.key, manifest, segment.Sig); err != nil {
 		return errors.New("audit segment signature verification failed")
+	}
+	if segment.FormatVersion == "audit-segment/v2" {
+		proof, exists, err := s.readProof(ctx, segment, manifest)
+		if err != nil || !exists || proof.Signature != segment.Sig || proof.KeyVersion != segment.KeyVer {
+			return errors.New("signed audit proof archive is missing or inconsistent")
+		}
 	}
 	if segment.Ref.Digest != segment.Digest || segment.Ref.ObjectID != segment.ID || segment.Ref.TenantID != tenant {
 		return errors.New("audit segment archive reference mismatch")
@@ -347,7 +462,17 @@ type signedManifest struct {
 }
 
 func manifestBytes(segment segmentDescriptor, ref archive.ObjectRef) ([]byte, error) {
-	encoded, err := json.Marshal(signedManifest{"audit-segment/v1", segment.TenantID, segment.ID, segment.First, segment.Last, segment.Count, segment.Root, ref})
+	base := signedManifest{segment.FormatVersion, segment.TenantID, segment.ID, segment.First, segment.Last, segment.Count, segment.Root, ref}
+	var value any = base
+	if base.Version == "audit-segment/v2" {
+		value = struct {
+			signedManifest
+			PreviousID *uuid.UUID `json:"previousSegmentId"`
+		}{base, segment.PreviousID}
+	} else if base.Version != "audit-segment/v1" {
+		return nil, errors.New("unsupported audit manifest version")
+	}
+	encoded, err := json.Marshal(value)
 	if err != nil {
 		return nil, err
 	}
@@ -371,9 +496,9 @@ func loadSegment(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID) (segmentD
 	segment.TenantID = tenant
 	var refJSON []byte
 	err := tx.QueryRow(ctx, `SELECT segment_id, first_audit_seq, last_audit_seq, record_count, merkle_root,
-		status, COALESCE(object_ref, 'null'::jsonb), COALESCE(object_digest, ''), COALESCE(signature, ''), COALESCE(signing_key_version, '')
+		format_version, previous_segment_id, status, COALESCE(object_ref, 'null'::jsonb), COALESCE(object_digest, ''), COALESCE(signature, ''), COALESCE(signing_key_version, '')
 		FROM audit.signed_segments WHERE tenant_id = $1 AND segment_id = $2`, tenant, id).
-		Scan(&segment.ID, &segment.First, &segment.Last, &segment.Count, &segment.Root, &segment.Status, &refJSON, &segment.Digest, &segment.Sig, &segment.KeyVer)
+		Scan(&segment.ID, &segment.First, &segment.Last, &segment.Count, &segment.Root, &segment.FormatVersion, &segment.PreviousID, &segment.Status, &refJSON, &segment.Digest, &segment.Sig, &segment.KeyVer)
 	if err != nil {
 		return segmentDescriptor{}, err
 	}
@@ -387,7 +512,7 @@ func loadSegment(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID) (segmentD
 
 func listSegments(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, first, last int64) ([]segmentDescriptor, error) {
 	rows, err := tx.Query(ctx, `SELECT segment_id, first_audit_seq, last_audit_seq, record_count, merkle_root,
-		status, COALESCE(object_ref, 'null'::jsonb), COALESCE(object_digest, ''), COALESCE(signature, ''), COALESCE(signing_key_version, '')
+		format_version, previous_segment_id, status, COALESCE(object_ref, 'null'::jsonb), COALESCE(object_digest, ''), COALESCE(signature, ''), COALESCE(signing_key_version, '')
 		FROM audit.signed_segments WHERE tenant_id = $1 AND last_audit_seq >= $2 AND first_audit_seq <= $3 ORDER BY first_audit_seq`, tenant, first, last)
 	if err != nil {
 		return nil, err
@@ -397,7 +522,7 @@ func listSegments(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, first, last 
 	for rows.Next() {
 		segment := segmentDescriptor{TenantID: tenant}
 		var refJSON []byte
-		if err := rows.Scan(&segment.ID, &segment.First, &segment.Last, &segment.Count, &segment.Root, &segment.Status, &refJSON, &segment.Digest, &segment.Sig, &segment.KeyVer); err != nil {
+		if err := rows.Scan(&segment.ID, &segment.First, &segment.Last, &segment.Count, &segment.Root, &segment.FormatVersion, &segment.PreviousID, &segment.Status, &refJSON, &segment.Digest, &segment.Sig, &segment.KeyVer); err != nil {
 			return nil, err
 		}
 		if segment.Status == "signed" {
