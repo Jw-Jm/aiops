@@ -1,0 +1,255 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ops-sp03-review-20261001
+  labels:
+    ops.platform.io/release: sp03-review-20261001
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ops-sp03-review-20261001-other
+  labels:
+    ops.platform.io/release: sp03-review-20261001
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-api
+  namespace: ops-sp03-review-20261001
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-worker
+  namespace: ops-sp03-review-20261001
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-investigator
+  namespace: ops-sp03-review-20261001
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-command-runner
+  namespace: ops-sp03-review-20261001
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-unauthorized
+  namespace: ops-sp03-review-20261001
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-openbao-reviewer
+  namespace: ops-sp03-review-20261001
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sp03-review-tokenreview-20261001
+rules:
+  - apiGroups: [authentication.k8s.io]
+    resources: [tokenreviews]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sp03-review-tokenreview-20261001
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: sp03-review-tokenreview-20261001
+subjects:
+  - kind: ServiceAccount
+    name: ops-openbao-reviewer
+    namespace: ops-sp03-review-20261001
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: review-openbao-config
+  namespace: ops-sp03-review-20261001
+data:
+  bao.hcl: |
+    ui=false
+    storage "inmem" {}
+    listener "tcp" { address="0.0.0.0:8200" tls_cert_file="/tls/tls.crt" tls_key_file="/tls/tls.key" }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: review-openbao
+  namespace: ops-sp03-review-20261001
+spec:
+  serviceAccountName: ops-openbao-reviewer
+  automountServiceAccountToken: false
+  containers:
+    - name: openbao
+      image: ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6
+      args: [server, -config=/cfg/bao.hcl]
+      ports: [{containerPort: 8200}]
+      volumeMounts:
+        - {name: config, mountPath: /cfg, readOnly: true}
+        - {name: tls, mountPath: /tls, readOnly: true}
+        - {name: reviewer, mountPath: /var/run/secrets/kubernetes.io/serviceaccount, readOnly: true}
+  volumes:
+    - name: config
+      configMap: {name: review-openbao-config}
+    - name: tls
+      secret: {secretName: review-openbao-tls}
+    - name: reviewer
+      projected:
+        sources:
+          - serviceAccountToken: {path: token, expirationSeconds: 3600}
+          - configMap:
+              name: kube-root-ca.crt
+              items: [{key: ca.crt, path: ca.crt}]
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: identity-ops-api
+  namespace: ops-sp03-review-20261001
+spec:
+  serviceAccountName: ops-api
+  automountServiceAccountToken: false
+  containers:
+    - name: identity
+      image: postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+      command: [sleep, "3600"]
+      volumeMounts:
+        - {name: token, mountPath: /identity, readOnly: true}
+  volumes:
+    - name: token
+      projected:
+        defaultMode: 0444
+        sources:
+          - serviceAccountToken: {path: token, audience: openbao, expirationSeconds: 600}
+          - serviceAccountToken: {path: wrong-audience, audience: wrong-audience, expirationSeconds: 600}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: identity-ops-worker
+  namespace: ops-sp03-review-20261001
+spec:
+  serviceAccountName: ops-worker
+  automountServiceAccountToken: false
+  containers:
+    - name: identity
+      image: postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+      command: [sleep, "3600"]
+      volumeMounts:
+        - {name: token, mountPath: /identity, readOnly: true}
+  volumes:
+    - name: token
+      projected:
+        defaultMode: 0444
+        sources:
+          - serviceAccountToken: {path: token, audience: openbao, expirationSeconds: 600}
+          - serviceAccountToken: {path: wrong-audience, audience: wrong-audience, expirationSeconds: 600}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: identity-ops-investigator
+  namespace: ops-sp03-review-20261001
+spec:
+  serviceAccountName: ops-investigator
+  automountServiceAccountToken: false
+  containers:
+    - name: identity
+      image: postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+      command: [sleep, "3600"]
+      volumeMounts:
+        - {name: token, mountPath: /identity, readOnly: true}
+  volumes:
+    - name: token
+      projected:
+        defaultMode: 0444
+        sources:
+          - serviceAccountToken: {path: token, audience: openbao, expirationSeconds: 600}
+          - serviceAccountToken: {path: wrong-audience, audience: wrong-audience, expirationSeconds: 600}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: identity-ops-command-runner
+  namespace: ops-sp03-review-20261001
+spec:
+  serviceAccountName: ops-command-runner
+  automountServiceAccountToken: false
+  containers:
+    - name: identity
+      image: postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+      command: [sleep, "3600"]
+      volumeMounts:
+        - {name: token, mountPath: /identity, readOnly: true}
+  volumes:
+    - name: token
+      projected:
+        defaultMode: 0444
+        sources:
+          - serviceAccountToken: {path: token, audience: openbao, expirationSeconds: 600}
+          - serviceAccountToken: {path: wrong-audience, audience: wrong-audience, expirationSeconds: 600}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: identity-ops-unauthorized
+  namespace: ops-sp03-review-20261001
+spec:
+  serviceAccountName: ops-unauthorized
+  automountServiceAccountToken: false
+  containers:
+    - name: identity
+      image: postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+      command: [sleep, "3600"]
+      volumeMounts:
+        - {name: token, mountPath: /identity, readOnly: true}
+  volumes:
+    - name: token
+      projected:
+        defaultMode: 0444
+        sources:
+          - serviceAccountToken: {path: token, audience: openbao, expirationSeconds: 600}
+          - serviceAccountToken: {path: wrong-audience, audience: wrong-audience, expirationSeconds: 600}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: ops-api, namespace: ops-sp03-review-20261001-other}
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: identity-ops-api
+  namespace: ops-sp03-review-20261001-other
+spec:
+  serviceAccountName: ops-api
+  automountServiceAccountToken: false
+  containers:
+    - name: identity
+      image: postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+      command: [sleep, "3600"]
+      volumeMounts:
+        - {name: token, mountPath: /identity, readOnly: true}
+  volumes:
+    - name: token
+      projected:
+        defaultMode: 0444
+        sources:
+          - serviceAccountToken: {path: token, audience: openbao, expirationSeconds: 600}
+          - serviceAccountToken: {path: wrong-audience, audience: wrong-audience, expirationSeconds: 600}
