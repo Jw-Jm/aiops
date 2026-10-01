@@ -7,7 +7,7 @@ import (
 )
 
 func TestBundledKeycloakUsesIndependentTLSSecret(t *testing.T) {
-	output, err := exec.CommandContext(t.Context(), "helm", "template", "review", "../../deploy/charts/ops-dependencies").CombinedOutput()
+	output, err := exec.CommandContext(t.Context(), "helm", "template", "review", "../../deploy/charts/ops-dependencies", "--set", "components.keycloak.endpoint=https://ops-keycloak.ops-system.svc.cluster.local:8443").CombinedOutput()
 	if err != nil {
 		t.Fatalf("render: %v %s", err, output)
 	}
@@ -17,7 +17,7 @@ func TestBundledKeycloakUsesIndependentTLSSecret(t *testing.T) {
 			deployment = doc
 		}
 	}
-	for _, required := range []string{"name: https", "containerPort: 8443", "name: KC_HTTP_ENABLED\n              value: \"false\"", "name: KC_HTTPS_CERTIFICATE_FILE", "name: KC_HTTPS_CERTIFICATE_KEY_FILE", "secretName: \"ops-keycloak-tls\"", "mountPath: /etc/keycloak/tls"} {
+	for _, required := range []string{"name: KC_HOSTNAME", "value: \"https://ops-keycloak.ops-system.svc.cluster.local:8443\"", "name: https", "containerPort: 8443", "name: KC_HTTP_ENABLED\n              value: \"false\"", "name: KC_HTTPS_CERTIFICATE_FILE", "name: KC_HTTPS_CERTIFICATE_KEY_FILE", "secretName: \"ops-keycloak-tls\"", "mountPath: /etc/keycloak/tls"} {
 		if !strings.Contains(deployment, required) {
 			t.Errorf("Keycloak TLS missing %s", required)
 		}

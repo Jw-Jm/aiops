@@ -86,6 +86,8 @@ spec:
             - name: management
               containerPort: 9000
           env:
+            - name: KC_HOSTNAME
+              value: {{ required "components.keycloak.endpoint is required" $component.endpoint | quote }}
             - name: KC_HTTP_ENABLED
               value: {{ ternary "false" "true" $tls | quote }}
             {{ if $tls }}

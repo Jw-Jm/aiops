@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -60,6 +61,23 @@ func TestBundleBuildCLIAndIndependentVerify(t *testing.T) {
 		spec.Files = append(spec.Files, bundle.BuildFile{PayloadFile: bundle.PayloadFile{Path: name, Digest: digests[name], Size: int64(len(data)), Kind: kind}, Source: name})
 	}
 	spec.Materials = []bundle.Material{{Name: "opsctl", Kind: "binary", Version: "1.0.0", Digest: digests["binaries/opsctl"], Architecture: "linux/arm64", PayloadRef: "binaries/opsctl", SBOMRef: "sbom/opsctl.json", LicenseRef: "licenses/opsctl.txt", InstallAfter: []string{}}}
+	// This is a packaging fixture, but first-party names still satisfy the real
+	// source-admission gate. Rebuild from the locked local cache, without network.
+	sourceDir := t.TempDir()
+	command := exec.CommandContext(t.Context(), "python3", "scripts/prepare-runtime-source.py", "--out", sourceDir)
+	command.Dir = filepath.Join("..", "..")
+	if output, err := command.CombinedOutput(); err != nil {
+		t.Fatalf("prepare qualified runtime source: %v: %s", err, output)
+	}
+	sourcePath := filepath.Join(sourceDir, "runtime-go-source.tar")
+	source, err := os.ReadFile(sourcePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256(source)
+	sourceDigest := "sha256:" + hex.EncodeToString(sum[:])
+	spec.Files = append(spec.Files, bundle.BuildFile{PayloadFile: bundle.PayloadFile{Path: "sources/opa-sdk.tar", Digest: sourceDigest, Size: int64(len(source)), Kind: "source"}, Source: sourcePath})
+	spec.Materials = append(spec.Materials, bundle.Material{Name: "opa-sdk-source", Kind: "source", Version: "v1.21.0", Digest: sourceDigest, Architecture: "linux/arm64", PayloadRef: "sources/opa-sdk.tar", SBOMRef: "sbom/opsctl.json", LicenseRef: "licenses/opsctl.txt", InstallAfter: []string{}})
 	data, err := json.Marshal(spec)
 	if err != nil {
 		t.Fatal(err)

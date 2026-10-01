@@ -5,9 +5,12 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"encoding/pem"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -38,14 +41,38 @@ func verifyCoreCapabilities(t *testing.T, p profile.ResolvedProfile, bundleDir s
 		t.Fatal("PostgreSQL did not answer the read-only SQL health check")
 	}
 
-	kc := corePortForward(t, p.Kubernetes.Context, "ops-system", "ops-keycloak", "8080")
-	metadata := coreGetJSON(t, kc+"/realms/master/.well-known/openid-configuration")
+	component := p.Components["keycloak"]
+	endpoint, err := url.Parse(component.Endpoint)
+	if err != nil || endpoint.Scheme != "https" {
+		t.Fatal("Keycloak requires the locked HTTPS endpoint")
+	}
+	names := strings.Split(endpoint.Hostname(), ".")
+	if len(names) < 3 || names[2] != "svc" {
+		t.Fatal("Keycloak health requires the locked Kubernetes Service")
+	}
+	port := endpoint.Port()
+	if port == "" {
+		port = "443"
+	}
+	rawCA := run("kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system", "get", "configmap", "ops-platform-bootstrap", "-o", "json")
+	var bootstrap struct {
+		Data map[string]string `json:"data"`
+	}
+	if json.Unmarshal(rawCA, &bootstrap) != nil {
+		t.Fatal("invalid independent public bootstrap ConfigMap")
+	}
+	client, err := coreOIDCClient(endpoint.Hostname(), []byte(bootstrap.Data["oidc-ca.pem"]))
+	if err != nil {
+		t.Fatal(err)
+	}
+	kc := strings.Replace(corePortForward(t, p.Kubernetes.Context, names[1], names[0], port), "http://", "https://", 1)
+	metadata := coreGetJSONWithClient(t, client, kc+"/realms/ops/.well-known/openid-configuration")
 	issuer, _ := metadata["issuer"].(string)
 	jwks, _ := metadata["jwks_uri"].(string)
-	if !strings.HasSuffix(issuer, "/realms/master") || jwks == "" {
-		t.Fatal("Keycloak did not expose realm discovery and a signing-key endpoint")
+	if issuer != strings.TrimSuffix(component.Endpoint, "/")+"/realms/ops" || jwks != issuer+"/protocol/openid-connect/certs" {
+		t.Fatal("Keycloak issuer/JWKS differs from its locked runtime identity")
 	}
-	keys := coreGetJSON(t, kc+"/realms/master/protocol/openid-connect/certs")
+	keys := coreGetJSONWithClient(t, client, kc+"/realms/ops/protocol/openid-connect/certs")
 	if values, ok := keys["keys"].([]any); !ok || len(values) == 0 {
 		t.Fatal("Keycloak signing keys are unavailable")
 	}
@@ -155,9 +182,16 @@ func corePortForward(t *testing.T, kubeContext, namespace, service, port string)
 	return ""
 }
 
-func coreGetJSON(t *testing.T, endpoint string) map[string]any {
+func coreOIDCClient(serverName string, ca []byte) (*http.Client, error) {
+	roots := x509.NewCertPool()
+	if serverName == "" || !roots.AppendCertsFromPEM(ca) {
+		return nil, fmt.Errorf("independent OIDC CA and Service identity are required")
+	}
+	return &http.Client{Timeout: 10 * time.Second, Transport: &http.Transport{TLSClientConfig: &tls.Config{RootCAs: roots, ServerName: serverName, MinVersion: tls.VersionTLS12}}, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}, nil
+}
+
+func coreGetJSONWithClient(t *testing.T, client *http.Client, endpoint string) map[string]any {
 	t.Helper()
-	client := &http.Client{Timeout: 10 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
 	request, err := http.NewRequestWithContext(t.Context(), http.MethodGet, endpoint, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -358,4 +392,30 @@ func TestSeaweedPinnedOfflineS3Capability(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log("exact pinned SeaweedFS: internal Docker network, non-root/read-only, anonymous rejected, signed object round-trip passed")
+}
+
+func TestCoreOIDCHealthUsesIndependentTLSAndServiceIdentity(t *testing.T) {
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"ok":true}`))
+	}))
+	defer server.Close()
+	ca := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: server.Certificate().Raw})
+	client, err := coreOIDCClient("example.com", ca)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := coreGetJSONWithClient(t, client, server.URL)["ok"]; got != true {
+		t.Fatal("TLS health response unavailable")
+	}
+	wrong, err := coreOIDCClient("other-service.example", ca)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := wrong.Get(server.URL); err == nil {
+		t.Fatal("different Service TLS identity accepted")
+	}
+	if _, err := coreOIDCClient("example.com", []byte("invalid")); err == nil {
+		t.Fatal("invalid independent CA accepted")
+	}
 }
