@@ -57,8 +57,15 @@ func TestVictoriaBundledSmoke(t *testing.T) {
 			t.Fatalf("logs capability evidence missing for %s: %s", name, joined)
 		}
 	}
-	if resolved.Components["vmalert"].Mode != "bundled" {
-		t.Fatalf("missing vmalert mode = %q, want bundled recommendation", resolved.Components["vmalert"].Mode)
+	wantVMAlertMode := "bundled"
+	if candidates := discovery.Components["vmalert"]; len(candidates) == 1 {
+		wantVMAlertMode = "external"
+		if resolved.Components["vmalert"].ObjectUID != candidates[0].ObjectUID {
+			t.Fatal("vmalert discovery identity was not retained")
+		}
+	}
+	if resolved.Components["vmalert"].Mode != wantVMAlertMode {
+		t.Fatalf("vmalert mode = %q, want %s from actual read-only discovery", resolved.Components["vmalert"].Mode, wantVMAlertMode)
 	}
 	wantInstallable := true
 	for _, component := range resolved.Components {

@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"context"
 	"errors"
 	"testing"
 	"time"
@@ -23,11 +22,8 @@ func TestRevokedStepUpCannotBeRecreatedByReplayingSameJWT(t *testing.T) {
 	if _, err := db.ExecContext(ctx, `INSERT INTO platform.tenants(tenant_id,slug,display_name) VALUES($1,$2,'review')`, tenant, tenant.String()); err != nil {
 		t.Fatal(err)
 	}
-	cfg, _ := pgxpool.ParseConfig(dsn)
-	cfg.AfterConnect = func(ctx context.Context, c *pgx.Conn) error {
-		_, err := c.Exec(ctx, `SET ROLE api_runtime_role`)
-		return err
-	}
+	cfg := runtimePoolConfig(t, ctx, db, dsn, "api_runtime_role")
+
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {
 		t.Fatal(err)

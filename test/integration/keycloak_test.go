@@ -448,14 +448,8 @@ func verifyPersistedKeycloakStepUp(t *testing.T, ctx context.Context, token keyc
 	if _, err := db.ExecContext(dbctx, `INSERT INTO platform.role_bindings (tenant_id, binding_id, subject, role_name) VALUES ($1, $2, $3, 'platform_admin')`, tenantID, uuid.Must(uuid.NewV7()), token.Subject); err != nil {
 		t.Fatal(err)
 	}
-	poolConfig, err := pgxpool.ParseConfig(dbURL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	poolConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		_, err := conn.Exec(ctx, `SET ROLE api_runtime_role`)
-		return err
-	}
+	poolConfig := runtimePoolConfig(t, dbctx, db, dbURL, "api_runtime_role")
+
 	pool, err := pgxpool.NewWithConfig(dbctx, poolConfig)
 	if err != nil {
 		t.Fatal(err)

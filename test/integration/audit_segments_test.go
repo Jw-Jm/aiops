@@ -42,15 +42,8 @@ func TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped(t *testing.
 		}
 	}
 
-	poolConfig, err := pgxpool.ParseConfig(dbURL)
-	if err != nil {
-		t.Fatal(err)
-	}
+	poolConfig := runtimePoolConfig(t, ctx, admin, dbURL, "worker_runtime_role")
 	poolConfig.MaxConns = 20
-	poolConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		_, err := conn.Exec(ctx, `SET ROLE worker_runtime_role`)
-		return err
-	}
 	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
 	if err != nil {
 		t.Fatal(err)

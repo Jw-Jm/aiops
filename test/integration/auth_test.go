@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"testing"
@@ -50,14 +49,8 @@ func TestRoleBindingsAndStepUpSessions(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	poolConfig, err := pgxpool.ParseConfig(dbURL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	poolConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		_, err := conn.Exec(ctx, "SET ROLE api_runtime_role")
-		return err
-	}
+	poolConfig := runtimePoolConfig(t, ctx, db, dbURL, "api_runtime_role")
+
 	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
 	if err != nil {
 		t.Fatal(err)
