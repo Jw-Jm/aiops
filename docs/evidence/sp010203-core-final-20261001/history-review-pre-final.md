@@ -1,0 +1,144 @@
+# SP-01～SP-03 全面复审与修复记录（Task 2.7 定向授权后准备）
+
+本次范围：SP-01 全部、SP-02 非虚拟化部分、SP-03 全部。依据用户本轮授权、根目录/仓库 AGENTS.md、ADR-0008 和根目录 00～10 正式方案；正式文档不修改。已完成当前实现的全范围核对和独立门禁；当前 Bundle 的 Task 2.7 运行验收尚未完成，总体保持未通过。早期“待重跑”文字保留为过程记录，最新状态以文末为准。
+
+## 审核起点
+
+- 原始工作树：main，`a300fa8a7c2b9f6a6c9aad36053572f6881cc123`，已跟踪/未跟踪工作树均干净。
+- SP-01 独立交付：`e3c990fb462e66dd63624b38c9ce83a549aa6938`，合并历史提交 `ec311cdfe7d5d4e1a5c8805263857c39cc72b45b`；合并保留了已有实现及 SP-02 升级。
+- SP-02 非虚拟化交付记录：Task 2.7 原始运行源码 `f3ef3c4949cd24ac669a3c5c642d832a0cbd6e3a`，源绑定 `0eadb4b`；图基线 `11e7da9`，DeepFlow `1109306`，Inspection `5c1ee72`。`ac8f4ff` 保留的虚拟化资料继续延期。
+- SP-03 阶段交付：`ebe143c033ceb4615cd7c8689082a3c0da599ada`；合并 `a645a4208c0ce745232d16c8244c29f2b38485df`；既往最终受测源码 `312f37b6492d4a1ec305b77067ea289840739e83`，报告交付 `a300fa8`。
+- 此次检查覆盖 HEAD 下全部范围内实现，不只覆盖最近 diff；既往报告不能直接替代当前证据。
+
+## 已关闭问题
+
+- R01（Task 1.1/2.8/2.9）：Makefile 的 test-replay 仅打印占位说明，test-e2e 允许跳过全部 live 用例仍返回成功。失败复现与修复验证见 entrypoints-red/green.log。`2dea0a4` 接通两项非虚拟化上游重放并拒绝 skipped/empty 报告；E2E 明确排除 ADR-0008 延期的 KubeVirt 用例，其他跳过均不得用于验收。
+- R02（Task 2.1）：Resolve 校验 version/digest，但忽略检测输入的 endpoint、镜像仓库、目标架构、Server 版本与镜像导入驱动漂移。五种失败复现见 profile-red.log；`82ffe9b` 拒绝这些漂移，profile-green.log 为整个 Profile 包回归。
+- R03（Task 3.2/3.9）：幂等错误生成独立 UUIDv4 requestId，丢失实际请求关联链。correlation-red.log 复现；`96b9a68` 统一使用已验证请求 ID，并保留 HTTP header，整个 HTTP 包回归见 correlation-green.log。
+
+## 待处理及证据缺口
+
+- 当前源码的 ops-platform Chart 与 Task 2.7 原始 Bundle Chart 已不同，旧 Bundle 重装记录只证明当时状态；需核查当前运行配置、制包及受影响重装门禁。
+- 上述 installer/Keycloak 配置问题已由 R06 修复；当前 Bundle 重装证据仍待补齐。
+- DB 集成首次复跑因既有独立测试容器停止而连接拒绝；失败保留。已核对其完整容器 ID、owner label 和本地端口后启动该独立 PostgreSQL，复跑不涉及共享数据库。
+
+KubeVirt/CDI 及专属能力延期、未验证；Task 2.6 及相关虚拟化分项不计作通过，未宣称原 SP-02 完整验收通过。
+
+## 本轮继续修复与回归
+
+- R04：`196bfd7` 隔离 Make 入口测试的假 Go 报告，避免覆盖并发真实验收日志。第一次重放的两个用例均通过，但报告被入口测试覆盖导致最终校验失败；修复后 replay-isolated.log 两项真实上游断网重放及报告校验通过。
+- R05：`630c56a` 在 core Resolve/Validate 中固定 kubevirt/cdi disabled、unverified。矩阵 supported 不能转换为运行验收事实。
+- R06：`e417398` 补齐独立公共 bootstrap CA/Registry 公钥/归档桶读取、resolved endpoint 绑定和 Keycloak HTTPS Chart/发现/NetworkPolicy。runtime-config-green.log 覆盖配置缺失、非法公钥/CA/桶、HTTP issuer 拒绝和 HTTPS 渲染。尚未视为当前 Bundle 重装通过。
+- R07：`296f1be` 按冻结 6.2 节补齐 Source allowedSchemas 和 Cluster 元数据；未注册 Envelope 版本的失败复现见 source-schema-red.log。迁移保留旧记录的空白权限/信息，由显式 revision + step-up 管理 API 修复；revision/回滚/审计同事务。Source 集成改用 API-only LOGIN，经实际运行池校验，source-runtime-final.log 通过。ADR-0014 记录已有规格的补齐及边界。
+- R08：`5ec1d18` 迁移恢复验证从已交付迁移集合确定最新版本并注入下一条失败 migration，仍验证 DDL/版本原子回滚及 migration_role 恢复。Source Fixture 使用 OIDC auth_time 整秒格式。
+
+完整集成第一次复跑保留 integration-first-failure.log：旧迁移版本常量、已停止的独立 API 抓取目标、非 OIDC 纳秒 Fixture 导致失败。修复并恢复独立目标后，integration-r2.log 24 个测试事件通过、零失败、零跳过；security.log 11 个测试事件通过、零跳过；check-r2.log 包含锁定工具链、生成一致性、vet、Go/Web/Contract 门禁。普通 make check 中的环境依赖跳过不能替代显式验收入口。
+
+隔离环境复跑重新核对七个历史测试 Docker 容器完整 ID/owner label，重启保留数据；端口按当前 inspect 映射重新绑定。临时 TokenReview namespace/角色/Pod 仅使用仓库 Fixture，创建前确认对象不存在。OpenBao 根令牌与 Shamir 材料保存在仓库/Bundle 外 0600 文件，不进入报告。JWT 仅存外部临时文件，报告只收录公开身份和期限。当前源码 API 在新建独立数据库上运行，迁移使用 migration-only LOGIN，API 使用 API-only LOGIN；Victoria 真实抓取通过。清理尚未执行，完成剩余必要验证后按本轮 UID 清理临时授权与 namespace。
+
+## 后续关闭问题与剩余门禁
+
+- R09：`5cad29b` 将 resolved Profile 真正接入 API/Worker 启动，在数据库连接前拒绝缺失、非法、不可安装或 endpoint 漂移；独立 Keycloak/API 与真实 Worker 归档故障恢复重跑通过。隔离 loopback Profile 仅说明测试配置，不能替代 Kubernetes 发现。
+- R10：`d62b8f6`/`45c9cd7` 完成 OPA SDK 的独立准入：79 个实际链接 Go 模块、2419 个模块文件及1332 个标准库文件的来源/许可证闭包，固定 Linux/arm64、CGO disabled。独立 OPA 服务保留 candidate；Bundle 中第一方 Go 运行物要求 qualified SDK 和准确 source material。真实 SDK 的12项测试、无网络且空模块缓存的三个命令重建通过；Catalog Git/archive 排他字段的中间失败已保留并修复。
+- R11：`f2eaed0` 要求独立 OIDC CA，scratch API 不依赖缺失的系统 CA；失败用例和修复回归通过。
+- R12：`07d8e43` 限定 make fmt 的第一方源码范围，防止改写锁定的第三方源码；入口回归通过。
+- R13：外部实例只锁名称、不锁 UID，Service 同名重建仍被接受。新增 objectUid Schema 字段、只读发现/Resolve 绑定与安装前实际 Service UID 校验；包括 ops-system 内外部实例。针对性失败复现后 Profile/Bundle 全包通过。旧无 UID 的发现资料不可直接作为当前安装证明，需重新只读发现。
+
+最终工具链、生成、check、integration/security/replay 和三个 SP 的完整核对仍需绑定最终源码。旧 Bundle 的第一方二进制/Chart/SBOM 不能证明 SP-03 新源码的准入与重装；空缓存和有状态重装不得在共享环境未经额外授权执行。目前三个 SP 均保留未通过状态。
+
+- R14：`ddf81ae` 修复离线 OIDC 健康检查仍用 HTTP/8080 的旧路径，改为 resolved HTTPS endpoint、独立 CA 与 Service SAN 验证，并固定 bundled Keycloak hostname；CLI 制包 Fixture 补齐真实 SDK source-admission 前置要求。
+- R15：Registry 集成使用管理员连接 SET ROLE，未验证运行时真实 LOGIN；改用仅 api_runtime_role 的独立 LOGIN 和 OpenRuntimePool。编译失败后历史解析采用 PostgreSQL 自身时钟，消除 host/VM 亚秒时钟差造成的误报；OIDC Fixture auth_time 对齐整秒。针对性 Registry 全流程通过。
+
+最终重放已通过：2个真实 upstream 测试、零跳过；当前 check/security 通过。最终 integration 曾因未加载基础凭据而被入口严格拒绝（未计作通过），补全原有外部凭据与当前端口绑定后仅 Registry 时钟断言失败；原失败保留，修复后待完整重跑。
+
+## 当前交付状态与最终全范围核对（2026-10-01）
+
+受测实现/配置 HEAD：`6355c6863df74e357699ba5ec13cbeb613c3c258`。修复范围 `a300fa8a7c2b9f6a6c9aad36053572f6881cc123..6355c6863df74e357699ba5ec13cbeb613c3c258`，22 个逻辑提交；完整提交和标题见 [repair-commits.json](sp010203-review-20261001/repair-commits.json)。后续报告提交只新增证据与本文，不改变受测运行代码或配置。原三处 worktree 的分支/HEAD 保持原值，原始用户工作没有重置、回滚或清理。根目录 00～10 正式文档未修改，没有进入 SP-04～SP-09。
+
+新增关闭问题：
+
+- R16：DB 集成仍有管理员 SET ROLE 池，无法证明实际 LOGIN 的权限闭包。`9c7c09a` 的 `test/integration/runtime_login_test.go:17` 接通真实 API/Worker-only LOGIN 与生产 OpenRuntimePool；`033c3a2` 补齐遗漏的 Archive 集成池。真实 RLS、池复用、权限、并发、迁移恢复和审计集成通过，未放宽运行角色。
+- R17：Service 只根据容器镜像认定兼容，未检查 Pod Running/Ready，selectorless Service 也可能被接受。`c39f8dc` 修复 `internal/profile/detect.go:472` 的只读发现；失败复现与修复全包回归保留。当前 Victoria 只读发现再次通过，实例 UID 绑定且未新增/覆盖 monitoring workload。
+- R18：归档的非 loopback HTTP 与无独立 CA 的 TLS 可被接受，S3 Chart/安装探针也使用 HTTP。`033c3a2` 修复 `internal/integrations/s3/client.go:37`、Bundle 公共 bootstrap、Chart、Worker CA 注入及真实健康探针。archive-tls-red/green-r2.log、archive-tls-real.log 验证明文拒绝、独立 CA、错误 SAN 拒绝，以及 pinned SeaweedFS + OpenBao Transit +真实 LOGIN 归档。
+- R19：Worker 持有全桶 S3 凭据，软件 prefix 校验不能证明服务器租户 IAM。`3928403` 在 `internal/integrations/s3/tenants.go:47`/`:60`/`:139` 及 `internal/app/audit_runtime.go:102` 接通有上限、严格 JSON 的按租户凭据路由，没有全局 fallback。每个实际服务器 principal 必须证明 own-prefix list 可用、无 prefix/foreign-prefix list 和 foreign get 返回 AccessDenied/403；404/超时不能代替拒绝。Chart 仅在 Worker 挂载凭据，bundled SeaweedFS 引用外部 IAM Secret，导入前检查所选 Secret key。真实服务器双租户 TLS round-trip、实际跨租户现有对象拒绝、全桶 principal 拒绝及 Worker SIGKILL/故障恢复通过。ADR-0016 记录已有冻结要求的实现和操作者边界。
+- R20：生产适配/Chart 已要求 TLS，但 `deploy/profiles/dev-orbstack.yaml` 的 SeaweedFS 默认仍为 HTTP，当前默认安装会被自身门禁拒绝。`6355c68` 用 core_template_tls_test 的失败复现补齐默认端点；profile-archive-tls-red/green.log 保留，不修改正式方案。
+
+验证结果与证据：
+
+- final-check-r9.log：精确锁定工具链、`make check-toolchain`、`check-generated`、`check`、`test-security` 成功；11 项 security、零跳过。check 的默认环境跳过不作为 live 验收依据。
+- final-integration-r14-tls.log：26 项真实集成、零跳过。Keycloak 26.7.4 在新隔离 PostgreSQL 数据库上以 `start` 和 HTTPS 运行，独立 CA/SAN 验证，冻结 realm 导入，临时 bootstrap account 在创建测试操作者后禁用；真实 PKCE、ACR、step-up、API-only/Worker-only LOGIN、OpenBao projected login/mTLS、S3 TLS/IAM、归档签名和积压恢复通过。首次 TLS fixture bootstrap 用户名不符合既有测试前置的 HTTP 400 失败保留在 r13-tls-failure.jsonl，修正隔离 fixture 后完整重跑通过，未修改断言。
+- final-replay-r5.log：2 个真实 upstream 断网重放、零跳过；Ariadne/ontology 的非虚拟化 2 万对象与 8 个 Inspection/Incident/硬件复用路径执行。r4 因本机缓存缺少锁定 Go 工具镜像严格失败，记录保留；测试工具单独按固定 digest 准备后，容器仍使用 network=none、pull=never，无下载 fallback。
+- final-selected-source-build.log：`3928403` 的当前 Go 运行代码，79 个精确选入模块源文件闭包，在 Linux/arm64、CGO disabled、无网络、空 module cache 下成功重建 API/Worker/opsctl；后续 `6355c68` 无 Go 运行代码变化。
+- chart-server-dry-run-final-r2.log：当前依赖 Chart 及实际 API/Worker Deployment 的 Kubernetes server schema admission 成功，未部署 workload；临时 namespace 以 UID 前置条件删除。仅 dry-run 不代表运行安装通过。
+- final-victoria-discovery-r2.log：当前 Profile 发现真实现有 VictoriaMetrics/Logs/vmalert，版本/能力/UID 锁和复用不改变实例数量通过。原 Victoria 独立 bundled fallback 的运行测试保留，不因共享服务存在而删减 Bundle 的 fallback 镜像、Chart、源码与许可证。
+- [current-raw-log-index.json](sp010203-review-20261001/current-raw-log-index.json)：原始日志及公开环境绑定的大小与 SHA-256。复制前扫描外部真实凭据、Shamir/root token、projected JWT 和 private-key/JWT 形态，无匹配。此前失败记录和原始阶段报告均保留。
+
+当前 Bundle：`artifacts/bundles/sp010203-core-arm64-20261001-delivery`，sourceCommit=`6355c6863df74e357699ba5ec13cbeb613c3c258`；23 项物料、69 个文件、3671304708 字节完整核验，payload digest=`sha256:9285bb1402adc3fc2a022b3e18570b791586c89b4dd902b8e5653f2d51a97cbb`。独立开发信任根指纹=`sha256:50629825fcb0cc3a3f4a65af7af4b5a516ec08b90e94e6936d1d14d62a66be99`；独立 verify 与制包内 verify 均成功。新开发签名根不构成生产信任根；Bundle 未在共享 core 安装，历史 Bundle 成功不能替代这一步。
+
+本轮临时 namespace、TokenReview ClusterRole/Binding、运行 API/port-forward、新建 TLS/备用 S3/Keycloak fixture 已按 UID/完整容器 ID + label 清理。七个历史独立容器恢复为本轮初始的停止状态，原数据库/volume、失败数据和新隔离 DB 均保留，没有 DROP。现有 ops-system Service/PVC UID 和四个 Helm release revision 与只读基线一致；见 owned-cleanup-final.json 与 post-cleanup-protected-state.json。
+
+## 逐项状态
+
+下列“独立门禁通过”指当前范围实现、Contract 与实际适用证据已核对；当前 Bundle 联装尚有 Task 2.7 未完成，不能将它等同于总体通过。
+
+- Task 1.1：独立门禁通过。锁定工具链/生成/make 真实入口、启动错误和退出路径核对。
+- Task 1.2：独立门禁通过。必需 ADR 及实现边界核对；未宣称生产 HA/恢复/虚拟化兼容性已经验收。
+- Task 1.3：独立门禁通过。Schema 真源、封闭边界/预算/身份/租户绑定、ActionPlan v2 兼容门禁及反例核对。
+- Task 1.4：独立门禁通过。路由/错误/幂等/分页/Envelope/SSE、Go/TS 生成与 $ref、当前真实写 API 核对；R07 的公共字段先改 Contract 后生成。
+- Task 1.5：独立门禁通过。qualified 的来源/架构/文件许可证/闭包/实际复用/退出边界及 GPL/AGPL 裁决核对；新增 OPA SDK 闭包准入，standalone OPA 与其他 candidate 不进入 core。
+- Task 1.6：独立门禁通过。独立信任根、RFC 8785、Cosign library、全量摘要/引用/布局、导入前验签、安全解压及负例；当前真实 Bundle 验证成功。
+- Task 2.1：独立门禁通过。只读真实发现、Ready/UID/版本/digest/endpoint/环境锁、拒绝冲突/未知/漂移、core 虚拟化 disabled/unverified。
+- Task 2.2：独立门禁通过。external/bundled 渲染互斥、Secret 引用、digest/non-root/read-only/必要写盘/SA/NetworkPolicy、实际 server dry-run；联装运行证据归 Task 2.7。
+- Task 2.3：独立门禁通过。既有精确版本的 non-dev/persistent/TLS bootstrap 状态机、恢复和最小权限证据与当前代码核对；新增 Worker projected login 仅在隔离实例验证，未配置或重装受保护 OpenBao。
+- Task 2.4：独立门禁通过。真实版本/健康/最小查询、认证/错误/逻辑身份/唯一实例复用；当前 Bundle 保留合格 bundled fallback 的完整物料。
+- Task 2.5：当前 PoC 范围通过。最新 source-bound DeepFlow 结果是 2026-09-29 `live`、exit 0，历史公网拒绝失败保留；Agent/Querier/内网对照、边界与精确最小拓扑核对。全量分发准入仍 candidate，core 不包含；未宣称 L7/trace 或生产运行准入通过。
+- Task 2.6：延期、未验证，不计作通过。
+- Task 2.7：未通过。共享环境定向操作授权已取得，已完成独立 TLS、数据库运行角色、归档 bucket/租户材料和 release 所有权准备；受保护 OpenBao 当前 sealed，且锁定 Keycloak 镜像有范围外停止容器使用者，补充授权尚未取得。当前 Bundle 的空缓存安装、实际出口阻断与内网对照、release 清理/重装及新配置健康/能力检查尚未执行，不能改为通过。
+- Task 2.8：非虚拟化 SP-02 可行性/锁定基线通过。真实单 Ariadne 上游/适配、2 万对象、预算/隔离/过期/重建/退化/公共投影证据核对；生产图服务留在 SP-04，新增虚拟化关系延期。
+- Task 2.9：非虚拟化 SP-02 复用 PoC/裁决通过。真实 K8sGPT deterministic CLI、NPD 等价、Coroot/Keep Community/Metal3/Gofish/exporters 选入源与断网重放核对；disabled 有许可证或 runtime 未准入的明确裁决，没有跳过必要 PoC。未宣称完整常驻栈、未知许可证 CLI 分发或真实硬件兼容性；虚拟化专属分项延期。
+- Task 3.1：独立门禁通过。实际最低权限 LOGIN、NO BYPASSRLS、租户复合 FK/RLS、SET LOCAL/池复用、迁移故障恢复、受限 SECURITY DEFINER 追加审计。
+- Task 3.2：独立门禁通过。真实写 API 幂等范围/规范摘要/并发/冲突/重放、同事务业务与审计、Lease/崩溃恢复、执行不重复 dispatch。
+- Task 3.3：独立门禁通过。实际 Keycloak HTTPS/PKCE/ACR、OIDC/JWT issuer/audience/签名/rollover、可信 tenant/scope、角色/revision/审计、step-up 全绑定/绝对与空闲期限/原子更新。
+- Task 3.4：独立门禁通过。真实 API-only LOGIN 下 Source.allowedSchemas、Cluster 稳定 UID/元数据、重复注册、scope/auth_ref/禁用/轮换/revision/RLS/审计。
+- Task 3.5：独立门禁通过。Registry 独立 Schema、签名发布/published 不变、乐观锁/激活冲突/旧版回滚/历史保护与真实 API-only LOGIN。
+- Task 3.6：独立门禁通过。OPA SDK 真实加载先验签后编译、digest cache、完整决定及 tenant/scope/Agent/step-up/命令摘要、有效版保留和 fail closed。
+- Task 3.7：独立门禁通过。S3 TLS/真实 tenant IAM/digest/retention，Transit 加密轮换，同事务审计/global seq/canonical/Merkle/签名/归档/VerifyRange；篡改/插入/重排/缺口/伪签/并发及故障后积压恢复。真实 Worker 最终无永久 pending、签名延迟小于 600 秒。
+- Task 3.8：独立门禁通过。实际 projected token 仅作 Bao auth，短时 mTLS、SPIFFE SAN/namespace/SA、内存私钥/轮换/撤销、错误 audience/未授权工作负载拒绝。
+- Task 3.9：独立门禁通过。实际 API 指标抓取、关联 ID/结构化脱敏/label 基数/Trace、已有 CRD 条件渲染、源故障业务继续与退化；业务状态与幂等/授权/审计实际接通。
+
+## 阶段与总体结论
+
+SP-01 当前独立门禁通过。SP-02 非虚拟化部分未通过，阻断为当前 Bundle 的 Task 2.7 实际运行验收。SP-03 九项独立门禁均已通过，但当前 Bundle 的跨阶段联装/重装证据仍缺，阶段总体保留未通过，防止以隔离集成替代当前交付运行证明。
+
+不存在尚未关闭的已复现源码缺陷；仍有上述真实运行验收和外部前置未完成，可能在实际复跑后产生需要继续自动修复的问题。没有规格降级，没有用 Fixture、旧 Bundle、跳过或未提供证据项目宣称总体完成。
+
+当前总体：**未通过**。尚不能写“SP-01、SP-02 非虚拟化部分、SP-03 当前范围全部通过”。
+
+具体前置与可评审操作范围：[sp010203-core-rerun-prerequisites-20261001.md](sp010203-core-rerun-prerequisites-20261001.md)。用户随后明确回复“授权”，本轮已按该定向范围推进，最新实际状态见下节；授权本身不替代运行验收。
+
+## 定向授权后的实际准备与保护例外
+
+本节的起始 HEAD 为 `cebaa09abb09480ecebdaf10d488b52794a1bca3`，受测运行代码/配置仍为 `6355c6863df74e357699ba5ec13cbeb613c3c258`，Bundle 未变化。新增公开原始证据与 SHA-256 索引见 [authorized preparation/index.json](sp010203-authorized-preparation-20261001/index.json)，配置/源码/Bundle 绑定见 [preparation.json](sp010203-authorized-preparation-20261001/preparation.json)。没有新源码修复或规格调整。
+
+- 独立生成 Keycloak/S3 开发 CA 与 Service SAN 证书，私钥与操作者材料仅保存在仓库外 0700 目录 `/tmp/ops-sp010203-core-authorized-20261001`，文件 0600；创建 `ops-keycloak-tls`、`ops-seaweedfs-tls`。独立 CA/SAN 校验通过，但尚未加载至重装 workload，不能计作其 HTTPS 运行通过。
+- 创建归属明确的新数据库 `sp010203_core_2cd03be85085471bb1eac9be062cfdf1`，版本 1 由受控 bootstrap 执行，后续至版本 16 由 migration-only LOGIN 执行；API/Worker 使用独立最低权限 LOGIN。实际 `OpenRuntimePool` 连接、角色选择、NOBYPASSRLS 及 DDL 拒绝通过。既有 `ops` 用户数据库未运行 migration，所有原数据保留。
+- 共享 Keycloak 原先只有 `master`，只导入此前不存在的冻结 `ops` realm，没有覆盖已有 realm。初次临时核查因将服务端生成的默认字段与整个属性 map 作严格相等比较而失败；后续逐项核查所有显式冻结字段（含客户、mapper、PKCE、browser/ACR flows）通过，未改冻结配置。bootstrap 管理员退休与新的 TLS 运行验证尚未完成，隔离集成的既有成功不能替代这两步。
+- 创建新归档 bucket `sp010203-core-9ce6011221884414ad8305512e4055fe`，实际 Object Lock/versioning 检查通过，未对已有 bucket 调用 bootstrap。准备两个新租户及仅限各自前缀的 IAM，创建 `ops-seaweedfs-iam`，新增公共 `ops-platform-bootstrap`；独立 Registry 私钥也仅在仓库外。按授权更新 `ops-platform-runtime` 的 API/Worker URL 和租户凭据 map，原 Secret UID 及无关键保留，原值仅保存在外部 0600 备份。新 IAM 尚未被重装 S3 加载，不能计作 live IAM 通过。
+- 18 个待清理 release manifest/live 资源的 release label、Helm release/namespace annotation、managed-by 与 UID 已核对；无 PVC/PV 或 hooks 进入清理计划。所有既有 Service/PVC UID、`ops-core`/`ops-dependencies`/`ops-platform`/`vmalert` revision 均与前置快照一致。尚未卸载 release、删除容器、清空缓存或执行安装。
+
+当前精确阻碍：
+
+1. 受保护 `ops-core` 的 OpenBao 2.7.0 经独立 CA/SAN 验证后返回 HTTP 503，`initialized=true, sealed=true`，策略/密钥的只读请求亦返回 503。已请求仅通过既有外部恢复材料提交两份 share 解封并只读核查；不初始化、重启或更改配置/恢复材料。若解封后发现 SP-03 所需策略/密钥缺失，再提供具体差异请求保护例外，不能借 root token 作为运行凭据。
+2. 锁定 Keycloak 镜像还被范围外停止容器 `sp03-keycloak-import-test`（完整 ID `15752885bbdbb9be66bbbf9ff6f3e56be0c15a299fd5a3e4fca1ef6199e63971`）、`sp03-keycloak-bootstrap`（`4becd4f2823f31aa9e171942db92e628783665fff0aa21bfa4eeb9ae27aecc98`）引用。遵循已授权范围的“遇到受保护使用者停止”，未清缓存；已请求仅暂时移除所选镜像缓存引用并从同一 Bundle 恢复同一 digest，容器/卷/数据/停止状态均保留。
+
+这两项补充授权尚未收到。新公共证据已扫描外部真实凭据、root/share、私钥与 JWT，无匹配。等待受保护步骤所需授权，不用成功的准备工作替代 Task 2.7；SP-01 独立门禁通过，SP-02 非虚拟化和 SP-03 阶段总体仍保留未通过。
+
+## 非虚拟化补充授权后的复跑修复
+
+用户随后明确要求“除了虚拟化，其他均处理，使之通过”，覆盖上述受保护步骤的必要最小操作。已解封既有 OpenBao，并核实旧配置缺少 SP-03 审计签名 key、工作负载 PKI/auth role、token audience 和 Worker 签名策略。按当前源码补齐后 `Configure`/`Status` 达到 ready；保留既有加密 key、根 CA、PVC、SSH CA 和外部恢复材料。Keycloak 初始 bootstrap account 已禁用/轮换，新增命名操作者管理验证通过，凭据仅在外部文件。五个所选镜像 reference 和 manifest digest 实际移除，所有停止容器及 mount 保留；没有全局 prune 或公共 pull。
+
+R21（Task 2.7/3.9）：当前 Bundle 第一次真实安装与 SQL/OIDC/S3/Victoria/OpenBao 能力检查通过，但重装清理拒绝属于该 release 的 `VMServiceScrape`。进一步发现本地 `helm template` 无 server capabilities，预检未渲染该对象，实际 Helm 安装却根据已有 CRD 创建，造成资源计划差异。`internal/bundle/installer.go` 补齐两种标准 scrape 资源的受限检查/清理，新增 `scrape_values.go` 从 resolved CRD 清单冻结选择并验证实际 served version；预检和安装共用确定值。所有权/命名空间/冲突/PVC/hooks 限制不变，没有允许任意 CRD 或关闭观测。
+
+原 live 失败保留在外部 `live-offline-install-r1.log`，针对性 owned/foreign monitoring 失败复现见 `monitoring-cleanup-red.log`，修复后的 Bundle/CLI/Contract 全包回归通过（`monitoring-fix-green.log`）。新的源码 Bundle、来源闭包及实际安装/重装仍需完成；此时尚未写总体通过。
+
+**KubeVirt/CDI 及其专属能力延期、未验证；Task 2.6 和相关虚拟化分项不计作通过，未宣称原 SP-02 完整验收通过。**

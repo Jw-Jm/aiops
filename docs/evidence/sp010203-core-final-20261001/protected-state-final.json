@@ -1,0 +1,86 @@
+{
+  "protectedUIDsUnchanged": {
+    "Service/ops-openbao": "bb7a6f45-71ca-4cad-803f-a247d033fbc7",
+    "PersistentVolumeClaim/data-ops-openbao-0": "c6d6fd30-b259-4edd-ab4d-457a86c9680f",
+    "PersistentVolumeClaim/data-ops-postgresql-0": "fa694502-a948-4fa7-b072-46eb2f4ce8bb",
+    "PersistentVolumeClaim/data-ops-seaweedfs-0": "cacf92e6-8352-47e0-913c-4f9ff641eb34"
+  },
+  "protectedReleaseRevisionsUnchanged": {
+    "ops-core": "2",
+    "vmalert": "1"
+  },
+  "allCorePods": [
+    {
+      "name": "ops-api-65b6847cdd-hrm4h",
+      "uid": "9a0d0105-176a-4cab-a2ab-fa554d8f630c",
+      "serviceAccount": "ops-api",
+      "phase": "Running",
+      "containerImages": [
+        "ops.local/task27/platform-api@sha256:a189f2a00da94cf8b885c5f4dd6f118f8e3f91b7be87680133f92ba903f3e0ed"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-keycloak-7fb7d8596c-jhwcx",
+      "uid": "50e21233-3248-4b59-ae8c-4a4aa69272f1",
+      "serviceAccount": "default",
+      "phase": "Running",
+      "containerImages": [
+        "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-openbao-0",
+      "uid": "90f6098c-456f-4d54-bb19-b1583effd417",
+      "serviceAccount": "ops-openbao-tokenreview",
+      "phase": "Running",
+      "containerImages": [
+        "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-postgresql-0",
+      "uid": "607b65db-eaba-4c0d-898c-bd26d83ac04b",
+      "serviceAccount": "default",
+      "phase": "Running",
+      "containerImages": [
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-seaweedfs-0",
+      "uid": "829b94d9-9401-44dc-8fc4-1b2472c6314d",
+      "serviceAccount": "default",
+      "phase": "Running",
+      "containerImages": [
+        "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-vmalert-5b48cd5f47-rfgn6",
+      "uid": "5eb9d81a-3cff-40ee-904e-295f35bac584",
+      "serviceAccount": "default",
+      "phase": "Running",
+      "containerImages": [
+        "docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-worker-567695474-8j8x4",
+      "uid": "3042ae55-64b5-4788-b1e8-3606ac13b947",
+      "serviceAccount": "ops-worker",
+      "phase": "Running",
+      "containerImages": [
+        "ops.local/task27/platform-worker@sha256:d143739dc440254dc01ad15f05fefe6e352442aebaad187ac7d665698263733a"
+      ],
+      "ready": true
+    }
+  ],
+  "monitoringAndVictoriaUnchangedEvidence": "live-offline-install-r2.log",
+  "cacheConsumersRestoredEvidence": "protected-image-consumers-restored.json"
+}

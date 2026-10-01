@@ -1,0 +1,162 @@
+[
+  {
+    "name": "keycloak",
+    "reference": "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+    "manifestDigest": "sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+    "imageID": "sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+    "beforeRepoTags": [
+      "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"
+    ],
+    "beforeRepoDigests": [
+      "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"
+    ],
+    "retainedConsumers": [
+      {
+        "id": "17b6f3367a08f52cc9144b961ac4eb9676333ccd4e47a2bdfe18d9c14a519178",
+        "name": "sp03-review-keycloak-20261001",
+        "running": false,
+        "mounts": [
+          {
+            "Type": "bind",
+            "Name": null,
+            "Source": "/Users/mssc/Documents/Code/ops/.worktrees/sp03-review-fixes/deploy/keycloak/realm-ops.json",
+            "Destination": "/opt/keycloak/data/import/realm-ops.json",
+            "RW": false
+          }
+        ]
+      },
+      {
+        "id": "15752885bbdbb9be66bbbf9ff6f3e56be0c15a299fd5a3e4fca1ef6199e63971",
+        "name": "sp03-keycloak-import-test",
+        "running": false,
+        "mounts": [
+          {
+            "Type": "bind",
+            "Name": null,
+            "Source": "/Users/mssc/Documents/Code/ops/.worktrees/sp03-platform-foundation/deploy/keycloak/realm-ops.json",
+            "Destination": "/opt/keycloak/data/import/realm-ops.json",
+            "RW": false
+          }
+        ]
+      },
+      {
+        "id": "4becd4f2823f31aa9e171942db92e628783665fff0aa21bfa4eeb9ae27aecc98",
+        "name": "sp03-keycloak-bootstrap",
+        "running": false,
+        "mounts": []
+      }
+    ],
+    "referenceAndManifestAbsentBeforeImport": true,
+    "consumersAndMountsPreserved": true
+  },
+  {
+    "name": "postgresql",
+    "reference": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+    "manifestDigest": "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+    "imageID": "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+    "beforeRepoTags": [
+      "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "beforeRepoDigests": [
+      "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "retainedConsumers": [
+      {
+        "id": "548e854612bb18ed80dc4d88c1040af16db3a8a9bca050f18992c5b056f97eb7",
+        "name": "sp03-review-postgres-20260930",
+        "running": false,
+        "mounts": [
+          {
+            "Type": "volume",
+            "Name": "1ef81d409e6e23e1fd7010d7a0c378edd8f2b5de71070fd9e7ab7137ccabc524",
+            "Source": "/var/lib/docker/volumes/1ef81d409e6e23e1fd7010d7a0c378edd8f2b5de71070fd9e7ab7137ccabc524/_data",
+            "Destination": "/var/lib/postgresql/data",
+            "RW": true
+          }
+        ]
+      }
+    ],
+    "referenceAndManifestAbsentBeforeImport": true,
+    "consumersAndMountsPreserved": true
+  },
+  {
+    "name": "seaweedfs",
+    "reference": "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+    "manifestDigest": "sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+    "imageID": "sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+    "beforeRepoTags": [
+      "chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e"
+    ],
+    "beforeRepoDigests": [
+      "chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e"
+    ],
+    "retainedConsumers": [
+      {
+        "id": "61e25d8d13dcbf86c0272f958b83458822c0fbc15da971bd548f28cbd6330a3e",
+        "name": "sp03-review-seaweed-capacity-20261001",
+        "running": false,
+        "mounts": [
+          {
+            "Type": "bind",
+            "Name": null,
+            "Source": "/tmp/sp03-review-20261001-66yogqy9/s3.json",
+            "Destination": "/cfg/s3.json",
+            "RW": false
+          }
+        ]
+      },
+      {
+        "id": "aa62bcf4d3c1d7d8219ab8208ce297e57ac29fecaa953d46969e1eef37331f58",
+        "name": "sp03-review-seaweed-20261001",
+        "running": false,
+        "mounts": [
+          {
+            "Type": "bind",
+            "Name": null,
+            "Source": "/tmp/sp03-review-20261001-66yogqy9/s3.json",
+            "Destination": "/cfg/s3.json",
+            "RW": false
+          }
+        ]
+      }
+    ],
+    "referenceAndManifestAbsentBeforeImport": true,
+    "consumersAndMountsPreserved": true
+  },
+  {
+    "name": "platform-api",
+    "manifestDigest": "sha256:b4ce879e0cb218467e5342cf1198748357a35fcf8473b91c0438dde5441cac2d",
+    "reference": "ops.local/task27/platform-api@sha256:b4ce879e0cb218467e5342cf1198748357a35fcf8473b91c0438dde5441cac2d",
+    "manifestRegistered": true,
+    "imageID": "sha256:b4ce879e0cb218467e5342cf1198748357a35fcf8473b91c0438dde5441cac2d",
+    "beforeRepoTags": [
+      "ops.local/sp010203-core-arm64-20261001-archive-final/platform-api:1.0.0",
+      "ops.local/sp010203-core-arm64-20261001-delivery/platform-api:1.0.0"
+    ],
+    "beforeRepoDigests": [
+      "ops.local/sp010203-core-arm64-20261001-archive-final/platform-api@sha256:b4ce879e0cb218467e5342cf1198748357a35fcf8473b91c0438dde5441cac2d",
+      "ops.local/sp010203-core-arm64-20261001-delivery/platform-api@sha256:b4ce879e0cb218467e5342cf1198748357a35fcf8473b91c0438dde5441cac2d"
+    ],
+    "retainedConsumers": [],
+    "referenceAndManifestAbsentBeforeImport": true,
+    "consumersAndMountsPreserved": true
+  },
+  {
+    "name": "platform-worker",
+    "manifestDigest": "sha256:f8823899321ddd982de52270787acf1a0eae8fcc8be8838e7eb0e968d5e17963",
+    "reference": "ops.local/task27/platform-worker@sha256:f8823899321ddd982de52270787acf1a0eae8fcc8be8838e7eb0e968d5e17963",
+    "manifestRegistered": true,
+    "imageID": "sha256:f8823899321ddd982de52270787acf1a0eae8fcc8be8838e7eb0e968d5e17963",
+    "beforeRepoTags": [
+      "ops.local/sp010203-core-arm64-20261001-archive-final/platform-worker:1.0.0",
+      "ops.local/sp010203-core-arm64-20261001-delivery/platform-worker:1.0.0"
+    ],
+    "beforeRepoDigests": [
+      "ops.local/sp010203-core-arm64-20261001-archive-final/platform-worker@sha256:f8823899321ddd982de52270787acf1a0eae8fcc8be8838e7eb0e968d5e17963",
+      "ops.local/sp010203-core-arm64-20261001-delivery/platform-worker@sha256:f8823899321ddd982de52270787acf1a0eae8fcc8be8838e7eb0e968d5e17963"
+    ],
+    "retainedConsumers": [],
+    "referenceAndManifestAbsentBeforeImport": true,
+    "consumersAndMountsPreserved": true
+  }
+]

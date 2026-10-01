@@ -1,0 +1,327 @@
+package main
+
+import (
+	"context"
+	"crypto/tls"
+	"encoding/base64"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"ops-platform/internal/app"
+	"ops-platform/internal/archive"
+	"ops-platform/internal/audit"
+	"ops-platform/internal/auth"
+	platformcrypto "ops-platform/internal/crypto"
+	"ops-platform/internal/integrations/openbao"
+	"ops-platform/internal/integrations/s3"
+	"ops-platform/internal/persistence"
+)
+
+const operatorDir = "/tmp/ops-sp010203-core-authorized-20261001"
+
+func require(err error) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+func readJSON(name string, out any) {
+	b, e := os.ReadFile(filepath.Join(operatorDir, name))
+	require(e)
+	require(json.Unmarshal(b, out))
+}
+func command(args ...string) []byte {
+	out, e := exec.Command("kubectl", append([]string{"--context", "orbstack", "-n", "ops-system"}, args...)...).Output()
+	require(e)
+	return out
+}
+func main() {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+	var db struct {
+		Database  string
+		Roles     map[string]string
+		Passwords map[string]string
+	}
+	readJSON("database-operator.json", &db)
+	var a struct {
+		Bucket string
+		Admin  struct {
+			AccessKey string
+			SecretKey string
+		}
+		Credentials s3.TenantCredentials
+	}
+	readJSON("archive-operator.json", &a)
+	dsn := func(role string) string {
+		u := url.URL{Scheme: "postgresql", User: url.UserPassword(db.Roles[role], db.Passwords[role]), Host: "localhost:19532", Path: db.Database}
+		u.RawQuery = "sslmode=disable"
+		return u.String()
+	}
+	var bootstrap struct{ Data map[string]string }
+	require(json.Unmarshal(command("get", "secret", "ops-postgresql-auth", "-o", "json"), &bootstrap))
+	user, e := base64.StdEncoding.DecodeString(bootstrap.Data["username"])
+	require(e)
+	// Only the newly owned database gets the initial two tenant rows. Runtime roles cannot perform this bootstrap.
+	for i, c := range a.Credentials.Tenants {
+		q := fmt.Sprintf("INSERT INTO platform.tenants(tenant_id,slug,display_name) VALUES('%s','sp010203-core-%d','Owned core acceptance tenant %d') ON CONFLICT(tenant_id) DO NOTHING;", c.TenantID, i, i)
+		cmd := exec.CommandContext(ctx, "kubectl", "--context", "orbstack", "-n", "ops-system", "exec", "-i", "ops-postgresql-0", "--", "psql", "-U", string(user), "-d", db.Database, "-v", "ON_ERROR_STOP=1", "-At")
+		cmd.Stdin = strings.NewReader(q)
+		out, e := cmd.CombinedOutput()
+		if e != nil {
+			fmt.Fprintln(os.Stderr, "owned tenant bootstrap failed", string(out))
+			os.Exit(1)
+		}
+	}
+	api, e := app.OpenRuntimePool(ctx, dsn("api"), "api_runtime_role")
+	require(e)
+	defer api.Close()
+	sequences := map[uuid.UUID]int64{}
+	if os.Getenv("OPS_REUSE_SIGNED_CORE_PROBE") == "1" {
+		for _, c := range a.Credentials.Tenants {
+			require(persistence.WithTenantTx(ctx, api, c.TenantID, func(tx pgx.Tx) error {
+				var seq int64
+				err := tx.QueryRow(ctx, "SELECT max(audit_seq) FROM audit.records WHERE event_type='core.acceptance.probe'").Scan(&seq)
+				sequences[c.TenantID] = seq
+				return err
+			}))
+		}
+	} else {
+		for _, c := range a.Credentials.Tenants {
+			require(persistence.WithTenantTx(ctx, api, c.TenantID, func(tx pgx.Tx) error {
+				seq, e := audit.Append(ctx, tx, audit.Entry{TenantID: c.TenantID, RecordID: uuid.Must(uuid.NewV7()), EventType: "core.acceptance.probe", EntityKind: "tenant", EntityID: c.TenantID, Subject: "ops-sp010203-acceptance", Payload: map[string]any{"purpose": "current core Worker archive and IAM acceptance"}})
+				sequences[c.TenantID] = seq.Audit
+				return e
+			}))
+		}
+	}
+
+	fmt.Println("actual API-only LOGIN audit records appended through SECURITY DEFINER (reused existing owned records when explicitly requested)")
+	worker, e := app.OpenRuntimePool(ctx, dsn("worker"), "worker_runtime_role")
+	require(e)
+	defer worker.Close()
+	for tenant, seq := range sequences {
+		start := time.Now()
+		for {
+			signed := false
+			delay := 0.0
+			require(persistence.WithTenantTx(ctx, worker, tenant, func(tx pgx.Tx) error {
+				return tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM audit.signed_segments WHERE status='signed' AND first_audit_seq <= $1 AND last_audit_seq >= $1),EXTRACT(EPOCH FROM COALESCE((SELECT min(signed_at) FROM audit.signed_segments WHERE status='signed' AND first_audit_seq <= $1 AND last_audit_seq >= $1),clock_timestamp())-(SELECT created_at FROM audit.records WHERE audit_seq=$1))::double precision", seq).Scan(&signed, &delay)
+			}))
+			if signed {
+				if delay < 0 || delay >= 600 {
+					panic("audit signing delay gate exceeded")
+				}
+				fmt.Printf("deployed Worker signed tenant=%s audit_seq=%d elapsed=%.3fs\n", tenant, seq, delay)
+				break
+			}
+			if time.Since(start) > 9*time.Minute {
+				panic("deployed Worker did not drain audit backlog")
+			}
+			select {
+			case <-ctx.Done():
+				panic("runtime probe timeout")
+			case <-time.After(2 * time.Second):
+			}
+		}
+	}
+	// Tokens are read from actual audience-bound mounted projections, never minted/fabricated by this probe.
+	tokens, e := os.MkdirTemp(operatorDir, "runtime-projected-")
+	require(e)
+	defer os.RemoveAll(tokens)
+	tokenFile := func(sa string) string {
+		component := strings.TrimPrefix(sa, "ops-")
+		var pods struct {
+			Items []struct {
+				Metadata struct{ UID string }
+				Spec     struct{ ServiceAccountName string }
+				Status   struct{ Phase string }
+			}
+		}
+		require(json.Unmarshal(command("get", "pods", "-l", "ops.platform.io/component="+component, "-o", "json"), &pods))
+		if len(pods.Items) != 1 || pods.Items[0].Spec.ServiceAccountName != sa || pods.Items[0].Status.Phase != "Running" {
+			panic("actual Pod identity unavailable")
+		}
+		uid := pods.Items[0].Metadata.UID
+		ids, e := exec.Command("docker", "--context", "orbstack", "ps", "-q", "--filter", "label=io.kubernetes.pod.uid="+uid, "--filter", "label=io.kubernetes.container.name="+component).Output()
+		require(e)
+		id := strings.TrimSpace(string(ids))
+		if id == "" || strings.Contains(id, "\n") {
+			panic("actual workload container is not unique")
+		}
+		metadata, e := exec.Command("docker", "--context", "orbstack", "inspect", id).Output()
+		require(e)
+		var containers []struct {
+			Mounts []struct {
+				Source      string
+				Destination string
+				RW          bool
+			}
+		}
+		require(json.Unmarshal(metadata, &containers))
+		if len(containers) != 1 {
+			panic("container mount identity invalid")
+		}
+		source := ""
+		for _, m := range containers[0].Mounts {
+			if m.Destination == "/var/run/secrets/ops-platform/openbao" && !m.RW {
+				source = m.Source
+			}
+		}
+		if !strings.HasPrefix(source, "/var/lib/kubelet/pods/"+uid+"/volumes/kubernetes.io~projected/") {
+			panic("mount is not the real Pod projection")
+		}
+		// Scratch workload images have no cat. A cached owned, networkless helper reads only this exact read-only projection.
+		raw, e := exec.Command("docker", "--context", "orbstack", "run", "--rm", "--pull=never", "--network=none", "--read-only", "--cap-drop=ALL", "--security-opt", "no-new-privileges", "--user", "65532:65532", "--label", "ops.sp010203.token-read=20261001", "--mount", "type=bind,src="+source+",dst=/identity,readonly", "--entrypoint", "/bin/sh", "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257", "-c", "cat /identity/token").Output()
+		require(e)
+		parts := strings.Split(strings.TrimSpace(string(raw)), ".")
+		if len(parts) != 3 {
+			panic("projected token invalid")
+		}
+		payload, e := base64.RawURLEncoding.DecodeString(parts[1])
+		require(e)
+		var claims struct {
+			Sub        string
+			Aud        []string
+			Exp        int64
+			Kubernetes struct{ Pod struct{ UID string } } `json:"kubernetes.io"`
+		}
+		require(json.Unmarshal(payload, &claims))
+		if claims.Sub != "system:serviceaccount:ops-system:"+sa || len(claims.Aud) != 1 || claims.Aud[0] != "openbao" || claims.Kubernetes.Pod.UID != uid || claims.Exp <= time.Now().Unix() {
+			panic("actual projected token claims mismatch")
+		}
+		fmt.Printf("actual mounted projection verified: sa=%s pod_uid=%s audience=openbao expires=%d\n", sa, uid, claims.Exp)
+		path := filepath.Join(tokens, sa)
+		require(os.WriteFile(path, raw, 0600))
+		return path
+	}
+	ca, e := os.ReadFile("/Users/mssc/.local/share/ops-platform/task-2.3-openbao/bootstrap-ca.pem")
+	require(e)
+	baoClient := func() *openbao.Client {
+		c, e := openbao.NewClient(openbao.ClientConfig{Address: "https://127.0.0.1:19520", ServerName: "ops-openbao.ops-system.svc.cluster.local", CACertBundle: ca, ServiceDomain: "ops-system.svc.cluster.local", ExpectedVersion: "2.7.0"})
+		require(e)
+		return c
+	}
+	workerToken := tokenFile("ops-worker")
+	bao := baoClient()
+	_, e = bao.LoginProjectedServiceAccount(ctx, workerToken, "ops-worker")
+	require(e)
+	archiveCA, e := os.ReadFile(filepath.Join(operatorDir, "seaweedfs/ca.pem"))
+	require(e)
+	raw, e := json.Marshal(a.Credentials)
+	require(e)
+	cfg := s3.Config{Endpoint: "https://127.0.0.1:19533", ServerName: "ops-seaweedfs-s3.ops-system.svc.cluster.local", CACertBundle: archiveCA, Bucket: a.Bucket}
+	backend, e := s3.NewTenantClient(cfg, raw)
+	require(e)
+	store, e := archive.NewStore(backend, 0)
+	require(e)
+	protector, e := platformcrypto.NewTransitProtector(bao, "evidence-archive")
+	require(e)
+	service, e := audit.NewSegmentService(worker, store, protector, bao, "audit-signing", 30*24*time.Hour)
+	require(e)
+	for tenant, seq := range sequences {
+		require(service.VerifyRange(ctx, tenant, seq, seq))
+		fmt.Println("actual TLS/tenant IAM/Transit archived VerifyRange passed", tenant)
+	}
+	refs := map[uuid.UUID]archive.ObjectRef{}
+	for _, c := range a.Credentials.Tenants {
+		ref, e := store.Put(ctx, archive.ObjectDescriptor{TenantID: c.TenantID, ObjectID: uuid.Must(uuid.NewV7()), Category: "evidence", ContentType: "application/octet-stream", RetainUntil: time.Now().Add(time.Hour)}, strings.NewReader("current core tenant boundary positive control"))
+		require(e)
+		refs[c.TenantID] = ref
+		_, e = store.Get(ctx, c.TenantID, ref)
+		require(e)
+	}
+	first, second := a.Credentials.Tenants[0], a.Credentials.Tenants[1]
+	cfg.AccessKey = first.AccessKey
+	cfg.SecretKey = first.SecretKey
+	principal, e := s3.NewClient(cfg)
+	require(e)
+	require(principal.VerifyTenantScope(ctx, archive.TenantPrefix(first.TenantID)))
+	foreign := refs[second.TenantID]
+	_, e = principal.Get(ctx, foreign.Key, foreign.VersionID)
+	if e == nil || errors.Is(e, archive.ErrObjectNotFound) {
+		panic("foreign existing object was not denied")
+	}
+	cfg.AccessKey = a.Admin.AccessKey
+	cfg.SecretKey = a.Admin.SecretKey
+	admin, e := s3.NewClient(cfg)
+	require(e)
+	_, e = admin.Get(ctx, foreign.Key, foreign.VersionID)
+	require(e)
+	if !errors.Is(admin.VerifyTenantScope(ctx, archive.TenantPrefix(first.TenantID)), s3.ErrTenantIAM) {
+		panic("global principal accepted for runtime")
+	}
+	fmt.Println("shared core live IAM: own-prefix positive, unscoped/foreign list AccessDenied403, existing foreign read denied, global principal rejected")
+	apiBao, workerBao := baoClient(), baoClient()
+	apiReload, e := openbao.NewCertReloader(apiBao, "ops-system", "ops-api")
+	require(e)
+	workerReload, e := openbao.NewCertReloader(workerBao, "ops-system", "ops-worker")
+	require(e)
+	require(apiReload.Start(ctx, tokenFile("ops-api")))
+	require(workerReload.Start(ctx, workerToken))
+	trust, e := apiReload.TrustMaterial()
+	require(e)
+	identity, e := auth.NewWorkloadIdentity("ops-system", "ops-worker")
+	require(e)
+	serverTLS, e := auth.WorkloadMTLSServerConfig(ctx, auth.WorkloadTrust{Roots: trust.Roots, Intermediates: trust.Intermediates, CRLIssuers: trust.CRLIssuers, CRLSource: apiReload, Allowed: []auth.WorkloadIdentity{identity}})
+	require(e)
+	apiTLS, e := apiReload.TLSClientConfig("")
+	require(e)
+	serverTLS.GetCertificate = func(*tls.ClientHelloInfo) (*tls.Certificate, error) { return apiTLS.GetClientCertificate(nil) }
+	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "" {
+			w.WriteHeader(400)
+			return
+		}
+		w.WriteHeader(204)
+	}))
+	server.TLS = serverTLS
+	server.StartTLS()
+	defer server.Close()
+	clientTLS, e := workerReload.TLSClientConfig("ops-api.ops-system.svc.cluster.local")
+	require(e)
+	hc := &http.Client{Transport: &http.Transport{TLSClientConfig: clientTLS}, Timeout: 10 * time.Second}
+	resp, e := hc.Get(server.URL + "/business")
+	require(e)
+	resp.Body.Close()
+	if resp.StatusCode != 204 {
+		panic("business mTLS probe failed")
+	}
+	fmt.Println("actual API/Worker projected identity -> in-memory short certificate -> fixture business mTLS passed; no ServiceAccount/JWT forwarding")
+	requestID := uuid.Must(uuid.NewV7()).String()
+	r, e := http.NewRequestWithContext(ctx, "GET", "http://127.0.0.1:19601/api/v1/admin/tenants", nil)
+	require(e)
+	r.Header.Set("X-Request-ID", requestID)
+	resp, e = http.DefaultClient.Do(r)
+	require(e)
+	body, e := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
+	require(e)
+	resp.Body.Close()
+	if resp.StatusCode != 401 || resp.Header.Get("X-Request-ID") != requestID {
+		panic("deployed API unauthenticated/correlation gate failed")
+	}
+	var envelope map[string]any
+	require(json.Unmarshal(body, &envelope))
+	fmt.Println("deployed API rejects unauthenticated admin request with correlated structured envelope")
+	metrics, e := http.Get("http://127.0.0.1:19602/metrics")
+	require(e)
+	b, e := io.ReadAll(metrics.Body)
+	require(e)
+	metrics.Body.Close()
+	if !strings.Contains(string(b), `platform_observability_degraded 0`) {
+		panic("worker audit degradation did not recover")
+	}
+	fmt.Println("actual Worker audit pipeline healthy after tenant-scoped archive/signature proof")
+}

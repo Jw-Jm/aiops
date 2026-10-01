@@ -1,0 +1,11 @@
+actual API-only LOGIN audit records appended through SECURITY DEFINER (reused existing owned records when explicitly requested)
+deployed Worker signed tenant=cdf926b7-96a1-462d-9075-749afd078d9c audit_seq=4 elapsed=87.672s
+deployed Worker signed tenant=f8258a76-2e3d-4d7a-b3da-fb32e3045728 audit_seq=3 elapsed=87.717s
+actual mounted projection verified: sa=ops-worker pod_uid=3042ae55-64b5-4788-b1e8-3606ac13b947 audience=openbao expires=1790856290
+actual TLS/tenant IAM/Transit archived VerifyRange passed f8258a76-2e3d-4d7a-b3da-fb32e3045728
+actual TLS/tenant IAM/Transit archived VerifyRange passed cdf926b7-96a1-462d-9075-749afd078d9c
+shared core live IAM: own-prefix positive, unscoped/foreign list AccessDenied403, existing foreign read denied, global principal rejected
+actual mounted projection verified: sa=ops-api pod_uid=9a0d0105-176a-4cab-a2ab-fa554d8f630c audience=openbao expires=1790856290
+actual API/Worker projected identity -> in-memory short certificate -> fixture business mTLS passed; no ServiceAccount/JWT forwarding
+deployed API rejects unauthenticated admin request with correlated structured envelope
+actual Worker audit pipeline healthy after tenant-scoped archive/signature proof

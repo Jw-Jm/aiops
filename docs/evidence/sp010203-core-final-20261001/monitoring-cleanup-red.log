@@ -1,0 +1,15 @@
+=== RUN   TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes
+=== RUN   TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/VMServiceScrape/ops-platform
+    installer_test.go:210: owned VMServiceScrape cleanup failed: checkpoint=cleanup-ownership release=ops-platform: cleanup refuses resource kind VMServiceScrape, uninstalled=false
+=== RUN   TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/VMServiceScrape/protected-monitoring
+=== RUN   TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/ServiceMonitor/ops-platform
+    installer_test.go:210: owned ServiceMonitor cleanup failed: checkpoint=cleanup-ownership release=ops-platform: cleanup refuses resource kind ServiceMonitor, uninstalled=false
+=== RUN   TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/ServiceMonitor/protected-monitoring
+--- FAIL: TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes (0.00s)
+    --- FAIL: TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/VMServiceScrape/ops-platform (0.00s)
+    --- PASS: TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/VMServiceScrape/protected-monitoring (0.00s)
+    --- FAIL: TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/ServiceMonitor/ops-platform (0.00s)
+    --- PASS: TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/ServiceMonitor/protected-monitoring (0.00s)
+FAIL
+FAIL	ops-platform/internal/bundle	1.155s
+FAIL

@@ -1,0 +1,181 @@
+schemaVersion: 1
+kind: detected
+profileId: dev-orbstack-arm64
+environment: development
+architecture: arm64
+context: orbstack
+selectedProfile: core
+kubernetes:
+  distribution: orbstack
+  version: v1.35.6+orb1
+  architecture: arm64
+  context: orbstack
+  clusterUid: 607d16b7-8684-491b-bca8-be31264b371e
+  storageClass: local-path
+  crds:
+    - addons.k3s.cattle.io
+    - etcdsnapshotfiles.k3s.cattle.io
+    - healthchecks.holmesgpt.dev
+    - scheduledhealthchecks.holmesgpt.dev
+    - triggeredhealthchecks.holmesgpt.dev
+    - vlogs.operator.victoriametrics.com
+    - vmagents.operator.victoriametrics.com
+    - vmalertmanagerconfigs.operator.victoriametrics.com
+    - vmalertmanagers.operator.victoriametrics.com
+    - vmalerts.operator.victoriametrics.com
+    - vmauths.operator.victoriametrics.com
+    - vmclusters.operator.victoriametrics.com
+    - vmnodescrapes.operator.victoriametrics.com
+    - vmpodscrapes.operator.victoriametrics.com
+    - vmprobes.operator.victoriametrics.com
+    - vmrules.operator.victoriametrics.com
+    - vmscrapeconfigs.operator.victoriametrics.com
+    - vmservicescrapes.operator.victoriametrics.com
+    - vmsingles.operator.victoriametrics.com
+    - vmstaticscrapes.operator.victoriametrics.com
+    - vmusers.operator.victoriametrics.com
+  kubevirtCompatibility: supported
+  kubevirtInstalled: false
+  kubevirtVersion: 1.9.0
+  cdiInstalled: false
+  cdiVersion: 1.63.0
+runtime:
+  publicEgress: deny
+  cpuBudget: 8
+  memoryMiB: 18432
+  imageImporter: unverified
+components:
+  cdi:
+    mode: disabled
+    endpoint: https://cdi-api.cdi.svc:443
+    enabledIn:
+      - virtualization
+      - full
+    disabledReason: not selected by profile core
+    compatibility: unverified
+  deepflow:
+    mode: disabled
+    versionCandidate: 7.2.0
+    enabledIn:
+      - deepflow
+      - full
+    disabledReason: not selected by profile core
+  keycloak:
+    mode: bundled
+    endpoint: https://ops-keycloak.ops-system.svc.cluster.local:8443
+    evidence:
+      - read-only discovery found no existing instance
+  kubevirt:
+    mode: disabled
+    endpoint: https://virt-api.kubevirt.svc:443
+    enabledIn:
+      - virtualization
+      - full
+    disabledReason: not selected by profile core
+    compatibility: unverified
+  openbao:
+    objectUid: bb7a6f45-71ca-4cad-803f-a247d033fbc7
+    mode: external
+    version: 2.7.0
+    digest: sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6
+    image: ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6
+    endpoint: https://ops-openbao.ops-system.svc.cluster.local:8200
+    namespace: ops-system
+    name: ops-openbao
+    evidence:
+      - Pod ops-system/ops-openbao-0 container[0] imageID docker-pullable://ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6
+      - Service ops-system/ops-openbao port 8200
+      - exact version 2.7.0 resolved from Component Catalog by runtime image digest sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6
+    compatibility: supported
+  postgresql:
+    mode: bundled
+    endpoint: postgresql://ops-postgresql.ops-system.svc.cluster.local:5432
+    evidence:
+      - read-only discovery found no existing instance
+  seaweedfs:
+    mode: bundled
+    endpoint: https://ops-seaweedfs-s3.ops-system.svc.cluster.local:8333
+    evidence:
+      - read-only discovery found no existing instance
+  victoriaLogs:
+    objectUid: 21041d8f-8b02-46f7-9ab4-990b52b086d1
+    mode: external
+    version: v1.52.0
+    digest: sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e
+    image: victoriametrics/victoria-logs@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e
+    endpoint: http://victoria-logs.monitoring.svc.cluster.local:9428
+    namespace: monitoring
+    name: victoria-logs
+    detectExisting: true
+    evidence:
+      - Pod monitoring/victoria-logs-85d7d5c6d6-kh4x9 container[0] imageID docker-pullable://victoriametrics/victoria-logs@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e
+      - Service monitoring/victoria-logs port 9428
+      - read-only capability logs=available
+      - logical source ID monitoring/victoria-logs@21041d8f-8b02-46f7-9ab4-990b52b086d1
+      - version read from upstream service root or application metrics
+    compatibility: supported
+  victoriaMetrics:
+    objectUid: 1b829aba-c6a2-4df6-a44f-c40929a89881
+    mode: external
+    version: v1.116.0
+    digest: sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638
+    image: victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638
+    endpoint: http://vmsingle-vm.monitoring.svc.cluster.local:8429
+    namespace: monitoring
+    name: vmsingle-vm
+    detectExisting: true
+    evidence:
+      - Pod monitoring/vmsingle-vm-5bb9646995-znljh container[0] imageID docker-pullable://victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638
+      - Service monitoring/vmsingle-vm port 8429
+      - read-only capability metrics=available
+      - logical source ID monitoring/vmsingle-vm@1b829aba-c6a2-4df6-a44f-c40929a89881
+      - version read from upstream service root or application metrics
+    compatibility: supported
+  vmalert:
+    objectUid: de8f02b6-be23-4247-8b63-5a280741978a
+    mode: external
+    version: v1.116.0
+    digest: sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+    image: docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+    endpoint: http://ops-vmalert.ops-system.svc.cluster.local:8880
+    namespace: ops-system
+    name: ops-vmalert
+    detectExisting: true
+    evidence:
+      - Pod ops-system/ops-vmalert-5b48cd5f47-rfgn6 container[0] imageID docker-pullable://victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+      - Service ops-system/ops-vmalert port 8880
+      - read-only capability alertRules=available
+      - logical source ID ops-system/ops-vmalert@de8f02b6-be23-4247-8b63-5a280741978a
+      - version read from upstream service root or application metrics
+      - runtime version v1.116.0 and image digest match Component Catalog
+    compatibility: supported
+model:
+  api: openai-compatible
+  endpoint: http://host.orb.internal:11434/v1
+  providerForDevelopment: ollama-0.34.2
+  model: llama3.1:8b-16k
+  bundleWeights: false
+profiles:
+  core:
+    - postgresql
+    - keycloak
+    - seaweedfs
+    - openbao
+    - platform
+  deepflow:
+    - core
+    - deepflow
+  full:
+    - core
+    - deepflow
+    - kubevirt
+    - cdi
+  virtualization:
+    - core
+    - kubevirt
+    - cdi
+discovery:
+  observedAt: "2026-10-01T11:01:18.836856Z"
+  context: orbstack
+  clusterUid: 607d16b7-8684-491b-bca8-be31264b371e
+  serverVersion: v1.35.6+orb1
