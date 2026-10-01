@@ -586,6 +586,7 @@ func (c *Client) ensurePolicy(ctx context.Context, name, policy string) error {
 
 func (c *Client) ensureKubernetesRole(ctx context.Context, name, serviceAccount string) error {
 	expected := map[string]any{
+		"audience":                         "openbao",
 		"bound_service_account_names":      []any{serviceAccount},
 		"bound_service_account_namespaces": []any{namespaceFromServiceDomain(c.serviceDomain)},
 		"policies":                         []any{name},
@@ -695,6 +696,7 @@ func (c *Client) verifyConfiguration(ctx context.Context) error {
 	}
 	for name, serviceAccount := range map[string]string{"ops-api": "ops-api", "ops-worker": "ops-worker", "ops-command-runner": "ops-command-runner"} {
 		if err := c.verifyObject(ctx, "/v1/auth/kubernetes/role/"+name, map[string]any{
+			"audience":                         "openbao",
 			"bound_service_account_names":      []any{serviceAccount},
 			"bound_service_account_namespaces": []any{namespaceFromServiceDomain(c.serviceDomain)},
 			"policies":                         []any{name}, "token_policies": []any{name}, "token_ttl": "15m", "token_max_ttl": "1h",
