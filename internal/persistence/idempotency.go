@@ -40,7 +40,6 @@ type DecisionKind string
 const (
 	DecisionProceed    DecisionKind = "proceed"
 	DecisionReplay     DecisionKind = "replay"
-	DecisionCompleted  DecisionKind = "completed"
 	DecisionInProgress DecisionKind = "in_progress"
 	DecisionConflict   DecisionKind = "conflict"
 )
@@ -257,7 +256,9 @@ func DispatchExecutionOnce(ctx context.Context, pool TxBeginner, scope Scope, ke
 		unknown := Decision{Kind: DecisionInProgress, ExecutionUnknown: true, Terminal: true}
 		return unknown, fmt.Errorf("persist execution response after dispatch: %w", err)
 	}
-	return Decision{Kind: DecisionCompleted, Response: response}, nil
+	// A committed response uses the same replay outcome as a later retry;
+	// admission decisions remain limited to the four Contract values.
+	return Decision{Kind: DecisionReplay, Response: response}, nil
 }
 
 func validateIdempotencyRequest(scope Scope, key string, digest Digest) error {

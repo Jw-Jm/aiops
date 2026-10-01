@@ -217,7 +217,7 @@ func TestIdempotencyLedger(t *testing.T) {
 		dispatches.Add(1)
 		return response, nil
 	})
-	if err != nil || executed.Kind != persistence.DecisionCompleted {
+	if err != nil || executed.Kind != persistence.DecisionReplay {
 		t.Fatalf("first execution request did not complete one dispatch: decision=%#v err=%v", executed, err)
 	}
 	replayed, err := persistence.DispatchExecutionOnce(ctx, pool, executionScope, executionKey, requestDigest, func(context.Context) (persistence.StoredResponse, error) {
