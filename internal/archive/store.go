@@ -107,7 +107,12 @@ func (s *Store) Put(ctx context.Context, d ObjectDescriptor, r io.Reader) (Objec
 	if err != nil {
 		return ObjectRef{}, err
 	}
-	return ObjectRef{TenantID: d.TenantID, ObjectID: d.ObjectID, Category: d.Category, Key: key, Digest: digest, Size: int64(len(body)), ContentType: d.ContentType, VersionID: version.VersionID, ETag: version.ETag, RetainUntil: d.RetainUntil.UTC()}, nil
+	ref := ObjectRef{TenantID: d.TenantID, ObjectID: d.ObjectID, Category: d.Category, Key: key, Digest: digest, Size: int64(len(body)), ContentType: d.ContentType, VersionID: version.VersionID, ETag: version.ETag, RetainUntil: d.RetainUntil.UTC()}
+	// Do not commit archive metadata based only on a successful upload response.
+	if _, err := s.Get(ctx, d.TenantID, ref); err != nil {
+		return ObjectRef{}, err
+	}
+	return ref, nil
 }
 func validateRef(tenant uuid.UUID, ref ObjectRef) error {
 	if tenant == uuid.Nil || ref.TenantID != tenant || ref.ObjectID == uuid.Nil || !categoryPattern.MatchString(ref.Category) || ref.Key != TenantPrefix(tenant)+ref.Category+"/"+ref.ObjectID.String() || strings.Contains(ref.Key, "..") {
@@ -172,6 +177,11 @@ func (s *Store) Get(ctx context.Context, tenant uuid.UUID, ref ObjectRef) ([]byt
 	if int64(len(object.Body)) != ref.Size || int64(len(object.Body)) > s.maxBytes || "sha256:"+hex.EncodeToString(sum[:]) != ref.Digest || object.Metadata["sha256"] != ref.Digest || object.Metadata["size"] != strconv.FormatInt(ref.Size, 10) {
 		return nil, ErrDigestMismatch
 	}
+	until, err := time.Parse(time.RFC3339Nano, object.Metadata["retain-until"])
+	if err != nil || until.Before(ref.RetainUntil) || object.Metadata["content-type"] != ref.ContentType ||
+		(ref.VersionID != "" && ref.VersionID != object.VersionID) {
+		return nil, ErrInvalidObject
+	}
 	return object.Body, nil
 }
 func (s *Store) Delete(ctx context.Context, tenant uuid.UUID, ref ObjectRef) error {
@@ -189,7 +199,7 @@ func (s *Store) Delete(ctx context.Context, tenant uuid.UUID, ref ObjectRef) err
 	if err != nil {
 		return ErrInvalidObject
 	}
-	if s.now().Before(until) {
+	if s.now().Before(until) || s.now().Before(ref.RetainUntil) {
 		return ErrRetentionActive
 	}
 	return s.backend.Delete(ctx, ref.Key, ref.VersionID)

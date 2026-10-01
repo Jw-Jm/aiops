@@ -111,7 +111,7 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 	if err != nil {
 		return err
 	}
-	service, err := audit.NewSegmentService(pool, store, protector, bao, "audit-signing", 30*24*time.Hour)
+	service, err := audit.NewSegmentService(pool, store, protector, bao, "audit-signing", audit.DefaultArchiveRetention)
 	if err != nil {
 		return err
 	}

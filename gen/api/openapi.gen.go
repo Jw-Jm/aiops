@@ -239,6 +239,87 @@ func (e RegistryDraftCreateRequestKind) Valid() bool {
 	}
 }
 
+// Defines values for SourceRegistrationAllowedSchemas.
+const (
+	SourceRegistrationAllowedSchemasFindingEnvelopev1 SourceRegistrationAllowedSchemas = "finding-envelope/v1"
+)
+
+// Valid indicates whether the value is a known member of the SourceRegistrationAllowedSchemas enum.
+func (e SourceRegistrationAllowedSchemas) Valid() bool {
+	switch e {
+	case SourceRegistrationAllowedSchemasFindingEnvelopev1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SourceRegistrationQueryCapabilityReason.
+const (
+	AdapterScopeVerificationPending SourceRegistrationQueryCapabilityReason = "adapter_scope_verification_pending"
+)
+
+// Valid indicates whether the value is a known member of the SourceRegistrationQueryCapabilityReason enum.
+func (e SourceRegistrationQueryCapabilityReason) Valid() bool {
+	switch e {
+	case AdapterScopeVerificationPending:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SourceRegistrationQueryCapabilityState.
+const (
+	SourceRegistrationQueryCapabilityStateDisabled SourceRegistrationQueryCapabilityState = "disabled"
+)
+
+// Valid indicates whether the value is a known member of the SourceRegistrationQueryCapabilityState enum.
+func (e SourceRegistrationQueryCapabilityState) Valid() bool {
+	switch e {
+	case SourceRegistrationQueryCapabilityStateDisabled:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SourceRegistrationQueryCapabilityVerification.
+const (
+	Unverified SourceRegistrationQueryCapabilityVerification = "unverified"
+)
+
+// Valid indicates whether the value is a known member of the SourceRegistrationQueryCapabilityVerification enum.
+func (e SourceRegistrationQueryCapabilityVerification) Valid() bool {
+	switch e {
+	case Unverified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SourceRegistrationStatus.
+const (
+	SourceRegistrationStatusActive   SourceRegistrationStatus = "active"
+	SourceRegistrationStatusDisabled SourceRegistrationStatus = "disabled"
+	SourceRegistrationStatusRotated  SourceRegistrationStatus = "rotated"
+)
+
+// Valid indicates whether the value is a known member of the SourceRegistrationStatus enum.
+func (e SourceRegistrationStatus) Valid() bool {
+	switch e {
+	case SourceRegistrationStatusActive:
+		return true
+	case SourceRegistrationStatusDisabled:
+		return true
+	case SourceRegistrationStatusRotated:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SourceRegistrationRequestAllowedSchemas.
 const (
 	SourceRegistrationRequestAllowedSchemasFindingEnvelopev1 SourceRegistrationRequestAllowedSchemas = "finding-envelope/v1"
@@ -310,16 +391,16 @@ func (e SourceRegistrationUpdateRequestAllowedSchemas) Valid() bool {
 
 // Defines values for SourceRegistrationUpdateRequestStatus.
 const (
-	Active   SourceRegistrationUpdateRequestStatus = "active"
-	Disabled SourceRegistrationUpdateRequestStatus = "disabled"
+	SourceRegistrationUpdateRequestStatusActive   SourceRegistrationUpdateRequestStatus = "active"
+	SourceRegistrationUpdateRequestStatusDisabled SourceRegistrationUpdateRequestStatus = "disabled"
 )
 
 // Valid indicates whether the value is a known member of the SourceRegistrationUpdateRequestStatus enum.
 func (e SourceRegistrationUpdateRequestStatus) Valid() bool {
 	switch e {
-	case Active:
+	case SourceRegistrationUpdateRequestStatusActive:
 		return true
-	case Disabled:
+	case SourceRegistrationUpdateRequestStatusDisabled:
 		return true
 	default:
 		return false
@@ -556,13 +637,91 @@ type SourceCredentialRotationRequest struct {
 	ExpectedRevision int64  `json:"expectedRevision"`
 }
 
+// SourceDataScopeMapping Declared exact scopes; empty scopes grant no permission. Backend verification is read-only and unavailable until adapter admission.
+type SourceDataScopeMapping struct {
+	NativeTenant   *string            `json:"nativeTenant,omitempty"`
+	RequiredLabels *map[string]string `json:"requiredLabels,omitempty"`
+	Scopes         *struct {
+		Account      *[]string `json:"account,omitempty"`
+		Cluster      *[]string `json:"cluster,omitempty"`
+		Namespace    *[]string `json:"namespace,omitempty"`
+		Organization *[]string `json:"organization,omitempty"`
+		Project      *[]string `json:"project,omitempty"`
+		Team         *[]string `json:"team,omitempty"`
+	} `json:"scopes,omitempty"`
+}
+
+// SourceRegistration defines model for SourceRegistration.
+type SourceRegistration struct {
+	AllowedSchemas []SourceRegistrationAllowedSchemas `json:"allowedSchemas"`
+	AuthRef        string                             `json:"authRef"`
+
+	// BackendLogicalId Stable backend identity; an empty legacy value grants no query capability.
+	BackendLogicalId   string      `json:"backendLogicalId"`
+	ClusterId          *Identifier `json:"clusterId"`
+	ClusterUid         string      `json:"clusterUid"`
+	CreatedAt          time.Time   `json:"createdAt"`
+	CredentialRevision int64       `json:"credentialRevision"`
+
+	// DataScopeMapping Declared exact scopes; empty scopes grant no permission. Backend verification is read-only and unavailable until adapter admission.
+	DataScopeMapping SourceDataScopeMapping `json:"dataScopeMapping"`
+	InstanceKey      string                 `json:"instanceKey"`
+
+	// QueryCapability A declaration cannot enable queries. Adapter admission requires a separately versioned verification contract.
+	QueryCapability *struct {
+		Reason       SourceRegistrationQueryCapabilityReason       `json:"reason"`
+		State        SourceRegistrationQueryCapabilityState        `json:"state"`
+		Verification SourceRegistrationQueryCapabilityVerification `json:"verification"`
+	} `json:"queryCapability,omitempty"`
+	Revision   int64                    `json:"revision"`
+	SourceId   Identifier               `json:"sourceId"`
+	SourceType string                   `json:"sourceType"`
+	Status     SourceRegistrationStatus `json:"status"`
+	TenantId   Identifier               `json:"tenantId"`
+	UpdatedAt  time.Time                `json:"updatedAt"`
+}
+
+// SourceRegistrationAllowedSchemas defines model for SourceRegistration.AllowedSchemas.
+type SourceRegistrationAllowedSchemas string
+
+// SourceRegistrationQueryCapabilityReason defines model for SourceRegistration.QueryCapability.Reason.
+type SourceRegistrationQueryCapabilityReason string
+
+// SourceRegistrationQueryCapabilityState defines model for SourceRegistration.QueryCapability.State.
+type SourceRegistrationQueryCapabilityState string
+
+// SourceRegistrationQueryCapabilityVerification defines model for SourceRegistration.QueryCapability.Verification.
+type SourceRegistrationQueryCapabilityVerification string
+
+// SourceRegistrationStatus defines model for SourceRegistration.Status.
+type SourceRegistrationStatus string
+
+// SourceRegistrationEnvelope defines model for SourceRegistrationEnvelope.
+type SourceRegistrationEnvelope struct {
+	Data      SourceRegistration `json:"data"`
+	RequestId Identifier         `json:"requestId"`
+}
+
+// SourceRegistrationPageEnvelope defines model for SourceRegistrationPageEnvelope.
+type SourceRegistrationPageEnvelope struct {
+	Data []SourceRegistration `json:"data"`
+	Meta struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta"`
+	RequestId Identifier `json:"requestId"`
+}
+
 // SourceRegistrationRequest defines model for SourceRegistrationRequest.
 type SourceRegistrationRequest struct {
-	AllowedSchemas []SourceRegistrationRequestAllowedSchemas `json:"allowedSchemas"`
-	AuthRef        string                                    `json:"authRef"`
-	ClusterId      *Identifier                               `json:"clusterId,omitempty"`
-	InstanceKey    string                                    `json:"instanceKey"`
-	SourceType     SourceRegistrationRequestSourceType       `json:"sourceType"`
+	AllowedSchemas   []SourceRegistrationRequestAllowedSchemas `json:"allowedSchemas"`
+	AuthRef          string                                    `json:"authRef"`
+	BackendLogicalId *string                                   `json:"backendLogicalId,omitempty"`
+	ClusterId        *Identifier                               `json:"clusterId,omitempty"`
+
+	// DataScopeMapping Declared exact scopes; empty scopes grant no permission. Backend verification is read-only and unavailable until adapter admission.
+	DataScopeMapping *SourceDataScopeMapping             `json:"dataScopeMapping,omitempty"`
+	InstanceKey      string                              `json:"instanceKey"`
+	SourceType       SourceRegistrationRequestSourceType `json:"sourceType"`
 }
 
 // SourceRegistrationRequestAllowedSchemas defines model for SourceRegistrationRequest.AllowedSchemas.
@@ -580,9 +739,13 @@ type SourceRegistrationRollbackRequest struct {
 // SourceRegistrationUpdateRequest defines model for SourceRegistrationUpdateRequest.
 type SourceRegistrationUpdateRequest struct {
 	AllowedSchemas   *[]SourceRegistrationUpdateRequestAllowedSchemas `json:"allowedSchemas,omitempty"`
+	BackendLogicalId *string                                          `json:"backendLogicalId,omitempty"`
 	ClusterId        *Identifier                                      `json:"clusterId,omitempty"`
-	ExpectedRevision int64                                            `json:"expectedRevision"`
-	Status           *SourceRegistrationUpdateRequestStatus           `json:"status,omitempty"`
+
+	// DataScopeMapping Declared exact scopes; empty scopes grant no permission. Backend verification is read-only and unavailable until adapter admission.
+	DataScopeMapping *SourceDataScopeMapping                `json:"dataScopeMapping,omitempty"`
+	ExpectedRevision int64                                  `json:"expectedRevision"`
+	Status           *SourceRegistrationUpdateRequestStatus `json:"status,omitempty"`
 	union            json.RawMessage
 }
 
@@ -600,6 +763,12 @@ type SourceRegistrationUpdateRequest1 = interface{}
 
 // SourceRegistrationUpdateRequest2 defines model for SourceRegistrationUpdateRequest.2.
 type SourceRegistrationUpdateRequest2 = interface{}
+
+// SourceRegistrationUpdateRequest3 defines model for SourceRegistrationUpdateRequest.3.
+type SourceRegistrationUpdateRequest3 = interface{}
+
+// SourceRegistrationUpdateRequest4 defines model for SourceRegistrationUpdateRequest.4.
+type SourceRegistrationUpdateRequest4 = interface{}
 
 // StepUpSession defines model for StepUpSession.
 type StepUpSession struct {
@@ -1225,6 +1394,58 @@ func (t *SourceRegistrationUpdateRequest) MergeSourceRegistrationUpdateRequest2(
 	return err
 }
 
+// AsSourceRegistrationUpdateRequest3 returns the union data inside the SourceRegistrationUpdateRequest as a SourceRegistrationUpdateRequest3
+func (t SourceRegistrationUpdateRequest) AsSourceRegistrationUpdateRequest3() (SourceRegistrationUpdateRequest3, error) {
+	var body SourceRegistrationUpdateRequest3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSourceRegistrationUpdateRequest3 overwrites any union data inside the SourceRegistrationUpdateRequest as the provided SourceRegistrationUpdateRequest3
+func (t *SourceRegistrationUpdateRequest) FromSourceRegistrationUpdateRequest3(v SourceRegistrationUpdateRequest3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSourceRegistrationUpdateRequest3 performs a merge with any union data inside the SourceRegistrationUpdateRequest, using the provided SourceRegistrationUpdateRequest3
+func (t *SourceRegistrationUpdateRequest) MergeSourceRegistrationUpdateRequest3(v SourceRegistrationUpdateRequest3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSourceRegistrationUpdateRequest4 returns the union data inside the SourceRegistrationUpdateRequest as a SourceRegistrationUpdateRequest4
+func (t SourceRegistrationUpdateRequest) AsSourceRegistrationUpdateRequest4() (SourceRegistrationUpdateRequest4, error) {
+	var body SourceRegistrationUpdateRequest4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSourceRegistrationUpdateRequest4 overwrites any union data inside the SourceRegistrationUpdateRequest as the provided SourceRegistrationUpdateRequest4
+func (t *SourceRegistrationUpdateRequest) FromSourceRegistrationUpdateRequest4(v SourceRegistrationUpdateRequest4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSourceRegistrationUpdateRequest4 performs a merge with any union data inside the SourceRegistrationUpdateRequest, using the provided SourceRegistrationUpdateRequest4
+func (t *SourceRegistrationUpdateRequest) MergeSourceRegistrationUpdateRequest4(v SourceRegistrationUpdateRequest4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t SourceRegistrationUpdateRequest) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	if err != nil {
@@ -1245,10 +1466,24 @@ func (t SourceRegistrationUpdateRequest) MarshalJSON() ([]byte, error) {
 		}
 	}
 
+	if t.BackendLogicalId != nil {
+		object["backendLogicalId"], err = json.Marshal(t.BackendLogicalId)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'backendLogicalId': %w", err)
+		}
+	}
+
 	if t.ClusterId != nil {
 		object["clusterId"], err = json.Marshal(t.ClusterId)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'clusterId': %w", err)
+		}
+	}
+
+	if t.DataScopeMapping != nil {
+		object["dataScopeMapping"], err = json.Marshal(t.DataScopeMapping)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dataScopeMapping': %w", err)
 		}
 	}
 
@@ -1285,10 +1520,24 @@ func (t *SourceRegistrationUpdateRequest) UnmarshalJSON(b []byte) error {
 		}
 	}
 
+	if raw, found := object["backendLogicalId"]; found {
+		err = json.Unmarshal(raw, &t.BackendLogicalId)
+		if err != nil {
+			return fmt.Errorf("error reading 'backendLogicalId': %w", err)
+		}
+	}
+
 	if raw, found := object["clusterId"]; found {
 		err = json.Unmarshal(raw, &t.ClusterId)
 		if err != nil {
 			return fmt.Errorf("error reading 'clusterId': %w", err)
+		}
+	}
+
+	if raw, found := object["dataScopeMapping"]; found {
+		err = json.Unmarshal(raw, &t.DataScopeMapping)
+		if err != nil {
+			return fmt.Errorf("error reading 'dataScopeMapping': %w", err)
 		}
 	}
 
@@ -6288,7 +6537,7 @@ type GetSourceRegistrationsResponseObject interface {
 	VisitGetSourceRegistrationsResponse(w http.ResponseWriter) error
 }
 
-type GetSourceRegistrations200JSONResponse PageEnvelope
+type GetSourceRegistrations200JSONResponse SourceRegistrationPageEnvelope
 
 func (response GetSourceRegistrations200JSONResponse) VisitGetSourceRegistrationsResponse(w http.ResponseWriter) error {
 
@@ -6328,7 +6577,7 @@ type CreateSourceRegistrationResponseObject interface {
 	VisitCreateSourceRegistrationResponse(w http.ResponseWriter) error
 }
 
-type CreateSourceRegistration201JSONResponse SuccessEnvelope
+type CreateSourceRegistration201JSONResponse SourceRegistrationEnvelope
 
 func (response CreateSourceRegistration201JSONResponse) VisitCreateSourceRegistrationResponse(w http.ResponseWriter) error {
 
@@ -6369,7 +6618,7 @@ type UpdateSourceRegistrationResponseObject interface {
 	VisitUpdateSourceRegistrationResponse(w http.ResponseWriter) error
 }
 
-type UpdateSourceRegistration200JSONResponse SuccessEnvelope
+type UpdateSourceRegistration200JSONResponse SourceRegistrationEnvelope
 
 func (response UpdateSourceRegistration200JSONResponse) VisitUpdateSourceRegistrationResponse(w http.ResponseWriter) error {
 
@@ -6410,7 +6659,7 @@ type RollbackSourceRegistrationResponseObject interface {
 	VisitRollbackSourceRegistrationResponse(w http.ResponseWriter) error
 }
 
-type RollbackSourceRegistration200JSONResponse SuccessEnvelope
+type RollbackSourceRegistration200JSONResponse SourceRegistrationEnvelope
 
 func (response RollbackSourceRegistration200JSONResponse) VisitRollbackSourceRegistrationResponse(w http.ResponseWriter) error {
 
@@ -6451,7 +6700,7 @@ type RotateSourceCredentialResponseObject interface {
 	VisitRotateSourceCredentialResponse(w http.ResponseWriter) error
 }
 
-type RotateSourceCredential200JSONResponse SuccessEnvelope
+type RotateSourceCredential200JSONResponse SourceRegistrationEnvelope
 
 func (response RotateSourceCredential200JSONResponse) VisitRotateSourceCredentialResponse(w http.ResponseWriter) error {
 

@@ -21,6 +21,9 @@ import (
 
 const maxSegmentRecords = 10000
 
+// DefaultArchiveRetention implements the platform default for Action/Audit dependencies.
+const DefaultArchiveRetention = 365 * 24 * time.Hour
+
 type SegmentArchive interface {
 	Put(context.Context, archive.ObjectDescriptor, io.Reader) (archive.ObjectRef, error)
 	Get(context.Context, uuid.UUID, archive.ObjectRef) ([]byte, error)

@@ -100,8 +100,8 @@ components:
                         - INTERNAL
                         - CAPABILITY_DISABLED
                         - SOURCE_NOT_CONFIGURED
-                        - IDEMPOTENCY_KEY_REUSED
                         - IDEMPOTENCY_IN_PROGRESS
+                        - IDEMPOTENCY_KEY_REUSED
                         - EXECUTION_PROFILE_DENIED
                         - COMMAND_POLICY_DENIED
                         - EXECUTION_UNKNOWN
@@ -267,9 +267,154 @@ components:
                 - authRef
                 - expectedRevision
             type: object
+        SourceDataScopeMapping:
+            description: Declared exact scopes; empty scopes grant no permission. Backend verification is read-only and unavailable until adapter admission.
+            type: object
+            additionalProperties: false
+            properties:
+                nativeTenant:
+                    type: string
+                    minLength: 1
+                    maxLength: 512
+                    pattern: '^[^*|~\[\]{}()^$\\\t\r\n]+$'
+                scopes:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                        account:
+                            type: array
+                            maxItems: 128
+                            uniqueItems: true
+                            items:
+                                type: string
+                                minLength: 1
+                                maxLength: 512
+                                pattern: '^[^*|~\[\]{}()^$\\\t\r\n]+$'
+                        project:
+                            type: array
+                            maxItems: 128
+                            uniqueItems: true
+                            items:
+                                type: string
+                                minLength: 1
+                                maxLength: 512
+                                pattern: '^[^*|~\[\]{}()^$\\\t\r\n]+$'
+                        organization:
+                            type: array
+                            maxItems: 128
+                            uniqueItems: true
+                            items:
+                                type: string
+                                minLength: 1
+                                maxLength: 512
+                                pattern: '^[^*|~\[\]{}()^$\\\t\r\n]+$'
+                        team:
+                            type: array
+                            maxItems: 128
+                            uniqueItems: true
+                            items:
+                                type: string
+                                minLength: 1
+                                maxLength: 512
+                                pattern: '^[^*|~\[\]{}()^$\\\t\r\n]+$'
+                        cluster:
+                            type: array
+                            maxItems: 128
+                            uniqueItems: true
+                            items:
+                                type: string
+                                minLength: 1
+                                maxLength: 512
+                                pattern: '^[^*|~\[\]{}()^$\\\t\r\n]+$'
+                        namespace:
+                            type: array
+                            maxItems: 128
+                            uniqueItems: true
+                            items:
+                                type: string
+                                minLength: 1
+                                maxLength: 512
+                                pattern: '^[^*|~\[\]{}()^$\\\t\r\n]+$'
+                requiredLabels:
+                    type: object
+                    maxProperties: 32
+                    additionalProperties:
+                        type: string
+                        minLength: 1
+                        maxLength: 512
+                        pattern: '^[^*|~\[\]{}()^$\\\t\r\n]+$'
+        SourceRegistration:
+            type: object
+            additionalProperties: false
+            required: [tenantId, sourceId, sourceType, instanceKey, clusterId, clusterUid, authRef, credentialRevision, allowedSchemas, backendLogicalId, dataScopeMapping, queryCapability, status, revision, createdAt, updatedAt]
+            properties:
+                tenantId: {$ref: '#/components/schemas/Identifier'}
+                sourceId: {$ref: '#/components/schemas/Identifier'}
+                sourceType: {type: string}
+                instanceKey: {type: string}
+                clusterId:
+                    oneOf:
+                        - $ref: '#/components/schemas/Identifier'
+                        - type: 'null'
+                clusterUid: {type: string}
+                authRef: {type: string}
+                credentialRevision: {type: integer, format: int64, minimum: 1}
+                allowedSchemas:
+                    type: array
+                    items: {type: string, enum: [finding-envelope/v1]}
+                    maxItems: 1
+                backendLogicalId:
+                    description: Stable backend identity; an empty legacy value grants no query capability.
+                    type: string
+                    maxLength: 512
+                dataScopeMapping: {$ref: '#/components/schemas/SourceDataScopeMapping'}
+                queryCapability:
+                    description: A declaration cannot enable queries. Adapter admission requires a separately versioned verification contract.
+                    type: object
+                    readOnly: true
+                    additionalProperties: false
+                    required: [state, verification, reason]
+                    properties:
+                        state: {type: string, enum: [disabled]}
+                        verification: {type: string, enum: [unverified]}
+                        reason: {type: string, enum: [adapter_scope_verification_pending]}
+                status: {type: string, enum: [active, disabled, rotated]}
+                revision: {type: integer, format: int64, minimum: 1}
+                createdAt: {type: string, format: date-time}
+                updatedAt: {type: string, format: date-time}
+        SourceRegistrationEnvelope:
+            type: object
+            additionalProperties: false
+            required: [data, requestId]
+            properties:
+                data: {$ref: '#/components/schemas/SourceRegistration'}
+                requestId: {$ref: '#/components/schemas/Identifier'}
+        SourceRegistrationPageEnvelope:
+            type: object
+            additionalProperties: false
+            required: [data, meta, requestId]
+            properties:
+                data:
+                    type: array
+                    items: {$ref: '#/components/schemas/SourceRegistration'}
+                meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                        nextCursor:
+                            oneOf:
+                                - type: string
+                                - type: 'null'
+                requestId: {$ref: '#/components/schemas/Identifier'}
         SourceRegistrationRequest:
             additionalProperties: false
             properties:
+                backendLogicalId:
+                    type: string
+                    minLength: 1
+                    maxLength: 512
+                dataScopeMapping:
+                    $ref: '#/components/schemas/SourceDataScopeMapping'
                 allowedSchemas:
                     type: array
                     minItems: 1
@@ -316,7 +461,15 @@ components:
                     - status
                 - required:
                     - allowedSchemas
+                - required: [backendLogicalId]
+                - required: [dataScopeMapping]
             properties:
+                backendLogicalId:
+                    type: string
+                    minLength: 1
+                    maxLength: 512
+                dataScopeMapping:
+                    $ref: '#/components/schemas/SourceDataScopeMapping'
                 allowedSchemas:
                     type: array
                     minItems: 1
@@ -568,7 +721,7 @@ components:
             type: http
 info:
     title: Smart Operations Platform API
-    version: 1.0.0
+    version: 1.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 openapi: 3.1.0
 paths:
@@ -1333,7 +1486,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/PageEnvelope'
+                                $ref: '#/components/schemas/SourceRegistrationPageEnvelope'
                     description: Successful response.
                 default:
                     content:
@@ -1367,7 +1520,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/SuccessEnvelope'
+                                $ref: '#/components/schemas/SourceRegistrationEnvelope'
                     description: Successful response.
                 default:
                     content:
@@ -1408,7 +1561,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/SuccessEnvelope'
+                                $ref: '#/components/schemas/SourceRegistrationEnvelope'
                     description: Successful response.
                 default:
                     content:
@@ -1449,7 +1602,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/SuccessEnvelope'
+                                $ref: '#/components/schemas/SourceRegistrationEnvelope'
                     description: Successful response.
                 default:
                     content:
@@ -1490,7 +1643,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/SuccessEnvelope'
+                                $ref: '#/components/schemas/SourceRegistrationEnvelope'
                     description: Successful response.
                 default:
                     content:

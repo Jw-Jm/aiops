@@ -41,12 +41,14 @@ components:
     versionCandidate: 7.2.0
     enabledIn: [deepflow, full]
   kubevirt:
-    mode: detect
+    mode: disabled
+    disabledReason: development_deferred
     endpoint: https://virt-api.kubevirt.svc:443
     enabledIn: [virtualization, full]
     compatibility: unverified
   cdi:
-    mode: detect
+    mode: disabled
+    disabledReason: development_deferred
     endpoint: https://cdi-api.cdi.svc:443
     enabledIn: [virtualization, full]
     compatibility: unverified

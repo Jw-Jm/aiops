@@ -34,23 +34,8 @@ check-toolchain:
 generate:
 	$(GO) generate ./...
 
-check-generated: generate
-	@if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
-		if ! git diff --quiet -- gen web/src/api/generated internal/persistence/dbgen; then \
-			git diff -- gen web/src/api/generated internal/persistence/dbgen >&2; \
-			echo "Generated artifacts are out of date; run make generate and review the generated changes." >&2; \
-			exit 1; \
-		fi; \
-		untracked=$$(git ls-files --others --exclude-standard -- gen web/src/api/generated internal/persistence/dbgen); \
-		if [ -n "$$untracked" ]; then \
-			printf '%s\n' "$$untracked" >&2; \
-			echo "Generated artifacts are out of date; run make generate and review the generated changes." >&2; \
-			exit 1; \
-		fi; \
-	else \
-		echo "check-generated requires the standalone platform Git repository" >&2; \
-		exit 1; \
-	fi
+check-generated:
+	python3 scripts/check-generated.py "$(GO)" gen web/src/api/generated internal/persistence/dbgen
 
 fmt:
 	gofmt -w $(GO_SOURCES)

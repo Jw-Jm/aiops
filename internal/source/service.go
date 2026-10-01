@@ -50,25 +50,25 @@ func (service *Service) Register(ctx context.Context, tx pgx.Tx, actor auth.Requ
 	sourceID := uuid.Must(uuid.NewV7())
 	var createdID uuid.UUID
 	err := tx.QueryRow(ctx, `
-INSERT INTO platform.source_registrations (tenant_id, source_id, source_type, instance_key, cluster_id, auth_ref, allowed_schemas)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO platform.source_registrations (tenant_id, source_id, source_type, instance_key, cluster_id, auth_ref, allowed_schemas, backend_logical_id, data_scope_mapping)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 ON CONFLICT (tenant_id, source_type, instance_key) DO NOTHING
-RETURNING source_id`, actor.TenantID, sourceID, command.SourceType, command.InstanceKey, clusterID, command.AuthRef, command.AllowedSchemas).Scan(&createdID)
+RETURNING source_id`, actor.TenantID, sourceID, command.SourceType, command.InstanceKey, clusterID, command.AuthRef, command.AllowedSchemas, command.BackendLogicalID, command.DataScopeMapping).Scan(&createdID)
 	if errors.Is(err, pgx.ErrNoRows) {
 		var existing SourceRegistration
 		var storedClusterID *uuid.UUID
-		err = tx.QueryRow(ctx, `SELECT source_id, cluster_id, auth_ref, credential_revision, status, revision, created_at, updated_at, allowed_schemas
+		err = tx.QueryRow(ctx, `SELECT source_id, cluster_id, auth_ref, credential_revision, status, revision, created_at, updated_at, allowed_schemas, backend_logical_id, data_scope_mapping
 			FROM platform.source_registrations WHERE tenant_id = $1 AND source_type = $2 AND instance_key = $3`,
 			actor.TenantID, command.SourceType, command.InstanceKey).
 			Scan(&existing.SourceID, &storedClusterID, &existing.AuthRef, &existing.CredentialRevision,
-				&existing.Status, &existing.Revision, &existing.CreatedAt, &existing.UpdatedAt, &existing.AllowedSchemas)
+				&existing.Status, &existing.Revision, &existing.CreatedAt, &existing.UpdatedAt, &existing.AllowedSchemas, &existing.BackendLogicalID, &existing.DataScopeMapping)
 		if err != nil {
 			return SourceRegistration{}, fmt.Errorf("load duplicate source registration: %w", err)
 		}
 		if storedClusterID != nil {
 			existing.ClusterID = *storedClusterID
 		}
-		if existing.AuthRef != command.AuthRef || !sameClusterID(existing.ClusterID, command.ClusterID) || !slices.Equal(existing.AllowedSchemas, command.AllowedSchemas) {
+		if existing.AuthRef != command.AuthRef || !sameClusterID(existing.ClusterID, command.ClusterID) || !slices.Equal(existing.AllowedSchemas, command.AllowedSchemas) || existing.BackendLogicalID != command.BackendLogicalID || !sameDataScope(existing.DataScopeMapping, command.DataScopeMapping) {
 			return SourceRegistration{}, ErrIdentityConflict
 		}
 		return loadSource(ctx, tx, actor.TenantID, existing.SourceID, false)
@@ -88,7 +88,7 @@ RETURNING source_id`, actor.TenantID, sourceID, command.SourceType, command.Inst
 		EntityKind: "source_registration", EntityID: created.SourceID, Subject: actor.Subject,
 		Payload: map[string]any{
 			"source_type": created.SourceType, "instance_key": created.InstanceKey,
-			"cluster_id": nullableUUIDString(created.ClusterID), "auth_version": created.CredentialRevision, "revision": created.Revision, "allowed_schemas": created.AllowedSchemas,
+			"cluster_id": nullableUUIDString(created.ClusterID), "auth_version": created.CredentialRevision, "revision": created.Revision, "allowed_schemas": created.AllowedSchemas, "backend_logical_id": created.BackendLogicalID, "data_scope_mapping": created.DataScopeMapping,
 		},
 	}); err != nil {
 		return SourceRegistration{}, fmt.Errorf("audit source registration: %w", err)
@@ -97,7 +97,7 @@ RETURNING source_id`, actor.TenantID, sourceID, command.SourceType, command.Inst
 }
 
 func (service *Service) UpdateRegistration(ctx context.Context, tx pgx.Tx, actor auth.RequestContext, sourceID uuid.UUID, command SourceUpdateCommand) (SourceRegistration, error) {
-	if sourceID == uuid.Nil || command.ExpectedRevision < 1 || (!command.ClusterIDSet && command.Status == "" && command.AllowedSchemas == nil) ||
+	if sourceID == uuid.Nil || command.ExpectedRevision < 1 || (!command.ClusterIDSet && command.Status == "" && command.AllowedSchemas == nil && command.BackendLogicalID == nil && command.DataScopeMapping == nil) ||
 		(command.AllowedSchemas != nil && !validAllowedSchemas(command.AllowedSchemas)) ||
 		(command.Status != "" && command.Status != "active" && command.Status != "disabled") ||
 		(command.ClusterIDSet && command.ClusterID != nil && *command.ClusterID == uuid.Nil) {
@@ -136,7 +136,22 @@ func (service *Service) UpdateRegistration(ctx context.Context, tx pgx.Tx, actor
 	if command.AllowedSchemas != nil {
 		newSchemas = command.AllowedSchemas
 	}
-	if newClusterID == previous.ClusterID && newStatus == previous.Status && slices.Equal(newSchemas, previous.AllowedSchemas) {
+	newBackend := previous.BackendLogicalID
+	if command.BackendLogicalID != nil {
+		newBackend = *command.BackendLogicalID
+		// A completed backend identity cannot silently refer to a different backend.
+		if previous.BackendLogicalID != "" && newBackend != previous.BackendLogicalID {
+			return SourceRegistration{}, ErrIdentityConflict
+		}
+	}
+	newMapping := previous.DataScopeMapping
+	if command.DataScopeMapping != nil {
+		newMapping = *command.DataScopeMapping
+	}
+	if !validScopeBinding(newBackend, newMapping) {
+		return SourceRegistration{}, ErrInvalidInput
+	}
+	if newClusterID == previous.ClusterID && newStatus == previous.Status && slices.Equal(newSchemas, previous.AllowedSchemas) && newBackend == previous.BackendLogicalID && sameDataScope(newMapping, previous.DataScopeMapping) {
 		return previous, nil
 	}
 	var clusterValue any
@@ -144,9 +159,9 @@ func (service *Service) UpdateRegistration(ctx context.Context, tx pgx.Tx, actor
 		clusterValue = newClusterID
 	}
 	updated, err := tx.Query(ctx, `UPDATE platform.source_registrations
-		SET cluster_id = $1, status = $2, allowed_schemas = $6, revision = revision + 1, updated_at = clock_timestamp()
+		SET cluster_id = $1, status = $2, allowed_schemas = $6, backend_logical_id = $7, data_scope_mapping = $8, revision = revision + 1, updated_at = clock_timestamp()
 		WHERE tenant_id = $3 AND source_id = $4 AND revision = $5
-		RETURNING revision, updated_at`, clusterValue, newStatus, actor.TenantID, sourceID, command.ExpectedRevision, newSchemas)
+		RETURNING revision, updated_at`, clusterValue, newStatus, actor.TenantID, sourceID, command.ExpectedRevision, newSchemas, newBackend, newMapping)
 	if err != nil {
 		return SourceRegistration{}, fmt.Errorf("update source registration: %w", err)
 	}
@@ -170,8 +185,8 @@ func (service *Service) UpdateRegistration(ctx context.Context, tx pgx.Tx, actor
 		TenantID: actor.TenantID, RecordID: uuid.Must(uuid.NewV7()), EventType: "source_registration.updated",
 		EntityKind: "source_registration", EntityID: result.SourceID, Subject: actor.Subject,
 		Payload: map[string]any{
-			"before": map[string]any{"cluster_id": nullableUUIDString(previous.ClusterID), "status": previous.Status, "revision": command.ExpectedRevision, "allowed_schemas": previous.AllowedSchemas},
-			"after":  map[string]any{"cluster_id": nullableUUIDString(result.ClusterID), "status": result.Status, "revision": result.Revision, "allowed_schemas": result.AllowedSchemas},
+			"before": map[string]any{"cluster_id": nullableUUIDString(previous.ClusterID), "status": previous.Status, "revision": command.ExpectedRevision, "allowed_schemas": previous.AllowedSchemas, "backend_logical_id": previous.BackendLogicalID, "data_scope_mapping": previous.DataScopeMapping},
+			"after":  map[string]any{"cluster_id": nullableUUIDString(result.ClusterID), "status": result.Status, "revision": result.Revision, "allowed_schemas": result.AllowedSchemas, "backend_logical_id": result.BackendLogicalID, "data_scope_mapping": result.DataScopeMapping},
 		},
 	}); err != nil {
 		return SourceRegistration{}, fmt.Errorf("audit source registration update: %w", err)
@@ -263,10 +278,12 @@ func (service *Service) RollbackRegistration(ctx context.Context, tx pgx.Tx, act
 		return SourceRegistration{}, fmt.Errorf("load source rollback revision: %w", err)
 	}
 	var scope struct {
-		SourceType     string   `json:"source_type"`
-		InstanceKey    string   `json:"instance_key"`
-		ClusterID      *string  `json:"cluster_id"`
-		AllowedSchemas []string `json:"allowed_schemas"`
+		SourceType       string           `json:"source_type"`
+		InstanceKey      string           `json:"instance_key"`
+		ClusterID        *string          `json:"cluster_id"`
+		AllowedSchemas   []string         `json:"allowed_schemas"`
+		BackendLogicalID string           `json:"backend_logical_id"`
+		DataScopeMapping DataScopeMapping `json:"data_scope_mapping"`
 	}
 	if err := json.Unmarshal(scopeJSON, &scope); err != nil || scope.SourceType != current.SourceType || scope.InstanceKey != current.InstanceKey {
 		return SourceRegistration{}, fmt.Errorf("%w: source rollback revision scope is invalid", ErrInvalidInput)
@@ -276,6 +293,15 @@ func (service *Service) RollbackRegistration(ctx context.Context, tx pgx.Tx, act
 	}
 	if len(scope.AllowedSchemas) > 0 && !validAllowedSchemas(scope.AllowedSchemas) {
 		return SourceRegistration{}, ErrInvalidInput
+	}
+	if !validScopeBinding(scope.BackendLogicalID, scope.DataScopeMapping) ||
+		(scope.BackendLogicalID != "" && current.BackendLogicalID != "" && scope.BackendLogicalID != current.BackendLogicalID) {
+		return SourceRegistration{}, ErrIdentityConflict
+	}
+	// Rolling back to a legacy revision may revoke scope, but cannot erase or
+	// rebind a completed backend identity.
+	if scope.BackendLogicalID == "" {
+		scope.BackendLogicalID = current.BackendLogicalID
 	}
 	clusterID := uuid.Nil
 	if scope.ClusterID != nil {
@@ -303,10 +329,10 @@ func (service *Service) RollbackRegistration(ctx context.Context, tx pgx.Tx, act
 		clusterValue = clusterID
 	}
 	tag, err := tx.Exec(ctx, `UPDATE platform.source_registrations
-		SET cluster_id = $1, auth_ref = $2, credential_revision = $3, status = $4, allowed_schemas = $8,
+		SET cluster_id = $1, auth_ref = $2, credential_revision = $3, status = $4, allowed_schemas = $8, backend_logical_id = $9, data_scope_mapping = $10,
 		    revision = revision + 1, updated_at = clock_timestamp()
 		WHERE tenant_id = $5 AND source_id = $6 AND revision = $7`,
-		clusterValue, authRef, credentialRevision, status, actor.TenantID, sourceID, command.ExpectedRevision, scope.AllowedSchemas)
+		clusterValue, authRef, credentialRevision, status, actor.TenantID, sourceID, command.ExpectedRevision, scope.AllowedSchemas, scope.BackendLogicalID, scope.DataScopeMapping)
 	if err != nil {
 		return SourceRegistration{}, fmt.Errorf("rollback source registration: %w", err)
 	}
@@ -325,8 +351,8 @@ func (service *Service) RollbackRegistration(ctx context.Context, tx pgx.Tx, act
 		EntityKind: "source_registration", EntityID: result.SourceID, Subject: actor.Subject,
 		Payload: map[string]any{
 			"restored_from_revision": command.TargetRevision,
-			"before":                 map[string]any{"cluster_id": nullableUUIDString(current.ClusterID), "status": current.Status, "revision": current.Revision, "allowed_schemas": current.AllowedSchemas},
-			"after":                  map[string]any{"cluster_id": nullableUUIDString(result.ClusterID), "status": result.Status, "revision": result.Revision, "allowed_schemas": result.AllowedSchemas},
+			"before":                 map[string]any{"cluster_id": nullableUUIDString(current.ClusterID), "status": current.Status, "revision": current.Revision, "allowed_schemas": current.AllowedSchemas, "backend_logical_id": current.BackendLogicalID, "data_scope_mapping": current.DataScopeMapping},
+			"after":                  map[string]any{"cluster_id": nullableUUIDString(result.ClusterID), "status": result.Status, "revision": result.Revision, "allowed_schemas": result.AllowedSchemas, "backend_logical_id": result.BackendLogicalID, "data_scope_mapping": result.DataScopeMapping},
 			"auth_ref_changed":       current.AuthRef != result.AuthRef, "auth_version": result.CredentialRevision,
 		},
 	}); err != nil {
@@ -397,7 +423,7 @@ func bindEnvelope(ctx context.Context, registration SourceRegistration, identity
 	}
 	return BoundSourceContext{
 		TenantID: registration.TenantID, SourceID: registration.SourceID, ClusterID: registration.ClusterID,
-		ClusterUID: registration.ClusterUID, CredentialRevision: registration.CredentialRevision,
+		ClusterUID: registration.ClusterUID, CredentialRevision: registration.CredentialRevision, RegistrationRevision: registration.Revision,
 	}, nil
 }
 
@@ -441,7 +467,7 @@ func appendSourceRevision(ctx context.Context, tx pgx.Tx, value SourceRegistrati
 	scope, err := json.Marshal(map[string]any{
 		"source_type": value.SourceType, "instance_key": value.InstanceKey,
 		"cluster_id": nullableUUIDString(value.ClusterID), "cluster_uid": value.ClusterUID,
-		"allowed_schemas": value.AllowedSchemas,
+		"allowed_schemas": value.AllowedSchemas, "backend_logical_id": value.BackendLogicalID, "data_scope_mapping": value.DataScopeMapping,
 	})
 	if err != nil {
 		return fmt.Errorf("encode source registration scope: %w", err)

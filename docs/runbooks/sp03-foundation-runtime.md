@@ -1,5 +1,22 @@
 # SP-03 foundation runtime
 
+The 2026-10-01 specification synchronization is recorded in
+[ADR-0017](../adr/0017-align-sp01-sp03-with-reviewed-specification.md). Apply
+forward-only migration 00017 before starting the updated runtime. The source
+registry accepts optional `backendLogicalId` and `dataScopeMapping` declarations
+through its existing protected writes; legacy records remain readable with empty
+mapping. A completed backend ID is immutable. Empty scope is no permission;
+`queryCapability` stays `disabled/unverified` until actual SP-04 adapter admission.
+An administrator cannot claim verification in a request.
+
+New Worker audit segment/proof objects default to 365 days of retention and are
+read back and verified before database completion. Provision corresponding
+capacity and retain Transit key versions for the referenced lifetime. Existing
+objects keep their stored retention; extending their lifetime requires the
+backend's controlled retention extension, not a metadata-only change. A readback
+failure preserves pending state for recovery. This change does not establish
+production HA/capacity or implement future evidence Legal Hold/dependency flows.
+
 The API process now serves only SP-03 tenant/role, Source/Cluster and signed configuration administration, plus `POST /api/v1/auth/step-up-sessions`. The latter accepts an empty object with an Idempotency-Key; identity and fresh LoA-2 claims come exclusively from the verified Keycloak access token. Domain ingestion, graph, Incident, Agent and Runner endpoints remain outside this runtime.
 
 ## Database identities

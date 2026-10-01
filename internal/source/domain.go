@@ -23,33 +23,38 @@ var (
 )
 
 type SourceRegistration struct {
-	TenantID           uuid.UUID `json:"tenantId"`
-	SourceID           uuid.UUID `json:"sourceId"`
-	SourceType         string    `json:"sourceType"`
-	InstanceKey        string    `json:"instanceKey"`
-	ClusterID          uuid.UUID `json:"clusterId,omitempty"`
-	ClusterUID         string    `json:"clusterUid,omitempty"`
-	AuthRef            string    `json:"authRef"`
-	AllowedSchemas     []string  `json:"allowedSchemas"`
-	CredentialRevision int64     `json:"credentialRevision"`
-	Status             string    `json:"status"`
-	Revision           int64     `json:"revision"`
-	CreatedAt          time.Time `json:"createdAt"`
-	UpdatedAt          time.Time `json:"updatedAt"`
+	TenantID           uuid.UUID        `json:"tenantId"`
+	SourceID           uuid.UUID        `json:"sourceId"`
+	SourceType         string           `json:"sourceType"`
+	InstanceKey        string           `json:"instanceKey"`
+	ClusterID          uuid.UUID        `json:"clusterId,omitempty"`
+	ClusterUID         string           `json:"clusterUid,omitempty"`
+	AuthRef            string           `json:"authRef"`
+	AllowedSchemas     []string         `json:"allowedSchemas"`
+	BackendLogicalID   string           `json:"backendLogicalId"`
+	DataScopeMapping   DataScopeMapping `json:"dataScopeMapping"`
+	CredentialRevision int64            `json:"credentialRevision"`
+	Status             string           `json:"status"`
+	Revision           int64            `json:"revision"`
+	CreatedAt          time.Time        `json:"createdAt"`
+	UpdatedAt          time.Time        `json:"updatedAt"`
 }
 
 type RegisterCommand struct {
-	SourceType     string
-	InstanceKey    string
-	ClusterID      *uuid.UUID
-	AuthRef        string
-	AllowedSchemas []string
+	SourceType       string
+	InstanceKey      string
+	ClusterID        *uuid.UUID
+	AuthRef          string
+	AllowedSchemas   []string
+	BackendLogicalID string
+	DataScopeMapping DataScopeMapping
 }
 
 func (command RegisterCommand) Validate() error {
 	if _, allowed := allowedSourceTypes[command.SourceType]; !allowed ||
 		!validOpaqueName(command.InstanceKey, 512) || !validAuthRef(command.AuthRef) ||
-		(command.ClusterID != nil && *command.ClusterID == uuid.Nil) || !validAllowedSchemas(command.AllowedSchemas) {
+		(command.ClusterID != nil && *command.ClusterID == uuid.Nil) || !validAllowedSchemas(command.AllowedSchemas) ||
+		!validScopeBinding(command.BackendLogicalID, command.DataScopeMapping) {
 		return ErrInvalidInput
 	}
 	return nil
@@ -75,11 +80,12 @@ type FindingEnvelope struct {
 }
 
 type BoundSourceContext struct {
-	TenantID           uuid.UUID
-	SourceID           uuid.UUID
-	ClusterID          uuid.UUID
-	ClusterUID         string
-	CredentialRevision int64
+	TenantID             uuid.UUID
+	SourceID             uuid.UUID
+	ClusterID            uuid.UUID
+	ClusterUID           string
+	CredentialRevision   int64
+	RegistrationRevision int64
 }
 
 type CredentialVerifier interface {
@@ -98,6 +104,8 @@ type SourceUpdateCommand struct {
 	ClusterIDSet     bool
 	Status           string
 	AllowedSchemas   []string
+	BackendLogicalID *string
+	DataScopeMapping *DataScopeMapping
 }
 
 func validAllowedSchemas(values []string) bool {

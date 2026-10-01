@@ -15,7 +15,7 @@ type Repository struct{}
 const sourceSelect = `
 SELECT s.tenant_id, s.source_id, s.source_type, s.instance_key, s.cluster_id,
        COALESCE(c.cluster_uid, ''), s.auth_ref, s.credential_revision, s.status, s.revision,
-       s.created_at, s.updated_at, s.allowed_schemas
+       s.created_at, s.updated_at, s.allowed_schemas, s.backend_logical_id, s.data_scope_mapping
 FROM platform.source_registrations AS s
 LEFT JOIN platform.cluster_registrations AS c
   ON c.tenant_id = s.tenant_id AND c.cluster_id = s.cluster_id
@@ -31,7 +31,7 @@ func loadSource(ctx context.Context, tx pgx.Tx, tenantID, sourceID uuid.UUID, lo
 	err := tx.QueryRow(ctx, query, tenantID, sourceID).Scan(
 		&result.TenantID, &result.SourceID, &result.SourceType, &result.InstanceKey, &clusterID,
 		&result.ClusterUID, &result.AuthRef, &result.CredentialRevision, &result.Status, &result.Revision,
-		&result.CreatedAt, &result.UpdatedAt, &result.AllowedSchemas,
+		&result.CreatedAt, &result.UpdatedAt, &result.AllowedSchemas, &result.BackendLogicalID, &result.DataScopeMapping,
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return SourceRegistration{}, ErrResourceNotFound
@@ -78,7 +78,7 @@ func listSources(ctx context.Context, tx pgx.Tx, tenantID uuid.UUID) ([]SourceRe
 		if err := rows.Scan(
 			&item.TenantID, &item.SourceID, &item.SourceType, &item.InstanceKey, &clusterID,
 			&item.ClusterUID, &item.AuthRef, &item.CredentialRevision, &item.Status, &item.Revision,
-			&item.CreatedAt, &item.UpdatedAt, &item.AllowedSchemas,
+			&item.CreatedAt, &item.UpdatedAt, &item.AllowedSchemas, &item.BackendLogicalID, &item.DataScopeMapping,
 		); err != nil {
 			return nil, fmt.Errorf("scan source registration: %w", err)
 		}

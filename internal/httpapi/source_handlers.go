@@ -69,7 +69,8 @@ func (h SourceAdminHandlers) createSource(w http.ResponseWriter, r *http.Request
 		return
 	}
 	var body api.SourceRegistrationRequest
-	if err := decodeSourceJSON(r, &body); err != nil {
+	present, decodeErr := decodeSourceObject(r, &body)
+	if decodeErr != nil || string(present["backendLogicalId"]) == "null" || string(present["dataScopeMapping"]) == "null" {
 		writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "source registration is invalid", false, request.RequestID)
 		return
 	}
@@ -82,8 +83,23 @@ func (h SourceAdminHandlers) createSource(w http.ResponseWriter, r *http.Request
 		}
 		clusterID = &parsed
 	}
+	var backend string
+	if body.BackendLogicalId != nil {
+		backend = *body.BackendLogicalId
+		if backend == "" {
+			writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "backend identity is invalid", false, request.RequestID)
+			return
+		}
+	}
+	var mapping source.DataScopeMapping
+	if raw := present["dataScopeMapping"]; raw != nil {
+		if err := decodeScopeMapping(raw, &mapping); err != nil {
+			writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "source data scope is invalid", false, request.RequestID)
+			return
+		}
+	}
 	created, err := h.service.Register(r.Context(), tx, request, source.RegisterCommand{
-		SourceType: string(body.SourceType), InstanceKey: body.InstanceKey, ClusterID: clusterID, AuthRef: body.AuthRef, AllowedSchemas: schemaNames(body.AllowedSchemas),
+		SourceType: string(body.SourceType), InstanceKey: body.InstanceKey, ClusterID: clusterID, AuthRef: body.AuthRef, AllowedSchemas: schemaNames(body.AllowedSchemas), BackendLogicalID: backend, DataScopeMapping: mapping,
 	})
 	if err != nil {
 		writeSourceServiceError(w, err, request.RequestID)
@@ -102,6 +118,8 @@ func (h SourceAdminHandlers) updateSource(w http.ResponseWriter, r *http.Request
 		ClusterID        json.RawMessage `json:"clusterId"`
 		Status           *string         `json:"status"`
 		AllowedSchemas   *[]string       `json:"allowedSchemas"`
+		BackendLogicalID *string         `json:"backendLogicalId"`
+		DataScopeMapping json.RawMessage `json:"dataScopeMapping"`
 	}
 	present, err := decodeSourceObject(r, &body)
 	if err != nil || body.ExpectedRevision < 1 {
@@ -109,6 +127,21 @@ func (h SourceAdminHandlers) updateSource(w http.ResponseWriter, r *http.Request
 		return
 	}
 	command := source.SourceUpdateCommand{ExpectedRevision: body.ExpectedRevision}
+	if raw, exists := present["backendLogicalId"]; exists {
+		if string(raw) == "null" || body.BackendLogicalID == nil || *body.BackendLogicalID == "" {
+			writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "backend identity is invalid", false, request.RequestID)
+			return
+		}
+		command.BackendLogicalID = body.BackendLogicalID
+	}
+	if raw, exists := present["dataScopeMapping"]; exists {
+		var mapping source.DataScopeMapping
+		if string(raw) == "null" || decodeScopeMapping(raw, &mapping) != nil {
+			writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "source data scope is invalid", false, request.RequestID)
+			return
+		}
+		command.DataScopeMapping = &mapping
+	}
 	if raw, exists := present["allowedSchemas"]; exists {
 		if string(raw) == "null" || body.AllowedSchemas == nil {
 			writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "source schema scope is invalid", false, request.RequestID)
@@ -250,8 +283,10 @@ func sourceRegistrationJSON(value source.SourceRegistration) map[string]any {
 		"tenantId": value.TenantID, "sourceId": value.SourceID, "sourceType": value.SourceType,
 		"instanceKey": value.InstanceKey, "clusterId": clusterID, "clusterUid": value.ClusterUID,
 		"authRef": value.AuthRef, "credentialRevision": value.CredentialRevision,
-		"allowedSchemas": value.AllowedSchemas,
-		"status":         value.Status, "revision": value.Revision, "createdAt": value.CreatedAt, "updatedAt": value.UpdatedAt,
+		"allowedSchemas":   value.AllowedSchemas,
+		"backendLogicalId": value.BackendLogicalID, "dataScopeMapping": value.DataScopeMapping,
+		"queryCapability": map[string]string{"state": "disabled", "verification": "unverified", "reason": "adapter_scope_verification_pending"},
+		"status":          value.Status, "revision": value.Revision, "createdAt": value.CreatedAt, "updatedAt": value.UpdatedAt,
 	}
 }
 
@@ -343,4 +378,36 @@ func writeSourceError(w http.ResponseWriter, status int, code, message string, r
 		requestID = uuid.Must(uuid.NewV7()).String()
 	}
 	writeJSON(w, status, api.ErrorEnvelope{Code: api.ErrorEnvelopeCode(code), Message: message, RequestId: requestID, Retryable: retryable})
+}
+
+func decodeScopeMapping(raw json.RawMessage, target *source.DataScopeMapping) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &fields); err != nil || fields == nil {
+		return source.ErrInvalidInput
+	}
+	for _, field := range fields {
+		if string(field) == "null" {
+			return source.ErrInvalidInput
+		}
+	}
+	if raw, exists := fields["nativeTenant"]; exists {
+		var value string
+		if json.Unmarshal(raw, &value) != nil || value == "" {
+			return source.ErrInvalidInput
+		}
+	}
+	if scopes, exists := fields["scopes"]; exists {
+		var dimensions map[string]json.RawMessage
+		if err := json.Unmarshal(scopes, &dimensions); err != nil {
+			return source.ErrInvalidInput
+		}
+		for _, value := range dimensions {
+			if string(value) == "null" {
+				return source.ErrInvalidInput
+			}
+		}
+	}
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	decoder.DisallowUnknownFields()
+	return decoder.Decode(target)
 }

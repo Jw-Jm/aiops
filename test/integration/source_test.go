@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -96,9 +97,14 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 
 	initialAuthRef := "openbao://kv/platform/sources/vm-prod-a"
 	register := source.RegisterCommand{AllowedSchemas: []string{"finding-envelope/v1"}, SourceType: "victoriametrics", InstanceKey: "vm-prod-a", ClusterID: &cluster.ClusterID, AuthRef: initialAuthRef}
+	register.BackendLogicalID = "metrics-primary"
+	register.DataScopeMapping = source.DataScopeMapping{NativeTenant: "account-a", Scopes: map[string][]string{"namespace": {"prod"}}, RequiredLabels: map[string]string{"tenant_id": tenantID.String()}}
 	registration, err := registerSourceInTenant(ctx, pool, service, actor, register)
 	if err != nil {
 		t.Fatalf("register source: %v", err)
+	}
+	if registration.BackendLogicalID != register.BackendLogicalID || registration.DataScopeMapping.NativeTenant != "account-a" {
+		t.Fatal("source backend scope was not persisted")
 	}
 	duplicate, err := registerSourceInTenant(ctx, pool, service, actor, register)
 	if err != nil || duplicate.SourceID != registration.SourceID || duplicate.Revision != registration.Revision {
@@ -117,7 +123,7 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	}
 	identity := source.SourceIdentity{TenantID: tenantID, SourceID: registration.SourceID, CredentialRevision: 1, Proof: []byte("test-proof")}
 	bound, err := service.AuthenticateEnvelope(ctx, identity, envelope)
-	if err != nil || bound.TenantID != tenantID || bound.ClusterID != cluster.ClusterID || bound.ClusterUID != cluster.ClusterUID {
+	if err != nil || bound.TenantID != tenantID || bound.ClusterID != cluster.ClusterID || bound.ClusterUID != cluster.ClusterUID || bound.RegistrationRevision != registration.Revision {
 		t.Fatalf("valid registered source was not bound to its tenant and cluster: context=%#v err=%v", bound, err)
 	}
 	for name, changed := range map[string]source.FindingEnvelope{
@@ -137,6 +143,9 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	if err != nil || rotated.CredentialRevision != registration.CredentialRevision+1 || rotated.Revision != registration.Revision+1 {
 		t.Fatalf("source credential rotation did not create a new revision: source=%#v err=%v", rotated, err)
 	}
+	if rotated.SourceID != registration.SourceID || rotated.BackendLogicalID != registration.BackendLogicalID || rotated.DataScopeMapping.NativeTenant != "account-a" {
+		t.Fatal("credential rotation changed stable backend identity or scope")
+	}
 	if _, err := service.AuthenticateEnvelope(ctx, identity, envelope); !errors.Is(err, source.ErrUnauthorized) {
 		t.Fatalf("rotated credential revision was accepted: %v", err)
 	}
@@ -146,11 +155,20 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 		t.Fatalf("new credential revision was rejected: %v", err)
 	}
 
+	changedMapping := source.DataScopeMapping{NativeTenant: "account-a", Scopes: map[string][]string{"namespace": {"staging"}}}
 	updated, err := updateSourceInTenant(ctx, pool, service, actor, registration.SourceID, source.SourceUpdateCommand{
 		ExpectedRevision: rotated.Revision, ClusterID: &secondCluster.ClusterID, ClusterIDSet: true,
+		DataScopeMapping: &changedMapping,
 	})
 	if err != nil || updated.Revision != rotated.Revision+1 || updated.ClusterUID != secondCluster.ClusterUID {
 		t.Fatalf("source scope update did not produce a new revision: source=%#v err=%v", updated, err)
+	}
+	if updated.DataScopeMapping.Scopes["namespace"][0] != "staging" {
+		t.Fatal("scope revision did not update declared mapping")
+	}
+	otherBackend := "metrics-other"
+	if _, err := updateSourceInTenant(ctx, pool, service, actor, registration.SourceID, source.SourceUpdateCommand{ExpectedRevision: updated.Revision, BackendLogicalID: &otherBackend}); !errors.Is(err, source.ErrIdentityConflict) {
+		t.Fatalf("backend identity was silently redefined: %v", err)
 	}
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -203,6 +221,9 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 		t.Fatalf("pre-rollback credential generation was accepted: %v", err)
 	}
 	rolledBackIdentity := currentIdentity
+	if rolledBack.BackendLogicalID != registration.BackendLogicalID || rolledBack.DataScopeMapping.Scopes["namespace"][0] != "prod" {
+		t.Fatal("rollback did not restore source scope")
+	}
 	rolledBackIdentity.CredentialRevision = rolledBack.CredentialRevision
 	if _, err := service.AuthenticateEnvelope(ctx, rolledBackIdentity, envelope); err != nil {
 		t.Fatalf("restored source auth_ref did not authenticate at its new generation: %v", err)
@@ -224,6 +245,16 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	}
 	if sourceRevisions != 6 || clusterRevisions != 3 || auditRecords < 7 {
 		t.Fatalf("registration history was incomplete: source_revisions=%d cluster_revisions=%d audit_records=%d", sourceRevisions, clusterRevisions, auditRecords)
+	}
+	var scopeAudits int
+	if err := db.QueryRowContext(dbctx, `SELECT count(*) FROM audit.records WHERE tenant_id=$1 AND entity_id=$2 AND record->'after'->'data_scope_mapping'->'scopes'->'namespace' = '["staging"]'::jsonb`, tenantID, registration.SourceID).Scan(&scopeAudits); err != nil || scopeAudits == 0 {
+		t.Fatalf("source scope was absent from the transactional audit: count=%d err=%v", scopeAudits, err)
+	}
+	if err := persistence.WithTenantTx(ctx, pool, tenantID, func(tx pgx.Tx) error {
+		_, err := tx.Exec(ctx, `UPDATE platform.source_registrations SET backend_logical_id='rebound' WHERE tenant_id=$1 AND source_id=$2`, tenantID, registration.SourceID)
+		return err
+	}); err == nil {
+		t.Fatal("runtime SQL bypassed immutable backend identity")
 	}
 	if cluster.APIEndpointRef != "openbao://kv/clusters/review/endpoint" || cluster.ActualVersions["kubernetes"] != "v1.35.6+orb1" || !cluster.Capabilities["kubernetes"] {
 		t.Fatal("registered cluster metadata was not preserved")
@@ -310,9 +341,14 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	if replay.Code != first.Code || replay.Body.String() != first.Body.String() {
 		t.Fatalf("cluster write replay differed from the committed response: first=%d replay=%d", first.Code, replay.Code)
 	}
-	sourceBody := `{"allowedSchemas":["finding-envelope/v1"],"sourceType":"victoriametrics","instanceKey":"http-vm","clusterId":"` + cluster.ClusterID.String() + `","authRef":"openbao://kv/platform/sources/http-vm"}`
+	sourceBody := `{"backendLogicalId":"http-metrics","dataScopeMapping":{"nativeTenant":"account-http","scopes":{"namespace":["prod"]}},"allowedSchemas":["finding-envelope/v1"],"sourceType":"victoriametrics","instanceKey":"http-vm","clusterId":"` + cluster.ClusterID.String() + `","authRef":"openbao://kv/platform/sources/http-vm"}`
 	if response := requestWithActor(http.MethodPost, "/api/v1/admin/source-registrations", `{"tenantId":"`+tenantID.String()+`","allowedSchemas":["finding-envelope/v1"],"sourceType":"victoriametrics","instanceKey":"http-bad","authRef":"openbao://kv/platform/sources/http-bad"}`, "source-http-contract-reject", stepUpActor); response.Code != http.StatusBadRequest {
 		t.Fatalf("caller-selected source tenant was accepted: status=%d body=%s", response.Code, response.Body.String())
+	}
+	legacyBody := `{"allowedSchemas":["finding-envelope/v1"],"sourceType":"victoriametrics","instanceKey":"http-legacy","authRef":"openbao://kv/platform/sources/http-legacy"}`
+	legacyHTTP := requestWithActor(http.MethodPost, "/api/v1/admin/source-registrations", legacyBody, "source-http-legacy", stepUpActor)
+	if legacyHTTP.Code != http.StatusCreated || !strings.Contains(legacyHTTP.Body.String(), `"backendLogicalId":""`) || !strings.Contains(legacyHTTP.Body.String(), `"verification":"unverified"`) {
+		t.Fatalf("legacy HTTP request lost compatibility or acquired a query grant: status=%d body=%s", legacyHTTP.Code, legacyHTTP.Body.String())
 	}
 	createdSource := requestWithActor(http.MethodPost, "/api/v1/admin/source-registrations", sourceBody, "source-http-register", stepUpActor)
 	if createdSource.Code != http.StatusCreated {
@@ -320,7 +356,10 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	}
 	var createdEnvelope struct {
 		Data struct {
-			SourceID string `json:"sourceId"`
+			SourceID         string                  `json:"sourceId"`
+			BackendLogicalID string                  `json:"backendLogicalId"`
+			DataScopeMapping source.DataScopeMapping `json:"dataScopeMapping"`
+			QueryCapability  map[string]string       `json:"queryCapability"`
 		} `json:"data"`
 	}
 	if err := json.Unmarshal(createdSource.Body.Bytes(), &createdEnvelope); err != nil {
@@ -328,6 +367,15 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	}
 	if _, err := uuid.Parse(createdEnvelope.Data.SourceID); err != nil {
 		t.Fatalf("created source response omitted its identity: %v", err)
+	}
+	if createdEnvelope.Data.BackendLogicalID != "http-metrics" || createdEnvelope.Data.DataScopeMapping.NativeTenant != "account-http" || createdEnvelope.Data.QueryCapability["state"] != "disabled" || createdEnvelope.Data.QueryCapability["verification"] != "unverified" {
+		t.Fatal("HTTP registry response omitted scope or promoted query capability")
+	}
+	for i, badMapping := range []string{`{"verified":true}`, `{"scopes":{"region":["a"]}}`, `{"scopes":{"namespace":["*"]}}`, `{"scopes":{"namespace":null}}`} {
+		badBody := `{"expectedRevision":1,"dataScopeMapping":` + badMapping + `}`
+		if response := requestWithActor(http.MethodPatch, "/api/v1/admin/source-registrations/"+createdEnvelope.Data.SourceID, badBody, fmt.Sprintf("source-bad-mapping-%d", i), stepUpActor); response.Code != http.StatusBadRequest {
+			t.Fatalf("invalid mapping passed HTTP boundary: status=%d body=%s", response.Code, response.Body.String())
+		}
 	}
 	rotatedSource := requestWithActor(http.MethodPost, "/api/v1/admin/source-registrations/"+createdEnvelope.Data.SourceID+"/rotate-credential", `{"expectedRevision":1,"authRef":"openbao://kv/platform/sources/http-vm-rotated"}`, "source-http-rotate", stepUpActor)
 	if rotatedSource.Code != http.StatusOK {

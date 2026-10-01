@@ -100,7 +100,7 @@ func (m IdempotencyMiddleware) Wrap(next http.Handler) http.Handler {
 				output = capturedFromStored(decision.Response)
 				return nil
 			case persistence.DecisionConflict:
-				output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_KEY_REUSED", "the key was already used for a different request", false, requestID)
+				output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_CONFLICT", "the key was already used for a different request", false, requestID)
 				return nil
 			case persistence.DecisionInProgress:
 				if decision.ExecutionUnknown {
@@ -109,6 +109,7 @@ func (m IdempotencyMiddleware) Wrap(next http.Handler) http.Handler {
 					output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_CONFLICT", "the request key has a terminal result", false, requestID)
 				} else {
 					output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_IN_PROGRESS", "a request with this key is still in progress", true, requestID)
+					output.header.Set("Retry-After", "1")
 				}
 				return nil
 			case persistence.DecisionProceed:

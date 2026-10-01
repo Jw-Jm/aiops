@@ -339,8 +339,20 @@ func TestIdempotencyHTTPMiddleware(t *testing.T) {
 		t.Fatalf("response replay did not preserve only safe headers: location=%q set-cookie=%q", second.Header().Get("Location"), second.Header().Get("Set-Cookie"))
 	}
 	conflict := request(`{"source":"two"}`)
-	if conflict.Code != http.StatusConflict || calls.Load() != 1 || !strings.Contains(conflict.Body.String(), "IDEMPOTENCY_KEY_REUSED") {
+	if conflict.Code != http.StatusConflict || calls.Load() != 1 || !strings.Contains(conflict.Body.String(), "IDEMPOTENCY_CONFLICT") {
 		t.Fatalf("same key with a different body was not rejected before dispatch: status=%d calls=%d body=%s", conflict.Code, calls.Load(), conflict.Body.String())
+	}
+	// Model another request holding a live lease without redispatching business
+	// work. The retry response must guide the client and retain its error code.
+	if _, err := db.ExecContext(ctx, `UPDATE platform.idempotency_request_ledger
+		SET state='in_progress', lease_token=$2, lease_expires_at=clock_timestamp()+interval '30 seconds',
+		response_status=NULL, response_content_type=NULL, response_headers='{}', response_body=NULL, response_expires_at=NULL
+		WHERE tenant_id=$1 AND subject='operator-a' AND operation='create-source-registration'`, tenantID, uuid.New()); err != nil {
+		t.Fatal(err)
+	}
+	inProgress := request(`{"source":"one"}`)
+	if inProgress.Code != http.StatusConflict || inProgress.Header().Get("Retry-After") != "1" || calls.Load() != 1 || !strings.Contains(inProgress.Body.String(), "IDEMPOTENCY_IN_PROGRESS") {
+		t.Fatalf("in-progress retry lost its delay or redispatched work: status=%d headers=%v body=%s", inProgress.Code, inProgress.Header(), inProgress.Body.String())
 	}
 
 	draftID := uuid.MustParse("018f0f2b-91c2-7d42-a8dc-f719c5987320")

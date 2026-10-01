@@ -61,6 +61,60 @@ func TestArchiveBindsTenantDigestAndRetention(t *testing.T) {
 
 type memoryBackend struct{ objects map[string]StoredObject }
 
+type corruptUploadBackend struct {
+	memoryBackend
+	mutate func(*StoredObject)
+}
+
+func (b *corruptUploadBackend) Put(ctx context.Context, key string, body []byte, metadata map[string]string) (Version, error) {
+	version, err := b.memoryBackend.Put(ctx, key, body, metadata)
+	stored := b.objects[key]
+	b.mutate(&stored)
+	b.objects[key] = stored
+	return version, err
+}
+
+func TestArchiveUploadMustVerifyStoredBytesAndMetadata(t *testing.T) {
+	for name, mutate := range map[string]func(*StoredObject){
+		"bytes":  func(object *StoredObject) { object.Body = []byte("corrupted") },
+		"tenant": func(object *StoredObject) { object.Metadata["tenant-id"] = uuid.NewString() },
+		"retention": func(object *StoredObject) {
+			object.Metadata["retain-until"] = time.Now().UTC().Format(time.RFC3339Nano)
+		},
+		"content type": func(object *StoredObject) { object.Metadata["content-type"] = "text/plain" },
+	} {
+		t.Run(name, func(t *testing.T) {
+			backend := &corruptUploadBackend{memoryBackend: memoryBackend{objects: map[string]StoredObject{}}, mutate: mutate}
+			store, err := NewStore(backend, 1024)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = store.Put(context.Background(), ObjectDescriptor{TenantID: uuid.New(), ObjectID: uuid.New(), Category: "audit-segment", ContentType: "application/json", RetainUntil: time.Now().Add(time.Hour)}, bytes.NewBufferString("ciphertext"))
+			if err == nil {
+				t.Fatal("successful upload response concealed corrupt stored object")
+			}
+		})
+	}
+}
+
+func TestArchiveDeleteHonorsReferenceRetentionWhenBackendMetadataIsShorter(t *testing.T) {
+	backend := &memoryBackend{objects: map[string]StoredObject{}}
+	store, err := NewStore(backend, 1024)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ref, err := store.Put(context.Background(), ObjectDescriptor{TenantID: uuid.New(), ObjectID: uuid.New(), Category: "audit-segment", RetainUntil: time.Now().Add(time.Hour)}, bytes.NewBufferString("ciphertext"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	stored := backend.objects[ref.Key]
+	stored.Metadata["retain-until"] = time.Now().Add(-time.Hour).UTC().Format(time.RFC3339Nano)
+	backend.objects[ref.Key] = stored
+	if err := store.Delete(context.Background(), ref.TenantID, ref); !errors.Is(err, ErrRetentionActive) {
+		t.Fatalf("short backend retention bypassed active reference retention: %v", err)
+	}
+}
+
 func (m *memoryBackend) Put(_ context.Context, key string, body []byte, metadata map[string]string) (Version, error) {
 	m.objects[key] = StoredObject{Body: append([]byte(nil), body...), Metadata: metadata}
 	return Version{}, nil

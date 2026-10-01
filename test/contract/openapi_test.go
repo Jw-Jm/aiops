@@ -253,19 +253,72 @@ func TestCheckGeneratedCoversGoAndTypeScriptOutput(t *testing.T) {
 	}
 }
 
-func TestCheckGeneratedAllowsStagedNewArtifactsAndRejectsWorkingTreeDrift(t *testing.T) {
+func TestSourceScopeContractPreservesLegacyCallsAndDisablesQueryDeclarations(t *testing.T) {
+	contents, err := os.ReadFile("../../api/openapi/platform-v1.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var document openAPIDocument
+	if err := yaml.Unmarshal(contents, &document); err != nil {
+		t.Fatal(err)
+	}
+	request := document.Components.Schemas["SourceRegistrationRequest"]
+	for _, field := range []string{"backendLogicalId", "dataScopeMapping"} {
+		if _, ok := request.Properties[field]; !ok || contains(request.Required, field) {
+			t.Fatalf("scope declaration %s is absent or breaks legacy request compatibility", field)
+		}
+	}
+	if _, ok := document.Components.Schemas["SourceDataScopeMapping"].Properties["verification"]; ok {
+		t.Fatal("caller may claim scope verification")
+	}
+	registration := document.Components.Schemas["SourceRegistration"]
+	capability := registration.Properties["queryCapability"].(map[string]any)
+	if capability["readOnly"] != true {
+		t.Fatal("query capability is writable")
+	}
+	for path, methods := range document.Paths {
+		if !strings.HasPrefix(path, "/api/v1/admin/source-registrations") {
+			continue
+		}
+		for method, operation := range methods {
+			for status, response := range operation.Responses {
+				if !strings.HasPrefix(status, "2") {
+					continue
+				}
+				want := "#/components/schemas/SourceRegistrationEnvelope"
+				if method == "get" {
+					want = "#/components/schemas/SourceRegistrationPageEnvelope"
+				}
+				if response.Content["application/json"].Schema["$ref"] != want {
+					t.Fatalf("%s %s omits typed source response", method, path)
+				}
+			}
+		}
+	}
+}
+
+func TestCheckGeneratedUsesWorkingFilesAndRejectsGeneratorDrift(t *testing.T) {
 	tests := []struct {
-		name      string
-		directory string
-		staged    bool
-		tracked   bool
-		wantPass  bool
+		name             string
+		directory        string
+		staged           bool
+		generatedDrift   bool
+		extraFile        bool
+		generatorFailure bool
+		workspaceVisible bool
+		tracked          bool
+		wantPass         bool
 	}{
 		{name: "staged generated artifact", staged: true, wantPass: true},
-		{name: "untracked generated artifact", wantPass: false},
-		{name: "modified tracked generated artifact", tracked: true, wantPass: false},
-		{name: "SQLC tracked drift", directory: "internal/persistence/dbgen", tracked: true, wantPass: false},
-		{name: "SQLC untracked drift", directory: "internal/persistence/dbgen", wantPass: false},
+		{name: "untracked generated artifact", wantPass: true},
+		{name: "modified tracked generated artifact", tracked: true, wantPass: true},
+		{name: "SQLC generator drift", directory: "internal/persistence/dbgen", tracked: true, generatedDrift: true, wantPass: false},
+		{name: "SQLC untracked artifact", directory: "internal/persistence/dbgen", wantPass: true},
+		{name: "new generator artifact", generatedDrift: true, wantPass: false},
+		{name: "tracked generator drift", tracked: true, generatedDrift: true, wantPass: false},
+		{name: "extraneous output", extraFile: true, wantPass: false},
+		{name: "failed generator restores input", tracked: true, generatorFailure: true, wantPass: false},
+		{name: "concurrent workspace retains output", tracked: true, workspaceVisible: true, wantPass: true},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -289,6 +342,11 @@ func TestCheckGeneratedAllowsStagedNewArtifactsAndRejectsWorkingTreeDrift(t *tes
 				}
 			}
 			writeFile("Makefile", string(makefile))
+			checker, err := os.ReadFile(filepath.Join("..", "..", "scripts", "check-generated.py"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			writeFile("scripts/check-generated.py", string(checker))
 			writeFile("go.mod", "module check-generated-fixture\n\ngo 1.27.1\n")
 			writeFile("fixture.go", "package fixture\n")
 			if test.tracked {
@@ -322,6 +380,25 @@ func TestCheckGeneratedAllowsStagedNewArtifactsAndRejectsWorkingTreeDrift(t *tes
 				writeFile(directory+"/tracked.txt", "changed\n")
 			}
 
+			artifact, contents := "review-probe.txt", "generated\n"
+			if test.tracked {
+				artifact, contents = "tracked.txt", "changed\n"
+			}
+			if test.generatedDrift {
+				contents = "generated-drift\n"
+			}
+			if test.extraFile {
+				artifact = "actual-output.txt"
+			}
+			writeFile("fixture.go", "package fixture\n//go:generate sh -c \"mkdir -p "+directory+"; printf '"+strings.TrimSuffix(contents, "\n")+"\\n' > "+directory+"/"+artifact+"\"\n")
+
+			if test.workspaceVisible {
+				originalPath := filepath.Join(root, directory, artifact)
+				writeFile("fixture.go", "package fixture\n//go:generate sh -c \"test -f '"+originalPath+"' || exit 1; mkdir -p "+directory+"; printf 'changed\\n' > "+directory+"/"+artifact+"\"\n")
+			}
+			if test.generatorFailure {
+				writeFile("fixture.go", "package fixture\n//go:generate sh -c \"exit 1\"\n")
+			}
 			command := exec.Command("make", "check-generated")
 			command.Dir = root
 			output, err := command.CombinedOutput()
@@ -330,6 +407,14 @@ func TestCheckGeneratedAllowsStagedNewArtifactsAndRejectsWorkingTreeDrift(t *tes
 			}
 			if !test.wantPass && err == nil {
 				t.Fatalf("make check-generated unexpectedly passed\n%s", output)
+			}
+			original, want := "review-probe.txt", "generated\n"
+			if test.tracked {
+				original, want = "tracked.txt", "changed\n"
+			}
+			got, readErr := os.ReadFile(filepath.Join(root, directory, original))
+			if readErr != nil || string(got) != want {
+				t.Fatalf("checker changed reviewable input: %q %v", got, readErr)
 			}
 		})
 	}

@@ -95,7 +95,7 @@ func TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped(t *testing.
 	if err != nil {
 		t.Fatal(err)
 	}
-	service, err := audit.NewSegmentService(pool, archiveStore, protector, &signer, "audit-signing", 30*24*time.Hour)
+	service, err := audit.NewSegmentService(pool, archiveStore, protector, &signer, "audit-signing", audit.DefaultArchiveRetention)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -123,6 +123,11 @@ func TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped(t *testing.
 	}
 	backend.mu.Lock()
 	stored := backend.objects[objectKey]
+	until, retentionErr := time.Parse(time.RFC3339Nano, stored.Metadata["retain-until"])
+	if retentionErr != nil || until.Before(time.Now().Add(365*24*time.Hour-time.Minute)) {
+		backend.mu.Unlock()
+		t.Fatalf("audit archive default is below 365 days: until=%v err=%v", until, retentionErr)
+	}
 	stored.Body = append(stored.Body, 'x')
 	backend.objects[objectKey] = stored
 	backend.mu.Unlock()
@@ -146,8 +151,24 @@ func TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped(t *testing.
 	if err := admin.QueryRowContext(ctx, `SELECT count(*) FROM audit.signed_segments WHERE tenant_id=$1 AND status='pending_signature'`, tenantA).Scan(&pending); err != nil || pending != 1 {
 		t.Fatalf("pending segment count=%d err=%v", pending, err)
 	}
+	backend.mu.Lock()
+	backend.failReadback = true
+	uploadsBeforeReadbackFailure := backend.successfulPuts
+	backend.mu.Unlock()
+	if _, sealed, err := service.SealNext(ctx, tenantA); err == nil || sealed {
+		t.Fatal("failed upload readback committed a signed segment")
+	}
+	if err := admin.QueryRowContext(ctx, `SELECT count(*) FROM audit.signed_segments WHERE tenant_id=$1 AND status='pending_signature'`, tenantA).Scan(&pending); err != nil || pending != 1 {
+		t.Fatalf("readback failure did not preserve pending intent: count=%d err=%v", pending, err)
+	}
 	if _, sealed, err := service.SealNext(ctx, tenantA); err != nil || !sealed {
 		t.Fatalf("retry pending segment: sealed=%v err=%v", sealed, err)
+	}
+	backend.mu.Lock()
+	uploadsAfterReadbackRecovery := backend.successfulPuts
+	backend.mu.Unlock()
+	if uploadsAfterReadbackRecovery != uploadsBeforeReadbackFailure+2 {
+		t.Fatal("readback recovery duplicated the encrypted upload instead of reusing it")
 	}
 	if err := service.VerifyRange(ctx, tenantA, firstSeq, secondSeq); err != nil {
 		t.Fatalf("verify recovered segment: %v", err)
@@ -404,6 +425,7 @@ type integrationArchiveBackend struct {
 	mu             sync.Mutex
 	objects        map[string]archive.StoredObject
 	failPuts       int
+	failReadback   bool
 	successfulPuts int
 }
 
@@ -427,6 +449,10 @@ func (b *integrationArchiveBackend) Get(_ context.Context, key, _ string) (archi
 	value, ok := b.objects[key]
 	if !ok {
 		return archive.StoredObject{}, archive.ErrObjectNotFound
+	}
+	if b.failReadback {
+		b.failReadback = false
+		return archive.StoredObject{}, errors.New("injected upload readback outage")
 	}
 	value.Body = append([]byte(nil), value.Body...)
 	return value, nil

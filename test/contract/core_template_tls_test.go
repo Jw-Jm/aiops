@@ -17,4 +17,10 @@ func TestCoreTemplateLocksHTTPSRuntimeTrustEndpoints(t *testing.T) {
 			t.Errorf("core template %s runtime endpoint is not HTTPS", name)
 		}
 	}
+	for _, name := range []string{"kubevirt", "cdi"} {
+		component := p.Components[name]
+		if component.Mode != "disabled" || component.Compatibility != "unverified" || component.DisabledReason != "development_deferred" {
+			t.Errorf("core template activated deferred component %s", name)
+		}
+	}
 }

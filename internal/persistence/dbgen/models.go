@@ -322,6 +322,8 @@ type PlatformSourceRegistration struct {
 	CreatedAt          pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt          pgtype.Timestamptz `json:"updated_at"`
 	AllowedSchemas     []string           `json:"allowed_schemas"`
+	BackendLogicalID   string             `json:"backend_logical_id"`
+	DataScopeMapping   []byte             `json:"data_scope_mapping"`
 }
 
 type PlatformSourceRegistrationRevision struct {
