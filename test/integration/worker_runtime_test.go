@@ -79,9 +79,10 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 	}
 	var childLogs []string
 	start := func() (*exec.Cmd, chan error) {
+		profilePath := isolatedRuntimeProfile(t, "", os.Getenv("OPENBAO_ADDR"), os.Getenv("S3_ENDPOINT"))
 		t.Logf("start worker with archive endpoint=%s bucket=%s", os.Getenv("S3_ENDPOINT"), os.Getenv("S3_BUCKET"))
 		command := exec.Command(binary)
-		command.Env = []string{"DATABASE_URL=" + u.String(), "OIDC_ISSUER_URL=isolated-not-used-by-audit", "PLATFORM_PROFILE=isolated-core", "PLATFORM_METRICS_ADDR=127.0.0.1:0"}
+		command.Env = []string{"DATABASE_URL=" + u.String(), "OIDC_ISSUER_URL=isolated-not-used-by-audit", "PLATFORM_PROFILE=" + profilePath, "PLATFORM_METRICS_ADDR=127.0.0.1:0"}
 		for _, key := range []string{"OPENBAO_ADDR", "OPENBAO_CA_FILE", "OPENBAO_SERVICE_DOMAIN", "OPENBAO_PROJECTED_TOKEN_FILE", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY", "S3_ENDPOINT"} {
 			command.Env = append(command.Env, key+"="+os.Getenv(key))
 		}

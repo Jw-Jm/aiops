@@ -76,6 +76,9 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 	if runtime == nil {
 		return errors.New("worker observability is required")
 	}
+	if err := application.config.validateRuntimeProfile(true); err != nil {
+		return err
+	}
 	pool, err := OpenRuntimePool(ctx, application.config.DatabaseURL, "worker_runtime_role")
 	if err != nil {
 		return err

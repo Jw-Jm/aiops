@@ -17,7 +17,6 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/yaml.v3"
 	"ops-platform/internal/bundle"
 	"ops-platform/internal/bundle/drivers"
 	"ops-platform/internal/integrations/openbao"
@@ -345,21 +344,7 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 }
 
 func readResolvedProfile(path string) (profile.ResolvedProfile, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return profile.ResolvedProfile{}, fmt.Errorf("open resolved profile: %w", err)
-	}
-	defer file.Close()
-	decoder := yaml.NewDecoder(file)
-	decoder.KnownFields(true)
-	var resolved profile.ResolvedProfile
-	if err := decoder.Decode(&resolved); err != nil {
-		return profile.ResolvedProfile{}, fmt.Errorf("decode resolved profile: %w", err)
-	}
-	if err := resolved.Validate(); err != nil {
-		return profile.ResolvedProfile{}, fmt.Errorf("resolved profile validation: %w", err)
-	}
-	return resolved, nil
+	return profile.ReadResolvedProfileFile(path)
 }
 
 func parseOpenBaoEndpoint(endpoint string) (service, namespace, serverName, serviceDomain string, err error) {

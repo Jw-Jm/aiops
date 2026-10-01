@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net"
+	"strings"
 	"testing"
 
 	"ops-platform/internal/observability"
@@ -18,8 +19,8 @@ func TestAPIServingRequiresRuntimeDependencies(t *testing.T) {
 	defer listener.Close()
 	runtime, _ := observability.NewRuntime(context.Background(), "test")
 	defer runtime.Close(context.Background())
-	if err := application.Serve(context.Background(), listener, runtime); err == nil {
-		t.Fatal("API listener ran without valid persistence and identity dependencies")
+	if err := application.Serve(context.Background(), listener, runtime); err == nil || !strings.Contains(err.Error(), "resolved Deployment Profile") {
+		t.Fatalf("API must reject an unavailable profile before opening persistence: %v", err)
 	}
 }
 
@@ -27,8 +28,8 @@ func TestWorkerServingRequiresRuntimeDependencies(t *testing.T) {
 	application, _ := NewWorker(AppConfig{DatabaseURL: "invalid", OIDCIssuerURL: "https://invalid", ProfilePath: "fixture"})
 	runtime, _ := observability.NewRuntime(context.Background(), "test-worker")
 	defer runtime.Close(context.Background())
-	if err := application.Serve(context.Background(), runtime); err == nil {
-		t.Fatal("worker started without audit persistence, archive and Transit")
+	if err := application.Serve(context.Background(), runtime); err == nil || !strings.Contains(err.Error(), "resolved Deployment Profile") {
+		t.Fatalf("worker must reject an unavailable profile before opening persistence: %v", err)
 	}
 }
 

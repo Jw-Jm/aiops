@@ -503,7 +503,8 @@ func verifyFoundationAPI(t *testing.T, ctx context.Context, dsn string, token ke
 	defer admin.Exec(ctx, `DROP ROLE "`+name+`"`)
 	u, _ := url.Parse(dsn)
 	u.User = url.User(name)
-	application, err := app.NewAPI(app.AppConfig{DatabaseURL: u.String(), OIDCIssuerURL: os.Getenv("SP03_KEYCLOAK_TEST_ISSUER"), ProfilePath: "isolated-core"})
+	issuer := os.Getenv("SP03_KEYCLOAK_TEST_ISSUER")
+	application, err := app.NewAPI(app.AppConfig{DatabaseURL: u.String(), OIDCIssuerURL: issuer, ProfilePath: isolatedRuntimeProfile(t, issuer, "", "")})
 	if err != nil {
 		t.Fatal(err)
 	}

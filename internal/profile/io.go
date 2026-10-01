@@ -2,6 +2,7 @@ package profile
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -17,6 +18,9 @@ func ReadProfile(reader io.Reader) (InputProfile, error) {
 	if err := decoder.Decode(&input); err != nil {
 		return InputProfile{}, fmt.Errorf("decode Deployment Profile: %w", err)
 	}
+	if err := requireSingleDocument(decoder); err != nil {
+		return InputProfile{}, err
+	}
 	if err := input.ValidateTemplate(); err != nil {
 		return InputProfile{}, err
 	}
@@ -24,6 +28,44 @@ func ReadProfile(reader io.Reader) (InputProfile, error) {
 		return InputProfile{}, err
 	}
 	return input, nil
+}
+
+func requireSingleDocument(decoder *yaml.Decoder) error {
+	var extra any
+	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
+		return errors.New("Deployment Profile must contain exactly one YAML document")
+	}
+	return nil
+}
+
+// ReadResolvedProfile applies the public Schema and semantic locks at every
+// consumer, including process startup; an input template is never accepted.
+func ReadResolvedProfile(reader io.Reader) (ResolvedProfile, error) {
+	decoder := yaml.NewDecoder(reader)
+	decoder.KnownFields(true)
+	var resolved ResolvedProfile
+	if err := decoder.Decode(&resolved); err != nil {
+		return ResolvedProfile{}, fmt.Errorf("decode resolved Deployment Profile: %w", err)
+	}
+	if err := requireSingleDocument(decoder); err != nil {
+		return ResolvedProfile{}, err
+	}
+	if err := resolved.Validate(); err != nil {
+		return ResolvedProfile{}, err
+	}
+	if err := validateProfileSchema(resolved); err != nil {
+		return ResolvedProfile{}, err
+	}
+	return resolved, nil
+}
+
+func ReadResolvedProfileFile(path string) (ResolvedProfile, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return ResolvedProfile{}, fmt.Errorf("open resolved Deployment Profile: %w", err)
+	}
+	defer file.Close()
+	return ReadResolvedProfile(file)
 }
 
 func validateProfileSchema(value any) error {

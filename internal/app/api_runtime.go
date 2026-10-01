@@ -88,6 +88,9 @@ func (application *APIApp) Serve(ctx context.Context, listener net.Listener, run
 	if listener == nil || runtime == nil {
 		return errors.New("API listener and observability are required")
 	}
+	if err := application.config.validateRuntimeProfile(false); err != nil {
+		return err
+	}
 	pool, err := OpenRuntimePool(ctx, application.config.DatabaseURL, "api_runtime_role")
 	if err != nil {
 		return err
