@@ -73,6 +73,10 @@ func RecordStepUpSession(ctx context.Context, tx pgx.Tx, request RequestContext,
 		ON CONFLICT (tenant_id, subject, keycloak_sid) DO UPDATE SET
 			session_id = EXCLUDED.session_id, acr = EXCLUDED.acr, auth_time = EXCLUDED.auth_time,
 			created_at = EXCLUDED.created_at, last_used_at = clock_timestamp(), revoked_at = NULL
+		WHERE EXCLUDED.auth_time > platform.step_up_sessions.auth_time
+		   OR (EXCLUDED.auth_time = platform.step_up_sessions.auth_time
+		       AND platform.step_up_sessions.revoked_at IS NULL
+		       AND EXCLUDED.acr = platform.step_up_sessions.acr)
 		RETURNING session_id, tenant_id, subject, keycloak_sid, acr, auth_time, created_at, last_used_at, revoked_at`,
 		request.TenantID, sessionID, request.Subject, request.KeycloakSID, request.ACR, request.AuthTime,
 	).Scan(&session.SessionID, &session.TenantID, &session.Subject, &session.KeycloakSID, &session.ACR,
@@ -100,6 +104,8 @@ func TouchStepUpSession(ctx context.Context, tx pgx.Tx, session StepUpSession, r
 		SET last_used_at = clock_timestamp()
 		WHERE tenant_id = $1 AND session_id = $2 AND subject = $3 AND keycloak_sid = $4
 		  AND acr = $5 AND auth_time = $6 AND revoked_at IS NULL
+		  AND auth_time <= clock_timestamp() AND created_at <= clock_timestamp()
+		  AND last_used_at <= clock_timestamp()
 		  AND created_at + interval '1 hour' > clock_timestamp()
 		  AND last_used_at + interval '1 hour' > clock_timestamp()
 		RETURNING session_id, tenant_id, subject, keycloak_sid, acr, auth_time, created_at, last_used_at, revoked_at`,
