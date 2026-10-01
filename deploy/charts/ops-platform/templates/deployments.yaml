@@ -56,6 +56,10 @@ spec:
             - name: PLATFORM_PROFILE
               value: /etc/ops/profile.yaml
             {{ if eq $name "api" }}
+            {{ if $.Values.runtime.oidcCABundle }}
+            - name: SSL_CERT_FILE
+              value: /etc/ops/oidc-ca.pem
+            {{ end }}
             - name: PLATFORM_REGISTRY_TRUST_FILE
               value: /etc/ops/registry-trust.json
             {{ end }}
@@ -120,6 +124,7 @@ metadata:
 data:
   registry-trust.json: {{ $.Values.runtime.registryTrust | default dict | toJson | quote }}
   openbao-ca.pem: {{ $.Values.runtime.openbaoCABundle | default "" | quote }}
+  oidc-ca.pem: {{ $.Values.runtime.oidcCABundle | default "" | quote }}
   profile.yaml: |
 {{ required "runtime.profile is required" .Values.runtime.profile | indent 4 }}
 {{- end }}

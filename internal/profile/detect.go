@@ -452,7 +452,7 @@ func componentForService(service map[string]any) string {
 		return "victoriaMetrics"
 	case hasPort(service, 5432) && (strings.Contains(identity, "postgres") || strings.Contains(identity, "pgsql")):
 		return "postgresql"
-	case hasPort(service, 8080) && strings.Contains(identity, "keycloak"):
+	case (hasPort(service, 8080) || hasPort(service, 8443)) && strings.Contains(identity, "keycloak"):
 		return "keycloak"
 	case hasPort(service, 8333) && strings.Contains(identity, "seaweed"):
 		return "seaweedfs"
@@ -504,11 +504,11 @@ func serviceCandidate(service map[string]any, component string, resources []map[
 
 func servicePort(service map[string]any, component string) (int, string) {
 	ports, _ := objectMap(service["spec"])["ports"].([]any)
-	preferred := map[string][]int{"victoriaMetrics": {8428, 8429}, "victoriaLogs": {9428}, "vmalert": {8880}, "postgresql": {5432}, "keycloak": {8080}, "seaweedfs": {8333}, "openbao": {8200}}
+	preferred := map[string][]int{"victoriaMetrics": {8428, 8429}, "victoriaLogs": {9428}, "vmalert": {8880}, "postgresql": {5432}, "keycloak": {8443, 8080}, "seaweedfs": {8333}, "openbao": {8200}}
 	for _, rawPort := range ports {
 		if number, ok := asInt(objectMap(rawPort)["port"]); ok && containsInt(preferred[component], number) {
 			protocol := "http"
-			if component == "openbao" {
+			if component == "openbao" || (component == "keycloak" && number == 8443) {
 				protocol = "https"
 			}
 			return number, protocol

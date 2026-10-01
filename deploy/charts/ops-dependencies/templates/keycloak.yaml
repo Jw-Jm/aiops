@@ -1,4 +1,5 @@
 {{- $component := .Values.components.keycloak -}}
+{{- $tls := hasPrefix "https://" $component.endpoint -}}
 {{- if eq $component.mode "bundled" }}
 apiVersion: v1
 kind: Service
@@ -14,9 +15,9 @@ spec:
   selector:
     app.kubernetes.io/name: ops-keycloak
   ports:
-    - name: http
-      port: 8080
-      targetPort: http
+    - name: {{ ternary "https" "http" $tls }}
+      port: {{ ternary 8443 8080 $tls }}
+      targetPort: {{ ternary "https" "http" $tls }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -80,13 +81,21 @@ spec:
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
           args: ["start", "--optimized", "--hostname-strict=false"]
           ports:
-            - name: http
-              containerPort: 8080
+            - name: {{ ternary "https" "http" $tls }}
+              containerPort: {{ ternary 8443 8080 $tls }}
             - name: management
               containerPort: 9000
           env:
             - name: KC_HTTP_ENABLED
-              value: "true"
+              value: {{ ternary "false" "true" $tls | quote }}
+            {{ if $tls }}
+            - name: KC_HTTPS_CERTIFICATE_FILE
+              value: /etc/keycloak/tls/tls.crt
+            - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+              value: /etc/keycloak/tls/tls.key
+            - name: KC_HTTP_MANAGEMENT_SCHEME
+              value: http
+            {{ end }}
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL
@@ -130,6 +139,11 @@ spec:
             capabilities:
               drop: ["ALL"]
           volumeMounts:
+            {{ if $tls }}
+            - name: tls
+              mountPath: /etc/keycloak/tls
+              readOnly: true
+            {{ end }}
             - name: distribution
               mountPath: /opt/keycloak
               readOnly: true
@@ -138,6 +152,11 @@ spec:
             - name: tmp
               mountPath: /tmp
       volumes:
+        {{ if $tls }}
+        - name: tls
+          secret:
+            secretName: {{ required "components.keycloak.tlsSecretName is required for HTTPS" $component.tlsSecretName | quote }}
+        {{ end }}
         - name: distribution
           emptyDir: {}
         - name: data

@@ -1,6 +1,8 @@
 # OrbStack core offline installation
 
-Status: Task 2.7 passed on the OrbStack development profile on 2026-09-29.
+Historical status: Task 2.7 passed on the source-bound OrbStack development
+profile on 2026-09-29. That record does not accept subsequent SP-03 Chart or
+runtime changes; the current Bundle needs its own affected installation proof.
 KubeVirt/CDI development, deployment and runtime acceptance remain deferred
 under [ADR-0008](../adr/0008-defer-kubevirt-cdi-development.md). This runbook
 covers the core Profile only; virtual machine work is outside the current stage.
@@ -18,14 +20,34 @@ covers the core Profile only; virtual machine work is outside the current stage.
    licenses. Include the qualified VictoriaMetrics/VictoriaLogs fallback
    materials even when the selected Profile reuses existing services.
 4. Provide bootstrap Secrets outside Bundle/Git. Required secret keys are
-   checked without printing their values. ops-platform-runtime/databaseURL is
-   the platform process credential; dependency Chart credentials use the
+   checked without printing their values. ops-platform-runtime/apiDatabaseURL
+   and workerDatabaseURL must use distinct LOGIN roles granted only their
+   respective runtime role; archiveAccessKey and archiveSecretKey are the S3
+   credential references. Apply forward-only migrations with the isolated
+   migration principal before starting these runtime processes. Dependency Chart credentials use the
    existingSecret names defined by that Chart. Existing external OpenBao retains
    its own bootstrap and unseal workflow.
 5. The initial installer requires ops-system to exist and refuses adoption or
    overwrite of rendered resources. A cleanup or reinstall must target only
    this installation's identified release resources, never existing Victoria
    instances, external OpenBao, user namespaces or user data.
+6. Provision the independent public ConfigMap `ops-platform-bootstrap` in
+   ops-system before image import. Required entries are `openbao-ca.pem`
+   (the independently verified public OpenBao bootstrap CA), `archive-bucket`
+   (an existing S3 bucket with the required retention configuration), and
+   `registry-trust.json` (a JSON map from trusted key IDs to base64 Ed25519
+   public keys). Optional `oidc-ca.pem` supplies the private issuer's public
+   TLS CA. The installer copies only these public values into the runtime
+   ConfigMap and uses the OpenBao, SeaweedFS and Keycloak endpoints locked in
+   the resolved Profile. It fails before import if required values are absent
+   or malformed. Do not place root tokens, Shamir shares or private keys here.
+7. Keycloak and OpenBao runtime endpoints must use HTTPS. For bundled Keycloak,
+   provide `ops-keycloak-tls` with `tls.crt` and `tls.key` outside the repository
+   and Bundle, with a certificate valid for its Profile DNS identity. Its HTTPS
+   Service uses port 8443. Import the frozen realm/PKCE/ACR configuration and
+   complete bootstrap credential rotation per `keycloak-bootstrap.md`.
+   An existing HTTP-only instance must not be overwritten by this installer;
+   arrange an explicitly authorized TLS change or select an isolated instance.
 
 ## Commands
 

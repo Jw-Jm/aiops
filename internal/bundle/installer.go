@@ -303,11 +303,11 @@ func planCharts(ctx context.Context, v *verifiedPayload, p profile.ResolvedProfi
 				return nil, err
 			}
 			values["networkPolicy"] = map[string]any{"managedDependencyReleases": managed, "externalServices": externalServices}
-			profileYAML, err := yaml.Marshal(p)
+			runtimeValues, err := platformRuntimeValues(ctx, p, run)
 			if err != nil {
 				return nil, err
 			}
-			values["runtime"] = map[string]any{"profile": string(profileYAML), "oidcIssuerURL": strings.TrimSuffix(p.Components["keycloak"].Endpoint, "/") + "/realms/ops"}
+			values["runtime"] = runtimeValues
 			values["components"] = map[string]any{
 				"api":            map[string]any{"image": imageNames["platform-api"]},
 				"worker":         map[string]any{"image": imageNames["platform-worker"]},
