@@ -1,0 +1,54 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "ClusterRole",
+            "metadata": {
+                "creationTimestamp": "2026-10-01T06:14:37Z",
+                "name": "sp03-review-tokenreview-20261001",
+                "resourceVersion": "190276",
+                "uid": "cdc5bb52-465c-4331-8484-934d63687068"
+            },
+            "rules": [
+                {
+                    "apiGroups": [
+                        "authentication.k8s.io"
+                    ],
+                    "resources": [
+                        "tokenreviews"
+                    ],
+                    "verbs": [
+                        "create"
+                    ]
+                }
+            ]
+        },
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "ClusterRoleBinding",
+            "metadata": {
+                "creationTimestamp": "2026-10-01T06:14:37Z",
+                "name": "sp03-review-tokenreview-20261001",
+                "resourceVersion": "190277",
+                "uid": "edc12341-8dfa-47e4-a213-613e083aeebf"
+            },
+            "roleRef": {
+                "apiGroup": "rbac.authorization.k8s.io",
+                "kind": "ClusterRole",
+                "name": "sp03-review-tokenreview-20261001"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "ops-openbao-reviewer",
+                    "namespace": "ops-sp03-review-20261001"
+                }
+            ]
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}

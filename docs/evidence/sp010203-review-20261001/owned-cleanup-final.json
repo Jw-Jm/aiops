@@ -1,0 +1,106 @@
+{
+  "scope": "owned test resources only; shared core/Victoria/OpenBao/PVCs unchanged",
+  "records": [
+    {
+      "action": "stop-owned-process",
+      "pid": 5382,
+      "command": "kubectl --context orbstack -n ops-sp03-review-20261001 port-forward pod/review-openbao 19420:8200"
+    },
+    {
+      "action": "stop-owned-process",
+      "pid": 21097,
+      "command": "/tmp/sp03-review-20261001-66yogqy9/platform-api-sp010203-3928403"
+    },
+    {
+      "action": "delete-owned-resource",
+      "kind": "ClusterRoleBinding",
+      "name": "sp03-review-tokenreview-20261001",
+      "uid": "edc12341-8dfa-47e4-a213-613e083aeebf",
+      "uidPrecondition": true
+    },
+    {
+      "action": "delete-owned-resource",
+      "kind": "ClusterRole",
+      "name": "sp03-review-tokenreview-20261001",
+      "uid": "cdc5bb52-465c-4331-8484-934d63687068",
+      "uidPrecondition": true
+    },
+    {
+      "action": "delete-owned-resource",
+      "kind": "Namespace",
+      "name": "ops-sp03-review-20261001",
+      "uid": "b1cc4374-df34-4659-af3f-1e37e77aa919",
+      "uidPrecondition": true
+    },
+    {
+      "action": "delete-owned-resource",
+      "kind": "Namespace",
+      "name": "ops-sp03-review-20261001-other",
+      "uid": "c4cbc543-bfb0-4687-98c1-32d150ff9758",
+      "uidPrecondition": true
+    },
+    {
+      "action": "remove-owned-fixture",
+      "id": "1a22f8e4baf704be51170e781bd3376b00a9aa3824c12246f434874cd050185a",
+      "owner": "20261001-kc-tls"
+    },
+    {
+      "action": "remove-owned-TLS-volume",
+      "name": "sp010203-review-keycloak-tls-8fe26ec2-tls",
+      "owner": "20261001-kc-tls"
+    },
+    {
+      "action": "remove-owned-fixture",
+      "id": "e60ccefbb25f0f00aa854f4cce21195e06a7b42ce671dc2b6820f0c71a6d7b29",
+      "owner": "20261001-tls"
+    },
+    {
+      "action": "remove-owned-fixture",
+      "id": "9c5512993250eb157d7e84d0b981a70b55127cb74d6506998714fbebaf1d6796",
+      "owner": "20261001-final"
+    },
+    {
+      "action": "restore-historic-fixture-stopped",
+      "id": "548e854612bb18ed80dc4d88c1040af16db3a8a9bca050f18992c5b056f97eb7",
+      "name": "sp03-review-postgres-20260930",
+      "dataPreserved": true
+    },
+    {
+      "action": "restore-historic-fixture-stopped",
+      "id": "e0896d79e064d5ca62df45875b35f49c08976302b2a1addfd52e9a5d9ade69b8",
+      "name": "sp03-review-openbao-20261001",
+      "dataPreserved": true
+    },
+    {
+      "action": "restore-historic-fixture-stopped",
+      "id": "aa62bcf4d3c1d7d8219ab8208ce297e57ac29fecaa953d46969e1eef37331f58",
+      "name": "sp03-review-seaweed-20261001",
+      "dataPreserved": true
+    },
+    {
+      "action": "restore-historic-fixture-stopped",
+      "id": "17b6f3367a08f52cc9144b961ac4eb9676333ccd4e47a2bdfe18d9c14a519178",
+      "name": "sp03-review-keycloak-20261001",
+      "dataPreserved": true
+    },
+    {
+      "action": "restore-historic-fixture-stopped",
+      "id": "fd27797d6af7100f893bbfc31d200b3de171f7f25e1e73c2a9dca490eedaa05b",
+      "name": "sp03-review-victoria-metrics-20261001",
+      "dataPreserved": true
+    },
+    {
+      "action": "restore-historic-fixture-stopped",
+      "id": "f4121821d8ee330c70b90534eb7006a4d3e14b201df3969d887b3431b0de700d",
+      "name": "sp03-review-victoria-logs-20261001",
+      "dataPreserved": true
+    },
+    {
+      "action": "restore-historic-fixture-stopped",
+      "id": "61e25d8d13dcbf86c0272f958b83458822c0fbc15da971bd548f28cbd6330a3e",
+      "name": "sp03-review-seaweed-capacity-20261001",
+      "dataPreserved": true
+    }
+  ],
+  "isolatedDatabases": "preserved inside the stopped historic PostgreSQL fixture; no DROP or shared migration"
+}

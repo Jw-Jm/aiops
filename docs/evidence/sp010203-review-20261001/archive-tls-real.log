@@ -1,0 +1,23 @@
+=== RUN   TestRealOpenBaoTransitAndSeaweedS3AuditArchive
+2026/10/01 17:29:33 OK   00001_roles_and_schemas.sql (15.84ms)
+2026/10/01 17:29:33 goose: successfully migrated database to version: 1
+2026/10/01 17:29:33 OK   00002_platform_meta.sql (19.31ms)
+2026/10/01 17:29:33 OK   00003_finding.sql (7.6ms)
+2026/10/01 17:29:33 OK   00004_incident.sql (6.42ms)
+2026/10/01 17:29:33 OK   00005_investigation.sql (6.18ms)
+2026/10/01 17:29:33 OK   00006_action_command.sql (7.08ms)
+2026/10/01 17:29:33 OK   00007_audit.sql (8.27ms)
+2026/10/01 17:29:33 OK   00008_rls.sql (8.9ms)
+2026/10/01 17:29:33 OK   00009_idempotency_ledger.sql (6.82ms)
+2026/10/01 17:29:33 OK   00010_tenant_provisioning.sql (3.66ms)
+2026/10/01 17:29:33 OK   00011_source_registration_history.sql (6.7ms)
+2026/10/01 17:29:33 OK   00012_config_registry_lifecycle.sql (7.71ms)
+2026/10/01 17:29:33 OK   00013_audit_signed_segments.sql (8.83ms)
+2026/10/01 17:29:33 OK   00014_audit_segment_predecessors.sql (4.54ms)
+2026/10/01 17:29:33 OK   00015_source_schema_scope.sql (2.94ms)
+2026/10/01 17:29:33 OK   00016_cluster_registration_metadata.sql (3.12ms)
+2026/10/01 17:29:33 goose: successfully migrated database to version: 16
+    archive_services_test.go:182: isolated S3 bucket=sp03-437bb8db object=1c1b8f5f-918e-44ff-8e52-f2e507d6127b digest=sha256:29e16a3c7cd8a747ca75df38a1eeb48a2e1ac0ca49630508c723320b21457c70; audit tenant=9d116470-fd1f-4f10-9a9d-07e6842c8f09 segment=01a0f6cc-373a-7557-94cc-6e56bbedbfda seq=1 verified
+--- PASS: TestRealOpenBaoTransitAndSeaweedS3AuditArchive (0.58s)
+PASS
+ok  	ops-platform/test/integration	1.278s
