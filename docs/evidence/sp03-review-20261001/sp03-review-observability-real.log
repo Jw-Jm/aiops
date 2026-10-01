@@ -1,0 +1,35 @@
+=== RUN   TestKeycloakAuthorizationCodePKCEAndStepUp
+2026/10/01 08:37:30 OK   00001_roles_and_schemas.sql (9.9ms)
+2026/10/01 08:37:30 goose: successfully migrated database to version: 1
+2026/10/01 08:37:30 OK   00002_platform_meta.sql (12.87ms)
+2026/10/01 08:37:30 OK   00003_finding.sql (5.5ms)
+2026/10/01 08:37:30 OK   00004_incident.sql (4.31ms)
+2026/10/01 08:37:30 OK   00005_investigation.sql (4.49ms)
+2026/10/01 08:37:30 OK   00006_action_command.sql (3.92ms)
+2026/10/01 08:37:30 OK   00007_audit.sql (6.46ms)
+2026/10/01 08:37:30 OK   00008_rls.sql (5.63ms)
+2026/10/01 08:37:30 OK   00009_idempotency_ledger.sql (4.9ms)
+2026/10/01 08:37:30 OK   00010_tenant_provisioning.sql (2.91ms)
+2026/10/01 08:37:30 OK   00011_source_registration_history.sql (4.39ms)
+2026/10/01 08:37:30 OK   00012_config_registry_lifecycle.sql (6.45ms)
+2026/10/01 08:37:30 OK   00013_audit_signed_segments.sql (7.15ms)
+2026/10/01 08:37:30 goose: successfully migrated database to version: 13
+{"time":"2026-10-01T08:37:30.389172+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4e5-1a90-7a0a-81da-21e46d27be79","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-01T08:37:30.390946+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4e5-1a95-74b3-9910-e63f2758515e","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-01T08:37:30.392858+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4e5-1a97-7182-ab31-171d618c1b82","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-01T08:37:30.394741+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4e5-1a98-7f07-beac-0a1fafb63b19","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-01T08:37:30.396104+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4e5-1a9a-7d3e-98cd-f724616b2b88","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-01T08:37:30.397431+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4e5-1a9c-73d4-8711-0c93f0789f14","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-01T08:37:30.404114+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4e5-1a9d-7816-9e38-ed232c5194a9","method":"POST","status_code":201,"duration_ms":6}
+{"time":"2026-10-01T08:37:30.40862+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4e5-1aa4-7451-82c3-6818a09a2dd4","method":"POST","status_code":201,"duration_ms":4}
+    keycloak_test.go:155: actual APIApp served six management routes and replayed claim-bound step-up using real Keycloak JWT and distinct database login
+    keycloak_test.go:155: actual authenticated API stdout collected and queried in isolated VictoriaLogs
+--- PASS: TestKeycloakAuthorizationCodePKCEAndStepUp (2.58s)
+=== RUN   TestRealVictoriaMetricsScrapesPlatformProcessMetric
+    observability_test.go:53: isolated VictoriaMetrics did not scrape platform_process_up=1
+--- FAIL: TestRealVictoriaMetricsScrapesPlatformProcessMetric (30.22s)
+=== RUN   TestRealVictoriaLogsAcceptsStructuredPlatformStdout
+--- PASS: TestRealVictoriaLogsAcceptsStructuredPlatformStdout (1.53s)
+FAIL
+FAIL	ops-platform/test/integration	35.114s
+FAIL

@@ -1,0 +1,23 @@
+=== RUN   TestFailedForwardMigrationRollsBackAndCanRecover
+2026/10/01 08:53:01 OK   00001_roles_and_schemas.sql (22.61ms)
+2026/10/01 08:53:01 goose: successfully migrated database to version: 1
+2026/10/01 08:53:01 OK   00002_platform_meta.sql (16.77ms)
+2026/10/01 08:53:01 OK   00003_finding.sql (5.66ms)
+2026/10/01 08:53:01 OK   00004_incident.sql (3.76ms)
+2026/10/01 08:53:01 OK   00005_investigation.sql (4.42ms)
+2026/10/01 08:53:01 OK   00006_action_command.sql (4.02ms)
+2026/10/01 08:53:01 OK   00007_audit.sql (7.02ms)
+2026/10/01 08:53:01 OK   00008_rls.sql (7.14ms)
+2026/10/01 08:53:01 OK   00009_idempotency_ledger.sql (5.01ms)
+2026/10/01 08:53:01 OK   00010_tenant_provisioning.sql (2.87ms)
+2026/10/01 08:53:01 OK   00011_source_registration_history.sql (4.7ms)
+2026/10/01 08:53:01 OK   00012_config_registry_lifecycle.sql (6.99ms)
+2026/10/01 08:53:01 OK   00013_audit_signed_segments.sql (8.31ms)
+2026/10/01 08:53:01 OK   00014_audit_segment_predecessors.sql (3.74ms)
+2026/10/01 08:53:01 goose: successfully migrated database to version: 14
+2026/10/01 08:53:01 OK   00015_review_failure.sql (2.25ms)
+2026/10/01 08:53:01 goose: successfully migrated database to version: 15
+    migration_recovery_test.go:66: deliberate SQL division-by-zero rolled back DDL/version; corrected unapplied forward migration succeeded as migration_role
+--- PASS: TestFailedForwardMigrationRollsBackAndCanRecover (0.25s)
+PASS
+ok  	ops-platform/test/integration	1.062s

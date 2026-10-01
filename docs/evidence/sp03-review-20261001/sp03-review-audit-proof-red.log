@@ -1,0 +1,22 @@
+=== RUN   TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped
+2026/10/01 08:46:51 OK   00001_roles_and_schemas.sql (11.45ms)
+2026/10/01 08:46:51 goose: successfully migrated database to version: 1
+2026/10/01 08:46:51 OK   00002_platform_meta.sql (22.25ms)
+2026/10/01 08:46:51 OK   00003_finding.sql (8.96ms)
+2026/10/01 08:46:51 OK   00004_incident.sql (5.63ms)
+2026/10/01 08:46:51 OK   00005_investigation.sql (7.27ms)
+2026/10/01 08:46:51 OK   00006_action_command.sql (6.27ms)
+2026/10/01 08:46:51 OK   00007_audit.sql (9.42ms)
+2026/10/01 08:46:51 OK   00008_rls.sql (8.32ms)
+2026/10/01 08:46:51 OK   00009_idempotency_ledger.sql (5.71ms)
+2026/10/01 08:46:51 OK   00010_tenant_provisioning.sql (4.4ms)
+2026/10/01 08:46:51 OK   00011_source_registration_history.sql (5.17ms)
+2026/10/01 08:46:51 OK   00012_config_registry_lifecycle.sql (7.92ms)
+2026/10/01 08:46:51 OK   00013_audit_signed_segments.sql (9.19ms)
+2026/10/01 08:46:51 OK   00014_audit_segment_predecessors.sql (5.23ms)
+2026/10/01 08:46:51 goose: successfully migrated database to version: 14
+    audit_segments_test.go:117: signed manifest proof was not archived: exists=false err=<nil>
+--- FAIL: TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped (1.94s)
+FAIL
+FAIL	ops-platform/test/integration	2.690s
+FAIL

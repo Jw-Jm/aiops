@@ -1,0 +1,12 @@
+=== RUN   TestRealOpenBaoTransitAndSeaweedS3AuditArchive
+    archive_services_test.go:86: create isolated S3 bucket with versioning and Object Lock: S3 bucket creation failed
+--- FAIL: TestRealOpenBaoTransitAndSeaweedS3AuditArchive (3.92s)
+=== RUN   TestKeycloakAuthorizationCodePKCEAndStepUp
+    keycloak_test.go:42: isolated Keycloak bootstrap token returned HTTP 400
+--- FAIL: TestKeycloakAuthorizationCodePKCEAndStepUp (0.24s)
+=== RUN   TestRealOpenBaoWorkloadPKIIssuanceAndRevocation
+    workload_identity_test.go:86: isolated OpenBao workload role=platform-workload-ops-api certificate_serial=3f529cac52a896548d63ade4b8aee69ca4afe0b0 cert_ttl=1h0m30s revoked_crl_verified=true
+--- PASS: TestRealOpenBaoWorkloadPKIIssuanceAndRevocation (0.03s)
+FAIL
+FAIL	ops-platform/test/integration	4.688s
+FAIL

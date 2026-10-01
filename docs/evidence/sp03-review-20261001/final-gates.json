@@ -1,0 +1,81 @@
+{
+  "integration": {
+    "pass": [
+      "TestRealOpenBaoTransitAndSeaweedS3AuditArchive",
+      "TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped",
+      "TestRoleBindingsAndStepUpSessions",
+      "TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory",
+      "TestIdempotencyLedgerSchema",
+      "TestIdempotencyLedger",
+      "TestIdempotencyHTTPMiddleware",
+      "TestKeycloakAuthorizationCodePKCEAndStepUp",
+      "TestFailedForwardMigrationRollsBackAndCanRecover",
+      "TestMigrationScriptsAreForwardOnlyAndContiguous",
+      "TestMigrationsAndRoles",
+      "TestMigrationsUpgradeVersionOneData",
+      "TestWithTenantTxIsolatesTenantsAndUsesAppendOnlyAudit",
+      "TestRealVictoriaMetricsScrapesPlatformProcessMetric",
+      "TestRealVictoriaLogsAcceptsStructuredPlatformStdout",
+      "TestRuntimeDatabaseLoginCannotRegainOwnerOrOtherProcess",
+      "TestSourceRegistrationsAreTenantBoundRevisionedAndAudited/payload-tenant",
+      "TestSourceRegistrationsAreTenantBoundRevisionedAndAudited/payload-cluster",
+      "TestSourceRegistrationsAreTenantBoundRevisionedAndAudited",
+      "TestRevokedStepUpCannotBeRecreatedByReplayingSameJWT",
+      "TestTenantProvisioningAndRoleBindingRevisions",
+      "TestRealOpenBaoWorkloadPKIIssuanceAndRevocation"
+    ],
+    "fail": [],
+    "skip": [
+      "TestRealProjectedPodTokensAuthenticateOpenBaoAndWorkloadMTLS",
+      "TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage"
+    ]
+  },
+  "security": {
+    "pass": [
+      "TestOperatorAndPlatformAdminAreIndependent/operator_cannot_administer",
+      "TestOperatorAndPlatformAdminAreIndependent/administrator_cannot_operate",
+      "TestOperatorAndPlatformAdminAreIndependent",
+      "TestOperatorMustHaveExplicitResourceScope",
+      "TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_namespace",
+      "TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_service_account",
+      "TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount",
+      "TestWorkloadIdentityRejectsExpiredRevokedAndUntrustedCertificate",
+      "TestUserTokenCannotEstablishWorkloadIdentity",
+      "TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken",
+      "TestWorkloadIdentityUsesFreshCRLSourceAndFailsClosedWhenStale"
+    ],
+    "fail": [],
+    "skip": []
+  },
+  "sourceCommit": "7e7f72c4192df8769aa289c0d99e7efa3f0c8e0d",
+  "reviewBaseline": "a645a4208c0ce745232d16c8244c29f2b38485df",
+  "commands": [
+    {
+      "command": "make check-toolchain",
+      "exitCode": 0
+    },
+    {
+      "command": "make check-generated",
+      "exitCode": 0
+    },
+    {
+      "command": "make check",
+      "exitCode": 0
+    },
+    {
+      "command": "make test-security",
+      "exitCode": 0
+    },
+    {
+      "command": "make test-integration (isolated environment variables supplied)",
+      "exitCode": 2
+    },
+    {
+      "command": "opa v1.21.0 test policies -v",
+      "exitCode": 0
+    }
+  ],
+  "apiBinarySHA256": "8c4ddb8e8a876ac62cdbc0210e8344c3a9619ebb48f4074505f8af132143c464",
+  "apiBuildBinding": "sp03-review-api-final-build-binding.log",
+  "conclusion": "SP-03 非虚拟化范围证据不足"
+}

@@ -1,0 +1,40 @@
+=== RUN   TestAuditPayloadRejectsSensitiveValuesButAllowsDigestsAndReferences
+--- PASS: TestAuditPayloadRejectsSensitiveValuesButAllowsDigestsAndReferences (0.00s)
+PASS
+ok  	ops-platform/internal/audit	0.506s
+=== RUN   TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped
+2026/10/01 08:20:36 OK   00001_roles_and_schemas.sql (13.14ms)
+2026/10/01 08:20:36 goose: successfully migrated database to version: 1
+2026/10/01 08:20:36 OK   00002_platform_meta.sql (23.58ms)
+2026/10/01 08:20:36 OK   00003_finding.sql (8.4ms)
+2026/10/01 08:20:36 OK   00004_incident.sql (5.8ms)
+2026/10/01 08:20:36 OK   00005_investigation.sql (6.81ms)
+2026/10/01 08:20:36 OK   00006_action_command.sql (6.03ms)
+2026/10/01 08:20:36 OK   00007_audit.sql (9.51ms)
+2026/10/01 08:20:36 OK   00008_rls.sql (9.34ms)
+2026/10/01 08:20:36 OK   00009_idempotency_ledger.sql (6.16ms)
+2026/10/01 08:20:36 OK   00010_tenant_provisioning.sql (3.31ms)
+2026/10/01 08:20:36 OK   00011_source_registration_history.sql (6ms)
+2026/10/01 08:20:36 OK   00012_config_registry_lifecycle.sql (7.75ms)
+2026/10/01 08:20:36 OK   00013_audit_signed_segments.sql (9.7ms)
+2026/10/01 08:20:36 goose: successfully migrated database to version: 13
+--- PASS: TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped (1.95s)
+=== RUN   TestMigrationsAndRoles
+2026/10/01 08:20:38 OK   00001_roles_and_schemas.sql (6.75ms)
+2026/10/01 08:20:38 goose: successfully migrated database to version: 1
+2026/10/01 08:20:38 OK   00002_platform_meta.sql (12.12ms)
+2026/10/01 08:20:38 OK   00003_finding.sql (5.31ms)
+2026/10/01 08:20:38 OK   00004_incident.sql (4.14ms)
+2026/10/01 08:20:38 OK   00005_investigation.sql (4.33ms)
+2026/10/01 08:20:38 OK   00006_action_command.sql (3.82ms)
+2026/10/01 08:20:38 OK   00007_audit.sql (6.17ms)
+2026/10/01 08:20:38 OK   00008_rls.sql (6.53ms)
+2026/10/01 08:20:38 OK   00009_idempotency_ledger.sql (4.69ms)
+2026/10/01 08:20:38 OK   00010_tenant_provisioning.sql (2.55ms)
+2026/10/01 08:20:38 OK   00011_source_registration_history.sql (3.7ms)
+2026/10/01 08:20:38 OK   00012_config_registry_lifecycle.sql (5.57ms)
+2026/10/01 08:20:38 OK   00013_audit_signed_segments.sql (7.93ms)
+2026/10/01 08:20:38 goose: successfully migrated database to version: 13
+--- PASS: TestMigrationsAndRoles (0.15s)
+PASS
+ok  	ops-platform/test/integration	2.804s

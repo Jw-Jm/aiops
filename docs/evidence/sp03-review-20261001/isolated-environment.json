@@ -1,0 +1,196 @@
+[
+  {
+    "name": "sp03-review-postgres-20260930",
+    "id": "548e854612bb18ed80dc4d88c1040af16db3a8a9bca050f18992c5b056f97eb7",
+    "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+    "ports": {
+      "5432/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32768"
+        }
+      ]
+    },
+    "reviewLabels": {
+      "ops.sp03.review": "20260930"
+    },
+    "mountTypes": [
+      "volume"
+    ],
+    "entrypoint": [
+      "docker-entrypoint.sh"
+    ],
+    "command": [
+      "postgres"
+    ],
+    "ephemeralTmpfs": [],
+    "restartCount": 0,
+    "readOnlyMountDestinations": []
+  },
+  {
+    "name": "sp03-review-openbao-20261001",
+    "id": "e0896d79e064d5ca62df45875b35f49c08976302b2a1addfd52e9a5d9ade69b8",
+    "image": "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+    "ports": {
+      "8200/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32770"
+        }
+      ]
+    },
+    "reviewLabels": {
+      "ops.sp03.review": "20261001"
+    },
+    "mountTypes": [
+      "bind"
+    ],
+    "entrypoint": [
+      "docker-entrypoint.sh"
+    ],
+    "command": [
+      "server",
+      "-config=/cfg/bao.hcl"
+    ],
+    "ephemeralTmpfs": [],
+    "restartCount": 0,
+    "readOnlyMountDestinations": [
+      "/cfg"
+    ]
+  },
+  {
+    "name": "sp03-review-seaweed-20261001",
+    "id": "aa62bcf4d3c1d7d8219ab8208ce297e57ac29fecaa953d46969e1eef37331f58",
+    "image": "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+    "ports": {
+      "18080/tcp": null,
+      "18888/tcp": null,
+      "19333/tcp": null,
+      "7333/tcp": null,
+      "8080/tcp": null,
+      "8333/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32773"
+        }
+      ],
+      "8888/tcp": null,
+      "9333/tcp": null
+    },
+    "reviewLabels": {
+      "ops.sp03.review": "20261001"
+    },
+    "mountTypes": [
+      "bind"
+    ],
+    "entrypoint": [
+      "/entrypoint.sh"
+    ],
+    "command": [
+      "server",
+      "-dir=/data",
+      "-s3",
+      "-s3.config=/cfg/s3.json",
+      "-master.volumeSizeLimitMB=128"
+    ],
+    "ephemeralTmpfs": [
+      "/data"
+    ],
+    "restartCount": 0,
+    "readOnlyMountDestinations": [
+      "/cfg/s3.json"
+    ]
+  },
+  {
+    "name": "sp03-review-keycloak-20261001",
+    "id": "17b6f3367a08f52cc9144b961ac4eb9676333ccd4e47a2bdfe18d9c14a519178",
+    "image": "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+    "ports": {
+      "8080/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32774"
+        }
+      ],
+      "8443/tcp": null,
+      "9000/tcp": null
+    },
+    "reviewLabels": {
+      "ops.sp03.review": "20261001"
+    },
+    "mountTypes": [
+      "bind"
+    ],
+    "entrypoint": [
+      "/opt/keycloak/bin/kc.sh"
+    ],
+    "command": [
+      "start-dev",
+      "--import-realm",
+      "--http-enabled=true",
+      "--hostname-strict=false"
+    ],
+    "ephemeralTmpfs": [],
+    "restartCount": 0,
+    "readOnlyMountDestinations": [
+      "/opt/keycloak/data/import/realm-ops.json"
+    ]
+  },
+  {
+    "name": "sp03-review-victoria-metrics-20261001",
+    "id": "fd27797d6af7100f893bbfc31d200b3de171f7f25e1e73c2a9dca490eedaa05b",
+    "image": "victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638",
+    "ports": {
+      "8428/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32775"
+        }
+      ]
+    },
+    "reviewLabels": {
+      "ops.sp03.review": "20261001"
+    },
+    "mountTypes": [
+      "bind"
+    ],
+    "entrypoint": [
+      "/victoria-metrics-prod"
+    ],
+    "command": [
+      "-promscrape.config=/cfg/scrape.yaml",
+      "-storageDataPath=/tmp/vm"
+    ],
+    "ephemeralTmpfs": [],
+    "restartCount": 0,
+    "readOnlyMountDestinations": [
+      "/cfg/scrape.yaml"
+    ]
+  },
+  {
+    "name": "sp03-review-victoria-logs-20261001",
+    "id": "f4121821d8ee330c70b90534eb7006a4d3e14b201df3969d887b3431b0de700d",
+    "image": "victoriametrics/victoria-logs@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e",
+    "ports": {
+      "9428/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32776"
+        }
+      ]
+    },
+    "reviewLabels": {
+      "ops.sp03.review": "20261001"
+    },
+    "mountTypes": [],
+    "entrypoint": [
+      "/victoria-logs-prod"
+    ],
+    "command": [
+      "-storageDataPath=/tmp/vl"
+    ],
+    "ephemeralTmpfs": [],
+    "restartCount": 0,
+    "readOnlyMountDestinations": []
+  }
+]

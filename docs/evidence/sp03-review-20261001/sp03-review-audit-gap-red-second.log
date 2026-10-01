@@ -1,0 +1,21 @@
+=== RUN   TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped
+2026/10/01 08:42:25 OK   00001_roles_and_schemas.sql (11.92ms)
+2026/10/01 08:42:25 goose: successfully migrated database to version: 1
+2026/10/01 08:42:25 OK   00002_platform_meta.sql (23.45ms)
+2026/10/01 08:42:25 OK   00003_finding.sql (8.13ms)
+2026/10/01 08:42:25 OK   00004_incident.sql (5.73ms)
+2026/10/01 08:42:25 OK   00005_investigation.sql (6.49ms)
+2026/10/01 08:42:25 OK   00006_action_command.sql (6.08ms)
+2026/10/01 08:42:25 OK   00007_audit.sql (9.68ms)
+2026/10/01 08:42:25 OK   00008_rls.sql (8.74ms)
+2026/10/01 08:42:25 OK   00009_idempotency_ledger.sql (6.69ms)
+2026/10/01 08:42:25 OK   00010_tenant_provisioning.sql (4.67ms)
+2026/10/01 08:42:25 OK   00011_source_registration_history.sql (5.96ms)
+2026/10/01 08:42:25 OK   00012_config_registry_lifecycle.sql (9.47ms)
+2026/10/01 08:42:25 OK   00013_audit_signed_segments.sql (10.67ms)
+2026/10/01 08:42:25 goose: successfully migrated database to version: 13
+    audit_segments_test.go:212: complete signed segment deletion was accepted
+--- FAIL: TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped (2.02s)
+FAIL
+FAIL	ops-platform/test/integration	2.777s
+FAIL

@@ -1,0 +1,20 @@
+=== RUN   TestRevokedStepUpCannotBeRecreatedByReplayingSameJWT
+2026/10/01 08:15:44 OK   00001_roles_and_schemas.sql (16.37ms)
+2026/10/01 08:15:44 OK   00002_platform_meta.sql (18.9ms)
+2026/10/01 08:15:44 OK   00003_finding.sql (7.56ms)
+2026/10/01 08:15:44 OK   00004_incident.sql (4.85ms)
+2026/10/01 08:15:44 OK   00005_investigation.sql (6.35ms)
+2026/10/01 08:15:44 OK   00006_action_command.sql (5.14ms)
+2026/10/01 08:15:44 OK   00007_audit.sql (8.57ms)
+2026/10/01 08:15:44 OK   00008_rls.sql (9.04ms)
+2026/10/01 08:15:44 OK   00009_idempotency_ledger.sql (8.88ms)
+2026/10/01 08:15:44 OK   00010_tenant_provisioning.sql (5.79ms)
+2026/10/01 08:15:44 OK   00011_source_registration_history.sql (9.5ms)
+2026/10/01 08:15:44 OK   00012_config_registry_lifecycle.sql (8.56ms)
+2026/10/01 08:15:44 OK   00013_audit_signed_segments.sql (10.3ms)
+2026/10/01 08:15:44 goose: successfully migrated database to version: 13
+    stepup_replay_test.go:50: replayed revoked proof returned <nil>
+--- FAIL: TestRevokedStepUpCannotBeRecreatedByReplayingSameJWT (0.25s)
+FAIL
+FAIL	ops-platform/test/integration	1.023s
+FAIL

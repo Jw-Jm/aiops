@@ -1,0 +1,22 @@
+=== RUN   TestIdempotencyLedger
+2026/10/01 09:26:00 OK   00001_roles_and_schemas.sql (15.86ms)
+2026/10/01 09:26:00 goose: successfully migrated database to version: 1
+2026/10/01 09:26:00 OK   00002_platform_meta.sql (17.2ms)
+2026/10/01 09:26:00 OK   00003_finding.sql (6.73ms)
+2026/10/01 09:26:00 OK   00004_incident.sql (6.04ms)
+2026/10/01 09:26:00 OK   00005_investigation.sql (5.51ms)
+2026/10/01 09:26:00 OK   00006_action_command.sql (5.72ms)
+2026/10/01 09:26:00 OK   00007_audit.sql (9.24ms)
+2026/10/01 09:26:00 OK   00008_rls.sql (9.21ms)
+2026/10/01 09:26:00 OK   00009_idempotency_ledger.sql (5.91ms)
+2026/10/01 09:26:00 OK   00010_tenant_provisioning.sql (3.48ms)
+2026/10/01 09:26:00 OK   00011_source_registration_history.sql (6.5ms)
+2026/10/01 09:26:00 OK   00012_config_registry_lifecycle.sql (8.27ms)
+2026/10/01 09:26:00 OK   00013_audit_signed_segments.sql (10.31ms)
+2026/10/01 09:26:00 OK   00014_audit_segment_predecessors.sql (4.33ms)
+2026/10/01 09:26:00 goose: successfully migrated database to version: 14
+    idempotency_test.go:221: first execution request did not complete one dispatch: decision=persistence.Decision{Kind:"completed", Lease:persistence.Lease{TenantID:uuid.UUID{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, Subject:"", Operation:"", KeyDigest:"", Token:uuid.UUID{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, Attempt:0, ExecutionOnce:false}, Response:persistence.StoredResponse{Status:201, ContentType:"application/json", Headers:map[string]string(nil), Body:[]uint8{0x7b, 0x22, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x49, 0x64, 0x22, 0x3a, 0x22, 0x30, 0x31, 0x38, 0x66, 0x30, 0x66, 0x32, 0x62, 0x2d, 0x39, 0x31, 0x63, 0x32, 0x2d, 0x37, 0x64, 0x34, 0x32, 0x2d, 0x61, 0x38, 0x64, 0x63, 0x2d, 0x66, 0x37, 0x31, 0x39, 0x63, 0x35, 0x39, 0x38, 0x37, 0x33, 0x39, 0x39, 0x22, 0x7d}}, ExecutionUnknown:false, Terminal:false} err=<nil>
+--- FAIL: TestIdempotencyLedger (0.37s)
+FAIL
+FAIL	ops-platform/test/integration	1.363s
+FAIL

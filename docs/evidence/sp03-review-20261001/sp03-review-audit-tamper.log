@@ -1,0 +1,22 @@
+=== RUN   TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped
+2026/10/01 08:54:10 OK   00001_roles_and_schemas.sql (12.1ms)
+2026/10/01 08:54:10 goose: successfully migrated database to version: 1
+2026/10/01 08:54:10 OK   00002_platform_meta.sql (20.64ms)
+2026/10/01 08:54:10 OK   00003_finding.sql (7.68ms)
+2026/10/01 08:54:10 OK   00004_incident.sql (4.77ms)
+2026/10/01 08:54:10 OK   00005_investigation.sql (5.58ms)
+2026/10/01 08:54:10 OK   00006_action_command.sql (5.62ms)
+2026/10/01 08:54:10 OK   00007_audit.sql (10.68ms)
+2026/10/01 08:54:10 OK   00008_rls.sql (9.33ms)
+2026/10/01 08:54:10 OK   00009_idempotency_ledger.sql (6.9ms)
+2026/10/01 08:54:10 OK   00010_tenant_provisioning.sql (4.58ms)
+2026/10/01 08:54:10 OK   00011_source_registration_history.sql (6.79ms)
+2026/10/01 08:54:10 OK   00012_config_registry_lifecycle.sql (9.06ms)
+2026/10/01 08:54:10 OK   00013_audit_signed_segments.sql (10.31ms)
+2026/10/01 08:54:10 OK   00014_audit_segment_predecessors.sql (4.93ms)
+2026/10/01 08:54:10 goose: successfully migrated database to version: 14
+    audit_segments_test.go:246: ERROR: column "audit_seq" can only be updated to DEFAULT (SQLSTATE 428C9)
+--- FAIL: TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped (0.48s)
+FAIL
+FAIL	ops-platform/test/integration	1.258s
+FAIL

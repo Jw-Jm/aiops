@@ -1,0 +1,74 @@
+=== RUN   TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped
+2026/10/01 09:13:58 OK   00001_roles_and_schemas.sql (17.08ms)
+2026/10/01 09:13:58 goose: successfully migrated database to version: 1
+2026/10/01 09:13:58 OK   00002_platform_meta.sql (20.75ms)
+2026/10/01 09:13:58 OK   00003_finding.sql (8.07ms)
+2026/10/01 09:13:58 OK   00004_incident.sql (5.72ms)
+2026/10/01 09:13:58 OK   00005_investigation.sql (6.11ms)
+2026/10/01 09:13:58 OK   00006_action_command.sql (4.77ms)
+2026/10/01 09:13:58 OK   00007_audit.sql (8.12ms)
+2026/10/01 09:13:58 OK   00008_rls.sql (7.51ms)
+2026/10/01 09:13:58 OK   00009_idempotency_ledger.sql (5.57ms)
+2026/10/01 09:13:58 OK   00010_tenant_provisioning.sql (3.52ms)
+2026/10/01 09:13:58 OK   00011_source_registration_history.sql (5ms)
+2026/10/01 09:13:58 OK   00012_config_registry_lifecycle.sql (6.97ms)
+2026/10/01 09:13:58 OK   00013_audit_signed_segments.sql (9.94ms)
+2026/10/01 09:13:58 OK   00014_audit_segment_predecessors.sql (4.48ms)
+2026/10/01 09:13:58 goose: successfully migrated database to version: 14
+--- PASS: TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped (2.26s)
+=== RUN   TestMigrationsAndRoles
+2026/10/01 09:14:00 OK   00001_roles_and_schemas.sql (12.58ms)
+2026/10/01 09:14:00 goose: successfully migrated database to version: 1
+2026/10/01 09:14:00 OK   00002_platform_meta.sql (18.61ms)
+2026/10/01 09:14:00 OK   00003_finding.sql (6.79ms)
+2026/10/01 09:14:00 OK   00004_incident.sql (4.47ms)
+2026/10/01 09:14:00 OK   00005_investigation.sql (5.78ms)
+2026/10/01 09:14:00 OK   00006_action_command.sql (5.05ms)
+2026/10/01 09:14:00 OK   00007_audit.sql (9.59ms)
+2026/10/01 09:14:01 OK   00008_rls.sql (8.17ms)
+2026/10/01 09:14:01 OK   00009_idempotency_ledger.sql (6.47ms)
+2026/10/01 09:14:01 OK   00010_tenant_provisioning.sql (3.6ms)
+2026/10/01 09:14:01 OK   00011_source_registration_history.sql (5.4ms)
+2026/10/01 09:14:01 OK   00012_config_registry_lifecycle.sql (7.93ms)
+2026/10/01 09:14:01 OK   00013_audit_signed_segments.sql (10.35ms)
+2026/10/01 09:14:01 OK   00014_audit_segment_predecessors.sql (4.43ms)
+2026/10/01 09:14:01 goose: successfully migrated database to version: 14
+--- PASS: TestMigrationsAndRoles (0.23s)
+=== RUN   TestMigrationsUpgradeVersionOneData
+2026/10/01 09:14:01 OK   00001_roles_and_schemas.sql (8.12ms)
+2026/10/01 09:14:01 goose: successfully migrated database to version: 1
+2026/10/01 09:14:01 OK   00002_platform_meta.sql (15.97ms)
+2026/10/01 09:14:01 OK   00003_finding.sql (6.28ms)
+2026/10/01 09:14:01 OK   00004_incident.sql (4.7ms)
+2026/10/01 09:14:01 OK   00005_investigation.sql (5.39ms)
+2026/10/01 09:14:01 OK   00006_action_command.sql (4.78ms)
+2026/10/01 09:14:01 OK   00007_audit.sql (8.15ms)
+2026/10/01 09:14:01 OK   00008_rls.sql (7.9ms)
+2026/10/01 09:14:01 OK   00009_idempotency_ledger.sql (5.33ms)
+2026/10/01 09:14:01 OK   00010_tenant_provisioning.sql (3.83ms)
+2026/10/01 09:14:01 OK   00011_source_registration_history.sql (4.82ms)
+2026/10/01 09:14:01 OK   00012_config_registry_lifecycle.sql (6.1ms)
+2026/10/01 09:14:01 OK   00013_audit_signed_segments.sql (9ms)
+2026/10/01 09:14:01 OK   00014_audit_segment_predecessors.sql (3.98ms)
+2026/10/01 09:14:01 goose: successfully migrated database to version: 14
+--- PASS: TestMigrationsUpgradeVersionOneData (0.18s)
+=== RUN   TestWithTenantTxIsolatesTenantsAndUsesAppendOnlyAudit
+2026/10/01 09:14:01 OK   00001_roles_and_schemas.sql (7.58ms)
+2026/10/01 09:14:01 goose: successfully migrated database to version: 1
+2026/10/01 09:14:01 OK   00002_platform_meta.sql (11.89ms)
+2026/10/01 09:14:01 OK   00003_finding.sql (5.36ms)
+2026/10/01 09:14:01 OK   00004_incident.sql (3.4ms)
+2026/10/01 09:14:01 OK   00005_investigation.sql (3.69ms)
+2026/10/01 09:14:01 OK   00006_action_command.sql (3.69ms)
+2026/10/01 09:14:01 OK   00007_audit.sql (6.09ms)
+2026/10/01 09:14:01 OK   00008_rls.sql (5.89ms)
+2026/10/01 09:14:01 OK   00009_idempotency_ledger.sql (4.9ms)
+2026/10/01 09:14:01 OK   00010_tenant_provisioning.sql (3.02ms)
+2026/10/01 09:14:01 OK   00011_source_registration_history.sql (4.38ms)
+2026/10/01 09:14:01 OK   00012_config_registry_lifecycle.sql (8.07ms)
+2026/10/01 09:14:01 OK   00013_audit_signed_segments.sql (10.71ms)
+2026/10/01 09:14:01 OK   00014_audit_segment_predecessors.sql (4.25ms)
+2026/10/01 09:14:01 goose: successfully migrated database to version: 14
+--- PASS: TestWithTenantTxIsolatesTenantsAndUsesAppendOnlyAudit (0.19s)
+PASS
+ok  	ops-platform/test/integration	3.556s

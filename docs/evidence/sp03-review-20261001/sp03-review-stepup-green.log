@@ -1,0 +1,35 @@
+=== RUN   TestRoleBindingsAndStepUpSessions
+2026/10/01 08:16:35 OK   00001_roles_and_schemas.sql (7.29ms)
+2026/10/01 08:16:35 goose: successfully migrated database to version: 1
+2026/10/01 08:16:35 OK   00002_platform_meta.sql (15.43ms)
+2026/10/01 08:16:35 OK   00003_finding.sql (5.77ms)
+2026/10/01 08:16:35 OK   00004_incident.sql (4.94ms)
+2026/10/01 08:16:35 OK   00005_investigation.sql (5.09ms)
+2026/10/01 08:16:35 OK   00006_action_command.sql (3.99ms)
+2026/10/01 08:16:35 OK   00007_audit.sql (6.8ms)
+2026/10/01 08:16:35 OK   00008_rls.sql (9.59ms)
+2026/10/01 08:16:35 OK   00009_idempotency_ledger.sql (5.86ms)
+2026/10/01 08:16:35 OK   00010_tenant_provisioning.sql (3.28ms)
+2026/10/01 08:16:35 OK   00011_source_registration_history.sql (4.31ms)
+2026/10/01 08:16:35 OK   00012_config_registry_lifecycle.sql (6.55ms)
+2026/10/01 08:16:35 OK   00013_audit_signed_segments.sql (8.45ms)
+2026/10/01 08:16:35 goose: successfully migrated database to version: 13
+--- PASS: TestRoleBindingsAndStepUpSessions (0.21s)
+=== RUN   TestRevokedStepUpCannotBeRecreatedByReplayingSameJWT
+2026/10/01 08:16:35 OK   00001_roles_and_schemas.sql (6.44ms)
+2026/10/01 08:16:35 OK   00002_platform_meta.sql (11.99ms)
+2026/10/01 08:16:35 OK   00003_finding.sql (6.39ms)
+2026/10/01 08:16:35 OK   00004_incident.sql (4.12ms)
+2026/10/01 08:16:35 OK   00005_investigation.sql (4.52ms)
+2026/10/01 08:16:35 OK   00006_action_command.sql (4.38ms)
+2026/10/01 08:16:35 OK   00007_audit.sql (8.4ms)
+2026/10/01 08:16:35 OK   00008_rls.sql (6.7ms)
+2026/10/01 08:16:35 OK   00009_idempotency_ledger.sql (9.37ms)
+2026/10/01 08:16:35 OK   00010_tenant_provisioning.sql (3.6ms)
+2026/10/01 08:16:35 OK   00011_source_registration_history.sql (5.31ms)
+2026/10/01 08:16:35 OK   00012_config_registry_lifecycle.sql (7.96ms)
+2026/10/01 08:16:35 OK   00013_audit_signed_segments.sql (24.01ms)
+2026/10/01 08:16:35 goose: successfully migrated database to version: 13
+--- PASS: TestRevokedStepUpCannotBeRecreatedByReplayingSameJWT (0.18s)
+PASS
+ok  	ops-platform/test/integration	1.090s

@@ -1,0 +1,9 @@
+=== RUN   TestPolicyPublicationRejectsExternalAndNondeterministicBuiltins
+    review_test.go:23: publication accepted forbidden builtin: time.now_ns() > 0
+--- FAIL: TestPolicyPublicationRejectsExternalAndNondeterministicBuiltins (0.01s)
+=== RUN   TestPolicyRaisedRiskRequiresAcknowledgement
+    review_test.go:51: unsafe or out-of-scope policy request was not fail-closed: decision=policy.PolicyDecision{Allow:true, Risk:"high", Reasons:[]string{}, RequiresStepUp:false, PolicyVersion:"f387a2a2-815f-421a-8c2f-ec5ad663bea8", DecisionID:"sha256:62bc9396ce2918a573721301116f5ce81954db5b48a485807fe3357555453284"} err=<nil>
+--- FAIL: TestPolicyRaisedRiskRequiresAcknowledgement (0.00s)
+FAIL
+FAIL	ops-platform/internal/policy	0.673s
+FAIL

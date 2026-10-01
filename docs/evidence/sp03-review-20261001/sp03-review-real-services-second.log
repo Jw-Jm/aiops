@@ -1,0 +1,27 @@
+=== RUN   TestRealOpenBaoTransitAndSeaweedS3AuditArchive
+2026/10/01 08:17:54 OK   00001_roles_and_schemas.sql (11.07ms)
+2026/10/01 08:17:54 goose: successfully migrated database to version: 1
+2026/10/01 08:17:54 OK   00002_platform_meta.sql (23.77ms)
+2026/10/01 08:17:54 OK   00003_finding.sql (7.77ms)
+2026/10/01 08:17:54 OK   00004_incident.sql (6.47ms)
+2026/10/01 08:17:54 OK   00005_investigation.sql (7.9ms)
+2026/10/01 08:17:54 OK   00006_action_command.sql (7.49ms)
+2026/10/01 08:17:54 OK   00007_audit.sql (11.15ms)
+2026/10/01 08:17:54 OK   00008_rls.sql (8.42ms)
+2026/10/01 08:17:54 OK   00009_idempotency_ledger.sql (9.95ms)
+2026/10/01 08:17:54 OK   00010_tenant_provisioning.sql (4.26ms)
+2026/10/01 08:17:54 OK   00011_source_registration_history.sql (5.18ms)
+2026/10/01 08:17:54 OK   00012_config_registry_lifecycle.sql (8.4ms)
+2026/10/01 08:17:54 OK   00013_audit_signed_segments.sql (10.67ms)
+2026/10/01 08:17:54 goose: successfully migrated database to version: 13
+    archive_services_test.go:182: isolated S3 bucket=sp03-70cfe2ba object=ba23f263-85a8-48f1-89f9-e2b1e8516d31 digest=sha256:29e16a3c7cd8a747ca75df38a1eeb48a2e1ac0ca49630508c723320b21457c70; audit tenant=f856c961-1b82-4a58-a7db-3645cca4e166 segment=9e8d483f-d883-433f-9d6d-390ffdde2f6a seq=1 verified
+--- PASS: TestRealOpenBaoTransitAndSeaweedS3AuditArchive (0.60s)
+=== RUN   TestKeycloakAuthorizationCodePKCEAndStepUp
+    keycloak_test.go:45: isolated Keycloak bootstrap token returned HTTP 400
+--- FAIL: TestKeycloakAuthorizationCodePKCEAndStepUp (0.02s)
+=== RUN   TestRealOpenBaoWorkloadPKIIssuanceAndRevocation
+    workload_identity_test.go:86: isolated OpenBao workload role=platform-workload-ops-api certificate_serial=2517da4fbff1e485465a489ff8a3f7f701aee794 cert_ttl=1h0m30s revoked_crl_verified=true
+--- PASS: TestRealOpenBaoWorkloadPKIIssuanceAndRevocation (0.02s)
+FAIL
+FAIL	ops-platform/test/integration	1.454s
+FAIL

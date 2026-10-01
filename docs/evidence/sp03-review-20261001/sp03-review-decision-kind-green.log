@@ -1,0 +1,56 @@
+=== RUN   TestIdempotencyLedgerSchema
+2026/10/01 09:26:25 OK   00001_roles_and_schemas.sql (10.57ms)
+2026/10/01 09:26:25 goose: successfully migrated database to version: 1
+2026/10/01 09:26:25 OK   00002_platform_meta.sql (14.86ms)
+2026/10/01 09:26:25 OK   00003_finding.sql (5.56ms)
+2026/10/01 09:26:25 OK   00004_incident.sql (4.03ms)
+2026/10/01 09:26:25 OK   00005_investigation.sql (4.4ms)
+2026/10/01 09:26:25 OK   00006_action_command.sql (4.19ms)
+2026/10/01 09:26:25 OK   00007_audit.sql (6.56ms)
+2026/10/01 09:26:25 OK   00008_rls.sql (6.2ms)
+2026/10/01 09:26:25 OK   00009_idempotency_ledger.sql (4.93ms)
+2026/10/01 09:26:25 OK   00010_tenant_provisioning.sql (3.19ms)
+2026/10/01 09:26:25 OK   00011_source_registration_history.sql (3.4ms)
+2026/10/01 09:26:25 OK   00012_config_registry_lifecycle.sql (6ms)
+2026/10/01 09:26:25 OK   00013_audit_signed_segments.sql (7.41ms)
+2026/10/01 09:26:25 OK   00014_audit_segment_predecessors.sql (3.89ms)
+2026/10/01 09:26:25 goose: successfully migrated database to version: 14
+--- PASS: TestIdempotencyLedgerSchema (0.18s)
+=== RUN   TestIdempotencyLedger
+2026/10/01 09:26:25 OK   00001_roles_and_schemas.sql (6.89ms)
+2026/10/01 09:26:25 goose: successfully migrated database to version: 1
+2026/10/01 09:26:25 OK   00002_platform_meta.sql (13.73ms)
+2026/10/01 09:26:25 OK   00003_finding.sql (5.73ms)
+2026/10/01 09:26:25 OK   00004_incident.sql (3.92ms)
+2026/10/01 09:26:25 OK   00005_investigation.sql (4.37ms)
+2026/10/01 09:26:25 OK   00006_action_command.sql (3.84ms)
+2026/10/01 09:26:25 OK   00007_audit.sql (6.48ms)
+2026/10/01 09:26:25 OK   00008_rls.sql (6.36ms)
+2026/10/01 09:26:25 OK   00009_idempotency_ledger.sql (4.91ms)
+2026/10/01 09:26:25 OK   00010_tenant_provisioning.sql (3.2ms)
+2026/10/01 09:26:25 OK   00011_source_registration_history.sql (4.71ms)
+2026/10/01 09:26:25 OK   00012_config_registry_lifecycle.sql (6.35ms)
+2026/10/01 09:26:25 OK   00013_audit_signed_segments.sql (8.57ms)
+2026/10/01 09:26:25 OK   00014_audit_segment_predecessors.sql (3.72ms)
+2026/10/01 09:26:25 goose: successfully migrated database to version: 14
+--- PASS: TestIdempotencyLedger (0.21s)
+=== RUN   TestIdempotencyHTTPMiddleware
+2026/10/01 09:26:25 OK   00001_roles_and_schemas.sql (6.81ms)
+2026/10/01 09:26:25 goose: successfully migrated database to version: 1
+2026/10/01 09:26:25 OK   00002_platform_meta.sql (12.01ms)
+2026/10/01 09:26:25 OK   00003_finding.sql (4.83ms)
+2026/10/01 09:26:25 OK   00004_incident.sql (3.3ms)
+2026/10/01 09:26:25 OK   00005_investigation.sql (3.9ms)
+2026/10/01 09:26:25 OK   00006_action_command.sql (3.35ms)
+2026/10/01 09:26:25 OK   00007_audit.sql (5.67ms)
+2026/10/01 09:26:25 OK   00008_rls.sql (5.65ms)
+2026/10/01 09:26:25 OK   00009_idempotency_ledger.sql (4.36ms)
+2026/10/01 09:26:25 OK   00010_tenant_provisioning.sql (2.7ms)
+2026/10/01 09:26:25 OK   00011_source_registration_history.sql (4.12ms)
+2026/10/01 09:26:25 OK   00012_config_registry_lifecycle.sql (6.09ms)
+2026/10/01 09:26:25 OK   00013_audit_signed_segments.sql (7.21ms)
+2026/10/01 09:26:25 OK   00014_audit_segment_predecessors.sql (3.15ms)
+2026/10/01 09:26:25 goose: successfully migrated database to version: 14
+--- PASS: TestIdempotencyHTTPMiddleware (0.14s)
+PASS
+ok  	ops-platform/test/integration	1.269s

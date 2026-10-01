@@ -1,0 +1,22 @@
+=== RUN   TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped
+2026/10/01 08:19:18 OK   00001_roles_and_schemas.sql (16.13ms)
+2026/10/01 08:19:18 goose: successfully migrated database to version: 1
+2026/10/01 08:19:18 OK   00002_platform_meta.sql (22.09ms)
+2026/10/01 08:19:18 OK   00003_finding.sql (8.23ms)
+2026/10/01 08:19:18 OK   00004_incident.sql (5.45ms)
+2026/10/01 08:19:18 OK   00005_investigation.sql (6.39ms)
+2026/10/01 08:19:18 OK   00006_action_command.sql (5.85ms)
+2026/10/01 08:19:18 OK   00007_audit.sql (9.2ms)
+2026/10/01 08:19:18 OK   00008_rls.sql (6.94ms)
+2026/10/01 08:19:18 OK   00009_idempotency_ledger.sql (6.71ms)
+2026/10/01 08:19:18 OK   00010_tenant_provisioning.sql (4.16ms)
+2026/10/01 08:19:18 OK   00011_source_registration_history.sql (6.64ms)
+2026/10/01 08:19:18 OK   00012_config_registry_lifecycle.sql (9.74ms)
+2026/10/01 08:19:18 OK   00013_audit_signed_segments.sql (9.93ms)
+2026/10/01 08:19:18 goose: successfully migrated database to version: 13
+    audit_segments_test.go:114: audit segment ID version=4, expected UUIDv7
+    audit_segments_test.go:303: 1 recovered segments exceed five-minute window
+--- FAIL: TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped (1.92s)
+FAIL
+FAIL	ops-platform/test/integration	2.724s
+FAIL

@@ -1,0 +1,88 @@
+ok  	ops-platform/internal/audit	0.532s
+ok  	ops-platform/internal/app	2.416s
+ok  	ops-platform/internal/auth	0.835s
+ok  	ops-platform/internal/httpapi	1.317s
+--- FAIL: TestEvaluatorAllowsScopedReadOnlyToolsAndReturnsDeterministicDecision (0.00s)
+    evaluator_test.go:24: policy bundle is invalid: validate policy registry content: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+--- FAIL: TestEvaluatorFailsClosedAcrossTenantAndScopeBoundaries (0.00s)
+    evaluator_test.go:51: policy bundle is invalid: validate policy registry content: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+--- FAIL: TestEvaluatorAllowsOnlyVerifiedAgentReadOnlyToolInvocation (0.00s)
+    evaluator_test.go:87: policy bundle is invalid: validate policy registry content: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+--- FAIL: TestEvaluatorRejectsAgentWritesRootWithoutStepUpAndCommandDigestMismatch (0.00s)
+    evaluator_test.go:112: policy bundle is invalid: validate policy registry content: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+--- FAIL: TestDecisionIdentityChangesWhenRiskAcknowledgementChanges (0.00s)
+    evaluator_test.go:160: policy bundle is invalid: validate policy registry content: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+--- FAIL: TestEvaluatorRejectsPlatformAdminWithoutExplicitOperatorExecutionRole (0.00s)
+    evaluator_test.go:190: policy bundle is invalid: validate policy registry content: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+--- FAIL: TestEvaluatorRejectsBadSignatureAndCompileFailureKeepsPreviousCompiledBundle (0.00s)
+    evaluator_test.go:213: policy bundle is invalid: validate policy registry content: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+--- FAIL: TestUntrustedSignatureKeyIsRejected (0.00s)
+    evaluator_test.go:247: policy bundle is invalid: validate policy registry content: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+--- FAIL: TestPolicyRaisedRiskRequiresAcknowledgement (0.00s)
+    review_test.go:33: policy bundle is invalid: validate policy registry content: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+FAIL
+FAIL	ops-platform/internal/policy	2.947s
+--- FAIL: TestOntologyDiagnosticProjectsToPlatformContract (0.00s)
+    ontology_projection_test.go:75: projected diagnostic graph rejected by public Contract (degraded=false): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+        {"budgets":{"maxDepth":1,"maxEdges":64,"maxNodes":32,"timeout":3000},"collectedAt":"2026-09-29T00:00:00Z","conflicts":[],"degradedSources":[],"edges":[{"confidence":0,"from":"kubernetes+v1://tenant-a/cluster-a/core/Pod/pod-1","kind":"managed-by","observedAt":"2026-09-29T00:00:00Z","provenance":{"resolver":"structural","sourceType":"owner_reference","state":"inferred"},"to":"kubernetes+v1://tenant-a/cluster-a/apps/Workload/web-rs","validFrom":"2026-09-29T00:00:00Z","validTo":null},{"confidence":0,"from":"kubernetes+v1://tenant-a/cluster-a/core/Pod/pod-1","kind":"mounts-pvc","observedAt":"2026-09-29T00:00:00Z","provenance":{"resolver":"structural","sourceType":"explicit_ref","state":"asserted"},"to":"kubernetes+v1://tenant-a/cluster-a/core/PVC/pvc-1","validFrom":"2026-09-29T00:00:00Z","validTo":null},{"confidence":0,"from":"kubernetes+v1://tenant-a/cluster-a/core/Pod/pod-1","kind":"scheduled-on","observedAt":"2026-09-29T00:00:00Z","provenance":{"resolver":"structural","sourceType":"runtime_observed","state":"observed"},"to":"kubernetes+v1://tenant-a/cluster-a/core/Node/node-1","validFrom":"2026-09-29T00:00:00Z","validTo":null},{"confidence":0,"from":"kubernetes+v1://tenant-a/cluster-a/core/Service/svc-1","kind":"selects-pod","observedAt":"2026-09-29T00:00:00Z","provenance":{"resolver":"nonvirtual-poc-v1","sourceType":"selector_match","state":"inferred"},"to":"kubernetes+v1://tenant-a/cluster-a/core/Pod/pod-1","validFrom":"2026-09-29T00:00:00Z","validTo":null},{"confidence":0,"from":"deepflow+v1://tenant-a/cluster-a/deepflow.example/FlowEndpoint/flow-1","kind":"related-to","observedAt":"2026-09-29T00:00:00Z","provenance":{"resolver":"nonvirtual-poc-v1","sourceType":"runtime_observed","state":"observed"},"to":"kubernetes+v1://tenant-a/cluster-a/core/Pod/pod-1","validFrom":"2026-09-29T00:00:00Z","validTo":null},{"confidence":0,"from":"kubernetes+v1://tenant-a/cluster-a/core/PVC/pvc-1","kind":"bound-to-pv","observedAt":"2026-09-29T00:00:00Z","provenance":{"resolver":"structural","sourceType":"explicit_ref","state":"asserted"},"to":"kubernetes+v1://tenant-a/cluster-a/core/PV/pv-1","validFrom":"2026-09-29T00:00:00Z","validTo":null},{"confidence":0,"from":"kubernetes+v1://tenant-a/cluster-a/core/PVC/pvc-1","kind":"uses-storage-class","observedAt":"2026-09-29T00:00:00Z","provenance":{"resolver":"structural","sourceType":"explicit_ref","state":"asserted"},"to":"kubernetes+v1://tenant-a/cluster-a/storage.k8s.io/StorageClass/sc-1","validFrom":"2026-09-29T00:00:00Z","validTo":null},{"confidence":0,"from":"kubernetes+v1://tenant-a/cluster-a/core/PV/pv-1","kind":"uses-storage-class","observedAt":"2026-09-29T00:00:00Z","provenance":{"resolver":"structural","sourceType":"explicit_ref","state":"asserted"},"to":"kubernetes+v1://tenant-a/cluster-a/storage.k8s.io/StorageClass/sc-1","validFrom":"2026-09-29T00:00:00Z","validTo":null},{"confidence":0,"from":"kubernetes+v1://tenant-a/cluster-a/core/PV/pv-1","kind":"provisioned-by-csi-driver","observedAt":"2026-09-29T00:00:00Z","provenance":{"resolver":"structural","sourceType":"explicit_ref","state":"asserted"},"to":"kubernetes+v1://tenant-a/cluster-a/storage.k8s.io/CSIDriver/csi-1","validFrom":"2026-09-29T00:00:00Z","validTo":null}],"entry":{"apiGroup":"core","attributes":{"nodeName":"node-a"},"canonicalId":"kubernetes+v1://tenant-a/cluster-a/core/Pod/pod-1","domain":"kubernetes","firstObservedAt":"2026-09-29T00:00:00Z","kind":"Pod","labels":{},"lastObservedAt":"2026-09-29T00:00:00Z","name":"web-0","namespace":"apps","scope":"cluster-a","sourceRefs":[],"stableId":"pod-1","tenantId":"tenant-a"},"freshness":{"kubernetes":{"lastError":null,"lastListAt":"2026-09-29T00:00:00Z","lastWatchAt":"2026-09-29T00:00:00Z","ready":true,"staleness":"fresh","watchContinuous":true}},"nodes":[{"apiGroup":"core","attributes":{"nodeName":"node-a"},"canonicalId":"kubernetes+v1://tenant-a/cluster-a/core/Pod/pod-1","domain":"kubernetes","firstObservedAt":"2026-09-29T00:00:00Z","kind":"Pod","labels":{},"lastObservedAt":"2026-09-29T00:00:00Z","name":"web-0","namespace":"apps","scope":"cluster-a","sourceRefs":[],"stableId":"pod-1","tenantId":"tenant-a"},{"apiGroup":"apps","attributes":{},"canonicalId":"kubernetes+v1://tenant-a/cluster-a/apps/Workload/web-rs","domain":"kubernetes","firstObservedAt":"2026-09-29T00:00:00Z","kind":"Workload","labels":{},"lastObservedAt":"2026-09-29T00:00:00Z","name":"web-rs","namespace":"apps","scope":"cluster-a","sourceRefs":[],"stableId":"web-rs","tenantId":"tenant-a"},{"apiGroup":"core","attributes":{},"canonicalId":"kubernetes+v1://tenant-a/cluster-a/core/PVC/pvc-1","domain":"kubernetes","firstObservedAt":"2026-09-29T00:00:00Z","kind":"PVC","labels":{},"lastObservedAt":"2026-09-29T00:00:00Z","name":"web-data","namespace":"apps","scope":"cluster-a","sourceRefs":[],"stableId":"pvc-1","tenantId":"tenant-a"},{"apiGroup":"core","attributes":{},"canonicalId":"kubernetes+v1://tenant-a/cluster-a/core/Node/node-1","domain":"kubernetes","firstObservedAt":"2026-09-29T00:00:00Z","kind":"Node","labels":{},"lastObservedAt":"2026-09-29T00:00:00Z","name":"node-a","namespace":null,"scope":"cluster-a","sourceRefs":[],"stableId":"node-1","tenantId":"tenant-a"},{"apiGroup":"core","attributes":{},"canonicalId":"kubernetes+v1://tenant-a/cluster-a/core/Service/svc-1","domain":"kubernetes","firstObservedAt":"2026-09-29T00:00:00Z","kind":"Service","labels":{},"lastObservedAt":"2026-09-29T00:00:00Z","name":"web","namespace":"apps","scope":"cluster-a","sourceRefs":[],"stableId":"svc-1","tenantId":"tenant-a"},{"apiGroup":"deepflow.example","attributes":{"podName":"web-0"},"canonicalId":"deepflow+v1://tenant-a/cluster-a/deepflow.example/FlowEndpoint/flow-1","domain":"deepflow","firstObservedAt":"2026-09-29T00:00:00Z","kind":"FlowEndpoint","labels":{},"lastObservedAt":"2026-09-29T00:00:00Z","name":"web-flow","namespace":"apps","scope":"cluster-a","sourceRefs":[],"stableId":"flow-1","tenantId":"tenant-a"},{"apiGroup":"core","attributes":{},"canonicalId":"kubernetes+v1://tenant-a/cluster-a/core/PV/pv-1","domain":"kubernetes","firstObservedAt":"2026-09-29T00:00:00Z","kind":"PV","labels":{},"lastObservedAt":"2026-09-29T00:00:00Z","name":"pv-web-data","namespace":null,"scope":"cluster-a","sourceRefs":[],"stableId":"pv-1","tenantId":"tenant-a"},{"apiGroup":"storage.k8s.io","attributes":{},"canonicalId":"kubernetes+v1://tenant-a/cluster-a/storage.k8s.io/StorageClass/sc-1","domain":"kubernetes","firstObservedAt":"2026-09-29T00:00:00Z","kind":"StorageClass","labels":{},"lastObservedAt":"2026-09-29T00:00:00Z","name":"fast","namespace":null,"scope":"cluster-a","sourceRefs":[],"stableId":"sc-1","tenantId":"tenant-a"},{"apiGroup":"storage.k8s.io","attributes":{},"canonicalId":"kubernetes+v1://tenant-a/cluster-a/storage.k8s.io/CSIDriver/csi-1","domain":"kubernetes","firstObservedAt":"2026-09-29T00:00:00Z","kind":"CSIDriver","labels":{},"lastObservedAt":"2026-09-29T00:00:00Z","name":"fast-csi","namespace":null,"scope":"cluster-a","sourceRefs":[],"stableId":"csi-1","tenantId":"tenant-a"}],"partial":false,"rankedEvidence":[],"schemaVersion":"diagnostic-graph/v1","warnings":[]}
+--- FAIL: TestJSONSchemas (0.00s)
+    --- FAIL: TestJSONSchemas/valid/finding-envelope (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/finding-envelope/v1", finding-envelope): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/finding-envelope-percent-encoded-id (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/finding-envelope/v1", finding-envelope-percent-encoded-id): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/incident (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/incident/v1", incident): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/evidence (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/evidence/v1", evidence): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/diagnostic-graph (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/diagnostic-graph/v1", diagnostic-graph): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/rca-result (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/rca-result/v1", rca-result): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/invocation-context (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/invocation-context/v1", invocation-context): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/action-plan-v2 (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/action-plan/v2", action-plan-v2): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/command-execution (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/command-execution/v1", command-execution): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/audit-record (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/audit-record/v1", audit-record): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/finding-event (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/finding-event/v1", finding-event): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestJSONSchemas/valid/incident-event (0.00s)
+        schema_compatibility_test.go:38: Validate("https://ops.local/schemas/incident-event/v1", incident-event): load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+--- FAIL: TestMCPToolSchemas (0.00s)
+    --- FAIL: TestMCPToolSchemas/get_incident_context (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/get_resource_context (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/get_resource_health (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/get_dependencies (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/get_impact_scope (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/get_findings (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/get_ranked_evidence (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/get_evidence_conflicts (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/get_recent_changes (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/get_root_cause_candidates (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/query_metrics (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/query_logs (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/query_deepflow (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/query_kubernetes (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/query_kubevirt (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+    --- FAIL: TestMCPToolSchemas/query_hardware (0.00s)
+        schema_compatibility_test.go:158: validate tool metadata: load embedded schemas: schemas/audit-segment-proof-v1.schema.json has an invalid $id
+FAIL
+FAIL	ops-platform/test/contract	18.860s
+FAIL

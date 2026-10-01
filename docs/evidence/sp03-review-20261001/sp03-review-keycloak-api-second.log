@@ -1,0 +1,28 @@
+=== RUN   TestKeycloakAuthorizationCodePKCEAndStepUp
+2026/10/01 08:23:00 OK   00001_roles_and_schemas.sql (12.65ms)
+2026/10/01 08:23:00 goose: successfully migrated database to version: 1
+2026/10/01 08:23:00 OK   00002_platform_meta.sql (13.71ms)
+2026/10/01 08:23:00 OK   00003_finding.sql (6.32ms)
+2026/10/01 08:23:00 OK   00004_incident.sql (4.76ms)
+2026/10/01 08:23:00 OK   00005_investigation.sql (5.23ms)
+2026/10/01 08:23:00 OK   00006_action_command.sql (4.8ms)
+2026/10/01 08:23:00 OK   00007_audit.sql (8.15ms)
+2026/10/01 08:23:00 OK   00008_rls.sql (8.15ms)
+2026/10/01 08:23:00 OK   00009_idempotency_ledger.sql (5.43ms)
+2026/10/01 08:23:00 OK   00010_tenant_provisioning.sql (3.23ms)
+2026/10/01 08:23:00 OK   00011_source_registration_history.sql (4.21ms)
+2026/10/01 08:23:00 OK   00012_config_registry_lifecycle.sql (6.36ms)
+2026/10/01 08:23:00 OK   00013_audit_signed_segments.sql (8.42ms)
+2026/10/01 08:23:00 goose: successfully migrated database to version: 13
+{"time":"2026-10-01T08:23:00.468697+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4d7-d46e-7e53-8d17-26fefc5ffeb4","method":"GET","status_code":200,"duration_ms":5}
+{"time":"2026-10-01T08:23:00.47161+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4d7-d475-7518-8d85-46b85718c12e","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-01T08:23:00.474681+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4d7-d478-79d7-abb3-7fd43bcdf01e","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-01T08:23:00.477076+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4d7-d47b-7003-9540-1684bf69a109","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-01T08:23:00.478876+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4d7-d47d-73c0-91fb-f243975cc3d9","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-01T08:23:00.480676+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4d7-d47f-7059-be5b-6980904e82a2","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-01T08:23:00.486833+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4d7-d480-7c7b-92cb-d75e87937ad7","method":"POST","status_code":201,"duration_ms":5}
+{"time":"2026-10-01T08:23:00.489861+08:00","level":"INFO","msg":"http request complete","request_id":"01a0f4d7-d487-7071-bb87-d3ed2ec23a0e","method":"POST","status_code":201,"duration_ms":2}
+    keycloak_test.go:153: actual APIApp served six management routes and replayed claim-bound step-up using real Keycloak JWT and distinct database login
+--- PASS: TestKeycloakAuthorizationCodePKCEAndStepUp (18.90s)
+PASS
+ok  	ops-platform/test/integration	19.614s

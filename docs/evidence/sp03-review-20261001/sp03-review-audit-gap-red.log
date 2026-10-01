@@ -1,0 +1,21 @@
+=== RUN   TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped
+2026/10/01 08:41:47 OK   00001_roles_and_schemas.sql (14.48ms)
+2026/10/01 08:41:47 goose: successfully migrated database to version: 1
+2026/10/01 08:41:47 OK   00002_platform_meta.sql (17.19ms)
+2026/10/01 08:41:47 OK   00003_finding.sql (6.46ms)
+2026/10/01 08:41:47 OK   00004_incident.sql (3.83ms)
+2026/10/01 08:41:47 OK   00005_investigation.sql (4.52ms)
+2026/10/01 08:41:47 OK   00006_action_command.sql (4.75ms)
+2026/10/01 08:41:47 OK   00007_audit.sql (7.08ms)
+2026/10/01 08:41:47 OK   00008_rls.sql (6.73ms)
+2026/10/01 08:41:47 OK   00009_idempotency_ledger.sql (6.17ms)
+2026/10/01 08:41:47 OK   00010_tenant_provisioning.sql (2.85ms)
+2026/10/01 08:41:47 OK   00011_source_registration_history.sql (5.13ms)
+2026/10/01 08:41:47 OK   00012_config_registry_lifecycle.sql (7.77ms)
+2026/10/01 08:41:47 OK   00013_audit_signed_segments.sql (8.66ms)
+2026/10/01 08:41:47 goose: successfully migrated database to version: 13
+    audit_segments_test.go:188: ERROR: cannot insert multiple commands into a prepared statement (SQLSTATE 42601)
+--- FAIL: TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped (0.43s)
+FAIL
+FAIL	ops-platform/test/integration	1.207s
+FAIL
