@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	generated "ops-platform/gen/api"
+	"ops-platform/internal/auth"
 	"ops-platform/internal/bundle"
 	"ops-platform/internal/persistence"
 )
@@ -44,26 +45,31 @@ type IdempotencyMiddleware struct {
 
 func (m IdempotencyMiddleware) Wrap(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestID := auth.RequestIDFromHeader(r.Header.Get("X-Request-ID"))
+		if verified, ok := auth.RequestID(r.Context()); ok {
+			requestID = verified
+		}
+		w.Header().Set("X-Request-ID", requestID)
 		if m.Pool == nil || m.Resolve == nil || m.Authorize == nil || next == nil {
-			writeIdempotencyError(w, http.StatusInternalServerError, "INTERNAL", "idempotency middleware is not configured", false)
+			writeIdempotencyError(w, http.StatusInternalServerError, "INTERNAL", "idempotency middleware is not configured", false, requestID)
 			return
 		}
 		keyValues := r.Header.Values("Idempotency-Key")
 		if len(keyValues) != 1 || !validIdempotencyKey(keyValues[0]) {
-			writeIdempotencyError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "exactly one valid Idempotency-Key header is required", false)
+			writeIdempotencyError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "exactly one valid Idempotency-Key header is required", false, requestID)
 			return
 		}
 		scope, err := m.Resolve(r)
 		if err != nil || scope.TenantID == uuid.Nil || scope.Subject == "" || scope.Operation == "" {
-			writeIdempotencyError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "authenticated tenant and subject are required", false)
+			writeIdempotencyError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "authenticated tenant and subject are required", false, requestID)
 			return
 		}
 		if err := m.Authorize(r, scope); err != nil {
-			writeIdempotencyError(w, http.StatusForbidden, "FORBIDDEN", "request is not authorized", false)
+			writeIdempotencyError(w, http.StatusForbidden, "FORBIDDEN", "request is not authorized", false, requestID)
 			return
 		}
 		if scope.NoRedispatch {
-			writeIdempotencyError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "execution requests require the single-dispatch execution boundary", false)
+			writeIdempotencyError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "execution requests require the single-dispatch execution boundary", false, requestID)
 			return
 		}
 		body, err := readIdempotentRequestBody(r)
@@ -72,13 +78,13 @@ func (m IdempotencyMiddleware) Wrap(next http.Handler) http.Handler {
 			if errors.Is(err, errIdempotencyBodyTooLarge) {
 				status, message = http.StatusRequestEntityTooLarge, "request body exceeds the idempotency limit"
 			}
-			writeIdempotencyError(w, status, "INVALID_ARGUMENT", message, false)
+			writeIdempotencyError(w, status, "INVALID_ARGUMENT", message, false, requestID)
 			return
 		}
 		r.Body = io.NopCloser(bytes.NewReader(body))
 		digest, err := canonicalRequestDigest(scope, r, body)
 		if err != nil {
-			writeIdempotencyError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "request query is invalid", false)
+			writeIdempotencyError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "request query is invalid", false, requestID)
 			return
 		}
 		var output *capturedResponse
@@ -94,15 +100,15 @@ func (m IdempotencyMiddleware) Wrap(next http.Handler) http.Handler {
 				output = capturedFromStored(decision.Response)
 				return nil
 			case persistence.DecisionConflict:
-				output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_KEY_REUSED", "the key was already used for a different request", false)
+				output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_KEY_REUSED", "the key was already used for a different request", false, requestID)
 				return nil
 			case persistence.DecisionInProgress:
 				if decision.ExecutionUnknown {
-					output = idempotencyErrorResponse(http.StatusConflict, "EXECUTION_UNKNOWN", "the execution result is uncertain and will not be dispatched again", false)
+					output = idempotencyErrorResponse(http.StatusConflict, "EXECUTION_UNKNOWN", "the execution result is uncertain and will not be dispatched again", false, requestID)
 				} else if decision.Terminal {
-					output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_CONFLICT", "the request key has a terminal result", false)
+					output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_CONFLICT", "the request key has a terminal result", false, requestID)
 				} else {
-					output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_IN_PROGRESS", "a request with this key is still in progress", true)
+					output = idempotencyErrorResponse(http.StatusConflict, "IDEMPOTENCY_IN_PROGRESS", "a request with this key is still in progress", true, requestID)
 				}
 				return nil
 			case persistence.DecisionProceed:
@@ -128,7 +134,7 @@ func (m IdempotencyMiddleware) Wrap(next http.Handler) http.Handler {
 					return err
 				}
 				if capture.overflow {
-					output = idempotencyErrorResponse(http.StatusInternalServerError, "INTERNAL", "response exceeds the idempotency limit", true)
+					output = idempotencyErrorResponse(http.StatusInternalServerError, "INTERNAL", "response exceeds the idempotency limit", true, requestID)
 				} else {
 					output = capture
 				}
@@ -148,10 +154,10 @@ func (m IdempotencyMiddleware) Wrap(next http.Handler) http.Handler {
 			return nil
 		})
 		if err != nil {
-			output = idempotencyErrorResponse(http.StatusInternalServerError, "INTERNAL", "the idempotent request could not be committed", true)
+			output = idempotencyErrorResponse(http.StatusInternalServerError, "INTERNAL", "the idempotent request could not be committed", true, requestID)
 		}
 		if output == nil {
-			output = idempotencyErrorResponse(http.StatusInternalServerError, "INTERNAL", "the idempotent request produced no response", true)
+			output = idempotencyErrorResponse(http.StatusInternalServerError, "INTERNAL", "the idempotent request produced no response", true, requestID)
 		}
 		output.writeTo(w)
 	})
@@ -299,9 +305,9 @@ func capturedFromStored(response persistence.StoredResponse) *capturedResponse {
 	return capture
 }
 
-func idempotencyErrorResponse(status int, code, message string, retryable bool) *capturedResponse {
+func idempotencyErrorResponse(status int, code, message string, retryable bool, requestID string) *capturedResponse {
 	body, _ := json.Marshal(generated.ErrorEnvelope{
-		Code: generated.ErrorEnvelopeCode(code), Message: message, RequestId: uuid.NewString(), Retryable: retryable,
+		Code: generated.ErrorEnvelopeCode(code), Message: message, RequestId: auth.RequestIDFromHeader(requestID), Retryable: retryable,
 	})
 	capture := newCapturedResponse()
 	capture.status = status
@@ -310,6 +316,6 @@ func idempotencyErrorResponse(status int, code, message string, retryable bool) 
 	return capture
 }
 
-func writeIdempotencyError(w http.ResponseWriter, status int, code, message string, retryable bool) {
-	idempotencyErrorResponse(status, code, message, retryable).writeTo(w)
+func writeIdempotencyError(w http.ResponseWriter, status int, code, message string, retryable bool, requestID string) {
+	idempotencyErrorResponse(status, code, message, retryable, requestID).writeTo(w)
 }
