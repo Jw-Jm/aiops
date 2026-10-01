@@ -15,7 +15,7 @@ type Repository struct{}
 const sourceSelect = `
 SELECT s.tenant_id, s.source_id, s.source_type, s.instance_key, s.cluster_id,
        COALESCE(c.cluster_uid, ''), s.auth_ref, s.credential_revision, s.status, s.revision,
-       s.created_at, s.updated_at
+       s.created_at, s.updated_at, s.allowed_schemas
 FROM platform.source_registrations AS s
 LEFT JOIN platform.cluster_registrations AS c
   ON c.tenant_id = s.tenant_id AND c.cluster_id = s.cluster_id
@@ -31,7 +31,7 @@ func loadSource(ctx context.Context, tx pgx.Tx, tenantID, sourceID uuid.UUID, lo
 	err := tx.QueryRow(ctx, query, tenantID, sourceID).Scan(
 		&result.TenantID, &result.SourceID, &result.SourceType, &result.InstanceKey, &clusterID,
 		&result.ClusterUID, &result.AuthRef, &result.CredentialRevision, &result.Status, &result.Revision,
-		&result.CreatedAt, &result.UpdatedAt,
+		&result.CreatedAt, &result.UpdatedAt, &result.AllowedSchemas,
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return SourceRegistration{}, ErrResourceNotFound
@@ -46,7 +46,7 @@ func loadSource(ctx context.Context, tx pgx.Tx, tenantID, sourceID uuid.UUID, lo
 }
 
 func loadCluster(ctx context.Context, tx pgx.Tx, tenantID, clusterID uuid.UUID, lock bool) (ClusterRegistration, error) {
-	query := `SELECT tenant_id, cluster_id, cluster_uid, display_name, status, revision, created_at, updated_at
+	query := `SELECT tenant_id, cluster_id, cluster_uid, display_name, status, revision, created_at, updated_at, api_endpoint_ref, distribution, actual_versions, capabilities
 		FROM platform.cluster_registrations WHERE tenant_id = $1 AND cluster_id = $2`
 	if lock {
 		query += ` FOR UPDATE`
@@ -54,7 +54,7 @@ func loadCluster(ctx context.Context, tx pgx.Tx, tenantID, clusterID uuid.UUID, 
 	var result ClusterRegistration
 	err := tx.QueryRow(ctx, query, tenantID, clusterID).Scan(
 		&result.TenantID, &result.ClusterID, &result.ClusterUID, &result.DisplayName,
-		&result.Status, &result.Revision, &result.CreatedAt, &result.UpdatedAt,
+		&result.Status, &result.Revision, &result.CreatedAt, &result.UpdatedAt, &result.APIEndpointRef, &result.Distribution, &result.ActualVersions, &result.Capabilities,
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ClusterRegistration{}, ErrResourceNotFound
@@ -78,7 +78,7 @@ func listSources(ctx context.Context, tx pgx.Tx, tenantID uuid.UUID) ([]SourceRe
 		if err := rows.Scan(
 			&item.TenantID, &item.SourceID, &item.SourceType, &item.InstanceKey, &clusterID,
 			&item.ClusterUID, &item.AuthRef, &item.CredentialRevision, &item.Status, &item.Revision,
-			&item.CreatedAt, &item.UpdatedAt,
+			&item.CreatedAt, &item.UpdatedAt, &item.AllowedSchemas,
 		); err != nil {
 			return nil, fmt.Errorf("scan source registration: %w", err)
 		}
@@ -95,7 +95,7 @@ func listSources(ctx context.Context, tx pgx.Tx, tenantID uuid.UUID) ([]SourceRe
 
 func listClusters(ctx context.Context, tx pgx.Tx, tenantID uuid.UUID) ([]ClusterRegistration, error) {
 	rows, err := tx.Query(ctx, `
-SELECT tenant_id, cluster_id, cluster_uid, display_name, status, revision, created_at, updated_at
+SELECT tenant_id, cluster_id, cluster_uid, display_name, status, revision, created_at, updated_at, api_endpoint_ref, distribution, actual_versions, capabilities
 FROM platform.cluster_registrations WHERE tenant_id = $1 ORDER BY cluster_uid, cluster_id`, tenantID)
 	if err != nil {
 		return nil, fmt.Errorf("list cluster registrations: %w", err)
@@ -105,7 +105,7 @@ FROM platform.cluster_registrations WHERE tenant_id = $1 ORDER BY cluster_uid, c
 	for rows.Next() {
 		var item ClusterRegistration
 		if err := rows.Scan(&item.TenantID, &item.ClusterID, &item.ClusterUID, &item.DisplayName,
-			&item.Status, &item.Revision, &item.CreatedAt, &item.UpdatedAt); err != nil {
+			&item.Status, &item.Revision, &item.CreatedAt, &item.UpdatedAt, &item.APIEndpointRef, &item.Distribution, &item.ActualVersions, &item.Capabilities); err != nil {
 			return nil, fmt.Errorf("scan cluster registration: %w", err)
 		}
 		result = append(result, item)

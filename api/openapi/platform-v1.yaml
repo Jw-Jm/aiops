@@ -208,6 +208,35 @@ components:
         ClusterRegistrationRequest:
             additionalProperties: false
             properties:
+                expectedRevision:
+                    type: integer
+                    format: int64
+                    minimum: 1
+                    description: Required to explicitly complete or update metadata of an existing stable cluster identity.
+                apiEndpointRef:
+                    type: string
+                    minLength: 1
+                    maxLength: 1024
+                    pattern: '^openbao://[A-Za-z0-9_./-]+$'
+                distribution:
+                    type: string
+                    minLength: 1
+                    maxLength: 64
+                actualVersions:
+                    type: object
+                    minProperties: 1
+                    maxProperties: 64
+                    required: [kubernetes]
+                    additionalProperties:
+                        type: string
+                        minLength: 1
+                        maxLength: 128
+                capabilities:
+                    type: object
+                    minProperties: 1
+                    maxProperties: 64
+                    additionalProperties:
+                        type: boolean
                 clusterUid:
                     maxLength: 512
                     minLength: 1
@@ -219,6 +248,10 @@ components:
             required:
                 - clusterUid
                 - displayName
+                - apiEndpointRef
+                - distribution
+                - actualVersions
+                - capabilities
             type: object
         SourceCredentialRotationRequest:
             additionalProperties: false
@@ -237,6 +270,14 @@ components:
         SourceRegistrationRequest:
             additionalProperties: false
             properties:
+                allowedSchemas:
+                    type: array
+                    minItems: 1
+                    maxItems: 1
+                    uniqueItems: true
+                    items:
+                        type: string
+                        enum: [finding-envelope/v1]
                 authRef:
                     pattern: '^openbao://[A-Za-z0-9_./-]+$'
                     type: string
@@ -264,6 +305,7 @@ components:
                 - sourceType
                 - instanceKey
                 - authRef
+                - allowedSchemas
             type: object
         SourceRegistrationUpdateRequest:
             additionalProperties: false
@@ -272,7 +314,17 @@ components:
                     - clusterId
                 - required:
                     - status
+                - required:
+                    - allowedSchemas
             properties:
+                allowedSchemas:
+                    type: array
+                    minItems: 1
+                    maxItems: 1
+                    uniqueItems: true
+                    items:
+                        type: string
+                        enum: [finding-envelope/v1]
                 clusterId:
                     oneOf:
                         - $ref: '#/components/schemas/Identifier'

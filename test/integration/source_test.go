@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -16,6 +17,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pressly/goose/v3"
+	"ops-platform/internal/app"
 	"ops-platform/internal/auth"
 	"ops-platform/internal/httpapi"
 	"ops-platform/internal/persistence"
@@ -46,15 +48,17 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 		($1, $3, 'source-admin', 'platform_admin'), ($2, $4, 'source-admin-other', 'platform_admin')`, tenantID, otherTenantID, uuid.Must(uuid.NewV7()), uuid.Must(uuid.NewV7())); err != nil {
 		t.Fatal(err)
 	}
-	poolConfig, err := pgxpool.ParseConfig(dbURL)
+	login := "source_review_" + strings.ReplaceAll(uuid.NewString(), "-", "")
+	if _, err := db.ExecContext(dbctx, `CREATE ROLE "`+login+`" LOGIN; GRANT api_runtime_role TO "`+login+`"`); err != nil {
+		t.Fatal(err)
+	}
+	defer db.ExecContext(dbctx, `DROP ROLE "`+login+`"`)
+	runtimeURL, err := url.Parse(dbURL)
 	if err != nil {
 		t.Fatal(err)
 	}
-	poolConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		_, err := conn.Exec(ctx, `SET ROLE api_runtime_role`)
-		return err
-	}
-	pool, err := pgxpool.NewWithConfig(dbctx, poolConfig)
+	runtimeURL.User = url.User(login)
+	pool, err := app.OpenRuntimePool(dbctx, runtimeURL.String(), "api_runtime_role")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,28 +74,28 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cluster, err := registerClusterInTenant(ctx, pool, service, actor, source.ClusterCommand{ClusterUID: "cluster-prod-a", DisplayName: "Production A"})
+	cluster, err := registerClusterInTenant(ctx, pool, service, actor, source.ClusterCommand{APIEndpointRef: "openbao://kv/clusters/review/endpoint", Distribution: "orbstack", ActualVersions: map[string]string{"kubernetes": "v1.35.6+orb1"}, Capabilities: map[string]bool{"kubernetes": true}, ClusterUID: "cluster-prod-a", DisplayName: "Production A"})
 	if err != nil {
 		t.Fatalf("register cluster: %v", err)
 	}
-	duplicateCluster, err := registerClusterInTenant(ctx, pool, service, actor, source.ClusterCommand{ClusterUID: "cluster-prod-a", DisplayName: "Production A"})
+	duplicateCluster, err := registerClusterInTenant(ctx, pool, service, actor, source.ClusterCommand{APIEndpointRef: "openbao://kv/clusters/review/endpoint", Distribution: "orbstack", ActualVersions: map[string]string{"kubernetes": "v1.35.6+orb1"}, Capabilities: map[string]bool{"kubernetes": true}, ClusterUID: "cluster-prod-a", DisplayName: "Production A"})
 	if err != nil || duplicateCluster.ClusterID != cluster.ClusterID {
 		t.Fatalf("duplicate cluster registration was not idempotent: cluster=%#v err=%v", duplicateCluster, err)
 	}
-	if _, err := registerClusterInTenant(ctx, pool, service, actor, source.ClusterCommand{ClusterUID: "cluster-prod-a", DisplayName: "Different Meaning"}); !errors.Is(err, source.ErrIdentityConflict) {
+	if _, err := registerClusterInTenant(ctx, pool, service, actor, source.ClusterCommand{APIEndpointRef: "openbao://kv/clusters/review/endpoint", Distribution: "orbstack", ActualVersions: map[string]string{"kubernetes": "v1.35.6+orb1"}, Capabilities: map[string]bool{"kubernetes": true}, ClusterUID: "cluster-prod-a", DisplayName: "Different Meaning"}); !errors.Is(err, source.ErrIdentityConflict) {
 		t.Fatalf("cluster identity redefinition returned %v", err)
 	}
-	secondCluster, err := registerClusterInTenant(ctx, pool, service, actor, source.ClusterCommand{ClusterUID: "cluster-prod-b", DisplayName: "Production B"})
+	secondCluster, err := registerClusterInTenant(ctx, pool, service, actor, source.ClusterCommand{APIEndpointRef: "openbao://kv/clusters/review/endpoint", Distribution: "orbstack", ActualVersions: map[string]string{"kubernetes": "v1.35.6+orb1"}, Capabilities: map[string]bool{"kubernetes": true}, ClusterUID: "cluster-prod-b", DisplayName: "Production B"})
 	if err != nil {
 		t.Fatalf("register second cluster: %v", err)
 	}
-	thirdCluster, err := registerClusterInTenant(ctx, pool, service, actor, source.ClusterCommand{ClusterUID: "cluster-prod-c", DisplayName: "Production C"})
+	thirdCluster, err := registerClusterInTenant(ctx, pool, service, actor, source.ClusterCommand{APIEndpointRef: "openbao://kv/clusters/review/endpoint", Distribution: "orbstack", ActualVersions: map[string]string{"kubernetes": "v1.35.6+orb1"}, Capabilities: map[string]bool{"kubernetes": true}, ClusterUID: "cluster-prod-c", DisplayName: "Production C"})
 	if err != nil {
 		t.Fatalf("register third cluster: %v", err)
 	}
 
 	initialAuthRef := "openbao://kv/platform/sources/vm-prod-a"
-	register := source.RegisterCommand{SourceType: "victoriametrics", InstanceKey: "vm-prod-a", ClusterID: &cluster.ClusterID, AuthRef: initialAuthRef}
+	register := source.RegisterCommand{AllowedSchemas: []string{"finding-envelope/v1"}, SourceType: "victoriametrics", InstanceKey: "vm-prod-a", ClusterID: &cluster.ClusterID, AuthRef: initialAuthRef}
 	registration, err := registerSourceInTenant(ctx, pool, service, actor, register)
 	if err != nil {
 		t.Fatalf("register source: %v", err)
@@ -107,7 +111,8 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	}
 
 	envelope := source.FindingEnvelope{
-		TenantID: tenantID, ClusterUID: "cluster-prod-a",
+		SchemaVersion: "finding-envelope/v1",
+		TenantID:      tenantID, ClusterUID: "cluster-prod-a",
 		Source: source.EnvelopeSource{System: "victoriametrics", Instance: "vm-prod-a"},
 	}
 	identity := source.SourceIdentity{TenantID: tenantID, SourceID: registration.SourceID, CredentialRevision: 1, Proof: []byte("test-proof")}
@@ -220,6 +225,35 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	if sourceRevisions != 6 || clusterRevisions != 3 || auditRecords < 7 {
 		t.Fatalf("registration history was incomplete: source_revisions=%d cluster_revisions=%d audit_records=%d", sourceRevisions, clusterRevisions, auditRecords)
 	}
+	if cluster.APIEndpointRef != "openbao://kv/clusters/review/endpoint" || cluster.ActualVersions["kubernetes"] != "v1.35.6+orb1" || !cluster.Capabilities["kubernetes"] {
+		t.Fatal("registered cluster metadata was not preserved")
+	}
+	metadata := source.ClusterCommand{ExpectedRevision: cluster.Revision, ClusterUID: cluster.ClusterUID, DisplayName: cluster.DisplayName, APIEndpointRef: cluster.APIEndpointRef, Distribution: cluster.Distribution, ActualVersions: map[string]string{"kubernetes": "v1.35.7"}, Capabilities: cluster.Capabilities}
+	updatedCluster, err := registerClusterInTenant(ctx, pool, service, actor, metadata)
+	if err != nil || updatedCluster.Revision != cluster.Revision+1 || updatedCluster.ClusterUID != cluster.ClusterUID {
+		t.Fatalf("explicit cluster metadata update failed: %v", err)
+	}
+	if _, err := registerClusterInTenant(ctx, pool, service, actor, metadata); !errors.Is(err, source.ErrRevisionConflict) {
+		t.Fatalf("stale metadata revision accepted: %v", err)
+	}
+	if _, err := service.AuthenticateEnvelope(ctx, rolledBackIdentity, source.FindingEnvelope{SchemaVersion: "finding-envelope/v999", TenantID: tenantID, ClusterUID: cluster.ClusterUID, Source: envelope.Source}); !errors.Is(err, source.ErrUnauthorized) {
+		t.Fatalf("unregistered schema passed real runtime authentication: %v", err)
+	}
+	// Simulate the empty permission retained by the forward-only migration;
+	// granting it must use the runtime revision and audit path.
+	if _, err := db.ExecContext(dbctx, `UPDATE platform.source_registrations SET allowed_schemas='{}' WHERE tenant_id=$1 AND source_id=$2`, tenantID, rolledBack.SourceID); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := service.AuthenticateEnvelope(ctx, rolledBackIdentity, envelope); !errors.Is(err, source.ErrUnauthorized) {
+		t.Fatalf("legacy empty schema scope acquired permission: %v", err)
+	}
+	repairedScope, err := updateSourceInTenant(ctx, pool, service, actor, rolledBack.SourceID, source.SourceUpdateCommand{ExpectedRevision: rolledBack.Revision, AllowedSchemas: []string{"finding-envelope/v1"}})
+	if err != nil || repairedScope.Revision != rolledBack.Revision+1 {
+		t.Fatalf("audited schema permission repair failed: %v", err)
+	}
+	if _, err := service.AuthenticateEnvelope(ctx, rolledBackIdentity, envelope); err != nil {
+		t.Fatalf("explicit schema permission did not take effect: %v", err)
+	}
 	err = persistence.WithTenantTx(ctx, pool, tenantID, func(tx pgx.Tx) error {
 		_, err := tx.Exec(ctx, `UPDATE platform.cluster_registrations SET cluster_uid = 'cluster-redefined' WHERE tenant_id = $1 AND cluster_id = $2`, tenantID, cluster.ClusterID)
 		return err
@@ -259,13 +293,13 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 		t.Fatalf("operator inherited platform_admin access to source registrations: status=%d body=%s", response.Code, response.Body.String())
 	}
 	withoutStepUp := actor
-	if response := requestWithActor(http.MethodPost, "/api/v1/admin/clusters", `{"clusterUid":"cluster-no-step-up","displayName":"No Step Up"}`, "source-no-step-up", withoutStepUp); response.Code != http.StatusForbidden {
+	if response := requestWithActor(http.MethodPost, "/api/v1/admin/clusters", `{"apiEndpointRef":"openbao://kv/clusters/review/endpoint","distribution":"orbstack","actualVersions":{"kubernetes":"v1.35.6+orb1"},"capabilities":{"kubernetes":true},"clusterUid":"cluster-no-step-up","displayName":"No Step Up"}`, "source-no-step-up", withoutStepUp); response.Code != http.StatusForbidden {
 		t.Fatalf("cluster write without step-up was accepted: status=%d body=%s", response.Code, response.Body.String())
 	}
 	if response := requestWithActor(http.MethodPost, "/api/v1/admin/clusters", `{"tenantId":"`+tenantID.String()+`","clusterUid":"cluster-http","displayName":"HTTP Cluster"}`, "source-contract-reject", stepUpActor); response.Code != http.StatusBadRequest {
 		t.Fatalf("caller-selected tenant field was accepted: status=%d body=%s", response.Code, response.Body.String())
 	}
-	body := `{"clusterUid":"cluster-http","displayName":"HTTP Cluster"}`
+	body := `{"apiEndpointRef":"openbao://kv/clusters/review/endpoint","distribution":"orbstack","actualVersions":{"kubernetes":"v1.35.6+orb1"},"capabilities":{"kubernetes":true},"clusterUid":"cluster-http","displayName":"HTTP Cluster"}`
 	first := requestWithActor(http.MethodPost, "/api/v1/admin/clusters", body, "source-http-create", stepUpActor)
 	if first.Code != http.StatusCreated {
 		t.Fatalf("step-up authorized cluster registration failed: status=%d body=%s", first.Code, first.Body.String())
@@ -274,8 +308,8 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	if replay.Code != first.Code || replay.Body.String() != first.Body.String() {
 		t.Fatalf("cluster write replay differed from the committed response: first=%d replay=%d", first.Code, replay.Code)
 	}
-	sourceBody := `{"sourceType":"victoriametrics","instanceKey":"http-vm","clusterId":"` + cluster.ClusterID.String() + `","authRef":"openbao://kv/platform/sources/http-vm"}`
-	if response := requestWithActor(http.MethodPost, "/api/v1/admin/source-registrations", `{"tenantId":"`+tenantID.String()+`","sourceType":"victoriametrics","instanceKey":"http-bad","authRef":"openbao://kv/platform/sources/http-bad"}`, "source-http-contract-reject", stepUpActor); response.Code != http.StatusBadRequest {
+	sourceBody := `{"allowedSchemas":["finding-envelope/v1"],"sourceType":"victoriametrics","instanceKey":"http-vm","clusterId":"` + cluster.ClusterID.String() + `","authRef":"openbao://kv/platform/sources/http-vm"}`
+	if response := requestWithActor(http.MethodPost, "/api/v1/admin/source-registrations", `{"tenantId":"`+tenantID.String()+`","allowedSchemas":["finding-envelope/v1"],"sourceType":"victoriametrics","instanceKey":"http-bad","authRef":"openbao://kv/platform/sources/http-bad"}`, "source-http-contract-reject", stepUpActor); response.Code != http.StatusBadRequest {
 		t.Fatalf("caller-selected source tenant was accepted: status=%d body=%s", response.Code, response.Body.String())
 	}
 	createdSource := requestWithActor(http.MethodPost, "/api/v1/admin/source-registrations", sourceBody, "source-http-register", stepUpActor)

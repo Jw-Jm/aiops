@@ -83,7 +83,7 @@ func (h SourceAdminHandlers) createSource(w http.ResponseWriter, r *http.Request
 		clusterID = &parsed
 	}
 	created, err := h.service.Register(r.Context(), tx, request, source.RegisterCommand{
-		SourceType: string(body.SourceType), InstanceKey: body.InstanceKey, ClusterID: clusterID, AuthRef: body.AuthRef,
+		SourceType: string(body.SourceType), InstanceKey: body.InstanceKey, ClusterID: clusterID, AuthRef: body.AuthRef, AllowedSchemas: schemaNames(body.AllowedSchemas),
 	})
 	if err != nil {
 		writeSourceServiceError(w, err, request.RequestID)
@@ -101,6 +101,7 @@ func (h SourceAdminHandlers) updateSource(w http.ResponseWriter, r *http.Request
 		ExpectedRevision int64           `json:"expectedRevision"`
 		ClusterID        json.RawMessage `json:"clusterId"`
 		Status           *string         `json:"status"`
+		AllowedSchemas   *[]string       `json:"allowedSchemas"`
 	}
 	present, err := decodeSourceObject(r, &body)
 	if err != nil || body.ExpectedRevision < 1 {
@@ -108,6 +109,13 @@ func (h SourceAdminHandlers) updateSource(w http.ResponseWriter, r *http.Request
 		return
 	}
 	command := source.SourceUpdateCommand{ExpectedRevision: body.ExpectedRevision}
+	if raw, exists := present["allowedSchemas"]; exists {
+		if string(raw) == "null" || body.AllowedSchemas == nil {
+			writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "source schema scope is invalid", false, request.RequestID)
+			return
+		}
+		command.AllowedSchemas = schemaNames(*body.AllowedSchemas)
+	}
 	if raw, exists := present["clusterId"]; exists {
 		command.ClusterIDSet = true
 		if string(raw) != "null" {
@@ -242,8 +250,17 @@ func sourceRegistrationJSON(value source.SourceRegistration) map[string]any {
 		"tenantId": value.TenantID, "sourceId": value.SourceID, "sourceType": value.SourceType,
 		"instanceKey": value.InstanceKey, "clusterId": clusterID, "clusterUid": value.ClusterUID,
 		"authRef": value.AuthRef, "credentialRevision": value.CredentialRevision,
-		"status": value.Status, "revision": value.Revision, "createdAt": value.CreatedAt, "updatedAt": value.UpdatedAt,
+		"allowedSchemas": value.AllowedSchemas,
+		"status":         value.Status, "revision": value.Revision, "createdAt": value.CreatedAt, "updatedAt": value.UpdatedAt,
 	}
+}
+
+func schemaNames[T ~string](values []T) []string {
+	result := make([]string, len(values))
+	for i, value := range values {
+		result[i] = string(value)
+	}
+	return result
 }
 
 func queryLimit(r *http.Request) int {

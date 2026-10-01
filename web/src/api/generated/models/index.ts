@@ -7,6 +7,8 @@
 
 export * from './canonicalID';
 export * from './clusterRegistrationRequest';
+export * from './clusterRegistrationRequestActualVersions';
+export * from './clusterRegistrationRequestCapabilities';
 export * from './commandExecutionEvent';
 export * from './commandExecutionRequest';
 export * from './createStepUpSessionBody';
@@ -62,9 +64,11 @@ export * from './registryPublishRequest';
 export * from './registryVersionRetireRequest';
 export * from './sourceCredentialRotationRequest';
 export * from './sourceRegistrationRequest';
+export * from './sourceRegistrationRequestAllowedSchemasItem';
 export * from './sourceRegistrationRequestSourceType';
 export * from './sourceRegistrationRollbackRequest';
 export * from './sourceRegistrationUpdateRequest';
+export * from './sourceRegistrationUpdateRequestAllowedSchemasItem';
 export * from './sourceRegistrationUpdateRequestStatus';
 export * from './stepUpSession';
 export * from './successEnvelope';

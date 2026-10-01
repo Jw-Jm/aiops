@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -49,25 +50,25 @@ func (service *Service) Register(ctx context.Context, tx pgx.Tx, actor auth.Requ
 	sourceID := uuid.Must(uuid.NewV7())
 	var createdID uuid.UUID
 	err := tx.QueryRow(ctx, `
-INSERT INTO platform.source_registrations (tenant_id, source_id, source_type, instance_key, cluster_id, auth_ref)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO platform.source_registrations (tenant_id, source_id, source_type, instance_key, cluster_id, auth_ref, allowed_schemas)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 ON CONFLICT (tenant_id, source_type, instance_key) DO NOTHING
-RETURNING source_id`, actor.TenantID, sourceID, command.SourceType, command.InstanceKey, clusterID, command.AuthRef).Scan(&createdID)
+RETURNING source_id`, actor.TenantID, sourceID, command.SourceType, command.InstanceKey, clusterID, command.AuthRef, command.AllowedSchemas).Scan(&createdID)
 	if errors.Is(err, pgx.ErrNoRows) {
 		var existing SourceRegistration
 		var storedClusterID *uuid.UUID
-		err = tx.QueryRow(ctx, `SELECT source_id, cluster_id, auth_ref, credential_revision, status, revision, created_at, updated_at
+		err = tx.QueryRow(ctx, `SELECT source_id, cluster_id, auth_ref, credential_revision, status, revision, created_at, updated_at, allowed_schemas
 			FROM platform.source_registrations WHERE tenant_id = $1 AND source_type = $2 AND instance_key = $3`,
 			actor.TenantID, command.SourceType, command.InstanceKey).
 			Scan(&existing.SourceID, &storedClusterID, &existing.AuthRef, &existing.CredentialRevision,
-				&existing.Status, &existing.Revision, &existing.CreatedAt, &existing.UpdatedAt)
+				&existing.Status, &existing.Revision, &existing.CreatedAt, &existing.UpdatedAt, &existing.AllowedSchemas)
 		if err != nil {
 			return SourceRegistration{}, fmt.Errorf("load duplicate source registration: %w", err)
 		}
 		if storedClusterID != nil {
 			existing.ClusterID = *storedClusterID
 		}
-		if existing.AuthRef != command.AuthRef || !sameClusterID(existing.ClusterID, command.ClusterID) {
+		if existing.AuthRef != command.AuthRef || !sameClusterID(existing.ClusterID, command.ClusterID) || !slices.Equal(existing.AllowedSchemas, command.AllowedSchemas) {
 			return SourceRegistration{}, ErrIdentityConflict
 		}
 		return loadSource(ctx, tx, actor.TenantID, existing.SourceID, false)
@@ -87,7 +88,7 @@ RETURNING source_id`, actor.TenantID, sourceID, command.SourceType, command.Inst
 		EntityKind: "source_registration", EntityID: created.SourceID, Subject: actor.Subject,
 		Payload: map[string]any{
 			"source_type": created.SourceType, "instance_key": created.InstanceKey,
-			"cluster_id": nullableUUIDString(created.ClusterID), "auth_version": created.CredentialRevision, "revision": created.Revision,
+			"cluster_id": nullableUUIDString(created.ClusterID), "auth_version": created.CredentialRevision, "revision": created.Revision, "allowed_schemas": created.AllowedSchemas,
 		},
 	}); err != nil {
 		return SourceRegistration{}, fmt.Errorf("audit source registration: %w", err)
@@ -96,7 +97,8 @@ RETURNING source_id`, actor.TenantID, sourceID, command.SourceType, command.Inst
 }
 
 func (service *Service) UpdateRegistration(ctx context.Context, tx pgx.Tx, actor auth.RequestContext, sourceID uuid.UUID, command SourceUpdateCommand) (SourceRegistration, error) {
-	if sourceID == uuid.Nil || command.ExpectedRevision < 1 || (!command.ClusterIDSet && command.Status == "") ||
+	if sourceID == uuid.Nil || command.ExpectedRevision < 1 || (!command.ClusterIDSet && command.Status == "" && command.AllowedSchemas == nil) ||
+		(command.AllowedSchemas != nil && !validAllowedSchemas(command.AllowedSchemas)) ||
 		(command.Status != "" && command.Status != "active" && command.Status != "disabled") ||
 		(command.ClusterIDSet && command.ClusterID != nil && *command.ClusterID == uuid.Nil) {
 		return SourceRegistration{}, ErrInvalidInput
@@ -130,7 +132,11 @@ func (service *Service) UpdateRegistration(ctx context.Context, tx pgx.Tx, actor
 	if command.Status != "" {
 		newStatus = command.Status
 	}
-	if newClusterID == previous.ClusterID && newStatus == previous.Status {
+	newSchemas := previous.AllowedSchemas
+	if command.AllowedSchemas != nil {
+		newSchemas = command.AllowedSchemas
+	}
+	if newClusterID == previous.ClusterID && newStatus == previous.Status && slices.Equal(newSchemas, previous.AllowedSchemas) {
 		return previous, nil
 	}
 	var clusterValue any
@@ -138,9 +144,9 @@ func (service *Service) UpdateRegistration(ctx context.Context, tx pgx.Tx, actor
 		clusterValue = newClusterID
 	}
 	updated, err := tx.Query(ctx, `UPDATE platform.source_registrations
-		SET cluster_id = $1, status = $2, revision = revision + 1, updated_at = clock_timestamp()
+		SET cluster_id = $1, status = $2, allowed_schemas = $6, revision = revision + 1, updated_at = clock_timestamp()
 		WHERE tenant_id = $3 AND source_id = $4 AND revision = $5
-		RETURNING revision, updated_at`, clusterValue, newStatus, actor.TenantID, sourceID, command.ExpectedRevision)
+		RETURNING revision, updated_at`, clusterValue, newStatus, actor.TenantID, sourceID, command.ExpectedRevision, newSchemas)
 	if err != nil {
 		return SourceRegistration{}, fmt.Errorf("update source registration: %w", err)
 	}
@@ -164,8 +170,8 @@ func (service *Service) UpdateRegistration(ctx context.Context, tx pgx.Tx, actor
 		TenantID: actor.TenantID, RecordID: uuid.Must(uuid.NewV7()), EventType: "source_registration.updated",
 		EntityKind: "source_registration", EntityID: result.SourceID, Subject: actor.Subject,
 		Payload: map[string]any{
-			"before": map[string]any{"cluster_id": nullableUUIDString(previous.ClusterID), "status": previous.Status, "revision": command.ExpectedRevision},
-			"after":  map[string]any{"cluster_id": nullableUUIDString(result.ClusterID), "status": result.Status, "revision": result.Revision},
+			"before": map[string]any{"cluster_id": nullableUUIDString(previous.ClusterID), "status": previous.Status, "revision": command.ExpectedRevision, "allowed_schemas": previous.AllowedSchemas},
+			"after":  map[string]any{"cluster_id": nullableUUIDString(result.ClusterID), "status": result.Status, "revision": result.Revision, "allowed_schemas": result.AllowedSchemas},
 		},
 	}); err != nil {
 		return SourceRegistration{}, fmt.Errorf("audit source registration update: %w", err)
@@ -257,12 +263,19 @@ func (service *Service) RollbackRegistration(ctx context.Context, tx pgx.Tx, act
 		return SourceRegistration{}, fmt.Errorf("load source rollback revision: %w", err)
 	}
 	var scope struct {
-		SourceType  string  `json:"source_type"`
-		InstanceKey string  `json:"instance_key"`
-		ClusterID   *string `json:"cluster_id"`
+		SourceType     string   `json:"source_type"`
+		InstanceKey    string   `json:"instance_key"`
+		ClusterID      *string  `json:"cluster_id"`
+		AllowedSchemas []string `json:"allowed_schemas"`
 	}
 	if err := json.Unmarshal(scopeJSON, &scope); err != nil || scope.SourceType != current.SourceType || scope.InstanceKey != current.InstanceKey {
 		return SourceRegistration{}, fmt.Errorf("%w: source rollback revision scope is invalid", ErrInvalidInput)
+	}
+	if scope.AllowedSchemas == nil {
+		scope.AllowedSchemas = []string{}
+	}
+	if len(scope.AllowedSchemas) > 0 && !validAllowedSchemas(scope.AllowedSchemas) {
+		return SourceRegistration{}, ErrInvalidInput
 	}
 	clusterID := uuid.Nil
 	if scope.ClusterID != nil {
@@ -290,10 +303,10 @@ func (service *Service) RollbackRegistration(ctx context.Context, tx pgx.Tx, act
 		clusterValue = clusterID
 	}
 	tag, err := tx.Exec(ctx, `UPDATE platform.source_registrations
-		SET cluster_id = $1, auth_ref = $2, credential_revision = $3, status = $4,
+		SET cluster_id = $1, auth_ref = $2, credential_revision = $3, status = $4, allowed_schemas = $8,
 		    revision = revision + 1, updated_at = clock_timestamp()
 		WHERE tenant_id = $5 AND source_id = $6 AND revision = $7`,
-		clusterValue, authRef, credentialRevision, status, actor.TenantID, sourceID, command.ExpectedRevision)
+		clusterValue, authRef, credentialRevision, status, actor.TenantID, sourceID, command.ExpectedRevision, scope.AllowedSchemas)
 	if err != nil {
 		return SourceRegistration{}, fmt.Errorf("rollback source registration: %w", err)
 	}
@@ -312,8 +325,8 @@ func (service *Service) RollbackRegistration(ctx context.Context, tx pgx.Tx, act
 		EntityKind: "source_registration", EntityID: result.SourceID, Subject: actor.Subject,
 		Payload: map[string]any{
 			"restored_from_revision": command.TargetRevision,
-			"before":                 map[string]any{"cluster_id": nullableUUIDString(current.ClusterID), "status": current.Status, "revision": current.Revision},
-			"after":                  map[string]any{"cluster_id": nullableUUIDString(result.ClusterID), "status": result.Status, "revision": result.Revision},
+			"before":                 map[string]any{"cluster_id": nullableUUIDString(current.ClusterID), "status": current.Status, "revision": current.Revision, "allowed_schemas": current.AllowedSchemas},
+			"after":                  map[string]any{"cluster_id": nullableUUIDString(result.ClusterID), "status": result.Status, "revision": result.Revision, "allowed_schemas": result.AllowedSchemas},
 			"auth_ref_changed":       current.AuthRef != result.AuthRef, "auth_version": result.CredentialRevision,
 		},
 	}); err != nil {
@@ -374,6 +387,7 @@ func bindEnvelope(ctx context.Context, registration SourceRegistration, identity
 	if registration.TenantID == uuid.Nil || registration.SourceID == uuid.Nil || registration.ClusterID == uuid.Nil || registration.ClusterUID == "" ||
 		registration.Status != "active" || registration.TenantID != identity.TenantID || registration.SourceID != identity.SourceID ||
 		registration.CredentialRevision != identity.CredentialRevision || envelope.TenantID != registration.TenantID ||
+		!slices.Contains(registration.AllowedSchemas, envelope.SchemaVersion) || envelope.SchemaVersion == "" ||
 		envelope.ClusterUID != registration.ClusterUID || envelope.Source.System != registration.SourceType ||
 		envelope.Source.Instance != registration.InstanceKey || verifier == nil {
 		return BoundSourceContext{}, ErrUnauthorized
@@ -414,9 +428,9 @@ func requireAdminContext(actor auth.RequestContext) error {
 
 func appendClusterRevision(ctx context.Context, tx pgx.Tx, value ClusterRegistration, actor string) error {
 	_, err := tx.Exec(ctx, `INSERT INTO platform.cluster_registration_revisions
-		(tenant_id, cluster_id, revision, cluster_uid, display_name, status, actor_subject)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-		value.TenantID, value.ClusterID, value.Revision, value.ClusterUID, value.DisplayName, value.Status, actor)
+		(tenant_id, cluster_id, revision, cluster_uid, display_name, status, actor_subject, api_endpoint_ref, distribution, actual_versions, capabilities)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+		value.TenantID, value.ClusterID, value.Revision, value.ClusterUID, value.DisplayName, value.Status, actor, value.APIEndpointRef, value.Distribution, value.ActualVersions, value.Capabilities)
 	if err != nil {
 		return fmt.Errorf("append cluster registration revision: %w", err)
 	}
@@ -427,6 +441,7 @@ func appendSourceRevision(ctx context.Context, tx pgx.Tx, value SourceRegistrati
 	scope, err := json.Marshal(map[string]any{
 		"source_type": value.SourceType, "instance_key": value.InstanceKey,
 		"cluster_id": nullableUUIDString(value.ClusterID), "cluster_uid": value.ClusterUID,
+		"allowed_schemas": value.AllowedSchemas,
 	})
 	if err != nil {
 		return fmt.Errorf("encode source registration scope: %w", err)

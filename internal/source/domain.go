@@ -30,6 +30,7 @@ type SourceRegistration struct {
 	ClusterID          uuid.UUID `json:"clusterId,omitempty"`
 	ClusterUID         string    `json:"clusterUid,omitempty"`
 	AuthRef            string    `json:"authRef"`
+	AllowedSchemas     []string  `json:"allowedSchemas"`
 	CredentialRevision int64     `json:"credentialRevision"`
 	Status             string    `json:"status"`
 	Revision           int64     `json:"revision"`
@@ -38,16 +39,17 @@ type SourceRegistration struct {
 }
 
 type RegisterCommand struct {
-	SourceType  string
-	InstanceKey string
-	ClusterID   *uuid.UUID
-	AuthRef     string
+	SourceType     string
+	InstanceKey    string
+	ClusterID      *uuid.UUID
+	AuthRef        string
+	AllowedSchemas []string
 }
 
 func (command RegisterCommand) Validate() error {
 	if _, allowed := allowedSourceTypes[command.SourceType]; !allowed ||
 		!validOpaqueName(command.InstanceKey, 512) || !validAuthRef(command.AuthRef) ||
-		(command.ClusterID != nil && *command.ClusterID == uuid.Nil) {
+		(command.ClusterID != nil && *command.ClusterID == uuid.Nil) || !validAllowedSchemas(command.AllowedSchemas) {
 		return ErrInvalidInput
 	}
 	return nil
@@ -66,9 +68,10 @@ type EnvelopeSource struct {
 }
 
 type FindingEnvelope struct {
-	TenantID   uuid.UUID
-	ClusterUID string
-	Source     EnvelopeSource
+	SchemaVersion string `json:"schemaVersion"`
+	TenantID      uuid.UUID
+	ClusterUID    string
+	Source        EnvelopeSource
 }
 
 type BoundSourceContext struct {
@@ -94,6 +97,11 @@ type SourceUpdateCommand struct {
 	ClusterID        *uuid.UUID
 	ClusterIDSet     bool
 	Status           string
+	AllowedSchemas   []string
+}
+
+func validAllowedSchemas(values []string) bool {
+	return len(values) == 1 && values[0] == "finding-envelope/v1"
 }
 
 type CredentialRotationCommand struct {

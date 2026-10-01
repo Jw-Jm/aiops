@@ -2,6 +2,7 @@ package source
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"testing"
 
@@ -13,12 +14,14 @@ func TestSourceEnvelopeCannotExpandRegisteredScope(t *testing.T) {
 		TenantID:   uuid.MustParse("018f0f2b-91c2-7d42-a8dc-f719c5987330"),
 		SourceID:   uuid.MustParse("018f0f2b-91c2-7d42-a8dc-f719c5987331"),
 		SourceType: "victoriametrics", InstanceKey: "vm-prod-a",
-		ClusterID: uuid.MustParse("018f0f2b-91c2-7d42-a8dc-f719c5987332"), ClusterUID: "cluster-prod-a",
+		AllowedSchemas: []string{"finding-envelope/v1"},
+		ClusterID:      uuid.MustParse("018f0f2b-91c2-7d42-a8dc-f719c5987332"), ClusterUID: "cluster-prod-a",
 		AuthRef: "openbao://kv/platform/sources/vm-prod-a", CredentialRevision: 2, Status: "active", Revision: 3,
 	}
 	identity := SourceIdentity{TenantID: registered.TenantID, SourceID: registered.SourceID, CredentialRevision: 2}
 	envelope := FindingEnvelope{
-		TenantID: registered.TenantID, ClusterUID: registered.ClusterUID,
+		SchemaVersion: "finding-envelope/v1",
+		TenantID:      registered.TenantID, ClusterUID: registered.ClusterUID,
 		Source: EnvelopeSource{System: registered.SourceType, Instance: registered.InstanceKey},
 	}
 	verifier := CredentialVerifierFunc(func(_ context.Context, authRef string, got SourceIdentity, _ FindingEnvelope) error {
@@ -37,6 +40,11 @@ func TestSourceEnvelopeCannotExpandRegisteredScope(t *testing.T) {
 	}
 
 	for name, mutate := range map[string]func(*SourceIdentity, *FindingEnvelope, *SourceRegistration){
+		"unregistered-schema": func(_ *SourceIdentity, input *FindingEnvelope, _ *SourceRegistration) {
+			if err := json.Unmarshal([]byte(`{"schemaVersion":"finding-envelope/v999"}`), input); err != nil {
+				t.Fatal(err)
+			}
+		},
 		"tenant": func(_ *SourceIdentity, input *FindingEnvelope, _ *SourceRegistration) { input.TenantID = uuid.New() },
 		"cluster": func(_ *SourceIdentity, input *FindingEnvelope, _ *SourceRegistration) {
 			input.ClusterUID = "cluster-other"
@@ -64,7 +72,8 @@ func TestSourceEnvelopeCannotExpandRegisteredScope(t *testing.T) {
 func TestRegisterRequiresAuthRefRatherThanCredentialMaterial(t *testing.T) {
 	clusterID := uuid.MustParse("018f0f2b-91c2-7d42-a8dc-f719c5987332")
 	base := RegisterCommand{
-		SourceType: "victorialogs", InstanceKey: "logs-prod-a",
+		AllowedSchemas: []string{"finding-envelope/v1"},
+		SourceType:     "victorialogs", InstanceKey: "logs-prod-a",
 		ClusterID: &clusterID,
 		AuthRef:   "openbao://kv/platform/sources/logs-prod-a",
 	}
@@ -109,5 +118,29 @@ func TestClusterIdentityCannotBeSilentlyRedefined(t *testing.T) {
 	command.DisplayName = "Different Cluster"
 	if sameClusterIdentity(registered, command) {
 		t.Fatal("cluster rename silently redefined a registered identity")
+	}
+}
+
+func TestRegistrationRequiresBoundedSchemaAndClusterMetadata(t *testing.T) {
+	for _, schemas := range [][]string{nil, {}, {"finding-envelope/v999"}, {"finding-envelope/v1", "finding-envelope/v1"}} {
+		if validAllowedSchemas(schemas) {
+			t.Fatalf("invalid schema scope accepted: %v", schemas)
+		}
+	}
+	base := ClusterCommand{ClusterUID: "review", DisplayName: "Review", APIEndpointRef: "openbao://kv/clusters/review/endpoint", Distribution: "orbstack", ActualVersions: map[string]string{"kubernetes": "v1.35.6+orb1"}, Capabilities: map[string]bool{"kubernetes": true}}
+	if err := base.Validate(); err != nil {
+		t.Fatal(err)
+	}
+	for _, capability := range []string{"kubevirt", "CDI", "VM", "VMI", "DataVolume"} {
+		changed := base
+		changed.Capabilities = map[string]bool{capability: true}
+		if err := changed.Validate(); !errors.Is(err, ErrInvalidInput) {
+			t.Fatalf("deferred capability %s admitted: %v", capability, err)
+		}
+	}
+	changed := base
+	changed.ActualVersions = map[string]string{"kubernetes": "latest"}
+	if err := changed.Validate(); !errors.Is(err, ErrInvalidInput) {
+		t.Fatal("unlocked actual Kubernetes version admitted")
 	}
 }

@@ -5,9 +5,15 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { Identifier } from './identifier';
+import type { SourceRegistrationRequestAllowedSchemasItem } from './sourceRegistrationRequestAllowedSchemasItem';
 import type { SourceRegistrationRequestSourceType } from './sourceRegistrationRequestSourceType';
 
 export interface SourceRegistrationRequest {
+  /**
+     * @minItems 1
+     * @maxItems 1
+     */
+  allowedSchemas: SourceRegistrationRequestAllowedSchemasItem[];
   /** @pattern ^openbao://[A-Za-z0-9_./-]+$ */
   authRef: string;
   clusterId?: Identifier | null;

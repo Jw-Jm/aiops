@@ -4,8 +4,28 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.0.0
  */
+import type { ClusterRegistrationRequestActualVersions } from './clusterRegistrationRequestActualVersions';
+import type { ClusterRegistrationRequestCapabilities } from './clusterRegistrationRequestCapabilities';
 
 export interface ClusterRegistrationRequest {
+  /**
+     * Required to explicitly complete or update metadata of an existing stable cluster identity.
+     * @minimum 1
+     */
+  expectedRevision?: number;
+  /**
+     * @minLength 1
+     * @maxLength 1024
+     * @pattern ^openbao://[A-Za-z0-9_./-]+$
+     */
+  apiEndpointRef: string;
+  /**
+     * @minLength 1
+     * @maxLength 64
+     */
+  distribution: string;
+  actualVersions: ClusterRegistrationRequestActualVersions;
+  capabilities: ClusterRegistrationRequestCapabilities;
   /**
      * @minLength 1
      * @maxLength 512

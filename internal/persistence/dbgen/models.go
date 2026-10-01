@@ -174,25 +174,33 @@ type InvestigationWorkerQueue struct {
 }
 
 type PlatformClusterRegistration struct {
-	TenantID    pgtype.UUID        `json:"tenant_id"`
-	ClusterID   pgtype.UUID        `json:"cluster_id"`
-	ClusterUid  string             `json:"cluster_uid"`
-	DisplayName string             `json:"display_name"`
-	Status      string             `json:"status"`
-	Revision    int64              `json:"revision"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	ClusterID      pgtype.UUID        `json:"cluster_id"`
+	ClusterUid     string             `json:"cluster_uid"`
+	DisplayName    string             `json:"display_name"`
+	Status         string             `json:"status"`
+	Revision       int64              `json:"revision"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+	ApiEndpointRef string             `json:"api_endpoint_ref"`
+	Distribution   string             `json:"distribution"`
+	ActualVersions []byte             `json:"actual_versions"`
+	Capabilities   []byte             `json:"capabilities"`
 }
 
 type PlatformClusterRegistrationRevision struct {
-	TenantID     pgtype.UUID        `json:"tenant_id"`
-	ClusterID    pgtype.UUID        `json:"cluster_id"`
-	Revision     int64              `json:"revision"`
-	ClusterUid   string             `json:"cluster_uid"`
-	DisplayName  string             `json:"display_name"`
-	Status       string             `json:"status"`
-	ActorSubject string             `json:"actor_subject"`
-	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	ClusterID      pgtype.UUID        `json:"cluster_id"`
+	Revision       int64              `json:"revision"`
+	ClusterUid     string             `json:"cluster_uid"`
+	DisplayName    string             `json:"display_name"`
+	Status         string             `json:"status"`
+	ActorSubject   string             `json:"actor_subject"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	ApiEndpointRef string             `json:"api_endpoint_ref"`
+	Distribution   string             `json:"distribution"`
+	ActualVersions []byte             `json:"actual_versions"`
+	Capabilities   []byte             `json:"capabilities"`
 }
 
 type PlatformExecutionProfileVersion struct {
@@ -313,6 +321,7 @@ type PlatformSourceRegistration struct {
 	Revision           int64              `json:"revision"`
 	CreatedAt          pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt          pgtype.Timestamptz `json:"updated_at"`
+	AllowedSchemas     []string           `json:"allowed_schemas"`
 }
 
 type PlatformSourceRegistrationRevision struct {

@@ -56,7 +56,15 @@ func (h ClusterAdminHandlers) createCluster(w http.ResponseWriter, r *http.Reque
 		writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "cluster registration is invalid", false, request.RequestID)
 		return
 	}
-	created, err := h.service.RegisterCluster(r.Context(), tx, request, source.ClusterCommand{ClusterUID: body.ClusterUid, DisplayName: body.DisplayName})
+	var expectedRevision int64
+	if body.ExpectedRevision != nil {
+		expectedRevision = *body.ExpectedRevision
+		if expectedRevision < 1 {
+			writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "cluster revision is invalid", false, request.RequestID)
+			return
+		}
+	}
+	created, err := h.service.RegisterCluster(r.Context(), tx, request, source.ClusterCommand{ExpectedRevision: expectedRevision, ClusterUID: body.ClusterUid, DisplayName: body.DisplayName, APIEndpointRef: body.ApiEndpointRef, Distribution: body.Distribution, ActualVersions: body.ActualVersions, Capabilities: body.Capabilities})
 	if err != nil {
 		writeSourceServiceError(w, err, request.RequestID)
 		return
@@ -68,6 +76,7 @@ func clusterRegistrationJSON(value source.ClusterRegistration) map[string]any {
 	return map[string]any{
 		"tenantId": value.TenantID, "clusterId": value.ClusterID, "clusterUid": value.ClusterUID,
 		"displayName": value.DisplayName, "status": value.Status, "revision": value.Revision,
+		"apiEndpointRef": value.APIEndpointRef, "distribution": value.Distribution, "actualVersions": value.ActualVersions, "capabilities": value.Capabilities,
 		"createdAt": value.CreatedAt, "updatedAt": value.UpdatedAt,
 	}
 }

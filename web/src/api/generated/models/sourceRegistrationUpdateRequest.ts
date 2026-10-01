@@ -5,9 +5,15 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { Identifier } from './identifier';
+import type { SourceRegistrationUpdateRequestAllowedSchemasItem } from './sourceRegistrationUpdateRequestAllowedSchemasItem';
 import type { SourceRegistrationUpdateRequestStatus } from './sourceRegistrationUpdateRequestStatus';
 
 export type SourceRegistrationUpdateRequest = (unknown & ({
+  /**
+     * @minItems 1
+     * @maxItems 1
+     */
+  allowedSchemas?: SourceRegistrationUpdateRequestAllowedSchemasItem[];
   clusterId?: Identifier | null;
   /** @minimum 1 */
   expectedRevision: number;

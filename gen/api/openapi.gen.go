@@ -239,6 +239,21 @@ func (e RegistryDraftCreateRequestKind) Valid() bool {
 	}
 }
 
+// Defines values for SourceRegistrationRequestAllowedSchemas.
+const (
+	SourceRegistrationRequestAllowedSchemasFindingEnvelopev1 SourceRegistrationRequestAllowedSchemas = "finding-envelope/v1"
+)
+
+// Valid indicates whether the value is a known member of the SourceRegistrationRequestAllowedSchemas enum.
+func (e SourceRegistrationRequestAllowedSchemas) Valid() bool {
+	switch e {
+	case SourceRegistrationRequestAllowedSchemasFindingEnvelopev1:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SourceRegistrationRequestSourceType.
 const (
 	Deepflow        SourceRegistrationRequestSourceType = "deepflow"
@@ -272,6 +287,21 @@ func (e SourceRegistrationRequestSourceType) Valid() bool {
 	case Victorialogs:
 		return true
 	case Victoriametrics:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SourceRegistrationUpdateRequestAllowedSchemas.
+const (
+	SourceRegistrationUpdateRequestAllowedSchemasFindingEnvelopev1 SourceRegistrationUpdateRequestAllowedSchemas = "finding-envelope/v1"
+)
+
+// Valid indicates whether the value is a known member of the SourceRegistrationUpdateRequestAllowedSchemas enum.
+func (e SourceRegistrationUpdateRequestAllowedSchemas) Valid() bool {
+	switch e {
+	case SourceRegistrationUpdateRequestAllowedSchemasFindingEnvelopev1:
 		return true
 	default:
 		return false
@@ -340,8 +370,15 @@ type CanonicalID = string
 
 // ClusterRegistrationRequest defines model for ClusterRegistrationRequest.
 type ClusterRegistrationRequest struct {
-	ClusterUid  string `json:"clusterUid"`
-	DisplayName string `json:"displayName"`
+	ActualVersions map[string]string `json:"actualVersions"`
+	ApiEndpointRef string            `json:"apiEndpointRef"`
+	Capabilities   map[string]bool   `json:"capabilities"`
+	ClusterUid     string            `json:"clusterUid"`
+	DisplayName    string            `json:"displayName"`
+	Distribution   string            `json:"distribution"`
+
+	// ExpectedRevision Required to explicitly complete or update metadata of an existing stable cluster identity.
+	ExpectedRevision *int64 `json:"expectedRevision,omitempty"`
 }
 
 // CommandExecutionEvent defines model for CommandExecutionEvent.
@@ -521,11 +558,15 @@ type SourceCredentialRotationRequest struct {
 
 // SourceRegistrationRequest defines model for SourceRegistrationRequest.
 type SourceRegistrationRequest struct {
-	AuthRef     string                              `json:"authRef"`
-	ClusterId   *Identifier                         `json:"clusterId,omitempty"`
-	InstanceKey string                              `json:"instanceKey"`
-	SourceType  SourceRegistrationRequestSourceType `json:"sourceType"`
+	AllowedSchemas []SourceRegistrationRequestAllowedSchemas `json:"allowedSchemas"`
+	AuthRef        string                                    `json:"authRef"`
+	ClusterId      *Identifier                               `json:"clusterId,omitempty"`
+	InstanceKey    string                                    `json:"instanceKey"`
+	SourceType     SourceRegistrationRequestSourceType       `json:"sourceType"`
 }
+
+// SourceRegistrationRequestAllowedSchemas defines model for SourceRegistrationRequest.AllowedSchemas.
+type SourceRegistrationRequestAllowedSchemas string
 
 // SourceRegistrationRequestSourceType defines model for SourceRegistrationRequest.SourceType.
 type SourceRegistrationRequestSourceType string
@@ -538,11 +579,15 @@ type SourceRegistrationRollbackRequest struct {
 
 // SourceRegistrationUpdateRequest defines model for SourceRegistrationUpdateRequest.
 type SourceRegistrationUpdateRequest struct {
-	ClusterId        *Identifier                            `json:"clusterId,omitempty"`
-	ExpectedRevision int64                                  `json:"expectedRevision"`
-	Status           *SourceRegistrationUpdateRequestStatus `json:"status,omitempty"`
+	AllowedSchemas   *[]SourceRegistrationUpdateRequestAllowedSchemas `json:"allowedSchemas,omitempty"`
+	ClusterId        *Identifier                                      `json:"clusterId,omitempty"`
+	ExpectedRevision int64                                            `json:"expectedRevision"`
+	Status           *SourceRegistrationUpdateRequestStatus           `json:"status,omitempty"`
 	union            json.RawMessage
 }
+
+// SourceRegistrationUpdateRequestAllowedSchemas defines model for SourceRegistrationUpdateRequest.AllowedSchemas.
+type SourceRegistrationUpdateRequestAllowedSchemas string
 
 // SourceRegistrationUpdateRequestStatus defines model for SourceRegistrationUpdateRequest.Status.
 type SourceRegistrationUpdateRequestStatus string
@@ -552,6 +597,9 @@ type SourceRegistrationUpdateRequest0 = interface{}
 
 // SourceRegistrationUpdateRequest1 defines model for SourceRegistrationUpdateRequest.1.
 type SourceRegistrationUpdateRequest1 = interface{}
+
+// SourceRegistrationUpdateRequest2 defines model for SourceRegistrationUpdateRequest.2.
+type SourceRegistrationUpdateRequest2 = interface{}
 
 // StepUpSession defines model for StepUpSession.
 type StepUpSession struct {
@@ -1151,6 +1199,32 @@ func (t *SourceRegistrationUpdateRequest) MergeSourceRegistrationUpdateRequest1(
 	return err
 }
 
+// AsSourceRegistrationUpdateRequest2 returns the union data inside the SourceRegistrationUpdateRequest as a SourceRegistrationUpdateRequest2
+func (t SourceRegistrationUpdateRequest) AsSourceRegistrationUpdateRequest2() (SourceRegistrationUpdateRequest2, error) {
+	var body SourceRegistrationUpdateRequest2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSourceRegistrationUpdateRequest2 overwrites any union data inside the SourceRegistrationUpdateRequest as the provided SourceRegistrationUpdateRequest2
+func (t *SourceRegistrationUpdateRequest) FromSourceRegistrationUpdateRequest2(v SourceRegistrationUpdateRequest2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSourceRegistrationUpdateRequest2 performs a merge with any union data inside the SourceRegistrationUpdateRequest, using the provided SourceRegistrationUpdateRequest2
+func (t *SourceRegistrationUpdateRequest) MergeSourceRegistrationUpdateRequest2(v SourceRegistrationUpdateRequest2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t SourceRegistrationUpdateRequest) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	if err != nil {
@@ -1161,6 +1235,13 @@ func (t SourceRegistrationUpdateRequest) MarshalJSON() ([]byte, error) {
 		err = json.Unmarshal(b, &object)
 		if err != nil {
 			return nil, err
+		}
+	}
+
+	if t.AllowedSchemas != nil {
+		object["allowedSchemas"], err = json.Marshal(t.AllowedSchemas)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'allowedSchemas': %w", err)
 		}
 	}
 
@@ -1195,6 +1276,13 @@ func (t *SourceRegistrationUpdateRequest) UnmarshalJSON(b []byte) error {
 	err = json.Unmarshal(b, &object)
 	if err != nil {
 		return err
+	}
+
+	if raw, found := object["allowedSchemas"]; found {
+		err = json.Unmarshal(raw, &t.AllowedSchemas)
+		if err != nil {
+			return fmt.Errorf("error reading 'allowedSchemas': %w", err)
+		}
 	}
 
 	if raw, found := object["clusterId"]; found {
