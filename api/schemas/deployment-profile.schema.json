@@ -19,6 +19,7 @@
         "endpoint": { "type": "string", "format": "uri", "minLength": 1 },
         "namespace": { "type": "string", "minLength": 1 },
         "name": { "type": "string", "minLength": 1 },
+        "objectUid": { "type": "string", "minLength": 1, "maxLength": 128 },
         "detectExisting": { "type": "boolean" },
         "enabledIn": { "type": "array", "items": { "enum": ["core", "deepflow", "virtualization", "full"] }, "uniqueItems": true },
         "disabledReason": { "type": "string" },
@@ -110,6 +111,7 @@
         "endpoint": { "type": "string", "format": "uri", "minLength": 1 },
         "namespace": { "type": "string", "minLength": 1 },
         "name": { "type": "string", "minLength": 1 },
+        "objectUid": { "type": "string", "minLength": 1, "maxLength": 128 },
         "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } },
         "compatibility": { "enum": ["supported", "unsupported", "unverified"] },
         "admissionState": { "enum": ["candidate", "qualified", "external"] }

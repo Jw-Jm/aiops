@@ -28,6 +28,7 @@ type InputProfile struct {
 }
 
 type ComponentInput struct {
+	ObjectUID        string   `yaml:"objectUid,omitempty" json:"objectUid,omitempty"`
 	Mode             string   `yaml:"mode" json:"mode"`
 	Version          string   `yaml:"version,omitempty" json:"version,omitempty"`
 	VersionCandidate string   `yaml:"versionCandidate,omitempty" json:"versionCandidate,omitempty"`
@@ -96,6 +97,7 @@ type ResolvedProfile struct {
 }
 
 type ResolvedComponent struct {
+	ObjectUID      string   `yaml:"objectUid,omitempty" json:"objectUid,omitempty"`
 	Mode           string   `yaml:"mode" json:"mode"`
 	Version        string   `yaml:"version,omitempty" json:"version,omitempty"`
 	Digest         string   `yaml:"digest,omitempty" json:"digest,omitempty"`
@@ -116,6 +118,7 @@ type Discovery struct {
 }
 
 type ComponentCandidate struct {
+	ObjectUID     string
 	Namespace     string
 	Name          string
 	Endpoint      string

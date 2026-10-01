@@ -204,8 +204,27 @@ func testDiscovery() Discovery {
 		Kubernetes: KubernetesDiscovery{Distribution: "orbstack", ServerVersion: "v1.35.6+orb1", Architecture: "arm64", Context: "orbstack", ClusterUID: "test-cluster", StorageClass: "local-path", KubeVirt: "unverified"},
 		Runtime:    RuntimeInput{ImageImporter: "orbstack_shared_store"},
 		Components: map[string][]ComponentCandidate{
-			"victoriaMetrics": {{Namespace: "monitoring", Name: "vmsingle-vm", Endpoint: "http://vmsingle-vm.monitoring.svc:8429", Version: "v1.116.0", Digest: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", Image: "victoriametrics/victoria-metrics@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", Compatible: true}},
-			"victoriaLogs":    {{Namespace: "monitoring", Name: "victoria-logs", Endpoint: "http://victoria-logs.monitoring.svc:9428", Version: "v1.52.0", Digest: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", Image: "victoriametrics/victoria-logs@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", Compatible: true}},
+			"victoriaMetrics": {{ObjectUID: "test-metrics-service-uid", Namespace: "monitoring", Name: "vmsingle-vm", Endpoint: "http://vmsingle-vm.monitoring.svc:8429", Version: "v1.116.0", Digest: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", Image: "victoriametrics/victoria-metrics@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", Compatible: true}},
+			"victoriaLogs":    {{ObjectUID: "test-logs-service-uid", Namespace: "monitoring", Name: "victoria-logs", Endpoint: "http://victoria-logs.monitoring.svc:9428", Version: "v1.52.0", Digest: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", Image: "victoriametrics/victoria-logs@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", Compatible: true}},
 		},
+	}
+}
+
+func TestResolveRejectsRecreatedExternalService(t *testing.T) {
+	input := testProfile("external")
+	component := input.Components["victoriaMetrics"]
+	component.ObjectUID = "old-service-uid"
+	input.Components["victoriaMetrics"] = component
+	discovery := testDiscovery()
+	discovery.Components["victoriaMetrics"][0].ObjectUID = "new-service-uid"
+	if _, err := Resolve(context.Background(), input, discovery); err == nil {
+		t.Fatal("recreated Service accepted under original identity lock")
+	}
+}
+func TestResolveRejectsExternalServiceWithoutUID(t *testing.T) {
+	discovery := testDiscovery()
+	discovery.Components["victoriaMetrics"][0].ObjectUID = ""
+	if _, err := Resolve(context.Background(), testProfile("external"), discovery); err == nil {
+		t.Fatal("external Service without observed UID accepted")
 	}
 }

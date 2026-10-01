@@ -121,7 +121,7 @@ func enrichVictoriaCandidates(ctx context.Context, reader kubectlReader, compone
 		sources := make([]SourceCandidate, 0, len(candidates))
 		transportMap := make(map[string]SourceCandidate, len(candidates))
 		for _, candidate := range candidates {
-			source := SourceCandidate{Component: component, Endpoint: candidate.Endpoint, Namespace: candidate.Namespace, Name: candidate.Name, LogicalID: candidate.Namespace + "/" + candidate.Name}
+			source := SourceCandidate{Component: component, Endpoint: candidate.Endpoint, Namespace: candidate.Namespace, Name: candidate.Name, LogicalID: candidate.Namespace + "/" + candidate.Name + "@" + candidate.ObjectUID}
 			sources = append(sources, source)
 			if parsed, err := url.Parse(candidate.Endpoint); err == nil {
 				transportMap[parsed.Host] = source

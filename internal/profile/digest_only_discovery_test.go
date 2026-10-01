@@ -29,7 +29,7 @@ case "$4" in
   crd) printf '%s\n' '{"items":[]}' ;;
   deployments,statefulsets,daemonsets,pods,services) cat <<'JSON'
 {"items":[
-  {"kind":"Service","metadata":{"name":"ops-openbao","namespace":"ops-system","labels":{"app.kubernetes.io/name":"ops-openbao"}},"spec":{"selector":{"app.kubernetes.io/name":"ops-openbao"},"ports":[{"port":8200}]}},
+  {"kind":"Service","metadata":{"uid":"test-openbao-service-uid","name":"ops-openbao","namespace":"ops-system","labels":{"app.kubernetes.io/name":"ops-openbao"}},"spec":{"selector":{"app.kubernetes.io/name":"ops-openbao"},"ports":[{"port":8200}]}},
   {"kind":"Pod","metadata":{"name":"ops-openbao-0","namespace":"ops-system","labels":{"app.kubernetes.io/name":"ops-openbao"}},"spec":{"containers":[{"name":"openbao","image":"ghcr.io/openbao/openbao@DIGEST"}]},"status":{"phase":"Running","containerStatuses":[{"name":"openbao","image":"ghcr.io/openbao/openbao@DIGEST","imageID":"docker-pullable://ghcr.io/openbao/openbao@DIGEST","ready":true}]}}
 ]}
 JSON

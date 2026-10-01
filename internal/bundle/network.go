@@ -29,9 +29,9 @@ func externalServiceEgress(ctx context.Context, p profile.ResolvedProfile, run C
 			return nil, fmt.Errorf("CAPABILITY_DISABLED: offline core policy for %s requires an in-cluster Service endpoint", name)
 		}
 		serviceName, namespace := labels[0], labels[1]
-		if namespace == "ops-system" {
-			continue
-		} // Already allowed by the internal rule.
+		if component.ObjectUID == "" || component.Namespace != namespace || component.Name != serviceName {
+			return nil, fmt.Errorf("external Service identity lock is missing or inconsistent for %s", name)
+		}
 		portText := endpoint.Port()
 		if portText == "" {
 			switch endpoint.Scheme {
@@ -52,6 +52,11 @@ func externalServiceEgress(ctx context.Context, p profile.ResolvedProfile, run C
 			return nil, fmt.Errorf("read external Service for %s: %w", name, err)
 		}
 		var service struct {
+			Metadata struct {
+				UID       string `json:"uid"`
+				Namespace string `json:"namespace"`
+				Name      string `json:"name"`
+			} `json:"metadata"`
 			Spec struct {
 				Selector map[string]string `json:"selector"`
 				Ports    []struct {
@@ -64,6 +69,12 @@ func externalServiceEgress(ctx context.Context, p profile.ResolvedProfile, run C
 		if err := json.Unmarshal(raw, &service); err != nil {
 			return nil, fmt.Errorf("decode external Service for %s: %w", name, err)
 		}
+		if service.Metadata.UID != component.ObjectUID || service.Metadata.Namespace != namespace || service.Metadata.Name != serviceName {
+			return nil, fmt.Errorf("external Service object identity changed for %s", name)
+		}
+		if namespace == "ops-system" {
+			continue
+		} // Identity is checked even when the internal policy already permits traffic.
 		if len(service.Spec.Selector) == 0 {
 			return nil, fmt.Errorf("offline core cannot authorize selectorless external Service for %s", name)
 		}

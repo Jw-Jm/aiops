@@ -394,6 +394,7 @@ func setCandidate(component *ComponentInput, candidate ComponentCandidate) {
 	component.Endpoint = candidate.Endpoint
 	component.Namespace = candidate.Namespace
 	component.Name = candidate.Name
+	component.ObjectUID = candidate.ObjectUID
 	component.Compatibility = candidate.Compatibility
 	if component.Compatibility == "" && candidate.Compatible {
 		component.Compatibility = "supported"
@@ -467,7 +468,11 @@ func serviceCandidate(service map[string]any, component string, resources []map[
 	meta := objectMap(service["metadata"])
 	namespace, _ := meta["namespace"].(string)
 	name, _ := meta["name"].(string)
-	candidate := ComponentCandidate{Namespace: namespace, Name: name, Compatible: true}
+	uid, _ := meta["uid"].(string)
+	candidate := ComponentCandidate{Namespace: namespace, Name: name, ObjectUID: uid, Compatible: uid != ""}
+	if uid == "" {
+		candidate.Evidence = append(candidate.Evidence, "Service object UID is unavailable")
+	}
 	selector := objectMap(objectMap(service["spec"])["selector"])
 	for _, resource := range resources {
 		if objectKind(resource) != "Pod" {

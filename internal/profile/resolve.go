@@ -93,12 +93,13 @@ func Resolve(ctx context.Context, input InputProfile, discovery Discovery) (Reso
 				return ResolvedProfile{}, err
 			}
 			if component.Version != "" && component.Version != candidate.Version || component.Digest != "" && component.Digest != candidate.Digest ||
-				component.Endpoint != "" && component.Endpoint != candidate.Endpoint || component.Image != "" && component.Image != candidate.Image {
+				component.Endpoint != "" && component.Endpoint != candidate.Endpoint || component.Image != "" && component.Image != candidate.Image ||
+				component.ObjectUID != "" && component.ObjectUID != candidate.ObjectUID {
 				return ResolvedProfile{}, profileConflict(name, "profile lock does not match the currently discovered image")
 			}
 			resolvedComponent := ResolvedComponent{
 				Mode: "external", Version: candidate.Version, Digest: candidate.Digest, Image: candidate.Image,
-				Endpoint: candidate.Endpoint, Namespace: candidate.Namespace, Name: candidate.Name,
+				Endpoint: candidate.Endpoint, Namespace: candidate.Namespace, Name: candidate.Name, ObjectUID: candidate.ObjectUID,
 				Evidence: append([]string(nil), candidate.Evidence...), AdmissionState: "external", Compatibility: candidate.Compatibility,
 			}
 			if resolvedComponent.Compatibility == "" {
@@ -153,6 +154,9 @@ func selectExternalCandidate(name string, input ComponentInput, candidates []Com
 	candidate := filtered[0]
 	if !candidate.Compatible {
 		return ComponentCandidate{}, profileConflict(name, "existing instance is incompatible or its compatibility is unknown")
+	}
+	if candidate.ObjectUID == "" || candidate.Namespace == "" || candidate.Name == "" {
+		return ComponentCandidate{}, profileConflict(name, "existing instance is missing its observed Service object identity")
 	}
 	if candidate.Version == "" || !versionPattern.MatchString(candidate.Version) || !digestPattern.MatchString(candidate.Digest) || candidate.Endpoint == "" || !strings.Contains(candidate.Image, "@sha256:") {
 		return ComponentCandidate{}, profileConflict(name, "existing instance is missing an exact version, image digest, or endpoint")
