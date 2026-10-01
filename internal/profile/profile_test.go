@@ -228,3 +228,25 @@ func TestResolveRejectsExternalServiceWithoutUID(t *testing.T) {
 		t.Fatal("external Service without observed UID accepted")
 	}
 }
+
+func TestServiceCandidateRejectsUnreadyOrSelectorlessService(t *testing.T) {
+	service := map[string]any{"metadata": map[string]any{"uid": "test-service", "namespace": "test", "name": "postgres"}, "spec": map[string]any{"selector": map[string]any{"app": "postgres"}}}
+	pod := map[string]any{"kind": "Pod", "metadata": map[string]any{"namespace": "test", "name": "postgres-0", "labels": map[string]any{"app": "postgres"}}, "spec": map[string]any{"containers": []any{map[string]any{"name": "postgres", "image": "postgres:17.11"}}}, "status": map[string]any{"phase": "Running", "containerStatuses": []any{map[string]any{"name": "postgres", "imageID": "docker-pullable://postgres@sha256:" + strings.Repeat("a", 64), "ready": false}}}}
+	if got := serviceCandidate(service, "postgresql", []map[string]any{pod}); got.Compatible {
+		t.Fatal("unready backing container accepted")
+	}
+	status := pod["status"].(map[string]any)
+	status["containerStatuses"].([]any)[0].(map[string]any)["ready"] = true
+	if got := serviceCandidate(service, "postgresql", []map[string]any{pod}); !got.Compatible {
+		t.Fatal("Running Ready locked container rejected")
+	}
+	status["phase"] = "Failed"
+	if got := serviceCandidate(service, "postgresql", []map[string]any{pod}); got.Compatible {
+		t.Fatal("terminated Pod accepted")
+	}
+	status["phase"] = "Running"
+	service["spec"].(map[string]any)["selector"] = map[string]any{}
+	if got := serviceCandidate(service, "postgresql", []map[string]any{pod}); got.Compatible {
+		t.Fatal("selectorless Service matched arbitrary Pod")
+	}
+}

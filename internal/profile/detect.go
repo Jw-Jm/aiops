@@ -469,11 +469,15 @@ func serviceCandidate(service map[string]any, component string, resources []map[
 	namespace, _ := meta["namespace"].(string)
 	name, _ := meta["name"].(string)
 	uid, _ := meta["uid"].(string)
-	candidate := ComponentCandidate{Namespace: namespace, Name: name, ObjectUID: uid, Compatible: uid != ""}
+	candidate := ComponentCandidate{Namespace: namespace, Name: name, ObjectUID: uid}
 	if uid == "" {
 		candidate.Evidence = append(candidate.Evidence, "Service object UID is unavailable")
 	}
 	selector := objectMap(objectMap(service["spec"])["selector"])
+	if len(selector) == 0 {
+		candidate.Evidence = append(candidate.Evidence, "Service selector is unavailable")
+		return candidate
+	}
 	for _, resource := range resources {
 		if objectKind(resource) != "Pod" {
 			continue
@@ -484,9 +488,15 @@ func serviceCandidate(service map[string]any, component string, resources []map[
 			continue
 		}
 		status := objectMap(resource["status"])
+		if status["phase"] != "Running" {
+			continue
+		}
 		statusList, _ := status["containerStatuses"].([]any)
 		for index, statusValue := range statusList {
 			containerStatus := objectMap(statusValue)
+			if ready, ok := containerStatus["ready"].(bool); !ok || !ready {
+				continue
+			}
 			containerName, _ := containerStatus["name"].(string)
 			imageID, _ := containerStatus["imageID"].(string)
 			container := findContainer(resource, containerName)
@@ -494,6 +504,7 @@ func serviceCandidate(service map[string]any, component string, resources []map[
 			if !imageMatchesComponent(image, component) {
 				continue
 			}
+			candidate.Compatible = uid != ""
 			candidate.Image = imageDigestReference(image, imageID)
 			candidate.Version = imageTag(image)
 			candidate.Digest = digestFromImageID(imageID)
