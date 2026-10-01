@@ -99,6 +99,7 @@ var releaseNamePattern = regexp.MustCompile(`^[a-z0-9](?:[-a-z0-9]*[a-z0-9])?$`)
 var offlineResourceKinds = map[string]bool{
 	"Service": true, "ServiceAccount": true, "ConfigMap": true, "Secret": true,
 	"Deployment": true, "StatefulSet": true, "NetworkPolicy": true, "ClusterRoleBinding": true,
+	"VMServiceScrape": true, "ServiceMonitor": true,
 }
 
 // CleanupRelease removes a Helm release only after its recorded manifest and
@@ -308,6 +309,11 @@ func planCharts(ctx context.Context, v *verifiedPayload, p profile.ResolvedProfi
 				return nil, err
 			}
 			values["runtime"] = runtimeValues
+			scrapeValues, err := platformScrapeValues(ctx, p, run)
+			if err != nil {
+				return nil, err
+			}
+			values["observability"] = scrapeValues
 			values["components"] = map[string]any{
 				"api":            map[string]any{"image": imageNames["platform-api"]},
 				"worker":         map[string]any{"image": imageNames["platform-worker"]},

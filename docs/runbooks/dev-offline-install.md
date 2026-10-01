@@ -127,6 +127,15 @@ downloads. Errors identify the last checkpoint and material/release; retrying
 requires checking the actual resource state. No automatic deletion or rollback
 is performed.
 
+The platform monitoring choice is frozen in the same values used for local
+preflight and server installation: an existing, served VMServiceScrape v1beta1
+has priority, otherwise an existing ServiceMonitor v1 is used, otherwise none.
+The installer verifies the selected CRD before import. This avoids Helm's local
+and server capability discovery rendering different resources. These two
+release-owned scrape kinds undergo the same namespace, collision and cleanup
+ownership checks as other managed resources; foreign monitoring resources,
+PVCs and PVs remain outside cleanup.
+
 The locked Victoria Charts construct `repository:tag` and do not use an
 independent `image.digest` field. The installer supplies the exact
 `version@digest` tag. Its local `opsctl helm-render-owned` post-renderer accepts

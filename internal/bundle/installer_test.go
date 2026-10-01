@@ -184,3 +184,35 @@ func TestRequireAbsentReleaseRejectsExistingHelmRelease(t *testing.T) {
 		t.Fatalf("existing release error=%v", err)
 	}
 }
+
+func TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes(t *testing.T) {
+	for _, kind := range []string{"VMServiceScrape", "ServiceMonitor"} {
+		for _, owner := range []string{"ops-platform", "protected-monitoring"} {
+			t.Run(kind+"/"+owner, func(t *testing.T) {
+				uninstalled := false
+				run := func(_ context.Context, program string, args ...string) ([]byte, error) {
+					joined := strings.Join(append([]string{program}, args...), " ")
+					switch {
+					case strings.Contains(joined, "helm list"):
+						return []byte(`[{"name":"ops-platform"}]`), nil
+					case strings.Contains(joined, "helm get manifest"):
+						return []byte("kind: " + kind + "\nmetadata:\n  name: ops-platform\n  namespace: ops-system\n  labels:\n    ops.platform.io/release: ops-platform\n"), nil
+					case strings.Contains(joined, "kubectl"):
+						return []byte(`{"metadata":{"labels":{"ops.platform.io/release":"` + owner + `"}}}`), nil
+					case strings.Contains(joined, "helm uninstall"):
+						uninstalled = true
+					}
+					return nil, nil
+				}
+				err := CleanupRelease(context.Background(), importProfile(), "ops-platform", run)
+				if owner == "ops-platform" {
+					if err != nil || !uninstalled {
+						t.Fatalf("owned %s cleanup failed: %v, uninstalled=%t", kind, err, uninstalled)
+					}
+				} else if err == nil || uninstalled {
+					t.Fatalf("foreign monitoring object accepted: %v, uninstalled=%t", err, uninstalled)
+				}
+			})
+		}
+	}
+}
