@@ -1,6 +1,7 @@
 package audit
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
@@ -35,12 +36,25 @@ func Append(ctx context.Context, tx pgx.Tx, entry Entry) (Sequence, error) {
 		entry.EntityKind == "" || entry.Subject == "" || entry.Payload == nil {
 		return Sequence{}, errors.New("audit entry is incomplete")
 	}
-	if containsSecretField(entry.Payload) {
-		return Sequence{}, errors.New("audit payload contains a prohibited secret or raw command field")
-	}
 	record, err := json.Marshal(entry.Payload)
 	if err != nil {
 		return Sequence{}, fmt.Errorf("encode audit payload: %w", err)
+	}
+	// Inspect precisely the JSON tree that will be stored, including typed
+	// structures and custom marshalers. Normalize once so the digest cannot
+	// observe a different result from a stateful marshaler.
+	record, err = bundle.CanonicalizeJSON(record)
+	if err != nil {
+		return Sequence{}, fmt.Errorf("canonicalize audit payload: %w", err)
+	}
+	entry.Payload = nil
+	decoder := json.NewDecoder(bytes.NewReader(record))
+	decoder.UseNumber()
+	if err := decoder.Decode(&entry.Payload); err != nil {
+		return Sequence{}, fmt.Errorf("decode audit payload: %w", err)
+	}
+	if containsSecretField(entry.Payload) {
+		return Sequence{}, errors.New("audit payload contains a prohibited secret or raw command field")
 	}
 	if entry.CreatedAt.IsZero() {
 		entry.CreatedAt = time.Now().UTC()
@@ -98,7 +112,7 @@ func containsSecretField(value any) bool {
 			if name == "token" || strings.HasSuffix(name, "token") || name == "secret" || strings.HasSuffix(name, "secret") ||
 				name == "password" || strings.HasSuffix(name, "password") || strings.Contains(name, "credential") ||
 				name == "authorization" || name == "ciphertext" || name == "command" || name == "prompt" ||
-				name == "stdout" || name == "stderr" {
+				name == "stdout" || name == "stderr" || rawTextField(name) {
 				return true
 			}
 			if containsSecretField(child) {
@@ -113,4 +127,11 @@ func containsSecretField(value any) bool {
 		}
 	}
 	return false
+}
+
+func rawTextField(name string) bool {
+	if strings.HasSuffix(name, "digest") || strings.HasSuffix(name, "id") || strings.HasSuffix(name, "ref") || strings.HasSuffix(name, "version") {
+		return false
+	}
+	return strings.Contains(name, "command") || strings.Contains(name, "prompt")
 }

@@ -2,13 +2,16 @@ package audit
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 func TestCanonicalEntryUsesRFC8785AndStableUTCPrecision(t *testing.T) {
@@ -82,4 +85,38 @@ func TestLegacyAuditDigestRemainsVerifiableAndIsCanonicalizedForSegments(t *test
 func mustJSON(value any) string {
 	encoded, _ := json.Marshal(value)
 	return strings.TrimSpace(string(encoded))
+}
+
+type rejectAuditTx struct {
+	pgx.Tx
+	called bool
+}
+
+func (tx *rejectAuditTx) QueryRow(context.Context, string, ...any) pgx.Row {
+	tx.called = true
+	return rejectAuditRow{}
+}
+
+type rejectAuditRow struct{}
+
+func (rejectAuditRow) Scan(...any) error { return errors.New("unexpected audit SQL") }
+
+func TestAppendRejectsSensitiveFieldsAfterJSONEncoding(t *testing.T) {
+	type hidden struct {
+		Password string `json:"password"`
+	}
+	for name, value := range map[string]any{
+		"typed struct":      hidden{Password: "not-logged"},
+		"typed slice":       []hidden{{Password: "not-logged"}},
+		"raw command alias": map[string]string{"actualCommand": "not-logged"},
+		"raw prompt alias":  map[string]string{"raw_prompt": "not-logged"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			tx := &rejectAuditTx{}
+			_, err := Append(context.Background(), tx, Entry{TenantID: uuid.New(), RecordID: uuid.New(), EventType: "review.test", EntityKind: "test", Subject: "review", Payload: map[string]any{"nested": value}})
+			if err == nil || tx.called {
+				t.Fatal("sensitive JSON payload reached the database")
+			}
+		})
+	}
 }
