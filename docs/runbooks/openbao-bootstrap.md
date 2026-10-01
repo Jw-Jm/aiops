@@ -52,6 +52,14 @@ A StatefulSet pod restart reuses its Raft PVC and returns OpenBao to `sealed`. C
 
 When OpenBao is unavailable or sealed, operations requiring Transit decryption, PKI issuance, or SSH signing must fail closed. Read-only investigation paths that do not require those secrets are intended to continue. Never put recovery material into a Kubernetes Secret, Bundle, repository, platform database, or log.
 
+## PKI revocation list maintenance
+
+PKI issuance alone does not refresh an expired CRL. Before admitting workload mTLS, an operator must check `GET /v1/pki/config/crl` and the public `GET /v1/pki/crl/pem` over the independently trusted OpenBao TLS connection. Require `disable=false`, automatic rebuilding enabled, and a signed CRL with `ThisUpdate <= now < NextUpdate`. OpenBao documents this maintenance requirement in its [PKI health checks](https://openbao.org/docs/commands/pki/health-check/).
+
+For an existing mount with automatic rebuilding disabled, first review its current settings, then submit `POST /v1/pki/config/crl` with only `{"auto_rebuild":true}`. Preserve its expiry, grace period, delta settings, issuer, keys and revoked entries. If the CRL has already expired, an authorized operator requests `GET /v1/pki/crl/rotate`, checks the successful response and validates the new CRL's issuer signature and validity dates. These privileged operations use recovery material read from external operator storage into memory; never place a token in command arguments or saved output. Runtime policies must not receive CRL configuration or rotation privileges.
+
+After an extended sealed period or outage, repeat the validity check after unseal and before restoring workload admission. A stale, unavailable or invalid CRL remains a fail-closed condition; do not disable revocation checks to resume service. `opsctl openbao status` checks the bootstrap configuration, but is not itself proof of current workload mTLS or CRL validity.
+
 ## Task 2.3 OrbStack verification record
 
 Verified on 2026-09-27 against OrbStack Kubernetes `v1.35.6+orb1` on `linux/arm64`, using OpenBao `v2.7.0` image digest `sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6`. The isolated `ops-system` namespace was absent before this task. The `ops-dependencies` release rendered PostgreSQL, Keycloak, and SeaweedFS as `external`; only the OpenBao workload was created. The API server accepted the rendered StatefulSet, PVC, ServiceAccount, and TokenReview ClusterRoleBinding. The PVC used the OrbStack default `local-path` StorageClass with a 2 GiB request.
