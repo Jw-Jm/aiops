@@ -296,11 +296,12 @@ firstPartyKernels: []
 	if err := validateCatalogAdmissionWithEvidence([]Material{{Name: "demo"}}, withSource, evidence); err == nil || !strings.Contains(err.Error(), "missing its locked corresponding-source") {
 		t.Fatalf("missing corresponding-source error: %v", err)
 	}
-	source := Material{Name: "demo-source", Version: "1.2.3", Kind: "source", Digest: sourceDigest}
+	source := Material{Name: "demo-source", Version: "1.2.3", Kind: "source", Digest: sourceDigest, Architecture: "linux/arm64"}
 	if err := validateCatalogAdmissionWithEvidence([]Material{{Name: "demo"}, source}, withSource, evidence); err != nil {
 		t.Fatal(err)
 	}
 	for _, invalid := range []Material{
+		{Name: "demo-source", Version: "1.2.3", Kind: "source", Digest: sourceDigest, Architecture: "linux/amd64"},
 		{Name: "demo-source", Version: "1.2.3", Kind: "source", Digest: "sha256:" + strings.Repeat("c", 64)},
 		{Name: "demo-source", Version: "1.2.4", Kind: "source", Digest: sourceDigest},
 		{Name: "demo-source", Version: "1.2.3", Kind: "container-image", Digest: sourceDigest},
@@ -583,7 +584,9 @@ func signedFixture(t *testing.T, mutate func(*fixtureManifest)) (Manifest, Trust
 			},
 		},
 		Materials: []fixtureMaterial{{
-			Name: "platform-api", Kind: "container-image", Version: "1.0.0", Digest: fixtureDigest("api"),
+			// This integrity-only payload has no Go process. Runtime Go source
+			// admission is tested separately with complete source materials.
+			Name: "platform-web", Kind: "container-image", Version: "1.0.0", Digest: fixtureDigest("api"),
 			Architecture: "linux/arm64", PayloadRef: "oci/platform-api.tar", SBOMRef: "sbom/platform-api.cdx.json", LicenseRef: "licenses/platform-api.txt",
 			InstallAfter: []string{},
 		}},

@@ -1,7 +1,7 @@
 GO ?= go
 GO_SOURCES := $(shell find . -type f -name '*.go' -not -path './.git/*')
 
-.PHONY: bootstrap check-toolchain generate check-generated fmt lint test-unit test-contract test-integration test-replay test-e2e test-security bundle-dev-arm64 verify-bundle check
+.PHONY: bootstrap check-toolchain generate check-generated check-runtime-source fmt lint test-unit test-contract test-integration test-replay test-e2e test-security bundle-dev-arm64 verify-bundle check
 
 bootstrap:
 	@if command -v mise >/dev/null 2>&1; then \
@@ -55,6 +55,9 @@ check-generated: generate
 fmt:
 	gofmt -w $(GO_SOURCES)
 
+check-runtime-source:
+	python3 scripts/prepare-runtime-source.py --check
+
 lint:
 	$(GO) vet ./...
 
@@ -92,8 +95,8 @@ verify-bundle:
 	@test -n "$(BUNDLE_DIR)" && test -n "$(TRUST_KEY)" || { echo "BUNDLE_DIR and TRUST_KEY are required" >&2; exit 1; }
 	$(GO) run ./cmd/opsctl bundle verify --manifest "$(BUNDLE_DIR)/bundle.lock.json" --signature "$(BUNDLE_DIR)/bundle.lock.sig" --payload "$(BUNDLE_DIR)/payload.tar.zst" --key "$(TRUST_KEY)"
 
-bundle-dev-arm64: check-toolchain
+bundle-dev-arm64: check-toolchain check-runtime-source
 	@test -n "$(BUNDLE_SPEC)" && test -n "$(BUNDLE_DIR)" && test -n "$(SIGNING_KEY)" || { echo "BUNDLE_SPEC, BUNDLE_DIR and external SIGNING_KEY are required; inputs must already be qualified" >&2; exit 1; }
 	$(GO) run ./cmd/opsctl bundle build --architecture linux/arm64 --spec "$(BUNDLE_SPEC)" --output "$(BUNDLE_DIR)" --signing-key "$(SIGNING_KEY)"
 
-check: check-generated lint test-unit test-contract
+check: check-generated check-runtime-source lint test-unit test-contract

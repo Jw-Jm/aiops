@@ -161,9 +161,20 @@ func signedOCIImportFixture(t *testing.T, missingWorkerLayer bool) (Manifest, Tr
 		materials = append(materials, Material{Name: name, Kind: "container-image", Version: "1.0.0", Digest: fixtureDigest(string(archive)), Architecture: "linux/arm64",
 			PayloadRef: "oci/" + name + ".tar", SBOMRef: "sbom/" + name + ".json", LicenseRef: "licenses/" + name + ".txt", InstallAfter: []string{}})
 	}
+	sdk, err := loadEmbeddedCatalog()
+	if err != nil {
+		t.Fatal(err)
+	}
+	component, _ := sdk.Component("opa-sdk")
+	source := runtimeSourceFixture(t)
+	add("sources/opa-sdk-source.tar", source, "source")
+	add("sbom/opa-sdk-source.json", []byte(`{"scope":"selected Go runtime source and original notices"}`), "sbom")
+	add("licenses/opa-sdk-source.txt", []byte("Applicable original notices accompany selected sources in the archive."), "license")
+	materials = append(materials, Material{Name: "opa-sdk-source", Kind: "source", Version: component.Version, Architecture: "linux/arm64", Digest: component.CorrespondingSourceBundleSHA256,
+		PayloadRef: "sources/opa-sdk-source.tar", SBOMRef: "sbom/opa-sdk-source.json", LicenseRef: "licenses/opa-sdk-source.txt", InstallAfter: []string{}})
 	payload := compressZstd(t, makeTar(t, entries))
 	m := Manifest{SchemaVersion: 1, BundleID: "import-test", PlatformVersion: "1.0.0", Architecture: "linux/arm64", Materials: materials,
-		Payload: Payload{File: "payload.tar.zst", Digest: fixtureDigest(string(payload)), MaxFiles: 20, MaxBytes: 1 << 20, MaxCompressedBytes: 1 << 20, Files: files}}
+		Payload: Payload{File: "payload.tar.zst", Digest: fixtureDigest(string(payload)), MaxFiles: 20, MaxBytes: 128 << 20, MaxCompressedBytes: 128 << 20, Files: files}}
 	raw, err := json.Marshal(m)
 	if err != nil {
 		t.Fatal(err)

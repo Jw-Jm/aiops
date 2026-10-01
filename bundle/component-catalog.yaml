@@ -12220,9 +12220,2341 @@ components:
     pocReport: pending
     conformanceFixtures: pending
     exitPlan: pending
-    requiredFor1_0: true
-    candidateNote: "Exact release, digest, license closure, and arm64 support are pending admission."
+    requiredFor1_0: false
+    candidateNote: "Standalone service is not selected by the frozen embedded-SDK architecture. SDK admission is independently locked as opa-sdk; this service remains candidate and cannot enter Bundle."
     officialSupportSources: []
+  - name: opa-sdk
+    state: qualified
+    version: v1.21.0
+    source: https://github.com/open-policy-agent/opa
+    commit: dc6269f2c648bbbece4b76fa1fc3dbb7b61cc7b6
+    digest: sha256:1151ba6c986808b472182e6e52700f21bd18b1cf6c5081f943647651b25d2dc2
+    license: Apache-2.0 AND BSD-3-Clause
+    sourceSnapshot: true
+    sourceArchiveSHA256: sha256:1151ba6c986808b472182e6e52700f21bd18b1cf6c5081f943647651b25d2dc2
+    architectures: [linux/arm64]
+    usage: Embedded Rego SDK and shared first-party Go runtime source closure
+    reuseMode: direct-dependency
+    linkageMode: static-Go-library
+    fileLicenses:
+      - path: "capabilities/capabilities.go"
+        license: "Apache-2.0"
+        digest: sha256:22a0b88fedd828960b57e80249e3ef4bec4e496c3cb3613679d6602329d010f5
+      - path: "capabilities/v0.17.0.json"
+        license: "Apache-2.0"
+        digest: sha256:947daccc10905d4c4d5eb4789c9f55926fc66e1ba467ef1b1e91ddec3a5a03cd
+      - path: "capabilities/v0.17.1.json"
+        license: "Apache-2.0"
+        digest: sha256:947daccc10905d4c4d5eb4789c9f55926fc66e1ba467ef1b1e91ddec3a5a03cd
+      - path: "capabilities/v0.17.2.json"
+        license: "Apache-2.0"
+        digest: sha256:3ef3fa0ca1f321e582dcff49bac81201e0b7ae0e3ceb13c1b0635dec84240250
+      - path: "capabilities/v0.17.3.json"
+        license: "Apache-2.0"
+        digest: sha256:3ef3fa0ca1f321e582dcff49bac81201e0b7ae0e3ceb13c1b0635dec84240250
+      - path: "capabilities/v0.18.0.json"
+        license: "Apache-2.0"
+        digest: sha256:d33f5ece3b89e9175de6b93f6647c42fb3e78f0cd113408b3b257cd64430d529
+      - path: "capabilities/v0.19.0-rc1.json"
+        license: "Apache-2.0"
+        digest: sha256:04d2a693c7fcc992fb1fa5364f3d916cf6db03234501d2948a6085654951b38c
+      - path: "capabilities/v0.19.0.json"
+        license: "Apache-2.0"
+        digest: sha256:6ef261e35c9aaf5b3e0b6d750bcf55c226d14833dc84a639bfa5487419f41bb1
+      - path: "capabilities/v0.19.1.json"
+        license: "Apache-2.0"
+        digest: sha256:6ef261e35c9aaf5b3e0b6d750bcf55c226d14833dc84a639bfa5487419f41bb1
+      - path: "capabilities/v0.19.2.json"
+        license: "Apache-2.0"
+        digest: sha256:6ef261e35c9aaf5b3e0b6d750bcf55c226d14833dc84a639bfa5487419f41bb1
+      - path: "capabilities/v0.20.0.json"
+        license: "Apache-2.0"
+        digest: sha256:4cc7cfca9a519d6dc09a038005da4b90acb63258c837d40fd89d9bb14eb30ded
+      - path: "capabilities/v0.20.1.json"
+        license: "Apache-2.0"
+        digest: sha256:4cc7cfca9a519d6dc09a038005da4b90acb63258c837d40fd89d9bb14eb30ded
+      - path: "capabilities/v0.20.2.json"
+        license: "Apache-2.0"
+        digest: sha256:4cc7cfca9a519d6dc09a038005da4b90acb63258c837d40fd89d9bb14eb30ded
+      - path: "capabilities/v0.20.3.json"
+        license: "Apache-2.0"
+        digest: sha256:4cc7cfca9a519d6dc09a038005da4b90acb63258c837d40fd89d9bb14eb30ded
+      - path: "capabilities/v0.20.4.json"
+        license: "Apache-2.0"
+        digest: sha256:4cc7cfca9a519d6dc09a038005da4b90acb63258c837d40fd89d9bb14eb30ded
+      - path: "capabilities/v0.20.5.json"
+        license: "Apache-2.0"
+        digest: sha256:4cc7cfca9a519d6dc09a038005da4b90acb63258c837d40fd89d9bb14eb30ded
+      - path: "capabilities/v0.21.0.json"
+        license: "Apache-2.0"
+        digest: sha256:f3cc4db4211e77293a97ade1fbad5b8035d1a7177384eb9ffea1298095712df5
+      - path: "capabilities/v0.21.1.json"
+        license: "Apache-2.0"
+        digest: sha256:f3cc4db4211e77293a97ade1fbad5b8035d1a7177384eb9ffea1298095712df5
+      - path: "capabilities/v0.22.0.json"
+        license: "Apache-2.0"
+        digest: sha256:c155fbee1ba998cce1c59ddfa15755889d7b650fbced7dfc6600ca48122112bc
+      - path: "capabilities/v0.23.0.json"
+        license: "Apache-2.0"
+        digest: sha256:42d520d4809a0a76529d32d23f4a7021979eea2dbac9b437c9ea9deac2d53602
+      - path: "capabilities/v0.23.1.json"
+        license: "Apache-2.0"
+        digest: sha256:42d520d4809a0a76529d32d23f4a7021979eea2dbac9b437c9ea9deac2d53602
+      - path: "capabilities/v0.23.2.json"
+        license: "Apache-2.0"
+        digest: sha256:42d520d4809a0a76529d32d23f4a7021979eea2dbac9b437c9ea9deac2d53602
+      - path: "capabilities/v0.24.0.json"
+        license: "Apache-2.0"
+        digest: sha256:206c22094730ac97e76bc750822b7fdf99e94521620f6b856a1ac37075dd3c86
+      - path: "capabilities/v0.25.0-rc1.json"
+        license: "Apache-2.0"
+        digest: sha256:f3115773146063d63d8391586480dff31fa53470f51c2194cd2c3a0f93bb2617
+      - path: "capabilities/v0.25.0-rc2.json"
+        license: "Apache-2.0"
+        digest: sha256:0bbe86a7f57d8844365167def3526f67e5cc7fab300989f0c037b0fc21cc0b1b
+      - path: "capabilities/v0.25.0-rc3.json"
+        license: "Apache-2.0"
+        digest: sha256:0bbe86a7f57d8844365167def3526f67e5cc7fab300989f0c037b0fc21cc0b1b
+      - path: "capabilities/v0.25.0-rc4.json"
+        license: "Apache-2.0"
+        digest: sha256:0bbe86a7f57d8844365167def3526f67e5cc7fab300989f0c037b0fc21cc0b1b
+      - path: "capabilities/v0.25.0.json"
+        license: "Apache-2.0"
+        digest: sha256:2758931329ff288f7e918eb8cbb347faed2693b8add517943d756107e433dadf
+      - path: "capabilities/v0.25.1.json"
+        license: "Apache-2.0"
+        digest: sha256:2758931329ff288f7e918eb8cbb347faed2693b8add517943d756107e433dadf
+      - path: "capabilities/v0.25.2.json"
+        license: "Apache-2.0"
+        digest: sha256:2758931329ff288f7e918eb8cbb347faed2693b8add517943d756107e433dadf
+      - path: "capabilities/v0.26.0.json"
+        license: "Apache-2.0"
+        digest: sha256:dabc0c2bb376fa8bf0ee45041f93c1e6a454952eab890acfbfdc19b873dcda24
+      - path: "capabilities/v0.27.0.json"
+        license: "Apache-2.0"
+        digest: sha256:c606f76ef2971931c5836d12c469040d7331e9f255e9903f82db8852679e4ccb
+      - path: "capabilities/v0.27.1.json"
+        license: "Apache-2.0"
+        digest: sha256:c606f76ef2971931c5836d12c469040d7331e9f255e9903f82db8852679e4ccb
+      - path: "capabilities/v0.28.0.json"
+        license: "Apache-2.0"
+        digest: sha256:df797135966b01a2d1d8f0da8d9cb88614e9466d08bf469a555daf0e65e2f8ad
+      - path: "capabilities/v0.29.0.json"
+        license: "Apache-2.0"
+        digest: sha256:df797135966b01a2d1d8f0da8d9cb88614e9466d08bf469a555daf0e65e2f8ad
+      - path: "capabilities/v0.29.1.json"
+        license: "Apache-2.0"
+        digest: sha256:df797135966b01a2d1d8f0da8d9cb88614e9466d08bf469a555daf0e65e2f8ad
+      - path: "capabilities/v0.29.2.json"
+        license: "Apache-2.0"
+        digest: sha256:df797135966b01a2d1d8f0da8d9cb88614e9466d08bf469a555daf0e65e2f8ad
+      - path: "capabilities/v0.29.3.json"
+        license: "Apache-2.0"
+        digest: sha256:df797135966b01a2d1d8f0da8d9cb88614e9466d08bf469a555daf0e65e2f8ad
+      - path: "capabilities/v0.29.4.json"
+        license: "Apache-2.0"
+        digest: sha256:df797135966b01a2d1d8f0da8d9cb88614e9466d08bf469a555daf0e65e2f8ad
+      - path: "capabilities/v0.30.0.json"
+        license: "Apache-2.0"
+        digest: sha256:df797135966b01a2d1d8f0da8d9cb88614e9466d08bf469a555daf0e65e2f8ad
+      - path: "capabilities/v0.30.1.json"
+        license: "Apache-2.0"
+        digest: sha256:df797135966b01a2d1d8f0da8d9cb88614e9466d08bf469a555daf0e65e2f8ad
+      - path: "capabilities/v0.30.2.json"
+        license: "Apache-2.0"
+        digest: sha256:df797135966b01a2d1d8f0da8d9cb88614e9466d08bf469a555daf0e65e2f8ad
+      - path: "capabilities/v0.31.0.json"
+        license: "Apache-2.0"
+        digest: sha256:f68bcb564207ddbdb0b87c4ffad7cd54dbab73c3fb02e3bf0b312aa2480ec12f
+      - path: "capabilities/v0.32.0.json"
+        license: "Apache-2.0"
+        digest: sha256:f68bcb564207ddbdb0b87c4ffad7cd54dbab73c3fb02e3bf0b312aa2480ec12f
+      - path: "capabilities/v0.32.1.json"
+        license: "Apache-2.0"
+        digest: sha256:f68bcb564207ddbdb0b87c4ffad7cd54dbab73c3fb02e3bf0b312aa2480ec12f
+      - path: "capabilities/v0.33.0.json"
+        license: "Apache-2.0"
+        digest: sha256:d117e1fc6b1e2c0cafba6579fce3b8152f29c6214838b1fb148de20cf0d04c58
+      - path: "capabilities/v0.33.1.json"
+        license: "Apache-2.0"
+        digest: sha256:d117e1fc6b1e2c0cafba6579fce3b8152f29c6214838b1fb148de20cf0d04c58
+      - path: "capabilities/v0.34.0.json"
+        license: "Apache-2.0"
+        digest: sha256:fb8a4b3b29e1118bd63c2b7fe7b844e8f258d49a17247dbb5532f949d97a6830
+      - path: "capabilities/v0.34.1.json"
+        license: "Apache-2.0"
+        digest: sha256:fb8a4b3b29e1118bd63c2b7fe7b844e8f258d49a17247dbb5532f949d97a6830
+      - path: "capabilities/v0.34.2.json"
+        license: "Apache-2.0"
+        digest: sha256:fb8a4b3b29e1118bd63c2b7fe7b844e8f258d49a17247dbb5532f949d97a6830
+      - path: "capabilities/v0.35.0.json"
+        license: "Apache-2.0"
+        digest: sha256:46ddfbbae68a72f5b0adec74a4900dd9a6a9a30a695d917c40dfff2d24812b1e
+      - path: "capabilities/v0.36.0.json"
+        license: "Apache-2.0"
+        digest: sha256:d4d888b0584e58b628f1ad7a49a07d027b8594c7b352ac517054033dece8d5c1
+      - path: "capabilities/v0.36.1.json"
+        license: "Apache-2.0"
+        digest: sha256:d4d888b0584e58b628f1ad7a49a07d027b8594c7b352ac517054033dece8d5c1
+      - path: "capabilities/v0.37.0.json"
+        license: "Apache-2.0"
+        digest: sha256:3177555cc2e110aa7bdfbda81baa6c1e0fb721607f9d0cc83f1cefd9117c4972
+      - path: "capabilities/v0.37.1.json"
+        license: "Apache-2.0"
+        digest: sha256:3177555cc2e110aa7bdfbda81baa6c1e0fb721607f9d0cc83f1cefd9117c4972
+      - path: "capabilities/v0.37.2.json"
+        license: "Apache-2.0"
+        digest: sha256:3177555cc2e110aa7bdfbda81baa6c1e0fb721607f9d0cc83f1cefd9117c4972
+      - path: "capabilities/v0.38.0.json"
+        license: "Apache-2.0"
+        digest: sha256:c098e213f17525fec3801b24cf347d397aec79fe1ebd1ca556069778f34c722a
+      - path: "capabilities/v0.38.1.json"
+        license: "Apache-2.0"
+        digest: sha256:c098e213f17525fec3801b24cf347d397aec79fe1ebd1ca556069778f34c722a
+      - path: "capabilities/v0.39.0.json"
+        license: "Apache-2.0"
+        digest: sha256:c098e213f17525fec3801b24cf347d397aec79fe1ebd1ca556069778f34c722a
+      - path: "capabilities/v0.40.0.json"
+        license: "Apache-2.0"
+        digest: sha256:68264dc4b85e6cc86a1d8984459857f18fb24620177fbc4b9abc55f05ff032dc
+      - path: "capabilities/v0.41.0.json"
+        license: "Apache-2.0"
+        digest: sha256:fa0e80e5cdb3715d668a42058f226b0e9d2b255563ec2269b77a980815b7b3dc
+      - path: "capabilities/v0.42.0.json"
+        license: "Apache-2.0"
+        digest: sha256:938685d1c859148108f5343a895b892f87a9cb708b3982d5f0e4fa5f74eaf38a
+      - path: "capabilities/v0.42.1.json"
+        license: "Apache-2.0"
+        digest: sha256:938685d1c859148108f5343a895b892f87a9cb708b3982d5f0e4fa5f74eaf38a
+      - path: "capabilities/v0.42.2.json"
+        license: "Apache-2.0"
+        digest: sha256:938685d1c859148108f5343a895b892f87a9cb708b3982d5f0e4fa5f74eaf38a
+      - path: "capabilities/v0.43.0.json"
+        license: "Apache-2.0"
+        digest: sha256:9e1571333aa7581edfcaba0618a229522a22bf315b49933dafff8a587f93994a
+      - path: "capabilities/v0.43.1.json"
+        license: "Apache-2.0"
+        digest: sha256:9e1571333aa7581edfcaba0618a229522a22bf315b49933dafff8a587f93994a
+      - path: "capabilities/v0.44.0.json"
+        license: "Apache-2.0"
+        digest: sha256:0e792591cb4e4955f0aa61f8c95fecb131e7a92ea52e966a81added04899345c
+      - path: "capabilities/v0.45.0.json"
+        license: "Apache-2.0"
+        digest: sha256:54f2c761037375cf9d2e0cbc203c4a2dfe100d198f279ce5ce77ba6f9fd9f4f8
+      - path: "capabilities/v0.46.0.json"
+        license: "Apache-2.0"
+        digest: sha256:f9a9ca4e5f75c157885fe1d4cb9d24381615800f9ac441d89cf2753debddeee7
+      - path: "capabilities/v0.46.1.json"
+        license: "Apache-2.0"
+        digest: sha256:f9a9ca4e5f75c157885fe1d4cb9d24381615800f9ac441d89cf2753debddeee7
+      - path: "capabilities/v0.46.2.json"
+        license: "Apache-2.0"
+        digest: sha256:f9a9ca4e5f75c157885fe1d4cb9d24381615800f9ac441d89cf2753debddeee7
+      - path: "capabilities/v0.46.3.json"
+        license: "Apache-2.0"
+        digest: sha256:f9a9ca4e5f75c157885fe1d4cb9d24381615800f9ac441d89cf2753debddeee7
+      - path: "capabilities/v0.47.0.json"
+        license: "Apache-2.0"
+        digest: sha256:653321443c5a467d1f225db1aaf499a031f645e952080530a462f74f9b4a7e76
+      - path: "capabilities/v0.47.1.json"
+        license: "Apache-2.0"
+        digest: sha256:653321443c5a467d1f225db1aaf499a031f645e952080530a462f74f9b4a7e76
+      - path: "capabilities/v0.47.2.json"
+        license: "Apache-2.0"
+        digest: sha256:653321443c5a467d1f225db1aaf499a031f645e952080530a462f74f9b4a7e76
+      - path: "capabilities/v0.47.3.json"
+        license: "Apache-2.0"
+        digest: sha256:653321443c5a467d1f225db1aaf499a031f645e952080530a462f74f9b4a7e76
+      - path: "capabilities/v0.47.4.json"
+        license: "Apache-2.0"
+        digest: sha256:653321443c5a467d1f225db1aaf499a031f645e952080530a462f74f9b4a7e76
+      - path: "capabilities/v0.48.0.json"
+        license: "Apache-2.0"
+        digest: sha256:df200eace1f1bb1c2dc84e861299be2cc672ecfcff3bddd1c1a71c78739a8ba0
+      - path: "capabilities/v0.49.0.json"
+        license: "Apache-2.0"
+        digest: sha256:df200eace1f1bb1c2dc84e861299be2cc672ecfcff3bddd1c1a71c78739a8ba0
+      - path: "capabilities/v0.49.1.json"
+        license: "Apache-2.0"
+        digest: sha256:df200eace1f1bb1c2dc84e861299be2cc672ecfcff3bddd1c1a71c78739a8ba0
+      - path: "capabilities/v0.49.2.json"
+        license: "Apache-2.0"
+        digest: sha256:df200eace1f1bb1c2dc84e861299be2cc672ecfcff3bddd1c1a71c78739a8ba0
+      - path: "capabilities/v0.50.0.json"
+        license: "Apache-2.0"
+        digest: sha256:91d1d0216047e4153249e3e457182772c69c57e09a76dc0cb969047012fba17b
+      - path: "capabilities/v0.50.1.json"
+        license: "Apache-2.0"
+        digest: sha256:91d1d0216047e4153249e3e457182772c69c57e09a76dc0cb969047012fba17b
+      - path: "capabilities/v0.50.2.json"
+        license: "Apache-2.0"
+        digest: sha256:91d1d0216047e4153249e3e457182772c69c57e09a76dc0cb969047012fba17b
+      - path: "capabilities/v0.51.0.json"
+        license: "Apache-2.0"
+        digest: sha256:91d1d0216047e4153249e3e457182772c69c57e09a76dc0cb969047012fba17b
+      - path: "capabilities/v0.52.0.json"
+        license: "Apache-2.0"
+        digest: sha256:ab6262a08d54063367fcee790a8ee6fd783ae19e8824135618673ac99a006ef6
+      - path: "capabilities/v0.53.0.json"
+        license: "Apache-2.0"
+        digest: sha256:2f91fc361a5799b21e0b92d767cf756ca4754912ce84c5b16234a9bf83a38480
+      - path: "capabilities/v0.53.1.json"
+        license: "Apache-2.0"
+        digest: sha256:2f91fc361a5799b21e0b92d767cf756ca4754912ce84c5b16234a9bf83a38480
+      - path: "capabilities/v0.54.0.json"
+        license: "Apache-2.0"
+        digest: sha256:2f91fc361a5799b21e0b92d767cf756ca4754912ce84c5b16234a9bf83a38480
+      - path: "capabilities/v0.55.0.json"
+        license: "Apache-2.0"
+        digest: sha256:270aebfc8baf295a356608acf36ca8487927fa860450ea22198a1ff314ab40f1
+      - path: "capabilities/v0.56.0.json"
+        license: "Apache-2.0"
+        digest: sha256:042c5c48042593b0a0cf93410bb66b30ff8adf8781e6fefff03b0fcf1f620765
+      - path: "capabilities/v0.57.0.json"
+        license: "Apache-2.0"
+        digest: sha256:3a99b25a99f484b9de2037ef459af50cfa3c2da01219d38ddb049ad0c2384411
+      - path: "capabilities/v0.57.1.json"
+        license: "Apache-2.0"
+        digest: sha256:3a99b25a99f484b9de2037ef459af50cfa3c2da01219d38ddb049ad0c2384411
+      - path: "capabilities/v0.58.0.json"
+        license: "Apache-2.0"
+        digest: sha256:3a99b25a99f484b9de2037ef459af50cfa3c2da01219d38ddb049ad0c2384411
+      - path: "capabilities/v0.59.0.json"
+        license: "Apache-2.0"
+        digest: sha256:c8e827c4186a3f30de7fefa3c2c9d72c8856ee10fd2890b8c41f5e351b6bfaa2
+      - path: "capabilities/v0.60.0.json"
+        license: "Apache-2.0"
+        digest: sha256:c8e827c4186a3f30de7fefa3c2c9d72c8856ee10fd2890b8c41f5e351b6bfaa2
+      - path: "capabilities/v0.61.0.json"
+        license: "Apache-2.0"
+        digest: sha256:c8e827c4186a3f30de7fefa3c2c9d72c8856ee10fd2890b8c41f5e351b6bfaa2
+      - path: "capabilities/v0.62.0.json"
+        license: "Apache-2.0"
+        digest: sha256:c8e827c4186a3f30de7fefa3c2c9d72c8856ee10fd2890b8c41f5e351b6bfaa2
+      - path: "capabilities/v0.62.1.json"
+        license: "Apache-2.0"
+        digest: sha256:c8e827c4186a3f30de7fefa3c2c9d72c8856ee10fd2890b8c41f5e351b6bfaa2
+      - path: "capabilities/v0.63.0.json"
+        license: "Apache-2.0"
+        digest: sha256:4e43bd196f78e2210097e2e3bbce25512ef7783c48922be9e2ac0af8ad2fa7c8
+      - path: "capabilities/v0.64.0.json"
+        license: "Apache-2.0"
+        digest: sha256:fdcc65f878bb42838ea1a63a7904cbf67361f0f536a99a61dff11be33357fe8c
+      - path: "capabilities/v0.64.1.json"
+        license: "Apache-2.0"
+        digest: sha256:fdcc65f878bb42838ea1a63a7904cbf67361f0f536a99a61dff11be33357fe8c
+      - path: "capabilities/v0.65.0.json"
+        license: "Apache-2.0"
+        digest: sha256:fdcc65f878bb42838ea1a63a7904cbf67361f0f536a99a61dff11be33357fe8c
+      - path: "capabilities/v0.66.0.json"
+        license: "Apache-2.0"
+        digest: sha256:fdcc65f878bb42838ea1a63a7904cbf67361f0f536a99a61dff11be33357fe8c
+      - path: "capabilities/v0.67.0.json"
+        license: "Apache-2.0"
+        digest: sha256:cc18c421b22011cf784a31de5ad6b3e56a9c21e0b1c62583ed43f50e8bff5734
+      - path: "capabilities/v0.67.1.json"
+        license: "Apache-2.0"
+        digest: sha256:cc18c421b22011cf784a31de5ad6b3e56a9c21e0b1c62583ed43f50e8bff5734
+      - path: "capabilities/v0.68.0.json"
+        license: "Apache-2.0"
+        digest: sha256:cc18c421b22011cf784a31de5ad6b3e56a9c21e0b1c62583ed43f50e8bff5734
+      - path: "capabilities/v0.69.0.json"
+        license: "Apache-2.0"
+        digest: sha256:cc18c421b22011cf784a31de5ad6b3e56a9c21e0b1c62583ed43f50e8bff5734
+      - path: "capabilities/v0.70.0.json"
+        license: "Apache-2.0"
+        digest: sha256:cc18c421b22011cf784a31de5ad6b3e56a9c21e0b1c62583ed43f50e8bff5734
+      - path: "capabilities/v1.0.0.json"
+        license: "Apache-2.0"
+        digest: sha256:db207cb45b0a2efaac5643cdff6610fa20a875e8472a026d3819fbb0bb9da2f9
+      - path: "capabilities/v1.0.1.json"
+        license: "Apache-2.0"
+        digest: sha256:db207cb45b0a2efaac5643cdff6610fa20a875e8472a026d3819fbb0bb9da2f9
+      - path: "capabilities/v1.1.0.json"
+        license: "Apache-2.0"
+        digest: sha256:db207cb45b0a2efaac5643cdff6610fa20a875e8472a026d3819fbb0bb9da2f9
+      - path: "capabilities/v1.10.0.json"
+        license: "Apache-2.0"
+        digest: sha256:022ddd7fd592534ee931a5c37e3082fd8dca7d340d686745ba9d75b431564a4c
+      - path: "capabilities/v1.11.0.json"
+        license: "Apache-2.0"
+        digest: sha256:b7aa09e28aca8fde700e2018ce4c583b8c08a883c854ff2687e271d064cfcd1d
+      - path: "capabilities/v1.11.1.json"
+        license: "Apache-2.0"
+        digest: sha256:b7aa09e28aca8fde700e2018ce4c583b8c08a883c854ff2687e271d064cfcd1d
+      - path: "capabilities/v1.12.0.json"
+        license: "Apache-2.0"
+        digest: sha256:eafade9d436dbb5737c84d26e99f21e32bd7c5f73baa7cfe290bf4a4eccb6852
+      - path: "capabilities/v1.12.1.json"
+        license: "Apache-2.0"
+        digest: sha256:eafade9d436dbb5737c84d26e99f21e32bd7c5f73baa7cfe290bf4a4eccb6852
+      - path: "capabilities/v1.12.2.json"
+        license: "Apache-2.0"
+        digest: sha256:eafade9d436dbb5737c84d26e99f21e32bd7c5f73baa7cfe290bf4a4eccb6852
+      - path: "capabilities/v1.12.3.json"
+        license: "Apache-2.0"
+        digest: sha256:eafade9d436dbb5737c84d26e99f21e32bd7c5f73baa7cfe290bf4a4eccb6852
+      - path: "capabilities/v1.13.0.json"
+        license: "Apache-2.0"
+        digest: sha256:868793527e381bc893f14d54a2ab1991686d80ae92a3c0a191c8269595332075
+      - path: "capabilities/v1.13.1.json"
+        license: "Apache-2.0"
+        digest: sha256:868793527e381bc893f14d54a2ab1991686d80ae92a3c0a191c8269595332075
+      - path: "capabilities/v1.13.2.json"
+        license: "Apache-2.0"
+        digest: sha256:868793527e381bc893f14d54a2ab1991686d80ae92a3c0a191c8269595332075
+      - path: "capabilities/v1.14.0.json"
+        license: "Apache-2.0"
+        digest: sha256:868793527e381bc893f14d54a2ab1991686d80ae92a3c0a191c8269595332075
+      - path: "capabilities/v1.14.1.json"
+        license: "Apache-2.0"
+        digest: sha256:868793527e381bc893f14d54a2ab1991686d80ae92a3c0a191c8269595332075
+      - path: "capabilities/v1.15.0.json"
+        license: "Apache-2.0"
+        digest: sha256:868793527e381bc893f14d54a2ab1991686d80ae92a3c0a191c8269595332075
+      - path: "capabilities/v1.15.1.json"
+        license: "Apache-2.0"
+        digest: sha256:aa6b0813ba26a08004fee53967aed5396f2bab8cb2cea9c59e7728b86d34dfcc
+      - path: "capabilities/v1.16.0.json"
+        license: "Apache-2.0"
+        digest: sha256:bc7971d9e64bf36f1d5962277a5cf6c6443196852edb295bc95e4e2a597b920f
+      - path: "capabilities/v1.16.1.json"
+        license: "Apache-2.0"
+        digest: sha256:bc7971d9e64bf36f1d5962277a5cf6c6443196852edb295bc95e4e2a597b920f
+      - path: "capabilities/v1.16.2.json"
+        license: "Apache-2.0"
+        digest: sha256:bc7971d9e64bf36f1d5962277a5cf6c6443196852edb295bc95e4e2a597b920f
+      - path: "capabilities/v1.17.0.json"
+        license: "Apache-2.0"
+        digest: sha256:838a511dc7d5e80bab452afcddc297a451c9f2965d26e6b3fc45e95732351878
+      - path: "capabilities/v1.17.1.json"
+        license: "Apache-2.0"
+        digest: sha256:838a511dc7d5e80bab452afcddc297a451c9f2965d26e6b3fc45e95732351878
+      - path: "capabilities/v1.18.0.json"
+        license: "Apache-2.0"
+        digest: sha256:838a511dc7d5e80bab452afcddc297a451c9f2965d26e6b3fc45e95732351878
+      - path: "capabilities/v1.18.1.json"
+        license: "Apache-2.0"
+        digest: sha256:838a511dc7d5e80bab452afcddc297a451c9f2965d26e6b3fc45e95732351878
+      - path: "capabilities/v1.18.2.json"
+        license: "Apache-2.0"
+        digest: sha256:838a511dc7d5e80bab452afcddc297a451c9f2965d26e6b3fc45e95732351878
+      - path: "capabilities/v1.19.0.json"
+        license: "Apache-2.0"
+        digest: sha256:b91e86f13518863bb98490798388909cd13f61b121072f9209a5bdcb837c9f43
+      - path: "capabilities/v1.19.1.json"
+        license: "Apache-2.0"
+        digest: sha256:b91e86f13518863bb98490798388909cd13f61b121072f9209a5bdcb837c9f43
+      - path: "capabilities/v1.2.0.json"
+        license: "Apache-2.0"
+        digest: sha256:53334445930e26c8e904481d12b6e4cc79c9e1ce76c6c9b0ac3a5ab03c1dfdb8
+      - path: "capabilities/v1.20.0.json"
+        license: "Apache-2.0"
+        digest: sha256:538a17e64680ad912fbdc3379b81c49aa31ef3c8c70c78fa63ae2f636479ed74
+      - path: "capabilities/v1.20.1.json"
+        license: "Apache-2.0"
+        digest: sha256:538a17e64680ad912fbdc3379b81c49aa31ef3c8c70c78fa63ae2f636479ed74
+      - path: "capabilities/v1.20.2.json"
+        license: "Apache-2.0"
+        digest: sha256:538a17e64680ad912fbdc3379b81c49aa31ef3c8c70c78fa63ae2f636479ed74
+      - path: "capabilities/v1.21.0.json"
+        license: "Apache-2.0"
+        digest: sha256:7ec50542587979b0cb52414b57b0b8e0cb448406c258cc08bb3e09d97e2292dd
+      - path: "capabilities/v1.3.0.json"
+        license: "Apache-2.0"
+        digest: sha256:53334445930e26c8e904481d12b6e4cc79c9e1ce76c6c9b0ac3a5ab03c1dfdb8
+      - path: "capabilities/v1.4.0.json"
+        license: "Apache-2.0"
+        digest: sha256:53334445930e26c8e904481d12b6e4cc79c9e1ce76c6c9b0ac3a5ab03c1dfdb8
+      - path: "capabilities/v1.4.1.json"
+        license: "Apache-2.0"
+        digest: sha256:53334445930e26c8e904481d12b6e4cc79c9e1ce76c6c9b0ac3a5ab03c1dfdb8
+      - path: "capabilities/v1.4.2.json"
+        license: "Apache-2.0"
+        digest: sha256:53334445930e26c8e904481d12b6e4cc79c9e1ce76c6c9b0ac3a5ab03c1dfdb8
+      - path: "capabilities/v1.5.0.json"
+        license: "Apache-2.0"
+        digest: sha256:53334445930e26c8e904481d12b6e4cc79c9e1ce76c6c9b0ac3a5ab03c1dfdb8
+      - path: "capabilities/v1.5.1.json"
+        license: "Apache-2.0"
+        digest: sha256:53334445930e26c8e904481d12b6e4cc79c9e1ce76c6c9b0ac3a5ab03c1dfdb8
+      - path: "capabilities/v1.6.0.json"
+        license: "Apache-2.0"
+        digest: sha256:2acb9fedcd1b3e454c9cf434d491e76ac9972709345ee6f2d76f9f545e9974a6
+      - path: "capabilities/v1.7.0.json"
+        license: "Apache-2.0"
+        digest: sha256:2acb9fedcd1b3e454c9cf434d491e76ac9972709345ee6f2d76f9f545e9974a6
+      - path: "capabilities/v1.8.0.json"
+        license: "Apache-2.0"
+        digest: sha256:022ddd7fd592534ee931a5c37e3082fd8dca7d340d686745ba9d75b431564a4c
+      - path: "capabilities/v1.9.0.json"
+        license: "Apache-2.0"
+        digest: sha256:022ddd7fd592534ee931a5c37e3082fd8dca7d340d686745ba9d75b431564a4c
+      - path: "internal/bundle/utils.go"
+        license: "Apache-2.0"
+        digest: sha256:8ebf1a2294e4d655d9885f929674ab0bdefd212efe48211534551e1cc531dbca
+      - path: "internal/cidr/merge/merge.go"
+        license: "Apache-2.0"
+        digest: sha256:fb45880f260cce77652f9e86e4411cd036a165c7fa0b241fc5476982bd58b811
+      - path: "internal/compiler/utils.go"
+        license: "Apache-2.0"
+        digest: sha256:fa57d1cbc9998963e993849c9ef98526fb35ae32f4bfef5fba37ae471b951786
+      - path: "internal/compiler/wasm/opa/callgraph.csv"
+        license: "Apache-2.0"
+        digest: sha256:254e1a7c9de1e1175442e137d4b8958b3b4b61969fb393fafbaaee590e08f640
+      - path: "internal/compiler/wasm/opa/opa.go"
+        license: "Apache-2.0"
+        digest: sha256:21658e1a6ad1e1d43b43a67af2c9f67f4e09453efd3ba9e0ca0025b31f32bf4c
+      - path: "internal/compiler/wasm/opa/opa.wasm"
+        license: "Apache-2.0"
+        digest: sha256:bcdcf035ee3fed5340ca1b9a90a9b1f9ea5f1b6d17b501b7bdd7bdcedb20af0c
+      - path: "internal/compiler/wasm/optimizations.go"
+        license: "Apache-2.0"
+        digest: sha256:92924ecd256f0fe884ca17f0f78a44d3ebcb0eaea292c1eac84825dd787a0f40
+      - path: "internal/compiler/wasm/wasm.go"
+        license: "Apache-2.0"
+        digest: sha256:bdb11904dc88dc8c5ea911f0b5076a36d8d199c67ba80998f6b6cc5543d8d5c8
+      - path: "internal/debug/debug.go"
+        license: "Apache-2.0"
+        digest: sha256:9275dba937789a6c5b700d214a04df0fdd5f5ae93683e9343d3c0816fb23c85e
+      - path: "internal/deepcopy/deepcopy.go"
+        license: "Apache-2.0"
+        digest: sha256:ae2137be7dd36dadf008e60b8278601acf1a1d32237267285242bdb6e088b3f1
+      - path: "internal/edittree/bitvector/bitvector.go"
+        license: "BSD-3-Clause"
+        digest: sha256:f7438e373dbfc6dcab6fed7331e7bee0b5ffb9355f36e3cd57ad171b335849b2
+      - path: "internal/edittree/edittree.go"
+        license: "Apache-2.0"
+        digest: sha256:d348bd65c783e8d73b945b98c11e05fb6e150bdeae5985015535884050ffe452
+      - path: "internal/file/archive/tarball.go"
+        license: "Apache-2.0"
+        digest: sha256:6980d6a7bd87b0579f1361b6cd15a719a44b3a9d0b98f45a16c9f6607b3c0c1b
+      - path: "internal/file/url/url.go"
+        license: "Apache-2.0"
+        digest: sha256:fedca02ae691d04c38a67e03834ec6a9cb91eba77d950bf1c6fc556274279875
+      - path: "internal/future/filter_imports.go"
+        license: "Apache-2.0"
+        digest: sha256:21b89d848ebf4847132b156db00fbf2d2f63e6a429c37f25f8b3e0840c71ae71
+      - path: "internal/future/parser_opts.go"
+        license: "Apache-2.0"
+        digest: sha256:556b4205028eea19062003796f702843cb5b78973c2bd3284b8bcda8a970aefc
+      - path: "internal/gojsonschema/draft.go"
+        license: "Apache-2.0"
+        digest: sha256:9f6c93d8a0e6ef5cadd26722c7fcced5b21e6ee76758552be1b40ca1207fbcbb
+      - path: "internal/gojsonschema/errors.go"
+        license: "Apache-2.0"
+        digest: sha256:bfa3f7b90eca4fbacaa92c1650a47ba2949f66475b1b3295ea6db8888e0a18db
+      - path: "internal/gojsonschema/format_checkers.go"
+        license: "Apache-2.0"
+        digest: sha256:d90f072cb1b796395ebf4868868641601e2362f33871d5f00b003e6c5b90cd37
+      - path: "internal/gojsonschema/internalLog.go"
+        license: "Apache-2.0"
+        digest: sha256:debfd898e1acb8c4824ba175bfb8867cb891c10382ddd001f3ec5e3270de94a2
+      - path: "internal/gojsonschema/jsonContext.go"
+        license: "Apache-2.0"
+        digest: sha256:6f119afa0da531ddcc184276f6890d4fb0f1ebed7eefb82b7d73be045752c5c3
+      - path: "internal/gojsonschema/jsonLoader.go"
+        license: "Apache-2.0"
+        digest: sha256:47444a41a5205975c586557ef07baf2aa8bfafa26aa358099003dbf9457942aa
+      - path: "internal/gojsonschema/locales.go"
+        license: "Apache-2.0"
+        digest: sha256:c4e48d9ded0b9bb343823b1186d7fb8bee0c25bee1db0ddf4e71d9b66d77c4cc
+      - path: "internal/gojsonschema/result.go"
+        license: "Apache-2.0"
+        digest: sha256:73931c95e2ead051f1fe15c9affdda67d285f89bba7f7895d2b8f44c85c50679
+      - path: "internal/gojsonschema/schema.go"
+        license: "Apache-2.0"
+        digest: sha256:e87abf609a075eda47d6210a89de3d7ee10f7664ecfedd548eeb82c513bca7f4
+      - path: "internal/gojsonschema/schemaLoader.go"
+        license: "Apache-2.0"
+        digest: sha256:b5a6013a65a4372290427e6e39207addb751f5777fd0fcfd228c0b6f638abd34
+      - path: "internal/gojsonschema/schemaPool.go"
+        license: "Apache-2.0"
+        digest: sha256:42c821bb7e4d5c05fb101e34252cff22ff7063ef06b0e9b09772c3630ecdb37a
+      - path: "internal/gojsonschema/schemaReferencePool.go"
+        license: "Apache-2.0"
+        digest: sha256:4eba238c42f0ed6397fd18d9651dfb723a6ee440b94e58d7604fb749350b42ea
+      - path: "internal/gojsonschema/schemaType.go"
+        license: "Apache-2.0"
+        digest: sha256:8a3062a5e598c1a69cf99ec35e004b7152056a7011f1d090bd9181946d903843
+      - path: "internal/gojsonschema/subSchema.go"
+        license: "Apache-2.0"
+        digest: sha256:8139ae06789d1c1132e6d821263afd44071774a2b4209fff5044d0491aeba507
+      - path: "internal/gojsonschema/types.go"
+        license: "Apache-2.0"
+        digest: sha256:da460b5c227b519fdd03fc15deb69ce2d71d78df97ee0a6e00e29e505b51fa31
+      - path: "internal/gojsonschema/utils.go"
+        license: "Apache-2.0"
+        digest: sha256:5b45c26aabc4876b7824f4e2b579cba787baf6d8bbb33d916ddede3456e50e7d
+      - path: "internal/gojsonschema/validation.go"
+        license: "Apache-2.0"
+        digest: sha256:f1bd842ac5168d7604cf1748f4781659ae76de79f891c2bda12ef677cdd25a74
+      - path: "internal/json/patch/patch.go"
+        license: "Apache-2.0"
+        digest: sha256:da0e6d12ff79900d2dcb63b3c88ee91f954ff7cbe7fffc7b2d5f3f62ead25d8f
+      - path: "internal/jsonv2/jsonv2.go"
+        license: "Apache-2.0"
+        digest: sha256:ef48f866136caded5c17981ff815dafbe263d80cd4062eb5f98eae199e66666a
+      - path: "internal/lcss/lcss.go"
+        license: "Apache-2.0"
+        digest: sha256:dc3f71991a9e634bebd4f4df9de1bf6d3a901c814ca0eafce921e7306238e173
+      - path: "internal/lcss/qsufsort.go"
+        license: "Apache-2.0"
+        digest: sha256:4dafcbaec49ab102d4874f9deee3d6a8ef665c90f7dcaaf57c2195a98a065438
+      - path: "internal/leb128/leb128.go"
+        license: "Apache-2.0"
+        digest: sha256:ef86255a2576b9950f860e74de1c05b4f120cbc0825572a8402219e793260b0f
+      - path: "internal/merge/merge.go"
+        license: "Apache-2.0"
+        digest: sha256:90ab3652200004d966da4a3ddb0711925831d1ca5804bfe823d2703b352188ee
+      - path: "internal/methodlesstemplate/doc.go"
+        license: "BSD-3-Clause"
+        digest: sha256:0f74f7ac85529540095185d9905584606b9140a3b0a1ae7b3e064df3470387d0
+      - path: "internal/methodlesstemplate/exec.go"
+        license: "BSD-3-Clause"
+        digest: sha256:067e2bc8090da21094f6dfa75eaa31d43927058b915c912b9385a1fcfa6d764e
+      - path: "internal/methodlesstemplate/funcs.go"
+        license: "BSD-3-Clause"
+        digest: sha256:c23161df15b30c86d7da8667c45d271fd7fd7e75dc43db55506b9f1b75e8720c
+      - path: "internal/methodlesstemplate/internal/fmtsort/sort.go"
+        license: "BSD-3-Clause"
+        digest: sha256:8cb72c619d72d7065bc4225b352a6b7460355cf956e3301b9dd09bbd4b288f27
+      - path: "internal/methodlesstemplate/option.go"
+        license: "BSD-3-Clause"
+        digest: sha256:fae2206d9c10cf31439ba9d616a2f8ead93f8e9b8fc12060fbf9cfbc842c0a43
+      - path: "internal/methodlesstemplate/template.go"
+        license: "BSD-3-Clause"
+        digest: sha256:932154333435a7e26a71c8d27b3b70ebf3a3cbea289d4d29cfbe647e765318e6
+      - path: "internal/planner/planner.go"
+        license: "Apache-2.0"
+        digest: sha256:b71f4d3d50d1e43d214de03906f4f2000a95b1c7364c7d5d213da9d5776a54a0
+      - path: "internal/planner/rules.go"
+        license: "Apache-2.0"
+        digest: sha256:7321612bd4e07e5e97cd088bc443e84db8439f8d4bff109ffe5523bb90de530c
+      - path: "internal/planner/varstack.go"
+        license: "Apache-2.0"
+        digest: sha256:548ff35673c13939d565f3eb005d8d8d70fc85671075f90bd3f276b1e8ba3df6
+      - path: "internal/providers/aws/crypto/compare.go"
+        license: "Apache-2.0"
+        digest: sha256:ee7a1e4347c12727ed6edc58f8d884bfef1564ea240d4c399bfd73e431bc8fa8
+      - path: "internal/providers/aws/crypto/ecc.go"
+        license: "Apache-2.0"
+        digest: sha256:c387accd1e9bf12fb418c16e51d57e1ea8b82e1f1f5fef8a230f76e973a1b8e8
+      - path: "internal/providers/aws/ecr.go"
+        license: "Apache-2.0"
+        digest: sha256:4becbbddcbb854456b7fc7391b9f06b3971cbb8d76abac79f25d6eb37d46d683
+      - path: "internal/providers/aws/kms.go"
+        license: "Apache-2.0"
+        digest: sha256:21b5fefb4f4c57ecb63008e429739864d59f7efbd7691e49f527afbe6a3245f4
+      - path: "internal/providers/aws/signing_v4.go"
+        license: "Apache-2.0"
+        digest: sha256:f5e7929f7869bd4d0cf15e31ec2bca13e45c3e72371fb13df1d1662c32ad455d
+      - path: "internal/providers/aws/signing_v4a.go"
+        license: "Apache-2.0"
+        digest: sha256:082b83db275e1e541a454f1fd1bf281367a988e64d703ff0f8f9b3fb846ecc5c
+      - path: "internal/providers/aws/util.go"
+        license: "Apache-2.0"
+        digest: sha256:8b2c5b663e2d95a173824cf77ace6be04d1b8a05adc90c86705a13e155440756
+      - path: "internal/providers/aws/v4/const.go"
+        license: "Apache-2.0"
+        digest: sha256:491ca693842822c270102ef40094f44bfd50bcaaf35c39f71d53345262cf2807
+      - path: "internal/providers/aws/v4/header_rules.go"
+        license: "Apache-2.0"
+        digest: sha256:c459a095fb9102a0489e60a1de019a6419bc9f3e118c7ae89374c0b2b02baaac
+      - path: "internal/providers/aws/v4/headers.go"
+        license: "Apache-2.0"
+        digest: sha256:035f700cbd9ff6f5a26b12fa7d86388793e887a1e27ce7c54f05588ce1518173
+      - path: "internal/providers/aws/v4/host.go"
+        license: "Apache-2.0"
+        digest: sha256:681af5e6b7ed91b6af450bc2981ed64eb776eddd6cd003a7bd699442e1231330
+      - path: "internal/providers/aws/v4/util.go"
+        license: "Apache-2.0"
+        digest: sha256:c0e9ff4a0284e3ac5b7d4291561727b63371342006449aaded63e80a8644354f
+      - path: "internal/rego/opa/engine.go"
+        license: "Apache-2.0"
+        digest: sha256:5b1135174b08ebf12e5c335eaf41904c5504c6f6c6fce58f247c8a51ae0ab2eb
+      - path: "internal/rego/opa/options.go"
+        license: "Apache-2.0"
+        digest: sha256:65283782fc80fe5dc87c24dea05b540130d5ede21acbf8d6bdaf2809cdde2f5b
+      - path: "internal/semver/semver.go"
+        license: "Apache-2.0"
+        digest: sha256:72c9b4b3c4590da3b995aad67f7eafd71b6e17a69f7e7cda713b8cce79e2764c
+      - path: "internal/strings/strings.go"
+        license: "Apache-2.0"
+        digest: sha256:ce8c9ef38fbccadd0aa9911ebd675b59ba80dd391cd49cb6586c46d0bafc8833
+      - path: "internal/uuid/uuid.go"
+        license: "Apache-2.0"
+        digest: sha256:9b1b6204e1bd0c491a8c105d911668cdae8f8b413b3cbfac2602547fb4b618ee
+      - path: "internal/version/version.go"
+        license: "Apache-2.0"
+        digest: sha256:5b5053e00962129ebb28cdafab6f95574cbd666472887a657a526c411a7fbcc5
+      - path: "internal/wasm/constant/constant.go"
+        license: "Apache-2.0"
+        digest: sha256:014e095ccc8c64055f8786a0d18340778a59b878ba1b4b76c8a1450271792acc
+      - path: "internal/wasm/encoding/doc.go"
+        license: "Apache-2.0"
+        digest: sha256:c876c32bee2a51405c2d898a0e02ffb6a78fa9bbd5d78521b72ccb71196ab709
+      - path: "internal/wasm/encoding/reader.go"
+        license: "Apache-2.0"
+        digest: sha256:7881d504af5d04b70e7096c20f80914efe1e843d48e3847a8bb52e4d55bfc48c
+      - path: "internal/wasm/encoding/writer.go"
+        license: "Apache-2.0"
+        digest: sha256:106c21ebba20bd335a932a9923f05a84b14eec8951a1ddc8a9f9bc55a65c23b8
+      - path: "internal/wasm/instruction/control.go"
+        license: "Apache-2.0"
+        digest: sha256:8670c10e042a3246878a75856ed24266ce0101d5db113e7bea6db5acb30da0b4
+      - path: "internal/wasm/instruction/instruction.go"
+        license: "Apache-2.0"
+        digest: sha256:da46c10b1d752ada953aa6eeae1cf7b7bb9681d96f02ecd1d7787a02de161289
+      - path: "internal/wasm/instruction/memory.go"
+        license: "Apache-2.0"
+        digest: sha256:a7d0f8722a4f2c4a3f1f3fc06fa966fa42e7fdf4df686dc1cb6ba0d52bfc8cd8
+      - path: "internal/wasm/instruction/numeric.go"
+        license: "Apache-2.0"
+        digest: sha256:00333c99e9ae17394145d24dd872f13dc5fa5e8b1368015ba4ce97d16566020d
+      - path: "internal/wasm/instruction/parametric.go"
+        license: "Apache-2.0"
+        digest: sha256:b9baf4ca403d542ec5a696790a76e9181ec07a7924b70622fa9832318e5ade66
+      - path: "internal/wasm/instruction/variable.go"
+        license: "Apache-2.0"
+        digest: sha256:8c3daf5d08f2f921867305bb94b1b8377b76abd3b6c1c64c2abe44beb83282bb
+      - path: "internal/wasm/module/module.go"
+        license: "Apache-2.0"
+        digest: sha256:392c0a911cc76eec97dd50b0e2af0c19fd6761d1a6dc1d7c52f1996e497392b2
+      - path: "internal/wasm/module/pretty.go"
+        license: "Apache-2.0"
+        digest: sha256:9b4df84452b1bdba5beae5cb0fea95a68b4aafdf8d4610e589eee9f907278c3e
+      - path: "internal/wasm/opcode/opcode.go"
+        license: "Apache-2.0"
+        digest: sha256:5cdbded04c9280a9c05b4c0cb2683bf96beabc05b6d0338cfd329e9d5ddd0676
+      - path: "internal/wasm/sdk/opa/capabilities/capabilities_nowasm.go"
+        license: "Apache-2.0"
+        digest: sha256:deef0bcee8c809f72ae6a02bdd24b3fdfbc7d9c9d0f596273682e67cbbb50873
+      - path: "internal/wasm/types/types.go"
+        license: "Apache-2.0"
+        digest: sha256:75519ea216005cc2966ca871f2564ae9c102d620747c83f30202794a697fd975
+      - path: "internal/wasm/util/util.go"
+        license: "Apache-2.0"
+        digest: sha256:6d89bbe07e64705205325e789de3504bd1e633eced12338ab9dc20a23f26be16
+      - path: "internal/yaml/yaml.go"
+        license: "Apache-2.0"
+        digest: sha256:12eec4ae3d91325b865f39d45d2b5ba94948e007570f2355c736f7f6689ace85
+      - path: "v1/ast/annotations.go"
+        license: "Apache-2.0"
+        digest: sha256:7ff72893694718e1f2def0c5fadd553758bf01f3eb96c0f4ca41187f693ec606
+      - path: "v1/ast/annotations_jsonv2.go"
+        license: "Apache-2.0"
+        digest: sha256:0bfa623b84fabc1916c4ba0f5de1f3de96df9280ab49fc532efff638c0edb73c
+      - path: "v1/ast/builtins.go"
+        license: "Apache-2.0"
+        digest: sha256:0bb7ed24cc34444aa02112f9266f656cea4b9edd4a4e526756e8413aa789d33e
+      - path: "v1/ast/capabilities.go"
+        license: "Apache-2.0"
+        digest: sha256:cae472bb2401c72351e3a656d68505e425320d01d6bd996ff00e8b9d6c57cf0d
+      - path: "v1/ast/check.go"
+        license: "Apache-2.0"
+        digest: sha256:79899063648f1ab0002f2f98553f4fba0eb7805f734e51030d01979aaf2cdbff
+      - path: "v1/ast/check_elide.go"
+        license: "Apache-2.0"
+        digest: sha256:e088a5cdcff103f1320d12c00061081fd4eb4471ef6d770505be50936befc5c5
+      - path: "v1/ast/compare.go"
+        license: "Apache-2.0"
+        digest: sha256:f9aac8f75e3090d48569b4adeaf28be8741e0e7f383a75f31f6cbbacc238479e
+      - path: "v1/ast/compile.go"
+        license: "Apache-2.0"
+        digest: sha256:a92775a64c1e51f63409ce30aedb50eb979ad70e535224602b752a851be4ce3b
+      - path: "v1/ast/compilehelper.go"
+        license: "Apache-2.0"
+        digest: sha256:43c5c51b40a6c8651c4419324d3fdd4bba7716725c0b4ef4caefd9826dccb5d7
+      - path: "v1/ast/compilemetrics.go"
+        license: "Apache-2.0"
+        digest: sha256:91468ff33367edbb1144b73bd290c3468155206a0d4386be258415c74c75b95f
+      - path: "v1/ast/conflicts.go"
+        license: "Apache-2.0"
+        digest: sha256:526d8047f7b8b600ed6ad061835a4e644669ce249bd918903329b50de5260630
+      - path: "v1/ast/default_module_loader.go"
+        license: "Apache-2.0"
+        digest: sha256:524857465f865d3aaaaf2637e4ad7602dbe4db772efb5a2ba60f964bbbc06ccf
+      - path: "v1/ast/doc.go"
+        license: "Apache-2.0"
+        digest: sha256:bce4a50dafc9183fa5fc4bbb3b2a82441792ee94812b32a1a0207fd7503cc76c
+      - path: "v1/ast/env.go"
+        license: "Apache-2.0"
+        digest: sha256:05cff2bd710722c79e7008abca942888e60dd3943c70081f683fa7060ddc6f72
+      - path: "v1/ast/errors.go"
+        license: "Apache-2.0"
+        digest: sha256:0674a2836f229bdfdc8eda84c29e9cd91546e59fd91b5f5efb45b9ee7a8524b1
+      - path: "v1/ast/external_source.go"
+        license: "Apache-2.0"
+        digest: sha256:b562de49723d99c0b77303df55ac6b47a93dd79b13fcab7a8400034f270e4882
+      - path: "v1/ast/index.go"
+        license: "Apache-2.0"
+        digest: sha256:835a7c0ce5214e934a075f9483272bb64a36d328f028f9a2d0f1f6dfe3240e3f
+      - path: "v1/ast/index_affix.go"
+        license: "Apache-2.0"
+        digest: sha256:ed6080e6b9987b1b41de7a71e1c1c05938f130c880aa79277383f650dc2c3622
+      - path: "v1/ast/index_debug.go"
+        license: "Apache-2.0"
+        digest: sha256:df452bd5096025cd57f3cd3b6d1a02947b280f7153080d157c3b70c361a77f75
+      - path: "v1/ast/internal/scanner/scanner.go"
+        license: "Apache-2.0"
+        digest: sha256:53607ef1b2a06c9bb1a60525ea415ff78598acd4e45fadbb84b79760ed856153
+      - path: "v1/ast/internal/tokens/tokens.go"
+        license: "Apache-2.0"
+        digest: sha256:ceca012af98f95e6a8964330783273be4b52db9e73024949aaabfa89d10be873
+      - path: "v1/ast/interning.go"
+        license: "Apache-2.0"
+        digest: sha256:938970902fa33eddc3ffd7d6afced245f83ca334a9d533b0413338ccca01af79
+      - path: "v1/ast/json/json.go"
+        license: "Apache-2.0"
+        digest: sha256:0f6478eee416f8fe456c60a1c65a452f508994295a119a853faa9aa198c579ce
+      - path: "v1/ast/location/location.go"
+        license: "Apache-2.0"
+        digest: sha256:5a10a4cad3f49bdceff5a9d46a4e84af4f064f9d1078ef3c808cbee38a9a046d
+      - path: "v1/ast/location/location_jsonv2.go"
+        license: "Apache-2.0"
+        digest: sha256:9fe4a9a56189ef2fb903957a7862f52e51d03b890b2422bcb1681f7f6a696c5c
+      - path: "v1/ast/map.go"
+        license: "Apache-2.0"
+        digest: sha256:60e208280bac63408aa3eac2e6378fc468d71b75cdf76ea025fe06ff94a034d8
+      - path: "v1/ast/mermaid.go"
+        license: "Apache-2.0"
+        digest: sha256:d086d191e674f8e7b28296de170ed77f3e9478ce1b8bf34d3d5d98571fbe0815
+      - path: "v1/ast/object.go"
+        license: "Apache-2.0"
+        digest: sha256:59ffcdcbb6130d12172c52a70567581b9fa76d227e9a4cf2d23493dc78f9179f
+      - path: "v1/ast/parser.go"
+        license: "Apache-2.0"
+        digest: sha256:218c16a40e3cfeef8cf723e6d63bdbd220f9e57edc02acf9e93406e8a049b527
+      - path: "v1/ast/parser_ext.go"
+        license: "Apache-2.0"
+        digest: sha256:11c13f7167f6726a5b728f46ba90562b19a1aac35949b8e424a87907119ba7d1
+      - path: "v1/ast/performance.go"
+        license: "Apache-2.0"
+        digest: sha256:0cd0df572b48079cd739113a6d38a0a89c71bfd3d490816d52b54c9c6cd148b0
+      - path: "v1/ast/policy.go"
+        license: "Apache-2.0"
+        digest: sha256:9aca2f00dfe9897efeb424f3ee9a856068518b4a989f20de92eaa5e921bbba26
+      - path: "v1/ast/policy_appenders.go"
+        license: "Apache-2.0"
+        digest: sha256:f40a12a93cd78b613476f974d7d458d34e26c43fa99c09d16ca09ed2d26f5d42
+      - path: "v1/ast/policy_jsonv2.go"
+        license: "Apache-2.0"
+        digest: sha256:b4b34baada0a2d12ae74e270ccef15e49681e2141b7c70058a4dba4427506b6a
+      - path: "v1/ast/pretty.go"
+        license: "Apache-2.0"
+        digest: sha256:efcd6962557c6da0b892dc4036121d94f73ccb8018d30bbdf2b350e378e7c5f7
+      - path: "v1/ast/rego_compiler.go"
+        license: "Apache-2.0"
+        digest: sha256:0dfe95957b44d71e969d877b9071e295ec391b0a06610820d7a894dd9f6f4df0
+      - path: "v1/ast/rego_v1.go"
+        license: "Apache-2.0"
+        digest: sha256:9039bba1cb50ae788bcbd5bf3639a427bf78afee1e88409dc755a4b036a867d7
+      - path: "v1/ast/schema.go"
+        license: "Apache-2.0"
+        digest: sha256:0cb727333996254baa8c714fdf7dbcc95157a9d70863470b7b23678d8c14a883
+      - path: "v1/ast/string_length.go"
+        license: "Apache-2.0"
+        digest: sha256:c6d381d713ac07b33dfcb175109b7587643f90bb1e70253fec0bf19c80644535
+      - path: "v1/ast/strings.go"
+        license: "Apache-2.0"
+        digest: sha256:c367c75b4fb99309873204572880746cc2936da053683f6acfd6dab62c7f9cf8
+      - path: "v1/ast/syncpools.go"
+        license: "Apache-2.0"
+        digest: sha256:87493e98f1869bb114cdd60f9f04bd437a248c9ec05d2ecaa18fe3576222107f
+      - path: "v1/ast/term.go"
+        license: "Apache-2.0"
+        digest: sha256:40bfa37cd8f3ec61daa9b00c031b580a3a7834fe5d67c6fddd61301b01190750
+      - path: "v1/ast/term_appenders.go"
+        license: "Apache-2.0"
+        digest: sha256:3140b65cb5f509db04b48936064a3fe72c854d3cce99a644398283ae6b6aa96c
+      - path: "v1/ast/term_jsonv2.go"
+        license: "Apache-2.0"
+        digest: sha256:9ba62f3b8623583a5b979565d06b48aafb570be9bc0d303aa9e2595b6157b709
+      - path: "v1/ast/transform.go"
+        license: "Apache-2.0"
+        digest: sha256:8794559165b7124917668625028d56e6317fe3dd5fa74ac6fc706e15807ed4db
+      - path: "v1/ast/treenode_dump.go"
+        license: "Apache-2.0"
+        digest: sha256:4e8ffced9498534c895d5bde5c3398bc23f4622b1ebe92cf529f5cdd672ca41c
+      - path: "v1/ast/unify.go"
+        license: "Apache-2.0"
+        digest: sha256:43b19aae63c27278a97b73ca035bd7253486555156ce61bf3be8240f0d09307b
+      - path: "v1/ast/varset.go"
+        license: "Apache-2.0"
+        digest: sha256:a33eedc5682ab9ca0f2d96b0b37d28cfad15e584f1c029e3f1d8dbb6ede64882
+      - path: "v1/ast/version_index.json"
+        license: "Apache-2.0"
+        digest: sha256:1e6043d120940f2f11196090ad5089bc8ded50e7b732c200a0dece092ceaab6b
+      - path: "v1/ast/visit.go"
+        license: "Apache-2.0"
+        digest: sha256:6e05524d6670c9795d144a855645be3a99401898634245c1ef4bc089af4a51fa
+      - path: "v1/bundle/bundle.go"
+        license: "Apache-2.0"
+        digest: sha256:ff87e774b03a3eb89ac45e6249160ba33e39f35850afcb42f259e503ff41d2ec
+      - path: "v1/bundle/file.go"
+        license: "Apache-2.0"
+        digest: sha256:7a2366243f387d698c742f3df2b7c84e6afb9059ff3e3d883df86c00838e6fb2
+      - path: "v1/bundle/filefs.go"
+        license: "Apache-2.0"
+        digest: sha256:21afdb16ca19cec5ea4c5dd788f70a744267935a12cc555ebac6e0457b008d94
+      - path: "v1/bundle/hash.go"
+        license: "Apache-2.0"
+        digest: sha256:2def3ccca48666d65f37864464104d4f572f59552e836793b128d420f1bf8ece
+      - path: "v1/bundle/keys.go"
+        license: "Apache-2.0"
+        digest: sha256:a38879560e8f3f3d624af54988d5660b9c7e29042c4ac184837a311243de7046
+      - path: "v1/bundle/proto.go"
+        license: "Apache-2.0"
+        digest: sha256:0ef9af94da1461d42ff44dea98ca5f12c0fc6a7bac79bf382f7a078990776243
+      - path: "v1/bundle/sign.go"
+        license: "Apache-2.0"
+        digest: sha256:07450550ed8eb8945f6030766fd567d2b321a23dda64364b40f11f551dbdb0ee
+      - path: "v1/bundle/store.go"
+        license: "Apache-2.0"
+        digest: sha256:7eaa818237d5390524bd9a09e6775165e9b271c4f22058eb74e18977aeeadfeb
+      - path: "v1/bundle/v1pb/manifest.pb.go"
+        license: "Apache-2.0"
+        digest: sha256:c535644501b2172a1c575fd696090b14558b8de19991a187f43e9d5e3747ecc8
+      - path: "v1/bundle/verify.go"
+        license: "Apache-2.0"
+        digest: sha256:3c68516c29462f47f17eefcd316b7bb29df2a38b0de7eda3638950886c9f8e18
+      - path: "v1/capabilities/capabilities.go"
+        license: "Apache-2.0"
+        digest: sha256:6eea99582297d74dc80f4d99acf605b63c8ece2be890245b3e46dbf794da4880
+      - path: "v1/format/format.go"
+        license: "Apache-2.0"
+        digest: sha256:d2f2e0d6832e9b8b7a8c3b518d8759429d2cd420bb5b828c0ff6c0a319df0f13
+      - path: "v1/ir/ir.go"
+        license: "Apache-2.0"
+        digest: sha256:ecea3d04d62f97ce4559b9504fec359cf17c1f3aabf161240cff82098d6cdfe6
+      - path: "v1/ir/marshal.go"
+        license: "Apache-2.0"
+        digest: sha256:ddcc06a4d482b9c569b3ee0267b00774aaa342dae6979d2ab181b56a69efa55c
+      - path: "v1/ir/pretty.go"
+        license: "Apache-2.0"
+        digest: sha256:c7c69bb366c21687bcaa9ca0ba6498c30d851fb20cab479f42d570e6c4ebf8e6
+      - path: "v1/ir/proto.go"
+        license: "Apache-2.0"
+        digest: sha256:c9d91103e2b56f28a9336d5701c9e65b532d4e2edfe84e770657fbfae0364178
+      - path: "v1/ir/v1pb/plan.pb.go"
+        license: "Apache-2.0"
+        digest: sha256:5949015d88feeb82b6ade2c8a7043678fefc77b8ee8ff2e71536ee3c10895819
+      - path: "v1/ir/walk.go"
+        license: "Apache-2.0"
+        digest: sha256:6fe5aa5868da3a09320c1d16444508076b60271620289fcc7a50dad6c175d0e2
+      - path: "v1/keys/keys.go"
+        license: "Apache-2.0"
+        digest: sha256:a4419482e47121a8d4c115a35ae7808426bf98635ac04beae6f132cd9601b642
+      - path: "v1/loader/errors.go"
+        license: "Apache-2.0"
+        digest: sha256:517eb18f1ee2a5bef033f964478971f66fd3c318b6700e5ee4eae0636b3ac505
+      - path: "v1/loader/extension/extension.go"
+        license: "Apache-2.0"
+        digest: sha256:033127f02692b5ddbc0942992eb38b1f04f9dabb97e09860e009ee1e281251ed
+      - path: "v1/loader/filter/filter.go"
+        license: "Apache-2.0"
+        digest: sha256:4943668637546b4818b21e4342950e14c22629e772545d5cad295b727e2ff0d1
+      - path: "v1/loader/loader.go"
+        license: "Apache-2.0"
+        digest: sha256:4fb87c6f2f392715bd4bdf69122db22152093f8325b633c0cb158e47b582a324
+      - path: "v1/logging/buffered_logger.go"
+        license: "Apache-2.0"
+        digest: sha256:12f14db3c0415e2f7b8611239ddb3697e19a19100aaa1c9bc1aced20fb8257f2
+      - path: "v1/logging/logging.go"
+        license: "Apache-2.0"
+        digest: sha256:ee3a98e3c878fdc23e32d6018d559dc7461260461b5da336ea1e9ce0caf8d955
+      - path: "v1/metrics/metrics.go"
+        license: "Apache-2.0"
+        digest: sha256:0425545c98009061d77bc06345b217e0eb1526f96429ebb74691e897c29ddb0d
+      - path: "v1/rego/errors.go"
+        license: "Apache-2.0"
+        digest: sha256:bcbd25ce44287562a91ccfeff3d8206a8c9a983cc67ab1a82b5487f757a7e9c6
+      - path: "v1/rego/plugins.go"
+        license: "Apache-2.0"
+        digest: sha256:a2278876091eaa706fbd4fb87f1635595a97e2ad84496d07163417c0de5a128e
+      - path: "v1/rego/rego.go"
+        license: "Apache-2.0"
+        digest: sha256:89835c0c28624fe25fe5ed540c26a8b41ee13b6be9745e458e3d714fca2a15c1
+      - path: "v1/rego/resultset.go"
+        license: "Apache-2.0"
+        digest: sha256:57034e2d5ebc96d842bd2ffc41128df68ce191eb2f0a68deb3c46122bd82b4b1
+      - path: "v1/resolver/interface.go"
+        license: "Apache-2.0"
+        digest: sha256:b07a534dce0a432d8a899d155a43a7326167cca94174a403816ce3401958cb7b
+      - path: "v1/resolver/wasm/wasm.go"
+        license: "Apache-2.0"
+        digest: sha256:33bb07669c752a947f7f9bed23f982d87e741ec93884b5e69fdc1b67cf4f26f4
+      - path: "v1/schemas/authorizationPolicy.json"
+        license: "Apache-2.0"
+        digest: sha256:943021d813ba4a1deba3e1b6f15305b1e487d7b68af0e1e061ad318d1d9f4286
+      - path: "v1/schemas/schemas.go"
+        license: "Apache-2.0"
+        digest: sha256:de76919c88f34c94d9b9e0db03e6917ed393ea4c24c2fda59b1e156ff4382b6b
+      - path: "v1/storage/doc.go"
+        license: "Apache-2.0"
+        digest: sha256:1c4922dc017290500821f2dbac63167d8ce8db13a49a569de33b00bd3e3cd9af
+      - path: "v1/storage/errors.go"
+        license: "Apache-2.0"
+        digest: sha256:9f48b351c2dbeb080e0212db42481770805106fad9b99f9cbcbe79e99adbbe87
+      - path: "v1/storage/inmem/ast.go"
+        license: "Apache-2.0"
+        digest: sha256:23a54877ca42696cac9f1ae115f90736ec7457896e93e68458eb03fe08a48b3c
+      - path: "v1/storage/inmem/inmem.go"
+        license: "Apache-2.0"
+        digest: sha256:c7cf7d6ee89637b0daea705c74c1d3678316c4f7dd9133467a33f0ad740c7bbf
+      - path: "v1/storage/inmem/opts.go"
+        license: "Apache-2.0"
+        digest: sha256:c7f3ebceb5a11a6dd62171e1b6dd05ea8c3189092f45a5d6bfaa391a7e85f42c
+      - path: "v1/storage/inmem/txn.go"
+        license: "Apache-2.0"
+        digest: sha256:2ab68b470f0b12faeb179d57a0b76fc7ce04d50783a141337c01831827862a32
+      - path: "v1/storage/interface.go"
+        license: "Apache-2.0"
+        digest: sha256:338fdc292c6c94147ac64345180254e2e014489d38016a3661a40ce3d978d0c6
+      - path: "v1/storage/internal/errors/errors.go"
+        license: "Apache-2.0"
+        digest: sha256:2469f9724ebd3425b7618297f22a2e04a94b173795d85f58e339def53fc9d6ae
+      - path: "v1/storage/internal/ptr/ptr.go"
+        license: "Apache-2.0"
+        digest: sha256:cc55616a85384f294d50cd27454d8a0e5ffe28e4efe9e55a97b6ba73d253538d
+      - path: "v1/storage/path.go"
+        license: "Apache-2.0"
+        digest: sha256:98ddd864500c6622bc9b06b9c93a804f3e6a3dae88d673358f1d08e35a471b6d
+      - path: "v1/storage/storage.go"
+        license: "Apache-2.0"
+        digest: sha256:48484b09edfa1c48da44145ea2128c4def808439495e2be2269646f59f34ff8d
+      - path: "v1/topdown/aggregates.go"
+        license: "Apache-2.0"
+        digest: sha256:e5fbccfeb6768171ef2bb9be04bfe6787d51d5d4a194feb8ec7ab13a0644ecea
+      - path: "v1/topdown/arithmetic.go"
+        license: "Apache-2.0"
+        digest: sha256:12ab36f0a9175bee6177f5ef97a9f42264679592ba88ac2ccd5a9c3ce6691578
+      - path: "v1/topdown/array.go"
+        license: "Apache-2.0"
+        digest: sha256:bd25fd723d7982ad264b5a245e4c6e8f372f9d4a3e87d203cfaf8130ce934005
+      - path: "v1/topdown/binary.go"
+        license: "Apache-2.0"
+        digest: sha256:b00515b5bb8100f0612b2e9c2032d20f33ecdbfe2a046fedd8288a54eea8ce84
+      - path: "v1/topdown/bindings.go"
+        license: "Apache-2.0"
+        digest: sha256:6ff70b9a965cc6c0731f772ef2e6f7062103fbae3b197f150ad2c5f210be494a
+      - path: "v1/topdown/bits.go"
+        license: "Apache-2.0"
+        digest: sha256:e9a9c0d46b9be549bed2fc2117021fb288b64878928ba410c482986dac12e642
+      - path: "v1/topdown/builtins.go"
+        license: "Apache-2.0"
+        digest: sha256:5dd57ba78fa5dab7c153498e80e293d3749c28299b847640c4c2ed7b4a9f9f78
+      - path: "v1/topdown/builtins/builtins.go"
+        license: "Apache-2.0"
+        digest: sha256:0d28edd22d0d9d2f7ffdd150d83e97fc308c20662977524b944cd31e2e13f30f
+      - path: "v1/topdown/cache.go"
+        license: "Apache-2.0"
+        digest: sha256:801752ed1f80deb8e5f2a749cd55711993f65bddbddcb2d84a9dd618213fb4f8
+      - path: "v1/topdown/cache/cache.go"
+        license: "Apache-2.0"
+        digest: sha256:64cd1ce5fefffd04948f1e67d5216a41c4e3d9dd6eba3681216e33ef4b82a9f4
+      - path: "v1/topdown/cancel.go"
+        license: "Apache-2.0"
+        digest: sha256:a417debe49bea51c55c48edbaf39af4a5bae6e0d317db77deaf15421df50cf3c
+      - path: "v1/topdown/casts.go"
+        license: "Apache-2.0"
+        digest: sha256:4504bfa4f51478b1ed3efc0f0b6efa6b9171a88a7c508a0254b346d67d8f9526
+      - path: "v1/topdown/cidr.go"
+        license: "Apache-2.0"
+        digest: sha256:7514dce471a3791e8c6725fa294bcd1a6a1f67112c8d1a8e184ef8b86fde80a2
+      - path: "v1/topdown/comparison.go"
+        license: "Apache-2.0"
+        digest: sha256:1834c3472b332f6d2da06c1e16d6754a75b16856081f2ffcbdcab26a2c1836e3
+      - path: "v1/topdown/copypropagation/copypropagation.go"
+        license: "Apache-2.0"
+        digest: sha256:4a8c17468b83037b19fa04bccd133dedb419c8a6c300d0028a92bd3f73d93126
+      - path: "v1/topdown/copypropagation/unionfind.go"
+        license: "Apache-2.0"
+        digest: sha256:5cfe3284d96b438a5ed6f8fad48cf103316e882b49be4229849ffadab4ffb42d
+      - path: "v1/topdown/crypto.go"
+        license: "Apache-2.0"
+        digest: sha256:6fce30f779a6ccab024df0c320dabc8700411e64951f2394cbb919de6f51b378
+      - path: "v1/topdown/doc.go"
+        license: "Apache-2.0"
+        digest: sha256:e6da840bb38cdbd03960ff3bb475c538478eeae14e01b33f5a3f532dbd5486bb
+      - path: "v1/topdown/durationparser/duration_parser.go"
+        license: "Apache-2.0"
+        digest: sha256:26978e32abe31998b9904e1fc2aac0d781a2725f56c2585fbd317b4e92c4cd62
+      - path: "v1/topdown/durationparser/types.go"
+        license: "Apache-2.0"
+        digest: sha256:61b7972be4b3ff8a5c46d36e84f6a77f0f328edcce8c405ee68bffe6bcf5223e
+      - path: "v1/topdown/encoding.go"
+        license: "Apache-2.0"
+        digest: sha256:d86f23f9aa32b40c1a5f28b7ae3d1e300ef5cb6ac53cacd7a8199fa12eb57189
+      - path: "v1/topdown/errors.go"
+        license: "Apache-2.0"
+        digest: sha256:4b79a2a12bcf0708309a55ee85bf9f938a51538b50156fef622c988c203360d0
+      - path: "v1/topdown/errors_jsonv2.go"
+        license: "Apache-2.0"
+        digest: sha256:c25cdee04a823ab9c158e4c7158084a5a9faca81e9106e8e4bd9cb4a44f19806
+      - path: "v1/topdown/eval.go"
+        license: "Apache-2.0"
+        digest: sha256:aa93d1ac8d2818ce0017fa9bc88fe27c28a403f939178429c434e71ba237daf3
+      - path: "v1/topdown/evaluated.go"
+        license: "Apache-2.0"
+        digest: sha256:4fd1fd0499aa7ed4643d02b0d4154c7a47e6c31211f1ba502303e51060bf7a29
+      - path: "v1/topdown/glob.go"
+        license: "Apache-2.0"
+        digest: sha256:3d3312a8115768aa34c6fce603c4511523ae8f721f93154885f5222897803c6f
+      - path: "v1/topdown/graphql.go"
+        license: "Apache-2.0"
+        digest: sha256:59fdb502638ba0c3821268ea65903b51c309b6b49c9c35eae2e7f8e53fc62f49
+      - path: "v1/topdown/http.go"
+        license: "Apache-2.0"
+        digest: sha256:fa9061d547610f9045c6a5b3e01d4c479d616c75d655f507e875d0c9c17aad34
+      - path: "v1/topdown/http_fixup.go"
+        license: "Apache-2.0"
+        digest: sha256:e28a8783acee786012d4a9b7fef809563d55af2aa2260c65a79c32579f6e45cb
+      - path: "v1/topdown/input.go"
+        license: "Apache-2.0"
+        digest: sha256:f5607c6e3094c6b7ec9e06b7b9d461c4e2f9111ff3cb6a55a918e1b55ab803ba
+      - path: "v1/topdown/instrumentation.go"
+        license: "Apache-2.0"
+        digest: sha256:76a006aa00953f6b6892788bd65c16b395435ad0167f45d1bf8fd7a3c9f3d6ac
+      - path: "v1/topdown/json.go"
+        license: "Apache-2.0"
+        digest: sha256:5745f93629b1b6d4f1cb71e06ad18187a4ff71e8f582dec9eb542cdf6292af0f
+      - path: "v1/topdown/jsonschema.go"
+        license: "Apache-2.0"
+        digest: sha256:1fbed61878f743006a939f5ff19148b78105296b2f85c4313f41c5ee89aae01d
+      - path: "v1/topdown/net.go"
+        license: "Apache-2.0"
+        digest: sha256:9cbdb3f5cc09b545f12286841a658b05e7da0d83e467b6016a5e9840fe04da3f
+      - path: "v1/topdown/numbers.go"
+        license: "Apache-2.0"
+        digest: sha256:089bafbba45cf399c35422c764c030d0985106e7030d7efd78653da8fd8c074c
+      - path: "v1/topdown/object.go"
+        license: "Apache-2.0"
+        digest: sha256:ffef591eeb9c4d3bcaee82c759fd6a60fe83b48b1d95ddc53f812b393f9693c1
+      - path: "v1/topdown/parse.go"
+        license: "Apache-2.0"
+        digest: sha256:eb6749be4a7599ff50fcb399eeb5f96a9cb7f2769fc5321a54fff642fd284e0d
+      - path: "v1/topdown/parse_bytes.go"
+        license: "Apache-2.0"
+        digest: sha256:e333e0f14b225343a57266a74f25e11760e3103e77b1edf04896038f336560e7
+      - path: "v1/topdown/parse_units.go"
+        license: "Apache-2.0"
+        digest: sha256:4241fcf24a289712cc22f71691f9a41869c05e7110d6f4cb2d1bc1e58be1cad0
+      - path: "v1/topdown/print.go"
+        license: "Apache-2.0"
+        digest: sha256:a465460b01e17c9c93170b7b73bf13c2de749866a1b7df4a3ec3c523e8aabe3a
+      - path: "v1/topdown/print/print.go"
+        license: "Apache-2.0"
+        digest: sha256:cbde8c5ab0732f7c57686a90c92c976464fa4b762f83fe7d112ac1f60b5b5983
+      - path: "v1/topdown/providers.go"
+        license: "Apache-2.0"
+        digest: sha256:469f66e10613acbdb67ce5254d77bb8f0146df74394728e174ef2a7db975973f
+      - path: "v1/topdown/query.go"
+        license: "Apache-2.0"
+        digest: sha256:be19a98334ede77d1e894f855e36d20e95d72760cfff9737166342a6ae3ef2f5
+      - path: "v1/topdown/reachable.go"
+        license: "Apache-2.0"
+        digest: sha256:7d4c89c08069c06ae863f7253facb81552e485654bba50504edcab2a8f9f9e91
+      - path: "v1/topdown/regex.go"
+        license: "Apache-2.0"
+        digest: sha256:0186a24d928c54890bb00680f9f9b8ec44a711abc01fc77b1b3dd66737053b44
+      - path: "v1/topdown/regex_template.go"
+        license: "Apache-2.0"
+        digest: sha256:454e8b9257cec1d7e485d84ab93419762149aa148d8888e23197265e8f0f9f00
+      - path: "v1/topdown/resolver.go"
+        license: "Apache-2.0"
+        digest: sha256:c5b49ba8099e9e3cbecc935cb299ba17b318fbd1f620463484a0a9f0d26c8f29
+      - path: "v1/topdown/runtime.go"
+        license: "Apache-2.0"
+        digest: sha256:83640e15e804b3ead180405b2578a7fb5e504066ae78eef1b01239c2d7d0adec
+      - path: "v1/topdown/save.go"
+        license: "Apache-2.0"
+        digest: sha256:14c05b626cb140b18cff0924f857b84e03af63bb55b36aa0c32bf93cdfacb3c4
+      - path: "v1/topdown/semver.go"
+        license: "Apache-2.0"
+        digest: sha256:d3662b738af11aeee68577068f9c72123806455b896ed2d5e824e4c74eab38b0
+      - path: "v1/topdown/sets.go"
+        license: "Apache-2.0"
+        digest: sha256:b4fa91a3483bec08a1989c223515b7ea9ff07706114911e01c62f5ffe5dc06ea
+      - path: "v1/topdown/sink.go"
+        license: "Apache-2.0"
+        digest: sha256:ffe093ffcade792a1c8d97461a3aa8067846ff4a188a457113f5188f37c2093d
+      - path: "v1/topdown/stacktrace.go"
+        license: "Apache-2.0"
+        digest: sha256:f06c02aa6683d6e84a1fa47dd071b3af7883855525b9adc12d09d825d52b4bdb
+      - path: "v1/topdown/strings.go"
+        license: "Apache-2.0"
+        digest: sha256:71efae2faf8a898066db2230827de69cf6ee447d85a2690c024ac33f1661a466
+      - path: "v1/topdown/subset.go"
+        license: "Apache-2.0"
+        digest: sha256:b1be2d22a8471534eff1f5558397112a0713ba0bb9fb3c547a35d12a6a6d62f3
+      - path: "v1/topdown/template.go"
+        license: "Apache-2.0"
+        digest: sha256:dc2ecefa4dce483dae3854a025f409f4edb088df77e599d5832202e60a9329b1
+      - path: "v1/topdown/template_string.go"
+        license: "Apache-2.0"
+        digest: sha256:92b96c43d9edb6cb553b8bf3c9bbe8be781b18128302beb71377a2570b7dc99e
+      - path: "v1/topdown/test.go"
+        license: "Apache-2.0"
+        digest: sha256:cf1f2caa075fc64d61474ca2f079fb9db09e6f92e513257a4663f20bba95fb64
+      - path: "v1/topdown/time.go"
+        license: "Apache-2.0"
+        digest: sha256:e15406443f5abac199b282c26530ac8c1ba790e999c6e623e4c6ac38683f45dc
+      - path: "v1/topdown/tokens.go"
+        license: "Apache-2.0"
+        digest: sha256:12c64e639011912e828842757238d0f809cd5d2f36a63fa881e93f4a01ad5231
+      - path: "v1/topdown/trace.go"
+        license: "Apache-2.0"
+        digest: sha256:4ea041fa17bf4149fd8484649e997c5163747aadb7952e3550f2745f344f7531
+      - path: "v1/topdown/type.go"
+        license: "Apache-2.0"
+        digest: sha256:189988681a73d0670698b7a2d85b4a3dde8365be6e968d81d8930703d597f9a3
+      - path: "v1/topdown/type_name.go"
+        license: "Apache-2.0"
+        digest: sha256:2de79f5635a1ee09f566057f183e7d73e325a12e649de3350df9238fd9ca1a77
+      - path: "v1/topdown/uri.go"
+        license: "Apache-2.0"
+        digest: sha256:2a9cfc5abc2d286f1d16903c9824f4f5c7c64166ccc27d259fc7a11cfa411826
+      - path: "v1/topdown/uuid.go"
+        license: "Apache-2.0"
+        digest: sha256:91104d8cc48ccf57dc46963ec6ba285e0de7150a397da9b29248d3e99009949e
+      - path: "v1/topdown/walk.go"
+        license: "Apache-2.0"
+        digest: sha256:567e0bfbd0acb90b08687abc2b85b772819e4dd8dca49a2171836e88dffa4544
+      - path: "v1/tracing/tracing.go"
+        license: "Apache-2.0"
+        digest: sha256:5b5e55ba01f23d0d13bc8e86735fa0c09bae3291d1c9a41632d67c3d2399d8c0
+      - path: "v1/types/decode.go"
+        license: "Apache-2.0"
+        digest: sha256:cbcdcfeb6e688ec310d132e99a2a7806856ac3e1e4457b0777f464892b2d2b91
+      - path: "v1/types/types.go"
+        license: "Apache-2.0"
+        digest: sha256:2eaf909338a07c91367a0ec5bf84a41dbb5e800927b962cf6a89a08813137c2c
+      - path: "v1/util/backoff.go"
+        license: "Apache-2.0"
+        digest: sha256:054e02d39ba567a6da5474776a9431820b7caef264ae03cdaf15b968f34cf9e7
+      - path: "v1/util/close.go"
+        license: "Apache-2.0"
+        digest: sha256:d23558c39518631dc4931db0dc1bce49b71f445a0a63f99db3437e657ed1002c
+      - path: "v1/util/compare.go"
+        license: "Apache-2.0"
+        digest: sha256:1f0180518fd77f8b253481ba09c48eb91f62ae596abb47835ea20f2cde532e25
+      - path: "v1/util/constraints.go"
+        license: "Apache-2.0"
+        digest: sha256:4da5488f5ee02c681287f2c3fd03810f8d9115bd7b07eb58e88687b5c97c95eb
+      - path: "v1/util/decoding/context.go"
+        license: "Apache-2.0"
+        digest: sha256:2d9155342726583f82622a5026a4a1dc1c979b287edd610f5ae8ffa94773fcb3
+      - path: "v1/util/doc.go"
+        license: "Apache-2.0"
+        digest: sha256:8659a35aace3a359f474d36080a82b4ba5e17e4def473369439b2d3981fda204
+      - path: "v1/util/enumflag.go"
+        license: "Apache-2.0"
+        digest: sha256:cdfcbed1559c032cceb9aceb548e6237a40d9cca83c51edd040fc6ccdbb6d0ae
+      - path: "v1/util/errors.go"
+        license: "Apache-2.0"
+        digest: sha256:53f285ec4973b01baf771c3033e0b14121b32c9176578252547dfff64b2321ac
+      - path: "v1/util/graph.go"
+        license: "Apache-2.0"
+        digest: sha256:8c605e42013c8572ecb7064f1d6fae9640cceabfca2be3f6e3181ec42c9dd524
+      - path: "v1/util/hashmap.go"
+        license: "Apache-2.0"
+        digest: sha256:d759d5c87fd017e6f7af35a518a52aec7527b021e57e81ebd66048fd857d59f5
+      - path: "v1/util/json.go"
+        license: "Apache-2.0"
+        digest: sha256:9b581cc0cb6548cd5ebbf3e29f6a5ddf0027b8e8f412c74ac0648f55aca2cc25
+      - path: "v1/util/maps.go"
+        license: "Apache-2.0"
+        digest: sha256:c1dad1d957d7bee5a1f56a55b72c488a3b7eccc7f1676a103659050dbe1eb210
+      - path: "v1/util/performance.go"
+        license: "Apache-2.0"
+        digest: sha256:4ec64ed0034167bb6cfa4833745e4d8845f864f9104c37553fd0b6e43ebb4aaf
+      - path: "v1/util/queue.go"
+        license: "Apache-2.0"
+        digest: sha256:f572b50059dc58d5822e1c0211ed9aa1c223e0aae33d9b6269c53b21a4502341
+      - path: "v1/util/read_gzip_body.go"
+        license: "Apache-2.0"
+        digest: sha256:7cf9f361345b7033c02a65bce78ec565c59253039486e12ddbd78572cf0fb3a3
+      - path: "v1/util/slices.go"
+        license: "Apache-2.0"
+        digest: sha256:3079a81059d70d90b5b02c5ba88bb219669efc9b5b671429a0212f46175d79bd
+      - path: "v1/util/strings.go"
+        license: "Apache-2.0"
+        digest: sha256:6dc6c1be9c922acec176e7a342ddf0e941cf8d3b95f35447b5130209302bc1a5
+      - path: "v1/util/time.go"
+        license: "Apache-2.0"
+        digest: sha256:9a04f5d0c92c9b7fc4a612958fb32353b5c912e1ab817421ec3952861a253cd3
+      - path: "v1/util/wait.go"
+        license: "Apache-2.0"
+        digest: sha256:bd186745173e6a38e1aa0cf300d369a4a359a6052b7f5db029b23849a7cc5fa3
+      - path: "v1/version/version.go"
+        license: "Apache-2.0"
+        digest: sha256:4575420b0049a822eb576c17a2ad51e2f172ee8b5376cbe9a2cd4a997f7a6447
+      - path: "v1/version/wasm.go"
+        license: "Apache-2.0"
+        digest: sha256:51ce5f8f9f3345abcafe0c1054229b915c3d7b52ab31d13347a8724682ab599c
+    importedPaths:
+      - "capabilities/capabilities.go"
+      - "capabilities/v0.17.0.json"
+      - "capabilities/v0.17.1.json"
+      - "capabilities/v0.17.2.json"
+      - "capabilities/v0.17.3.json"
+      - "capabilities/v0.18.0.json"
+      - "capabilities/v0.19.0-rc1.json"
+      - "capabilities/v0.19.0.json"
+      - "capabilities/v0.19.1.json"
+      - "capabilities/v0.19.2.json"
+      - "capabilities/v0.20.0.json"
+      - "capabilities/v0.20.1.json"
+      - "capabilities/v0.20.2.json"
+      - "capabilities/v0.20.3.json"
+      - "capabilities/v0.20.4.json"
+      - "capabilities/v0.20.5.json"
+      - "capabilities/v0.21.0.json"
+      - "capabilities/v0.21.1.json"
+      - "capabilities/v0.22.0.json"
+      - "capabilities/v0.23.0.json"
+      - "capabilities/v0.23.1.json"
+      - "capabilities/v0.23.2.json"
+      - "capabilities/v0.24.0.json"
+      - "capabilities/v0.25.0-rc1.json"
+      - "capabilities/v0.25.0-rc2.json"
+      - "capabilities/v0.25.0-rc3.json"
+      - "capabilities/v0.25.0-rc4.json"
+      - "capabilities/v0.25.0.json"
+      - "capabilities/v0.25.1.json"
+      - "capabilities/v0.25.2.json"
+      - "capabilities/v0.26.0.json"
+      - "capabilities/v0.27.0.json"
+      - "capabilities/v0.27.1.json"
+      - "capabilities/v0.28.0.json"
+      - "capabilities/v0.29.0.json"
+      - "capabilities/v0.29.1.json"
+      - "capabilities/v0.29.2.json"
+      - "capabilities/v0.29.3.json"
+      - "capabilities/v0.29.4.json"
+      - "capabilities/v0.30.0.json"
+      - "capabilities/v0.30.1.json"
+      - "capabilities/v0.30.2.json"
+      - "capabilities/v0.31.0.json"
+      - "capabilities/v0.32.0.json"
+      - "capabilities/v0.32.1.json"
+      - "capabilities/v0.33.0.json"
+      - "capabilities/v0.33.1.json"
+      - "capabilities/v0.34.0.json"
+      - "capabilities/v0.34.1.json"
+      - "capabilities/v0.34.2.json"
+      - "capabilities/v0.35.0.json"
+      - "capabilities/v0.36.0.json"
+      - "capabilities/v0.36.1.json"
+      - "capabilities/v0.37.0.json"
+      - "capabilities/v0.37.1.json"
+      - "capabilities/v0.37.2.json"
+      - "capabilities/v0.38.0.json"
+      - "capabilities/v0.38.1.json"
+      - "capabilities/v0.39.0.json"
+      - "capabilities/v0.40.0.json"
+      - "capabilities/v0.41.0.json"
+      - "capabilities/v0.42.0.json"
+      - "capabilities/v0.42.1.json"
+      - "capabilities/v0.42.2.json"
+      - "capabilities/v0.43.0.json"
+      - "capabilities/v0.43.1.json"
+      - "capabilities/v0.44.0.json"
+      - "capabilities/v0.45.0.json"
+      - "capabilities/v0.46.0.json"
+      - "capabilities/v0.46.1.json"
+      - "capabilities/v0.46.2.json"
+      - "capabilities/v0.46.3.json"
+      - "capabilities/v0.47.0.json"
+      - "capabilities/v0.47.1.json"
+      - "capabilities/v0.47.2.json"
+      - "capabilities/v0.47.3.json"
+      - "capabilities/v0.47.4.json"
+      - "capabilities/v0.48.0.json"
+      - "capabilities/v0.49.0.json"
+      - "capabilities/v0.49.1.json"
+      - "capabilities/v0.49.2.json"
+      - "capabilities/v0.50.0.json"
+      - "capabilities/v0.50.1.json"
+      - "capabilities/v0.50.2.json"
+      - "capabilities/v0.51.0.json"
+      - "capabilities/v0.52.0.json"
+      - "capabilities/v0.53.0.json"
+      - "capabilities/v0.53.1.json"
+      - "capabilities/v0.54.0.json"
+      - "capabilities/v0.55.0.json"
+      - "capabilities/v0.56.0.json"
+      - "capabilities/v0.57.0.json"
+      - "capabilities/v0.57.1.json"
+      - "capabilities/v0.58.0.json"
+      - "capabilities/v0.59.0.json"
+      - "capabilities/v0.60.0.json"
+      - "capabilities/v0.61.0.json"
+      - "capabilities/v0.62.0.json"
+      - "capabilities/v0.62.1.json"
+      - "capabilities/v0.63.0.json"
+      - "capabilities/v0.64.0.json"
+      - "capabilities/v0.64.1.json"
+      - "capabilities/v0.65.0.json"
+      - "capabilities/v0.66.0.json"
+      - "capabilities/v0.67.0.json"
+      - "capabilities/v0.67.1.json"
+      - "capabilities/v0.68.0.json"
+      - "capabilities/v0.69.0.json"
+      - "capabilities/v0.70.0.json"
+      - "capabilities/v1.0.0.json"
+      - "capabilities/v1.0.1.json"
+      - "capabilities/v1.1.0.json"
+      - "capabilities/v1.10.0.json"
+      - "capabilities/v1.11.0.json"
+      - "capabilities/v1.11.1.json"
+      - "capabilities/v1.12.0.json"
+      - "capabilities/v1.12.1.json"
+      - "capabilities/v1.12.2.json"
+      - "capabilities/v1.12.3.json"
+      - "capabilities/v1.13.0.json"
+      - "capabilities/v1.13.1.json"
+      - "capabilities/v1.13.2.json"
+      - "capabilities/v1.14.0.json"
+      - "capabilities/v1.14.1.json"
+      - "capabilities/v1.15.0.json"
+      - "capabilities/v1.15.1.json"
+      - "capabilities/v1.16.0.json"
+      - "capabilities/v1.16.1.json"
+      - "capabilities/v1.16.2.json"
+      - "capabilities/v1.17.0.json"
+      - "capabilities/v1.17.1.json"
+      - "capabilities/v1.18.0.json"
+      - "capabilities/v1.18.1.json"
+      - "capabilities/v1.18.2.json"
+      - "capabilities/v1.19.0.json"
+      - "capabilities/v1.19.1.json"
+      - "capabilities/v1.2.0.json"
+      - "capabilities/v1.20.0.json"
+      - "capabilities/v1.20.1.json"
+      - "capabilities/v1.20.2.json"
+      - "capabilities/v1.21.0.json"
+      - "capabilities/v1.3.0.json"
+      - "capabilities/v1.4.0.json"
+      - "capabilities/v1.4.1.json"
+      - "capabilities/v1.4.2.json"
+      - "capabilities/v1.5.0.json"
+      - "capabilities/v1.5.1.json"
+      - "capabilities/v1.6.0.json"
+      - "capabilities/v1.7.0.json"
+      - "capabilities/v1.8.0.json"
+      - "capabilities/v1.9.0.json"
+      - "internal/bundle/utils.go"
+      - "internal/cidr/merge/merge.go"
+      - "internal/compiler/utils.go"
+      - "internal/compiler/wasm/opa/callgraph.csv"
+      - "internal/compiler/wasm/opa/opa.go"
+      - "internal/compiler/wasm/opa/opa.wasm"
+      - "internal/compiler/wasm/optimizations.go"
+      - "internal/compiler/wasm/wasm.go"
+      - "internal/debug/debug.go"
+      - "internal/deepcopy/deepcopy.go"
+      - "internal/edittree/bitvector/bitvector.go"
+      - "internal/edittree/edittree.go"
+      - "internal/file/archive/tarball.go"
+      - "internal/file/url/url.go"
+      - "internal/future/filter_imports.go"
+      - "internal/future/parser_opts.go"
+      - "internal/gojsonschema/draft.go"
+      - "internal/gojsonschema/errors.go"
+      - "internal/gojsonschema/format_checkers.go"
+      - "internal/gojsonschema/internalLog.go"
+      - "internal/gojsonschema/jsonContext.go"
+      - "internal/gojsonschema/jsonLoader.go"
+      - "internal/gojsonschema/locales.go"
+      - "internal/gojsonschema/result.go"
+      - "internal/gojsonschema/schema.go"
+      - "internal/gojsonschema/schemaLoader.go"
+      - "internal/gojsonschema/schemaPool.go"
+      - "internal/gojsonschema/schemaReferencePool.go"
+      - "internal/gojsonschema/schemaType.go"
+      - "internal/gojsonschema/subSchema.go"
+      - "internal/gojsonschema/types.go"
+      - "internal/gojsonschema/utils.go"
+      - "internal/gojsonschema/validation.go"
+      - "internal/json/patch/patch.go"
+      - "internal/jsonv2/jsonv2.go"
+      - "internal/lcss/lcss.go"
+      - "internal/lcss/qsufsort.go"
+      - "internal/leb128/leb128.go"
+      - "internal/merge/merge.go"
+      - "internal/methodlesstemplate/doc.go"
+      - "internal/methodlesstemplate/exec.go"
+      - "internal/methodlesstemplate/funcs.go"
+      - "internal/methodlesstemplate/internal/fmtsort/sort.go"
+      - "internal/methodlesstemplate/option.go"
+      - "internal/methodlesstemplate/template.go"
+      - "internal/planner/planner.go"
+      - "internal/planner/rules.go"
+      - "internal/planner/varstack.go"
+      - "internal/providers/aws/crypto/compare.go"
+      - "internal/providers/aws/crypto/ecc.go"
+      - "internal/providers/aws/ecr.go"
+      - "internal/providers/aws/kms.go"
+      - "internal/providers/aws/signing_v4.go"
+      - "internal/providers/aws/signing_v4a.go"
+      - "internal/providers/aws/util.go"
+      - "internal/providers/aws/v4/const.go"
+      - "internal/providers/aws/v4/header_rules.go"
+      - "internal/providers/aws/v4/headers.go"
+      - "internal/providers/aws/v4/host.go"
+      - "internal/providers/aws/v4/util.go"
+      - "internal/rego/opa/engine.go"
+      - "internal/rego/opa/options.go"
+      - "internal/semver/semver.go"
+      - "internal/strings/strings.go"
+      - "internal/uuid/uuid.go"
+      - "internal/version/version.go"
+      - "internal/wasm/constant/constant.go"
+      - "internal/wasm/encoding/doc.go"
+      - "internal/wasm/encoding/reader.go"
+      - "internal/wasm/encoding/writer.go"
+      - "internal/wasm/instruction/control.go"
+      - "internal/wasm/instruction/instruction.go"
+      - "internal/wasm/instruction/memory.go"
+      - "internal/wasm/instruction/numeric.go"
+      - "internal/wasm/instruction/parametric.go"
+      - "internal/wasm/instruction/variable.go"
+      - "internal/wasm/module/module.go"
+      - "internal/wasm/module/pretty.go"
+      - "internal/wasm/opcode/opcode.go"
+      - "internal/wasm/sdk/opa/capabilities/capabilities_nowasm.go"
+      - "internal/wasm/types/types.go"
+      - "internal/wasm/util/util.go"
+      - "internal/yaml/yaml.go"
+      - "v1/ast/annotations.go"
+      - "v1/ast/annotations_jsonv2.go"
+      - "v1/ast/builtins.go"
+      - "v1/ast/capabilities.go"
+      - "v1/ast/check.go"
+      - "v1/ast/check_elide.go"
+      - "v1/ast/compare.go"
+      - "v1/ast/compile.go"
+      - "v1/ast/compilehelper.go"
+      - "v1/ast/compilemetrics.go"
+      - "v1/ast/conflicts.go"
+      - "v1/ast/default_module_loader.go"
+      - "v1/ast/doc.go"
+      - "v1/ast/env.go"
+      - "v1/ast/errors.go"
+      - "v1/ast/external_source.go"
+      - "v1/ast/index.go"
+      - "v1/ast/index_affix.go"
+      - "v1/ast/index_debug.go"
+      - "v1/ast/internal/scanner/scanner.go"
+      - "v1/ast/internal/tokens/tokens.go"
+      - "v1/ast/interning.go"
+      - "v1/ast/json/json.go"
+      - "v1/ast/location/location.go"
+      - "v1/ast/location/location_jsonv2.go"
+      - "v1/ast/map.go"
+      - "v1/ast/mermaid.go"
+      - "v1/ast/object.go"
+      - "v1/ast/parser.go"
+      - "v1/ast/parser_ext.go"
+      - "v1/ast/performance.go"
+      - "v1/ast/policy.go"
+      - "v1/ast/policy_appenders.go"
+      - "v1/ast/policy_jsonv2.go"
+      - "v1/ast/pretty.go"
+      - "v1/ast/rego_compiler.go"
+      - "v1/ast/rego_v1.go"
+      - "v1/ast/schema.go"
+      - "v1/ast/string_length.go"
+      - "v1/ast/strings.go"
+      - "v1/ast/syncpools.go"
+      - "v1/ast/term.go"
+      - "v1/ast/term_appenders.go"
+      - "v1/ast/term_jsonv2.go"
+      - "v1/ast/transform.go"
+      - "v1/ast/treenode_dump.go"
+      - "v1/ast/unify.go"
+      - "v1/ast/varset.go"
+      - "v1/ast/version_index.json"
+      - "v1/ast/visit.go"
+      - "v1/bundle/bundle.go"
+      - "v1/bundle/file.go"
+      - "v1/bundle/filefs.go"
+      - "v1/bundle/hash.go"
+      - "v1/bundle/keys.go"
+      - "v1/bundle/proto.go"
+      - "v1/bundle/sign.go"
+      - "v1/bundle/store.go"
+      - "v1/bundle/v1pb/manifest.pb.go"
+      - "v1/bundle/verify.go"
+      - "v1/capabilities/capabilities.go"
+      - "v1/format/format.go"
+      - "v1/ir/ir.go"
+      - "v1/ir/marshal.go"
+      - "v1/ir/pretty.go"
+      - "v1/ir/proto.go"
+      - "v1/ir/v1pb/plan.pb.go"
+      - "v1/ir/walk.go"
+      - "v1/keys/keys.go"
+      - "v1/loader/errors.go"
+      - "v1/loader/extension/extension.go"
+      - "v1/loader/filter/filter.go"
+      - "v1/loader/loader.go"
+      - "v1/logging/buffered_logger.go"
+      - "v1/logging/logging.go"
+      - "v1/metrics/metrics.go"
+      - "v1/rego/errors.go"
+      - "v1/rego/plugins.go"
+      - "v1/rego/rego.go"
+      - "v1/rego/resultset.go"
+      - "v1/resolver/interface.go"
+      - "v1/resolver/wasm/wasm.go"
+      - "v1/schemas/authorizationPolicy.json"
+      - "v1/schemas/schemas.go"
+      - "v1/storage/doc.go"
+      - "v1/storage/errors.go"
+      - "v1/storage/inmem/ast.go"
+      - "v1/storage/inmem/inmem.go"
+      - "v1/storage/inmem/opts.go"
+      - "v1/storage/inmem/txn.go"
+      - "v1/storage/interface.go"
+      - "v1/storage/internal/errors/errors.go"
+      - "v1/storage/internal/ptr/ptr.go"
+      - "v1/storage/path.go"
+      - "v1/storage/storage.go"
+      - "v1/topdown/aggregates.go"
+      - "v1/topdown/arithmetic.go"
+      - "v1/topdown/array.go"
+      - "v1/topdown/binary.go"
+      - "v1/topdown/bindings.go"
+      - "v1/topdown/bits.go"
+      - "v1/topdown/builtins.go"
+      - "v1/topdown/builtins/builtins.go"
+      - "v1/topdown/cache.go"
+      - "v1/topdown/cache/cache.go"
+      - "v1/topdown/cancel.go"
+      - "v1/topdown/casts.go"
+      - "v1/topdown/cidr.go"
+      - "v1/topdown/comparison.go"
+      - "v1/topdown/copypropagation/copypropagation.go"
+      - "v1/topdown/copypropagation/unionfind.go"
+      - "v1/topdown/crypto.go"
+      - "v1/topdown/doc.go"
+      - "v1/topdown/durationparser/duration_parser.go"
+      - "v1/topdown/durationparser/types.go"
+      - "v1/topdown/encoding.go"
+      - "v1/topdown/errors.go"
+      - "v1/topdown/errors_jsonv2.go"
+      - "v1/topdown/eval.go"
+      - "v1/topdown/evaluated.go"
+      - "v1/topdown/glob.go"
+      - "v1/topdown/graphql.go"
+      - "v1/topdown/http.go"
+      - "v1/topdown/http_fixup.go"
+      - "v1/topdown/input.go"
+      - "v1/topdown/instrumentation.go"
+      - "v1/topdown/json.go"
+      - "v1/topdown/jsonschema.go"
+      - "v1/topdown/net.go"
+      - "v1/topdown/numbers.go"
+      - "v1/topdown/object.go"
+      - "v1/topdown/parse.go"
+      - "v1/topdown/parse_bytes.go"
+      - "v1/topdown/parse_units.go"
+      - "v1/topdown/print.go"
+      - "v1/topdown/print/print.go"
+      - "v1/topdown/providers.go"
+      - "v1/topdown/query.go"
+      - "v1/topdown/reachable.go"
+      - "v1/topdown/regex.go"
+      - "v1/topdown/regex_template.go"
+      - "v1/topdown/resolver.go"
+      - "v1/topdown/runtime.go"
+      - "v1/topdown/save.go"
+      - "v1/topdown/semver.go"
+      - "v1/topdown/sets.go"
+      - "v1/topdown/sink.go"
+      - "v1/topdown/stacktrace.go"
+      - "v1/topdown/strings.go"
+      - "v1/topdown/subset.go"
+      - "v1/topdown/template.go"
+      - "v1/topdown/template_string.go"
+      - "v1/topdown/test.go"
+      - "v1/topdown/time.go"
+      - "v1/topdown/tokens.go"
+      - "v1/topdown/trace.go"
+      - "v1/topdown/type.go"
+      - "v1/topdown/type_name.go"
+      - "v1/topdown/uri.go"
+      - "v1/topdown/uuid.go"
+      - "v1/topdown/walk.go"
+      - "v1/tracing/tracing.go"
+      - "v1/types/decode.go"
+      - "v1/types/types.go"
+      - "v1/util/backoff.go"
+      - "v1/util/close.go"
+      - "v1/util/compare.go"
+      - "v1/util/constraints.go"
+      - "v1/util/decoding/context.go"
+      - "v1/util/doc.go"
+      - "v1/util/enumflag.go"
+      - "v1/util/errors.go"
+      - "v1/util/graph.go"
+      - "v1/util/hashmap.go"
+      - "v1/util/json.go"
+      - "v1/util/maps.go"
+      - "v1/util/performance.go"
+      - "v1/util/queue.go"
+      - "v1/util/read_gzip_body.go"
+      - "v1/util/slices.go"
+      - "v1/util/strings.go"
+      - "v1/util/time.go"
+      - "v1/util/wait.go"
+      - "v1/version/version.go"
+      - "v1/version/wasm.go"
+    dependencyClosure:
+      - name: "github.com/agnivade/levenshtein"
+        version: "v1.2.1"
+        source: "https://github.com/agnivade/levenshtein"
+        sourceType: git
+        commit: 813c5d3147488182a4d0d6aea81fc9f28d330cc1
+        sourceArchiveSHA256: sha256:26bdb12f38a5ca1c45a666e8dea1c409189a383443fa14f4ff04f75af7022534
+        digest: sha256:26bdb12f38a5ca1c45a666e8dea1c409189a383443fa14f4ff04f75af7022534
+        license: "MIT"
+      - name: "github.com/apapsch/go-jsonmerge/v2"
+        version: "v2.0.0"
+        source: "https://github.com/apapsch/go-jsonmerge"
+        sourceType: git
+        commit: 90b01458c2af82553f17c56a431386c57a8a569f
+        sourceArchiveSHA256: sha256:b5fbdf29dc23b3ce98f5215b125ccd324b7673f0e940bc122080fcf2c77bbaf7
+        digest: sha256:b5fbdf29dc23b3ce98f5215b125ccd324b7673f0e940bc122080fcf2c77bbaf7
+        license: "MIT"
+      - name: "github.com/aws/aws-sdk-go-v2"
+        version: "v1.47.1"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: 52ba2565aefa81106ba8aca112e7c42176cc28a7
+        sourceArchiveSHA256: sha256:77426f349a7b386aa8d2d9751238bf4db8956c9cc468bad629485597c7a6ac9f
+        digest: sha256:77426f349a7b386aa8d2d9751238bf4db8956c9cc468bad629485597c7a6ac9f
+        license: "Apache-2.0 AND BSD-3-Clause"
+      - name: "github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream"
+        version: "v1.7.20"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: a30468cff35d6e385287a0cbff0ac11aa7202529
+        sourceArchiveSHA256: sha256:bd715c4dd8a605f44bdde484e0b59eb43815040d948527d61da01792977ff9ec
+        digest: sha256:bd715c4dd8a605f44bdde484e0b59eb43815040d948527d61da01792977ff9ec
+        license: "Apache-2.0"
+      - name: "github.com/aws/aws-sdk-go-v2/credentials"
+        version: "v1.20.6"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: 52ba2565aefa81106ba8aca112e7c42176cc28a7
+        sourceArchiveSHA256: sha256:d147c2c128ece81781dc57f67e6e6509bd4bf09ff0b9fd49fc877a7e9bb5ad35
+        digest: sha256:d147c2c128ece81781dc57f67e6e6509bd4bf09ff0b9fd49fc877a7e9bb5ad35
+        license: "Apache-2.0"
+      - name: "github.com/aws/aws-sdk-go-v2/internal/configsources"
+        version: "v1.5.4"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: 52ba2565aefa81106ba8aca112e7c42176cc28a7
+        sourceArchiveSHA256: sha256:b74f96b17d0f4be1b1a5ef1ad0deefdb51968ef7d487baeea6ba6c53b78daaea
+        digest: sha256:b74f96b17d0f4be1b1a5ef1ad0deefdb51968ef7d487baeea6ba6c53b78daaea
+        license: "Apache-2.0"
+      - name: "github.com/aws/aws-sdk-go-v2/internal/endpoints/v2"
+        version: "v2.8.4"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: 52ba2565aefa81106ba8aca112e7c42176cc28a7
+        sourceArchiveSHA256: sha256:5dcec15cd217c314ca83fc5358a0982789816c958a6f5ae8443071b2aaa96f8f
+        digest: sha256:5dcec15cd217c314ca83fc5358a0982789816c958a6f5ae8443071b2aaa96f8f
+        license: "Apache-2.0"
+      - name: "github.com/aws/aws-sdk-go-v2/internal/v4a"
+        version: "v1.5.4"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: 52ba2565aefa81106ba8aca112e7c42176cc28a7
+        sourceArchiveSHA256: sha256:f0fe667942c87da9ce5667daec522e0aa1235e3066f197c73e8a5a3fd680f9fd
+        digest: sha256:f0fe667942c87da9ce5667daec522e0aa1235e3066f197c73e8a5a3fd680f9fd
+        license: "Apache-2.0"
+      - name: "github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding"
+        version: "v1.13.19"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: a30468cff35d6e385287a0cbff0ac11aa7202529
+        sourceArchiveSHA256: sha256:cd55f71c785b8d9b08ae8eeb8d9803e38a4c6f4905c1cf9ff54a30f1cd5c858d
+        digest: sha256:cd55f71c785b8d9b08ae8eeb8d9803e38a4c6f4905c1cf9ff54a30f1cd5c858d
+        license: "Apache-2.0"
+      - name: "github.com/aws/aws-sdk-go-v2/service/internal/checksum"
+        version: "v1.11.5"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: 52ba2565aefa81106ba8aca112e7c42176cc28a7
+        sourceArchiveSHA256: sha256:6e2e5f357550ed6e88ae44c9618e7873f75a5887c807cb94487da8e214e7fc4a
+        digest: sha256:6e2e5f357550ed6e88ae44c9618e7873f75a5887c807cb94487da8e214e7fc4a
+        license: "Apache-2.0"
+      - name: "github.com/aws/aws-sdk-go-v2/service/internal/presigned-url"
+        version: "v1.14.4"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: 52ba2565aefa81106ba8aca112e7c42176cc28a7
+        sourceArchiveSHA256: sha256:67d0d6a5471084647012d14d0382cc91b8c3b3ae1243dec97df0bd23d64fff02
+        digest: sha256:67d0d6a5471084647012d14d0382cc91b8c3b3ae1243dec97df0bd23d64fff02
+        license: "Apache-2.0"
+      - name: "github.com/aws/aws-sdk-go-v2/service/internal/s3shared"
+        version: "v1.20.4"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: 52ba2565aefa81106ba8aca112e7c42176cc28a7
+        sourceArchiveSHA256: sha256:11744905da097eac7e3e4e79761a559881c9d8956c8542c3d1040721ab94c4df
+        digest: sha256:11744905da097eac7e3e4e79761a559881c9d8956c8542c3d1040721ab94c4df
+        license: "Apache-2.0"
+      - name: "github.com/aws/aws-sdk-go-v2/service/s3"
+        version: "v1.113.4"
+        source: "https://github.com/aws/aws-sdk-go-v2"
+        sourceType: git
+        commit: 52ba2565aefa81106ba8aca112e7c42176cc28a7
+        sourceArchiveSHA256: sha256:f7f9c4a9738a03db55968cb9ed472e0542910ab36de9671071542471705218d5
+        digest: sha256:f7f9c4a9738a03db55968cb9ed472e0542910ab36de9671071542471705218d5
+        license: "Apache-2.0"
+      - name: "github.com/aws/smithy-go"
+        version: "v1.28.1"
+        source: "https://github.com/aws/smithy-go"
+        sourceType: git
+        commit: 73ba51d486a810a87e398d427b3b48c6927c30bd
+        sourceArchiveSHA256: sha256:88b0cddd5c35c76652b846b3a8ad2cbe52db0738af592e791976f1ac590750de
+        digest: sha256:88b0cddd5c35c76652b846b3a8ad2cbe52db0738af592e791976f1ac590750de
+        license: "Apache-2.0 AND BSD-3-Clause"
+      - name: "github.com/beorn7/perks"
+        version: "v1.0.1"
+        source: "https://github.com/beorn7/perks"
+        sourceType: git
+        commit: 37c8de3658fcb183f997c4e13e8337516ab753e6
+        sourceArchiveSHA256: sha256:25bd9e2d94aca770e6dbc1f53725f84f6af4432f631d35dd2c46f96ef0512f1a
+        digest: sha256:25bd9e2d94aca770e6dbc1f53725f84f6af4432f631d35dd2c46f96ef0512f1a
+        license: "MIT"
+      - name: "github.com/cenkalti/backoff/v5"
+        version: "v5.0.3"
+        source: "https://github.com/cenkalti/backoff"
+        sourceType: git
+        commit: 7cad66a637c4ffff09d0795608116ddcc7eb1769
+        sourceArchiveSHA256: sha256:58e4d9014277bc1c5c7ab64539137923964cc3920303a4f771d02a532939bedb
+        digest: sha256:58e4d9014277bc1c5c7ab64539137923964cc3920303a4f771d02a532939bedb
+        license: "MIT"
+      - name: "github.com/cespare/xxhash/v2"
+        version: "v2.3.0"
+        source: "https://github.com/cespare/xxhash"
+        sourceType: git
+        commit: 998dce232f17418a7a5721ecf87ca714025a3243
+        sourceArchiveSHA256: sha256:145a26cdc7c49db566017b807c4989ee7f7ddeb569423e9cb99f995fac3621d3
+        digest: sha256:145a26cdc7c49db566017b807c4989ee7f7ddeb569423e9cb99f995fac3621d3
+        license: "MIT"
+      - name: "github.com/coreos/go-oidc/v3"
+        version: "v3.20.0"
+        source: "https://github.com/coreos/go-oidc"
+        sourceType: git
+        commit: 75dfa5c0626c48e0ad8b761fdd9e1dc51cb8498a
+        sourceArchiveSHA256: sha256:c7650382d51dea12d4f6c245925f9b57dd0e952aa1dac9c5c285be77d346760a
+        digest: sha256:c7650382d51dea12d4f6c245925f9b57dd0e952aa1dac9c5c285be77d346760a
+        license: "Apache-2.0"
+      - name: "github.com/go-chi/chi/v5"
+        version: "v5.2.5"
+        source: "https://github.com/go-chi/chi"
+        sourceType: git
+        commit: 05f1ef7bb50b8a8cb33a9dd3ba1c5b94bff0f723
+        sourceArchiveSHA256: sha256:f78c1525f8b3af815bcf3406c0aba1f272eff96413ff51874677bf8a314fcad8
+        digest: sha256:f78c1525f8b3af815bcf3406c0aba1f272eff96413ff51874677bf8a314fcad8
+        license: "MIT"
+      - name: "github.com/go-jose/go-jose/v4"
+        version: "v4.1.4"
+        source: "https://github.com/go-jose/go-jose"
+        sourceType: git
+        commit: 0e59876635f3dbf46d7b5e97b52bb75a3f96e7d9
+        sourceArchiveSHA256: sha256:06a37b6668012a2dd109a5f71f6ae15387dc808b35d3cf73f5e406e78a17b027
+        digest: sha256:06a37b6668012a2dd109a5f71f6ae15387dc808b35d3cf73f5e406e78a17b027
+        license: "Apache-2.0 AND BSD-3-Clause"
+      - name: "github.com/go-logr/logr"
+        version: "v1.4.4"
+        source: "https://github.com/go-logr/logr"
+        sourceType: git
+        commit: 96a9abaa56526dd5d51745e817732a2d61505fb7
+        sourceArchiveSHA256: sha256:3ab107c1d280ce798eaa744efd595982fa709d4023f3f38d24189827483c1710
+        digest: sha256:3ab107c1d280ce798eaa744efd595982fa709d4023f3f38d24189827483c1710
+        license: "Apache-2.0"
+      - name: "github.com/go-logr/stdr"
+        version: "v1.2.2"
+        source: "https://github.com/go-logr/stdr"
+        sourceType: git
+        commit: 521af2addfa7c81c8a65d0e85ed34bb6bb6dc262
+        sourceArchiveSHA256: sha256:9dd6893bf700198485ae699640b49bc1efbc6c73b37cb5792a0476e1fd8f7fef
+        digest: sha256:9dd6893bf700198485ae699640b49bc1efbc6c73b37cb5792a0476e1fd8f7fef
+        license: "Apache-2.0"
+      - name: "github.com/gobwas/glob"
+        version: "v1.0.0"
+        source: "https://github.com/gobwas/glob"
+        sourceType: git
+        commit: 80c58b01f2b00664c92a1103bd9d9e328810d758
+        sourceArchiveSHA256: sha256:24cd47db97aad30b3ad25f82a157e42077d4046c750ad6f881c1fca4259c38f0
+        digest: sha256:24cd47db97aad30b3ad25f82a157e42077d4046c750ad6f881c1fca4259c38f0
+        license: "MIT"
+      - name: "github.com/google/go-containerregistry"
+        version: "v0.20.7"
+        source: "https://github.com/google/go-containerregistry"
+        sourceType: git
+        commit: e075f209120b2467fd1b7d24727f1890a0edb74a
+        sourceArchiveSHA256: sha256:66a762a1b62edda4980afb67b6c75dd2fd1a41f02d56af0d9473ad5edd7be266
+        digest: sha256:66a762a1b62edda4980afb67b6c75dd2fd1a41f02d56af0d9473ad5edd7be266
+        license: "Apache-2.0"
+      - name: "github.com/google/uuid"
+        version: "v1.6.0"
+        source: "https://github.com/google/uuid"
+        sourceType: git
+        commit: 0f11ee6918f41a04c201eceeadf612a377bc7fbc
+        sourceArchiveSHA256: sha256:d0f02f377217f42702e259684e06441edbf5140dddcc34ba9bea56038b38a6ed
+        digest: sha256:d0f02f377217f42702e259684e06441edbf5140dddcc34ba9bea56038b38a6ed
+        license: "BSD-3-Clause"
+      - name: "github.com/grpc-ecosystem/grpc-gateway/v2"
+        version: "v2.30.0"
+        source: "https://github.com/grpc-ecosystem/grpc-gateway"
+        sourceType: git
+        commit: 1debdeabd09134bc7755b9bc85802a7840bae100
+        sourceArchiveSHA256: sha256:e76534d0b9df3124c4d3c20378789db52bf700a5d8c4d8db7beeef49bf372980
+        digest: sha256:e76534d0b9df3124c4d3c20378789db52bf700a5d8c4d8db7beeef49bf372980
+        license: "BSD-3-Clause"
+      - name: "github.com/jackc/pgpassfile"
+        version: "v1.0.0"
+        source: "https://github.com/jackc/pgpassfile"
+        sourceType: git
+        commit: 99d8e8e28945ffceaf75b0299fcb2bb656b8a683
+        sourceArchiveSHA256: sha256:1cc79fb0b80f54b568afd3f4648dd1c349f746ad7c379df8d7f9e0eb1cac938b
+        digest: sha256:1cc79fb0b80f54b568afd3f4648dd1c349f746ad7c379df8d7f9e0eb1cac938b
+        license: "MIT"
+      - name: "github.com/jackc/pgservicefile"
+        version: "v0.0.0-20240606120523-5a60cdf6a761"
+        source: "https://github.com/jackc/pgservicefile"
+        sourceType: git
+        commit: 5a60cdf6a76120dc3d5152b95f3b5fd8aa7cc9eb
+        sourceArchiveSHA256: sha256:c9e31c91aebf96eb246bd410d1849cc7666d955a1e20ca2eba1c30b4eb89335f
+        digest: sha256:c9e31c91aebf96eb246bd410d1849cc7666d955a1e20ca2eba1c30b4eb89335f
+        license: "MIT"
+      - name: "github.com/jackc/pgx/v5"
+        version: "v5.11.0"
+        source: "https://github.com/jackc/pgx"
+        sourceType: git
+        commit: 5e583fa7aabfa88b796292f849fc9d7d75ac159d
+        sourceArchiveSHA256: sha256:ada62e95244336484f86c274e04a6845f0c494c93b69d24f2ac4181b7c58b11d
+        digest: sha256:ada62e95244336484f86c274e04a6845f0c494c93b69d24f2ac4181b7c58b11d
+        license: "MIT"
+      - name: "github.com/jackc/puddle/v2"
+        version: "v2.2.2"
+        source: "https://github.com/jackc/puddle"
+        sourceType: git
+        commit: bd09d14bd4018b6d65a9d7770e2f3ddf8b00af1c
+        sourceArchiveSHA256: sha256:f1f0789098a0bcb5ff3c7024f9ee387a6748446e1bc6713b13a63d763a9fb11e
+        digest: sha256:f1f0789098a0bcb5ff3c7024f9ee387a6748446e1bc6713b13a63d763a9fb11e
+        license: "MIT"
+      - name: "github.com/klauspost/compress"
+        version: "v1.20.0"
+        source: "https://github.com/klauspost/compress"
+        sourceType: git
+        commit: 9d8ccb1d9567304420eb55a88b6f63a2067a8da4
+        sourceArchiveSHA256: sha256:a04654d049a3caf33bcb60ee45efd8ccecabb93eb8be88045ed0003b0ecb5773
+        digest: sha256:a04654d049a3caf33bcb60ee45efd8ccecabb93eb8be88045ed0003b0ecb5773
+        license: "BSD-3-Clause AND MIT"
+      - name: "github.com/lestrrat-go/blackmagic"
+        version: "v1.0.4"
+        source: "https://github.com/lestrrat-go/blackmagic"
+        sourceType: git
+        commit: 150de8a4e21172dd241760e4398a24a8dec3feaf
+        sourceArchiveSHA256: sha256:4775ca8eab443a882cc1772c25716810a889d478746c6a405f559750de42dce6
+        digest: sha256:4775ca8eab443a882cc1772c25716810a889d478746c6a405f559750de42dce6
+        license: "MIT"
+      - name: "github.com/lestrrat-go/dsig"
+        version: "v1.4.0"
+        source: "https://github.com/lestrrat-go/dsig"
+        sourceType: git
+        commit: 2518d26abd5d0cfb62089883aaba6526df8e4f46
+        sourceArchiveSHA256: sha256:5ffb0bd56d8ee6a472cf7ff21472b792a3679c8c76934c58661ef05ca2ec692a
+        digest: sha256:5ffb0bd56d8ee6a472cf7ff21472b792a3679c8c76934c58661ef05ca2ec692a
+        license: "MIT"
+      - name: "github.com/lestrrat-go/httpcc"
+        version: "v1.0.1"
+        source: "https://github.com/lestrrat-go/httpcc"
+        sourceType: git
+        commit: 962f66809593fba7c5cdc78a0bdcf98827250e3c
+        sourceArchiveSHA256: sha256:d75132f805ea5cf6275d9af02a5ff3c116ad92ac7fc28e2a22b8fd2e029a3f4c
+        digest: sha256:d75132f805ea5cf6275d9af02a5ff3c116ad92ac7fc28e2a22b8fd2e029a3f4c
+        license: "MIT"
+      - name: "github.com/lestrrat-go/httprc/v3"
+        version: "v3.0.6"
+        source: "https://github.com/lestrrat-go/httprc"
+        sourceType: git
+        commit: 7c9e8e41c387dfe2e99290dd41fadf720e496f74
+        sourceArchiveSHA256: sha256:e9c724825002e7c25c54fbd1d7379d653dff4a7425cf0bf08814d864795ec664
+        digest: sha256:e9c724825002e7c25c54fbd1d7379d653dff4a7425cf0bf08814d864795ec664
+        license: "MIT"
+      - name: "github.com/lestrrat-go/jwx/v3"
+        version: "v3.3.0"
+        source: "https://github.com/lestrrat-go/jwx"
+        sourceType: git
+        commit: 0bbd1a78df76e17596e222cc9ee435dff0331756
+        sourceArchiveSHA256: sha256:1338f8dd8c167f387d23b6076482f96b2f6ca4c835593e1e3d4008d98402f645
+        digest: sha256:1338f8dd8c167f387d23b6076482f96b2f6ca4c835593e1e3d4008d98402f645
+        license: "MIT"
+      - name: "github.com/lestrrat-go/option/v2"
+        version: "v2.0.0"
+        source: "https://github.com/lestrrat-go/option"
+        sourceType: git
+        commit: 0f819155513c6863e03a9b185a3ba996e5357f71
+        sourceArchiveSHA256: sha256:3456bd01638c67da62570123f3d12f5996d0a01ed521959c2fc85aa83d3ee94a
+        digest: sha256:3456bd01638c67da62570123f3d12f5996d0a01ed521959c2fc85aa83d3ee94a
+        license: "MIT"
+      - name: "github.com/munnerz/goautoneg"
+        version: "v0.0.0-20191010083416-a7dc8b61c822"
+        source: "https://github.com/munnerz/goautoneg"
+        sourceType: git
+        commit: a7dc8b61c822528f973a5e4e7b272055c6fdb43e
+        sourceArchiveSHA256: sha256:3d7ce17916779890be02ea6b3dd6345c3c30c1df502ad9d8b5b9b310e636afd9
+        digest: sha256:3d7ce17916779890be02ea6b3dd6345c3c30c1df502ad9d8b5b9b310e636afd9
+        license: "BSD-3-Clause"
+      - name: "github.com/oapi-codegen/runtime"
+        version: "v1.6.0"
+        source: "https://github.com/oapi-codegen/runtime"
+        sourceType: git
+        commit: 01be2fa2667493dab65b6167f668a3c09a38ab34
+        sourceArchiveSHA256: sha256:72c629e121514a5c6cc523ab13282dd54dc0320d6832957a7802d4aca753989c
+        digest: sha256:72c629e121514a5c6cc523ab13282dd54dc0320d6832957a7802d4aca753989c
+        license: "Apache-2.0"
+      - name: "github.com/opencontainers/go-digest"
+        version: "v1.0.0"
+        source: "https://github.com/opencontainers/go-digest"
+        sourceType: git
+        commit: ea51bea511f75cfa3ef6098cc253c5c3609b037a
+        sourceArchiveSHA256: sha256:615efb31ff6cd71035b8aa38c3659d8b4da46f3cd92ac807cb50449adfe37c86
+        digest: sha256:615efb31ff6cd71035b8aa38c3659d8b4da46f3cd92ac807cb50449adfe37c86
+        license: "Apache-2.0"
+      - name: "github.com/prometheus/client_golang"
+        version: "v1.24.1"
+        source: "https://github.com/prometheus/client_golang"
+        sourceType: git
+        commit: d6087ee482e06716ee21dc03819432d5d40f72db
+        sourceArchiveSHA256: sha256:90b627e392d9936cf410ed23066d6198fecc11130bbab2e17dda627da3a86fc3
+        digest: sha256:90b627e392d9936cf410ed23066d6198fecc11130bbab2e17dda627da3a86fc3
+        license: "Apache-2.0 AND BSD-3-Clause"
+      - name: "github.com/prometheus/client_model"
+        version: "v0.6.3"
+        source: "https://github.com/prometheus/client_model"
+        sourceType: git
+        commit: a834711dbe83d46508daa32d3389f109cc85f53b
+        sourceArchiveSHA256: sha256:92f5d9a39b75bdc3f6733563934438148a3c3661420a8f742fea8cbf40d39abe
+        digest: sha256:92f5d9a39b75bdc3f6733563934438148a3c3661420a8f742fea8cbf40d39abe
+        license: "Apache-2.0"
+      - name: "github.com/prometheus/common"
+        version: "v0.70.1"
+        source: "https://github.com/prometheus/common"
+        sourceType: git
+        commit: b63d8c0f100a0788a91445e376ec3b1598e69c99
+        sourceArchiveSHA256: sha256:587d6d0890642e7f9ef2ce6a76cdf6dcbd71f70c59437282a2e19c98cf68c2b8
+        digest: sha256:587d6d0890642e7f9ef2ce6a76cdf6dcbd71f70c59437282a2e19c98cf68c2b8
+        license: "Apache-2.0"
+      - name: "github.com/prometheus/procfs"
+        version: "v0.22.0"
+        source: "https://github.com/prometheus/procfs"
+        sourceType: git
+        commit: e81f9e1a1a27c41b2c23dc1d58b56a85ebb7da4d
+        sourceArchiveSHA256: sha256:e13d43da4a9773cecdfa8b86e745bbd8efda07b005402c673a1e882b6dbb6804
+        digest: sha256:e13d43da4a9773cecdfa8b86e745bbd8efda07b005402c673a1e882b6dbb6804
+        license: "Apache-2.0"
+      - name: "github.com/rcrowley/go-metrics"
+        version: "v0.0.0-20250401214520-65e299d6c5c9"
+        source: "https://github.com/rcrowley/go-metrics"
+        sourceType: git
+        commit: 65e299d6c5c92718e672a9d2bc7f96e5b687eef8
+        sourceArchiveSHA256: sha256:a8c9e9792ad16f31ef8c32232de6243cc02147175661c9f64bc7b292f1c4d0cc
+        digest: sha256:a8c9e9792ad16f31ef8c32232de6243cc02147175661c9f64bc7b292f1c4d0cc
+        license: "BSD-2-Clause-Views"
+      - name: "github.com/santhosh-tekuri/jsonschema/v6"
+        version: "v6.0.3"
+        source: "https://github.com/santhosh-tekuri/jsonschema"
+        sourceType: git
+        commit: b0fc661f4939578bc429f408c18202573dbafcc4
+        sourceArchiveSHA256: sha256:79282583888de6fd146e513f01e09bd3b228976942d2114688e97608279b1ebe
+        digest: sha256:79282583888de6fd146e513f01e09bd3b228976942d2114688e97608279b1ebe
+        license: "Apache-2.0"
+      - name: "github.com/secure-systems-lab/go-securesystemslib"
+        version: "v0.11.0"
+        source: "https://github.com/secure-systems-lab/go-securesystemslib"
+        sourceType: git
+        commit: 1ce0aca0c8640e2b119fb8de53fb193759085c6a
+        sourceArchiveSHA256: sha256:bcc6c768b802666b5ad3aea122e15b34049655e5e8934c1e2a3e65b1fb59e692
+        digest: sha256:bcc6c768b802666b5ad3aea122e15b34049655e5e8934c1e2a3e65b1fb59e692
+        license: "MIT"
+      - name: "github.com/sigstore/protobuf-specs"
+        version: "v0.5.0"
+        source: "https://github.com/sigstore/protobuf-specs"
+        sourceType: git
+        commit: f8d009ede80474a9e257788207a00693e4693168
+        sourceArchiveSHA256: sha256:0eb8b14e1e4392ee93e6ab48fabea3f59d42cdf87e62111384c5d2cc02e1639f
+        digest: sha256:0eb8b14e1e4392ee93e6ab48fabea3f59d42cdf87e62111384c5d2cc02e1639f
+        license: "Apache-2.0"
+      - name: "github.com/sigstore/sigstore"
+        version: "v1.10.8"
+        source: "https://github.com/sigstore/sigstore"
+        sourceType: git
+        commit: c761681120b37d9c4b1410cf5720571582ab090a
+        sourceArchiveSHA256: sha256:0e7c054133f3eeafdccec2c059457bf4a9e10721c8e8f076a41f5b45f63fc5f2
+        digest: sha256:0e7c054133f3eeafdccec2c059457bf4a9e10721c8e8f076a41f5b45f63fc5f2
+        license: "Apache-2.0"
+      - name: "github.com/sirupsen/logrus"
+        version: "v1.10.2"
+        source: "https://github.com/sirupsen/logrus"
+        sourceType: git
+        commit: 6d6a132bc03324d4ceb78e1b927f995d014cda20
+        sourceArchiveSHA256: sha256:73a40737da86682dd536ec2c87dff0f589eeeed81873362b08ed009818747b52
+        digest: sha256:73a40737da86682dd536ec2c87dff0f589eeeed81873362b08ed009818747b52
+        license: "MIT"
+      - name: "github.com/tchap/go-patricia/v2"
+        version: "v2.3.3"
+        source: "https://github.com/tchap/go-patricia"
+        sourceType: git
+        commit: 8c5d7fa2ef98ad77bfbd2d2c3d67d4d17db0093a
+        sourceArchiveSHA256: sha256:37591393b0ea113849eacbc292886ea6978798a596164510c5834c2edc374067
+        digest: sha256:37591393b0ea113849eacbc292886ea6978798a596164510c5834c2edc374067
+        license: "MIT"
+      - name: "github.com/valyala/fastjson"
+        version: "v1.6.10"
+        source: "https://github.com/valyala/fastjson"
+        sourceType: git
+        commit: d652a1b1909d3520389b2c287ca3cf3aa3791451
+        sourceArchiveSHA256: sha256:9b4ec65a79a668f4948baf45f53d127f6c36cd37f78c1f5cfee672bd377afce7
+        digest: sha256:9b4ec65a79a668f4948baf45f53d127f6c36cd37f78c1f5cfee672bd377afce7
+        license: "MIT"
+      - name: "github.com/vektah/gqlparser/v2"
+        version: "v2.5.37"
+        source: "https://github.com/vektah/gqlparser"
+        sourceType: git
+        commit: dbf2a1db47de513d1df4cd5af0ea3e4d6b68ea4c
+        sourceArchiveSHA256: sha256:d40541daa07c6beaac56b7221d1110468aeac0bca5ecee30feafe241739b1e16
+        digest: sha256:d40541daa07c6beaac56b7221d1110468aeac0bca5ecee30feafe241739b1e16
+        license: "MIT"
+      - name: "github.com/xeipuuv/gojsonpointer"
+        version: "v0.0.0-20190905194746-02993c407bfb"
+        source: "https://github.com/xeipuuv/gojsonpointer"
+        sourceType: git
+        commit: 02993c407bfbf5f6dae44c4f4b1cf6a39b5fc5bb
+        sourceArchiveSHA256: sha256:11b54f0bc358b09261075c3e15cd14d57102f3ab1ba88c345c53eab6aaf228de
+        digest: sha256:11b54f0bc358b09261075c3e15cd14d57102f3ab1ba88c345c53eab6aaf228de
+        license: "Apache-2.0"
+      - name: "github.com/xeipuuv/gojsonreference"
+        version: "v0.0.0-20180127040603-bd5ef7bd5415"
+        source: "https://github.com/xeipuuv/gojsonreference"
+        sourceType: git
+        commit: bd5ef7bd5415a7ac448318e64f11a24cd21e594b
+        sourceArchiveSHA256: sha256:7ec98f4df894413f4dc58c8df330ca8b24ff425b05a8e1074c3028c99f7e45e7
+        digest: sha256:7ec98f4df894413f4dc58c8df330ca8b24ff425b05a8e1074c3028c99f7e45e7
+        license: "Apache-2.0"
+      - name: "github.com/yashtewari/glob-intersection"
+        version: "v0.2.0"
+        source: "https://github.com/yashtewari/glob-intersection"
+        sourceType: git
+        commit: 9f24ebf25f62b3565b778d6ec98775caf0e37720
+        sourceArchiveSHA256: sha256:bc999bc9a3bcce0ed7c06180320d2236a5c32aa61def5a7c79963faa6bcf2fd0
+        digest: sha256:bc999bc9a3bcce0ed7c06180320d2236a5c32aa61def5a7c79963faa6bcf2fd0
+        license: "Apache-2.0"
+      - name: "github.com/youmark/pkcs8"
+        version: "v0.0.0-20240726163527-a2c0da244d78"
+        source: "https://github.com/youmark/pkcs8"
+        sourceType: git
+        commit: a2c0da244d782506f23dd28c916a6efc2b33f9d6
+        sourceArchiveSHA256: sha256:cdcf5e96850f9f60bc96ab512e4bd06ee19dd2dbe855260c3589c6c79a1bcfb5
+        digest: sha256:cdcf5e96850f9f60bc96ab512e4bd06ee19dd2dbe855260c3589c6c79a1bcfb5
+        license: "MIT"
+      - name: "go.opentelemetry.io/auto/sdk"
+        version: "v1.2.1"
+        source: "https://github.com/open-telemetry/opentelemetry-go-instrumentation"
+        sourceType: git
+        commit: 715f58ce2f17e2176b8e53b871e47531a259cc1d
+        sourceArchiveSHA256: sha256:a08a16fc0a7041cdb875f47a260a56000632212c85f65a302a043c76380c8335
+        digest: sha256:a08a16fc0a7041cdb875f47a260a56000632212c85f65a302a043c76380c8335
+        license: "Apache-2.0"
+      - name: "go.opentelemetry.io/otel"
+        version: "v1.46.0"
+        source: "https://github.com/open-telemetry/opentelemetry-go"
+        sourceType: git
+        commit: 58db4c898f5b5594f8ba78f156475bf48486e2f2
+        sourceArchiveSHA256: sha256:5f1b7d702ee2e6e41880ef279a6c7ecae78f7867f5b3e92a3a87828d472501a9
+        digest: sha256:5f1b7d702ee2e6e41880ef279a6c7ecae78f7867f5b3e92a3a87828d472501a9
+        license: "Apache-2.0"
+      - name: "go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+        version: "v1.46.0"
+        source: "https://github.com/open-telemetry/opentelemetry-go"
+        sourceType: git
+        commit: 58db4c898f5b5594f8ba78f156475bf48486e2f2
+        sourceArchiveSHA256: sha256:9525fcb8bf01543e78e716ae10ff39c2a7181f73924de921402a04e4ba0be7b8
+        digest: sha256:9525fcb8bf01543e78e716ae10ff39c2a7181f73924de921402a04e4ba0be7b8
+        license: "Apache-2.0"
+      - name: "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+        version: "v1.46.0"
+        source: "https://github.com/open-telemetry/opentelemetry-go"
+        sourceType: git
+        commit: 58db4c898f5b5594f8ba78f156475bf48486e2f2
+        sourceArchiveSHA256: sha256:f87ca4401bb735a8f70c279e9fa07977d795f49c95d2d7518488614732d5ef55
+        digest: sha256:f87ca4401bb735a8f70c279e9fa07977d795f49c95d2d7518488614732d5ef55
+        license: "Apache-2.0"
+      - name: "go.opentelemetry.io/otel/metric"
+        version: "v1.46.0"
+        source: "https://github.com/open-telemetry/opentelemetry-go"
+        sourceType: git
+        commit: 58db4c898f5b5594f8ba78f156475bf48486e2f2
+        sourceArchiveSHA256: sha256:9dfefa696b083e8d923b4bb531e8c6d38328a1a859c69236434c0b2d36cfc4c4
+        digest: sha256:9dfefa696b083e8d923b4bb531e8c6d38328a1a859c69236434c0b2d36cfc4c4
+        license: "Apache-2.0"
+      - name: "go.opentelemetry.io/otel/sdk"
+        version: "v1.46.0"
+        source: "https://github.com/open-telemetry/opentelemetry-go"
+        sourceType: git
+        commit: 58db4c898f5b5594f8ba78f156475bf48486e2f2
+        sourceArchiveSHA256: sha256:3b190b8bd3e596b4f8496a1842898207f21416345c3228ca133231199bbb3e05
+        digest: sha256:3b190b8bd3e596b4f8496a1842898207f21416345c3228ca133231199bbb3e05
+        license: "Apache-2.0"
+      - name: "go.opentelemetry.io/otel/trace"
+        version: "v1.46.0"
+        source: "https://github.com/open-telemetry/opentelemetry-go"
+        sourceType: git
+        commit: 58db4c898f5b5594f8ba78f156475bf48486e2f2
+        sourceArchiveSHA256: sha256:00c882750676e787b00f1c0328d99ed7ad0546e19af86c7af546c1343481c25a
+        digest: sha256:00c882750676e787b00f1c0328d99ed7ad0546e19af86c7af546c1343481c25a
+        license: "Apache-2.0"
+      - name: "go.opentelemetry.io/proto/otlp"
+        version: "v1.11.0"
+        source: "https://github.com/open-telemetry/opentelemetry-proto-go"
+        sourceType: git
+        commit: bc625d6e040020737ab65c675c87e03bc841fd60
+        sourceArchiveSHA256: sha256:790b98d472e7095511fa7feddd04e1d85bd844226e03ba482bd4105ef2217e09
+        digest: sha256:790b98d472e7095511fa7feddd04e1d85bd844226e03ba482bd4105ef2217e09
+        license: "Apache-2.0"
+      - name: "go.yaml.in/yaml/v3"
+        version: "v3.0.5"
+        source: "https://github.com/yaml/go-yaml"
+        sourceType: git
+        commit: e16c7af9361b241fa02d91582fb59ce4954d8afc
+        sourceArchiveSHA256: sha256:f2d70caa35f66283aec58b889af8c5f07c374c5934be27a738c1215263e19205
+        digest: sha256:f2d70caa35f66283aec58b889af8c5f07c374c5934be27a738c1215263e19205
+        license: "Apache-2.0 AND MIT"
+      - name: "golang.org/x/crypto"
+        version: "v0.55.0"
+        source: "https://go.googlesource.com/crypto"
+        sourceType: git
+        commit: f44d03d253a1503e51b059ca880867c51d878242
+        sourceArchiveSHA256: sha256:0660bba47b3643fe1beb1b97af93b6a4d2bf2ed069d9e52a2b1bdf6f17cf3e79
+        digest: sha256:0660bba47b3643fe1beb1b97af93b6a4d2bf2ed069d9e52a2b1bdf6f17cf3e79
+        license: "BSD-3-Clause"
+      - name: "golang.org/x/net"
+        version: "v0.58.0"
+        source: "https://go.googlesource.com/net"
+        sourceType: git
+        commit: acc78e0d2b2c855c0c4fbdcfe5f42a9e3d0f9778
+        sourceArchiveSHA256: sha256:aa78bbf8d55db3e6995630165e2bcd7dce6d0b8831c166fa03b80ac94fb650e7
+        digest: sha256:aa78bbf8d55db3e6995630165e2bcd7dce6d0b8831c166fa03b80ac94fb650e7
+        license: "BSD-3-Clause"
+      - name: "golang.org/x/oauth2"
+        version: "v0.36.0"
+        source: "https://go.googlesource.com/oauth2"
+        sourceType: git
+        commit: 4d954e69a88d9e1ccb8439f8d5b6cbef230c4ef9
+        sourceArchiveSHA256: sha256:15bf65ff103e5dafc809d78cd037a1d1e88ccb8451824e851156002a13304504
+        digest: sha256:15bf65ff103e5dafc809d78cd037a1d1e88ccb8451824e851156002a13304504
+        license: "BSD-3-Clause"
+      - name: "golang.org/x/sync"
+        version: "v0.23.0"
+        source: "https://go.googlesource.com/sync"
+        sourceType: git
+        commit: f75267d8412fc1dfd12b343644a7ea46e4d9c85d
+        sourceArchiveSHA256: sha256:c19a11baba5c1a093cb4fd2f6d0d8d79673c97a82cb0fe2d693c9b6ad84f0f82
+        digest: sha256:c19a11baba5c1a093cb4fd2f6d0d8d79673c97a82cb0fe2d693c9b6ad84f0f82
+        license: "BSD-3-Clause"
+      - name: "golang.org/x/sys"
+        version: "v0.48.0"
+        source: "https://go.googlesource.com/sys"
+        sourceType: git
+        commit: 613e2570718ecde85c04e69ebd5585c3881c442c
+        sourceArchiveSHA256: sha256:3a47e06431ba1e24d5b2aca3a7ce31fd13faff34df3e5d8e63f105ff9d0c1786
+        digest: sha256:3a47e06431ba1e24d5b2aca3a7ce31fd13faff34df3e5d8e63f105ff9d0c1786
+        license: "BSD-3-Clause"
+      - name: "golang.org/x/term"
+        version: "v0.46.0"
+        source: "https://go.googlesource.com/term"
+        sourceType: git
+        commit: 6226200ed12cba417a9d9e799c2a7179d3fc0e27
+        sourceArchiveSHA256: sha256:9147fdd982f1aed1392183d5b48055f4f74c85d496604766c7f0b1d3bbd61c7c
+        digest: sha256:9147fdd982f1aed1392183d5b48055f4f74c85d496604766c7f0b1d3bbd61c7c
+        license: "BSD-3-Clause"
+      - name: "golang.org/x/text"
+        version: "v0.42.0"
+        source: "https://go.googlesource.com/text"
+        sourceType: git
+        commit: fafe4a06967e06550e69ee42787d9902845d2a3f
+        sourceArchiveSHA256: sha256:a7b64e003056b6470303f408202098d8f3714a115f23091b8cac85edeb265476
+        digest: sha256:a7b64e003056b6470303f408202098d8f3714a115f23091b8cac85edeb265476
+        license: "BSD-3-Clause"
+      - name: "google.golang.org/genproto/googleapis/api"
+        version: "v0.0.0-20260819154853-08b0e4226688"
+        source: "https://github.com/googleapis/go-genproto"
+        sourceType: git
+        commit: 08b0e42266880154f3122364912db2b5cf01a32a
+        sourceArchiveSHA256: sha256:b85486c4ee83217f2af7a79a6f19a305d24aa1db4c579bf896029b805664acb9
+        digest: sha256:b85486c4ee83217f2af7a79a6f19a305d24aa1db4c579bf896029b805664acb9
+        license: "Apache-2.0"
+      - name: "google.golang.org/genproto/googleapis/rpc"
+        version: "v0.0.0-20260831171406-18b4a7587f8a"
+        source: "https://github.com/googleapis/go-genproto"
+        sourceType: git
+        commit: 18b4a7587f8a25f7b80ffcf55cb06eabd19bafb9
+        sourceArchiveSHA256: sha256:0a74d39ec13723e07a7921fc1674525b6f5ebab65307f5c5843e6c9e2990aefc
+        digest: sha256:0a74d39ec13723e07a7921fc1674525b6f5ebab65307f5c5843e6c9e2990aefc
+        license: "Apache-2.0"
+      - name: "google.golang.org/grpc"
+        version: "v1.83.2"
+        source: "https://github.com/grpc/grpc-go"
+        sourceType: git
+        commit: 030ee8becb20ce4315d6bf2dfa26bdd876169dc4
+        sourceArchiveSHA256: sha256:84292905a694e17862d15abc123a6f7f7efa9e1e3a77e80120982ff95b2605ea
+        digest: sha256:84292905a694e17862d15abc123a6f7f7efa9e1e3a77e80120982ff95b2605ea
+        license: "Apache-2.0"
+      - name: "google.golang.org/protobuf"
+        version: "v1.36.12"
+        source: "https://go.googlesource.com/protobuf"
+        sourceType: git
+        commit: cdd4c5f7406e82462949c7a65defa9f3029c162d
+        sourceArchiveSHA256: sha256:68f8a3174aff42950fd9bd02c11b45c6986eb8060508d124d1c3dd6bf86b9be6
+        digest: sha256:68f8a3174aff42950fd9bd02c11b45c6986eb8060508d124d1c3dd6bf86b9be6
+        license: "BSD-3-Clause"
+      - name: "gopkg.in/yaml.v3"
+        version: "v3.0.1"
+        source: "https://github.com/go-yaml/yaml"
+        sourceType: git
+        commit: f6f7691b1fdeb513f56608cd2c32c51f8194bf51
+        sourceArchiveSHA256: sha256:aab8fbc4e6300ea08e6afe1caea18a21c90c79f489f52c53e2f20431f1a9a015
+        digest: sha256:aab8fbc4e6300ea08e6afe1caea18a21c90c79f489f52c53e2f20431f1a9a015
+        license: "Apache-2.0 AND MIT"
+    dependencyClosureVerified: true
+    patches: []
+    forkPolicy: not-applicable
+    owner: platform-policy-maintainers
+    pocReport: docs/poc/opa-sdk-runtime.md
+    conformanceFixtures:
+      - third_party/admission/platform-runtime-go.lock.json
+      - third_party/admission/platform-runtime-go-license-review.json
+      - test/fixtures/opa-sdk/offline-sdk.jsonl
+      - test/fixtures/opa-sdk/offline-source-rebuild.json
+      - test/fixtures/opa-sdk/primary-git-source-binding.json
+    exitPlan: Replace through signed policy compiler adapter only after equivalent deterministic fail-closed and source closure evidence
+    requiredFor1_0: true
+    officialSupportSources:
+      - https://github.com/open-policy-agent/opa/releases/tag/v1.21.0
+    correspondingSourceBundleSHA256: sha256:afb124b95c9ec9e3687eac5cc7d1a5435b66018447abb201546e5dd7d8341e8a
   - name: postgresql
     state: qualified
     version: '17.11'

@@ -33,7 +33,9 @@ func buildFixture(t *testing.T, missingLayer bool) (BuildSpec, string, string, T
 		}
 		spec.Files = append(spec.Files, BuildFile{PayloadFile: PayloadFile{Path: name, Digest: fixtureDigest(string(data)), Size: int64(len(data)), Kind: pathKind(name)}, Source: name})
 	}
-	spec.Materials = []Material{{Name: "platform-api", Kind: "container-image", Version: "1.0.0", Architecture: "linux/arm64", Digest: fixtureDigest(string(image)), PayloadRef: "oci/platform-api.tar", SBOMRef: "sbom/platform-api.json", LicenseRef: "licenses/platform-api.txt", InstallAfter: []string{}}}
+	// The primitive OCI test image is not a Go runtime; use the web identity.
+	// Go runtime admission has a separate complete-source integration fixture.
+	spec.Materials = []Material{{Name: "platform-web", Kind: "container-image", Version: "1.0.0", Architecture: "linux/arm64", Digest: fixtureDigest(string(image)), PayloadRef: "oci/platform-api.tar", SBOMRef: "sbom/platform-api.json", LicenseRef: "licenses/platform-api.txt", InstallAfter: []string{}}}
 	public, private, err := ed25519.GenerateKey(rand.Reader)
 	if err != nil {
 		t.Fatal(err)

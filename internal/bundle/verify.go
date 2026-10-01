@@ -197,6 +197,26 @@ func validateCatalogAdmissionWithCatalog(materials []Material, catalog *supplych
 	for _, material := range materials {
 		selected[material.Name] = true
 	}
+	for _, name := range []string{"platform-api", "platform-worker", "opsctl"} {
+		if !selected[name] {
+			continue
+		}
+		sdk, ok := catalog.Component("opa-sdk")
+		if !ok || sdk.State != "qualified" || sdk.CorrespondingSourceBundleSHA256 == "" || !selected["opa-sdk-source"] {
+			return fmt.Errorf("first-party Go material %s requires qualified opa-sdk and its complete locked source/license closure", name)
+		}
+		for _, material := range materials {
+			if material.Name == name {
+				supported := false
+				for _, architecture := range sdk.Architectures {
+					supported = supported || architecture == material.Architecture
+				}
+				if !supported {
+					return fmt.Errorf("first-party Go material %s has no qualified SDK source closure for %s", name, material.Architecture)
+				}
+			}
+		}
+	}
 	if selected["deepflow"] && selected["deepflow-app"] {
 		return errors.New("DeepFlow bundle must not contain deepflow-app")
 	}
@@ -210,6 +230,13 @@ func validateCatalogAdmissionWithCatalog(materials []Material, catalog *supplych
 			if component, ok := catalog.Component(name); ok {
 				if material.Kind != "source" || component.CorrespondingSourceBundleSHA256 == "" || material.Digest != component.CorrespondingSourceBundleSHA256 || material.Version != component.Version {
 					return fmt.Errorf("source material %s differs from the reviewed corresponding-source lock", material.Name)
+				}
+				supported := false
+				for _, architecture := range component.Architectures {
+					supported = supported || architecture == material.Architecture
+				}
+				if !supported {
+					return fmt.Errorf("source material %s has no qualified closure for %s", material.Name, material.Architecture)
 				}
 				selectedNames = append(selectedNames, name)
 				continue
