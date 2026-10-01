@@ -794,7 +794,7 @@ func normalizeValue(value any) any {
 
 func namespaceFromServiceDomain(domain string) string {
 	parts := strings.Split(domain, ".")
-	if len(parts) >= 3 && parts[1] != "svc" {
+	if len(parts) >= 3 && parts[1] == "svc" {
 		return parts[0]
 	}
 	return "ops-system"

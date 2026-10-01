@@ -28,3 +28,14 @@ func TestRuntimeTransitRoleRequiresProjectedTokenAudience(t *testing.T) {
 		t.Fatalf("runtime Transit role audience=%v, expected openbao", body["audience"])
 	}
 }
+
+func TestServiceDomainBindsTheInstalledNamespace(t *testing.T) {
+	for domain, expected := range map[string]string{
+		"ops-system.svc.cluster.local":               "ops-system",
+		"ops-sp03-review-20261001.svc.cluster.local": "ops-sp03-review-20261001",
+	} {
+		if got := namespaceFromServiceDomain(domain); got != expected {
+			t.Errorf("domain %q bound namespace %q; expected %q", domain, got, expected)
+		}
+	}
+}
