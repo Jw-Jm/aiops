@@ -1,13 +1,13 @@
 package integration
 
 import (
-	"context"
-	"io"
-	"log/slog"
+	"errors"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 
@@ -19,7 +19,6 @@ import (
 	"ops-platform/internal/audit"
 	"ops-platform/internal/crypto"
 	"ops-platform/internal/integrations/s3"
-	"ops-platform/internal/observability"
 	"ops-platform/internal/persistence"
 )
 
@@ -70,15 +69,27 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 	for key, value := range map[string]string{"OPENBAO_ADDR": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_URL"), "OPENBAO_CA_FILE": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_CA_FILE"), "OPENBAO_SERVICE_DOMAIN": reviewWorkloadNamespace + ".svc.cluster.local", "OPENBAO_PROJECTED_TOKEN_FILE": filepath.Join(os.Getenv("SP03_TEST_KUBERNETES_TOKEN_DIR"), "ops-worker"), "S3_BUCKET": bucket, "S3_ACCESS_KEY": os.Getenv("SP03_TEST_S3_ACCESS_KEY"), "S3_SECRET_KEY": os.Getenv("SP03_TEST_S3_SECRET_KEY")} {
 		t.Setenv(key, value)
 	}
-	application, _ := app.NewWorker(app.AppConfig{DatabaseURL: u.String(), OIDCIssuerURL: "isolated-not-used-by-audit", ProfilePath: "isolated-core"})
-	runtime, _ := observability.NewRuntime(ctx, "review-worker")
-	defer runtime.Close(ctx)
-	runtime.Logger = observability.NewLogger(io.Discard, slog.LevelInfo)
-	start := func() (context.CancelFunc, chan error) {
-		cctx, cancel := context.WithCancel(ctx)
+	// Exercise the delivered command in separate OS processes. The child gets
+	// only its runtime credentials, never bootstrap/root test tokens.
+	binary := filepath.Join(t.TempDir(), "platform-worker")
+	build := exec.Command("go", "build", "-trimpath", "-o", binary, "./cmd/platform-worker")
+	build.Dir = filepath.Dir(dir)
+	if output, err := build.CombinedOutput(); err != nil {
+		t.Fatalf("build locked worker command: %v: %s", err, output)
+	}
+	start := func() (*exec.Cmd, chan error) {
+		command := exec.Command(binary)
+		command.Env = []string{"DATABASE_URL=" + u.String(), "OIDC_ISSUER_URL=isolated-not-used-by-audit", "PLATFORM_PROFILE=isolated-core", "PLATFORM_METRICS_ADDR=127.0.0.1:0"}
+		for _, key := range []string{"OPENBAO_ADDR", "OPENBAO_CA_FILE", "OPENBAO_SERVICE_DOMAIN", "OPENBAO_PROJECTED_TOKEN_FILE", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY", "S3_ENDPOINT"} {
+			command.Env = append(command.Env, key+"="+os.Getenv(key))
+		}
+		if err := command.Start(); err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() { _ = command.Process.Kill() })
 		done := make(chan error, 1)
-		go func() { done <- application.Serve(cctx, runtime) }()
-		return cancel, done
+		go func() { done <- command.Wait() }()
+		return command, done
 	}
 	wait := func(query string, want int, done chan error) {
 		t.Helper()
@@ -100,17 +111,23 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 		t.Fatalf("worker condition did not reach %d", want)
 	}
 	t.Setenv("S3_ENDPOINT", "http://127.0.0.1:1")
-	cancel, done := start()
-	defer func() { cancel() }()
+	command, done := start()
+	firstPID := command.Process.Pid
 	wait(`SELECT CASE WHEN count(*) >= 1 THEN 1 ELSE 0 END FROM audit.signed_segments WHERE status='pending_signature'`, 1, done)
-	cancel()
-	if err := <-done; err != nil {
+	if err := command.Process.Kill(); err != nil {
 		t.Fatal(err)
 	}
+	err = <-done
+	var exit *exec.ExitError
+	if !errors.As(err, &exit) || !exit.ProcessState.Sys().(syscall.WaitStatus).Signaled() || exit.ProcessState.Sys().(syscall.WaitStatus).Signal() != syscall.SIGKILL {
+		t.Fatalf("first worker was not killed by SIGKILL: %v", err)
+	}
 	t.Setenv("S3_ENDPOINT", os.Getenv("SP03_TEST_S3_ENDPOINT"))
-	cancel, done = start()
+	command, done = start()
 	wait(`SELECT count(*) FROM audit.signed_segments WHERE status='signed'`, 2, done)
-	cancel()
+	if err := command.Process.Signal(syscall.SIGTERM); err != nil {
+		t.Fatal(err)
+	}
 	if err := <-done; err != nil {
 		t.Fatal(err)
 	}
@@ -130,5 +147,5 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 			t.Fatal(err)
 		}
 	}
-	t.Logf("actual WorkerApp used projected-token login and worker-only DB login; two tenants resumed after S3 refusal; pending=0 max_proof_delay_seconds=%.3f bucket=%s", delay, bucket)
+	t.Logf("actual cmd/platform-worker OS processes used projected-token login and worker-only DB login=%s; first_pid=%d exit_signal=SIGKILL second_pid=%d exit_code=0; restart resumed tenants=%s,%s after S3 refusal; pending=0 max_proof_delay_seconds=%.3f bucket=%s", name, firstPID, command.Process.Pid, tenants[0], tenants[1], delay, bucket)
 }
