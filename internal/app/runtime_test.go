@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"net"
 	"testing"
 
@@ -28,5 +29,18 @@ func TestWorkerServingRequiresRuntimeDependencies(t *testing.T) {
 	defer runtime.Close(context.Background())
 	if err := application.Serve(context.Background(), runtime); err == nil {
 		t.Fatal("worker started without audit persistence, archive and Transit")
+	}
+}
+
+func TestAuditFailureCodePreservesOnlyBoundedCategories(t *testing.T) {
+	for message, expected := range map[string]string{
+		"inspect pending audit archive: S3 object metadata lookup failed private-secret": "archive",
+		"audit segment encryption unavailable private-secret":                            "transit",
+		"audit segment signing unavailable private-secret":                               "signature",
+		"commit tenant transaction private-secret":                                       "database",
+	} {
+		if got := auditFailureCode(errors.New(message)); got != expected {
+			t.Errorf("failure code %q; expected %q", got, expected)
+		}
 	}
 }

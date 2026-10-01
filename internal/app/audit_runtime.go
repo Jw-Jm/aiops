@@ -3,7 +3,9 @@ package app
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -45,7 +47,7 @@ func SealAuditPass(ctx context.Context, pool *pgxpool.Pool, service *audit.Segme
 		for batch := 0; batch < 32; batch++ {
 			_, worked, err := service.SealNext(ctx, tenant)
 			if err != nil {
-				passErr = errors.New("audit signing or archive unavailable")
+				passErr = fmt.Errorf("audit signing or archive unavailable: %w", err)
 				break
 			}
 			if !worked {
@@ -130,12 +132,30 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 		cancel()
 		runtime.Metrics.SetComponentDegraded("audit_signing", passErr != nil)
 		if passErr != nil {
-			runtime.Logger.ErrorContext(ctx, "audit signature pass failed; retry scheduled", "operation", "audit_signing")
+			runtime.Logger.ErrorContext(ctx, "audit signature pass failed; retry scheduled", "operation", "audit_signing", "failure_code", auditFailureCode(passErr))
 		}
 		select {
 		case <-ctx.Done():
 			return nil
 		case <-ticker.C:
 		}
+	}
+}
+
+// Retain the cause for callers while logging only a bounded, nonsensitive code.
+func auditFailureCode(err error) string {
+	if cause := errors.Unwrap(err); cause != nil {
+		err = cause
+	}
+	message := err.Error()
+	switch {
+	case strings.Contains(message, "S3") || strings.Contains(message, "archive"):
+		return "archive"
+	case strings.Contains(message, "Transit") || strings.Contains(message, "encryption"):
+		return "transit"
+	case strings.Contains(message, "signing") || strings.Contains(message, "signature"):
+		return "signature"
+	default:
+		return "database"
 	}
 }
