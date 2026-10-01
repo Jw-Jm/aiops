@@ -1,5 +1,6 @@
 {{- $component := .Values.components.seaweedfs -}}
 {{- if eq $component.mode "bundled" }}
+{{- if not (hasPrefix "https://" $component.endpoint) }}{{ fail "bundled Archive requires HTTPS" }}{{ end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -28,6 +29,7 @@ spec:
     app.kubernetes.io/name: ops-seaweedfs
   ports:
     - name: s3
+      appProtocol: https
       port: 8333
       targetPort: s3
     - name: master
@@ -70,7 +72,7 @@ spec:
           image: {{ $component.image | quote }}
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
           command: ["weed"]
-          args: ["-config_dir=/etc/seaweedfs", "server", "-dir=/data", "-s3", "-volume.max=12", "-master.volumeSizeLimitMB=128", "-master.telemetry=false"]
+          args: ["-config_dir=/etc/seaweedfs", "server", "-dir=/data", "-s3", "-volume.max=12", "-master.volumeSizeLimitMB=128", "-master.telemetry=false", "-s3.cert.file=/etc/archive-tls/tls.crt", "-s3.key.file=/etc/archive-tls/tls.key"]
           env:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
@@ -106,6 +108,9 @@ spec:
             capabilities:
               drop: ["ALL"]
           volumeMounts:
+            - name: archive-tls
+              mountPath: /etc/archive-tls
+              readOnly: true
             - name: data
               mountPath: /data
             - name: master-config
@@ -114,6 +119,9 @@ spec:
             - name: tmp
               mountPath: /tmp
       volumes:
+        - name: archive-tls
+          secret:
+            secretName: {{ required "components.seaweedfs.tlsSecretName is required" $component.tlsSecretName | quote }}
         - name: master-config
           configMap:
             name: ops-seaweedfs-master-config

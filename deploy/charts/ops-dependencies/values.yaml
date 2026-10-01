@@ -21,8 +21,9 @@ components:
       usernameKey: username
       passwordKey: password
   seaweedfs:
+    tlsSecretName: ops-seaweedfs-tls
     mode: bundled
-    endpoint: http://ops-seaweedfs-s3:8333
+    endpoint: https://ops-seaweedfs-s3:8333
     image: docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e
     storage: 2Gi
     auth:

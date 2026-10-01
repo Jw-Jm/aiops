@@ -524,7 +524,7 @@ func servicePort(service map[string]any, component string) (int, string) {
 	for _, rawPort := range ports {
 		if number, ok := asInt(objectMap(rawPort)["port"]); ok && containsInt(preferred[component], number) {
 			protocol := "http"
-			if component == "openbao" || (component == "keycloak" && number == 8443) {
+			if component == "openbao" || (component == "keycloak" && number == 8443) || objectMap(rawPort)["appProtocol"] == "https" {
 				protocol = "https"
 			}
 			return number, protocol

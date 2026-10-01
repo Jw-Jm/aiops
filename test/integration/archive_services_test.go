@@ -78,7 +78,14 @@ func TestRealOpenBaoTransitAndSeaweedS3AuditArchive(t *testing.T) {
 	}
 
 	bucketName := "sp03-" + uuid.NewString()[:8]
-	s3Client, err := s3.NewClient(s3.Config{Endpoint: s3Endpoint, Region: "us-east-1", Bucket: bucketName, AccessKey: s3Access, SecretKey: s3Secret, MaxObjectBytes: 2 << 20})
+	var archiveCA []byte
+	if path := os.Getenv("SP03_TEST_S3_CA_FILE"); path != "" {
+		archiveCA, err = os.ReadFile(path)
+		if err != nil {
+			t.Fatal("read independent test archive CA")
+		}
+	}
+	s3Client, err := s3.NewClient(s3.Config{CACertBundle: archiveCA, Endpoint: s3Endpoint, Region: "us-east-1", Bucket: bucketName, AccessKey: s3Access, SecretKey: s3Secret, MaxObjectBytes: 2 << 20})
 	if err != nil {
 		t.Fatal("configure isolated SeaweedFS S3 client")
 	}
@@ -125,14 +132,7 @@ func TestRealOpenBaoTransitAndSeaweedS3AuditArchive(t *testing.T) {
 	if _, err := admin.ExecContext(dbctx, `INSERT INTO platform.tenants (tenant_id, slug, display_name) VALUES ($1, $2, $2)`, segmentTenant, "audit-"+segmentTenant.String()[:8]); err != nil {
 		t.Fatal(err)
 	}
-	poolConfig, err := pgxpool.ParseConfig(dbURL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	poolConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		_, err := conn.Exec(ctx, `SET ROLE worker_runtime_role`)
-		return err
-	}
+	poolConfig := runtimePoolConfig(t, dbctx, admin, dbURL, "worker_runtime_role")
 	pool, err := pgxpool.NewWithConfig(dbctx, poolConfig)
 	if err != nil {
 		t.Fatal(err)

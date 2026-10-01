@@ -28,8 +28,8 @@ func platformRuntimeValues(ctx context.Context, p profile.ResolvedProfile, run C
 	}
 	archive := p.Components["seaweedfs"].Endpoint
 	u, err := url.Parse(archive)
-	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Hostname() == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" {
-		return nil, errors.New("runtime archive endpoint is invalid")
+	if err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" {
+		return nil, errors.New("runtime archive endpoint requires HTTPS without credentials")
 	}
 	encoded, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "--namespace", "ops-system", "get", "configmap", "ops-platform-bootstrap", "-o", "json")
 	if err != nil {
@@ -57,6 +57,9 @@ func platformRuntimeValues(ctx context.Context, p profile.ResolvedProfile, run C
 	if err := validateCA("oidc-ca.pem", true); err != nil {
 		return nil, err
 	}
+	if err := validateCA("archive-ca.pem", true); err != nil {
+		return nil, err
+	}
 	bucket := bootstrap.Data["archive-bucket"]
 	if !regexp.MustCompile(`^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$`).MatchString(bucket) || strings.Contains(bucket, "..") {
 		return nil, errors.New("runtime bootstrap archive-bucket is required and must be an S3 bucket name")
@@ -75,5 +78,5 @@ func platformRuntimeValues(ctx context.Context, p profile.ResolvedProfile, run C
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"profile": string(profileYAML), "oidcIssuerURL": issuer + "/realms/ops", "oidcCABundle": bootstrap.Data["oidc-ca.pem"], "openbaoAddress": p.Components["openbao"].Endpoint, "openbaoCABundle": bootstrap.Data["openbao-ca.pem"], "archiveEndpoint": archive, "archiveBucket": bucket, "registryTrust": trust}, nil
+	return map[string]any{"profile": string(profileYAML), "oidcIssuerURL": issuer + "/realms/ops", "oidcCABundle": bootstrap.Data["oidc-ca.pem"], "openbaoAddress": p.Components["openbao"].Endpoint, "openbaoCABundle": bootstrap.Data["openbao-ca.pem"], "archiveEndpoint": archive, "archiveCABundle": bootstrap.Data["archive-ca.pem"], "archiveBucket": bucket, "registryTrust": trust}, nil
 }

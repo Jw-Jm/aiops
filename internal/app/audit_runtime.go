@@ -92,7 +92,14 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 	if err != nil {
 		return errors.New("worker OpenBao configuration is invalid")
 	}
-	backend, err := s3.NewClient(s3.Config{Endpoint: os.Getenv("S3_ENDPOINT"), Bucket: os.Getenv("S3_BUCKET"), AccessKey: os.Getenv("S3_ACCESS_KEY"), SecretKey: os.Getenv("S3_SECRET_KEY")})
+	var archiveCA []byte
+	if path := os.Getenv("S3_CA_FILE"); path != "" {
+		archiveCA, err = os.ReadFile(path)
+		if err != nil {
+			return errors.New("worker independent archive CA is unavailable")
+		}
+	}
+	backend, err := s3.NewClient(s3.Config{Endpoint: os.Getenv("S3_ENDPOINT"), Bucket: os.Getenv("S3_BUCKET"), AccessKey: os.Getenv("S3_ACCESS_KEY"), SecretKey: os.Getenv("S3_SECRET_KEY"), CACertBundle: archiveCA})
 	if err != nil {
 		return errors.New("worker archive configuration is invalid")
 	}

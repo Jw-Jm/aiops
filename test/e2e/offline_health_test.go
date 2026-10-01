@@ -61,7 +61,7 @@ func verifyCoreCapabilities(t *testing.T, p profile.ResolvedProfile, bundleDir s
 	if json.Unmarshal(rawCA, &bootstrap) != nil {
 		t.Fatal("invalid independent public bootstrap ConfigMap")
 	}
-	client, err := coreOIDCClient(endpoint.Hostname(), []byte(bootstrap.Data["oidc-ca.pem"]))
+	client, err := coreTLSClient(endpoint.Hostname(), []byte(bootstrap.Data["oidc-ca.pem"]))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,9 +77,25 @@ func verifyCoreCapabilities(t *testing.T, p profile.ResolvedProfile, bundleDir s
 		t.Fatal("Keycloak signing keys are unavailable")
 	}
 
-	s3 := corePortForward(t, p.Kubernetes.Context, "ops-system", "ops-seaweedfs-s3", "8333")
+	archiveURL, err := url.Parse(p.Components["seaweedfs"].Endpoint)
+	if err != nil || archiveURL.Scheme != "https" {
+		t.Fatal("archive requires the locked HTTPS endpoint")
+	}
+	archiveNames := strings.Split(archiveURL.Hostname(), ".")
+	if len(archiveNames) < 3 || archiveNames[2] != "svc" {
+		t.Fatal("archive requires the locked Kubernetes Service")
+	}
+	archivePort := archiveURL.Port()
+	if archivePort == "" {
+		archivePort = "443"
+	}
+	archiveClient, err := coreTLSClient(archiveURL.Hostname(), []byte(bootstrap.Data["archive-ca.pem"]))
+	if err != nil {
+		t.Fatal(err)
+	}
+	s3 := strings.Replace(corePortForward(t, p.Kubernetes.Context, archiveNames[1], archiveNames[0], archivePort), "http://", "https://", 1)
 	credentials := aws.Credentials{AccessKeyID: readCoreSecret(t, p.Kubernetes.Context, "ops-seaweedfs-auth", "accessKey"), SecretAccessKey: readCoreSecret(t, p.Kubernetes.Context, "ops-seaweedfs-auth", "secretKey")}
-	if err := coreS3RoundTrip(t.Context(), s3, credentials); err != nil {
+	if err := coreS3RoundTripWithClient(t.Context(), archiveClient, s3, credentials); err != nil {
 		t.Fatalf("SeaweedFS signed object capability check: %v", err)
 	}
 
@@ -182,10 +198,10 @@ func corePortForward(t *testing.T, kubeContext, namespace, service, port string)
 	return ""
 }
 
-func coreOIDCClient(serverName string, ca []byte) (*http.Client, error) {
+func coreTLSClient(serverName string, ca []byte) (*http.Client, error) {
 	roots := x509.NewCertPool()
 	if serverName == "" || !roots.AppendCertsFromPEM(ca) {
-		return nil, fmt.Errorf("independent OIDC CA and Service identity are required")
+		return nil, fmt.Errorf("independent CA and Service identity are required")
 	}
 	return &http.Client{Timeout: 10 * time.Second, Transport: &http.Transport{TLSClientConfig: &tls.Config{RootCAs: roots, ServerName: serverName, MinVersion: tls.VersionTLS12}}, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}, nil
 }
@@ -217,6 +233,10 @@ func coreGetJSONWithClient(t *testing.T, client *http.Client, endpoint string) m
 
 func coreS3RoundTrip(ctx context.Context, endpoint string, credentials aws.Credentials) error {
 	client := &http.Client{Timeout: 10 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+	return coreS3RoundTripWithClient(ctx, client, endpoint, credentials)
+}
+
+func coreS3RoundTripWithClient(ctx context.Context, client *http.Client, endpoint string, credentials aws.Credentials) error {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint+"/", nil)
 	if err != nil {
 		return err
@@ -401,21 +421,21 @@ func TestCoreOIDCHealthUsesIndependentTLSAndServiceIdentity(t *testing.T) {
 	}))
 	defer server.Close()
 	ca := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: server.Certificate().Raw})
-	client, err := coreOIDCClient("example.com", ca)
+	client, err := coreTLSClient("example.com", ca)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if got := coreGetJSONWithClient(t, client, server.URL)["ok"]; got != true {
 		t.Fatal("TLS health response unavailable")
 	}
-	wrong, err := coreOIDCClient("other-service.example", ca)
+	wrong, err := coreTLSClient("other-service.example", ca)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if _, err := wrong.Get(server.URL); err == nil {
 		t.Fatal("different Service TLS identity accepted")
 	}
-	if _, err := coreOIDCClient("example.com", []byte("invalid")); err == nil {
+	if _, err := coreTLSClient("example.com", []byte("invalid")); err == nil {
 		t.Fatal("invalid independent CA accepted")
 	}
 }

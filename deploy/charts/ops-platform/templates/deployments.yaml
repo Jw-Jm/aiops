@@ -71,7 +71,9 @@ spec:
             - name: OPENBAO_SERVICE_DOMAIN
               value: {{ printf "%s.svc.cluster.local" $.Release.Namespace | quote }}
             - name: S3_ENDPOINT
-              value: {{ $.Values.runtime.archiveEndpoint | default (printf "http://ops-seaweedfs.%s.svc.cluster.local:8333" $.Release.Namespace) | quote }}
+              value: {{ $.Values.runtime.archiveEndpoint | default (printf "https://ops-seaweedfs-s3.%s.svc.cluster.local:8333" $.Release.Namespace) | quote }}
+            - name: S3_CA_FILE
+              value: /etc/ops/archive-ca.pem
             - name: S3_BUCKET
               value: {{ $.Values.runtime.archiveBucket | default "" | quote }}
             - name: S3_ACCESS_KEY
@@ -124,6 +126,7 @@ metadata:
 data:
   registry-trust.json: {{ $.Values.runtime.registryTrust | default dict | toJson | quote }}
   openbao-ca.pem: {{ $.Values.runtime.openbaoCABundle | default "" | quote }}
+  archive-ca.pem: {{ $.Values.runtime.archiveCABundle | default "" | quote }}
   oidc-ca.pem: {{ $.Values.runtime.oidcCABundle | default "" | quote }}
   profile.yaml: |
 {{ required "runtime.profile is required" .Values.runtime.profile | indent 4 }}

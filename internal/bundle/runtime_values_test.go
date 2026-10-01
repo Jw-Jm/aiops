@@ -20,7 +20,7 @@ func TestInstallerRejectsMissingRuntimeBootstrapBeforeImport(t *testing.T) {
 	p := importProfile()
 	p.Components["keycloak"] = profile.ResolvedComponent{Mode: "external", Endpoint: "https://keycloak.identity.svc:8443"}
 	p.Components["openbao"] = profile.ResolvedComponent{Mode: "external", Endpoint: "https://bao.trust.svc:8200"}
-	p.Components["seaweedfs"] = profile.ResolvedComponent{Mode: "bundled", Endpoint: "http://archive.ops-system.svc:8333"}
+	p.Components["seaweedfs"] = profile.ResolvedComponent{Mode: "bundled", Endpoint: "https://archive.ops-system.svc:8333"}
 	if _, err := platformRuntimeValues(context.Background(), p, func(context.Context, string, ...string) ([]byte, error) {
 		return []byte(`{"data":{}}`), nil
 	}); err == nil {
@@ -32,7 +32,7 @@ func TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust(t *testing.T)
 	p := importProfile()
 	p.Components["keycloak"] = profile.ResolvedComponent{Mode: "external", Endpoint: "https://keycloak.identity.svc:8443"}
 	p.Components["openbao"] = profile.ResolvedComponent{Mode: "external", Endpoint: "https://bao.trust.svc:8200"}
-	p.Components["seaweedfs"] = profile.ResolvedComponent{Mode: "external", Endpoint: "http://archive.storage.svc:8333"}
+	p.Components["seaweedfs"] = profile.ResolvedComponent{Mode: "external", Endpoint: "https://archive.storage.svc:8333"}
 	public, private, err := ed25519.GenerateKey(rand.Reader)
 	if err != nil {
 		t.Fatal(err)
@@ -44,7 +44,7 @@ func TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust(t *testing.T)
 	}
 	ca := string(pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der}))
 	trust := `{"review":"` + base64.StdEncoding.EncodeToString(public) + `"}`
-	data := map[string]string{"openbao-ca.pem": ca, "oidc-ca.pem": ca, "registry-trust.json": trust, "archive-bucket": "review-audit"}
+	data := map[string]string{"openbao-ca.pem": ca, "oidc-ca.pem": ca, "archive-ca.pem": ca, "registry-trust.json": trust, "archive-bucket": "review-audit"}
 	run := func(_ context.Context, program string, args ...string) ([]byte, error) {
 		if program != "kubectl" || !strings.Contains(strings.Join(args, " "), "get configmap ops-platform-bootstrap -o json") {
 			t.Fatalf("unexpected bootstrap command: %s %v", program, args)
@@ -55,12 +55,12 @@ func TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	for key, want := range map[string]string{"oidcIssuerURL": "https://keycloak.identity.svc:8443/realms/ops", "openbaoAddress": "https://bao.trust.svc:8200", "archiveEndpoint": "http://archive.storage.svc:8333", "archiveBucket": "review-audit", "openbaoCABundle": ca, "oidcCABundle": ca} {
+	for key, want := range map[string]string{"oidcIssuerURL": "https://keycloak.identity.svc:8443/realms/ops", "openbaoAddress": "https://bao.trust.svc:8200", "archiveEndpoint": "https://archive.storage.svc:8333", "archiveBucket": "review-audit", "openbaoCABundle": ca, "oidcCABundle": ca, "archiveCABundle": ca} {
 		if values[key] != want {
 			t.Errorf("runtime %s lost the independent lock", key)
 		}
 	}
-	for _, key := range []string{"openbao-ca.pem", "oidc-ca.pem", "registry-trust.json", "archive-bucket"} {
+	for _, key := range []string{"openbao-ca.pem", "oidc-ca.pem", "archive-ca.pem", "registry-trust.json", "archive-bucket"} {
 		old := data[key]
 		data[key] = "invalid_"
 		if _, err := platformRuntimeValues(context.Background(), p, run); err == nil {

@@ -3,6 +3,8 @@ package s3
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
@@ -11,6 +13,7 @@ import (
 	"github.com/aws/smithy-go"
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"ops-platform/internal/archive"
@@ -19,6 +22,8 @@ import (
 )
 
 type Config struct {
+	CACertBundle                                   []byte
+	ServerName                                     string
 	Endpoint, Region, Bucket, AccessKey, SecretKey string
 	HTTPClient                                     *http.Client
 	MaxObjectBytes                                 int64
@@ -34,6 +39,20 @@ func NewClient(c Config) (*Client, error) {
 	if err != nil || u.Host == "" || (u.Scheme != "https" && u.Scheme != "http") || u.User != nil || u.RawQuery != "" || u.Fragment != "" || c.Bucket == "" || strings.ContainsAny(c.Bucket, "/\\") || c.AccessKey == "" || c.SecretKey == "" {
 		return nil, errors.New("explicit S3 endpoint, bucket, and credentials are required")
 	}
+	loopback := strings.EqualFold(u.Hostname(), "localhost")
+	if ip := net.ParseIP(u.Hostname()); ip != nil {
+		loopback = ip.IsLoopback()
+	}
+	if u.Scheme == "http" && !loopback {
+		return nil, errors.New("archive endpoint requires HTTPS outside loopback fixtures")
+	}
+	var roots *x509.CertPool
+	if u.Scheme == "https" {
+		roots = x509.NewCertPool()
+		if len(c.CACertBundle) == 0 || strings.Contains(string(c.CACertBundle), "PRIVATE KEY") || !roots.AppendCertsFromPEM(c.CACertBundle) {
+			return nil, errors.New("independent public archive CA is required")
+		}
+	}
 	if c.Region == "" {
 		c.Region = "us-east-1"
 	}
@@ -48,6 +67,19 @@ func NewClient(c Config) (*Client, error) {
 		h = &http.Client{Transport: &http.Transport{Proxy: nil}, Timeout: 30 * time.Second}
 	}
 	hcopy := *h
+	if u.Scheme == "https" {
+		transport := &http.Transport{Proxy: nil}
+		if h.Transport != nil {
+			supplied, ok := h.Transport.(*http.Transport)
+			if !ok {
+				return nil, errors.New("archive HTTPS requires a verifiable TLS transport")
+			}
+			transport = supplied.Clone()
+		}
+		transport.Proxy = nil
+		transport.TLSClientConfig = &tls.Config{RootCAs: roots, ServerName: c.ServerName, MinVersion: tls.VersionTLS12}
+		hcopy.Transport = transport
+	}
 	hcopy.CheckRedirect = func(*http.Request, []*http.Request) error { return errors.New("S3 redirects are forbidden") }
 	cfg := aws.Config{Region: c.Region, Credentials: aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(c.AccessKey, c.SecretKey, "")), HTTPClient: &hcopy, RetryMaxAttempts: 3}
 	client := sdk.NewFromConfig(cfg, func(o *sdk.Options) {

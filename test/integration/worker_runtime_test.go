@@ -59,14 +59,21 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 		}
 	}
 	bucket := "sp03-worker-" + uuid.NewString()[:8]
-	backend, err := s3.NewClient(s3.Config{Endpoint: os.Getenv("SP03_TEST_S3_ENDPOINT"), Bucket: bucket, AccessKey: os.Getenv("SP03_TEST_S3_ACCESS_KEY"), SecretKey: os.Getenv("SP03_TEST_S3_SECRET_KEY")})
+	var archiveCA []byte
+	if path := os.Getenv("SP03_TEST_S3_CA_FILE"); path != "" {
+		archiveCA, err = os.ReadFile(path)
+		if err != nil {
+			t.Fatal("read independent test archive CA")
+		}
+	}
+	backend, err := s3.NewClient(s3.Config{CACertBundle: archiveCA, Endpoint: os.Getenv("SP03_TEST_S3_ENDPOINT"), Bucket: bucket, AccessKey: os.Getenv("SP03_TEST_S3_ACCESS_KEY"), SecretKey: os.Getenv("SP03_TEST_S3_SECRET_KEY")})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if err := backend.CreateBucket(ctx); err != nil {
 		t.Fatal(err)
 	}
-	for key, value := range map[string]string{"OPENBAO_ADDR": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_URL"), "OPENBAO_CA_FILE": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_CA_FILE"), "OPENBAO_SERVICE_DOMAIN": reviewWorkloadNamespace + ".svc.cluster.local", "OPENBAO_PROJECTED_TOKEN_FILE": filepath.Join(os.Getenv("SP03_TEST_KUBERNETES_TOKEN_DIR"), "ops-worker"), "S3_BUCKET": bucket, "S3_ACCESS_KEY": os.Getenv("SP03_TEST_S3_ACCESS_KEY"), "S3_SECRET_KEY": os.Getenv("SP03_TEST_S3_SECRET_KEY")} {
+	for key, value := range map[string]string{"OPENBAO_ADDR": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_URL"), "OPENBAO_CA_FILE": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_CA_FILE"), "OPENBAO_SERVICE_DOMAIN": reviewWorkloadNamespace + ".svc.cluster.local", "OPENBAO_PROJECTED_TOKEN_FILE": filepath.Join(os.Getenv("SP03_TEST_KUBERNETES_TOKEN_DIR"), "ops-worker"), "S3_CA_FILE": os.Getenv("SP03_TEST_S3_CA_FILE"), "S3_BUCKET": bucket, "S3_ACCESS_KEY": os.Getenv("SP03_TEST_S3_ACCESS_KEY"), "S3_SECRET_KEY": os.Getenv("SP03_TEST_S3_SECRET_KEY")} {
 		t.Setenv(key, value)
 	}
 	// Exercise the delivered command in separate OS processes. The child gets
@@ -83,7 +90,7 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 		t.Logf("start worker with archive endpoint=%s bucket=%s", os.Getenv("S3_ENDPOINT"), os.Getenv("S3_BUCKET"))
 		command := exec.Command(binary)
 		command.Env = []string{"DATABASE_URL=" + u.String(), "OIDC_ISSUER_URL=isolated-not-used-by-audit", "PLATFORM_PROFILE=" + profilePath, "PLATFORM_METRICS_ADDR=127.0.0.1:0"}
-		for _, key := range []string{"OPENBAO_ADDR", "OPENBAO_CA_FILE", "OPENBAO_SERVICE_DOMAIN", "OPENBAO_PROJECTED_TOKEN_FILE", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY", "S3_ENDPOINT"} {
+		for _, key := range []string{"OPENBAO_ADDR", "OPENBAO_CA_FILE", "OPENBAO_SERVICE_DOMAIN", "OPENBAO_PROJECTED_TOKEN_FILE", "S3_CA_FILE", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY", "S3_ENDPOINT"} {
 			command.Env = append(command.Env, key+"="+os.Getenv(key))
 		}
 		logFile, err := os.CreateTemp(t.TempDir(), "worker-*.log")
