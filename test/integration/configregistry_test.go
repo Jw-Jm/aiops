@@ -8,6 +8,8 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"ops-platform/internal/app"
 	"os"
 	"strings"
 	"sync"
@@ -51,15 +53,17 @@ func TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory(t *testing
 		($1, $3, 'registry-admin', 'platform_admin'), ($2, $4, 'registry-admin-other', 'platform_admin')`, tenantID, otherTenantID, uuid.Must(uuid.NewV7()), uuid.Must(uuid.NewV7())); err != nil {
 		t.Fatal(err)
 	}
-	poolConfig, err := pgxpool.ParseConfig(dbURL)
+	login := "registry_review_" + strings.ReplaceAll(uuid.NewString(), "-", "")
+	if _, err := db.ExecContext(dbctx, `CREATE ROLE "`+login+`" LOGIN; GRANT api_runtime_role TO "`+login+`"`); err != nil {
+		t.Fatal(err)
+	}
+	defer db.ExecContext(dbctx, `DROP ROLE "`+login+`"`)
+	runtimeURL, err := url.Parse(dbURL)
 	if err != nil {
 		t.Fatal(err)
 	}
-	poolConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		_, err := conn.Exec(ctx, `SET ROLE api_runtime_role`)
-		return err
-	}
-	pool, err := pgxpool.NewWithConfig(dbctx, poolConfig)
+	runtimeURL.User = url.User(login)
+	pool, err := app.OpenRuntimePool(dbctx, runtimeURL.String(), "api_runtime_role")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -146,7 +150,13 @@ func TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory(t *testing
 	}); err != nil {
 		t.Fatal(err)
 	}
-	stillActive, err := service.ResolveActive(ctx, tenantID, configregistry.KindPolicy, "safe-default", tenantScope, time.Now().UTC())
+	// Activation history is stamped by PostgreSQL. Use that same clock to test
+	// post-failure resolution rather than assume host/VM subsecond synchronization.
+	var databaseNow time.Time
+	if err := pool.QueryRow(ctx, `SELECT clock_timestamp()`).Scan(&databaseNow); err != nil {
+		t.Fatal(err)
+	}
+	stillActive, err := service.ResolveActive(ctx, tenantID, configregistry.KindPolicy, "safe-default", tenantScope, databaseNow)
 	if err != nil || stillActive.VersionID != first.VersionID || safeDefaultVersionCount != 2 {
 		t.Fatalf("failed compilation changed the active policy or published versions: active=%#v versions=%d err=%v", stillActive, safeDefaultVersionCount, err)
 	}
@@ -303,7 +313,7 @@ func TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory(t *testing
 	stepUpActor := actor
 	stepUpActor.KeycloakSID = "registry-admin-session"
 	stepUpActor.ACR = auth.StepUpACRLevel2
-	stepUpActor.AuthTime = time.Now().UTC()
+	stepUpActor.AuthTime = time.Now().UTC().Truncate(time.Second)
 	if err := persistence.WithTenantTx(ctx, pool, tenantID, func(tx pgx.Tx) error {
 		_, err := auth.RecordStepUpSession(ctx, tx, stepUpActor, uuid.Must(uuid.NewV7()), []string{auth.StepUpACRLevel2})
 		return err

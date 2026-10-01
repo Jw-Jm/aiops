@@ -6,6 +6,7 @@ Requires PyYAML 6.0.3 and the independently
 prepared pinned Syft tool. Output goes to ignored artifacts, not application
 runtime. The Bundle builder independently checks every digest and OCI layer.
 """
+import argparse
 import hashlib
 import io
 import json
@@ -117,10 +118,19 @@ def first_party_notices(binary, target):
 
 
 def main():
+    global OUT
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--out", type=Path)
+    parser.add_argument("--reuse-reviewed-spec", type=Path)
+    parser.add_argument("--bundle-id", default="task27-core-arm64-20260929")
+    args = parser.parse_args()
+    if args.out:
+        OUT = args.out.resolve()
+        if OUT.exists(): raise RuntimeError("new preparation output must not already exist")
     OUT.mkdir(parents=True,exist_ok=True)
     catalog={c["name"]:c for c in yaml.safe_load(Path("bundle/component-catalog.yaml").read_text())["components"]}
     audit={c["component"]:c for c in json.loads(Path("third_party/admission/task-2.7-core-image-sbom-audit.json").read_text())["components"]}
-    spec={"schemaVersion":1,"bundleId":"task27-core-arm64-20260929","platformVersion":"1.0.0","architecture":"linux/arm64","files":[],"materials":[]}
+    spec={"schemaVersion":1,"bundleId":args.bundle_id,"platformVersion":"1.0.0","architecture":"linux/arm64","files":[],"materials":[]}
     def file(path,source,kind):
         row={"path":path,"source":str(Path(source).resolve()),"kind":kind,"digest":sha(source),"size":Path(source).stat().st_size}
         spec["files"].append(row);return row["digest"]
@@ -129,7 +139,20 @@ def main():
         refs=(payloadroot+"/"+Path(payload).name,"sbom/"+name+".json","licenses/"+name+".txt")
         digest=file(refs[0],payload,payloadkind);file(refs[1],sbom,"sbom");file(refs[2],license,"license")
         spec["materials"].append({"name":name,"kind":kind,"version":str(version),"architecture":"linux/arm64","digest":digest,"payloadRef":refs[0],"sbomRef":refs[1],"licenseRef":refs[2],"installAfter":[]})
-    for name in NAMES:
+    if args.reuse_reviewed_spec:
+        previous = json.loads(args.reuse_reviewed_spec.read_text())
+        names = set(NAMES) | {n+"-source" for n in NAMES}
+        spec["materials"] = [m for m in previous["materials"] if m["name"] in names]
+        if {m["name"] for m in spec["materials"]} != names: raise RuntimeError("reviewed core source/image material set is incomplete")
+        refs = {m[k] for m in spec["materials"] for k in ("payloadRef", "sbomRef", "licenseRef")}
+        spec["files"] = [f for f in previous["files"] if f["path"] in refs]
+        if {f["path"] for f in spec["files"]} != refs: raise RuntimeError("reviewed core material references are incomplete")
+        for f in spec["files"]:
+            source = Path(f["source"])
+            if not source.is_absolute(): source = args.reuse_reviewed_spec.parent/source
+            if sha(source) != f["digest"] or source.stat().st_size != f["size"]: raise RuntimeError("reviewed material changed: "+f["path"])
+            f["source"] = str(source.resolve())
+    for name in (() if args.reuse_reviewed_spec else NAMES):
         c=catalog[name]
         if c["state"]!="qualified": raise RuntimeError("candidate: "+name)
         payload,reference,image_digest=export(name,REPOS[name]+"@"+c["digest"],c["digest"])
@@ -157,8 +180,8 @@ def main():
         else:
             context=OUT/(name+"-context");context.mkdir(exist_ok=True)
             shutil.copyfile(binary,context/"ops-process")
-            run(["docker","--context","orbstack","build","--network=none","--pull=false","--provenance=false","--platform=linux/arm64","--file",str(ROOT/"build/images/offline-runtime.Dockerfile"),"--tag","ops.local/task27/"+name+":1.0.0",str(context)])
-            payload,reference,image_digest=export(name,"ops.local/task27/"+name+":1.0.0")
+            run(["docker","--context","orbstack","build","--network=none","--pull=false","--provenance=false","--platform=linux/arm64","--file",str(ROOT/"build/images/offline-runtime.Dockerfile"),"--tag","ops.local/"+args.bundle_id+"/"+name+":1.0.0",str(context)])
+            payload,reference,image_digest=export(name,"ops.local/"+args.bundle_id+"/"+name+":1.0.0")
             kind="container-image";payloadkind="oci";scan="oci-archive:"+str(payload)
         sbom=OUT/(name+".spdx.json")
         sbom.write_bytes(run([str(SYFT),scan,"-o","spdx-json"]))
@@ -175,7 +198,39 @@ def main():
         payload=ROOT/"deploy/addons/victoria/charts"/Path(lock["source"]).name
         if sha(payload)!=lock["digest"]: raise RuntimeError("upstream Chart archive differs")
         sbom=OUT/(name+"-chart-sbom.json");sbom.write_text(json.dumps(chart_spdx(payload,lock["name"],lock["version"],lock["source"],"Apache-2.0")))
-        material(name+"-chart","chart",lock["version"],payload,sbom,OUT/(name+"-notices.txt"),"chart")
+        chart_license = OUT/(name+"-notices.txt")
+        if args.reuse_reviewed_spec:
+            chart_license = Path(next(f["source"] for f in spec["files"] if f["path"] == "licenses/"+name+".txt"))
+        material(name+"-chart","chart",lock["version"],payload,sbom,chart_license,"chart")
+    # Qualify the actual SDK runtime closure separately from the candidate
+    # standalone OPA image. Its full notices accompany every compiled file.
+    runtime = OUT/"runtime-source"
+    run(["python3", "scripts/prepare-runtime-source.py", "--out", str(runtime)])
+    lock = json.loads((runtime/"runtime-go.lock.json").read_text())
+    sdk = catalog["opa-sdk"]
+    source = runtime/"runtime-go-source.tar"
+    if sdk["state"] != "qualified" or sha(source) != sdk["correspondingSourceBundleSHA256"]: raise RuntimeError("runtime source is not the qualified SDK closure")
+    sbom = OUT/"runtime-source.spdx.json"
+    entries = []
+    for module in lock["modules"]:
+        for f in module["files"]:
+            entries.append({"SPDXID":"SPDXRef-File-"+str(len(entries)),"fileName":"modules/"+module["path"]+"@"+module["version"]+"/"+f["path"],"checksums":[{"algorithm":"SHA256","checksumValue":f["digest"].split(":")[1]}],"licenseConcluded":f["license"],"licenseInfoInFiles":[f["license"]],"copyrightText":"Original source headers and notices accompany this file"})
+    for f in lock["standardLibraryFiles"]:
+        entries.append({"SPDXID":"SPDXRef-File-"+str(len(entries)),"fileName":"toolchain/"+lock["goVersion"]+"/"+f["path"],"checksums":[{"algorithm":"SHA256","checksumValue":f["digest"].split(":")[1]}],"licenseConcluded":f["license"],"licenseInfoInFiles":[f["license"]],"copyrightText":"Original source headers and notices accompany this file"})
+    sbom.write_text(json.dumps({"spdxVersion":"SPDX-2.3","dataLicense":"CC0-1.0","SPDXID":"SPDXRef-DOCUMENT","name":"Selected Go runtime source closure","documentNamespace":"https://ops.local/sbom/runtime-source/"+sha(source).split(":")[1],"creationInfo":{"creators":["Tool: ops-selected-runtime-lock"],"created":"2026-10-01T00:00:00Z"},"files":entries}))
+    notices = OUT/"runtime-source-notices.txt"
+    with tarfile.open(source) as archive:
+        text = "Selected SDK/runtime sources: exact original notices below and alongside their source files.\n"
+        for module in lock["modules"]:
+            for notice in module["notices"]:
+                name = "modules/"+module["path"]+"@"+module["version"]+"/"+notice["path"]
+                text += "\n===== "+name+" =====\n" + archive.extractfile(name).read().decode()
+        text += "\n===== Go LICENSE =====\n" + archive.extractfile("toolchain/"+lock["goVersion"]+"/LICENSE").read().decode()
+    notices.write_text(text)
+    material("opa-sdk-source", "source", sdk["version"], source, sbom, notices, "source")
+    head = run(["git", "rev-parse", "HEAD"]).decode().strip()
+    if run(["git", "status", "--porcelain"]).strip(): raise RuntimeError("current first-party sources must be committed before preparation")
+    (OUT/"source-binding.json").write_text(json.dumps({"sourceCommit":head,"runtimeSourceDigest":sha(source),"buildSpecBundleID":args.bundle_id,"goVersion":run(["go","version"]).decode().strip(),"network":"Go proxy/sumdb off; Docker build network none; no pull","target":"linux/arm64 CGO_ENABLED=0"},indent=2))
     (OUT/"build-spec.json").write_text(json.dumps(spec,indent=2)+"\n")
     print("local inputs complete",len(spec["materials"]),"materials",len(spec["files"]),"authenticated files",flush=True)
 
