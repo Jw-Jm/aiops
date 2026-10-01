@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
@@ -25,8 +26,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pressly/goose/v3"
 	"golang.org/x/net/html"
+	"ops-platform/internal/app"
 	"ops-platform/internal/auth"
 	"ops-platform/internal/integrations/keycloak"
+	"ops-platform/internal/observability"
 	"ops-platform/internal/persistence"
 )
 
@@ -481,4 +484,77 @@ func verifyPersistedKeycloakStepUp(t *testing.T, ctx context.Context, token keyc
 	if !errors.Is(err, auth.ErrStepUpInvalid) {
 		t.Fatalf("idle-expired live Keycloak step-up session returned %v", err)
 	}
+	verifyFoundationAPI(t, dbctx, dbURL, token)
+}
+
+func verifyFoundationAPI(t *testing.T, ctx context.Context, dsn string, token keycloak.TokenSet) {
+	t.Helper()
+	admin, err := pgx.Connect(ctx, dsn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer admin.Close(ctx)
+	name := "sp03_api_" + strings.ReplaceAll(uuid.NewString(), "-", "")
+	if _, err := admin.Exec(ctx, `CREATE ROLE "`+name+`" LOGIN; GRANT api_runtime_role TO "`+name+`"`); err != nil {
+		t.Fatal(err)
+	}
+	defer admin.Exec(ctx, `DROP ROLE "`+name+`"`)
+	u, _ := url.Parse(dsn)
+	u.User = url.User(name)
+	application, err := app.NewAPI(app.AppConfig{DatabaseURL: u.String(), OIDCIssuerURL: os.Getenv("SP03_KEYCLOAK_TEST_ISSUER"), ProfilePath: "isolated-core"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	runtime, _ := observability.NewRuntime(ctx, "sp03-review-api")
+	defer runtime.Close(ctx)
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer listener.Close()
+	serveCtx, cancel := context.WithCancel(ctx)
+	done := make(chan error, 1)
+	go func() { done <- application.Serve(serveCtx, listener, runtime) }()
+	defer func() {
+		cancel()
+		if err := <-done; err != nil {
+			t.Error(err)
+		}
+	}()
+	client := &http.Client{Timeout: 5 * time.Second}
+	defer client.CloseIdleConnections()
+	endpoint := "http://" + listener.Addr().String()
+	for _, path := range []string{"/api/v1/admin/tenants", "/api/v1/admin/clusters", "/api/v1/admin/source-registrations", "/api/v1/admin/policy-bundles", "/api/v1/admin/recipes", "/api/v1/admin/tools"} {
+		request, _ := http.NewRequestWithContext(ctx, http.MethodGet, endpoint+path, nil)
+		request.Header.Set("Authorization", "Bearer "+token.AccessToken)
+		response, err := client.Do(request)
+		if err != nil {
+			t.Fatal("foundation HTTP request failed")
+		}
+		response.Body.Close()
+		if response.StatusCode != http.StatusOK {
+			t.Fatalf("foundation route %s returned %d", path, response.StatusCode)
+		}
+	}
+	var previous string
+	for attempt := 0; attempt < 2; attempt++ {
+		request, _ := http.NewRequestWithContext(ctx, http.MethodPost, endpoint+"/api/v1/auth/step-up-sessions", strings.NewReader(`{}`))
+		request.Header.Set("Authorization", "Bearer "+token.AccessToken)
+		request.Header.Set("Idempotency-Key", "review-step-up")
+		request.Header.Set("Content-Type", "application/json")
+		response, err := client.Do(request)
+		if err != nil {
+			t.Fatal("step-up HTTP request failed")
+		}
+		body, err := io.ReadAll(io.LimitReader(response.Body, 1<<20))
+		response.Body.Close()
+		if err != nil || response.StatusCode != http.StatusCreated {
+			t.Fatalf("step-up API returned %d", response.StatusCode)
+		}
+		if attempt > 0 && string(body) != previous {
+			t.Fatal("step-up response was not replayed exactly")
+		}
+		previous = string(body)
+	}
+	t.Log("actual APIApp served six management routes and replayed claim-bound step-up using real Keycloak JWT and distinct database login")
 }

@@ -1,6 +1,15 @@
 # OpenAPI 3.1 source of truth for public REST and SSE contracts.
 components:
     schemas:
+        StepUpSession:
+            type: object
+            additionalProperties: false
+            required: [sessionId, expiresAt, lastUsedAt]
+            properties:
+                sessionId:
+                    $ref: '#/components/schemas/Identifier'
+                expiresAt: {type: string, format: date-time}
+                lastUsedAt: {type: string, format: date-time}
         CanonicalID:
             description: RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
             format: canonical-id
@@ -511,6 +520,37 @@ info:
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 openapi: 3.1.0
 paths:
+    /api/v1/auth/step-up-sessions:
+        post:
+            operationId: createStepUpSession
+            summary: Persist a fresh verified Keycloak step-up identity.
+            tags: [Authentication]
+            x-idempotency: required
+            parameters:
+                - in: header
+                  name: Idempotency-Key
+                  required: true
+                  schema: {type: string, minLength: 1, maxLength: 512}
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema: {type: object, additionalProperties: false}
+            responses:
+                "201":
+                    description: Bound step-up session recorded.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuccessEnvelope'
+                default:
+                    description: Unified API error.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorEnvelope'
+            security:
+                - BearerAuth: []
     /api/v1/action-plans:
         post:
             operationId: createActionPlan

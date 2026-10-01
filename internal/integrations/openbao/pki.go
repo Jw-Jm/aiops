@@ -91,6 +91,21 @@ func (c *Client) KubernetesLogin(ctx context.Context, projectedToken, role strin
 	return response.Auth.ClientToken, time.Duration(response.Auth.LeaseDuration) * time.Second, nil
 }
 
+// LoginProjectedServiceAccount retains only the short-lived OpenBao token in
+// memory. The projected JWT is read again on renewal and sent only to login.
+func (c *Client) LoginProjectedServiceAccount(ctx context.Context, path, role string) (time.Duration, error) {
+	jwt, err := readProjectedServiceAccountToken(path)
+	if err != nil {
+		return 0, err
+	}
+	token, ttl, err := c.KubernetesLogin(ctx, jwt, role)
+	if err != nil {
+		return 0, err
+	}
+	c.SetToken(token)
+	return ttl, nil
+}
+
 // SignWorkloadCSR is used by isolated integration checks and bootstrap tooling
 // that already holds an authorized OpenBao token. Runtime workloads use
 // CertReloader so their token comes from Kubernetes auth instead.

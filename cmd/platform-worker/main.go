@@ -14,7 +14,8 @@ import (
 
 func main() {
 	logger := observability.NewLogger(os.Stdout, slog.LevelInfo)
-	if _, err := app.NewWorker(app.ConfigFromEnv()); err != nil {
+	application, err := app.NewWorker(app.ConfigFromEnv())
+	if err != nil {
 		logger.Error("platform-worker bootstrap failed", "error", err)
 		os.Exit(1)
 	}
@@ -33,7 +34,10 @@ func main() {
 		}
 	}()
 	runtime.Logger.InfoContext(ctx, "platform-worker started")
-	<-ctx.Done()
+	if err := application.Serve(ctx, runtime); err != nil {
+		runtime.Logger.ErrorContext(ctx, "platform-worker stopped", "error", err)
+		os.Exit(1)
+	}
 	shutdownContext, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := runtime.Close(shutdownContext); err != nil {

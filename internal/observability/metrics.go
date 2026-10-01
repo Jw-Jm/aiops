@@ -18,11 +18,12 @@ type Metrics struct {
 	exportFailures *prometheus.CounterVec
 	degraded       prometheus.Gauge
 	processUp      prometheus.Gauge
+	auditDelay     prometheus.Gauge
 	degradedMu     sync.Mutex
 	degradedState  uint32
 }
 
-var degradationBits = map[string]uint32{"traces": 1, "metrics_listener": 2, "runtime": 4}
+var degradationBits = map[string]uint32{"traces": 1, "metrics_listener": 2, "runtime": 4, "audit_signing": 8}
 
 var operationSet = map[string]map[string]struct{}{
 	"api":      {"request": {}, "error": {}},
@@ -60,10 +61,20 @@ func NewMetrics() *Metrics {
 		processUp: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "platform", Name: "process_up", Help: "Whether the platform process metrics runtime is initialized.",
 		}),
+		auditDelay: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "platform", Name: "audit_signing_delay_seconds", Help: "Age of the oldest audit record not yet covered by a signed segment; alert above 600 seconds.",
+		}),
 	}
 	m.processUp.Set(1)
-	registry.MustRegister(m.httpRequests, m.httpDuration, m.operations, m.exportFailures, m.degraded, m.processUp)
+	registry.MustRegister(m.httpRequests, m.httpDuration, m.operations, m.exportFailures, m.degraded, m.processUp, m.auditDelay)
 	return m
+}
+
+func (m *Metrics) SetAuditSigningDelay(seconds float64) {
+	if seconds < 0 {
+		seconds = 0
+	}
+	m.auditDelay.Set(seconds)
 }
 
 // Handler exposes only the platform's private registry, not the process-global

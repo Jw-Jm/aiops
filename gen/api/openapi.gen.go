@@ -553,6 +553,13 @@ type SourceRegistrationUpdateRequest0 = interface{}
 // SourceRegistrationUpdateRequest1 defines model for SourceRegistrationUpdateRequest.1.
 type SourceRegistrationUpdateRequest1 = interface{}
 
+// StepUpSession defines model for StepUpSession.
+type StepUpSession struct {
+	ExpiresAt  time.Time  `json:"expiresAt"`
+	LastUsedAt time.Time  `json:"lastUsedAt"`
+	SessionId  Identifier `json:"sessionId"`
+}
+
 // SuccessEnvelope defines model for SuccessEnvelope.
 type SuccessEnvelope struct {
 	Data      interface{}             `json:"data"`
@@ -744,6 +751,14 @@ type GetAuditRecordsParams struct {
 	// Cursor Opaque cursor for keyset pagination.
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// CreateStepUpSessionJSONBody defines parameters for CreateStepUpSession.
+type CreateStepUpSessionJSONBody = map[string]interface{}
+
+// CreateStepUpSessionParams defines parameters for CreateStepUpSession.
+type CreateStepUpSessionParams struct {
+	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
 // CreateCommandExecutionParams defines parameters for CreateCommandExecution.
@@ -982,6 +997,9 @@ type RotateSourceCredentialJSONRequestBody = SourceCredentialRotationRequest
 
 // CreateTenantJSONRequestBody defines body for CreateTenant for application/json ContentType.
 type CreateTenantJSONRequestBody = JSONRequest
+
+// CreateStepUpSessionJSONRequestBody defines body for CreateStepUpSession for application/json ContentType.
+type CreateStepUpSessionJSONRequestBody = CreateStepUpSessionJSONBody
 
 // CreateCommandExecutionJSONRequestBody defines body for CreateCommandExecution for application/json ContentType.
 type CreateCommandExecutionJSONRequestBody = CommandExecutionRequest
@@ -1295,6 +1313,9 @@ type ServerInterface interface {
 	// GetAuditRecord getAuditRecord
 	// (GET /api/v1/audit-records/{auditId})
 	GetAuditRecord(w http.ResponseWriter, r *http.Request, auditId string)
+	// CreateStepUpSession Persist a fresh verified Keycloak step-up identity.
+	// (POST /api/v1/auth/step-up-sessions)
+	CreateStepUpSession(w http.ResponseWriter, r *http.Request, params CreateStepUpSessionParams)
 	// GetCapabilities getCapabilities
 	// (GET /api/v1/capabilities)
 	GetCapabilities(w http.ResponseWriter, r *http.Request)
@@ -1580,6 +1601,12 @@ func (_ Unimplemented) GetAuditRecords(w http.ResponseWriter, r *http.Request, p
 // GetAuditRecord getAuditRecord
 // (GET /api/v1/audit-records/{auditId})
 func (_ Unimplemented) GetAuditRecord(w http.ResponseWriter, r *http.Request, auditId string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateStepUpSession Persist a fresh verified Keycloak step-up identity.
+// (POST /api/v1/auth/step-up-sessions)
+func (_ Unimplemented) CreateStepUpSession(w http.ResponseWriter, r *http.Request, params CreateStepUpSessionParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3272,6 +3299,51 @@ func (siw *ServerInterfaceWrapper) GetAuditRecord(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAuditRecord(w, r, auditId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateStepUpSession operation middleware
+func (siw *ServerInterfaceWrapper) CreateStepUpSession(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateStepUpSessionParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateStepUpSession(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5124,6 +5196,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/auth/step-up-sessions", wrapper.CreateStepUpSession)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/action-plans", wrapper.CreateActionPlan)
 	})
 	r.Group(func(r chi.Router) {
@@ -6504,6 +6579,46 @@ type GetAuditRecorddefaultJSONResponse struct {
 }
 
 func (response GetAuditRecorddefaultJSONResponse) VisitGetAuditRecordResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateStepUpSessionRequestObject struct {
+	Params CreateStepUpSessionParams
+	Body   *CreateStepUpSessionJSONRequestBody
+}
+
+type CreateStepUpSessionResponseObject interface {
+	VisitCreateStepUpSessionResponse(w http.ResponseWriter) error
+}
+
+type CreateStepUpSession201JSONResponse SuccessEnvelope
+
+func (response CreateStepUpSession201JSONResponse) VisitCreateStepUpSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateStepUpSessiondefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response CreateStepUpSessiondefaultJSONResponse) VisitCreateStepUpSessionResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -8009,6 +8124,9 @@ type StrictServerInterface interface {
 	// GetAuditRecord getAuditRecord
 	// (GET /api/v1/audit-records/{auditId})
 	GetAuditRecord(ctx context.Context, request GetAuditRecordRequestObject) (GetAuditRecordResponseObject, error)
+	// CreateStepUpSession Persist a fresh verified Keycloak step-up identity.
+	// (POST /api/v1/auth/step-up-sessions)
+	CreateStepUpSession(ctx context.Context, request CreateStepUpSessionRequestObject) (CreateStepUpSessionResponseObject, error)
 	// GetCapabilities getCapabilities
 	// (GET /api/v1/capabilities)
 	GetCapabilities(ctx context.Context, request GetCapabilitiesRequestObject) (GetCapabilitiesResponseObject, error)
@@ -9059,6 +9177,39 @@ func (sh *strictHandler) GetAuditRecord(w http.ResponseWriter, r *http.Request, 
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetAuditRecordResponseObject); ok {
 		if err := validResponse.VisitGetAuditRecordResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateStepUpSession operation middleware
+func (sh *strictHandler) CreateStepUpSession(w http.ResponseWriter, r *http.Request, params CreateStepUpSessionParams) {
+	var request CreateStepUpSessionRequestObject
+
+	request.Params = params
+
+	var body CreateStepUpSessionJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateStepUpSession(ctx, request.(CreateStepUpSessionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateStepUpSession")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateStepUpSessionResponseObject); ok {
+		if err := validResponse.VisitCreateStepUpSessionResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

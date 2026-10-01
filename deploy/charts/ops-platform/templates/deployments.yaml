@@ -44,15 +44,43 @@ spec:
               protocol: TCP
             {{ end }}
           env:
+            {{ if has $name (list "api" "worker") }}
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: ops-platform-runtime
-                  key: databaseURL
+                  key: {{ $name }}DatabaseURL
+            {{ end }}
             - name: OIDC_ISSUER_URL
               value: {{ required "runtime.oidcIssuerURL is required" $.Values.runtime.oidcIssuerURL | quote }}
             - name: PLATFORM_PROFILE
               value: /etc/ops/profile.yaml
+            {{ if eq $name "api" }}
+            - name: PLATFORM_REGISTRY_TRUST_FILE
+              value: /etc/ops/registry-trust.json
+            {{ end }}
+            {{ if eq $name "worker" }}
+            - name: OPENBAO_ADDR
+              value: {{ $.Values.runtime.openbaoAddress | default (printf "https://ops-openbao.%s.svc.cluster.local:8200" $.Release.Namespace) | quote }}
+            - name: OPENBAO_CA_FILE
+              value: /etc/ops/openbao-ca.pem
+            - name: OPENBAO_SERVICE_DOMAIN
+              value: {{ printf "%s.svc.cluster.local" $.Release.Namespace | quote }}
+            - name: S3_ENDPOINT
+              value: {{ $.Values.runtime.archiveEndpoint | default (printf "http://ops-seaweedfs.%s.svc.cluster.local:8333" $.Release.Namespace) | quote }}
+            - name: S3_BUCKET
+              value: {{ $.Values.runtime.archiveBucket | default "" | quote }}
+            - name: S3_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ops-platform-runtime
+                  key: archiveAccessKey
+            - name: S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ops-platform-runtime
+                  key: archiveSecretKey
+            {{ end }}
           resources:
             requests:
               cpu: 100m
@@ -90,6 +118,8 @@ metadata:
   labels:
     ops.platform.io/release: {{ $.Release.Name | quote }}
 data:
+  registry-trust.json: {{ $.Values.runtime.registryTrust | default dict | toJson | quote }}
+  openbao-ca.pem: {{ $.Values.runtime.openbaoCABundle | default "" | quote }}
   profile.yaml: |
 {{ required "runtime.profile is required" .Values.runtime.profile | indent 4 }}
 {{- end }}
