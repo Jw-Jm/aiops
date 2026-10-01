@@ -36,12 +36,12 @@ generate:
 
 check-generated: generate
 	@if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
-		if ! git diff --quiet -- gen web/src/api/generated; then \
-			git diff -- gen web/src/api/generated >&2; \
+		if ! git diff --quiet -- gen web/src/api/generated internal/persistence/dbgen; then \
+			git diff -- gen web/src/api/generated internal/persistence/dbgen >&2; \
 			echo "Generated artifacts are out of date; run make generate and review the generated changes." >&2; \
 			exit 1; \
 		fi; \
-		untracked=$$(git ls-files --others --exclude-standard -- gen web/src/api/generated); \
+		untracked=$$(git ls-files --others --exclude-standard -- gen web/src/api/generated internal/persistence/dbgen); \
 		if [ -n "$$untracked" ]; then \
 			printf '%s\n' "$$untracked" >&2; \
 			echo "Generated artifacts are out of date; run make generate and review the generated changes." >&2; \
@@ -76,8 +76,16 @@ test-e2e:
 	@mkdir -p artifacts/test-reports
 	@set +e; $(GO) test ./test/e2e -count=1 -v -timeout=20m > artifacts/test-reports/e2e.txt 2>&1; status=$$?; cat artifacts/test-reports/e2e.txt; exit $$status
 
-test-integration test-replay test-security:
-	@echo "$@ suite is not implemented yet."
+test-integration:
+	@mkdir -p artifacts/test-reports
+	@set +e; $(GO) test ./test/integration -count=1 -json -timeout=10m > artifacts/test-reports/integration.jsonl 2>&1; status=$$?; cat artifacts/test-reports/integration.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/integration.jsonl
+
+test-security:
+	@mkdir -p artifacts/test-reports
+	@set +e; $(GO) test ./test/security -count=1 -json > artifacts/test-reports/security.jsonl 2>&1; status=$$?; cat artifacts/test-reports/security.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/security.jsonl
+
+test-replay:
+	@echo "Replay belongs to later business stages and is not an SP-03 acceptance gate."
 
 verify-bundle:
 	@test -n "$(BUNDLE_DIR)" && test -n "$(TRUST_KEY)" || { echo "BUNDLE_DIR and TRUST_KEY are required" >&2; exit 1; }

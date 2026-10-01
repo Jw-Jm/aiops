@@ -255,18 +255,25 @@ func TestCheckGeneratedCoversGoAndTypeScriptOutput(t *testing.T) {
 
 func TestCheckGeneratedAllowsStagedNewArtifactsAndRejectsWorkingTreeDrift(t *testing.T) {
 	tests := []struct {
-		name     string
-		staged   bool
-		tracked  bool
-		wantPass bool
+		name      string
+		directory string
+		staged    bool
+		tracked   bool
+		wantPass  bool
 	}{
 		{name: "staged generated artifact", staged: true, wantPass: true},
 		{name: "untracked generated artifact", wantPass: false},
 		{name: "modified tracked generated artifact", tracked: true, wantPass: false},
+		{name: "SQLC tracked drift", directory: "internal/persistence/dbgen", tracked: true, wantPass: false},
+		{name: "SQLC untracked drift", directory: "internal/persistence/dbgen", wantPass: false},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			root := t.TempDir()
+			directory := test.directory
+			if directory == "" {
+				directory = "gen"
+			}
 			makefile, err := os.ReadFile(filepath.Join("..", "..", "Makefile"))
 			if err != nil {
 				t.Fatalf("read Makefile: %v", err)
@@ -285,7 +292,7 @@ func TestCheckGeneratedAllowsStagedNewArtifactsAndRejectsWorkingTreeDrift(t *tes
 			writeFile("go.mod", "module check-generated-fixture\n\ngo 1.27.1\n")
 			writeFile("fixture.go", "package fixture\n")
 			if test.tracked {
-				writeFile("gen/tracked.txt", "baseline\n")
+				writeFile(directory+"/tracked.txt", "baseline\n")
 			}
 			runGit := func(args ...string) []byte {
 				t.Helper()
@@ -302,17 +309,17 @@ func TestCheckGeneratedAllowsStagedNewArtifactsAndRejectsWorkingTreeDrift(t *tes
 			runGit("config", "user.email", "sp01-contract-test@example.invalid")
 			runGit("add", "Makefile", "go.mod", "fixture.go")
 			if test.tracked {
-				runGit("add", "gen/tracked.txt")
+				runGit("add", directory+"/tracked.txt")
 			}
 			runGit("commit", "--quiet", "-m", "baseline")
 
 			if !test.tracked {
-				writeFile("gen/review-probe.txt", "generated\n")
+				writeFile(directory+"/review-probe.txt", "generated\n")
 				if test.staged {
-					runGit("add", "gen/review-probe.txt")
+					runGit("add", directory+"/review-probe.txt")
 				}
 			} else {
-				writeFile("gen/tracked.txt", "changed\n")
+				writeFile(directory+"/tracked.txt", "changed\n")
 			}
 
 			command := exec.Command("make", "check-generated")
