@@ -77,12 +77,21 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("build locked worker command: %v: %s", err, output)
 	}
+	var childLogs []string
 	start := func() (*exec.Cmd, chan error) {
+		t.Logf("start worker with archive endpoint=%s bucket=%s", os.Getenv("S3_ENDPOINT"), os.Getenv("S3_BUCKET"))
 		command := exec.Command(binary)
 		command.Env = []string{"DATABASE_URL=" + u.String(), "OIDC_ISSUER_URL=isolated-not-used-by-audit", "PLATFORM_PROFILE=isolated-core", "PLATFORM_METRICS_ADDR=127.0.0.1:0"}
 		for _, key := range []string{"OPENBAO_ADDR", "OPENBAO_CA_FILE", "OPENBAO_SERVICE_DOMAIN", "OPENBAO_PROJECTED_TOKEN_FILE", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY", "S3_ENDPOINT"} {
 			command.Env = append(command.Env, key+"="+os.Getenv(key))
 		}
+		logFile, err := os.CreateTemp(t.TempDir(), "worker-*.log")
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() { _ = logFile.Close() })
+		childLogs = append(childLogs, logFile.Name())
+		command.Stdout, command.Stderr = logFile, logFile
 		if err := command.Start(); err != nil {
 			t.Fatal(err)
 		}
@@ -108,7 +117,13 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 			}
 			time.Sleep(100 * time.Millisecond)
 		}
-		t.Fatalf("worker condition did not reach %d", want)
+		for _, path := range childLogs {
+			output, _ := os.ReadFile(path)
+			t.Logf("worker process stdout: %s", output)
+		}
+		var pending, signed int
+		_ = db.QueryRowContext(ctx, `SELECT count(*) FILTER (WHERE status='pending_signature'), count(*) FILTER (WHERE status='signed') FROM audit.signed_segments`).Scan(&pending, &signed)
+		t.Fatalf("worker condition did not reach %d; pending=%d signed=%d", want, pending, signed)
 	}
 	t.Setenv("S3_ENDPOINT", "http://127.0.0.1:1")
 	command, done := start()
