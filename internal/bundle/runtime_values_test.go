@@ -60,7 +60,7 @@ func TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust(t *testing.T)
 			t.Errorf("runtime %s lost the independent lock", key)
 		}
 	}
-	for _, key := range []string{"openbao-ca.pem", "registry-trust.json", "archive-bucket"} {
+	for _, key := range []string{"openbao-ca.pem", "oidc-ca.pem", "registry-trust.json", "archive-bucket"} {
 		old := data[key]
 		data[key] = "invalid_"
 		if _, err := platformRuntimeValues(context.Background(), p, run); err == nil {
@@ -68,6 +68,11 @@ func TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust(t *testing.T)
 		}
 		data[key] = old
 	}
+	delete(data, "oidc-ca.pem")
+	if _, err := platformRuntimeValues(context.Background(), p, run); err == nil {
+		t.Fatal("scratch API accepted TLS issuer without independently supplied trust")
+	}
+	data["oidc-ca.pem"] = ca
 	p.Components["keycloak"] = profile.ResolvedComponent{Mode: "external", Endpoint: "http://keycloak.identity.svc:8080"}
 	if _, err := platformRuntimeValues(context.Background(), p, run); err == nil {
 		t.Fatal("in-cluster plaintext OIDC accepted")

@@ -54,7 +54,7 @@ func platformRuntimeValues(ctx context.Context, p profile.ResolvedProfile, run C
 	if err := validateCA("openbao-ca.pem", true); err != nil {
 		return nil, err
 	}
-	if err := validateCA("oidc-ca.pem", false); err != nil {
+	if err := validateCA("oidc-ca.pem", true); err != nil {
 		return nil, err
 	}
 	bucket := bootstrap.Data["archive-bucket"]

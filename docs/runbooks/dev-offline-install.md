@@ -36,8 +36,8 @@ covers the core Profile only; virtual machine work is outside the current stage.
    (the independently verified public OpenBao bootstrap CA), `archive-bucket`
    (an existing S3 bucket with the required retention configuration), and
    `registry-trust.json` (a JSON map from trusted key IDs to base64 Ed25519
-   public keys). Optional `oidc-ca.pem` supplies the private issuer's public
-   TLS CA. The installer copies only these public values into the runtime
+   public keys), and `oidc-ca.pem` (the independently verified public issuer
+   TLS CA). The scratch API image has no implicit system CA store. The installer copies only these public values into the runtime
    ConfigMap and uses the OpenBao, SeaweedFS and Keycloak endpoints locked in
    the resolved Profile. It fails before import if required values are absent
    or malformed. Do not place root tokens, Shamir shares or private keys here.
