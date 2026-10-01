@@ -110,7 +110,24 @@ func (s *SegmentService) SealNext(ctx context.Context, tenantID uuid.UUID) (uuid
 		if len(rows) > maxSegmentRecords {
 			rows = rows[:maxSegmentRecords]
 		}
-		segment = segmentDescriptor{TenantID: tenantID, ID: uuid.New(), First: rows[0].EntrySeq(), Last: rows[len(rows)-1].EntrySeq(), Count: len(rows), Root: formatMerkleRoot(MerkleRoot(canonicalRows(rows))), Status: "pending_signature"}
+		oldest, newest := rows[0].CreatedAt, rows[0].CreatedAt
+		for index, row := range rows {
+			if row.CreatedAt.Before(oldest) {
+				oldest = row.CreatedAt
+			}
+			if row.CreatedAt.After(newest) {
+				newest = row.CreatedAt
+			}
+			if newest.Sub(oldest) > 5*time.Minute {
+				rows = rows[:index]
+				break
+			}
+		}
+		id, err := uuid.NewV7()
+		if err != nil {
+			return errors.New("audit segment identity unavailable")
+		}
+		segment = segmentDescriptor{TenantID: tenantID, ID: id, First: rows[0].EntrySeq(), Last: rows[len(rows)-1].EntrySeq(), Count: len(rows), Root: formatMerkleRoot(MerkleRoot(canonicalRows(rows))), Status: "pending_signature"}
 		if _, err := tx.Exec(ctx, "SELECT audit.begin_signed_segment($1,$2,$3,$4,$5,$6)", tenantID, segment.ID, segment.First, segment.Last, segment.Count, segment.Root); err != nil {
 			return fmt.Errorf("create pending signed audit segment: %w", err)
 		}

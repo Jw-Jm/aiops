@@ -110,6 +110,9 @@ func TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped(t *testing.
 	if err != nil || !sealed || id == uuid.Nil {
 		t.Fatalf("seal aged tenant segment: id=%s sealed=%v err=%v", id, sealed, err)
 	}
+	if id.Version() != 7 {
+		t.Errorf("audit segment ID version=%d, expected UUIDv7", id.Version())
+	}
 	if err := service.VerifyRange(ctx, tenantA, firstSeq, firstSeq); err != nil {
 		t.Fatalf("verify signed tenant segment: %v", err)
 	}
@@ -274,6 +277,30 @@ func TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped(t *testing.
 	}
 	if err := service.VerifyRange(ctx, bulkTenant, firstBulkSeq, lastBulkSeq); err != nil {
 		t.Fatalf("verify both bounded segments: %v", err)
+	}
+	// A recovered backlog must still split at five-minute boundaries.
+	windowTenant := uuid.Must(uuid.NewV7())
+	if _, err := admin.ExecContext(ctx, `INSERT INTO platform.tenants(tenant_id,slug,display_name) VALUES($1,$2,'window')`, windowTenant, windowTenant.String()); err != nil {
+		t.Fatal(err)
+	}
+	for _, age := range []time.Duration{15 * time.Minute, 8 * time.Minute, 6 * time.Minute} {
+		appendEntry(windowTenant, time.Now().UTC().Add(-age))
+	}
+	for range 5 {
+		_, worked, err := service.SealNext(ctx, windowTenant)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !worked {
+			break
+		}
+	}
+	var tooWide int
+	if err := admin.QueryRowContext(ctx, `SELECT count(*) FROM audit.signed_segments s WHERE tenant_id=$1 AND (SELECT max(created_at)-min(created_at) FROM audit.records r WHERE r.tenant_id=s.tenant_id AND r.audit_seq BETWEEN s.first_audit_seq AND s.last_audit_seq)>interval '5 minutes'`, windowTenant).Scan(&tooWide); err != nil {
+		t.Fatal(err)
+	}
+	if tooWide != 0 {
+		t.Errorf("%d recovered segments exceed five-minute window", tooWide)
 	}
 }
 
