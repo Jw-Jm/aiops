@@ -92,6 +92,31 @@ func TestResolveRequiresExactLocksAndDetectedInput(t *testing.T) {
 	})
 }
 
+func TestResolveRejectsDetectedLockDrift(t *testing.T) {
+	for _, field := range []string{"endpoint", "image", "architecture", "server", "importer"} {
+		t.Run(field, func(t *testing.T) {
+			input, discovery := testProfile("external"), testDiscovery()
+			component := input.Components["victoriaMetrics"]
+			switch field {
+			case "endpoint":
+				component.Endpoint = "http://different.monitoring.svc:8428"
+			case "image":
+				component.Image = "different/repository@" + discovery.Components["victoriaMetrics"][0].Digest
+			case "architecture":
+				input.Architecture = "amd64"
+			case "server":
+				input.Discovery.ServerVersion = "v1.35.5+orb1"
+			case "importer":
+				input.Runtime.ImageImporter = "internal_registry"
+			}
+			input.Components["victoriaMetrics"] = component
+			if _, err := Resolve(context.Background(), input, discovery); err == nil || !strings.Contains(err.Error(), "PROFILE_COMPONENT_CONFLICT") {
+				t.Fatalf("%s drift was accepted: %v", field, err)
+			}
+		})
+	}
+}
+
 func TestResolveKeepsUnqualifiedComponentsNonInstallable(t *testing.T) {
 	input := testProfile("bundled")
 	input.Components = map[string]ComponentInput{

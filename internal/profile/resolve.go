@@ -19,9 +19,18 @@ func Resolve(ctx context.Context, input InputProfile, discovery Discovery) (Reso
 	if err := input.ValidateTemplate(); err != nil {
 		return ResolvedProfile{}, err
 	}
+	if input.Architecture != discovery.Kubernetes.Architecture {
+		return ResolvedProfile{}, profileConflict("kubernetes", "the discovered architecture differs from the input lock")
+	}
+	if input.Runtime.ImageImporter != "" && discovery.Runtime.ImageImporter != "" && input.Runtime.ImageImporter != discovery.Runtime.ImageImporter {
+		return ResolvedProfile{}, profileConflict("runtime", "the discovered image importer differs from the input lock")
+	}
 	if input.Discovery != nil {
 		if input.Discovery.Context != discovery.Kubernetes.Context || input.Discovery.ClusterUID != discovery.Kubernetes.ClusterUID {
 			return ResolvedProfile{}, profileConflict("kubernetes", "the current cluster identity differs from the discovery profile")
+		}
+		if input.Discovery.ServerVersion != discovery.Kubernetes.ServerVersion {
+			return ResolvedProfile{}, profileConflict("kubernetes", "the current server version differs from the discovery profile; detect again")
 		}
 	}
 	if input.Selected == "virtualization" || input.Selected == "full" {
@@ -76,7 +85,8 @@ func Resolve(ctx context.Context, input InputProfile, discovery Discovery) (Reso
 			if err != nil {
 				return ResolvedProfile{}, err
 			}
-			if component.Version != "" && component.Version != candidate.Version || component.Digest != "" && component.Digest != candidate.Digest {
+			if component.Version != "" && component.Version != candidate.Version || component.Digest != "" && component.Digest != candidate.Digest ||
+				component.Endpoint != "" && component.Endpoint != candidate.Endpoint || component.Image != "" && component.Image != candidate.Image {
 				return ResolvedProfile{}, profileConflict(name, "profile lock does not match the currently discovered image")
 			}
 			resolvedComponent := ResolvedComponent{
