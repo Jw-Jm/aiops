@@ -1,0 +1,28 @@
+=== RUN   TestRealProjectedPodTokensAuthenticateOpenBaoAndWorkloadMTLS
+    projected_workload_test.go:133: real Pod-bound TokenReview accepted three workload identities, denied unauthorized SA/namespace/audience; Investigator and test Runner mTLS completed without forwarded JWT
+2026/10/01 09:57:11 http: TLS handshake error from 127.0.0.1:54067: tls: client didn't provide a certificate
+--- PASS: TestRealProjectedPodTokensAuthenticateOpenBaoAndWorkloadMTLS (0.17s)
+=== RUN   TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage
+2026/10/01 09:57:11 OK   00001_roles_and_schemas.sql (10.31ms)
+2026/10/01 09:57:11 OK   00002_platform_meta.sql (13.27ms)
+2026/10/01 09:57:11 OK   00003_finding.sql (6.73ms)
+2026/10/01 09:57:11 OK   00004_incident.sql (4.13ms)
+2026/10/01 09:57:11 OK   00005_investigation.sql (4.69ms)
+2026/10/01 09:57:11 OK   00006_action_command.sql (4.36ms)
+2026/10/01 09:57:11 OK   00007_audit.sql (6.58ms)
+2026/10/01 09:57:11 OK   00008_rls.sql (6.29ms)
+2026/10/01 09:57:11 OK   00009_idempotency_ledger.sql (4.85ms)
+2026/10/01 09:57:11 OK   00010_tenant_provisioning.sql (3.02ms)
+2026/10/01 09:57:11 OK   00011_source_registration_history.sql (4.99ms)
+2026/10/01 09:57:11 OK   00012_config_registry_lifecycle.sql (6.44ms)
+2026/10/01 09:57:11 OK   00013_audit_signed_segments.sql (8.17ms)
+2026/10/01 09:57:11 OK   00014_audit_segment_predecessors.sql (4.12ms)
+2026/10/01 09:57:11 goose: successfully migrated database to version: 14
+    worker_runtime_test.go:141: worker process stdout: {"time":"2026-10-01T09:57:15.123782+08:00","level":"INFO","msg":"platform-worker started"}
+    worker_runtime_test.go:141: worker process stdout: {"time":"2026-10-01T09:57:15.215658+08:00","level":"INFO","msg":"platform-worker started"}
+        {"time":"2026-10-01T09:57:24.637707+08:00","level":"ERROR","msg":"audit signature pass failed; retry scheduled","operation":"audit_signing"}
+    worker_runtime_test.go:141: worker condition did not reach 2; pending=2 signed=0
+--- FAIL: TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage (29.06s)
+FAIL
+FAIL	ops-platform/test/integration	29.983s
+FAIL

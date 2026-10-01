@@ -1,0 +1,7 @@
+$ kubectl delete namespace ops-sp03-review-20261001-other --wait=false
+namespace "ops-sp03-review-20261001-other" deleted
+exit_code=0
+$ kubectl wait --for=delete namespace/ops-sp03-review-20261001-other --timeout=45s
+namespace/ops-sp03-review-20261001-other condition met
+exit_code=0
+SIGTERM owned port-forward pid=96435

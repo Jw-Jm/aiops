@@ -1,0 +1,1187 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"name\":\"identity-ops-api\",\"namespace\":\"ops-sp03-review-20261001\"},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"command\":[\"sleep\",\"3600\"],\"image\":\"postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257\",\"name\":\"identity\",\"volumeMounts\":[{\"mountPath\":\"/identity\",\"name\":\"token\",\"readOnly\":true}]}],\"serviceAccountName\":\"ops-api\",\"volumes\":[{\"name\":\"token\",\"projected\":{\"defaultMode\":292,\"sources\":[{\"serviceAccountToken\":{\"audience\":\"openbao\",\"expirationSeconds\":600,\"path\":\"token\"}},{\"serviceAccountToken\":{\"audience\":\"wrong-audience\",\"expirationSeconds\":600,\"path\":\"wrong-audience\"}}]}}]}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "generation": 1,
+                "name": "identity-ops-api",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185235",
+                "uid": "ae9af8be-6fe4-4307-a3df-eb46c12eb075"
+            },
+            "spec": {
+                "automountServiceAccountToken": false,
+                "containers": [
+                    {
+                        "command": [
+                            "sleep",
+                            "3600"
+                        ],
+                        "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "identity",
+                        "resources": {},
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/identity",
+                                "name": "token",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "orbstack",
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "ops-api",
+                "serviceAccountName": "ops-api",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "token",
+                        "projected": {
+                            "defaultMode": 292,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "audience": "openbao",
+                                        "expirationSeconds": 600,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "serviceAccountToken": {
+                                        "audience": "wrong-audience",
+                                        "expirationSeconds": 600,
+                                        "path": "wrong-audience"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "docker://2d75a465eabfd3f4205d1e23f0fc45938ad22d70bb59de9207eef0bd36bb31c0",
+                        "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "imageID": "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "lastState": {},
+                        "name": "identity",
+                        "ready": true,
+                        "resources": {},
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-01T01:37:47Z"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/identity",
+                                "name": "token",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.139.2",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.139.2"
+                    },
+                    {
+                        "ip": "fd07:b51a:cc66::2"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "192.168.194.37",
+                "podIPs": [
+                    {
+                        "ip": "192.168.194.37"
+                    }
+                ],
+                "qosClass": "BestEffort",
+                "startTime": "2026-10-01T01:37:46Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"name\":\"identity-ops-command-runner\",\"namespace\":\"ops-sp03-review-20261001\"},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"command\":[\"sleep\",\"3600\"],\"image\":\"postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257\",\"name\":\"identity\",\"volumeMounts\":[{\"mountPath\":\"/identity\",\"name\":\"token\",\"readOnly\":true}]}],\"serviceAccountName\":\"ops-command-runner\",\"volumes\":[{\"name\":\"token\",\"projected\":{\"defaultMode\":292,\"sources\":[{\"serviceAccountToken\":{\"audience\":\"openbao\",\"expirationSeconds\":600,\"path\":\"token\"}},{\"serviceAccountToken\":{\"audience\":\"wrong-audience\",\"expirationSeconds\":600,\"path\":\"wrong-audience\"}}]}}]}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "generation": 1,
+                "name": "identity-ops-command-runner",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185238",
+                "uid": "e49932b7-7389-443a-93ab-d9877507d765"
+            },
+            "spec": {
+                "automountServiceAccountToken": false,
+                "containers": [
+                    {
+                        "command": [
+                            "sleep",
+                            "3600"
+                        ],
+                        "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "identity",
+                        "resources": {},
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/identity",
+                                "name": "token",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "orbstack",
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "ops-command-runner",
+                "serviceAccountName": "ops-command-runner",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "token",
+                        "projected": {
+                            "defaultMode": 292,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "audience": "openbao",
+                                        "expirationSeconds": 600,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "serviceAccountToken": {
+                                        "audience": "wrong-audience",
+                                        "expirationSeconds": 600,
+                                        "path": "wrong-audience"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "docker://7226b4e1b6854bd9a8f07404e6b16723e4a2c7e360719ff7ca8ddbfd75256240",
+                        "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "imageID": "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "lastState": {},
+                        "name": "identity",
+                        "ready": true,
+                        "resources": {},
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-01T01:37:47Z"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/identity",
+                                "name": "token",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.139.2",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.139.2"
+                    },
+                    {
+                        "ip": "fd07:b51a:cc66::2"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "192.168.194.39",
+                "podIPs": [
+                    {
+                        "ip": "192.168.194.39"
+                    }
+                ],
+                "qosClass": "BestEffort",
+                "startTime": "2026-10-01T01:37:46Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"name\":\"identity-ops-investigator\",\"namespace\":\"ops-sp03-review-20261001\"},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"command\":[\"sleep\",\"3600\"],\"image\":\"postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257\",\"name\":\"identity\",\"volumeMounts\":[{\"mountPath\":\"/identity\",\"name\":\"token\",\"readOnly\":true}]}],\"serviceAccountName\":\"ops-investigator\",\"volumes\":[{\"name\":\"token\",\"projected\":{\"defaultMode\":292,\"sources\":[{\"serviceAccountToken\":{\"audience\":\"openbao\",\"expirationSeconds\":600,\"path\":\"token\"}},{\"serviceAccountToken\":{\"audience\":\"wrong-audience\",\"expirationSeconds\":600,\"path\":\"wrong-audience\"}}]}}]}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "generation": 1,
+                "name": "identity-ops-investigator",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185237",
+                "uid": "ab3976fe-2f0d-4257-ae5c-57991eb85a0c"
+            },
+            "spec": {
+                "automountServiceAccountToken": false,
+                "containers": [
+                    {
+                        "command": [
+                            "sleep",
+                            "3600"
+                        ],
+                        "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "identity",
+                        "resources": {},
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/identity",
+                                "name": "token",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "orbstack",
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "ops-investigator",
+                "serviceAccountName": "ops-investigator",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "token",
+                        "projected": {
+                            "defaultMode": 292,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "audience": "openbao",
+                                        "expirationSeconds": 600,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "serviceAccountToken": {
+                                        "audience": "wrong-audience",
+                                        "expirationSeconds": 600,
+                                        "path": "wrong-audience"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "docker://ba0b6c5f4b055c87b15f0ee82368e1bc266e39b6284bd421a5d791aadd0a792f",
+                        "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "imageID": "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "lastState": {},
+                        "name": "identity",
+                        "ready": true,
+                        "resources": {},
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-01T01:37:47Z"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/identity",
+                                "name": "token",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.139.2",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.139.2"
+                    },
+                    {
+                        "ip": "fd07:b51a:cc66::2"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "192.168.194.38",
+                "podIPs": [
+                    {
+                        "ip": "192.168.194.38"
+                    }
+                ],
+                "qosClass": "BestEffort",
+                "startTime": "2026-10-01T01:37:46Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"name\":\"identity-ops-unauthorized\",\"namespace\":\"ops-sp03-review-20261001\"},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"command\":[\"sleep\",\"3600\"],\"image\":\"postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257\",\"name\":\"identity\",\"volumeMounts\":[{\"mountPath\":\"/identity\",\"name\":\"token\",\"readOnly\":true}]}],\"serviceAccountName\":\"ops-unauthorized\",\"volumes\":[{\"name\":\"token\",\"projected\":{\"defaultMode\":292,\"sources\":[{\"serviceAccountToken\":{\"audience\":\"openbao\",\"expirationSeconds\":600,\"path\":\"token\"}},{\"serviceAccountToken\":{\"audience\":\"wrong-audience\",\"expirationSeconds\":600,\"path\":\"wrong-audience\"}}]}}]}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "generation": 1,
+                "name": "identity-ops-unauthorized",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185236",
+                "uid": "67dbe6c4-377c-4fab-9a99-46db52b26d2f"
+            },
+            "spec": {
+                "automountServiceAccountToken": false,
+                "containers": [
+                    {
+                        "command": [
+                            "sleep",
+                            "3600"
+                        ],
+                        "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "identity",
+                        "resources": {},
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/identity",
+                                "name": "token",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "orbstack",
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "ops-unauthorized",
+                "serviceAccountName": "ops-unauthorized",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "token",
+                        "projected": {
+                            "defaultMode": 292,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "audience": "openbao",
+                                        "expirationSeconds": 600,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "serviceAccountToken": {
+                                        "audience": "wrong-audience",
+                                        "expirationSeconds": 600,
+                                        "path": "wrong-audience"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "docker://4aa9a0a258bb09a853a697a83c20c5923f32bd442716da82e42cb77e257f0d67",
+                        "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "imageID": "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "lastState": {},
+                        "name": "identity",
+                        "ready": true,
+                        "resources": {},
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-01T01:37:47Z"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/identity",
+                                "name": "token",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.139.2",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.139.2"
+                    },
+                    {
+                        "ip": "fd07:b51a:cc66::2"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "192.168.194.40",
+                "podIPs": [
+                    {
+                        "ip": "192.168.194.40"
+                    }
+                ],
+                "qosClass": "BestEffort",
+                "startTime": "2026-10-01T01:37:46Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"name\":\"identity-ops-worker\",\"namespace\":\"ops-sp03-review-20261001\"},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"command\":[\"sleep\",\"3600\"],\"image\":\"postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257\",\"name\":\"identity\",\"volumeMounts\":[{\"mountPath\":\"/identity\",\"name\":\"token\",\"readOnly\":true}]}],\"serviceAccountName\":\"ops-worker\",\"volumes\":[{\"name\":\"token\",\"projected\":{\"defaultMode\":292,\"sources\":[{\"serviceAccountToken\":{\"audience\":\"openbao\",\"expirationSeconds\":600,\"path\":\"token\"}},{\"serviceAccountToken\":{\"audience\":\"wrong-audience\",\"expirationSeconds\":600,\"path\":\"wrong-audience\"}}]}}]}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "generation": 1,
+                "name": "identity-ops-worker",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185240",
+                "uid": "b70d21a0-22fc-4c4c-827f-8bbf81f234f4"
+            },
+            "spec": {
+                "automountServiceAccountToken": false,
+                "containers": [
+                    {
+                        "command": [
+                            "sleep",
+                            "3600"
+                        ],
+                        "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "identity",
+                        "resources": {},
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/identity",
+                                "name": "token",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "orbstack",
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "ops-worker",
+                "serviceAccountName": "ops-worker",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "token",
+                        "projected": {
+                            "defaultMode": 292,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "audience": "openbao",
+                                        "expirationSeconds": 600,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "serviceAccountToken": {
+                                        "audience": "wrong-audience",
+                                        "expirationSeconds": 600,
+                                        "path": "wrong-audience"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "docker://903469018daee147a3505e397df3f97e79afa0e61ea64f9aefcc05f570557f67",
+                        "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "imageID": "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                        "lastState": {},
+                        "name": "identity",
+                        "ready": true,
+                        "resources": {},
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-01T01:37:47Z"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/identity",
+                                "name": "token",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.139.2",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.139.2"
+                    },
+                    {
+                        "ip": "fd07:b51a:cc66::2"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "192.168.194.41",
+                "podIPs": [
+                    {
+                        "ip": "192.168.194.41"
+                    }
+                ],
+                "qosClass": "BestEffort",
+                "startTime": "2026-10-01T01:37:46Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"name\":\"review-openbao\",\"namespace\":\"ops-sp03-review-20261001\"},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"args\":[\"server\",\"-config=/cfg/bao.hcl\"],\"image\":\"ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6\",\"name\":\"openbao\",\"ports\":[{\"containerPort\":8200}],\"volumeMounts\":[{\"mountPath\":\"/cfg\",\"name\":\"config\",\"readOnly\":true},{\"mountPath\":\"/tls\",\"name\":\"tls\",\"readOnly\":true},{\"mountPath\":\"/var/run/secrets/kubernetes.io/serviceaccount\",\"name\":\"reviewer\",\"readOnly\":true}]}],\"serviceAccountName\":\"ops-openbao-reviewer\",\"volumes\":[{\"configMap\":{\"name\":\"review-openbao-config\"},\"name\":\"config\"},{\"name\":\"tls\",\"secret\":{\"secretName\":\"review-openbao-tls\"}},{\"name\":\"reviewer\",\"projected\":{\"sources\":[{\"serviceAccountToken\":{\"expirationSeconds\":3600,\"path\":\"token\"}},{\"configMap\":{\"items\":[{\"key\":\"ca.crt\",\"path\":\"ca.crt\"}],\"name\":\"kube-root-ca.crt\"}}]}}]}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "generation": 1,
+                "name": "review-openbao",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185239",
+                "uid": "bf4a1ecb-15bf-45a1-a8cf-a59fdac47fb4"
+            },
+            "spec": {
+                "automountServiceAccountToken": false,
+                "containers": [
+                    {
+                        "args": [
+                            "server",
+                            "-config=/cfg/bao.hcl"
+                        ],
+                        "image": "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "openbao",
+                        "ports": [
+                            {
+                                "containerPort": 8200,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "resources": {},
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/cfg",
+                                "name": "config",
+                                "readOnly": true
+                            },
+                            {
+                                "mountPath": "/tls",
+                                "name": "tls",
+                                "readOnly": true
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "reviewer",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "orbstack",
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "ops-openbao-reviewer",
+                "serviceAccountName": "ops-openbao-reviewer",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "configMap": {
+                            "defaultMode": 420,
+                            "name": "review-openbao-config"
+                        },
+                        "name": "config"
+                    },
+                    {
+                        "name": "tls",
+                        "secret": {
+                            "defaultMode": 420,
+                            "secretName": "review-openbao-tls"
+                        }
+                    },
+                    {
+                        "name": "reviewer",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3600,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T01:37:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "docker://c245b6f6b4f4bfdf2487d4e5b0a553ef8af82767201706bce3f63a79e116533b",
+                        "image": "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+                        "imageID": "docker-pullable://ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+                        "lastState": {},
+                        "name": "openbao",
+                        "ready": true,
+                        "resources": {},
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-01T01:37:48Z"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/cfg",
+                                "name": "config",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            },
+                            {
+                                "mountPath": "/tls",
+                                "name": "tls",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "reviewer",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.139.2",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.139.2"
+                    },
+                    {
+                        "ip": "fd07:b51a:cc66::2"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "192.168.194.43",
+                "podIPs": [
+                    {
+                        "ip": "192.168.194.43"
+                    }
+                ],
+                "qosClass": "BestEffort",
+                "startTime": "2026-10-01T01:37:46Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ServiceAccount",
+            "metadata": {
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "name": "default",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185167",
+                "uid": "54752492-ccf5-4215-9a2e-94c633d265b4"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "automountServiceAccountToken": false,
+            "kind": "ServiceAccount",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"automountServiceAccountToken\":false,\"kind\":\"ServiceAccount\",\"metadata\":{\"annotations\":{},\"name\":\"ops-api\",\"namespace\":\"ops-sp03-review-20261001\"}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "name": "ops-api",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185171",
+                "uid": "d39165ee-ca5b-4a95-8a08-76cffbb00341"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "automountServiceAccountToken": false,
+            "kind": "ServiceAccount",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"automountServiceAccountToken\":false,\"kind\":\"ServiceAccount\",\"metadata\":{\"annotations\":{},\"name\":\"ops-command-runner\",\"namespace\":\"ops-sp03-review-20261001\"}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "name": "ops-command-runner",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185174",
+                "uid": "2c82bcbe-bf72-47cb-ad41-c95dcfa91d3b"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "automountServiceAccountToken": false,
+            "kind": "ServiceAccount",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"automountServiceAccountToken\":false,\"kind\":\"ServiceAccount\",\"metadata\":{\"annotations\":{},\"name\":\"ops-investigator\",\"namespace\":\"ops-sp03-review-20261001\"}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "name": "ops-investigator",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185173",
+                "uid": "059456c4-dae5-490f-a10a-dc6c0fe68a27"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "automountServiceAccountToken": false,
+            "kind": "ServiceAccount",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"automountServiceAccountToken\":false,\"kind\":\"ServiceAccount\",\"metadata\":{\"annotations\":{},\"name\":\"ops-openbao-reviewer\",\"namespace\":\"ops-sp03-review-20261001\"}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "name": "ops-openbao-reviewer",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185176",
+                "uid": "4aee0b79-83a0-419c-b111-6cb51f465e04"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "automountServiceAccountToken": false,
+            "kind": "ServiceAccount",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"automountServiceAccountToken\":false,\"kind\":\"ServiceAccount\",\"metadata\":{\"annotations\":{},\"name\":\"ops-unauthorized\",\"namespace\":\"ops-sp03-review-20261001\"}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "name": "ops-unauthorized",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185175",
+                "uid": "8a6c0969-be62-499a-b84c-06b9a6878926"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "automountServiceAccountToken": false,
+            "kind": "ServiceAccount",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"automountServiceAccountToken\":false,\"kind\":\"ServiceAccount\",\"metadata\":{\"annotations\":{},\"name\":\"ops-worker\",\"namespace\":\"ops-sp03-review-20261001\"}}\n"
+                },
+                "creationTimestamp": "2026-10-01T01:37:46Z",
+                "name": "ops-worker",
+                "namespace": "ops-sp03-review-20261001",
+                "resourceVersion": "185172",
+                "uid": "60132c16-8ea9-4712-908b-073f3f30a541"
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}

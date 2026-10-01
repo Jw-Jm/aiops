@@ -1,0 +1,26 @@
+=== RUN   TestRealProjectedPodTokensAuthenticateOpenBaoAndWorkloadMTLS
+2026/10/01 10:10:22 http: TLS handshake error from 127.0.0.1:55493: tls: client didn't provide a certificate
+    projected_workload_test.go:133: real Pod-bound TokenReview accepted three workload identities, denied unauthorized SA/namespace/audience; Investigator and test Runner mTLS completed without forwarded JWT
+--- PASS: TestRealProjectedPodTokensAuthenticateOpenBaoAndWorkloadMTLS (0.10s)
+=== RUN   TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage
+2026/10/01 10:10:22 OK   00001_roles_and_schemas.sql (16.34ms)
+2026/10/01 10:10:22 OK   00002_platform_meta.sql (14.66ms)
+2026/10/01 10:10:22 OK   00003_finding.sql (6.59ms)
+2026/10/01 10:10:22 OK   00004_incident.sql (4.57ms)
+2026/10/01 10:10:22 OK   00005_investigation.sql (5.07ms)
+2026/10/01 10:10:22 OK   00006_action_command.sql (5.1ms)
+2026/10/01 10:10:22 OK   00007_audit.sql (7.62ms)
+2026/10/01 10:10:22 OK   00008_rls.sql (7.56ms)
+2026/10/01 10:10:22 OK   00009_idempotency_ledger.sql (6.14ms)
+2026/10/01 10:10:22 OK   00010_tenant_provisioning.sql (3.78ms)
+2026/10/01 10:10:22 OK   00011_source_registration_history.sql (5.36ms)
+2026/10/01 10:10:22 OK   00012_config_registry_lifecycle.sql (7.67ms)
+2026/10/01 10:10:22 OK   00013_audit_signed_segments.sql (8.8ms)
+2026/10/01 10:10:22 OK   00014_audit_segment_predecessors.sql (3.86ms)
+2026/10/01 10:10:22 goose: successfully migrated database to version: 14
+    worker_runtime_test.go:82: start worker with archive endpoint=http://127.0.0.1:1 bucket=sp03-worker-6b6bdf8c
+    worker_runtime_test.go:82: start worker with archive endpoint=http://127.0.0.1:32777 bucket=sp03-worker-6b6bdf8c
+    worker_runtime_test.go:165: actual cmd/platform-worker OS processes used projected-token login and worker-only DB login=sp03_worker_5db13c2a986b421eb077b15a7480d865; first_pid=98191 exit_signal=SIGKILL second_pid=98192 exit_code=0; restart resumed tenants=01a0f53a-200b-74ab-92d1-8c9bbf432d9e,01a0f53a-200b-74af-b503-522f5d46f304 after S3 refusal; pending=0 max_proof_delay_seconds=364.577 bucket=sp03-worker-6b6bdf8c
+--- PASS: TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage (5.02s)
+PASS
+ok  	ops-platform/test/integration	5.913s

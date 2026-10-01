@@ -1,0 +1,31 @@
+{
+  "name": "sp03-review-seaweed-capacity-20261001",
+  "id": "61e25d8d13dcbf86c0272f958b83458822c0fbc15da971bd548f28cbd6330a3e",
+  "image": "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+  "command": [
+    "server",
+    "-dir=/data",
+    "-s3",
+    "-s3.config=/cfg/s3.json",
+    "-master.volumeSizeLimitMB=128",
+    "-volume.max=256"
+  ],
+  "ports": {
+    "18080/tcp": null,
+    "18888/tcp": null,
+    "19333/tcp": null,
+    "7333/tcp": null,
+    "8080/tcp": null,
+    "8333/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "32777"
+      }
+    ],
+    "8888/tcp": null,
+    "9333/tcp": null
+  },
+  "tmpfs": {
+    "/data": ""
+  }
+}

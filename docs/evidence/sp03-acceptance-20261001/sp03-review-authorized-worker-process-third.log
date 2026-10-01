@@ -1,0 +1,26 @@
+=== RUN   TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage
+2026/10/01 10:01:42 OK   00001_roles_and_schemas.sql (17.41ms)
+2026/10/01 10:01:42 OK   00002_platform_meta.sql (19.68ms)
+2026/10/01 10:01:42 OK   00003_finding.sql (7.52ms)
+2026/10/01 10:01:42 OK   00004_incident.sql (4.19ms)
+2026/10/01 10:01:42 OK   00005_investigation.sql (4.8ms)
+2026/10/01 10:01:42 OK   00006_action_command.sql (5.33ms)
+2026/10/01 10:01:42 OK   00007_audit.sql (7.36ms)
+2026/10/01 10:01:42 OK   00008_rls.sql (7.08ms)
+2026/10/01 10:01:42 OK   00009_idempotency_ledger.sql (5.19ms)
+2026/10/01 10:01:42 OK   00010_tenant_provisioning.sql (2.96ms)
+2026/10/01 10:01:42 OK   00011_source_registration_history.sql (4.46ms)
+2026/10/01 10:01:42 OK   00012_config_registry_lifecycle.sql (6.22ms)
+2026/10/01 10:01:42 OK   00013_audit_signed_segments.sql (8.26ms)
+2026/10/01 10:01:42 OK   00014_audit_segment_predecessors.sql (4.12ms)
+2026/10/01 10:01:42 goose: successfully migrated database to version: 14
+    worker_runtime_test.go:82: start worker with archive endpoint=http://127.0.0.1:1 bucket=sp03-worker-fb53c9b3
+    worker_runtime_test.go:82: start worker with archive endpoint=http://127.0.0.1:32773 bucket=sp03-worker-fb53c9b3
+    worker_runtime_test.go:142: worker process stdout: {"time":"2026-10-01T10:01:46.248275+08:00","level":"INFO","msg":"platform-worker started"}
+    worker_runtime_test.go:142: worker process stdout: {"time":"2026-10-01T10:01:46.460087+08:00","level":"INFO","msg":"platform-worker started"}
+        {"time":"2026-10-01T10:01:49.651051+08:00","level":"ERROR","msg":"audit signature pass failed; retry scheduled","operation":"audit_signing"}
+    worker_runtime_test.go:142: worker condition did not reach 2; pending=2 signed=0
+--- FAIL: TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage (29.19s)
+FAIL
+FAIL	ops-platform/test/integration	29.979s
+FAIL

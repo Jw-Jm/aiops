@@ -1,0 +1,295 @@
+[
+  {
+    "name": "sp03-review-postgres-20260930",
+    "id": "548e854612bb18ed80dc4d88c1040af16db3a8a9bca050f18992c5b056f97eb7",
+    "created": "2026-09-30T15:37:56.017879473Z",
+    "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+    "imageId": "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+    "labels": {
+      "ops.sp03.review": "20260930"
+    },
+    "ports": {
+      "5432/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32768"
+        }
+      ]
+    },
+    "mounts": [
+      {
+        "type": "volume",
+        "source": "/var/lib/docker/volumes/1ef81d409e6e23e1fd7010d7a0c378edd8f2b5de71070fd9e7ab7137ccabc524/_data",
+        "destination": "/var/lib/postgresql/data",
+        "rw": true
+      }
+    ],
+    "tmpfs": {},
+    "running": true
+  },
+  {
+    "name": "sp03-review-openbao-20261001",
+    "id": "e0896d79e064d5ca62df45875b35f49c08976302b2a1addfd52e9a5d9ade69b8",
+    "created": "2026-10-01T00:16:15.856385783Z",
+    "image": "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+    "imageId": "sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+    "labels": {
+      "build-date": "2026-09-23T17:00:07Z",
+      "description": "OpenBao is a tool for securely accessing secrets. A secret is anything that you want to tightly control access to, such as API keys, passwords, certificates, and more. OpenBao provides a unified interface to any secret, while providing tight access control and recording a detailed audit log",
+      "maintainer": "OpenBao <openbao@lists.openssf.org>",
+      "name": "OpenBao",
+      "ops.sp03.review": "20261001",
+      "org.opencontainers.image.authors": "OpenBao <openbao@lists.openssf.org>",
+      "org.opencontainers.image.description": "OpenBao is a tool for securely accessing secrets",
+      "org.opencontainers.image.documentation": "https://github.com/openbao/openbao/blob/main/README.md",
+      "org.opencontainers.image.licenses": "MPL-2.0",
+      "org.opencontainers.image.revision": "ca305a02daa68b203325daa1b25c18d7a252d4b3",
+      "org.opencontainers.image.source": "https://github.com/openbao/openbao",
+      "org.opencontainers.image.title": "OpenBao",
+      "org.opencontainers.image.url": "https://openbao.org",
+      "org.opencontainers.image.vendor": "OpenBao",
+      "org.opencontainers.image.version": "v2.7.0",
+      "release": "1790182807",
+      "summary": "OpenBao is a tool for securely accessing secrets",
+      "url": "https://openbao.org",
+      "vcs-ref": "ca305a02daa68b203325daa1b25c18d7a252d4b3",
+      "vcs-type": "git",
+      "vendor": "OpenBao",
+      "version": "v2.7.0"
+    },
+    "ports": {
+      "8200/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32770"
+        }
+      ]
+    },
+    "mounts": [
+      {
+        "type": "bind",
+        "source": "/tmp/sp03-review-20261001-66yogqy9",
+        "destination": "/cfg",
+        "rw": false
+      }
+    ],
+    "tmpfs": {},
+    "running": true
+  },
+  {
+    "name": "sp03-review-seaweed-20261001",
+    "id": "aa62bcf4d3c1d7d8219ab8208ce297e57ac29fecaa953d46969e1eef37331f58",
+    "created": "2026-10-01T00:17:02.599442836Z",
+    "image": "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+    "imageId": "sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+    "labels": {
+      "author": "Chris Lu",
+      "ops.sp03.review": "20261001",
+      "org.opencontainers.image.created": "2026-09-14T02:34:28.533Z",
+      "org.opencontainers.image.description": "SeaweedFS is a distributed storage system for blobs, objects, files, and data lake, to store and serve billions of files fast!",
+      "org.opencontainers.image.licenses": "Apache-2.0",
+      "org.opencontainers.image.revision": "c5073360007d28385a33426a42ac3e4ec504c5a3",
+      "org.opencontainers.image.source": "https://github.com/seaweedfs/seaweedfs",
+      "org.opencontainers.image.title": "seaweedfs",
+      "org.opencontainers.image.url": "https://github.com/seaweedfs/seaweedfs",
+      "org.opencontainers.image.vendor": "Chris Lu",
+      "org.opencontainers.image.version": "4.47"
+    },
+    "ports": {
+      "18080/tcp": null,
+      "18888/tcp": null,
+      "19333/tcp": null,
+      "7333/tcp": null,
+      "8080/tcp": null,
+      "8333/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32773"
+        }
+      ],
+      "8888/tcp": null,
+      "9333/tcp": null
+    },
+    "mounts": [
+      {
+        "type": "bind",
+        "source": "/tmp/sp03-review-20261001-66yogqy9/s3.json",
+        "destination": "/cfg/s3.json",
+        "rw": false
+      }
+    ],
+    "tmpfs": {
+      "/data": ""
+    },
+    "running": true
+  },
+  {
+    "name": "sp03-review-keycloak-20261001",
+    "id": "17b6f3367a08f52cc9144b961ac4eb9676333ccd4e47a2bdfe18d9c14a519178",
+    "created": "2026-10-01T00:18:19.049274209Z",
+    "image": "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+    "imageId": "sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+    "labels": {
+      "architecture": "aarch64",
+      "build-date": "2026-09-14T00:33:47Z",
+      "com.redhat.build-host": "",
+      "com.redhat.component": "",
+      "com.redhat.license_terms": "",
+      "cpe": "cpe:/a:redhat:enterprise_linux:9::appstream",
+      "description": "Keycloak Server Image",
+      "distribution-scope": "public",
+      "io.buildah.version": "1.44.0",
+      "io.k8s.description": "Keycloak Server Image",
+      "io.k8s.display-name": "Keycloak Server",
+      "io.openshift.expose-services": "",
+      "io.openshift.tags": "keycloak security identity",
+      "maintainer": "https://www.keycloak.org/",
+      "name": "keycloak",
+      "ops.sp03.review": "20261001",
+      "org.opencontainers.image.created": "2026-09-16T14:44:28.104Z",
+      "org.opencontainers.image.description": "",
+      "org.opencontainers.image.documentation": "https://www.keycloak.org/documentation",
+      "org.opencontainers.image.licenses": "Apache-2.0",
+      "org.opencontainers.image.revision": "df15afa5a3a8a2b10021f879ffa93b30fb36c73a",
+      "org.opencontainers.image.source": "https://github.com/keycloak-rel/keycloak-rel",
+      "org.opencontainers.image.title": "keycloak-rel",
+      "org.opencontainers.image.url": "https://github.com/keycloak-rel/keycloak-rel",
+      "org.opencontainers.image.version": "26.7.4",
+      "release": "",
+      "summary": "Keycloak Server Image",
+      "url": "https://www.keycloak.org/",
+      "vcs-ref": "",
+      "vcs-type": "git",
+      "vendor": "https://www.keycloak.org/",
+      "version": "26.7.4"
+    },
+    "ports": {
+      "8080/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32774"
+        }
+      ],
+      "8443/tcp": null,
+      "9000/tcp": null
+    },
+    "mounts": [
+      {
+        "type": "bind",
+        "source": "/Users/mssc/Documents/Code/ops/.worktrees/sp03-review-fixes/deploy/keycloak/realm-ops.json",
+        "destination": "/opt/keycloak/data/import/realm-ops.json",
+        "rw": false
+      }
+    ],
+    "tmpfs": {},
+    "running": true
+  },
+  {
+    "name": "sp03-review-victoria-metrics-20261001",
+    "id": "fd27797d6af7100f893bbfc31d200b3de171f7f25e1e73c2a9dca490eedaa05b",
+    "created": "2026-10-01T00:36:22.38997998Z",
+    "image": "victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638",
+    "imageId": "sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638",
+    "labels": {
+      "ops.sp03.review": "20261001",
+      "org.opencontainers.image.created": "2025-04-25T13:14:41Z",
+      "org.opencontainers.image.documentation": "https://docs.victoriametrics.com/",
+      "org.opencontainers.image.source": "https://github.com/VictoriaMetrics/VictoriaMetrics",
+      "org.opencontainers.image.title": "victoria-metrics",
+      "org.opencontainers.image.vendor": "VictoriaMetrics",
+      "org.opencontainers.image.version": "v1.116.0"
+    },
+    "ports": {
+      "8428/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32775"
+        }
+      ]
+    },
+    "mounts": [
+      {
+        "type": "bind",
+        "source": "/tmp/sp03-review-20261001-66yogqy9/scrape.yaml",
+        "destination": "/cfg/scrape.yaml",
+        "rw": false
+      }
+    ],
+    "tmpfs": {},
+    "running": true
+  },
+  {
+    "name": "sp03-review-victoria-logs-20261001",
+    "id": "f4121821d8ee330c70b90534eb7006a4d3e14b201df3969d887b3431b0de700d",
+    "created": "2026-10-01T00:36:22.760348168Z",
+    "image": "victoriametrics/victoria-logs@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e",
+    "imageId": "sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e",
+    "labels": {
+      "ops.sp03.review": "20261001",
+      "org.opencontainers.image.created": "2026-07-16T02:22:32Z",
+      "org.opencontainers.image.documentation": "https://docs.victoriametrics.com/victorialogs/",
+      "org.opencontainers.image.source": "https://github.com/VictoriaMetrics/VictoriaLogs",
+      "org.opencontainers.image.title": "victoria-logs",
+      "org.opencontainers.image.vendor": "VictoriaMetrics",
+      "org.opencontainers.image.version": "v1.52.0"
+    },
+    "ports": {
+      "9428/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32776"
+        }
+      ]
+    },
+    "mounts": [],
+    "tmpfs": {},
+    "running": true
+  },
+  {
+    "name": "sp03-review-seaweed-capacity-20261001",
+    "id": "61e25d8d13dcbf86c0272f958b83458822c0fbc15da971bd548f28cbd6330a3e",
+    "created": "2026-10-01T02:09:52.485571106Z",
+    "image": "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+    "imageId": "sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+    "labels": {
+      "author": "Chris Lu",
+      "ops.sp03.review": "20261001",
+      "org.opencontainers.image.created": "2026-09-14T02:34:28.533Z",
+      "org.opencontainers.image.description": "SeaweedFS is a distributed storage system for blobs, objects, files, and data lake, to store and serve billions of files fast!",
+      "org.opencontainers.image.licenses": "Apache-2.0",
+      "org.opencontainers.image.revision": "c5073360007d28385a33426a42ac3e4ec504c5a3",
+      "org.opencontainers.image.source": "https://github.com/seaweedfs/seaweedfs",
+      "org.opencontainers.image.title": "seaweedfs",
+      "org.opencontainers.image.url": "https://github.com/seaweedfs/seaweedfs",
+      "org.opencontainers.image.vendor": "Chris Lu",
+      "org.opencontainers.image.version": "4.47"
+    },
+    "ports": {
+      "18080/tcp": null,
+      "18888/tcp": null,
+      "19333/tcp": null,
+      "7333/tcp": null,
+      "8080/tcp": null,
+      "8333/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "32777"
+        }
+      ],
+      "8888/tcp": null,
+      "9333/tcp": null
+    },
+    "mounts": [
+      {
+        "type": "bind",
+        "source": "/tmp/sp03-review-20261001-66yogqy9/s3.json",
+        "destination": "/cfg/s3.json",
+        "rw": false
+      }
+    ],
+    "tmpfs": {
+      "/data": ""
+    },
+    "running": true
+  }
+]

@@ -1,0 +1,38 @@
+=== RUN   TestRuntimeTransitRoleRequiresProjectedTokenAudience
+--- PASS: TestRuntimeTransitRoleRequiresProjectedTokenAudience (0.01s)
+=== RUN   TestServiceDomainBindsTheInstalledNamespace
+--- PASS: TestServiceDomainBindsTheInstalledNamespace (0.00s)
+PASS
+ok  	ops-platform/internal/integrations/openbao	0.532s
+=== RUN   TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount
+=== RUN   TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_namespace
+=== RUN   TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_service_account
+--- PASS: TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount (0.00s)
+    --- PASS: TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_namespace (0.00s)
+    --- PASS: TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_service_account (0.00s)
+=== RUN   TestWorkloadIdentityRejectsExpiredRevokedAndUntrustedCertificate
+--- PASS: TestWorkloadIdentityRejectsExpiredRevokedAndUntrustedCertificate (0.00s)
+=== RUN   TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken
+2026/10/01 09:41:53 http: TLS handshake error from 127.0.0.1:52066: workload identity is outside the exact allowlist
+--- PASS: TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken (0.01s)
+=== RUN   TestWorkloadIdentityUsesFreshCRLSourceAndFailsClosedWhenStale
+--- PASS: TestWorkloadIdentityUsesFreshCRLSourceAndFailsClosedWhenStale (0.00s)
+PASS
+ok  	ops-platform/test/security	0.950s
+=== RUN   TestOpenBaoBootstrap
+=== RUN   TestOpenBaoBootstrap/initializes_once_and_stores_recovery_material_as_0600
+=== RUN   TestOpenBaoBootstrap/sealed_state_gates_configure_until_threshold_unseal
+=== RUN   TestOpenBaoBootstrap/recovery_file_cannot_be_written_in_the_repository_or_bundle
+=== RUN   TestOpenBaoBootstrap/untrusted_bootstrap_CA_fails_closed
+2026/10/01 09:41:53 http: TLS handshake error from 127.0.0.1:52073: read tcp 127.0.0.1:52072->127.0.0.1:52073: use of closed network connection
+=== RUN   TestOpenBaoBootstrap/configuration_drift_is_returned_as_a_distinct_state
+=== RUN   TestOpenBaoBootstrap/OpenBao_unavailability_blocks_ready-required_operations
+--- PASS: TestOpenBaoBootstrap (0.04s)
+    --- PASS: TestOpenBaoBootstrap/initializes_once_and_stores_recovery_material_as_0600 (0.01s)
+    --- PASS: TestOpenBaoBootstrap/sealed_state_gates_configure_until_threshold_unseal (0.02s)
+    --- PASS: TestOpenBaoBootstrap/recovery_file_cannot_be_written_in_the_repository_or_bundle (0.00s)
+    --- PASS: TestOpenBaoBootstrap/untrusted_bootstrap_CA_fails_closed (0.00s)
+    --- PASS: TestOpenBaoBootstrap/configuration_drift_is_returned_as_a_distinct_state (0.00s)
+    --- PASS: TestOpenBaoBootstrap/OpenBao_unavailability_blocks_ready-required_operations (0.00s)
+PASS
+ok  	ops-platform/test/e2e	1.419s

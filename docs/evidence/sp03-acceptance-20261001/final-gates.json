@@ -1,0 +1,83 @@
+{
+  "testedCodeHead": "312f37b6492d4a1ec305b77067ea289840739e83",
+  "apiBinarySHA256": "sha256:f9f70838dfe60a572bbc5507b2aeeb68eeff776601df44cd4fd147e72f77f086",
+  "commands": [
+    {
+      "command": "make check-toolchain",
+      "exitCode": 0,
+      "log": "sp03-review-authorized-final-toolchain.log"
+    },
+    {
+      "command": "make check-generated",
+      "exitCode": 0,
+      "log": "sp03-review-authorized-final-generated.log"
+    },
+    {
+      "command": "make check",
+      "exitCode": 0,
+      "log": "sp03-review-authorized-final-check.log"
+    },
+    {
+      "command": "make test-security",
+      "exitCode": 0,
+      "log": "sp03-review-authorized-final-security.log"
+    },
+    {
+      "command": "make test-integration",
+      "exitCode": 0,
+      "log": "sp03-review-authorized-final-integration.log"
+    },
+    {
+      "command": "mise exec -- go build -trimpath -o /tmp/sp03-review-20261001-66yogqy9/platform-api-accepted ./cmd/platform-api",
+      "exitCode": 0,
+      "log": "sp03-review-authorized-final-api-build.log"
+    }
+  ],
+  "integration": {
+    "pass": [
+      "TestRealOpenBaoTransitAndSeaweedS3AuditArchive",
+      "TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped",
+      "TestRoleBindingsAndStepUpSessions",
+      "TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory",
+      "TestIdempotencyLedgerSchema",
+      "TestIdempotencyLedger",
+      "TestIdempotencyHTTPMiddleware",
+      "TestKeycloakAuthorizationCodePKCEAndStepUp",
+      "TestFailedForwardMigrationRollsBackAndCanRecover",
+      "TestMigrationScriptsAreForwardOnlyAndContiguous",
+      "TestMigrationsAndRoles",
+      "TestMigrationsUpgradeVersionOneData",
+      "TestWithTenantTxIsolatesTenantsAndUsesAppendOnlyAudit",
+      "TestRealVictoriaMetricsScrapesPlatformProcessMetric",
+      "TestRealVictoriaLogsAcceptsStructuredPlatformStdout",
+      "TestRealProjectedPodTokensAuthenticateOpenBaoAndWorkloadMTLS",
+      "TestRuntimeDatabaseLoginCannotRegainOwnerOrOtherProcess",
+      "TestSourceRegistrationsAreTenantBoundRevisionedAndAudited/payload-tenant",
+      "TestSourceRegistrationsAreTenantBoundRevisionedAndAudited/payload-cluster",
+      "TestSourceRegistrationsAreTenantBoundRevisionedAndAudited",
+      "TestRevokedStepUpCannotBeRecreatedByReplayingSameJWT",
+      "TestTenantProvisioningAndRoleBindingRevisions",
+      "TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage",
+      "TestRealOpenBaoWorkloadPKIIssuanceAndRevocation"
+    ],
+    "fail": [],
+    "skip": []
+  },
+  "security": {
+    "pass": [
+      "TestOperatorAndPlatformAdminAreIndependent/operator_cannot_administer",
+      "TestOperatorAndPlatformAdminAreIndependent/administrator_cannot_operate",
+      "TestOperatorAndPlatformAdminAreIndependent",
+      "TestOperatorMustHaveExplicitResourceScope",
+      "TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_namespace",
+      "TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_service_account",
+      "TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount",
+      "TestWorkloadIdentityRejectsExpiredRevokedAndUntrustedCertificate",
+      "TestUserTokenCannotEstablishWorkloadIdentity",
+      "TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken",
+      "TestWorkloadIdentityUsesFreshCRLSourceAndFailsClosedWhenStale"
+    ],
+    "fail": [],
+    "skip": []
+  }
+}

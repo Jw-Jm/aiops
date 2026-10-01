@@ -1,0 +1,36 @@
+=== RUN   TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage
+2026/10/01 10:07:05 OK   00001_roles_and_schemas.sql (15.63ms)
+2026/10/01 10:07:05 OK   00002_platform_meta.sql (20.34ms)
+2026/10/01 10:07:05 OK   00003_finding.sql (6.66ms)
+2026/10/01 10:07:05 OK   00004_incident.sql (4.5ms)
+2026/10/01 10:07:05 OK   00005_investigation.sql (5.81ms)
+2026/10/01 10:07:05 OK   00006_action_command.sql (5.37ms)
+2026/10/01 10:07:05 OK   00007_audit.sql (8.21ms)
+2026/10/01 10:07:05 OK   00008_rls.sql (7.52ms)
+2026/10/01 10:07:05 OK   00009_idempotency_ledger.sql (5.59ms)
+2026/10/01 10:07:05 OK   00010_tenant_provisioning.sql (3.99ms)
+2026/10/01 10:07:05 OK   00011_source_registration_history.sql (6.04ms)
+2026/10/01 10:07:05 OK   00012_config_registry_lifecycle.sql (8.53ms)
+2026/10/01 10:07:05 OK   00013_audit_signed_segments.sql (8.98ms)
+2026/10/01 10:07:05 OK   00014_audit_segment_predecessors.sql (4.14ms)
+2026/10/01 10:07:05 goose: successfully migrated database to version: 14
+    worker_runtime_test.go:85: start worker with archive endpoint=http://127.0.0.1:1 bucket=sp03-worker-4ac90d48
+    worker_runtime_test.go:85: start worker with archive endpoint=http://127.0.0.1:55269 bucket=sp03-worker-4ac90d48
+    worker_runtime_test.go:146: real S3 diagnostic request method=HEAD response=404
+    worker_runtime_test.go:146: real S3 diagnostic request method=PUT response=500
+    worker_runtime_test.go:146: real S3 diagnostic request method=PUT response=500
+    worker_runtime_test.go:146: real S3 diagnostic request method=PUT response=500
+    worker_runtime_test.go:146: real S3 diagnostic request method=GET response=404
+    worker_runtime_test.go:146: real S3 diagnostic request method=HEAD response=404
+    worker_runtime_test.go:146: real S3 diagnostic request method=PUT response=500
+    worker_runtime_test.go:146: real S3 diagnostic request method=PUT response=500
+    worker_runtime_test.go:146: real S3 diagnostic request method=PUT response=500
+    worker_runtime_test.go:146: real S3 diagnostic request method=GET response=404
+    worker_runtime_test.go:153: worker process stdout: {"time":"2026-10-01T10:07:10.586176+08:00","level":"INFO","msg":"platform-worker started"}
+    worker_runtime_test.go:153: worker process stdout: {"time":"2026-10-01T10:07:10.781964+08:00","level":"INFO","msg":"platform-worker started"}
+        {"time":"2026-10-01T10:07:17.346573+08:00","level":"ERROR","msg":"audit signature pass failed; retry scheduled","operation":"audit_signing","failure_code":"archive"}
+    worker_runtime_test.go:153: worker condition did not reach 2; pending=2 signed=0
+--- FAIL: TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage (30.72s)
+FAIL
+FAIL	ops-platform/test/integration	31.517s
+FAIL

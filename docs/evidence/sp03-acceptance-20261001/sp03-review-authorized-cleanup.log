@@ -1,0 +1,17 @@
+$ kubectl config current-context
+orbstack
+exit_code=0
+UID verified ClusterRoleBinding/sp03-review-tokenreview-20261001 f4465de3-d1c2-40b0-83f5-afe3c23cd162
+UID verified ClusterRole/sp03-review-tokenreview-20261001 c5dfcf13-40f8-4712-aca7-c941306bcc6e
+UID verified Namespace/ops-sp03-review-20261001 fd775afb-4b6c-4b1e-84ce-ea975c2a5fc5
+UID verified Namespace/ops-sp03-review-20261001-other 9ed19332-605a-4c2b-95b8-dcf0c960bb09
+$ kubectl delete ClusterRoleBinding sp03-review-tokenreview-20261001 --wait=true --timeout=45s
+clusterrolebinding.rbac.authorization.k8s.io "sp03-review-tokenreview-20261001" deleted
+exit_code=0
+$ kubectl delete ClusterRole sp03-review-tokenreview-20261001 --wait=true --timeout=45s
+clusterrole.rbac.authorization.k8s.io "sp03-review-tokenreview-20261001" deleted
+exit_code=0
+$ kubectl delete Namespace ops-sp03-review-20261001 --wait=true --timeout=45s
+namespace "ops-sp03-review-20261001" deleted
+error: timed out waiting for the condition on namespaces/ops-sp03-review-20261001
+exit_code=1

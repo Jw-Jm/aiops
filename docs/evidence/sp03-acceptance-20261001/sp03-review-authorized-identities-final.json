@@ -1,0 +1,223 @@
+[
+  {
+    "kind": "Namespace",
+    "name": "ops-sp03-review-20261001",
+    "namespace": null,
+    "uid": "fd775afb-4b6c-4b1e-84ce-ea975c2a5fc5",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "Namespace",
+    "name": "ops-sp03-review-20261001-other",
+    "namespace": null,
+    "uid": "9ed19332-605a-4c2b-95b8-dcf0c960bb09",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "Pod",
+    "name": "identity-ops-api",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "ae9af8be-6fe4-4307-a3df-eb46c12eb075",
+    "createdAt": "2026-10-01T01:37:46Z",
+    "serviceAccount": "ops-api",
+    "images": [
+      "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "imageIDs": [
+      "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "phase": "Running"
+  },
+  {
+    "kind": "Pod",
+    "name": "identity-ops-command-runner",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "e49932b7-7389-443a-93ab-d9877507d765",
+    "createdAt": "2026-10-01T01:37:46Z",
+    "serviceAccount": "ops-command-runner",
+    "images": [
+      "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "imageIDs": [
+      "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "phase": "Running"
+  },
+  {
+    "kind": "Pod",
+    "name": "identity-ops-investigator",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "ab3976fe-2f0d-4257-ae5c-57991eb85a0c",
+    "createdAt": "2026-10-01T01:37:46Z",
+    "serviceAccount": "ops-investigator",
+    "images": [
+      "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "imageIDs": [
+      "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "phase": "Running"
+  },
+  {
+    "kind": "Pod",
+    "name": "identity-ops-unauthorized",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "67dbe6c4-377c-4fab-9a99-46db52b26d2f",
+    "createdAt": "2026-10-01T01:37:46Z",
+    "serviceAccount": "ops-unauthorized",
+    "images": [
+      "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "imageIDs": [
+      "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "phase": "Running"
+  },
+  {
+    "kind": "Pod",
+    "name": "identity-ops-worker",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "b70d21a0-22fc-4c4c-827f-8bbf81f234f4",
+    "createdAt": "2026-10-01T01:37:46Z",
+    "serviceAccount": "ops-worker",
+    "images": [
+      "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "imageIDs": [
+      "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "phase": "Running"
+  },
+  {
+    "kind": "Pod",
+    "name": "review-openbao",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "4bff6d89-c4ec-4f90-b128-8904e1636abb",
+    "createdAt": "2026-10-01T01:42:28Z",
+    "serviceAccount": "ops-openbao-reviewer",
+    "images": [
+      "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6"
+    ],
+    "imageIDs": [
+      "docker-pullable://ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6"
+    ],
+    "phase": "Running"
+  },
+  {
+    "kind": "ServiceAccount",
+    "name": "default",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "54752492-ccf5-4215-9a2e-94c633d265b4",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "ServiceAccount",
+    "name": "ops-api",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "d39165ee-ca5b-4a95-8a08-76cffbb00341",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "ServiceAccount",
+    "name": "ops-command-runner",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "2c82bcbe-bf72-47cb-ad41-c95dcfa91d3b",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "ServiceAccount",
+    "name": "ops-investigator",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "059456c4-dae5-490f-a10a-dc6c0fe68a27",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "ServiceAccount",
+    "name": "ops-openbao-reviewer",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "4aee0b79-83a0-419c-b111-6cb51f465e04",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "ServiceAccount",
+    "name": "ops-unauthorized",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "8a6c0969-be62-499a-b84c-06b9a6878926",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "ServiceAccount",
+    "name": "ops-worker",
+    "namespace": "ops-sp03-review-20261001",
+    "uid": "60132c16-8ea9-4712-908b-073f3f30a541",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "Pod",
+    "name": "identity-ops-api",
+    "namespace": "ops-sp03-review-20261001-other",
+    "uid": "2b13c3dc-d4c1-422f-a1f9-1f17dc43439a",
+    "createdAt": "2026-10-01T01:37:47Z",
+    "serviceAccount": "ops-api",
+    "images": [
+      "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "imageIDs": [
+      "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "phase": "Running"
+  },
+  {
+    "kind": "ServiceAccount",
+    "name": "default",
+    "namespace": "ops-sp03-review-20261001-other",
+    "uid": "7bc12df8-c930-4011-8bd3-238108a4327f",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "ServiceAccount",
+    "name": "ops-api",
+    "namespace": "ops-sp03-review-20261001-other",
+    "uid": "b5ecef25-9bcf-4f43-95a8-939af11d7b31",
+    "createdAt": "2026-10-01T01:37:46Z"
+  },
+  {
+    "kind": "ClusterRole",
+    "name": "sp03-review-tokenreview-20261001",
+    "namespace": null,
+    "uid": "c5dfcf13-40f8-4712-aca7-c941306bcc6e",
+    "createdAt": "2026-10-01T01:37:46Z",
+    "rules": [
+      {
+        "apiGroups": [
+          "authentication.k8s.io"
+        ],
+        "resources": [
+          "tokenreviews"
+        ],
+        "verbs": [
+          "create"
+        ]
+      }
+    ]
+  },
+  {
+    "kind": "ClusterRoleBinding",
+    "name": "sp03-review-tokenreview-20261001",
+    "namespace": null,
+    "uid": "f4465de3-d1c2-40b0-83f5-afe3c23cd162",
+    "createdAt": "2026-10-01T01:37:46Z",
+    "roleRef": {
+      "apiGroup": "rbac.authorization.k8s.io",
+      "kind": "ClusterRole",
+      "name": "sp03-review-tokenreview-20261001"
+    },
+    "subjects": [
+      {
+        "kind": "ServiceAccount",
+        "name": "ops-openbao-reviewer",
+        "namespace": "ops-sp03-review-20261001"
+      }
+    ]
+  }
+]

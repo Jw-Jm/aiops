@@ -1,0 +1,20 @@
+=== RUN   TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage
+2026/10/01 09:51:58 OK   00001_roles_and_schemas.sql (17.61ms)
+2026/10/01 09:51:58 OK   00002_platform_meta.sql (19.2ms)
+2026/10/01 09:51:58 OK   00003_finding.sql (7.73ms)
+2026/10/01 09:51:58 OK   00004_incident.sql (5.45ms)
+2026/10/01 09:51:58 OK   00005_investigation.sql (5.85ms)
+2026/10/01 09:51:58 OK   00006_action_command.sql (5.11ms)
+2026/10/01 09:51:59 OK   00007_audit.sql (8.13ms)
+2026/10/01 09:51:59 OK   00008_rls.sql (7.93ms)
+2026/10/01 09:51:59 OK   00009_idempotency_ledger.sql (5.47ms)
+2026/10/01 09:51:59 OK   00010_tenant_provisioning.sql (3.83ms)
+2026/10/01 09:51:59 OK   00011_source_registration_history.sql (5.38ms)
+2026/10/01 09:51:59 OK   00012_config_registry_lifecycle.sql (7.49ms)
+2026/10/01 09:51:59 OK   00013_audit_signed_segments.sql (9.69ms)
+2026/10/01 09:51:59 OK   00014_audit_segment_predecessors.sql (4.42ms)
+2026/10/01 09:51:59 goose: successfully migrated database to version: 14
+    worker_runtime_test.go:149: actual cmd/platform-worker OS processes used projected-token login and worker-only DB login; SIGKILL then restart resumed two tenants after S3 refusal; pending=0 max_proof_delay_seconds=365.869 bucket=sp03-worker-8ff12793
+--- PASS: TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage (6.30s)
+PASS
+ok  	ops-platform/test/integration	7.076s

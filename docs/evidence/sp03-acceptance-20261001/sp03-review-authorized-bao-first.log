@@ -1,0 +1,74 @@
+2026-10-01T01:37:48.228Z [INFO]  proxy environment: http_proxy="" https_proxy="" no_proxy=""
+
+WARNING: storage configured to use "inmem" which should NOT be used in
+production
+
+2026-10-01T01:37:48.228Z [WARN]  no `api_addr` value specified in config or in BAO_API_ADDR; falling back to detection if possible, but this value should be manually set
+2026-10-01T01:37:48.229Z [INFO]  core: Initializing version history cache for core
+
+==> OpenBao server configuration:
+
+                     Cgo: disabled
+   Environment Variables: HOME, HOSTNAME, KUBERNETES_PORT, KUBERNETES_PORT_443_TCP, KUBERNETES_PORT_443_TCP_ADDR, KUBERNETES_PORT_443_TCP_PORT, KUBERNETES_PORT_443_TCP_PROTO, KUBERNETES_SERVICE_HOST, KUBERNETES_SERVICE_PORT, KUBERNETES_SERVICE_PORT_HTTPS, PATH, PWD, SHLVL
+              Go Version: go1.27.1
+              Listener 1: tcp (addr: "0.0.0.0:8200", cluster address: "0.0.0.0:8201", max_request_duration: "1m30s", max_request_json_memory: "34078720", max_request_json_strings: "1000", max_request_size: "33554432", tls: "enabled")
+               Log Level: 
+           Recovery Mode: false
+                 Storage: inmem
+                 Version: OpenBao v2.7.0, committed 2026-09-23T19:00:07Z
+             Version Sha: ca305a02daa68b203325daa1b25c18d7a252d4b3
+
+==> OpenBao server started!
+2026-10-01T01:39:13.589Z [INFO]  core: security barrier not initialized
+2026-10-01T01:39:13.590Z [INFO]  core: security barrier initialized: shares=1 threshold=1
+2026-10-01T01:39:13.591Z [INFO]  core: post-unseal setup starting
+2026-10-01T01:39:13.597Z [INFO]  core: loaded wrapping token key
+2026-10-01T01:39:13.597Z [INFO]  core: successfully setup plugin catalog: plugin-directory=""
+2026-10-01T01:39:13.597Z [INFO]  core: reading transactional mount table
+2026-10-01T01:39:13.597Z [INFO]  core: no mounts in transactional mount table; adding default mount table
+2026-10-01T01:39:13.598Z [INFO]  core: successfully mounted: type=cubbyhole version="v2.7.0+builtin.bao" path=cubbyhole/ namespace="ID: root. Path: "
+2026-10-01T01:39:13.599Z [INFO]  core: successfully mounted: type=system version="v2.7.0+builtin.bao" path=sys/ namespace="ID: root. Path: "
+2026-10-01T01:39:13.599Z [INFO]  core: successfully mounted: type=identity version="v2.7.0+builtin.bao" path=identity/ namespace="ID: root. Path: "
+2026-10-01T01:39:13.602Z [INFO]  core: reading transactional auth mount table
+2026-10-01T01:39:13.602Z [INFO]  core: no auth mounts in transactional auth mount table; adding default auth mount table
+2026-10-01T01:39:13.602Z [INFO]  core: successfully mounted: type=token version="v2.7.0+builtin.bao" path=token/ namespace="ID: root. Path: "
+2026-10-01T01:39:13.602Z [INFO]  rollback: Starting the rollback manager with 256 workers
+2026-10-01T01:39:13.603Z [INFO]  rollback: starting rollback manager
+2026-10-01T01:39:13.603Z [INFO]  core: restoring leases
+2026-10-01T01:39:13.603Z [INFO]  expiration: lease restore complete
+2026-10-01T01:39:13.604Z [INFO]  core: entities restored
+2026-10-01T01:39:13.605Z [INFO]  core: groups restored
+2026-10-01T01:39:13.605Z [INFO]  core: Recorded vault version: vault version=2.7.0 upgrade time="2026-10-01 01:39:13.605066539 +0000 UTC" commit date=2026-09-23T19:00:07Z
+2026-10-01T01:39:13.605Z [INFO]  core: usage gauge collection is disabled
+2026-10-01T01:39:13.605Z [INFO]  core: post-unseal setup complete
+2026-10-01T01:39:13.605Z [INFO]  core: root token generated
+2026-10-01T01:39:13.605Z [INFO]  core: pre-seal teardown starting
+2026-10-01T01:39:13.605Z [INFO]  rollback: stopping rollback manager
+2026-10-01T01:39:13.605Z [INFO]  core: pre-seal teardown complete
+2026-10-01T01:39:13.613Z [INFO]  core.cluster-listener.tcp: starting listener: listener_address=0.0.0.0:8201
+2026-10-01T01:39:13.613Z [INFO]  core.cluster-listener: serving cluster requests: cluster_listen_address=[::]:8201
+2026-10-01T01:39:13.613Z [INFO]  core: post-unseal setup starting
+2026-10-01T01:39:13.613Z [INFO]  core: loaded wrapping token key
+2026-10-01T01:39:13.613Z [INFO]  core: successfully setup plugin catalog: plugin-directory=""
+2026-10-01T01:39:13.613Z [INFO]  core: reading transactional mount table
+2026-10-01T01:39:13.613Z [INFO]  core: successfully mounted: type=identity version="v2.7.0+builtin.bao" path=identity/ namespace="ID: root. Path: "
+2026-10-01T01:39:13.613Z [INFO]  core: successfully mounted: type=system version="v2.7.0+builtin.bao" path=sys/ namespace="ID: root. Path: "
+2026-10-01T01:39:13.613Z [INFO]  core: successfully mounted: type=cubbyhole version="v2.7.0+builtin.bao" path=cubbyhole/ namespace="ID: root. Path: "
+2026-10-01T01:39:13.614Z [INFO]  core: reading transactional auth mount table
+2026-10-01T01:39:13.614Z [INFO]  core: successfully mounted: type=token version="v2.7.0+builtin.bao" path=token/ namespace="ID: root. Path: "
+2026-10-01T01:39:13.614Z [INFO]  rollback: Starting the rollback manager with 256 workers
+2026-10-01T01:39:13.614Z [INFO]  core: restoring leases
+2026-10-01T01:39:13.614Z [INFO]  expiration: lease restore complete
+2026-10-01T01:39:13.614Z [INFO]  rollback: starting rollback manager
+2026-10-01T01:39:13.614Z [INFO]  core: entities restored
+2026-10-01T01:39:13.614Z [INFO]  core: groups restored
+2026-10-01T01:39:13.614Z [INFO]  core: post-unseal setup complete
+2026-10-01T01:39:13.614Z [INFO]  core: vault is unsealed
+2026-10-01T01:39:13.615Z [INFO]  core: usage gauge collection is disabled
+2026-10-01T01:39:29.638Z [INFO]  secrets.pki.pki_293debe5: 7d61eb29-6776-4548-2418-9f4bd75a97e0: succeeded in migrating to issuer storage version 2
+2026-10-01T01:39:29.638Z [INFO]  core: successful mount: namespace="" path=pki/ type=pki version=""
+2026-10-01T01:39:29.640Z [INFO]  secrets.ssh.ssh_085af4c5: Performing SSH migration to new issuers layout
+2026-10-01T01:39:29.640Z [INFO]  secrets.ssh.ssh_085af4c5: Succeeded in migrating to issuer storage version 1
+2026-10-01T01:39:29.640Z [INFO]  core: successful mount: namespace="" path=ssh/ type=ssh version=""
+2026-10-01T01:39:29.641Z [INFO]  core: successful mount: namespace="" path=transit/ type=transit version=""
+2026-10-01T01:39:29.644Z [INFO]  core: enabled credential backend: namespace="" path=kubernetes/ type=kubernetes version=""
