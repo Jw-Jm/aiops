@@ -1,5 +1,5 @@
 GO ?= go
-GO_SOURCES := $(shell find . -type f -name '*.go' -not -path './.git/*')
+GO_SOURCES := $(shell find cmd internal gen test -type f -name '*.go' 2>/dev/null)
 
 .PHONY: bootstrap check-toolchain generate check-generated check-runtime-source fmt lint test-unit test-contract test-integration test-replay test-e2e test-security bundle-dev-arm64 verify-bundle check
 
