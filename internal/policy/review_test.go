@@ -50,3 +50,16 @@ func TestPolicyRaisedRiskRequiresAcknowledgement(t *testing.T) {
 	input.ConfirmedCommandDigest = input.ActualCommandDigest
 	assertDenied(t, evaluator, ctx, input)
 }
+
+func TestPolicyDecisionMustContainAllRequiredFields(t *testing.T) {
+	compiler, _ := NewBundleCompiler(configregistry.Ed25519TrustStore{})
+	for _, result := range []string{`{"risk":"high"}`, `{"allow":false,"risk":"high","reasons":[]}`, `{"allow":false,"risk":"high","reasons":null,"requiresStepUp":false}`} {
+		module := `package ops.policy
+default tool_decision := ` + result + `
+default action_decision := ` + result
+		content, _ := json.Marshal(map[string]any{"schemaVersion": "policy-registry/v1", "name": "incomplete", "modules": []map[string]string{{"id": "missing.rego", "content": module}}})
+		if err := compiler.ValidatePolicyPublication(context.Background(), content); err == nil {
+			t.Errorf("accepted incomplete decision %s", result)
+		}
+	}
+}

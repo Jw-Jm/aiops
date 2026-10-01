@@ -167,7 +167,7 @@ func validateDefaultDeny(ctx context.Context, kind string, query rego.PreparedEv
 		return fmt.Errorf("%w: encode default %s decision: %v", ErrPolicyBundleInvalid, kind, err)
 	}
 	var decision PolicyDecision
-	if err := json.Unmarshal(encoded, &decision); err != nil || !validDecision(decision) || decision.Allow {
+	if err := decodeDecision(encoded, &decision); err != nil || decision.Allow {
 		return fmt.Errorf("%w: %s decision must default to a valid deny result", ErrPolicyBundleInvalid, kind)
 	}
 	return nil

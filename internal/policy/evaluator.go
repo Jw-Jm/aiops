@@ -182,7 +182,7 @@ func (evaluator *PolicyEvaluator) Evaluate(ctx context.Context, input PolicyInpu
 		return denyDecision(input, version.VersionID.String(), "policy_result_invalid"), fmt.Errorf("%w: encode policy result: %v", ErrPolicyEvaluation, err)
 	}
 	var decision PolicyDecision
-	if err := json.Unmarshal(encoded, &decision); err != nil || !validDecision(decision) {
+	if err := decodeDecision(encoded, &decision); err != nil {
 		return denyDecision(input, version.VersionID.String(), "policy_result_invalid"), ErrPolicyDenied
 	}
 	decision.PolicyVersion = version.VersionID.String()
@@ -273,6 +273,9 @@ func commandDigestsMatch(actual, confirmed string) bool {
 }
 
 func validDecision(decision PolicyDecision) bool {
+	if decision.Reasons == nil {
+		return false
+	}
 	if decision.Risk != RiskLow && decision.Risk != RiskMedium && decision.Risk != RiskHigh {
 		return false
 	}
@@ -282,6 +285,25 @@ func validDecision(decision PolicyDecision) bool {
 		}
 	}
 	return true
+}
+
+// Required booleans must be present: Go's zero values must not silently turn
+// an incomplete policy result into an apparently valid decision.
+func decodeDecision(encoded []byte, decision *PolicyDecision) error {
+	var fields struct {
+		Allow          *bool     `json:"allow"`
+		Risk           *Risk     `json:"risk"`
+		Reasons        *[]string `json:"reasons"`
+		RequiresStepUp *bool     `json:"requiresStepUp"`
+	}
+	if json.Unmarshal(encoded, &fields) != nil || fields.Allow == nil || fields.Risk == nil || fields.Reasons == nil || fields.RequiresStepUp == nil {
+		return ErrPolicyDenied
+	}
+	*decision = PolicyDecision{Allow: *fields.Allow, Risk: *fields.Risk, Reasons: *fields.Reasons, RequiresStepUp: *fields.RequiresStepUp}
+	if !validDecision(*decision) {
+		return ErrPolicyDenied
+	}
+	return nil
 }
 
 func denyDecision(input PolicyInput, version, reason string) PolicyDecision {
