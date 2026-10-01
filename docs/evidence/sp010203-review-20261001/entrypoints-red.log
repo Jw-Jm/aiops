@@ -1,0 +1,13 @@
+=== RUN   TestReplayAndE2EAcceptanceRejectSkippedSuites
+=== RUN   TestReplayAndE2EAcceptanceRejectSkippedSuites/test-replay
+    verification_targets_test.go:36: test-replay accepted skipped validation: <nil>
+        Replay belongs to later business stages and is not an SP-03 acceptance gate.
+=== RUN   TestReplayAndE2EAcceptanceRejectSkippedSuites/test-e2e
+    verification_targets_test.go:36: test-e2e accepted skipped validation: <nil>
+        {"Action":"skip","Package":"acceptance","Test":"TestMissingEnvironment"}
+--- FAIL: TestReplayAndE2EAcceptanceRejectSkippedSuites (1.29s)
+    --- FAIL: TestReplayAndE2EAcceptanceRejectSkippedSuites/test-replay (0.39s)
+    --- FAIL: TestReplayAndE2EAcceptanceRejectSkippedSuites/test-e2e (0.90s)
+FAIL
+FAIL	ops-platform/test/contract	1.908s
+FAIL
