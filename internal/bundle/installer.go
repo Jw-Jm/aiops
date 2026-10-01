@@ -540,6 +540,18 @@ func checkSecretReferences(ctx context.Context, value any, p profile.ResolvedPro
 			if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system", "get", "secret", name, "-o", "name"); err != nil {
 				return err
 			}
+			if items, ok := ref["items"].([]any); ok {
+				for _, item := range items {
+					entry, ok := item.(map[string]any)
+					if !ok {
+						return errors.New("invalid Secret volume item")
+					}
+					key, _ := entry["key"].(string)
+					if err := checkSecretReferences(ctx, map[string]any{"secretKeyRef": map[string]any{"name": name, "key": key}}, p, run); err != nil {
+						return err
+					}
+				}
+			}
 		}
 		for _, child := range object {
 			if err := checkSecretReferences(ctx, child, p, run); err != nil {

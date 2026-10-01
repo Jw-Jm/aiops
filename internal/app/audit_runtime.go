@@ -99,7 +99,7 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 			return errors.New("worker independent archive CA is unavailable")
 		}
 	}
-	backend, err := s3.NewClient(s3.Config{Endpoint: os.Getenv("S3_ENDPOINT"), Bucket: os.Getenv("S3_BUCKET"), AccessKey: os.Getenv("S3_ACCESS_KEY"), SecretKey: os.Getenv("S3_SECRET_KEY"), CACertBundle: archiveCA})
+	backend, err := s3.LoadTenantClient(s3.Config{Endpoint: os.Getenv("S3_ENDPOINT"), Bucket: os.Getenv("S3_BUCKET"), CACertBundle: archiveCA}, os.Getenv("S3_TENANT_CREDENTIALS_FILE"))
 	if err != nil {
 		return errors.New("worker archive configuration is invalid")
 	}

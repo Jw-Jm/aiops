@@ -59,21 +59,16 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 		}
 	}
 	bucket := "sp03-worker-" + uuid.NewString()[:8]
-	var archiveCA []byte
-	if path := os.Getenv("SP03_TEST_S3_CA_FILE"); path != "" {
-		archiveCA, err = os.ReadFile(path)
-		if err != nil {
-			t.Fatal("read independent test archive CA")
-		}
-	}
-	backend, err := s3.NewClient(s3.Config{CACertBundle: archiveCA, Endpoint: os.Getenv("SP03_TEST_S3_ENDPOINT"), Bucket: bucket, AccessKey: os.Getenv("SP03_TEST_S3_ACCESS_KEY"), SecretKey: os.Getenv("SP03_TEST_S3_SECRET_KEY")})
+	fixture := newTenantS3Fixture(t, tenants, bucket)
+	credentials, err := os.ReadFile(fixture.CredentialFile)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := backend.CreateBucket(ctx); err != nil {
+	backend, err := s3.NewTenantClient(s3.Config{Endpoint: fixture.Endpoint, Bucket: bucket, CACertBundle: fixture.CA}, credentials)
+	if err != nil {
 		t.Fatal(err)
 	}
-	for key, value := range map[string]string{"OPENBAO_ADDR": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_URL"), "OPENBAO_CA_FILE": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_CA_FILE"), "OPENBAO_SERVICE_DOMAIN": reviewWorkloadNamespace + ".svc.cluster.local", "OPENBAO_PROJECTED_TOKEN_FILE": filepath.Join(os.Getenv("SP03_TEST_KUBERNETES_TOKEN_DIR"), "ops-worker"), "S3_CA_FILE": os.Getenv("SP03_TEST_S3_CA_FILE"), "S3_BUCKET": bucket, "S3_ACCESS_KEY": os.Getenv("SP03_TEST_S3_ACCESS_KEY"), "S3_SECRET_KEY": os.Getenv("SP03_TEST_S3_SECRET_KEY")} {
+	for key, value := range map[string]string{"OPENBAO_ADDR": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_URL"), "OPENBAO_CA_FILE": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_CA_FILE"), "OPENBAO_SERVICE_DOMAIN": reviewWorkloadNamespace + ".svc.cluster.local", "OPENBAO_PROJECTED_TOKEN_FILE": filepath.Join(os.Getenv("SP03_TEST_KUBERNETES_TOKEN_DIR"), "ops-worker"), "S3_CA_FILE": fixture.CAFile, "S3_BUCKET": bucket, "S3_TENANT_CREDENTIALS_FILE": fixture.CredentialFile} {
 		t.Setenv(key, value)
 	}
 	// Exercise the delivered command in separate OS processes. The child gets
@@ -90,7 +85,7 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 		t.Logf("start worker with archive endpoint=%s bucket=%s", os.Getenv("S3_ENDPOINT"), os.Getenv("S3_BUCKET"))
 		command := exec.Command(binary)
 		command.Env = []string{"DATABASE_URL=" + u.String(), "OIDC_ISSUER_URL=isolated-not-used-by-audit", "PLATFORM_PROFILE=" + profilePath, "PLATFORM_METRICS_ADDR=127.0.0.1:0"}
-		for _, key := range []string{"OPENBAO_ADDR", "OPENBAO_CA_FILE", "OPENBAO_SERVICE_DOMAIN", "OPENBAO_PROJECTED_TOKEN_FILE", "S3_CA_FILE", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY", "S3_ENDPOINT"} {
+		for _, key := range []string{"OPENBAO_ADDR", "OPENBAO_CA_FILE", "OPENBAO_SERVICE_DOMAIN", "OPENBAO_PROJECTED_TOKEN_FILE", "S3_CA_FILE", "S3_BUCKET", "S3_TENANT_CREDENTIALS_FILE", "S3_ENDPOINT"} {
 			command.Env = append(command.Env, key+"="+os.Getenv(key))
 		}
 		logFile, err := os.CreateTemp(t.TempDir(), "worker-*.log")
@@ -145,7 +140,7 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 	if !errors.As(err, &exit) || !exit.ProcessState.Sys().(syscall.WaitStatus).Signaled() || exit.ProcessState.Sys().(syscall.WaitStatus).Signal() != syscall.SIGKILL {
 		t.Fatalf("first worker was not killed by SIGKILL: %v", err)
 	}
-	t.Setenv("S3_ENDPOINT", os.Getenv("SP03_TEST_S3_ENDPOINT"))
+	t.Setenv("S3_ENDPOINT", fixture.Endpoint)
 	command, done = start()
 	wait(`SELECT count(*) FROM audit.signed_segments WHERE status='signed'`, 2, done)
 	if err := command.Process.Signal(syscall.SIGTERM); err != nil {

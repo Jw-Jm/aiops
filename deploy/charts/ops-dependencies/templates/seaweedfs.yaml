@@ -72,7 +72,7 @@ spec:
           image: {{ $component.image | quote }}
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
           command: ["weed"]
-          args: ["-config_dir=/etc/seaweedfs", "server", "-dir=/data", "-s3", "-volume.max=12", "-master.volumeSizeLimitMB=128", "-master.telemetry=false", "-s3.cert.file=/etc/archive-tls/tls.crt", "-s3.key.file=/etc/archive-tls/tls.key"]
+          args: ["-config_dir=/etc/seaweedfs", "server", "-dir=/data", "-s3", "-s3.config=/etc/archive-iam/s3.json", "-volume.max=12", "-master.volumeSizeLimitMB=128", "-master.telemetry=false", "-s3.cert.file=/etc/archive-tls/tls.crt", "-s3.key.file=/etc/archive-tls/tls.key"]
           env:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
@@ -108,6 +108,9 @@ spec:
             capabilities:
               drop: ["ALL"]
           volumeMounts:
+            - name: archive-iam
+              mountPath: /etc/archive-iam
+              readOnly: true
             - name: archive-tls
               mountPath: /etc/archive-tls
               readOnly: true
@@ -119,6 +122,12 @@ spec:
             - name: tmp
               mountPath: /tmp
       volumes:
+        - name: archive-iam
+          secret:
+            secretName: {{ required "components.seaweedfs.iamSecretName is required" $component.iamSecretName | quote }}
+            items:
+              - key: s3.json
+                path: s3.json
         - name: archive-tls
           secret:
             secretName: {{ required "components.seaweedfs.tlsSecretName is required" $component.tlsSecretName | quote }}

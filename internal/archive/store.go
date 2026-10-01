@@ -79,7 +79,9 @@ func NewStore(backend Backend, maxBytes int64) (*Store, error) {
 	}
 	return &Store{backend: backend, maxBytes: maxBytes, now: time.Now}, nil
 }
-func tenantPrefix(id uuid.UUID) string {
+
+// TenantPrefix is the deterministic archive namespace used by server IAM policies.
+func TenantPrefix(id uuid.UUID) string {
 	sum := sha256.Sum256([]byte("ops-archive/v1|" + id.String()))
 	return "tenants/" + hex.EncodeToString(sum[:]) + "/"
 }
@@ -99,7 +101,7 @@ func (s *Store) Put(ctx context.Context, d ObjectDescriptor, r io.Reader) (Objec
 	if d.ExpectedDigest != "" && d.ExpectedDigest != digest {
 		return ObjectRef{}, ErrDigestMismatch
 	}
-	key := tenantPrefix(d.TenantID) + d.Category + "/" + d.ObjectID.String()
+	key := TenantPrefix(d.TenantID) + d.Category + "/" + d.ObjectID.String()
 	metadata := map[string]string{"tenant-id": d.TenantID.String(), "object-id": d.ObjectID.String(), "category": d.Category, "sha256": digest, "size": fmt.Sprintf("%d", len(body)), "retain-until": d.RetainUntil.UTC().Format(time.RFC3339Nano), "content-type": d.ContentType}
 	version, err := s.backend.Put(ctx, key, body, metadata)
 	if err != nil {
@@ -108,7 +110,7 @@ func (s *Store) Put(ctx context.Context, d ObjectDescriptor, r io.Reader) (Objec
 	return ObjectRef{TenantID: d.TenantID, ObjectID: d.ObjectID, Category: d.Category, Key: key, Digest: digest, Size: int64(len(body)), ContentType: d.ContentType, VersionID: version.VersionID, ETag: version.ETag, RetainUntil: d.RetainUntil.UTC()}, nil
 }
 func validateRef(tenant uuid.UUID, ref ObjectRef) error {
-	if tenant == uuid.Nil || ref.TenantID != tenant || ref.ObjectID == uuid.Nil || !categoryPattern.MatchString(ref.Category) || ref.Key != tenantPrefix(tenant)+ref.Category+"/"+ref.ObjectID.String() || strings.Contains(ref.Key, "..") {
+	if tenant == uuid.Nil || ref.TenantID != tenant || ref.ObjectID == uuid.Nil || !categoryPattern.MatchString(ref.Category) || ref.Key != TenantPrefix(tenant)+ref.Category+"/"+ref.ObjectID.String() || strings.Contains(ref.Key, "..") {
 		return ErrTenantMismatch
 	}
 	if !digestPattern.MatchString(ref.Digest) || ref.Size < 0 {
@@ -124,7 +126,7 @@ func (s *Store) Find(ctx context.Context, tenant, object uuid.UUID, category str
 	if tenant == uuid.Nil || object == uuid.Nil || !categoryPattern.MatchString(category) {
 		return ObjectRef{}, false, ErrInvalidObject
 	}
-	key := tenantPrefix(tenant) + category + "/" + object.String()
+	key := TenantPrefix(tenant) + category + "/" + object.String()
 	stored, err := s.backend.Head(ctx, key, "")
 	if err != nil {
 		if errors.Is(err, ErrObjectNotFound) {

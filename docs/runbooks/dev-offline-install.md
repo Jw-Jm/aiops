@@ -22,8 +22,9 @@ covers the core Profile only; virtual machine work is outside the current stage.
 4. Provide bootstrap Secrets outside Bundle/Git. Required secret keys are
    checked without printing their values. ops-platform-runtime/apiDatabaseURL
    and workerDatabaseURL must use distinct LOGIN roles granted only their
-   respective runtime role; archiveAccessKey and archiveSecretKey are the S3
-   credential references. Apply forward-only migrations with the isolated
+   respective runtime role; archiveTenantCredentials is the strict per-tenant S3 credential map
+   described in `sp03-foundation-runtime.md`; no bucket-wide credential is
+   passed to the Worker. Apply forward-only migrations with the isolated
    migration principal before starting these runtime processes. Dependency Chart credentials use the
    existingSecret names defined by that Chart. Existing external OpenBao retains
    its own bootstrap and unseal workflow.
@@ -45,7 +46,12 @@ covers the core Profile only; virtual machine work is outside the current stage.
 7. Keycloak, OpenBao and S3 runtime endpoints must use HTTPS.
    Bundled SeaweedFS requires `ops-seaweedfs-tls` with `tls.crt` and `tls.key`
    supplied outside Git/Bundle and a certificate for its locked Service DNS.
-   Port 8333 serves TLS only; there is no plaintext S3 listener. For bundled Keycloak,
+   Port 8333 serves TLS only; there is no plaintext S3 listener. Provide
+   `ops-seaweedfs-iam/s3.json` outside Git/Bundle with per-tenant scoped
+   identities. For SeaweedFS 4.47 the actions are `Read:<bucket>/<tenant-prefix>*`,
+   `Write:<bucket>/<tenant-prefix>*` and `List:<bucket>/<tenant-prefix>*`.
+   Do not grant bucket-wide actions to those identities. Bootstrap/admin
+   credentials remain separate and are never supplied to the Worker. For bundled Keycloak,
    provide `ops-keycloak-tls` with `tls.crt` and `tls.key` outside the repository
    and Bundle, with a certificate valid for its Profile DNS identity. Its HTTPS
    Service uses port 8443. Import the frozen realm/PKCE/ACR configuration and

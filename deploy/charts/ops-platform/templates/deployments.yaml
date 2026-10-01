@@ -28,6 +28,7 @@ spec:
         runAsNonRoot: true
         runAsUser: 65532
         runAsGroup: 65532
+        fsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
       containers:
@@ -76,16 +77,8 @@ spec:
               value: /etc/ops/archive-ca.pem
             - name: S3_BUCKET
               value: {{ $.Values.runtime.archiveBucket | default "" | quote }}
-            - name: S3_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: ops-platform-runtime
-                  key: archiveAccessKey
-            - name: S3_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: ops-platform-runtime
-                  key: archiveSecretKey
+            - name: S3_TENANT_CREDENTIALS_FILE
+              value: /etc/archive-credentials/tenants.json
             {{ end }}
           resources:
             requests:
@@ -100,6 +93,11 @@ spec:
             capabilities:
               drop: ["ALL"]
           volumeMounts:
+            {{ if eq $name "worker" }}
+            - name: archive-credentials
+              mountPath: /etc/archive-credentials
+              readOnly: true
+            {{ end }}
             - name: profile
               mountPath: /etc/ops
               readOnly: true
@@ -107,6 +105,15 @@ spec:
               mountPath: /tmp
 {{ include "ops-platform.workloadIdentityMount" (dict "enabled" $.Values.workloadIdentity.enabled "name" $name) | indent 12 }}
       volumes:
+        {{ if eq $name "worker" }}
+        - name: archive-credentials
+          secret:
+            secretName: ops-platform-runtime
+            defaultMode: 0440
+            items:
+              - key: archiveTenantCredentials
+                path: tenants.json
+        {{ end }}
         - name: profile
           configMap:
             name: ops-core-profile
