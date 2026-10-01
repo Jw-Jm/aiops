@@ -173,6 +173,12 @@ func (profile ResolvedProfile) Validate() error {
 		return fmt.Errorf("resolved profile has incomplete cluster identity")
 	}
 	for name, component := range profile.Components {
+		if profile.Selected == "core" && (name == "kubevirt" || name == "cdi") && (component.Mode != "disabled" || component.Compatibility != "unverified") {
+			return fmt.Errorf("core component %q must remain disabled and unverified under ADR-0008", name)
+		}
+		if component.Mode != "disabled" && component.Mode != "external" && component.Mode != "bundled" {
+			return fmt.Errorf("component %q has invalid resolved mode %q", name, component.Mode)
+		}
 		if component.Mode == "detect" || component.Mode == "pending" || component.Version == "pending" || component.Digest == "pending" || component.Endpoint == "pending" {
 			return fmt.Errorf("component %q contains unresolved detect/pending value", name)
 		}

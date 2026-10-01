@@ -64,7 +64,14 @@ func Resolve(ctx context.Context, input InputProfile, discovery Discovery) (Reso
 	if input.Discovery != nil {
 		resolved.Discovery = *input.Discovery
 	}
+	if input.Selected == "core" {
+		resolved.Kubernetes.KubeVirt = "unverified"
+	}
 	for name, component := range input.Components {
+		if input.Selected == "core" && (name == "kubevirt" || name == "cdi") {
+			resolved.Components[name] = ResolvedComponent{Mode: "disabled", Compatibility: "unverified"}
+			continue
+		}
 		if !isEnabled(component, input.Selected) {
 			component.Mode = "disabled"
 		}
