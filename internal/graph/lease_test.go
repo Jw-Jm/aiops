@@ -1,14 +1,17 @@
 package graph
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"ops-platform/internal/integrations/kubernetes"
 	"strconv"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -134,5 +137,30 @@ func TestLeaseIsOnlyAuthorityRestartStandbyPartitionAndRecreation(t *testing.T) 
 	mu.Unlock()
 	if err := second.Tick(ctx); err == nil {
 		t.Fatal("recreated Lease reset epoch")
+	}
+}
+
+func TestQualifiedFirstOwnerAcquisitionFailureIsObservable(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusForbidden) }))
+	defer server.Close()
+	client, err := kubernetes.NewClient(server.URL, server.Client(), 20, 50)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gvr := kubernetes.GVR{Version: "v1", Resource: "pods"}
+	g := New("tenant-a", "cluster-a", "first-owner", []kubernetes.GVR{gvr})
+	if err = g.Replace(t.Context(), 0, kubernetes.Snapshot{GVR: gvr, Objects: []unstructured.Unstructured{object("Pod", "apps", "web", "pod-a", nil)}, State: kubernetes.GVRState{LastListCompletedAt: time.Now(), LastConnectivityProbeAt: time.Now(), WatchConnected: true, WatchContinuous: true}}); err != nil {
+		t.Fatal(err)
+	}
+	var logs bytes.Buffer
+	l := &Lease{Client: client, Graph: g, Mirror: &faultMirror{}, Namespace: "owned", Name: "graph", Endpoint: "https://127.0.0.1:9444", Logger: slog.New(slog.NewJSONHandler(&logs, nil))}
+	if l.Tick(t.Context()) == nil {
+		t.Fatal("forbidden native Lease read accepted")
+	}
+	if !strings.Contains(logs.String(), `"stage":"lease_read"`) {
+		t.Fatal("first qualified owner failure was silent")
+	}
+	if strings.Contains(logs.String(), "tenant-a") || strings.Contains(logs.String(), "127.0.0.1") {
+		t.Fatal("ownership diagnostics leaked routing facts")
 	}
 }

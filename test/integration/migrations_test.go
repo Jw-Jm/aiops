@@ -390,8 +390,12 @@ func runRemainingMigrationsAsMigrationRole(t *testing.T, ctx context.Context, ad
 }
 
 func newMigrationDatabase(t *testing.T) (context.Context, *sql.DB, string, string) {
+	return newMigrationDatabaseWithTimeout(t, 90*time.Second)
+}
+
+func newMigrationDatabaseWithTimeout(t *testing.T, timeout time.Duration) (context.Context, *sql.DB, string, string) {
 	t.Helper()
-	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	t.Cleanup(cancel)
 	adminURL := os.Getenv("SP03_TEST_DATABASE_URL")
 	if adminURL == "" {

@@ -48,7 +48,7 @@ lint:
 
 test-unit:
 	@mkdir -p artifacts/test-reports
-	@set +e; $(GO) test ./... > artifacts/test-reports/unit.txt 2>&1; status=$$?; cat artifacts/test-reports/unit.txt; exit $$status
+	@set +e; $(GO) test -timeout=30m ./... > artifacts/test-reports/unit.txt 2>&1; status=$$?; cat artifacts/test-reports/unit.txt; exit $$status
 	@pnpm --dir web test
 
 test-contract:

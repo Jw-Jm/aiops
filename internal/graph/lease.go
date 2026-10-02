@@ -64,7 +64,7 @@ func (l *Lease) Tick(ctx context.Context) error {
 	stage := "lease_read"
 	failure := func(err error) error {
 		l.Graph.InvalidateOwner()
-		if l.epoch > 0 && l.Logger != nil {
+		if l.Logger != nil && (l.epoch > 0 || (stage != "lease_holder" && l.Graph.Qualified(time.Now()))) {
 			l.Logger.WarnContext(ctx, "Graph Lease renewal unavailable", "stage", stage)
 		}
 		return err
