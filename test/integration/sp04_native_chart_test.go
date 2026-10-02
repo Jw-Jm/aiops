@@ -219,6 +219,7 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	}
 	identity("ops-api")
 	identity("ops-worker")
+	crlPatchFile := filepath.Join(t.TempDir(), "crl-patch.json")
 	refreshCtx, stopRefresh := context.WithCancel(ctx)
 	refreshDone := make(chan struct{})
 	refreshErrors := make(chan error, 1)
@@ -240,9 +241,15 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 					continue
 				}
 				patch, _ := json.Marshal(map[string]any{"data": map[string][]byte{"crl.pem": pem.EncodeToMemory(&pem.Block{Type: "X509 CRL", Bytes: crl.Raw})}})
+				if e = os.WriteFile(crlPatchFile, patch, 0600); e != nil {
+					select {
+					case refreshErrors <- e:
+					default:
+					}
+					continue
+				}
 				for _, name := range []string{"api", "worker"} {
-					command := exec.CommandContext(refreshCtx, "kubectl", "--context", "orbstack", "-n", ns, "patch", "secret", "ops-sp04-"+name+"-identity", "--type=merge", "--patch-file", "-")
-					command.Stdin = bytes.NewReader(patch)
+					command := exec.CommandContext(refreshCtx, "kubectl", "--context", "orbstack", "-n", ns, "patch", "secret", "ops-sp04-"+name+"-identity", "--type=merge", "--patch-file", crlPatchFile)
 					if e = command.Run(); e != nil {
 						select {
 						case refreshErrors <- e:
@@ -735,6 +742,7 @@ func sp04ColdSelectedImages(t *testing.T, ctx context.Context, images []bundle.I
 			t.Fatal("refuse cold-cache operation on shared dependency")
 		}
 		ownedTag := "ops.local/" + bundleID + "/" + image.Name + ":1.0.0"
+		ownedDigest := "ops.local/" + bundleID + "/" + image.Name + "@" + strings.Split(image.Reference, "@")[1]
 		for _, reference := range []string{image.Reference, ownedTag} {
 			raw, err := exec.CommandContext(ctx, "docker", "--context", "orbstack", "image", "inspect", reference).CombinedOutput()
 			if err != nil {
@@ -743,36 +751,29 @@ func sp04ColdSelectedImages(t *testing.T, ctx context.Context, images []bundle.I
 				}
 				continue
 			}
-			var data []struct {
-				ID                    string `json:"Id"`
-				RepoDigests, RepoTags []string
-			}
+			var data []sp04ColdImageIdentity
 			if json.Unmarshal(raw, &data) != nil || len(data) != 1 {
 				t.Fatal("exact image identity unavailable")
 			}
 			d := data[0]
-			for _, ref := range d.RepoDigests {
-				if ref != image.Reference {
-					t.Fatal("refuse deleting image shared by another repository")
-				}
-			}
-			for _, tag := range d.RepoTags {
-				if tag != ownedTag {
-					t.Fatal("refuse deleting image shared by another tag")
-				}
+			if !sp04ColdIdentityMatches(d, image.Reference, ownedDigest, ownedTag) {
+				t.Fatal("refuse deleting image without exclusive signed identity")
 			}
 			for _, p := range pods.Items {
 				for _, group := range [][]container{p.Spec.Containers, p.Spec.InitContainers, p.Spec.EphemeralContainers} {
 					for _, c := range group {
-						if c.Image == image.Reference || c.Image == ownedTag || c.Image == d.ID {
+						if c.Image == image.Reference || c.Image == ownedTag || c.Image == ownedDigest || c.Image == d.ID {
 							t.Fatal("refuse removing existing Pod image")
 						}
 					}
 				}
 				for _, group := range [][]status{p.Status.ContainerStatuses, p.Status.InitContainerStatuses, p.Status.EphemeralContainerStatuses} {
 					for _, c := range group {
-						id := strings.TrimPrefix(strings.TrimPrefix(c.ImageID, "docker-pullable://"), "docker://")
-						if id == image.Reference || id == d.ID || id == strings.TrimPrefix(image.Reference, "ops.local/task27/"+image.Name+"@") {
+						id := c.ImageID
+						if _, suffix, ok := strings.Cut(id, "://"); ok {
+							id = suffix
+						}
+						if id == image.Reference || id == ownedDigest || id == d.ID || id == strings.TrimPrefix(image.Reference, "ops.local/task27/"+image.Name+"@") {
 							t.Fatal("refuse removing existing Pod image status")
 						}
 					}
@@ -806,4 +807,29 @@ func sp04ColdSelectedImages(t *testing.T, ctx context.Context, images []bundle.I
 		}
 		t.Logf("actual cold selected cache absent name=%s reference=%s; normal/init/ephemeral Pod and container consumers checked; shared dependencies preserved", image.Name, image.Reference)
 	}
+}
+
+// Positive identity proof is required even when an owned preparation tag exists.
+// An empty RepoDigests list cannot prove that a mutable tag still denotes the
+// immutable signed material after an external replacement.
+type sp04ColdImageIdentity struct {
+	ID                    string `json:"Id"`
+	RepoDigests, RepoTags []string
+}
+
+func sp04ColdIdentityMatches(d sp04ColdImageIdentity, signed, ownDigest, ownTag string) bool {
+	if d.ID == "" || len(d.RepoDigests) == 0 {
+		return false
+	}
+	for _, ref := range d.RepoDigests {
+		if ref != signed && ref != ownDigest {
+			return false
+		}
+	}
+	for _, tag := range d.RepoTags {
+		if tag != ownTag {
+			return false
+		}
+	}
+	return true
 }

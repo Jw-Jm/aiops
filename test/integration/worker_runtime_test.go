@@ -18,12 +18,18 @@ import (
 	"ops-platform/internal/archive"
 	"ops-platform/internal/audit"
 	"ops-platform/internal/crypto"
+	"ops-platform/internal/integrations/openbao"
 	"ops-platform/internal/integrations/s3"
 	"ops-platform/internal/persistence"
 )
 
 func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testing.T) {
 	bao := liveWorkloadClient(t)
+	runAuditWorkerProjectedRecovery(t, bao, reviewWorkloadNamespace)
+}
+
+func runAuditWorkerProjectedRecovery(t *testing.T, bao *openbao.Client, namespace string) {
+	t.Helper()
 	ctx, db, dir, dsn := newMigrationDatabase(t)
 	if err := goose.UpContext(ctx, db, dir); err != nil {
 		t.Fatal(err)
@@ -68,7 +74,7 @@ func TestRealAuditWorkerProjectedLoginResumesPendingAfterArchiveOutage(t *testin
 	if err != nil {
 		t.Fatal(err)
 	}
-	for key, value := range map[string]string{"OPENBAO_ADDR": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_URL"), "OPENBAO_CA_FILE": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_CA_FILE"), "OPENBAO_SERVICE_DOMAIN": reviewWorkloadNamespace + ".svc.cluster.local", "OPENBAO_PROJECTED_TOKEN_FILE": filepath.Join(os.Getenv("SP03_TEST_KUBERNETES_TOKEN_DIR"), "ops-worker"), "S3_CA_FILE": fixture.CAFile, "S3_BUCKET": bucket, "S3_TENANT_CREDENTIALS_FILE": fixture.CredentialFile} {
+	for key, value := range map[string]string{"OPENBAO_ADDR": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_URL"), "OPENBAO_CA_FILE": os.Getenv("SP03_TEST_WORKLOAD_OPENBAO_CA_FILE"), "OPENBAO_SERVICE_DOMAIN": namespace + ".svc.cluster.local", "OPENBAO_PROJECTED_TOKEN_FILE": filepath.Join(os.Getenv("SP03_TEST_KUBERNETES_TOKEN_DIR"), "ops-worker"), "S3_CA_FILE": fixture.CAFile, "S3_BUCKET": bucket, "S3_TENANT_CREDENTIALS_FILE": fixture.CredentialFile} {
 		t.Setenv(key, value)
 	}
 	// Exercise the delivered command in separate OS processes. The child gets
