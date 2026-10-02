@@ -117,6 +117,10 @@ func TestUpstreamConformanceAnd20KPlatformGeneration(t *testing.T) {
 		}
 	}
 	t.Logf("frozen 20k input: platform projection nodes=%d generation load=%s (external fixtures are tested via bounded overlay contract separately)", len(g.current.identities), time.Since(started))
+	// This conformance fixture sets a synthetic owner; construction time is
+	// reported separately from traversal. Start its query deadline after the
+	// build, while real Kubernetes Lease lifetime/fencing tests remain unchanged.
+	g.SetOwner(1, time.Now().Add(time.Minute))
 	canonical := func(kind, stable string) string {
 		group := "core"
 		if kind == "Deployment" || kind == "ReplicaSet" {

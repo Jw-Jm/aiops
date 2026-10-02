@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/http"
 	"net/http/httptest"
 	"ops-platform/internal/integrations/kubernetes"
@@ -71,10 +72,10 @@ func TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS(t *testing.T) {
 					d.Metadata.ResourceVersion = "opaque-version"
 					d.Metadata.Annotations = map[string]string{"ops.platform/owner-epoch": "12"}
 					d.Spec.LeaseDurationSeconds = 15
-					d.Spec.RenewTime = time.Now().Add(-time.Minute)
+					d.Spec.RenewTime = metav1.NewMicroTime(time.Now().Add(-time.Minute))
 					if tc.live {
 						d.Spec.HolderIdentity = "live-worker"
-						d.Spec.RenewTime = time.Now()
+						d.Spec.RenewTime = metav1.NewMicroTime(time.Now())
 					}
 					enc.Encode(d)
 					return

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log/slog"
 	"net/url"
 	"ops-platform/internal/integrations/kubernetes"
@@ -26,10 +27,10 @@ type LeaseDocument struct {
 		Annotations     map[string]string `json:"annotations"`
 	} `json:"metadata"`
 	Spec struct {
-		HolderIdentity       string    `json:"holderIdentity"`
-		LeaseDurationSeconds int       `json:"leaseDurationSeconds"`
-		RenewTime            time.Time `json:"renewTime"`
-		AcquireTime          time.Time `json:"acquireTime"`
+		HolderIdentity       string           `json:"holderIdentity"`
+		LeaseDurationSeconds int              `json:"leaseDurationSeconds"`
+		RenewTime            metav1.MicroTime `json:"renewTime"`
+		AcquireTime          metav1.MicroTime `json:"acquireTime"`
 	} `json:"spec"`
 }
 type OwnershipMirror struct {
@@ -112,10 +113,10 @@ func (l *Lease) Tick(ctx context.Context) error {
 			return failure(ErrNotReady)
 		}
 		epoch++
-		lease.Spec.AcquireTime = now
+		lease.Spec.AcquireTime = metav1.NewMicroTime(now)
 		lease.Spec.HolderIdentity = l.Graph.instance
 	}
-	lease.Spec.RenewTime = now
+	lease.Spec.RenewTime = metav1.NewMicroTime(now)
 	lease.Spec.LeaseDurationSeconds = 15
 	if lease.Metadata.Annotations == nil {
 		lease.Metadata.Annotations = map[string]string{}

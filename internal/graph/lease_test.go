@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"log/slog"
 	"net/http"
@@ -99,7 +100,7 @@ func TestLeaseIsOnlyAuthorityRestartStandbyPartitionAndRecreation(t *testing.T) 
 		t.Fatal("DB mirror elected pod restart")
 	}
 	mu.Lock()
-	doc.Spec.RenewTime = time.Now().Add(-time.Minute)
+	doc.Spec.RenewTime = metav1.NewMicroTime(time.Now().Add(-time.Minute))
 	mu.Unlock()
 	unsynced := New("tenant-a", "cluster-a", "standby-unsynced", []kubernetes.GVR{gvr})
 	third := &Lease{Client: client, Graph: unsynced, Mirror: mirror, Namespace: "owned", Name: "graph", Endpoint: "https://127.0.0.1:9444"}
@@ -162,5 +163,28 @@ func TestQualifiedFirstOwnerAcquisitionFailureIsObservable(t *testing.T) {
 	}
 	if strings.Contains(logs.String(), "tenant-a") || strings.Contains(logs.String(), "127.0.0.1") {
 		t.Fatal("ownership diagnostics leaked routing facts")
+	}
+}
+
+// Linux clocks retain nanoseconds; Darwin's clock precision masked this native
+// API contract failure in the host wire test. Decode with the locked upstream
+// Lease type rather than our own DTO so the fake cannot accept invalid JSON.
+func TestLeaseWireUsesNativeMicroTimeWithNanosecondClock(t *testing.T) {
+	doc := LeaseDocument{APIVersion: "coordination.k8s.io/v1", Kind: "Lease"}
+	doc.Metadata.Name, doc.Metadata.Namespace = "graph", "owned"
+	doc.Spec.RenewTime = metav1.NewMicroTime(time.Date(2026, 10, 2, 8, 57, 45, 896794703, time.UTC))
+	doc.Spec.AcquireTime = doc.Spec.RenewTime
+	raw, err := json.Marshal(doc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var native struct {
+		Spec struct{ RenewTime, AcquireTime *metav1.MicroTime }
+	}
+	if err = json.Unmarshal(raw, &native); err != nil {
+		t.Fatalf("actual native Lease decoder rejects nanosecond clock wire: %v", err)
+	}
+	if native.Spec.RenewTime == nil || native.Spec.AcquireTime == nil || native.Spec.RenewTime.Nanosecond() != 896794000 {
+		t.Fatal("Lease timestamp did not preserve native microsecond precision")
 	}
 }

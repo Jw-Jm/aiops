@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"io"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/url"
 	"ops-platform/internal/audit"
 	"ops-platform/internal/integrations/kubernetes"
@@ -114,7 +115,7 @@ func RecoverLease(ctx context.Context, client *kubernetes.Client, repo RecoveryR
 	document.Metadata.Annotations = map[string]string{"ops.platform/owner-epoch": strconv.FormatInt(floor, 10), "ops.platform/recovery-intent": intent}
 	document.Spec.HolderIdentity = ""
 	document.Spec.LeaseDurationSeconds = 15
-	document.Spec.RenewTime = time.Now().UTC().Add(-time.Minute).Truncate(time.Microsecond)
+	document.Spec.RenewTime = metav1.NewMicroTime(time.Now().UTC().Add(-time.Minute))
 	document.Spec.AcquireTime = document.Spec.RenewTime
 	raw, _ := json.Marshal(document)
 	method, target := "PUT", path

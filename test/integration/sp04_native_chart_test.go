@@ -97,6 +97,25 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	tenant, source, cluster, metricSource := uuid.New(), uuid.New(), uuid.New(), uuid.New()
 	collector, ns := sp04OwnedKubernetes(t, ctx, tenant.String(), source.String())
 	// Namespace fixture captures UID and label and uses server-side delete preconditions.
+	var namespaceIdentity struct {
+		Metadata struct {
+			UID    string
+			Labels map[string]string
+		}
+	}
+	if json.Unmarshal(sp04Kubectl(t, ctx, nil, "--context", "orbstack", "get", "namespace", ns, "-o", "json"), &namespaceIdentity) != nil || namespaceIdentity.Metadata.UID == "" || namespaceIdentity.Metadata.Labels["ops.platform.test"] != ns {
+		t.Fatal("owned namespace identity missing")
+	}
+	verifyOwnedNamespace := func() bool {
+		raw, e := exec.Command("kubectl", "--context", "orbstack", "get", "namespace", ns, "-o", "json").Output()
+		var current struct {
+			Metadata struct {
+				UID    string
+				Labels map[string]string
+			}
+		}
+		return e == nil && json.Unmarshal(raw, &current) == nil && current.Metadata.UID == namespaceIdentity.Metadata.UID && current.Metadata.Labels["ops.platform.test"] == ns
+	}
 	create := func(v any) []byte {
 		b, _ := json.Marshal(v)
 		return sp04Kubectl(t, ctx, b, "--context", "orbstack", "create", "-f", "-", "-o", "json")
@@ -328,10 +347,13 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	// Exact host bridge allowlist is owned test configuration for loopback-published
 	// fixtures. It does not permit arbitrary external hosts, ports, or public egress.
 	ports := []any{}
-	for _, endpoint := range []string{apiDSN, issuer, baoEndpoint, archiveEndpoint, sourceConfig.Binding.Endpoint} {
+	for _, endpoint := range []string{apiDSN, issuer, baoEndpoint, archiveEndpoint, sourceConfig.Binding.Endpoint, collector.Endpoint} {
 		u, _ := url.Parse(endpoint)
 		var port int
 		fmt.Sscanf(u.Port(), "%d", &port)
+		if port == 0 {
+			continue
+		}
 		ports = append(ports, map[string]any{"protocol": "TCP", "port": port})
 	}
 	create(map[string]any{"apiVersion": "networking.k8s.io/v1", "kind": "NetworkPolicy", "metadata": map[string]any{"name": "owned-host-fixtures", "namespace": ns}, "spec": map[string]any{"podSelector": map[string]any{"matchLabels": map[string]string{"ops.platform.io/release": ns}, "matchExpressions": []any{map[string]any{"key": "ops.platform.test.public-control", "operator": "DoesNotExist"}}}, "policyTypes": []string{"Egress"}, "egress": []any{map[string]any{"to": []any{map[string]any{"ipBlock": map[string]string{"cidr": "0.250.250.254/32"}}}, "ports": ports}}}})
@@ -360,10 +382,14 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	// Cluster RBAC belongs to this uniquely named release; clean up only after
 	// confirming namespace ownership through the fixture cleanup registered above.
 	t.Cleanup(func() {
+		if !verifyOwnedNamespace() {
+			t.Error("refuse release cleanup after namespace ownership changed")
+			return
+		}
 		_ = exec.Command("helm", "uninstall", ns, "--kube-context", "orbstack", "--namespace", ns, "--wait", "--timeout", "90s").Run()
 	})
 	if os.Getenv("SP04_COLD_IMPORT") == "1" {
-		sp04ColdSelectedImages(t, ctx, planned)
+		sp04ColdSelectedImages(t, ctx, planned, manifest.BundleID)
 	}
 	importReport, e := bundle.Import(ctx, manifest, trusted, discovered, drivers.OrbStackSharedStore{})
 	if e != nil {
@@ -371,6 +397,25 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	}
 	t.Logf("actual selected Bundle import driver=%s materials=%v", importReport.Driver, importReport.Imported)
 	install()
+	t.Cleanup(func() {
+		if !t.Failed() {
+			return
+		}
+		for _, deployment := range []string{"ops-api", "ops-worker"} {
+			raw, e := exec.Command("kubectl", "--context", "orbstack", "-n", ns, "logs", "deployment/"+deployment, "--all-pods=true", "--prefix", "--tail=80").Output()
+			if e == nil {
+				t.Logf("owned native %s diagnostic logs: %s", deployment, raw)
+			}
+		}
+		raw, e := exec.Command("kubectl", "--context", "orbstack", "-n", ns, "get", "lease", "sp04-graph", "-o", "json").Output()
+		if e == nil {
+			var lease graph.LeaseDocument
+			if json.Unmarshal(raw, &lease) == nil {
+				t.Logf("owned native Lease epoch=%s holder_present=%v uid=%s", lease.Metadata.Annotations["ops.platform/owner-epoch"], lease.Spec.HolderIdentity != "", lease.Metadata.UID)
+			}
+		}
+	})
+
 	for deadline := time.Now().Add(45 * time.Second); ; {
 		if !connect("1.1.1.1", 443) {
 			break
@@ -457,6 +502,9 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	}
 	// Reinstall just this release: the same database, archive, pre-created Lease,
 	// runtime and identity Secrets remain; no shared workloads or data are touched.
+	if !verifyOwnedNamespace() {
+		t.Fatal("refuse reinstall cleanup after namespace ownership changed")
+	}
 	run("helm", "uninstall", ns, "--kube-context", "orbstack", "--namespace", ns, "--wait", "--timeout", "90s")
 	if _, e = bundle.Import(ctx, manifest, trusted, discovered, drivers.OrbStackSharedStore{}); e != nil {
 		t.Fatal(e)
@@ -669,34 +717,38 @@ func sp04NativeKeycloak(t *testing.T, ctx context.Context, root string) (string,
 
 // Evict only these exact new first-party images after proving they have no
 // consumers. Shared dependency and user images never enter this operation.
-func sp04ColdSelectedImages(t *testing.T, ctx context.Context, images []bundle.ImageArtifact) {
+func sp04ColdSelectedImages(t *testing.T, ctx context.Context, images []bundle.ImageArtifact, bundleID string) {
 	t.Helper()
-	raw := sp04Kubectl(t, ctx, nil, "--context", "orbstack", "get", "pods", "--all-namespaces", "-o", "json")
+	type container struct{ Image string }
+	type status struct{ ImageID string }
 	var pods struct {
 		Items []struct {
-			Spec   struct{ Containers []struct{ Image string } }
-			Status struct{ ContainerStatuses []struct{ ImageID string } }
+			Spec   struct{ Containers, InitContainers, EphemeralContainers []container }
+			Status struct{ ContainerStatuses, InitContainerStatuses, EphemeralContainerStatuses []status }
 		}
 	}
-	if json.Unmarshal(raw, &pods) != nil {
+	if json.Unmarshal(sp04Kubectl(t, ctx, nil, "--context", "orbstack", "get", "pods", "--all-namespaces", "-o", "json"), &pods) != nil {
 		t.Fatal("native Pod inventory unavailable before cold import")
 	}
 	for _, image := range images {
-		if image.Name != "platform-api" && image.Name != "platform-worker" {
-			t.Fatal("refuse cold-cache operation on dependency")
+		if (image.Name != "platform-api" && image.Name != "platform-worker") || !strings.HasPrefix(image.Reference, "ops.local/task27/") {
+			t.Fatal("refuse cold-cache operation on shared dependency")
 		}
-		if !strings.HasPrefix(image.Reference, "ops.local/") {
-			t.Fatal("refuse cold-cache operation on upstream image")
-		}
-		command := exec.CommandContext(ctx, "docker", "--context", "orbstack", "image", "inspect", image.Reference)
-		raw, e := command.CombinedOutput()
-		if e == nil {
+		ownedTag := "ops.local/" + bundleID + "/" + image.Name + ":1.0.0"
+		for _, reference := range []string{image.Reference, ownedTag} {
+			raw, err := exec.CommandContext(ctx, "docker", "--context", "orbstack", "image", "inspect", reference).CombinedOutput()
+			if err != nil {
+				if !bytes.Contains(raw, []byte("No such image:")) {
+					t.Fatal("cold-cache inventory failed")
+				}
+				continue
+			}
 			var data []struct {
 				ID                    string `json:"Id"`
 				RepoDigests, RepoTags []string
 			}
 			if json.Unmarshal(raw, &data) != nil || len(data) != 1 {
-				t.Fatal("cold-cache exact image identity unavailable")
+				t.Fatal("exact image identity unavailable")
 			}
 			d := data[0]
 			for _, ref := range d.RepoDigests {
@@ -704,35 +756,54 @@ func sp04ColdSelectedImages(t *testing.T, ctx context.Context, images []bundle.I
 					t.Fatal("refuse deleting image shared by another repository")
 				}
 			}
-			if len(d.RepoTags) > 0 {
-				t.Fatal("refuse deleting tagged image not exclusively owned by this import")
+			for _, tag := range d.RepoTags {
+				if tag != ownedTag {
+					t.Fatal("refuse deleting image shared by another tag")
+				}
 			}
 			for _, p := range pods.Items {
-				for _, c := range p.Spec.Containers {
-					if c.Image == image.Reference {
-						t.Fatal("refuse removing image referenced by existing Pod")
+				for _, group := range [][]container{p.Spec.Containers, p.Spec.InitContainers, p.Spec.EphemeralContainers} {
+					for _, c := range group {
+						if c.Image == image.Reference || c.Image == ownedTag || c.Image == d.ID {
+							t.Fatal("refuse removing existing Pod image")
+						}
 					}
 				}
-				for _, c := range p.Status.ContainerStatuses {
-					if strings.TrimPrefix(c.ImageID, "docker-pullable://") == image.Reference || strings.TrimPrefix(c.ImageID, "docker://") == d.ID {
-						t.Fatal("refuse removing running Pod image")
+				for _, group := range [][]status{p.Status.ContainerStatuses, p.Status.InitContainerStatuses, p.Status.EphemeralContainerStatuses} {
+					for _, c := range group {
+						id := strings.TrimPrefix(strings.TrimPrefix(c.ImageID, "docker-pullable://"), "docker://")
+						if id == image.Reference || id == d.ID || id == strings.TrimPrefix(image.Reference, "ops.local/task27/"+image.Name+"@") {
+							t.Fatal("refuse removing existing Pod image status")
+						}
 					}
 				}
 			}
-			output, e := exec.CommandContext(ctx, "docker", "--context", "orbstack", "ps", "-aq", "--filter", "ancestor="+d.ID).Output()
-			if e != nil || len(bytes.TrimSpace(output)) != 0 {
+			output, err := exec.CommandContext(ctx, "docker", "--context", "orbstack", "ps", "-aq", "--filter", "ancestor="+d.ID).Output()
+			if err != nil || len(bytes.TrimSpace(output)) != 0 {
 				t.Fatal("refuse removing image with existing container or unverified inventory")
 			}
-			if exec.CommandContext(ctx, "docker", "--context", "orbstack", "image", "rm", d.ID).Run() != nil {
-				t.Fatal("owned selected image removal failed")
+			// Remove the sole owned preparation tag first, without force. No shared tag
+			// or consumer is allowed above; the immutable image ID is then safe to evict.
+			for _, tag := range d.RepoTags {
+				if exec.CommandContext(ctx, "docker", "--context", "orbstack", "image", "rm", tag).Run() != nil {
+					t.Fatal("owned build tag removal failed")
+				}
 			}
-		} else if !bytes.Contains(raw, []byte("No such image:")) {
-			t.Fatal("cold-cache inspection failed for a reason other than absent image")
+			check, checkErr := exec.CommandContext(ctx, "docker", "--context", "orbstack", "image", "inspect", d.ID).CombinedOutput()
+			if checkErr == nil {
+				if exec.CommandContext(ctx, "docker", "--context", "orbstack", "image", "rm", d.ID).Run() != nil {
+					t.Fatal("owned selected image removal failed")
+				}
+			} else if !bytes.Contains(check, []byte("No such image:")) {
+				t.Fatal("image ID inventory failed")
+			}
 		}
-		raw, e = exec.CommandContext(ctx, "docker", "--context", "orbstack", "image", "inspect", image.Reference).CombinedOutput()
-		if e == nil || !bytes.Contains(raw, []byte("No such image:")) {
-			t.Fatal("selected immutable image cache not demonstrably empty")
+		for _, ref := range []string{image.Reference, ownedTag} {
+			raw, err := exec.CommandContext(ctx, "docker", "--context", "orbstack", "image", "inspect", ref).CombinedOutput()
+			if err == nil || !bytes.Contains(raw, []byte("No such image:")) {
+				t.Fatal("selected immutable/build-tag cache not demonstrably empty")
+			}
 		}
-		t.Logf("actual cold selected cache absent name=%s reference=%s; all existing Pod/container consumers checked; shared dependencies preserved", image.Name, image.Reference)
+		t.Logf("actual cold selected cache absent name=%s reference=%s; normal/init/ephemeral Pod and container consumers checked; shared dependencies preserved", image.Name, image.Reference)
 	}
 }
