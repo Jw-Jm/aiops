@@ -1,0 +1,62 @@
+capability=node-problem-detector-rules source_commit=e2b57e2f42052e4cf62cd2be1eb882f6a71a7804 runtime_enabled=false
+locked_state=qualified disabled_reason=
+command: ["git", "-C", "/tmp/ops-sp02-task29/node-problem-detector", "archive", "--format=tar", "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-_gr3xed9/node-problem-detector-rules.tar", "e2b57e2f42052e4cf62cd2be1eb882f6a71a7804"]
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-_gr3xed9,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-_gr3xed9/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-_gr3xed9/node-problem-detector-rules/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/node-problem-detector-rules", "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414", "go", "test", "-mod=readonly", "-p", "1", "-count=1", "-v", "-timeout=5m", "./pkg/systemlogmonitor/log_buffer.go", "./pkg/systemlogmonitor/log_buffer_test.go", "-run", "^Test(Push|Match)$"]
+=== RUN   TestPush
+--- PASS: TestPush (0.00s)
+=== RUN   TestMatch
+--- PASS: TestMatch (0.00s)
+PASS
+ok  	command-line-arguments	0.001s
+exit_code=0
+command: ["docker", "--context", "orbstack", "cp", "2ecfb467256241b4bfbba308dfb84c37e3b236ff618cf60ab03d2a0d06848af8:/victoria-logs-prod", "/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-_gr3xed9/node-problem-detector-rules/victoria-logs"]
+exit_code=0
+command: ["docker", "--context", "orbstack", "rm", "2ecfb467256241b4bfbba308dfb84c37e3b236ff618cf60ab03d2a0d06848af8"]
+2ecfb467256241b4bfbba308dfb84c37e3b236ff618cf60ab03d2a0d06848af8
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-_gr3xed9,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-_gr3xed9/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-_gr3xed9/node-problem-detector-rules/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/node-problem-detector-rules", "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414", "go", "run", "/fixtures/verify-npd-victorialogs.go", "-victoria-logs", "/work/node-problem-detector-rules/victoria-logs", "-rules", "/fixtures/node-problem-detector-rules/config/kernel-monitor.json", "-cases", "/fixtures/npd-victorialogs-cases.json"]
+2026/10/02 09:33:13 INFO: metrics: disable exposing PSI metrics because of failed init: open /sys/fs/cgroup/cpu.pressure: no such file or directory
+2026-10-02T09:33:13.031Z	info	VictoriaMetrics@v1.146.1-0.20260630165203-c82127b6d4d1/lib/logger/flag.go:12	build version: victoria-logs-20260716-022232-tags-v1.52.0-0-g46a54c976f
+2026-10-02T09:33:13.031Z	info	VictoriaMetrics@v1.146.1-0.20260630165203-c82127b6d4d1/lib/logger/flag.go:13	command-line flags
+2026-10-02T09:33:13.031Z	info	VictoriaMetrics@v1.146.1-0.20260630165203-c82127b6d4d1/lib/logger/flag.go:20	  -httpListenAddr="127.0.0.1:9428"
+2026-10-02T09:33:13.031Z	info	VictoriaMetrics@v1.146.1-0.20260630165203-c82127b6d4d1/lib/logger/flag.go:20	  -retentionPeriod="1d"
+2026-10-02T09:33:13.031Z	info	VictoriaMetrics@v1.146.1-0.20260630165203-c82127b6d4d1/lib/logger/flag.go:20	  -storageDataPath="/tmp/task29-vlogs-826385015/storage"
+2026-10-02T09:33:13.031Z	info	VictoriaLogs/app/victoria-logs/main.go:44	starting VictoriaLogs at "[127.0.0.1:9428]"...
+2026-10-02T09:33:13.031Z	info	VictoriaLogs/app/vlstorage/main.go:145	opening storage at -storageDataPath=/tmp/task29-vlogs-826385015/storage
+2026-10-02T09:33:13.031Z	info	VictoriaLogs/app/vlstorage/main.go:152	successfully opened storage in 0.000 seconds; smallParts: 0; bigParts: 0; smallPartBlocks: 0; bigPartBlocks: 0; smallPartRows: 0; bigPartRows: 0; smallPartSize: 0 bytes; bigPartSize: 0 bytes
+2026-10-02T09:33:13.031Z	info	VictoriaLogs/app/victoria-logs/main.go:56	started VictoriaLogs in 0.000 seconds; see https://docs.victoriametrics.com/victorialogs/
+2026-10-02T09:33:13.036Z	info	VictoriaMetrics@v1.146.1-0.20260630165203-c82127b6d4d1/lib/httpserver/httpserver.go:152	started server at http://127.0.0.1:9428/
+2026-10-02T09:33:13.036Z	info	VictoriaMetrics@v1.146.1-0.20260630165203-c82127b6d4d1/lib/httpserver/httpserver.go:154	pprof handlers are exposed at http://127.0.0.1:9428/debug/pprof/
+2026-10-02T09:33:13.129Z	info	VictoriaMetrics@v1.146.1-0.20260630165203-c82127b6d4d1/lib/memory/memory.go:45	limiting caches to 11343202713 bytes, leaving 7562135143 bytes to the OS according to -memory.allowedPercent=60, system memory limit 18905337856 bytes
+case=rule-01-positive npd=true victorialogs=1
+case=rule-01-negative npd=false victorialogs=0
+case=rule-02-positive npd=true victorialogs=1
+case=rule-02-negative npd=false victorialogs=0
+case=rule-03-positive npd=true victorialogs=1
+case=rule-03-negative npd=false victorialogs=0
+case=rule-04-positive npd=true victorialogs=1
+case=rule-04-negative npd=false victorialogs=0
+case=rule-05-positive npd=true victorialogs=1
+case=rule-05-negative npd=false victorialogs=0
+case=rule-06-positive npd=true victorialogs=1
+case=rule-06-negative npd=false victorialogs=0
+case=rule-07-positive npd=true victorialogs=1
+case=rule-07-negative npd=false victorialogs=0
+case=rule-08-positive npd=true victorialogs=1
+case=rule-08-negative npd=false victorialogs=0
+case=rule-09-positive npd=true victorialogs=1
+case=rule-09-negative npd=false victorialogs=0
+case=rule-10-positive npd=true victorialogs=1
+case=rule-10-negative npd=false victorialogs=0
+case=rule-11-positive npd=true victorialogs=1
+case=rule-11-negative npd=false victorialogs=0
+case=rule-12-positive npd=true victorialogs=1
+case=rule-12-negative npd=false victorialogs=0
+case=rule-13-positive npd=true victorialogs=1
+case=rule-13-negative npd=false victorialogs=0
+case=rule-14-positive npd=true victorialogs=1
+case=rule-14-negative npd=false victorialogs=0
+verified 28 NPD rule/message cases against VictoriaLogs LogsQL
+exit_code=0
+replay_exit_code=0

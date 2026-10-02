@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+  "baselineCommit": "4738c1148c6bec7003dd85f1831a6059dfab86e1",
+  "finalWholeIndependentReview": "PASS",
+  "mandatoryGates": [
+    {
+      "id": "toolchain-generated-check",
+      "command": "make check-toolchain check",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-toolchain-check.log",
+      "rawSHA256": "5af41b678214c0c479f800eb1351034ff8307401a552f4b30dc6792ecef67963",
+      "methodAndLimits": "Locked Go1.27.1/Node24.21/pnpm12.7/Python3.12.14/uv0.12.17. Includes check-generated, check-runtime-source, vet, all Go packages with30m limit, web tests and contract entry. Cached unchanged package results appear literally; opt-in live skips in default unit entry are NOT substituted for the separate zero-skip gates."
+    },
+    {
+      "id": "security",
+      "command": "make test-security",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-security.log",
+      "rawSHA256": "b2922c90fe24cf24e624ff5da4ad838507d1265ead95777ebd52873bffdc3f1e",
+      "methodAndLimits": "11 security cases, zero skip; raw make output includes JSON events and checker footer."
+    },
+    {
+      "id": "integration",
+      "command": "source \"$(cat /tmp/ops-sp04-services-current-dir)/credentials.env\"; SP04_TEST_ORBSTACK=1 SP04_TEST_VM_URL=http://127.0.0.1:18428 SP04_TEST_VL_URL=http://127.0.0.1:19428 go test -race -json ./test/integration -run '^(TestSP04ArchiveCredentialRolesAtActualIAM|TestSP04ArchiveLiveTransitTLSIAMAndRecovery|TestSP04ArchiveRecoveryIntegrityAndRetention|TestSP04IdentityConflictFindingAndTerminalTombstone|TestSP04LeaseRecoveryNativeAuthorityAndAudit|TestSP04VictoriaLiveScopeProofAndRevocation)$' -count=1 -timeout=8m",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-integration.jsonl",
+      "rawSHA256": "bb22ad21532eb25000d13dbb3fa2409e739837ac55b6aae597009a29355ec9a8",
+      "methodAndLimits": "Actual PostgreSQL23 forward migrations/roles, native Lease recovery, identity/tombstone, OpenBao Transit and TLS4-role native SeaweedFS, archive crash/recovery/digest/Hold/retention and actual Victoria scope/revocation. 15 case/subcase events.",
+      "testEvents": {
+        "pass": 15,
+        "fail": 0,
+        "skip": 0
+      },
+      "topLevelTests": [
+        "TestSP04ArchiveLiveTransitTLSIAMAndRecovery",
+        "TestSP04ArchiveCredentialRolesAtActualIAM",
+        "TestSP04ArchiveRecoveryIntegrityAndRetention",
+        "TestSP04IdentityConflictFindingAndTerminalTombstone",
+        "TestSP04LeaseRecoveryNativeAuthorityAndAudit",
+        "TestSP04VictoriaLiveScopeProofAndRevocation"
+      ],
+      "resolvedTestRegex": "^(TestSP04ArchiveCredentialRolesAtActualIAM|TestSP04ArchiveLiveTransitTLSIAMAndRecovery|TestSP04ArchiveRecoveryIntegrityAndRetention|TestSP04IdentityConflictFindingAndTerminalTombstone|TestSP04LeaseRecoveryNativeAuthorityAndAudit|TestSP04VictoriaLiveScopeProofAndRevocation)$"
+    },
+    {
+      "id": "shared-sp01-sp03",
+      "command": "source \"$(cat /tmp/ops-sp04-services-current-dir)/credentials.env\"; go test -race -json ./test/integration -run '^(TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped|TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory|TestFailedForwardMigrationRollsBackAndCanRecover|TestIdempotencyHTTPMiddleware|TestIdempotencyLedger|TestIdempotencyLedgerSchema|TestKeycloakAuthorizationCodePKCEAndStepUp|TestMigrationsAndRoles|TestMigrationsUpgradeVersionOneData|TestRealArchiveTenantIAMTLS|TestRevokedStepUpCannotBeRecreatedByReplayingSameJWT|TestRoleBindingsAndStepUpSessions|TestRuntimeDatabaseLoginCannotRegainOwnerOrOtherProcess|TestSourceRegistrationsAreTenantBoundRevisionedAndAudited|TestSourceScopeMigrationPreservesLegacyIdentityWithoutQueryGrants|TestTenantProvisioningAndRoleBindingRevisions|TestWithTenantTxIsolatesTenantsAndUsesAppendOnlyAudit)$' -count=1 -timeout=10m",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-shared-regression.jsonl",
+      "rawSHA256": "cffbd43be1f635d2b71b0fa54d9ebd97265341695fea8d8dcfbbdbb923bc045d",
+      "methodAndLimits": "Selected affected regression, 19 case/subcase events. Full test names retained below; no shared release install/cleanup. Migrations/RLS/append-only Audit/idempotency/config/source/tenant/RBAC/step-up/runtime role recovery, real S3 v1 and Keycloak PKCE.",
+      "testEvents": {
+        "pass": 19,
+        "fail": 0,
+        "skip": 0
+      },
+      "topLevelTests": [
+        "TestRealArchiveTenantIAMTLS",
+        "TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped",
+        "TestRoleBindingsAndStepUpSessions",
+        "TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory",
+        "TestIdempotencyLedgerSchema",
+        "TestIdempotencyLedger",
+        "TestIdempotencyHTTPMiddleware",
+        "TestKeycloakAuthorizationCodePKCEAndStepUp",
+        "TestFailedForwardMigrationRollsBackAndCanRecover",
+        "TestMigrationsAndRoles",
+        "TestMigrationsUpgradeVersionOneData",
+        "TestWithTenantTxIsolatesTenantsAndUsesAppendOnlyAudit",
+        "TestRuntimeDatabaseLoginCannotRegainOwnerOrOtherProcess",
+        "TestSourceScopeMigrationPreservesLegacyIdentityWithoutQueryGrants",
+        "TestSourceRegistrationsAreTenantBoundRevisionedAndAudited",
+        "TestRevokedStepUpCannotBeRecreatedByReplayingSameJWT",
+        "TestTenantProvisioningAndRoleBindingRevisions"
+      ],
+      "resolvedTestRegex": "^(TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped|TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory|TestFailedForwardMigrationRollsBackAndCanRecover|TestIdempotencyHTTPMiddleware|TestIdempotencyLedger|TestIdempotencyLedgerSchema|TestKeycloakAuthorizationCodePKCEAndStepUp|TestMigrationsAndRoles|TestMigrationsUpgradeVersionOneData|TestRealArchiveTenantIAMTLS|TestRevokedStepUpCannotBeRecreatedByReplayingSameJWT|TestRoleBindingsAndStepUpSessions|TestRuntimeDatabaseLoginCannotRegainOwnerOrOtherProcess|TestSourceRegistrationsAreTenantBoundRevisionedAndAudited|TestSourceScopeMigrationPreservesLegacyIdentityWithoutQueryGrants|TestTenantProvisioningAndRoleBindingRevisions|TestWithTenantTxIsolatesTenantsAndUsesAppendOnlyAudit)$"
+    },
+    {
+      "id": "shared-audit-worker",
+      "command": "source \"$(cat /tmp/ops-sp04-services-current-dir)/credentials.env\"; SP04_TEST_ORBSTACK=1 go test -json ./test/integration -run '^TestSP04SharedAuditWorkerProjectedRecovery$' -count=1 -timeout=6m",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-shared-audit-worker.jsonl",
+      "rawSHA256": "31a4d415951f384c5f1563ea8df3abf3a13b86d86e72ea1654dad5911579d895",
+      "methodAndLimits": "Reuses all original SP03 Worker assertions in fresh owned native namespace: actual projected Pod token/OpenBao TokenReview, delivered process command with least-privilege login, archive refusal, pending, SIGKILL, resume both tenants to signed chain, VerifyRange and SIGTERM0.",
+      "testEvents": {
+        "pass": 1,
+        "fail": 0,
+        "skip": 0
+      },
+      "topLevelTests": [
+        "TestSP04SharedAuditWorkerProjectedRecovery"
+      ]
+    },
+    {
+      "id": "collector-e2e",
+      "command": "SP04_KUBERNETES_URL=http://127.0.0.1:61872 go test -json ./test/e2e -run '^TestSP04OrbStackNonVirtualListWatch$' -count=1 -timeout=5m",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-collector-e2e.jsonl",
+      "rawSHA256": "2192ff762a2326b87abf1d77822bbbb6ed290615e91d7b228cefb197d40f2f2c",
+      "methodAndLimits": "Owned loopback kubectl --context orbstack proxy, one native cluster17GVR/30sequential owned Pods. Direct collector→Graph only. Convergence30samples P95225.018833ms, Graph300small subgraphs P95651.417us. Not public-chain or production qualification.",
+      "testEvents": {
+        "pass": 1,
+        "fail": 0,
+        "skip": 0
+      },
+      "topLevelTests": [
+        "TestSP04OrbStackNonVirtualListWatch"
+      ]
+    },
+    {
+      "id": "runtime-and-performance",
+      "command": "source \"$(cat /tmp/ops-sp04-services-current-dir)/credentials.env\"; SP04_TEST_ORBSTACK=1 SP04_TEST_VM_URL=http://127.0.0.1:18428 SP04_TEST_VL_URL=http://127.0.0.1:19428 go test -json ./test/integration -run '^TestSP04(FullRuntimeOrbStackOIDCEvidenceAndFailover|FixtureAdaptersThroughActualRuntime)$' -count=1 -timeout=8m",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-runtime-performance.jsonl",
+      "rawSHA256": "b7ac4c8a26e0b1e406cd47d27cd06b757da05374df022b1db67c8278dae9724b",
+      "methodAndLimits": "Executed after preparation,20k construction and upstream replay completed, no concurrent run-owned heavy tasks. Native80.49s; fixture adapters36.60s. Each native latency group30samples: small Graph802.360333ms, source-write→publicAPI791.78525ms, Evidence127.894291ms, actual200nodes/199edges/depth2Graph692.801625ms. OIDC→mTLS API/ActiveWorker→nativecollector/PG/lockedGraph; Evidence→VM/Transit/S3/PG. Includes active stop/standby new epoch, source revision/mapping and same-revision archive withdrawal, role withdrawal, outage partial/metrics and generated input limits. Local fixture, no production capacity claim.",
+      "testEvents": {
+        "pass": 2,
+        "fail": 0,
+        "skip": 0
+      },
+      "topLevelTests": [
+        "TestSP04FullRuntimeOrbStackOIDCEvidenceAndFailover",
+        "TestSP04FixtureAdaptersThroughActualRuntime"
+      ]
+    },
+    {
+      "id": "signed-native-cold-offline-reinstall",
+      "command": "source \"$(cat /tmp/ops-sp04-services-current-dir)/credentials.env\"; SP04_NATIVE_CHART=1 SP04_COLD_IMPORT=1 SP04_TEST_ORBSTACK=1 SP04_TEST_VM_URL=http://127.0.0.1:18428 SP04_BUNDLE_INPUTS=/tmp/ops-sp04-signed-inputs-52d490c SP04_BUNDLE_DIR=/tmp/ops-sp04-signed-bundle-52d490c SP04_BUNDLE_TRUST=/tmp/ops-sp04-chart-private-ru3xx8zi/bundle-trust.pem SP04_RESOLVED_PROFILE=/tmp/ops-sp04-chart-private-ru3xx8zi/resolved.yaml go test -json ./test/integration -run '^TestSP04SignedChartNativeWorkerOfflineReinstall$' -count=1 -timeout=25m",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-native-chart-offline-reinstall.jsonl",
+      "rawSHA256": "6a161a5a423760418703fab6b138015d9ae0df431feb672c127ec75ed88f0e13",
+      "methodAndLimits": "167.45s. Signed tgz/digest, two exact selected API/Worker caches+owned build-tags absent before actual shared-store import; Never; native API/2Worker Pod-bound OpenBao login; real CNI public positive before/negative after plus exact fixture private endpoint positive; actual Evidence archived_verified; release uninstall/import/reinstall old archived Evidence GET, metadata50→83. All namespace/consumer/cleanup identities guarded. Seven shared external dependencies preserved; this is affected first-party/Chart offline regression, not fresh shared core deployment. Artifact subsequently relocated unchanged to artifacts/bundles/sp04-nonvirtual-52d490c; external trust remains outside Bundle.",
+      "sourceBinding": "final-bundle-source-binding.json",
+      "testEvents": {
+        "pass": 1,
+        "fail": 0,
+        "skip": 0
+      },
+      "topLevelTests": [
+        "TestSP04SignedChartNativeWorkerOfflineReinstall"
+      ]
+    },
+    {
+      "id": "identity-golden",
+      "command": "go test -v ./internal/resource -run '^TestDeterministicIdentityGolden10000$' -count=1",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-identity-golden.log",
+      "rawSHA256": "7c454261f08583d6a270ab2788c1d22af985274bbbee0c6cf85125e48da81e45",
+      "methodAndLimits": "Synthetic10,000 original and10,000 recreated UIDs,10tenants/100cluster scopes; deterministic recall1.0 and false merges0. Other conflict/casing/leading-zero/physical-vs-node tests in full unit entry."
+    },
+    {
+      "id": "platform-20k-golden",
+      "command": "go test -v ./internal/graph -run '^TestUpstreamConformanceAnd20KPlatformGeneration$' -count=1 -timeout=30m",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-20k-golden.log",
+      "rawSHA256": "a9722c6e48cba4f937f8266461c3ac3148e99a4d01724c013d50db232d482daf",
+      "methodAndLimits": "Frozen20,000 input→19,998 platform projected nodes+2external tested separately. Complete construction12m1.321115708s; synthetic owner query deadline begins after build; production Lease timing unchanged. Critical fixture9expected/9TP/0FP/0FN => Precision/Recall1.0. Wilson95% lower bound ~0.70085 due9-edge sample, not statistical production proof.100query samples P95184.542us at depth2/maxNodes200; returned frozen diagnostic small. Native exact200node/API gate is separately measured."
+    },
+    {
+      "id": "upstream-replay",
+      "command": "OPS_GRAPH_SOURCE_DIR=/tmp/ops-sp02-upstream OPS_INSPECTION_SOURCE_DIR=/tmp/ops-sp02-task29 OPS_INSPECTION_KEEP_WHEELS=/tmp/ops-sp02-keep/wheelhouse OPS_INSPECTION_REPLAY_OUTPUT=/tmp/ops-sp04-inspection-replay-52d490c-ready make test-replay",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-upstream-replay.jsonl",
+      "rawSHA256": "03c124badcf888e58160f68524a6124cdb34676693e7fcc71061a8991128cfd0",
+      "methodAndLimits": "2cases0skip393.33s; exact original commits/conformance corpus; offline --network=none --pull=never toolchain and selected sources; 8inspection source/model/fixture replays each exit0, scope not promoted to whole-component runtime/distribution. Full raw make log and9detail files retained. Initial missing tool cache failure is retained separately; actual exact original Go/Python restored and owned tool holders cleaned by ID+label+image.",
+      "testEvents": {
+        "pass": 2,
+        "fail": 0,
+        "skip": 0
+      },
+      "topLevelTests": [
+        "TestGraphNonVirtualUpstreamReplay",
+        "TestInspectionNonVirtualUpstreamReplay"
+      ]
+    },
+    {
+      "id": "signed-bundle-build",
+      "command": "uv run --with PyYAML==6.0.3 python3 test/fixtures/offline-core/prepare-bundle-inputs.py --out /tmp/ops-sp04-signed-inputs-52d490c --reuse-reviewed-spec /tmp/ops-sp04-signed-inputs-e0c2f08/build-spec.json --bundle-id sp04-nonvirtual-52d490c; go run ./cmd/opsctl bundle build --architecture linux/arm64 --spec /tmp/ops-sp04-signed-inputs-52d490c/build-spec.json --output /tmp/ops-sp04-signed-bundle-52d490c --signing-key /tmp/ops-sp04-chart-private-ru3xx8zi/bundle-signing.pem",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-signed-bundle-build.log",
+      "rawSHA256": "36956eea739534777ee288fbcec12adbf8b77d509abb79e7e5b87ddacd24e4e6",
+      "methodAndLimits": "Actual locked source/licenses/SBOM23materials/69authenticated files. First-party compiled from clean52d490c; Go proxy/sumdb off, Docker networknone/no pull. Signer key is external private operator-owned, never stored in Git/Bundle.",
+      "sourceBinding": "final-bundle-source-binding.json"
+    },
+    {
+      "id": "independent-bundle-verify",
+      "command": "go run ./cmd/opsctl bundle verify --manifest /Users/mssc/Documents/Code/ops/platform/artifacts/bundles/sp04-nonvirtual-52d490c/bundle.lock.json --signature /Users/mssc/Documents/Code/ops/platform/artifacts/bundles/sp04-nonvirtual-52d490c/bundle.lock.sig --payload /Users/mssc/Documents/Code/ops/platform/artifacts/bundles/sp04-nonvirtual-52d490c/payload.tar.zst --key /Users/mssc/Documents/Code/ops/platform/artifacts/profiles/sp04-52d490c-trust.pem",
+      "exitCode": 0,
+      "testedCommit": "52d490cb30943a899f46361a51f388ff9f801bb0",
+      "rawEvidence": "final-bundle-independent-verify.log",
+      "rawSHA256": "3f3d05d5e4c34c2f46ae699fff2b68bda5336467da2152270de616be0f54394a",
+      "methodAndLimits": "Actual independentCLI after identity-guarded move to durable ignored artifacts. External trust SHA256c91e8ee7fea7a80b6b3e503d429d26f3704d71d6d96440455e8a10bce353a9ad; detached signature, payload d974c453f2e54f1513221ccef419484c666fe7810f6740169e769291941a0044,69files3694128118bytes."
+    }
+  ],
+  "sourceBinding": "final-source-binding.json",
+  "bundleSourceBinding": "final-bundle-source-binding.json",
+  "preservedFailures": [
+    "final-runtime-performance-concurrent-failed.jsonl: actual small Graph P951.060257041s while run-owned heavy construction/image preparation concurrent; not counted as PASS; identical code subsequently measured in isolated group with all unchanged gates",
+    "final-replay-tools-absent-failed.log: exact toolchain image cache missing; not counted as replay; recovered exact images then all replay PASS",
+    "native-reinstall-crl-fixture-failed.jsonl: kubectl patch literal-file fixture issue; corrected before final candidate, re-review accepted",
+    "lease-microtime-red.log and native-chart-microtime-diagnostic-failed.jsonl: actual R17 defect fixed; diagnostic gateway not counted as direct gate",
+    "cold-identity-red.log: R18 replaced tag positive-identity gap fixed"
+  ],
+  "limits": [
+    "KubeVirt/CDI and VM/VMI/DataVolume-exclusive work deferred disabled/unverified and never counted",
+    "DeepFlow6fixedsemanticoperations frozenfixture_only; L7 unavailable; Trace CAPABILITY_DISABLED; no registered/live Server found in read-only current native/Docker environment inventory. No actual production DeepFlow/BMC/network-scale claim",
+    "Full20k cold projection construction12m1.321s, observed native change gate uses small owned scale; not a production-scale60s SLO guarantee",
+    "Seven external shared dependencies preserved; selected affected first-party images/Chart cold and release clean reinstall, not historical full-core reinstall",
+    "All raw logs are local test identities, endpoints/fixture source facts; credentials and key material remain only external0700/0600 private fixture storage"
+  ],
+  "independentReview": {
+    "agent": "/root/sp04_independent_review",
+    "participatedInImplementation": false,
+    "scope": "Entire final SP-04 nonvirtual Tasks4.1–4.7 and affected SP-01–SP-03 shared paths, deployment, reuse and evidence",
+    "verdict": "PASS",
+    "closedFindings": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06",
+      "R07",
+      "R08",
+      "R09",
+      "R10",
+      "R11",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16",
+      "R17",
+      "R18"
+    ],
+    "confirmedDefects": 16,
+    "evidenceGaps": 2,
+    "record": "final-independent-review.md",
+    "independentBundleCLIExitCode": 0
+  },
+  "latestUserInstruction": {
+    "instruction": "性能不用测",
+    "action": "No further performance tests; already executed raw measurements and failures retained with their original meaning."
+  }
+}

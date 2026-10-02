@@ -1,0 +1,77 @@
+Deployment    holmes                holmes-holmes
+Deployment    kube-system           coredns
+Deployment    kube-system           local-path-provisioner
+Deployment    monitoring            victoria-logs
+Deployment    monitoring            vm-kube-state-metrics
+Deployment    monitoring            vm-victoria-metrics-operator
+Deployment    monitoring            vmagent-vm
+Deployment    monitoring            vmsingle-vm
+Deployment    ops-system            ops-api
+Deployment    ops-system            ops-keycloak
+Deployment    ops-system            ops-vmalert
+Deployment    ops-system            ops-worker
+Deployment    sp04-chain-c4bd7945   ops-api
+Deployment    sp04-chain-c4bd7945   ops-worker
+StatefulSet   ops-system            ops-openbao
+StatefulSet   ops-system            ops-postgresql
+StatefulSet   ops-system            ops-seaweedfs
+DaemonSet     monitoring            vlagent
+DaemonSet     monitoring            vm-prometheus-node-exporter
+DaemonSet     ops-dev-network       ops-dev-network
+k8s_worker_ops-worker-5c9bcf99db-v89lf_sp04-chain-c4bd7945_c51a2bbe-c22f-4892-a99d-f5ee7ad12c43_0 0d28a1d0b217
+k8s_worker_ops-worker-5c9bcf99db-h7d8h_sp04-chain-c4bd7945_8819494d-dae4-448a-ab5d-b53031ba662b_0 0d28a1d0b217
+k8s_api_ops-api-6d7b784567-jfppv_sp04-chain-c4bd7945_ae667374-fa22-4095-a933-e0ca5ccf6a6a_0 efd8e61b6103
+k8s_POD_ops-api-6d7b784567-jfppv_sp04-chain-c4bd7945_ae667374-fa22-4095-a933-e0ca5ccf6a6a_0 rancher/mirrored-pause:3.6
+k8s_POD_ops-worker-5c9bcf99db-h7d8h_sp04-chain-c4bd7945_8819494d-dae4-448a-ab5d-b53031ba662b_0 rancher/mirrored-pause:3.6
+k8s_POD_ops-worker-5c9bcf99db-v89lf_sp04-chain-c4bd7945_c51a2bbe-c22f-4892-a99d-f5ee7ad12c43_0 rancher/mirrored-pause:3.6
+ops-archive-iam-5a6f56cf-97ca-4d6b-802e-02cbdd63fa27 d4cf67729aa8
+k8s_token-holder_audit-worker-token_sp04-chain-a3ba8f8e_7fbbf5ce-ba91-431f-971f-1a61b12cbb64_0 75731e2765e7
+k8s_POD_audit-worker-token_sp04-chain-a3ba8f8e_7fbbf5ce-ba91-431f-971f-1a61b12cbb64_0 rancher/mirrored-pause:3.6
+ops-sp04-native-aa289bdd-d9a9-4059-ad2b-2f669df8ac5f 4ca9310dd2a5
+k8s_probe_egress-probe_sp04-chain-c4bd7945_f2a33de9-55b8-428f-858c-748e18198468_0 75731e2765e7
+k8s_POD_egress-probe_sp04-chain-c4bd7945_f2a33de9-55b8-428f-858c-748e18198468_0 rancher/mirrored-pause:3.6
+k8s_probe_evidence-pod_sp04-chain-c4bd7945_64e89bdd-0d8e-4cd6-a3ef-f6f7277787e7_0 75731e2765e7
+k8s_POD_evidence-pod_sp04-chain-c4bd7945_64e89bdd-0d8e-4cd6-a3ef-f6f7277787e7_0 rancher/mirrored-pause:3.6
+ops-sp04-native-kc-c6cdf6d6-d447-4c02-b0d8-86cc4e60347b 1f91ac24e8d6
+ops-archive-iam-72cc21ba-61a2-41eb-b3fc-98d2bb23ed20 d4cf67729aa8
+ops-sp04-native-35f19a41-8f5c-49af-bd04-6e37caf7133a 4ca9310dd2a5
+k8s_holmes_holmes-holmes-69ff4b49cf-54mxf_holmes_397650d2-bf53-4cfe-b2de-cce3e056d0a8_0 7ae20e4012a8
+k8s_kube-router_ops-dev-network-lb2lv_ops-dev-network_48dd2eef-c262-4740-b5b0-d3619c90716c_0 fec5ac13d36a
+k8s_operator_vm-victoria-metrics-operator-6bb5dfbf4c-lxjb2_monitoring_e81d46ca-b401-4ef7-8124-4b8417c5a549_0 2bf9fcc3a61b
+k8s_vmagent_vmagent-vm-85dff8857d-7qjrw_monitoring_522ce219-d87a-4fd5-b0d2-a85f2036b47e_0 0348a39b8be2
+k8s_vmalert_ops-vmalert-5b48cd5f47-5xqjc_ops-system_7ccf45a0-875a-4806-a553-d3b963f10cbd_0 48e01bd36d09
+k8s_config-reloader_vmagent-vm-85dff8857d-7qjrw_monitoring_522ce219-d87a-4fd5-b0d2-a85f2036b47e_0 2eada80dc726
+k8s_vlagent_vlagent-24sr9_monitoring_4d7cc36c-d7e8-479a-984f-ec324a1a2680_0 5f8bb5cfde97
+k8s_node-exporter_vm-prometheus-node-exporter-n8bt4_monitoring_8802c116-ab7a-4fee-ac31-d1a034276d8b_0 d00a542e409e
+k8s_kube-state-metrics_vm-kube-state-metrics-6bdf7ddb76-mj9r2_monitoring_611612df-0c42-4f88-a034-f619a280a260_0 db384bf43222
+k8s_POD_ops-dev-network-lb2lv_ops-dev-network_48dd2eef-c262-4740-b5b0-d3619c90716c_0 rancher/mirrored-pause:3.6
+k8s_POD_vm-prometheus-node-exporter-n8bt4_monitoring_8802c116-ab7a-4fee-ac31-d1a034276d8b_0 rancher/mirrored-pause:3.6
+k8s_POD_vlagent-24sr9_monitoring_4d7cc36c-d7e8-479a-984f-ec324a1a2680_0 rancher/mirrored-pause:3.6
+k8s_keycloak_ops-keycloak-7fb7d8596c-67g2t_ops-system_cbb090e4-42a1-45b1-a0bf-3fb1a74baf9e_0 1f91ac24e8d6
+k8s_postgresql_ops-postgresql-0_ops-system_986978fc-4b67-4522-a395-0763c5ec379d_0 75731e2765e7
+k8s_vmsingle_vmsingle-vm-5bb9646995-zbvt8_monitoring_507ded5d-8c3a-4dcb-9935-008d54c5ac87_0 b10c78f4bd9b
+k8s_victoria-logs_victoria-logs-85d7d5c6d6-j2q4w_monitoring_1cc0c044-552e-4423-b5f3-c23aa776a517_0 47b820890d64
+k8s_seaweedfs_ops-seaweedfs-0_ops-system_94096705-34c0-40fe-834a-f3f6ca7c4ad3_0 d4cf67729aa8
+k8s_openbao_ops-openbao-0_ops-system_d9fdbe25-51ba-4968-b72d-951158c785f8_0 4ca9310dd2a5
+k8s_POD_ops-postgresql-0_ops-system_986978fc-4b67-4522-a395-0763c5ec379d_0 rancher/mirrored-pause:3.6
+k8s_POD_vmsingle-vm-5bb9646995-zbvt8_monitoring_507ded5d-8c3a-4dcb-9935-008d54c5ac87_0 rancher/mirrored-pause:3.6
+k8s_POD_vm-victoria-metrics-operator-6bb5dfbf4c-lxjb2_monitoring_e81d46ca-b401-4ef7-8124-4b8417c5a549_0 rancher/mirrored-pause:3.6
+k8s_POD_ops-api-65b6847cdd-jdn8c_ops-system_09353c58-0f20-415e-be5f-42fa8ab53138_0 rancher/mirrored-pause:3.6
+k8s_POD_ops-openbao-0_ops-system_d9fdbe25-51ba-4968-b72d-951158c785f8_0 rancher/mirrored-pause:3.6
+k8s_POD_ops-worker-567695474-vj9gt_ops-system_5859b4ee-c93e-4355-9e24-9496a4aa5ff9_0 rancher/mirrored-pause:3.6
+k8s_POD_ops-vmalert-5b48cd5f47-5xqjc_ops-system_7ccf45a0-875a-4806-a553-d3b963f10cbd_0 rancher/mirrored-pause:3.6
+k8s_POD_ops-seaweedfs-0_ops-system_94096705-34c0-40fe-834a-f3f6ca7c4ad3_0 rancher/mirrored-pause:3.6
+k8s_POD_holmes-holmes-69ff4b49cf-54mxf_holmes_397650d2-bf53-4cfe-b2de-cce3e056d0a8_0 rancher/mirrored-pause:3.6
+k8s_POD_victoria-logs-85d7d5c6d6-j2q4w_monitoring_1cc0c044-552e-4423-b5f3-c23aa776a517_0 rancher/mirrored-pause:3.6
+k8s_POD_vm-kube-state-metrics-6bdf7ddb76-mj9r2_monitoring_611612df-0c42-4f88-a034-f619a280a260_0 rancher/mirrored-pause:3.6
+k8s_POD_vmagent-vm-85dff8857d-7qjrw_monitoring_522ce219-d87a-4fd5-b0d2-a85f2036b47e_0 rancher/mirrored-pause:3.6
+k8s_POD_ops-keycloak-7fb7d8596c-67g2t_ops-system_cbb090e4-42a1-45b1-a0bf-3fb1a74baf9e_0 rancher/mirrored-pause:3.6
+k8s_local-path-provisioner_local-path-provisioner-5d9d9885bc-ttqmn_kube-system_8636f3e1-c1bb-436c-8238-8c85046efef2_24 1eba82e9c386
+k8s_coredns_coredns-75d478d48f-n4hg7_kube-system_cb532633-cc5c-4036-b5b5-4b7c8f25394c_24 a11fafae1f80
+k8s_POD_coredns-75d478d48f-n4hg7_kube-system_cb532633-cc5c-4036-b5b5-4b7c8f25394c_21 rancher/mirrored-pause:3.6
+k8s_POD_local-path-provisioner-5d9d9885bc-ttqmn_kube-system_8636f3e1-c1bb-436c-8238-8c85046efef2_21 rancher/mirrored-pause:3.6
+ops-sp04-keycloak-20261002 1f91ac24e8d6
+ops-sp04-openbao-20261002 4ca9310dd2a5
+ops-sp04-vl-20261001 47b820890d64
+ops-sp04-vm-20261001 b10c78f4bd9b
+ops-sp04-pg-20261001 75731e2765e7
