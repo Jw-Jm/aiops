@@ -1,0 +1,158 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "queryKind",
+    "canonicalId",
+    "expectedOwnerEpoch",
+    "maxDepth",
+    "maxNodes",
+    "maxEdges",
+    "scope",
+    "relationKinds"
+  ],
+  "properties": {
+    "queryKind": {
+      "type": "string",
+      "enum": [
+        "entity",
+        "neighbors",
+        "dependencies",
+        "impact",
+        "diagnostic",
+        "list"
+      ]
+    },
+    "canonicalId": {
+      "type": "string"
+    },
+    "expectedOwnerEpoch": {
+      "type": "integer",
+      "format": "int64",
+      "minimum": 1
+    },
+    "maxDepth": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2
+    },
+    "maxNodes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "maxEdges": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 400
+    },
+    "scope": {
+      "$ref": "#/$defs/Scope"
+    },
+    "relationKinds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cursorRevision": {
+      "$ref": "#/$defs/GraphRevision"
+    },
+    "afterCanonicalId": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "health": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    },
+    "sort": {
+      "type": "string"
+    },
+    "order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "namespace": {
+      "type": "string"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "in",
+        "out",
+        "both"
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/internal-graph-query/v1",
+  "$defs": {
+    "GraphRevision": {
+      "type": "object",
+      "required": [
+        "ownerEpoch",
+        "graphGeneration"
+      ],
+      "properties": {
+        "ownerEpoch": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "graphGeneration": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      }
+    },
+    "Scope": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "clusterUid",
+        "namespaces",
+        "resources",
+        "clusterScoped",
+        "authorizationRevision"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string"
+        },
+        "clusterUid": {
+          "type": "string"
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "clusterScoped": {
+          "type": "boolean"
+        },
+        "authorizationRevision": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

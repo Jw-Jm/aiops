@@ -1,0 +1,78 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "enum": [
+        "INVALID_ARGUMENT",
+        "UNAUTHENTICATED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "CONFLICT",
+        "PRECONDITION_FAILED",
+        "RATE_LIMITED",
+        "SOURCE_DEGRADED",
+        "GRAPH_NOT_READY",
+        "GRAPH_PARTIAL",
+        "TIMEOUT",
+        "BUDGET_EXHAUSTED",
+        "POLICY_DENIED",
+        "RISK_ACK_REQUIRED",
+        "RISK_ACK_COMMAND_MISMATCH",
+        "STEP_UP_REQUIRED",
+        "STEP_UP_EXPIRED",
+        "IDEMPOTENCY_CONFLICT",
+        "INTERNAL",
+        "CAPABILITY_DISABLED",
+        "SOURCE_NOT_CONFIGURED",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "IDEMPOTENCY_KEY_REUSED",
+        "EXECUTION_PROFILE_DENIED",
+        "COMMAND_POLICY_DENIED",
+        "EXECUTION_UNKNOWN",
+        "OUTPUT_TRUNCATED",
+        "BUNDLE_SIGNATURE_INVALID",
+        "BUNDLE_DIGEST_MISMATCH",
+        "BUNDLE_EXTRACTION_REJECTED",
+        "PROFILE_COMPONENT_CONFLICT",
+        "UPSTREAM_COMPATIBILITY_UNVERIFIED",
+        "OPENBAO_SEALED",
+        "HOST_NOT_ONBOARDED",
+        "SOURCE_SCOPE_UNVERIFIED",
+        "STALE_CONTEXT",
+        "CURSOR_EXPIRED"
+      ],
+      "type": "string"
+    },
+    "details": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "message": {
+      "type": "string"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "retryable": {
+      "type": "boolean"
+    },
+    "schemaVersion": {
+      "type": "string",
+      "enum": [
+        "error-envelope/v2"
+      ]
+    }
+  },
+  "required": [
+    "code",
+    "message",
+    "requestId",
+    "retryable",
+    "schemaVersion"
+  ],
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/error-envelope/v2"
+}

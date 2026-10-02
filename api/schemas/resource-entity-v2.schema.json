@@ -1,0 +1,104 @@
+{
+  "type": "object",
+  "properties": {
+    "canonicalId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+    },
+    "tenantId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+    },
+    "domain": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "scope": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "apiGroup": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 256
+    },
+    "kind": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/identifier"
+    },
+    "stableId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "name": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+    },
+    "namespace": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "labels": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "additionalProperties": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+      },
+      "maxProperties": 256
+    },
+    "attributes": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "additionalProperties": {
+        "$ref": "https://ops.local/schemas/resource-attribute-value/v2"
+      },
+      "maxProperties": 256
+    },
+    "sourceRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/common/v1#/$defs/shortText"
+      },
+      "maxItems": 1000
+    },
+    "firstObservedAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "lastObservedAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "canonicalId",
+    "tenantId",
+    "domain",
+    "scope",
+    "apiGroup",
+    "kind",
+    "stableId",
+    "name",
+    "namespace",
+    "labels",
+    "attributes",
+    "sourceRefs",
+    "firstObservedAt",
+    "lastObservedAt"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/resource-entity/v2"
+}

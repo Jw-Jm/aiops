@@ -1,0 +1,62 @@
+=== RUN   TestSP04FixtureAdaptersThroughActualRuntime
+2026/10/02 09:29:21 OK   00001_roles_and_schemas.sql (16.87ms)
+2026/10/02 09:29:21 goose: successfully migrated database to version: 1
+2026/10/02 09:29:21 OK   00002_platform_meta.sql (34.61ms)
+2026/10/02 09:29:21 OK   00003_finding.sql (8.44ms)
+2026/10/02 09:29:21 OK   00004_incident.sql (13.72ms)
+2026/10/02 09:29:21 OK   00005_investigation.sql (17.41ms)
+2026/10/02 09:29:21 OK   00006_action_command.sql (8.73ms)
+2026/10/02 09:29:21 OK   00007_audit.sql (19.18ms)
+2026/10/02 09:29:21 OK   00008_rls.sql (19.37ms)
+2026/10/02 09:29:21 OK   00009_idempotency_ledger.sql (18.72ms)
+2026/10/02 09:29:21 OK   00010_tenant_provisioning.sql (4.29ms)
+2026/10/02 09:29:21 OK   00011_source_registration_history.sql (6.72ms)
+2026/10/02 09:29:21 OK   00012_config_registry_lifecycle.sql (13.95ms)
+2026/10/02 09:29:21 OK   00013_audit_signed_segments.sql (22.6ms)
+2026/10/02 09:29:21 OK   00014_audit_segment_predecessors.sql (13.26ms)
+2026/10/02 09:29:21 OK   00015_source_schema_scope.sql (4.03ms)
+2026/10/02 09:29:21 OK   00016_cluster_registration_metadata.sql (4.8ms)
+2026/10/02 09:29:21 OK   00017_source_data_scope.sql (4.07ms)
+2026/10/02 09:29:21 OK   00018_sp04_resources_evidence.sql (14.01ms)
+2026/10/02 09:29:21 OK   00019_sp04_archive_ciphertext_bytes.sql (4.12ms)
+2026/10/02 09:29:21 OK   00020_sp04_request_ledger.sql (5.72ms)
+2026/10/02 09:29:21 OK   00021_sp04_archive_protection.sql (6.45ms)
+2026/10/02 09:29:21 OK   00022_sp04_legal_hold_dependencies.sql (6.39ms)
+2026/10/02 09:29:21 OK   00023_sp04_archive_query_intent.sql (3.84ms)
+2026/10/02 09:29:21 goose: successfully migrated database to version: 23
+    sp04_runtime_test.go:92: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=96d5f9cf90053183dc50991d6779816529d4f1aba03ab96efc59a7e3ea0f8cd8 bucket=sp04-chain-b1f7bd42 tenants=1
+{"time":"2026-10-02T09:29:26.924629+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-047d-7ea6-a3f9-e9da3e708d4b","method":"GET","status_code":503,"duration_ms":14}
+{"time":"2026-10-02T09:29:27.141952+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-0555-7ea9-b493-2ab6e5c2a872","method":"GET","status_code":503,"duration_ms":15}
+{"time":"2026-10-02T09:29:27.353693+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-062e-787f-8f34-64802358c407","method":"GET","status_code":503,"duration_ms":11}
+{"time":"2026-10-02T09:29:27.55642+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-0701-7e86-8c48-0cc80bb6c8f2","method":"GET","status_code":503,"duration_ms":2}
+{"time":"2026-10-02T09:29:27.773628+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-07cc-7c67-b227-da0107a4191f","method":"GET","status_code":503,"duration_ms":16}
+{"time":"2026-10-02T09:29:27.977697+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-08a6-78f4-a0bd-fc6779248ce1","method":"GET","status_code":503,"duration_ms":3}
+{"time":"2026-10-02T09:29:28.180528+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-02T09:29:28.182036+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-0972-71bd-80ed-bcb1c71f8d93","method":"GET","status_code":503,"duration_ms":3}
+{"time":"2026-10-02T09:29:28.397676+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-0a3f-74de-af5d-90513f0b46ea","method":"GET","status_code":503,"duration_ms":14}
+{"time":"2026-10-02T09:29:28.588021+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-02T09:29:28.63219+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-0b16-7f2a-8efd-ec5d9b6c3fec","method":"GET","status_code":503,"duration_ms":33}
+{"time":"2026-10-02T09:29:28.837157+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-0c00-77c8-8cdb-5905bf743833","method":"GET","status_code":503,"duration_ms":4}
+{"time":"2026-10-02T09:29:29.044565+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-0cce-7b04-8e5c-b578f61f333c","method":"GET","status_code":503,"duration_ms":5}
+{"time":"2026-10-02T09:29:29.25336+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-0d9c-7daf-a4ca-158014850888","method":"GET","status_code":503,"duration_ms":8}
+{"time":"2026-10-02T09:29:29.460391+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-0e6e-7bf2-a382-a7073c832081","method":"GET","status_code":503,"duration_ms":5}
+{"time":"2026-10-02T09:29:29.663829+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-0f3d-7c58-b338-9968edc3104f","method":"GET","status_code":503,"duration_ms":1}
+{"time":"2026-10-02T09:29:29.866391+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-1008-7023-afba-a8f462f85245","method":"GET","status_code":503,"duration_ms":2}
+{"time":"2026-10-02T09:29:30.070028+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-10d3-7b3e-8fc0-356b18593c93","method":"GET","status_code":503,"duration_ms":2}
+{"time":"2026-10-02T09:29:30.274014+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-119f-76a7-ada8-fcbb427dcdaa","method":"GET","status_code":503,"duration_ms":2}
+{"time":"2026-10-02T09:29:30.477647+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-126a-7e96-8023-354d72282139","method":"GET","status_code":503,"duration_ms":2}
+{"time":"2026-10-02T09:29:30.808353+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-1337-7242-b264-0657bcd2a666","method":"GET","status_code":200,"duration_ms":129}
+{"time":"2026-10-02T09:29:31.206053+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-13b8-79c0-9d84-05bf4bf35d80","method":"GET","status_code":200,"duration_ms":397}
+{"time":"2026-10-02T09:29:31.313391+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-1546-748f-857d-42c66f558efc","method":"POST","status_code":200,"duration_ms":107}
+{"time":"2026-10-02T09:29:31.321833+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-15b1-78c2-91db-f292df60c2ad","method":"GET","status_code":200,"duration_ms":8}
+    sp04_fixture_chain_test.go:151: hardware fixture_only: actual OIDC API -> mTLS Worker -> qualified Adapter proof -> PostgreSQL/Transit/TLS S3 -> verified archive/read passed
+{"time":"2026-10-02T09:29:31.430466+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-15b9-7e82-8d8b-001917617740","method":"GET","status_code":200,"duration_ms":108}
+{"time":"2026-10-02T09:29:31.472488+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-1626-7aa6-9cab-01bf7a442d88","method":"POST","status_code":200,"duration_ms":41}
+{"time":"2026-10-02T09:29:31.484248+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-1650-7a7f-8310-f60c224dd645","method":"GET","status_code":200,"duration_ms":11}
+    sp04_fixture_chain_test.go:151: network fixture_only: actual OIDC API -> mTLS Worker -> qualified Adapter proof -> PostgreSQL/Transit/TLS S3 -> verified archive/read passed
+{"time":"2026-10-02T09:29:31.634927+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa3b-165c-774f-ad17-05d970cba2e5","method":"POST","status_code":200,"duration_ms":150}
+    sp04_fixture_chain_test.go:157: fixture hardware component graph invalid 200 {"data":{"schemaVersion":"resource-graph/v2","graphRevision":{"ownerEpoch":1,"graphGeneration":2},"ownerInstance":"0c2305b7-20a6-425d-862e-e7f64f44864f","collectedAt":"2026-10-02T09:29:31.53047+08:00","freshness":"fresh","partial":true,"warnings":["source_scope_unverified","hardware_source_unverified_or_unavailable"],"degradedSources":["0527ac89-6395-4089-8035-830d5adc67f6/proof","831427e4-9ba9-45a0-ad18-cae6ec6b4f67"],"nodes":[{"canonicalId":"hardware+v1://cb5d24bb-b505-48b7-86ed-8715870f3eb0/607d16b7-8684-491b-bca8-be31264b371e/redfish/PhysicalServer/550e8400-e29b-41d4-a716-446655440000","kind":"PhysicalServer","name":"PowerEdge R760","updatedAt":"2026-10-02T01:29:26.877836Z","tenantId":"cb5d24bb-b505-48b7-86ed-8715870f3eb0","domain":"hardware","scope":"607d16b7-8684-491b-bca8-be31264b371e","apiGroup":"redfish","stableId":"550e8400-e29b-41d4-a716-446655440000","namespace":null,"labels":{},"attributes":{"health":"unknown","manufacturer":"DELL","metal3HardwareModel":{"hardware":{"cpu":{"count":16},"firmware":{"bios":{}},"hostname":"PowerEdge R760","nics":[{"name":"NIC1","speedGbps":10}],"ramMebibytes":32768,"storage":[{"name":"disk1","sizeBytes":1000000000000,"type":"SSD"}],"systemVendor":{"manufacturer":"DELL","productName":"PowerEdge R760","serialNumber":"000123"}},"partial":false,"state":"unknown"},"model":"PowerEdge R760","serial":"000123","uuid":"550e8400-e29b-41d4-a716-446655440000"},"sourceRefs":["831427e4-9ba9-45a0-ad18-cae6ec6b4f67"],"firstObservedAt":"2026-10-02T01:29:26.877836Z","lastObservedAt":"2026-10-02T01:29:26.877836Z"}],"edges":[],"budgets":{"maxDepth":2,"storageMaxDepth":2,"maxNodes":200,"maxEdges":200,"nodeCount":1,"edgeCount":0,"truncated":false},"rankedEvidence":[],"conflicts":null},"meta":{"nextCursor":""},"requestId":"01a0fa3b-165c-774f-ad17-05d970cba2e5"}
+--- FAIL: TestSP04FixtureAdaptersThroughActualRuntime (11.32s)
+FAIL
+FAIL	ops-platform/test/integration	12.225s
+FAIL

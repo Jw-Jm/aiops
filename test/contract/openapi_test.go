@@ -148,7 +148,18 @@ func TestOpenAPIConventions(t *testing.T) {
 			} else {
 				operationIDs[operation.OperationID] = true
 			}
-			if operation.Responses["default"].Content["application/json"].Schema["$ref"] != "#/components/schemas/ErrorEnvelope" {
+			errorSchema := operation.Responses["default"].Content["application/json"].Schema
+			sp04 := path == "/api/v1/resources" || strings.HasPrefix(path, "/api/v1/resources/") || path == "/api/v1/diagnostic-graphs:build" || path == "/api/v1/evidence:query" || path == "/api/v1/evidence/{evidenceId}" || path == "/api/v1/admin/legal-holds"
+			if sp04 {
+				variants, ok := errorSchema["oneOf"].([]any)
+				if !ok || len(variants) != 2 || variants[0].(map[string]any)["$ref"] != "#/components/schemas/ErrorEnvelope" || variants[1].(map[string]any)["$ref"] != "#/components/schemas/SP04ErrorEnvelopeV2" {
+					t.Errorf("%s must explicitly preserve v1 auth errors and negotiate SP04 error v2", route)
+				}
+				shape := document.Components.Schemas["SP04ErrorEnvelopeV2"]
+				if !contains(shape.Required, "schemaVersion") {
+					t.Error("SP04 error major missing required version")
+				}
+			} else if errorSchema["$ref"] != "#/components/schemas/ErrorEnvelope" {
 				t.Errorf("%s %s must use the unified ErrorEnvelope for default errors", strings.ToUpper(method), path)
 			}
 			canonicalQueryFound := false

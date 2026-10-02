@@ -1,0 +1,34 @@
+--- a/internal/service/diagnostic/service.go
++++ b/internal/upstream/ontology/service/diagnostic/service.go
+@@ -8,13 +8,18 @@
+ 	"strings"
+ 	"time"
+ 
+-	"github.com/Colvin-Y/kubernetes-ontology/internal/api"
+-	"github.com/Colvin-Y/kubernetes-ontology/internal/graph"
+-	"github.com/Colvin-Y/kubernetes-ontology/internal/model"
++	"ops-platform/internal/upstream/ontology/api"
++	"ops-platform/internal/upstream/ontology/model"
+ )
+ 
++type graphReader interface {
++ GetNode(model.CanonicalID) (model.Node, bool)
++ ListNodes() []model.Node
++ Neighbors(model.CanonicalID) []model.Edge
++}
++
+ type Service struct {
+-	kernel *graph.Kernel
++	kernel graphReader
+ }
+ 
+ const (
+@@ -23,7 +28,7 @@
+ 	MaxRankedEvidence         = 20
+ )
+ 
+-func NewService(kernel *graph.Kernel) *Service {
++func NewService(kernel graphReader) *Service {
+ 	return &Service{kernel: kernel}
+ }
+ 

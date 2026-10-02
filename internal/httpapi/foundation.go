@@ -17,10 +17,17 @@ import (
 )
 
 // NewFoundationHandler composes the SP-03 management routes. Later domain APIs
-// are intentionally not mounted by this foundation process.
+// include the authorized SP-04 resource/evidence routes.
 func NewFoundationHandler(pool persistence.TxBeginner, authenticator *auth.Authenticator, trust configregistry.SignatureVerifier, runtime *observability.Runtime) (http.Handler, error) {
+	return NewFoundationHandlerWithSP04(pool, authenticator, trust, runtime, &SP04Handlers{Pool: pool})
+}
+
+func NewFoundationHandlerWithSP04(pool persistence.TxBeginner, authenticator *auth.Authenticator, trust configregistry.SignatureVerifier, runtime *observability.Runtime, sp04 *SP04Handlers) (http.Handler, error) {
 	if pool == nil || authenticator == nil || trust == nil || runtime == nil {
 		return nil, errors.New("foundation persistence, authentication, trust and observability are required")
+	}
+	if sp04 == nil {
+		sp04 = &SP04Handlers{Pool: pool}
 	}
 	tenantService, err := tenant.NewService(pool)
 	if err != nil {
@@ -68,6 +75,8 @@ func NewFoundationHandler(pool persistence.TxBeginner, authenticator *auth.Authe
 	}.Wrap(http.HandlerFunc(createStepUpSession))
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
+		case strings.HasPrefix(r.URL.Path, "/api/v1/resources"), strings.HasPrefix(r.URL.Path, "/api/v1/evidence"), r.URL.Path == "/api/v1/diagnostic-graphs:build", r.URL.Path == "/api/v1/admin/legal-holds":
+			sp04.ServeHTTP(w, r)
 		case r.URL.Path == "/api/v1/auth/step-up-sessions" && r.Method == http.MethodPost:
 			stepUp.ServeHTTP(w, r)
 		case strings.HasPrefix(r.URL.Path, adminTenantsPath), strings.HasPrefix(r.URL.Path, adminRoleBindingsPath):

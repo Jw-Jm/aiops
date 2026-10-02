@@ -1,0 +1,17 @@
+=== RUN   TestPermissionAndThrottleRemainStaleAndShareBudget
+=== RUN   TestPermissionAndThrottleRemainStaleAndShareBudget/Forbidden
+=== RUN   TestPermissionAndThrottleRemainStaleAndShareBudget/Too_Many_Requests
+--- PASS: TestPermissionAndThrottleRemainStaleAndShareBudget (0.70s)
+    --- PASS: TestPermissionAndThrottleRemainStaleAndShareBudget/Forbidden (0.30s)
+    --- PASS: TestPermissionAndThrottleRemainStaleAndShareBudget/Too_Many_Requests (0.40s)
+=== RUN   TestLeaseRequestsRemainBoundedDuringCollectionQueue
+--- PASS: TestLeaseRequestsRemainBoundedDuringCollectionQueue (3.11s)
+=== RUN   TestTwoCredentialsShareActualRequestBudgetWithoutStarvation
+    rate_budget_test.go:117: two concurrent credential clients: actual HTTP requests=40 duration=1.987495917s aggregate intervals QPS=19.622682 burst=1
+--- PASS: TestTwoCredentialsShareActualRequestBudgetWithoutStarvation (1.99s)
+=== RUN   TestContinuousLeaseTrafficDoesNotStarveCollection
+--- PASS: TestContinuousLeaseTrafficDoesNotStarveCollection (3.51s)
+=== RUN   TestCanceledBudgetWaitersDoNotDelayNextLiveRequest
+--- PASS: TestCanceledBudgetWaitersDoNotDelayNextLiveRequest (0.05s)
+PASS
+ok  	ops-platform/internal/integrations/kubernetes	10.996s

@@ -9,6 +9,13 @@ import type { EvidenceQueryBudget } from './evidenceQueryBudget';
 import type { EvidenceQueryTimeRange } from './evidenceQueryTimeRange';
 
 export interface EvidenceQueryRequest {
+  sourceRegistrationId?: string;
+  namespace?: string;
+  /**
+     * @minimum 1
+     * @maximum 200
+     */
+  limit?: number;
   budget: EvidenceQueryBudget;
   queryTemplate: string;
   resourceCanonicalId: CanonicalID;

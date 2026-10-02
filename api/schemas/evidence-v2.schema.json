@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/evidence/v2",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "evidence/v2"
+    },
+    "evidenceId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenantId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "resourceCanonicalId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+    },
+    "type": {
+      "enum": [
+        "metric",
+        "log",
+        "event",
+        "network",
+        "hardware",
+        "resource_state",
+        "change"
+      ]
+    },
+    "dataClass": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/dataClass"
+    },
+    "sourceRegistrationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sourceSystem": {
+      "type": "string"
+    },
+    "backendLogicalId": {
+      "type": "string"
+    },
+    "queryTemplateVersion": {
+      "type": "string"
+    },
+    "queryHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "replayState": {
+      "enum": [
+        "source_available",
+        "archive_pending",
+        "archived_verified",
+        "unavailable"
+      ]
+    },
+    "contentDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "independenceGroup": {
+      "type": "string"
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "effectiveScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "clusterUid",
+        "namespaces",
+        "resources",
+        "clusterScoped",
+        "authorizationRevision"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "clusterUid": {
+          "type": "string",
+          "minLength": 1
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10000
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10000
+        },
+        "clusterScoped": {
+          "type": "boolean"
+        },
+        "authorizationRevision": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observedFrom": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observedTo": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sourceRetentionUntil": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "timeReliable": {
+      "type": "boolean"
+    },
+    "derivationEvidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "archiveRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backendLogicalId",
+        "object",
+        "encryptionKeyVersion",
+        "plaintextDigest",
+        "ciphertextDigest"
+      ],
+      "properties": {
+        "backendLogicalId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "encryptionKeyVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "plaintextDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "ciphertextDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "object": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tenantId",
+            "objectId",
+            "category",
+            "key",
+            "digest",
+            "size",
+            "contentType",
+            "versionId",
+            "retainUntil"
+          ],
+          "properties": {
+            "tenantId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "objectId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "category": {
+              "type": "string"
+            },
+            "key": {
+              "type": "string"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "size": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "contentType": {
+              "type": "string"
+            },
+            "versionId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "etag": {
+              "type": "string"
+            },
+            "retainUntil": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    "factSlice": {
+      "type": [
+        "object",
+        "array"
+      ]
+    },
+    "sourceScopeDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "evidenceId",
+    "tenantId",
+    "resourceCanonicalId",
+    "type",
+    "dataClass",
+    "sourceRegistrationId",
+    "sourceSystem",
+    "backendLogicalId",
+    "queryTemplateVersion",
+    "queryHash",
+    "replayState",
+    "contentDigest",
+    "independenceGroup",
+    "sourceRevision",
+    "effectiveScope",
+    "evaluatedAt",
+    "observedFrom",
+    "observedTo",
+    "sourceRetentionUntil",
+    "timeReliable",
+    "derivationEvidenceRefs"
+  ],
+  "additionalProperties": false
+}

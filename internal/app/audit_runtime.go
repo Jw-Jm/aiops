@@ -14,6 +14,7 @@ import (
 	"ops-platform/internal/archive"
 	"ops-platform/internal/audit"
 	platformcrypto "ops-platform/internal/crypto"
+	"ops-platform/internal/evidence"
 	"ops-platform/internal/integrations/openbao"
 	"ops-platform/internal/integrations/s3"
 	"ops-platform/internal/observability"
@@ -103,6 +104,9 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 	if err != nil {
 		return errors.New("worker archive configuration is invalid")
 	}
+	if os.Getenv("SP04_RUNTIME_FILE") != "" && !backend.RoleSeparated() {
+		return errors.New("SP04 archive requires separated v2 write/read/protect/cleanup credentials")
+	}
 	store, err := archive.NewStore(backend, 0)
 	if err != nil {
 		return err
@@ -116,6 +120,12 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 		return err
 	}
 	tokenPath := os.Getenv("OPENBAO_PROJECTED_TOKEN_FILE")
+	evidenceArchive := &evidence.ArchiveService{Pool: pool, Store: store, Protector: protector}
+	stopSP04, err := StartSP04Worker(ctx, pool, evidenceArchive, runtime)
+	if err != nil {
+		return err
+	}
+	defer stopSP04()
 	if tokenPath == "" {
 		tokenPath = "/var/run/secrets/ops-platform/openbao/token"
 	}

@@ -1,0 +1,32 @@
+=== RUN   TestSP04LeaseRecoveryNativeAuthorityAndAudit
+2026/10/02 08:24:41 OK   00001_roles_and_schemas.sql (10.71ms)
+2026/10/02 08:24:41 goose: successfully migrated database to version: 1
+2026/10/02 08:24:41 OK   00002_platform_meta.sql (13.53ms)
+2026/10/02 08:24:41 OK   00003_finding.sql (6.57ms)
+2026/10/02 08:24:41 OK   00004_incident.sql (4.59ms)
+2026/10/02 08:24:41 OK   00005_investigation.sql (4.62ms)
+2026/10/02 08:24:41 OK   00006_action_command.sql (4.23ms)
+2026/10/02 08:24:41 OK   00007_audit.sql (7.59ms)
+2026/10/02 08:24:41 OK   00008_rls.sql (8.58ms)
+2026/10/02 08:24:41 OK   00009_idempotency_ledger.sql (7ms)
+2026/10/02 08:24:41 OK   00010_tenant_provisioning.sql (5.37ms)
+2026/10/02 08:24:41 OK   00011_source_registration_history.sql (9.58ms)
+2026/10/02 08:24:41 OK   00012_config_registry_lifecycle.sql (10.42ms)
+2026/10/02 08:24:41 OK   00013_audit_signed_segments.sql (7.07ms)
+2026/10/02 08:24:41 OK   00014_audit_segment_predecessors.sql (3.4ms)
+2026/10/02 08:24:41 OK   00015_source_schema_scope.sql (1.86ms)
+2026/10/02 08:24:41 OK   00016_cluster_registration_metadata.sql (2.61ms)
+2026/10/02 08:24:41 OK   00017_source_data_scope.sql (2.39ms)
+2026/10/02 08:24:41 OK   00018_sp04_resources_evidence.sql (9.73ms)
+2026/10/02 08:24:41 OK   00019_sp04_archive_ciphertext_bytes.sql (7.3ms)
+2026/10/02 08:24:41 OK   00020_sp04_request_ledger.sql (7.46ms)
+2026/10/02 08:24:41 OK   00021_sp04_archive_protection.sql (7.77ms)
+2026/10/02 08:24:41 OK   00022_sp04_legal_hold_dependencies.sql (2.9ms)
+2026/10/02 08:24:41 OK   00023_sp04_archive_query_intent.sql (2.53ms)
+2026/10/02 08:24:41 goose: successfully migrated database to version: 23
+    sp04_lease_recovery_test.go:73: operator recovery failed: exit status 1 publish Lease status=400 decode=<nil>: GRAPH_NOT_READY
+        exit status 1
+--- FAIL: TestSP04LeaseRecoveryNativeAuthorityAndAudit (2.89s)
+FAIL
+FAIL	ops-platform/test/integration	3.498s
+FAIL

@@ -1,0 +1,32 @@
+=== RUN   TestSP04FixtureAdaptersThroughActualRuntime
+2026/10/02 09:16:03 OK   00001_roles_and_schemas.sql (13.55ms)
+2026/10/02 09:16:03 goose: successfully migrated database to version: 1
+2026/10/02 09:16:03 OK   00002_platform_meta.sql (18.43ms)
+2026/10/02 09:16:03 OK   00003_finding.sql (13.38ms)
+2026/10/02 09:16:03 OK   00004_incident.sql (4.99ms)
+2026/10/02 09:16:03 OK   00005_investigation.sql (7.21ms)
+2026/10/02 09:16:03 OK   00006_action_command.sql (8.52ms)
+2026/10/02 09:16:03 OK   00007_audit.sql (13.69ms)
+2026/10/02 09:16:03 OK   00008_rls.sql (10.69ms)
+2026/10/02 09:16:03 OK   00009_idempotency_ledger.sql (7.7ms)
+2026/10/02 09:16:03 OK   00010_tenant_provisioning.sql (5.78ms)
+2026/10/02 09:16:03 OK   00011_source_registration_history.sql (7.66ms)
+2026/10/02 09:16:03 OK   00012_config_registry_lifecycle.sql (9.35ms)
+2026/10/02 09:16:03 OK   00013_audit_signed_segments.sql (18.58ms)
+2026/10/02 09:16:03 OK   00014_audit_segment_predecessors.sql (4.91ms)
+2026/10/02 09:16:03 OK   00015_source_schema_scope.sql (8.41ms)
+2026/10/02 09:16:03 OK   00016_cluster_registration_metadata.sql (7.69ms)
+2026/10/02 09:16:03 OK   00017_source_data_scope.sql (7.23ms)
+2026/10/02 09:16:03 OK   00018_sp04_resources_evidence.sql (14.53ms)
+2026/10/02 09:16:03 OK   00019_sp04_archive_ciphertext_bytes.sql (5.37ms)
+2026/10/02 09:16:03 OK   00020_sp04_request_ledger.sql (5.66ms)
+2026/10/02 09:16:03 OK   00021_sp04_archive_protection.sql (3.09ms)
+2026/10/02 09:16:03 OK   00022_sp04_legal_hold_dependencies.sql (3.47ms)
+2026/10/02 09:16:03 OK   00023_sp04_archive_query_intent.sql (7.05ms)
+2026/10/02 09:16:03 goose: successfully migrated database to version: 23
+    sp04_runtime_test.go:92: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=ed9c26efb136122e0aab1ab70e940fbfa8ec9b514210d3e7c3049476f1dff7b7 bucket=sp04-chain-8ca6b628 tenants=1
+    sp04_runtime_test.go:131: TLS fixture setup failed: {Entities:[] Partial:true DegradedSources:[redfish] Warnings:[bmc_unavailable] Health:unknown} <nil>
+--- FAIL: TestSP04FixtureAdaptersThroughActualRuntime (6.92s)
+FAIL
+FAIL	ops-platform/test/integration	7.809s
+FAIL

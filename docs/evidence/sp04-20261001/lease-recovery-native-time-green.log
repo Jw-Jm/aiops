@@ -1,0 +1,31 @@
+=== RUN   TestSP04LeaseRecoveryNativeAuthorityAndAudit
+2026/10/02 08:25:05 OK   00001_roles_and_schemas.sql (37.38ms)
+2026/10/02 08:25:05 goose: successfully migrated database to version: 1
+2026/10/02 08:25:05 OK   00002_platform_meta.sql (12.82ms)
+2026/10/02 08:25:05 OK   00003_finding.sql (5.58ms)
+2026/10/02 08:25:05 OK   00004_incident.sql (3.78ms)
+2026/10/02 08:25:05 OK   00005_investigation.sql (4.43ms)
+2026/10/02 08:25:05 OK   00006_action_command.sql (22.77ms)
+2026/10/02 08:25:05 OK   00007_audit.sql (7.02ms)
+2026/10/02 08:25:05 OK   00008_rls.sql (6.18ms)
+2026/10/02 08:25:05 OK   00009_idempotency_ledger.sql (4.97ms)
+2026/10/02 08:25:05 OK   00010_tenant_provisioning.sql (3.3ms)
+2026/10/02 08:25:05 OK   00011_source_registration_history.sql (4.51ms)
+2026/10/02 08:25:05 OK   00012_config_registry_lifecycle.sql (6.37ms)
+2026/10/02 08:25:05 OK   00013_audit_signed_segments.sql (7.85ms)
+2026/10/02 08:25:05 OK   00014_audit_segment_predecessors.sql (4.01ms)
+2026/10/02 08:25:05 OK   00015_source_schema_scope.sql (2.66ms)
+2026/10/02 08:25:05 OK   00016_cluster_registration_metadata.sql (3.06ms)
+2026/10/02 08:25:05 OK   00017_source_data_scope.sql (2.82ms)
+2026/10/02 08:25:05 OK   00018_sp04_resources_evidence.sql (10.04ms)
+2026/10/02 08:25:05 OK   00019_sp04_archive_ciphertext_bytes.sql (20.47ms)
+2026/10/02 08:25:05 OK   00020_sp04_request_ledger.sql (4.95ms)
+2026/10/02 08:25:05 OK   00021_sp04_archive_protection.sql (3.13ms)
+2026/10/02 08:25:05 OK   00022_sp04_legal_hold_dependencies.sql (2.65ms)
+2026/10/02 08:25:05 OK   00023_sp04_archive_query_intent.sql (21.67ms)
+2026/10/02 08:25:05 goose: successfully migrated database to version: 23
+    sp04_lease_recovery_test.go:85: recovery audit missing count=0 err=ERROR: relation "platform.audit_records" does not exist (SQLSTATE 42P01)
+--- FAIL: TestSP04LeaseRecoveryNativeAuthorityAndAudit (3.21s)
+FAIL
+FAIL	ops-platform/test/integration	4.022s
+FAIL

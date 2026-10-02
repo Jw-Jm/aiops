@@ -1,0 +1,52 @@
+=== RUN   TestSP04FixtureAdaptersThroughActualRuntime
+2026/10/02 09:18:24 OK   00001_roles_and_schemas.sql (21.43ms)
+2026/10/02 09:18:24 goose: successfully migrated database to version: 1
+2026/10/02 09:18:24 OK   00002_platform_meta.sql (14.16ms)
+2026/10/02 09:18:24 OK   00003_finding.sql (11.13ms)
+2026/10/02 09:18:24 OK   00004_incident.sql (5.72ms)
+2026/10/02 09:18:24 OK   00005_investigation.sql (8.62ms)
+2026/10/02 09:18:24 OK   00006_action_command.sql (6.07ms)
+2026/10/02 09:18:24 OK   00007_audit.sql (20.87ms)
+2026/10/02 09:18:24 OK   00008_rls.sql (17.17ms)
+2026/10/02 09:18:24 OK   00009_idempotency_ledger.sql (13.77ms)
+2026/10/02 09:18:24 OK   00010_tenant_provisioning.sql (5.12ms)
+2026/10/02 09:18:24 OK   00011_source_registration_history.sql (6.48ms)
+2026/10/02 09:18:24 OK   00012_config_registry_lifecycle.sql (15.77ms)
+2026/10/02 09:18:24 OK   00013_audit_signed_segments.sql (10.07ms)
+2026/10/02 09:18:24 OK   00014_audit_segment_predecessors.sql (4.95ms)
+2026/10/02 09:18:24 OK   00015_source_schema_scope.sql (3.35ms)
+2026/10/02 09:18:24 OK   00016_cluster_registration_metadata.sql (4.28ms)
+2026/10/02 09:18:24 OK   00017_source_data_scope.sql (9.94ms)
+2026/10/02 09:18:24 OK   00018_sp04_resources_evidence.sql (47.25ms)
+2026/10/02 09:18:24 OK   00019_sp04_archive_ciphertext_bytes.sql (14.22ms)
+2026/10/02 09:18:24 OK   00020_sp04_request_ledger.sql (14.32ms)
+2026/10/02 09:18:24 OK   00021_sp04_archive_protection.sql (3.3ms)
+2026/10/02 09:18:24 OK   00022_sp04_legal_hold_dependencies.sql (9.87ms)
+2026/10/02 09:18:24 OK   00023_sp04_archive_query_intent.sql (12.91ms)
+2026/10/02 09:18:24 goose: successfully migrated database to version: 23
+    sp04_runtime_test.go:92: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=b30321dae562f25c6ab57b2eb2f1a8cfe4a252892ee4c57be191c7c521a7cd60 bucket=sp04-chain-6b0e52e5 tenants=1
+{"time":"2026-10-02T09:18:31.135341+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa31-02b8-733c-91a4-704cf878bf23","method":"GET","status_code":503,"duration_ms":39}
+{"time":"2026-10-02T09:18:31.162993+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+panic: cannot deep copy hardware.Metal3Inventory
+
+goroutine 303 [running]:
+k8s.io/apimachinery/pkg/runtime.DeepCopyJSONValue({0x10592cc30?, 0x787e641f85a0?})
+	/Users/mssc/go/pkg/mod/k8s.io/apimachinery@v0.35.2/pkg/runtime/converter.go:646 +0x23c
+k8s.io/apimachinery/pkg/runtime.DeepCopyJSONValue({0x1056eea40?, 0x787e63bd3080})
+	/Users/mssc/go/pkg/mod/k8s.io/apimachinery@v0.35.2/pkg/runtime/converter.go:630 +0x29c
+k8s.io/apimachinery/pkg/runtime.DeepCopyJSONValue({0x1056eea40?, 0x787e6473e150})
+	/Users/mssc/go/pkg/mod/k8s.io/apimachinery@v0.35.2/pkg/runtime/converter.go:630 +0x29c
+k8s.io/apimachinery/pkg/runtime.DeepCopyJSON(...)
+	/Users/mssc/go/pkg/mod/k8s.io/apimachinery@v0.35.2/pkg/runtime/converter.go:615
+k8s.io/apimachinery/pkg/apis/meta/v1/unstructured.(*Unstructured).DeepCopy(0x787e6270eb98)
+	/Users/mssc/go/pkg/mod/k8s.io/apimachinery@v0.35.2/pkg/apis/meta/v1/unstructured/unstructured.go:151 +0x68
+ops-platform/internal/graph.(*Graph).Replace(0x787e61ef6c00, {0x105abd6e0, 0x787e62192310}, 0x0, {{{0x103caba05, 0x7}, {0x103ca6ecb, 0x2}, {0x787e6281ef60, 0x24}}, ...})
+	/Users/mssc/Documents/Code/ops/platform/internal/graph/ariadne_adapter.go:240 +0xc50
+ops-platform/internal/graph.(*Graph).ReplaceHardware(0x787e61ef6c00, {0x105abd6e0, 0x787e62192310}, {0x787e6281ef60, 0x24}, {0x787e641be008?, 0x1?, 0x787e620d2f90?}, {0xf?, 0x787e6280fef0?, ...})
+	/Users/mssc/Documents/Code/ops/platform/internal/graph/hardware_projection.go:30 +0x944
+ops-platform/internal/app.collectHardware.func1()
+	/Users/mssc/Documents/Code/ops/platform/internal/app/sp04_hardware.go:35 +0x2d0
+created by ops-platform/internal/app.collectHardware in goroutine 8
+	/Users/mssc/Documents/Code/ops/platform/internal/app/sp04_hardware.go:20 +0x128
+FAIL	ops-platform/test/integration	7.930s
+FAIL

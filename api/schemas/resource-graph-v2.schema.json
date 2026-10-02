@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/resource-graph/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "resource-graph/v2"
+    },
+    "graphRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ownerEpoch",
+        "graphGeneration"
+      ],
+      "properties": {
+        "ownerEpoch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "graphGeneration": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "ownerInstance": {
+      "type": "string",
+      "minLength": 1
+    },
+    "collectedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "freshness": {
+      "enum": [
+        "fresh",
+        "stale",
+        "unavailable"
+      ]
+    },
+    "partial": {
+      "type": "boolean"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "degradedSources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "https://ops.local/schemas/resource-entity/v2"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "maxItems": 400,
+      "items": {
+        "$ref": "https://ops.local/schemas/resource-relation/v2"
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxDepth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "storageMaxDepth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxNodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxEdges": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nodeCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "edgeCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "truncationReasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "maxDepth",
+        "storageMaxDepth",
+        "maxNodes",
+        "maxEdges",
+        "nodeCount",
+        "edgeCount",
+        "truncated"
+      ]
+    },
+    "rankedEvidence": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "nodeId": {
+            "type": "string"
+          },
+          "edgeKey": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "integer"
+          },
+          "score": {
+            "type": "number"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "rank",
+          "source"
+        ]
+      }
+    },
+    "conflicts": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "nodeIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "edgeKeys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "confidence": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      }
+    },
+    "nextCanonicalId": {
+      "type": "string"
+    },
+    "directlyAffected": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "string"
+      }
+    },
+    "indirectlyAffected": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "string"
+      }
+    },
+    "dependencyOnly": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "graphRevision",
+    "ownerInstance",
+    "collectedAt",
+    "freshness",
+    "partial",
+    "warnings",
+    "degradedSources",
+    "nodes",
+    "edges",
+    "budgets",
+    "rankedEvidence",
+    "conflicts"
+  ]
+}

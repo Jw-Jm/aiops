@@ -50,10 +50,12 @@ type Version struct {
 	ETag      string
 }
 type StoredObject struct {
-	Body      []byte
-	Metadata  map[string]string
-	ETag      string
-	VersionID string
+	RetainUntil time.Time
+	LegalHold   bool
+	Body        []byte
+	Metadata    map[string]string
+	ETag        string
+	VersionID   string
 }
 type Backend interface {
 	Put(context.Context, string, []byte, map[string]string) (Version, error)
@@ -89,6 +91,7 @@ func (s *Store) Put(ctx context.Context, d ObjectDescriptor, r io.Reader) (Objec
 	if d.TenantID == uuid.Nil || d.ObjectID == uuid.Nil || !categoryPattern.MatchString(d.Category) || r == nil || d.RetainUntil.IsZero() || !d.RetainUntil.After(s.now()) || strings.ContainsAny(d.ContentType, "\r\n") || (d.ExpectedDigest != "" && !digestPattern.MatchString(d.ExpectedDigest)) {
 		return ObjectRef{}, ErrInvalidObject
 	}
+	d.RetainUntil = ceilProtectionTime(d.RetainUntil)
 	body, err := io.ReadAll(io.LimitReader(r, s.maxBytes+1))
 	if err != nil {
 		return ObjectRef{}, err
@@ -178,6 +181,9 @@ func (s *Store) Get(ctx context.Context, tenant uuid.UUID, ref ObjectRef) ([]byt
 		return nil, ErrDigestMismatch
 	}
 	until, err := time.Parse(time.RFC3339Nano, object.Metadata["retain-until"])
+	if object.RetainUntil.After(until) {
+		until = object.RetainUntil
+	}
 	if err != nil || until.Before(ref.RetainUntil) || object.Metadata["content-type"] != ref.ContentType ||
 		(ref.VersionID != "" && ref.VersionID != object.VersionID) {
 		return nil, ErrInvalidObject
@@ -199,8 +205,59 @@ func (s *Store) Delete(ctx context.Context, tenant uuid.UUID, ref ObjectRef) err
 	if err != nil {
 		return ErrInvalidObject
 	}
-	if s.now().Before(until) || s.now().Before(ref.RetainUntil) {
+	if object.RetainUntil.After(until) {
+		until = object.RetainUntil
+	}
+	if object.LegalHold || s.now().Before(until) || s.now().Before(ref.RetainUntil) {
 		return ErrRetentionActive
 	}
 	return s.backend.Delete(ctx, ref.Key, ref.VersionID)
+}
+
+// ProtectionBackend must enforce protection on the exact immutable version.
+// A backend without this contract cannot silently claim protection succeeded.
+type ProtectionBackend interface {
+	ProtectObject(context.Context, string, string, time.Time, bool) error
+}
+
+func (s *Store) Protect(ctx context.Context, tenant uuid.UUID, ref ObjectRef, until time.Time, hold bool) (ObjectRef, error) {
+	if err := validateRef(tenant, ref); err != nil {
+		return ref, err
+	}
+	if ref.VersionID == "" || until.IsZero() {
+		return ref, ErrInvalidObject
+	}
+	if _, err := s.Get(ctx, tenant, ref); err != nil {
+		return ref, err
+	}
+	backend, ok := s.backend.(ProtectionBackend)
+	if !ok {
+		return ref, errors.New("archive backend protection is unqualified")
+	}
+	if until.Before(ref.RetainUntil) {
+		until = ref.RetainUntil
+	}
+	until = ceilProtectionTime(until)
+	if err := backend.ProtectObject(ctx, ref.Key, ref.VersionID, until, hold); err != nil {
+		return ref, err
+	}
+	actual, err := s.backend.Head(ctx, ref.Key, ref.VersionID)
+	if err != nil {
+		return ref, err
+	}
+	if actual.VersionID != ref.VersionID || actual.RetainUntil.Before(until) || actual.LegalHold != hold {
+		return ref, errors.New("archive protection readback mismatch")
+	}
+	ref.RetainUntil = actual.RetainUntil
+	return ref, nil
+}
+
+// S3 Object Lock serializes timestamps at whole-second precision. Round upward
+// so the physical protection cannot end earlier than the database dependency.
+func ceilProtectionTime(t time.Time) time.Time {
+	u := t.UTC().Truncate(time.Second)
+	if u.Before(t) {
+		u = u.Add(time.Second)
+	}
+	return u
 }

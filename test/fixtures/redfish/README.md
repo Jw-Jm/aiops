@@ -1,0 +1,1 @@
+SP-04 synthetic Redfish protocol fixtures with Dell iDRAC, HPE iLO and Lenovo XCC path/model shapes. No production BMC capture or credential is included. Seven read-only typed inventory classes are exercised; this is Fixture evidence, not live BMC qualification or whole-component admission.

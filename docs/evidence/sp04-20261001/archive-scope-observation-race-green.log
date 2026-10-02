@@ -1,0 +1,43 @@
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention
+2026/10/02 12:16:41 OK   00001_roles_and_schemas.sql (15.23ms)
+2026/10/02 12:16:41 goose: successfully migrated database to version: 1
+2026/10/02 12:16:41 OK   00002_platform_meta.sql (31.76ms)
+2026/10/02 12:16:41 OK   00003_finding.sql (10.21ms)
+2026/10/02 12:16:41 OK   00004_incident.sql (6.95ms)
+2026/10/02 12:16:41 OK   00005_investigation.sql (7.76ms)
+2026/10/02 12:16:41 OK   00006_action_command.sql (7.83ms)
+2026/10/02 12:16:41 OK   00007_audit.sql (11.59ms)
+2026/10/02 12:16:41 OK   00008_rls.sql (9.78ms)
+2026/10/02 12:16:41 OK   00009_idempotency_ledger.sql (10.07ms)
+2026/10/02 12:16:41 OK   00010_tenant_provisioning.sql (7.37ms)
+2026/10/02 12:16:41 OK   00011_source_registration_history.sql (8.34ms)
+2026/10/02 12:16:41 OK   00012_config_registry_lifecycle.sql (12.69ms)
+2026/10/02 12:16:41 OK   00013_audit_signed_segments.sql (17.17ms)
+2026/10/02 12:16:41 OK   00014_audit_segment_predecessors.sql (9.38ms)
+2026/10/02 12:16:41 OK   00015_source_schema_scope.sql (4.54ms)
+2026/10/02 12:16:41 OK   00016_cluster_registration_metadata.sql (5.71ms)
+2026/10/02 12:16:41 OK   00017_source_data_scope.sql (4.77ms)
+2026/10/02 12:16:41 OK   00018_sp04_resources_evidence.sql (17.49ms)
+2026/10/02 12:16:41 OK   00019_sp04_archive_ciphertext_bytes.sql (4.33ms)
+2026/10/02 12:16:41 OK   00020_sp04_request_ledger.sql (6.07ms)
+2026/10/02 12:16:41 OK   00021_sp04_archive_protection.sql (5.2ms)
+2026/10/02 12:16:41 OK   00022_sp04_legal_hold_dependencies.sql (4.53ms)
+2026/10/02 12:16:41 OK   00023_sp04_archive_query_intent.sql (3.58ms)
+2026/10/02 12:16:41 goose: successfully migrated database to version: 23
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/source-withdrawal-between-collection-and-intent
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/concurrent-first-resource-observations
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/recover-original-query-even-when-source-is-partial
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/source-expired-before-encryption
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/legal-hold-pagination-and-mutation-fencing
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/database-commit-response-lost
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/closure-active-incident-hold-race-and-delete-crash
+--- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention (0.83s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/source-withdrawal-between-collection-and-intent (0.01s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/concurrent-first-resource-observations (0.08s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/recover-original-query-even-when-source-is-partial (0.02s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/source-expired-before-encryption (0.01s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/legal-hold-pagination-and-mutation-fencing (0.06s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/database-commit-response-lost (0.01s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/closure-active-incident-hold-race-and-delete-crash (0.09s)
+PASS
+ok  	ops-platform/test/integration	2.895s

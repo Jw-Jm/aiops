@@ -1,0 +1,166 @@
+{
+  "/redfish/v1/": {
+    "@odata.id": "/redfish/v1/",
+    "Systems": {
+      "@odata.id": "/redfish/v1/Systems"
+    }
+  },
+  "/redfish/v1/Systems": {
+    "Members": [
+      {
+        "@odata.id": "/redfish/v1/Systems/1"
+      }
+    ]
+  },
+  "/redfish/v1/Systems/1/Processors": {
+    "Members": [
+      {
+        "@odata.id": "/redfish/v1/Systems/1/Processors/CPU1"
+      }
+    ]
+  },
+  "/redfish/v1/Systems/1/Processors/CPU1": {
+    "@odata.id": "/redfish/v1/Systems/1/Processors/CPU1",
+    "Id": "CPU1",
+    "Name": "CPU1",
+    "Manufacturer": "HPE",
+    "Status": {
+      "State": "Enabled",
+      "Health": "OK"
+    },
+    "TotalCores": 16,
+    "TotalThreads": 32
+  },
+  "/redfish/v1/Systems/1/Memory": {
+    "Members": [
+      {
+        "@odata.id": "/redfish/v1/Systems/1/Memory/DIMM1"
+      }
+    ]
+  },
+  "/redfish/v1/Systems/1/Memory/DIMM1": {
+    "@odata.id": "/redfish/v1/Systems/1/Memory/DIMM1",
+    "Id": "DIMM1",
+    "Name": "DIMM1",
+    "Manufacturer": "HPE",
+    "Status": {
+      "State": "Enabled",
+      "Health": "OK"
+    },
+    "CapacityMiB": 32768
+  },
+  "/redfish/v1/Systems/1/EthernetInterfaces": {
+    "Members": [
+      {
+        "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces/NIC1"
+      }
+    ]
+  },
+  "/redfish/v1/Systems/1/EthernetInterfaces/NIC1": {
+    "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces/NIC1",
+    "Id": "NIC1",
+    "Name": "NIC1",
+    "Manufacturer": "HPE",
+    "Status": {
+      "State": "Enabled",
+      "Health": "OK"
+    },
+    "SpeedMbps": 10000
+  },
+  "/redfish/v1/Systems/1/Storage": {
+    "Members": [
+      {
+        "@odata.id": "/redfish/v1/Systems/1/Storage/controller1"
+      }
+    ]
+  },
+  "/redfish/v1/Systems/1/Storage/controller1": {
+    "@odata.id": "/redfish/v1/Systems/1/Storage/controller1",
+    "Id": "controller1",
+    "Drives": [
+      {
+        "@odata.id": "/redfish/v1/Chassis/1/Drives/disk1"
+      }
+    ]
+  },
+  "/redfish/v1/Chassis/1/Drives/disk1": {
+    "@odata.id": "/redfish/v1/Chassis/1/Drives/disk1",
+    "Id": "disk1",
+    "Name": "disk1",
+    "CapacityBytes": 1000000000000,
+    "MediaType": "SSD",
+    "Status": {
+      "State": "Enabled",
+      "Health": "OK"
+    }
+  },
+  "/redfish/v1/Chassis/1": {
+    "@odata.id": "/redfish/v1/Chassis/1",
+    "Id": "1",
+    "Power": {
+      "@odata.id": "/redfish/v1/Chassis/1/Power"
+    },
+    "Thermal": {
+      "@odata.id": "/redfish/v1/Chassis/1/Thermal"
+    }
+  },
+  "/redfish/v1/Chassis/1/Power": {
+    "@odata.id": "/redfish/v1/Chassis/1/Power",
+    "PowerSupplies": [
+      {
+        "MemberId": "PSU1",
+        "Name": "PSU1",
+        "Status": {
+          "State": "Enabled",
+          "Health": "OK"
+        }
+      }
+    ],
+    "PowerControl": []
+  },
+  "/redfish/v1/Chassis/1/Thermal": {
+    "@odata.id": "/redfish/v1/Chassis/1/Thermal",
+    "Fans": [
+      {
+        "MemberId": "Fan1",
+        "Name": "Fan1",
+        "Status": {
+          "State": "Enabled",
+          "Health": "OK"
+        }
+      }
+    ]
+  },
+  "/redfish/v1/Systems/1": {
+    "@odata.id": "/redfish/v1/Systems/1",
+    "Id": "1",
+    "Name": "ProLiant DL380 Gen11",
+    "Manufacturer": "HPE",
+    "Model": "ProLiant DL380 Gen11",
+    "UUID": "550e8400-e29b-41d4-a716-446655440000",
+    "SerialNumber": "000123",
+    "Status": {
+      "State": "Enabled",
+      "Health": "Warning"
+    },
+    "Links": {
+      "Chassis": [
+        {
+          "@odata.id": "/redfish/v1/Chassis/1"
+        }
+      ]
+    },
+    "Processors": {
+      "@odata.id": "/redfish/v1/Systems/1/Processors"
+    },
+    "Memory": {
+      "@odata.id": "/redfish/v1/Systems/1/Memory"
+    },
+    "EthernetInterfaces": {
+      "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces"
+    },
+    "Storage": {
+      "@odata.id": "/redfish/v1/Systems/1/Storage"
+    }
+  }
+}

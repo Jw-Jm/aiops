@@ -13,6 +13,11 @@ spec:
   selector:
     ops.platform.io/component: {{ $name }}
   ports:
+    {{ if and $.Values.sp04.enabled (eq $name "worker") }}
+    - name: graph-mtls
+      port: {{ $.Values.sp04.graphPort }}
+      targetPort: graph-mtls
+    {{ end }}
     - name: http
       port: {{ $component.port }}
       targetPort: http

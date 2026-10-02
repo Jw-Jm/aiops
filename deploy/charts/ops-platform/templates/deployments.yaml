@@ -12,7 +12,7 @@ metadata:
     ops.platform.io/release: {{ $.Release.Name | quote }}
     ops.platform.io/component: {{ $name }}
 spec:
-  replicas: 1
+  replicas: {{ if and (eq $name "worker") $.Values.sp04.enabled }}{{ $.Values.sp04.workerReplicas }}{{ else }}1{{ end }}
   selector:
     matchLabels:
       ops.platform.io/component: {{ $name }}
@@ -34,8 +34,13 @@ spec:
       containers:
         - name: {{ $name }}
           image: {{ $image | quote }}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ $component.imagePullPolicy | default $.Values.global.imagePullPolicy | quote }}
           ports:
+            {{ if and $.Values.sp04.enabled (eq $name "worker") }}
+            - name: graph-mtls
+              containerPort: {{ $.Values.sp04.graphPort }}
+              protocol: TCP
+            {{ end }}
             - name: http
               containerPort: {{ $component.port }}
               protocol: TCP
@@ -45,6 +50,18 @@ spec:
               protocol: TCP
             {{ end }}
           env:
+            {{ if and $.Values.sp04.enabled (has $name (list "api" "worker")) }}
+            - name: SP04_RUNTIME_FILE
+              value: /etc/sp04/runtime/{{ $name }}.json
+            {{ if eq $name "worker" }}
+            - name: SP04_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SP04_OWNER_ENDPOINT
+              value: "https://$(SP04_POD_IP):{{ $.Values.sp04.graphPort }}"
+            {{ end }}
+            {{ end }}
             {{ if has $name (list "api" "worker") }}
             - name: DATABASE_URL
               valueFrom:
@@ -93,6 +110,24 @@ spec:
             capabilities:
               drop: ["ALL"]
           volumeMounts:
+            {{ if and $.Values.sp04.enabled (has $name (list "api" "worker")) }}
+            - name: sp04-runtime
+              mountPath: /etc/sp04/runtime
+              readOnly: true
+            - name: sp04-identity
+              mountPath: /etc/sp04/identity
+              readOnly: true
+            {{ if eq $name "worker" }}
+            - name: sp04-sources
+              mountPath: /etc/sp04/sources
+              readOnly: true
+            {{ if $.Values.sp04.kubernetesAPI.localCollector }}
+            - name: sp04-kubernetes
+              mountPath: /var/run/secrets/ops-platform/kubernetes
+              readOnly: true
+            {{ end }}
+            {{ end }}
+            {{ end }}
             {{ if eq $name "worker" }}
             - name: archive-credentials
               mountPath: /etc/archive-credentials
@@ -105,6 +140,35 @@ spec:
               mountPath: /tmp
 {{ include "ops-platform.workloadIdentityMount" (dict "enabled" $.Values.workloadIdentity.enabled "name" $name) | indent 12 }}
       volumes:
+        {{ if and $.Values.sp04.enabled (has $name (list "api" "worker")) }}
+        - name: sp04-runtime
+          configMap:
+            name: ops-sp04-runtime
+        - name: sp04-identity
+          secret:
+            secretName: {{ if eq $name "api" }}{{ $.Values.sp04.apiIdentitySecret }}{{ else }}{{ $.Values.sp04.workerIdentitySecret }}{{ end }}
+            defaultMode: 0440
+        {{ if eq $name "worker" }}
+        - name: sp04-sources
+          secret:
+            secretName: {{ $.Values.sp04.sourceCredentialsSecret }}
+            defaultMode: 0440
+        {{ if $.Values.sp04.kubernetesAPI.localCollector }}
+        - name: sp04-kubernetes
+          projected:
+            defaultMode: 0440
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: 3600
+              - configMap:
+                  name: kube-root-ca.crt
+                  items:
+                    - key: ca.crt
+                      path: ca.pem
+        {{ end }}
+        {{ end }}
+        {{ end }}
         {{ if eq $name "worker" }}
         - name: archive-credentials
           secret:

@@ -1,0 +1,7 @@
+=== RUN   TestSP04ArchiveCredentialRolesAtActualIAM
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=664daa333e0ae57a10d845233381ea277ba276fd7ed568d1415b47d48556d71d bucket=sp04-roles-8e8c680d-646e-4a0a-8e0d-ac132dd0b176 tenants=1
+    sp04_archive_roles_test.go:110: native cross-role IAM 403 AccessDenied samples=15; positive upload/read/protection/cleanup and per-role tenant isolation verified
+    sp04_archive_roles_test.go:117: four distinct IAM principals: write/read/protect/cleanup; role routing positive, cross-role and cross-tenant denials, immutable protection verified
+--- PASS: TestSP04ArchiveCredentialRolesAtActualIAM (9.68s)
+PASS
+ok  	ops-platform/test/integration	10.552s

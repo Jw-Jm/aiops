@@ -108,7 +108,11 @@ func (application *APIApp) Serve(ctx context.Context, listener net.Listener, run
 	if err != nil {
 		return err
 	}
-	handler, err := httpapi.NewFoundationHandler(pool, authenticator, trust, runtime)
+	sp04, err := NewSP04API(ctx, pool)
+	if err != nil {
+		return err
+	}
+	handler, err := httpapi.NewFoundationHandlerWithSP04(pool, authenticator, trust, runtime, sp04)
 	if err != nil {
 		return err
 	}

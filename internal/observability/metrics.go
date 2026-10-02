@@ -11,29 +11,34 @@ import (
 )
 
 type Metrics struct {
-	registry       *prometheus.Registry
-	httpRequests   *prometheus.CounterVec
-	httpDuration   *prometheus.HistogramVec
-	operations     *prometheus.CounterVec
-	exportFailures *prometheus.CounterVec
-	degraded       prometheus.Gauge
-	processUp      prometheus.Gauge
-	auditDelay     prometheus.Gauge
-	degradedMu     sync.Mutex
-	degradedState  uint32
+	registry          *prometheus.Registry
+	httpRequests      *prometheus.CounterVec
+	httpDuration      *prometheus.HistogramVec
+	operations        *prometheus.CounterVec
+	queryCompleteness *prometheus.CounterVec
+	exportFailures    *prometheus.CounterVec
+	degraded          prometheus.Gauge
+	processUp         prometheus.Gauge
+	auditDelay        prometheus.Gauge
+	degradedMu        sync.Mutex
+	degradedState     uint32
 }
 
 var degradationBits = map[string]uint32{"traces": 1, "metrics_listener": 2, "runtime": 4, "audit_signing": 8}
 
 var operationSet = map[string]map[string]struct{}{
-	"api":      {"request": {}, "error": {}},
-	"graph":    {"query": {}, "error": {}},
-	"finding":  {"create": {}, "update": {}, "list": {}, "error": {}},
-	"incident": {"create": {}, "update": {}, "transition": {}, "error": {}},
-	"outbox":   {"publish": {}, "retry": {}, "backlog": {}, "error": {}},
-	"adapter":  {"call": {}, "retry": {}, "error": {}},
-	"agent":    {"job": {}, "model_call": {}, "error": {}},
-	"action":   {"plan": {}, "execution": {}, "error": {}},
+	"kubernetes": {"query": {}, "error": {}},
+	"evidence":   {"query": {}, "read": {}, "error": {}},
+	"archive":    {"write": {}, "read": {}, "cleanup": {}, "error": {}},
+	"resource":   {"resolve": {}, "error": {}},
+	"api":        {"request": {}, "error": {}},
+	"graph":      {"query": {}, "error": {}},
+	"finding":    {"create": {}, "update": {}, "list": {}, "error": {}},
+	"incident":   {"create": {}, "update": {}, "transition": {}, "error": {}},
+	"outbox":     {"publish": {}, "retry": {}, "backlog": {}, "error": {}},
+	"adapter":    {"call": {}, "retry": {}, "error": {}},
+	"agent":      {"job": {}, "model_call": {}, "error": {}},
+	"action":     {"plan": {}, "execution": {}, "error": {}},
 }
 
 var operationResults = map[string]struct{}{"ok": {}, "error": {}, "retry": {}, "rejected": {}, "unavailable": {}}
@@ -49,6 +54,7 @@ func NewMetrics() *Metrics {
 			Namespace: "platform", Name: "http_request_duration_seconds", Help: "HTTP request duration in seconds.",
 			Buckets: prometheus.DefBuckets,
 		}, []string{"method"}),
+		queryCompleteness: prometheus.NewCounterVec(prometheus.CounterOpts{Namespace: "platform", Name: "query_completeness_total", Help: "Semantic completeness and freshness of actual Graph/Evidence responses, independent of HTTP success."}, []string{"area", "completeness", "freshness"}),
 		operations: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: "platform", Name: "operations_total", Help: "Bounded platform control-plane operation counts.",
 		}, []string{"area", "operation", "result"}),
@@ -66,7 +72,7 @@ func NewMetrics() *Metrics {
 		}),
 	}
 	m.processUp.Set(1)
-	registry.MustRegister(m.httpRequests, m.httpDuration, m.operations, m.exportFailures, m.degraded, m.processUp, m.auditDelay)
+	registry.MustRegister(m.httpRequests, m.httpDuration, m.operations, m.exportFailures, m.degraded, m.processUp, m.auditDelay, m.queryCompleteness)
 	return m
 }
 
@@ -156,4 +162,20 @@ func boundedMethod(method string) string {
 	default:
 		return "OTHER"
 	}
+}
+
+func (m *Metrics) ObserveQuery(area string, partial bool, freshness string) bool {
+	if m == nil || (area != "graph" && area != "evidence") {
+		return false
+	}
+	if freshness != "fresh" && freshness != "stale" && freshness != "unavailable" {
+		return false
+	}
+	completeness := "complete"
+	if partial || freshness == "unavailable" {
+		completeness = "partial"
+	}
+	m.queryCompleteness.WithLabelValues(area, completeness, freshness).Inc()
+	m.RecordOperation(area, "query", "ok")
+	return true
 }

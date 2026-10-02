@@ -310,7 +310,11 @@ func isolatedKeycloakAdminToken(t *testing.T, ctx context.Context, issuer, passw
 		t.Fatal("isolated Keycloak issuer URL is invalid")
 	}
 	serverURL := parsed.Scheme + "://" + parsed.Host
-	values := url.Values{"grant_type": {"password"}, "client_id": {"admin-cli"}, "username": {"sp03admin"}, "password": {password}}
+	adminUsername := os.Getenv("SP03_KEYCLOAK_TEST_ADMIN_USERNAME")
+	if adminUsername == "" {
+		adminUsername = "sp03admin"
+	}
+	values := url.Values{"grant_type": {"password"}, "client_id": {"admin-cli"}, "username": {adminUsername}, "password": {password}}
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, serverURL+"/realms/master/protocol/openid-connect/token", strings.NewReader(values.Encode()))
 	if err != nil {
 		t.Fatal(err)

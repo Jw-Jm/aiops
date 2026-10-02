@@ -11,6 +11,8 @@ import type {
   DiagnosticGraphBuildRequest,
   ErrorEnvelope,
   EvidenceQueryRequest,
+  EvidenceResultSuccessV2,
+  EvidenceSuccessV2,
   FindingEnvelope,
   GetAuditRecordsParams,
   GetClustersParams,
@@ -35,6 +37,9 @@ import type {
   Identifier,
   IncidentTransitionRequest,
   JSONRequest,
+  LegalHoldPageV1,
+  LegalHoldRequestV1,
+  LegalHoldResultV1,
   PageEnvelope,
   PolicyBundlePublishRequest,
   RegistryActivationRequest,
@@ -42,6 +47,9 @@ import type {
   RegistryDraftUpdateRequest,
   RegistryPublishRequest,
   RegistryVersionRetireRequest,
+  ResourceGraphSuccessV2,
+  ResourcePageV2,
+  SP04ErrorEnvelopeV2,
   SourceCredentialRotationRequest,
   SourceRegistrationEnvelope,
   SourceRegistrationPageEnvelope,
@@ -609,12 +617,12 @@ const res = await fetch(getCreateExecutionProfileUrl(),
 
 
 export type getLegalHoldsResponse200 = {
-  data: PageEnvelope
+  data: LegalHoldPageV1
   status: 200
 }
 
 export type getLegalHoldsResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -666,12 +674,12 @@ export const getLegalHolds = async (params?: GetLegalHoldsParams, options?: Requ
 
 
 export type createLegalHoldResponse201 = {
-  data: SuccessEnvelope
+  data: LegalHoldResultV1
   status: 201
 }
 
 export type createLegalHoldResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 201>
 }
 
@@ -695,7 +703,7 @@ export const getCreateLegalHoldUrl = () => {
 /**
  * @summary createLegalHold
  */
-export const createLegalHold = async (jSONRequest: JSONRequest, options?: RequestInit): Promise<createLegalHoldResponse> => {
+export const createLegalHold = async (legalHoldRequestV1: LegalHoldRequestV1, options?: RequestInit): Promise<createLegalHoldResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -716,7 +724,7 @@ const res = await fetch(getCreateLegalHoldUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(jSONRequest)
+    body: JSON.stringify(legalHoldRequestV1)
   }
 )
 
@@ -2395,12 +2403,12 @@ const res = await fetch(getAssessCommandRiskUrl(),
 
 
 export type buildDiagnosticGraphResponse200 = {
-  data: SuccessEnvelope
+  data: ResourceGraphSuccessV2
   status: 200
 }
 
 export type buildDiagnosticGraphResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -2459,12 +2467,12 @@ const res = await fetch(getBuildDiagnosticGraphUrl(),
 
 
 export type getEvidenceResponse200 = {
-  data: SuccessEnvelope
+  data: EvidenceSuccessV2
   status: 200
 }
 
 export type getEvidenceResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -2509,12 +2517,12 @@ export const getEvidence = async (evidenceId: string, options?: RequestInit): Pr
 
 
 export type queryEvidenceResponse200 = {
-  data: SuccessEnvelope
+  data: EvidenceResultSuccessV2
   status: 200
 }
 
 export type queryEvidenceResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3648,12 +3656,12 @@ export const getOverview = async ( options?: RequestInit): Promise<getOverviewRe
 
 
 export type getResourcesResponse200 = {
-  data: PageEnvelope
+  data: ResourcePageV2
   status: 200
 }
 
 export type getResourcesResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3705,12 +3713,12 @@ export const getResources = async (params?: GetResourcesParams, options?: Reques
 
 
 export type getResourceByCanonicalIDResponse200 = {
-  data: SuccessEnvelope
+  data: ResourceGraphSuccessV2
   status: 200
 }
 
 export type getResourceByCanonicalIDResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3762,12 +3770,12 @@ export const getResourceByCanonicalID = async (params: GetResourceByCanonicalIDP
 
 
 export type getResourceImpactScopeResponse200 = {
-  data: SuccessEnvelope
+  data: ResourceGraphSuccessV2
   status: 200
 }
 
 export type getResourceImpactScopeResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3819,12 +3827,12 @@ export const getResourceImpactScope = async (params: GetResourceImpactScopeParam
 
 
 export type getResourceNeighborsResponse200 = {
-  data: PageEnvelope
+  data: ResourceGraphSuccessV2
   status: 200
 }
 
 export type getResourceNeighborsResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 

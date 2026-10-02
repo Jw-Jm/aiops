@@ -63,3 +63,33 @@ func TestTenantCredentialContractRejectsAmbiguity(t *testing.T) {
 		}
 	}
 }
+
+func TestArchiveV2RequiresFourDistinctRolePrincipals(t *testing.T) {
+	tenant := uuid.New()
+	roles := &TenantRoles{Write: RoleCredential{"writer", "w"}, Read: RoleCredential{"reader", "r"}, Protect: RoleCredential{"protector", "p"}, Cleanup: RoleCredential{"cleaner", "c"}}
+	valid := TenantCredentials{SchemaVersion: "ops-archive-credentials/v2", Tenants: []TenantCredential{{TenantID: tenant, Roles: roles}}}
+	config := Config{Endpoint: "http://localhost:1234", Bucket: "archive"}
+	raw, _ := json.Marshal(valid)
+	client, err := NewTenantClient(config, raw)
+	if err != nil || !client.RoleSeparated() {
+		t.Fatalf("role contract rejected: %v", err)
+	}
+	variants := []TenantRoles{*roles, *roles, *roles}
+	variants[0].Read = variants[0].Write
+	variants[1].Cleanup = RoleCredential{}
+	variants[2].Protect = variants[2].Read
+	for _, variant := range variants {
+		bad := valid
+		bad.Tenants = []TenantCredential{{TenantID: tenant, Roles: &variant}}
+		raw, _ := json.Marshal(bad)
+		if _, err := NewTenantClient(config, raw); !errors.Is(err, ErrTenantIAM) {
+			t.Fatal("ambiguous or shared role principal accepted")
+		}
+	}
+	valid.Tenants[0].AccessKey = "legacy"
+	valid.Tenants[0].SecretKey = "legacy"
+	raw, _ = json.Marshal(valid)
+	if _, err := NewTenantClient(config, raw); !errors.Is(err, ErrTenantIAM) {
+		t.Fatal("legacy fallback accepted in v2")
+	}
+}

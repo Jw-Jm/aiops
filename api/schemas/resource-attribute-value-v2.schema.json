@@ -1,0 +1,45 @@
+{
+  "anyOf": [
+    {
+      "type": "string",
+      "maxLength": 4096
+    },
+    {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    {
+      "type": "number",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    {
+      "type": "boolean"
+    },
+    {
+      "type": "null"
+    },
+    {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/resource-attribute-value/v2"
+      },
+      "maxItems": 100
+    },
+    {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "https://ops.local/schemas/resource-attribute-value/v2"
+      },
+      "maxProperties": 64
+    }
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/resource-attribute-value/v2",
+  "description": "Bounded JSON-safe resource quantities, including hardware byte capacities. Public v1 common extension limits remain unchanged."
+}

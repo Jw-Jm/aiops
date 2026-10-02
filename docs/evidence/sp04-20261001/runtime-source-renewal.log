@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/mssc/Documents/Code/ops/platform/scripts/prepare-runtime-source.py", line 176, in <module>
+    lock, source_digest = prepare(args.out)
+                          ^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/Documents/Code/ops/platform/scripts/prepare-runtime-source.py", line 65, in prepare
+    if published_origin.get("Hash") and (published_origin["Hash"] != decision["gitCommit"] or published_origin["URL"] != decision["gitSource"]):
+                                                                                              ~~~~~~~~~~~~~~~~^^^^^^^
+KeyError: 'URL'

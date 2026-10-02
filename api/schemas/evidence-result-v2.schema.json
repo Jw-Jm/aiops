@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/evidence-result/v2",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "evidence-result/v2"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/evidence/v2"
+      }
+    },
+    "partial": {
+      "type": "boolean"
+    },
+    "freshness": {
+      "enum": [
+        "fresh",
+        "stale",
+        "unavailable"
+      ]
+    },
+    "degradedSources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "queryHash": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "evidence",
+    "partial",
+    "freshness",
+    "degradedSources",
+    "warnings",
+    "queryHash"
+  ],
+  "additionalProperties": false
+}

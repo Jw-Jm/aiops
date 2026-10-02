@@ -1,0 +1,5 @@
+--- FAIL: TestProjectionRejectsNestedPayloadsAndCredentials (0.00s)
+    informer_test.go:132: projection leaked nested credentials: {"apiVersion":"v1","kind":"Pod","metadata":{"annotations":{"ops.internal/observed-at":"2026-10-01T16:55:33.786872Z"},"labels":{"app":"web","password":"canary-secret"},"name":"p","resourceVersion":"","uid":"u"},"spec":{"volumes":[{"name":"data","secret":{"items":[{"key":"canary-secret","path":"secret"}],"secretName":"credential-ref","unexpected":"canary-secret"}}]},"status":{"conditions":[{"message":"token=canary-secret","status":"False","type":"Ready","unexpected":"canary-secret"}]}}
+FAIL
+FAIL	ops-platform/internal/integrations/kubernetes	0.575s
+FAIL

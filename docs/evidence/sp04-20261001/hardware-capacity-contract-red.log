@@ -1,0 +1,14 @@
+=== RUN   TestHardwareCapacityFitsVersionedEntityContract
+    hardware_projection_test.go:52: realistic hardware quantity rejected: validate payload against schema "https://ops.local/schemas/resource-graph/v2": jsonschema validation failed with 'https://ops.local/schemas/resource-graph/v2#'
+        - at '/nodes/0/attributes/CapacityBytes': 'anyOf' failed
+          - at '/nodes/0/attributes/CapacityBytes': got number, want string
+          - at '/nodes/0/attributes/CapacityBytes': maximum: got 1×10¹², want 2.147483647×10⁰⁹
+          - at '/nodes/0/attributes/CapacityBytes': maximum: got 1×10¹², want 2.147483647×10⁰⁹
+          - at '/nodes/0/attributes/CapacityBytes': got number, want boolean
+          - at '/nodes/0/attributes/CapacityBytes': got number, want null
+          - at '/nodes/0/attributes/CapacityBytes': got number, want array
+          - at '/nodes/0/attributes/CapacityBytes': got number, want object
+--- FAIL: TestHardwareCapacityFitsVersionedEntityContract (0.00s)
+FAIL
+FAIL	ops-platform/internal/graph	0.611s
+FAIL

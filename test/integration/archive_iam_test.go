@@ -35,6 +35,12 @@ type tenantS3Fixture struct {
 }
 
 func newTenantS3Fixture(t *testing.T, tenants []uuid.UUID, bucket string) tenantS3Fixture {
+	return newTenantS3FixtureMode(t, tenants, bucket, false)
+}
+func newRoleTenantS3Fixture(t *testing.T, tenants []uuid.UUID, bucket string) tenantS3Fixture {
+	return newTenantS3FixtureMode(t, tenants, bucket, true)
+}
+func newTenantS3FixtureMode(t *testing.T, tenants []uuid.UUID, bucket string, separated bool) tenantS3Fixture {
 	t.Helper()
 	if _, err := exec.CommandContext(t.Context(), "docker", "image", "inspect", archiveIAMFixtureImage).Output(); err != nil {
 		t.Fatal("locked SeaweedFS 4.47 image must already be present; fixture never pulls")
@@ -68,13 +74,38 @@ func newTenantS3Fixture(t *testing.T, tenants []uuid.UUID, bucket string) tenant
 	adminAccess, adminSecret := secret(), secret()
 	identities := []map[string]any{{"name": "isolated-bootstrap", "credentials": []map[string]string{{"accessKey": adminAccess, "secretKey": adminSecret}}, "actions": []string{"Admin", "Read", "Write", "List", "Tagging"}}}
 	credentials := s3.TenantCredentials{SchemaVersion: "ops-archive-credentials/v1"}
-	for _, tenant := range tenants {
-		entry := s3.TenantCredential{TenantID: tenant, AccessKey: secret(), SecretKey: secret()}
-		credentials.Tenants = append(credentials.Tenants, entry)
-		scope := bucket + "/" + archive.TenantPrefix(tenant) + "*"
-		identities = append(identities, map[string]any{"name": "tenant-" + tenant.String(), "credentials": []map[string]string{{"accessKey": entry.AccessKey, "secretKey": entry.SecretKey}}, "actions": []string{"Read:" + scope, "Write:" + scope, "List:" + scope}})
+	policies := []map[string]any{}
+	if separated {
+		credentials.SchemaVersion = "ops-archive-credentials/v2"
 	}
-	config, _ := json.Marshal(map[string]any{"identities": identities})
+	for _, tenant := range tenants {
+		entry := s3.TenantCredential{TenantID: tenant}
+		prefix := archive.TenantPrefix(tenant)
+		if !separated {
+			entry.AccessKey = secret()
+			entry.SecretKey = secret()
+			scope := bucket + "/" + prefix + "*"
+			identities = append(identities, map[string]any{"name": "tenant-" + tenant.String(), "credentials": []map[string]string{{"accessKey": entry.AccessKey, "secretKey": entry.SecretKey}}, "actions": []string{"Read:" + scope, "Write:" + scope, "List:" + scope}})
+		} else {
+			roles := &s3.TenantRoles{}
+			principals := map[string]*s3.RoleCredential{"write": &roles.Write, "read": &roles.Read, "protect": &roles.Protect, "cleanup": &roles.Cleanup}
+			actions := map[string][]string{"write": {"s3:PutObject"}, "read": {"s3:GetObject", "s3:GetObjectVersion"}, "protect": {"s3:PutObjectRetention", "s3:PutObjectLegalHold"}, "cleanup": {"s3:DeleteObject", "s3:DeleteObjectVersion"}}
+			for role, principal := range principals {
+				principal.AccessKey = secret()
+				principal.SecretKey = secret()
+				name := "tenant-" + tenant.String() + "-" + role
+				policy, _ := json.Marshal(map[string]any{"Version": "2012-10-17", "Statement": []map[string]any{
+					{"Effect": "Allow", "Action": []string{"s3:ListBucket"}, "Resource": "arn:aws:s3:::" + bucket, "Condition": map[string]any{"StringLike": map[string]any{"s3:prefix": prefix + "*"}}},
+					{"Effect": "Allow", "Action": actions[role], "Resource": "arn:aws:s3:::" + bucket + "/" + prefix + "*"},
+				}})
+				policies = append(policies, map[string]any{"name": name, "content": string(policy)})
+				identities = append(identities, map[string]any{"name": name, "credentials": []map[string]string{{"accessKey": principal.AccessKey, "secretKey": principal.SecretKey}}, "policyNames": []string{name}})
+			}
+			entry.Roles = roles
+		}
+		credentials.Tenants = append(credentials.Tenants, entry)
+	}
+	config, _ := json.Marshal(map[string]any{"identities": identities, "policies": policies})
 	raw, _ := json.Marshal(credentials)
 	credentialFile := filepath.Join(dir, "tenant-credentials.json")
 	if os.WriteFile(filepath.Join(dir, "s3.json"), config, 0600) != nil || os.WriteFile(credentialFile, raw, 0600) != nil {

@@ -1,0 +1,227 @@
+=== RUN   TestSP04FixtureAdaptersThroughActualRuntime
+2026/10/02 09:12:48 OK   00001_roles_and_schemas.sql (26.77ms)
+2026/10/02 09:12:48 goose: successfully migrated database to version: 1
+2026/10/02 09:12:48 OK   00002_platform_meta.sql (34.35ms)
+2026/10/02 09:12:48 OK   00003_finding.sql (18.44ms)
+2026/10/02 09:12:48 OK   00004_incident.sql (18.74ms)
+2026/10/02 09:12:48 OK   00005_investigation.sql (10.63ms)
+2026/10/02 09:12:48 OK   00006_action_command.sql (14.97ms)
+2026/10/02 09:12:48 OK   00007_audit.sql (11.54ms)
+2026/10/02 09:12:49 OK   00008_rls.sql (12.95ms)
+2026/10/02 09:12:49 OK   00009_idempotency_ledger.sql (12.8ms)
+2026/10/02 09:12:49 OK   00010_tenant_provisioning.sql (5.77ms)
+2026/10/02 09:12:49 OK   00011_source_registration_history.sql (14.25ms)
+2026/10/02 09:12:49 OK   00012_config_registry_lifecycle.sql (14.65ms)
+2026/10/02 09:12:49 OK   00013_audit_signed_segments.sql (13.4ms)
+2026/10/02 09:12:49 OK   00014_audit_segment_predecessors.sql (9.67ms)
+2026/10/02 09:12:49 OK   00015_source_schema_scope.sql (8.6ms)
+2026/10/02 09:12:49 OK   00016_cluster_registration_metadata.sql (13.69ms)
+2026/10/02 09:12:49 OK   00017_source_data_scope.sql (38.77ms)
+2026/10/02 09:12:49 OK   00018_sp04_resources_evidence.sql (20.79ms)
+2026/10/02 09:12:49 OK   00019_sp04_archive_ciphertext_bytes.sql (10.86ms)
+2026/10/02 09:12:49 OK   00020_sp04_request_ledger.sql (9.16ms)
+2026/10/02 09:12:49 OK   00021_sp04_archive_protection.sql (10.85ms)
+2026/10/02 09:12:49 OK   00022_sp04_legal_hold_dependencies.sql (3.83ms)
+2026/10/02 09:12:49 OK   00023_sp04_archive_query_intent.sql (5.13ms)
+2026/10/02 09:12:49 goose: successfully migrated database to version: 23
+    sp04_runtime_test.go:92: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=90c8b720c72f4a680833318f2f813fd6333e654d3d1c07ea034a237eb941feb2 bucket=sp04-chain-f6b81ca2 tenants=1
+{"time":"2026-10-02T09:12:54.861589+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e131-763d-908c-760a6c57c117","method":"GET","status_code":503,"duration_ms":28}
+{"time":"2026-10-02T09:12:55.066318+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e216-7320-ae3a-dc76869c8e70","method":"GET","status_code":503,"duration_ms":4}
+{"time":"2026-10-02T09:12:55.271012+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e2e3-7b52-a46a-e0e3a34ede25","method":"GET","status_code":503,"duration_ms":3}
+{"time":"2026-10-02T09:12:55.495047+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e3b0-7720-a2d0-052693f8e316","method":"GET","status_code":503,"duration_ms":22}
+{"time":"2026-10-02T09:12:55.713016+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e48f-777d-9416-20688b4fd643","method":"GET","status_code":503,"duration_ms":17}
+{"time":"2026-10-02T09:12:55.9223+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e569-7914-97fa-36f3da6b1d57","method":"GET","status_code":503,"duration_ms":8}
+{"time":"2026-10-02T09:12:56.126799+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e63b-787b-b754-52afbff5dd0e","method":"GET","status_code":503,"duration_ms":3}
+{"time":"2026-10-02T09:12:56.331009+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e707-765c-86bb-43833142f4ff","method":"GET","status_code":503,"duration_ms":3}
+{"time":"2026-10-02T09:12:56.412461+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-02T09:12:56.505213+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-02T09:12:56.538994+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e7d3-7bfe-b427-ce47e4ca67ff","method":"GET","status_code":503,"duration_ms":7}
+{"time":"2026-10-02T09:12:56.744662+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e8a3-7c40-8acc-2c1288fc558c","method":"GET","status_code":503,"duration_ms":4}
+{"time":"2026-10-02T09:12:56.95975+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-e972-7101-88c7-a0814ac9535f","method":"GET","status_code":503,"duration_ms":13}
+{"time":"2026-10-02T09:12:57.167486+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-ea48-7094-b382-95bc559dd3cd","method":"GET","status_code":503,"duration_ms":7}
+{"time":"2026-10-02T09:12:57.378632+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-eb18-7079-8dd6-3f8c0faeb2a6","method":"GET","status_code":503,"duration_ms":10}
+{"time":"2026-10-02T09:12:57.585774+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-ebeb-71d8-9589-ce3f47899b39","method":"GET","status_code":503,"duration_ms":6}
+{"time":"2026-10-02T09:12:57.794766+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-ecba-7470-a7b1-11ac35130704","method":"GET","status_code":503,"duration_ms":8}
+{"time":"2026-10-02T09:12:58.008586+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-ed8b-71a1-bfb5-899fae50455c","method":"GET","status_code":503,"duration_ms":13}
+{"time":"2026-10-02T09:12:58.211395+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-ee60-7dc7-880d-665310c178f4","method":"GET","status_code":503,"duration_ms":2}
+{"time":"2026-10-02T09:12:58.422176+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-ef2c-71e8-a2f4-759d00063c93","method":"GET","status_code":503,"duration_ms":9}
+{"time":"2026-10-02T09:12:58.762171+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-effe-7d79-93e6-ff6a46d4e696","method":"GET","status_code":200,"duration_ms":139}
+{"time":"2026-10-02T09:12:58.839487+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-f08a-76f5-8ebb-59e9bdf81987","method":"GET","status_code":403,"duration_ms":76}
+{"time":"2026-10-02T09:12:59.141966+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-f1a0-777a-b9cb-58b0f8da3420","method":"GET","status_code":403,"duration_ms":101}
+{"time":"2026-10-02T09:12:59.351767+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-f2cf-7553-bcd7-c31e3f12f280","method":"GET","status_code":403,"duration_ms":8}
+{"time":"2026-10-02T09:12:59.561831+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-f3a0-7622-b886-31b4df7d017f","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:12:59.768942+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-f472-7e48-915d-3046e5a5ebb6","method":"GET","status_code":403,"duration_ms":5}
+{"time":"2026-10-02T09:12:59.980505+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-f542-716b-abe5-daa59bb5baf4","method":"GET","status_code":403,"duration_ms":10}
+{"time":"2026-10-02T09:13:00.190507+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-f615-7eec-8c33-204c9dfc892f","method":"GET","status_code":403,"duration_ms":8}
+{"time":"2026-10-02T09:13:00.401321+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-f6e8-719e-bab3-bad27ca60df1","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:00.620263+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-f7ba-7a83-b802-5a9cfa67345a","method":"GET","status_code":403,"duration_ms":17}
+{"time":"2026-10-02T09:13:00.98965+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-f895-7e40-b40d-1ae69c082751","method":"GET","status_code":403,"duration_ms":167}
+{"time":"2026-10-02T09:13:01.199471+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-fa06-70cb-accb-f1ea3d5c57df","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:01.42636+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-fad8-7eb9-be19-8c74ae46ede0","method":"GET","status_code":403,"duration_ms":25}
+{"time":"2026-10-02T09:13:01.650754+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-fbbb-76e5-854c-cac53c61d6e4","method":"GET","status_code":403,"duration_ms":23}
+{"time":"2026-10-02T09:13:01.869442+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-fc9c-739d-838d-db191261897f","method":"GET","status_code":403,"duration_ms":17}
+{"time":"2026-10-02T09:13:02.088215+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-fd76-788f-9522-024ed399515f","method":"GET","status_code":403,"duration_ms":17}
+{"time":"2026-10-02T09:13:02.299054+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-fe50-7efb-9748-ef8253bb5c3e","method":"GET","status_code":403,"duration_ms":10}
+{"time":"2026-10-02T09:13:02.511508+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-ff24-78c2-aa3f-d7b8f3257fe1","method":"GET","status_code":403,"duration_ms":10}
+{"time":"2026-10-02T09:13:02.734456+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2b-fff8-73c4-aae1-eab1fe49a2f6","method":"GET","status_code":403,"duration_ms":22}
+{"time":"2026-10-02T09:13:03.03952+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-00d6-7db3-8058-43b2ccd03146","method":"GET","status_code":403,"duration_ms":104}
+{"time":"2026-10-02T09:13:03.246465+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-0208-7dfe-a04f-ab1528f4b8bb","method":"GET","status_code":403,"duration_ms":5}
+{"time":"2026-10-02T09:13:03.494228+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-02d7-7c8e-85bb-91775f7d9e78","method":"GET","status_code":403,"duration_ms":46}
+{"time":"2026-10-02T09:13:03.708519+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-03cf-7900-80e1-6436e9c7ae27","method":"GET","status_code":403,"duration_ms":12}
+{"time":"2026-10-02T09:13:03.924484+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-04a5-7df6-b4dd-b397a750431f","method":"GET","status_code":403,"duration_ms":14}
+{"time":"2026-10-02T09:13:04.141229+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-057d-7e21-8a6c-c960c738dc98","method":"GET","status_code":403,"duration_ms":15}
+{"time":"2026-10-02T09:13:04.352+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-0656-7a44-832b-e006bf8f2381","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:04.566701+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-0729-75f7-a409-53c7c6920e18","method":"GET","status_code":403,"duration_ms":13}
+{"time":"2026-10-02T09:13:04.773093+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-07ff-732c-a039-e835483ecef3","method":"GET","status_code":403,"duration_ms":5}
+{"time":"2026-10-02T09:13:05.078398+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-08cd-760e-b546-4d08fe738fe4","method":"GET","status_code":403,"duration_ms":104}
+{"time":"2026-10-02T09:13:05.287552+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-09ff-7bfe-82d2-6b0e225b3672","method":"GET","status_code":403,"duration_ms":7}
+{"time":"2026-10-02T09:13:05.506421+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-0ad0-7f2e-a214-a569721a79b4","method":"GET","status_code":403,"duration_ms":17}
+{"time":"2026-10-02T09:13:05.718573+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-0bab-7d2f-95a8-35b5ff3dc720","method":"GET","status_code":403,"duration_ms":10}
+{"time":"2026-10-02T09:13:05.946876+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-0c7f-7e63-be7d-f0089e44323e","method":"GET","status_code":403,"duration_ms":26}
+{"time":"2026-10-02T09:13:06.163325+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-0d64-7382-b9dc-dfa4ef46504e","method":"GET","status_code":403,"duration_ms":15}
+{"time":"2026-10-02T09:13:06.379532+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-0e3c-7b62-9752-99c6c4f31e58","method":"GET","status_code":403,"duration_ms":14}
+{"time":"2026-10-02T09:13:06.597499+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-0f14-78e9-aead-c050ba279f93","method":"GET","status_code":403,"duration_ms":16}
+{"time":"2026-10-02T09:13:07.401044+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-0fee-7733-b3d7-b7787fbce209","method":"GET","status_code":403,"duration_ms":602}
+{"time":"2026-10-02T09:13:08.008529+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-1311-77ac-bafa-551879ff9a73","method":"GET","status_code":403,"duration_ms":406}
+{"time":"2026-10-02T09:13:08.712867+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-1571-702a-af56-62a0193ade65","method":"GET","status_code":403,"duration_ms":503}
+{"time":"2026-10-02T09:13:09.112489+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-1831-72ea-9475-30ecb0a195f0","method":"GET","status_code":403,"duration_ms":199}
+{"time":"2026-10-02T09:13:09.330019+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-19c1-7df2-bf1d-b7da231c8b6a","method":"GET","status_code":403,"duration_ms":16}
+{"time":"2026-10-02T09:13:09.558056+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-1a9b-75f3-87ea-d82415729bf2","method":"GET","status_code":403,"duration_ms":26}
+{"time":"2026-10-02T09:13:09.766226+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-1b7e-7c5c-8f49-2e3a81a1bb31","method":"GET","status_code":403,"duration_ms":7}
+{"time":"2026-10-02T09:13:09.993511+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-1c4f-7aa6-8aff-b5275d55df24","method":"GET","status_code":403,"duration_ms":25}
+{"time":"2026-10-02T09:13:10.227527+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-1d32-7d59-9f84-d298f23ea7f2","method":"GET","status_code":403,"duration_ms":32}
+{"time":"2026-10-02T09:13:10.439892+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-1e1c-776a-afdc-5cdd6561406b","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:10.650095+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-1ef1-7330-a4b1-026cc602b8f0","method":"GET","status_code":403,"duration_ms":8}
+{"time":"2026-10-02T09:13:10.996421+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-1fc2-7e9e-85b1-08d8c5304bf9","method":"GET","status_code":403,"duration_ms":145}
+{"time":"2026-10-02T09:13:11.208676+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-211d-7330-8e77-7ac6a53ac4f0","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:11.424593+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-21f1-7c1d-887c-d750b8def94a","method":"GET","status_code":403,"duration_ms":14}
+{"time":"2026-10-02T09:13:11.633917+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-22c9-7ef0-99b3-bf0b51b84eb8","method":"GET","status_code":403,"duration_ms":7}
+{"time":"2026-10-02T09:13:11.854456+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-239b-742a-99e1-0b50609fc3bc","method":"GET","status_code":403,"duration_ms":19}
+{"time":"2026-10-02T09:13:12.064982+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-2477-7d59-b472-9f6185a476a3","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:12.277168+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-2549-7956-ae20-982cce978e46","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:12.487546+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-261e-750c-b998-7976291cfb39","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:12.699394+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-26f0-7ef0-9911-38bae112e19b","method":"GET","status_code":403,"duration_ms":10}
+{"time":"2026-10-02T09:13:12.998573+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-27c3-7bf2-a197-d59f36efc2e0","method":"GET","status_code":403,"duration_ms":98}
+{"time":"2026-10-02T09:13:13.205952+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-28ee-7ee0-bb76-43041e1c1cda","method":"GET","status_code":403,"duration_ms":6}
+{"time":"2026-10-02T09:13:13.417306+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-29bf-7288-8b71-733c0b20c78f","method":"GET","status_code":403,"duration_ms":10}
+{"time":"2026-10-02T09:13:13.628237+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-2a92-75fb-99d8-abe3d6721877","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:13.845003+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-2b65-7530-93fe-c199255f460e","method":"GET","status_code":403,"duration_ms":15}
+{"time":"2026-10-02T09:13:14.065341+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-2c3e-7599-83e0-e5d4da6f7c2c","method":"GET","status_code":403,"duration_ms":18}
+{"time":"2026-10-02T09:13:14.274488+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-2d19-7e5f-94d1-60a18e6adc09","method":"GET","status_code":403,"duration_ms":8}
+{"time":"2026-10-02T09:13:14.489388+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-2deb-7af4-8e9c-08353c3b99c5","method":"GET","status_code":403,"duration_ms":13}
+{"time":"2026-10-02T09:13:14.699622+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-2ec1-7e09-b32e-088878b078e5","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:14.999199+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-2f94-7aa2-9ca1-688a3d49f41e","method":"GET","status_code":403,"duration_ms":98}
+{"time":"2026-10-02T09:13:15.217208+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-30c0-78c6-ab3d-fc0879c3b02e","method":"GET","status_code":403,"duration_ms":16}
+{"time":"2026-10-02T09:13:15.430885+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-319a-71d0-9960-bdd0d3053e88","method":"GET","status_code":403,"duration_ms":12}
+{"time":"2026-10-02T09:13:15.648598+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-326f-7839-b99f-fb6d77083ee2","method":"GET","status_code":403,"duration_ms":17}
+{"time":"2026-10-02T09:13:15.87655+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-3349-7a60-b9fd-4e1553fc2338","method":"GET","status_code":403,"duration_ms":26}
+{"time":"2026-10-02T09:13:16.09225+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-342d-7284-96ee-326418cb9b51","method":"GET","status_code":403,"duration_ms":15}
+{"time":"2026-10-02T09:13:16.320061+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-3505-7b23-ad7c-0c5a0b450db8","method":"GET","status_code":403,"duration_ms":26}
+{"time":"2026-10-02T09:13:16.529925+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-35e9-714c-bb40-7bad53727c44","method":"GET","status_code":403,"duration_ms":8}
+{"time":"2026-10-02T09:13:16.866422+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-36bb-74af-ad4a-bfe078a7f86a","method":"GET","status_code":403,"duration_ms":135}
+{"time":"2026-10-02T09:13:17.769287+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-380a-7a77-9717-20ce944306d6","method":"GET","status_code":403,"duration_ms":702}
+{"time":"2026-10-02T09:13:18.475353+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-3b91-7bb0-a382-d9280407cb4d","method":"GET","status_code":403,"duration_ms":505}
+{"time":"2026-10-02T09:13:18.876512+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-3e53-7c4c-babe-ea56833fa086","method":"GET","status_code":403,"duration_ms":200}
+{"time":"2026-10-02T09:13:19.185892+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-3fe4-7e25-80e1-60813b3e89d3","method":"GET","status_code":403,"duration_ms":108}
+{"time":"2026-10-02T09:13:19.406082+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-411a-7cae-b35f-0c0a4eac42da","method":"GET","status_code":403,"duration_ms":19}
+{"time":"2026-10-02T09:13:19.617529+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-41f7-77c0-af52-ae3d58e84a42","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:19.845005+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-42ca-7c06-ae49-e6dc6b9a0585","method":"GET","status_code":403,"duration_ms":26}
+{"time":"2026-10-02T09:13:20.060527+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-43ae-74d6-80bb-7a224d42fa77","method":"GET","status_code":403,"duration_ms":14}
+{"time":"2026-10-02T09:13:20.267736+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4485-7b08-99a1-7453eb36f2a0","method":"GET","status_code":403,"duration_ms":5}
+{"time":"2026-10-02T09:13:20.477515+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4555-716f-894a-4ab46a923555","method":"GET","status_code":403,"duration_ms":8}
+{"time":"2026-10-02T09:13:20.692098+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4626-72bf-b3fd-07dfe8402b10","method":"GET","status_code":403,"duration_ms":13}
+{"time":"2026-10-02T09:13:20.99982+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-46fc-762a-a84f-af3d149ec118","method":"GET","status_code":403,"duration_ms":107}
+{"time":"2026-10-02T09:13:21.217392+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4831-734b-b6ec-786670199cf6","method":"GET","status_code":403,"duration_ms":16}
+{"time":"2026-10-02T09:13:21.426059+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4909-7d79-bb50-f5be444d35e8","method":"GET","status_code":403,"duration_ms":8}
+{"time":"2026-10-02T09:13:21.653339+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-49db-7668-9830-72f78851ca32","method":"GET","status_code":403,"duration_ms":25}
+{"time":"2026-10-02T09:13:21.871044+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4abe-7b08-bc04-537a366beb5e","method":"GET","status_code":403,"duration_ms":16}
+{"time":"2026-10-02T09:13:22.09218+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4b98-7659-8cc5-012c8de7ce17","method":"GET","status_code":403,"duration_ms":19}
+{"time":"2026-10-02T09:13:22.307627+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4c75-789b-8f48-c272ce078b80","method":"GET","status_code":403,"duration_ms":14}
+{"time":"2026-10-02T09:13:22.520709+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4d4d-706d-a243-3d4ea7b67241","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:22.728579+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4e22-7207-b447-0351058833c9","method":"GET","status_code":403,"duration_ms":6}
+{"time":"2026-10-02T09:13:23.030909+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-4ef0-7dde-8a71-6798e9bd1bac","method":"GET","status_code":403,"duration_ms":101}
+{"time":"2026-10-02T09:13:23.241254+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-501f-77f7-8517-be7754573772","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:23.452832+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-50f2-79b4-84cc-d71812dbdf02","method":"GET","status_code":403,"duration_ms":10}
+{"time":"2026-10-02T09:13:23.663516+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-51c6-72af-8276-657213c0d6fd","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:23.878598+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-5298-7217-8abe-8062a981e3d5","method":"GET","status_code":403,"duration_ms":14}
+{"time":"2026-10-02T09:13:24.090407+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-536f-7ea9-8f82-172a27c1d2d7","method":"GET","status_code":403,"duration_ms":10}
+{"time":"2026-10-02T09:13:24.313038+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-5443-7c83-a452-b2afd78e09a3","method":"GET","status_code":403,"duration_ms":21}
+{"time":"2026-10-02T09:13:24.524007+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-5522-758d-a6cc-a4fc47701c0f","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:24.734837+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-55f4-765c-9f8d-32c10a80902f","method":"GET","status_code":403,"duration_ms":10}
+{"time":"2026-10-02T09:13:25.038677+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-56c7-789b-b74d-ca9910f7f180","method":"GET","status_code":403,"duration_ms":103}
+{"time":"2026-10-02T09:13:25.258145+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-57f7-770c-8b9c-ec4480d73d5a","method":"GET","status_code":403,"duration_ms":18}
+{"time":"2026-10-02T09:13:25.48224+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-58d3-77a5-9ff7-7bda44acbbad","method":"GET","status_code":403,"duration_ms":22}
+{"time":"2026-10-02T09:13:25.69626+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-59b3-79b4-b651-bcc253766f94","method":"GET","status_code":403,"duration_ms":12}
+{"time":"2026-10-02T09:13:25.908359+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-5a89-71d0-a768-6ae606b13e0c","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:26.12945+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-5b5c-7d5d-b900-c158dd2e47f1","method":"GET","status_code":403,"duration_ms":20}
+{"time":"2026-10-02T09:13:26.337841+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-5c3a-77f3-8274-e50d39d1fb6d","method":"GET","status_code":403,"duration_ms":7}
+{"time":"2026-10-02T09:13:26.552855+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-5d0b-741e-bd65-9a524d74ce9d","method":"GET","status_code":403,"duration_ms":13}
+{"time":"2026-10-02T09:13:26.852118+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-5de1-71f7-887b-53adcc495d6e","method":"GET","status_code":403,"duration_ms":98}
+{"time":"2026-10-02T09:13:28.060628+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-5f0c-75c8-89bd-1358e5000c93","method":"GET","status_code":403,"duration_ms":1008}
+{"time":"2026-10-02T09:13:29.070271+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-63c5-71d0-971f-1c7b3bd86067","method":"GET","status_code":403,"duration_ms":809}
+{"time":"2026-10-02T09:13:29.47554+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-67b6-7d46-9c73-abd61115261b","method":"GET","status_code":403,"duration_ms":204}
+{"time":"2026-10-02T09:13:29.682183+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-694c-730d-addf-0089f751d2f6","method":"GET","status_code":403,"duration_ms":5}
+{"time":"2026-10-02T09:13:29.89239+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-6a1a-7d36-bf39-01c30de5da5f","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:30.102452+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-6aed-7ba8-b411-3dd0c1aa7ef2","method":"GET","status_code":403,"duration_ms":8}
+{"time":"2026-10-02T09:13:30.315342+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-6bbf-7e3c-82f0-e088388f3386","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:30.527433+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-6c94-7dd3-8d83-4bc6130d7177","method":"GET","status_code":403,"duration_ms":10}
+{"time":"2026-10-02T09:13:30.738276+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-6d68-7ce4-9ddb-a374a0ca30d5","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:31.039375+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-6e3a-78b6-9b06-53d447ccaa65","method":"GET","status_code":403,"duration_ms":100}
+{"time":"2026-10-02T09:13:31.260696+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-6f67-7b9c-b07b-dc8ea4b7d961","method":"GET","status_code":403,"duration_ms":20}
+{"time":"2026-10-02T09:13:31.473347+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7046-72f1-ad89-81dbf4b78fc6","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:31.680208+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-711a-7173-ba74-a76f186d2d92","method":"GET","status_code":403,"duration_ms":6}
+{"time":"2026-10-02T09:13:31.887857+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-71e9-7138-b4a2-3c9881a66f6e","method":"GET","status_code":403,"duration_ms":6}
+{"time":"2026-10-02T09:13:32.098721+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-72b9-757a-b5f9-9731e6218f64","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:32.310992+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-738b-7bcf-80f4-4e74ba2bf3be","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:32.534996+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7460-7510-ac06-0b30262202b2","method":"GET","status_code":403,"duration_ms":22}
+{"time":"2026-10-02T09:13:32.746889+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-753f-79a0-b8ce-907df8f35e1d","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:33.051576+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7613-7265-a67e-28207c6f1f5b","method":"GET","status_code":403,"duration_ms":104}
+{"time":"2026-10-02T09:13:33.258925+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7745-718e-ba60-e3ceb234b10c","method":"GET","status_code":403,"duration_ms":5}
+{"time":"2026-10-02T09:13:33.467631+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7814-74b3-9864-11de3c7a13d4","method":"GET","status_code":403,"duration_ms":7}
+{"time":"2026-10-02T09:13:33.701405+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-78e5-70a4-8ac8-14da10852d6f","method":"GET","status_code":403,"duration_ms":32}
+{"time":"2026-10-02T09:13:33.92424+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-79ce-7b85-9e60-ac1842132d53","method":"GET","status_code":403,"duration_ms":21}
+{"time":"2026-10-02T09:13:34.134223+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7aad-7a25-a37a-e797ec2c9bb0","method":"GET","status_code":403,"duration_ms":8}
+{"time":"2026-10-02T09:13:34.342753+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7b7f-7b71-a898-ef504dfee27d","method":"GET","status_code":403,"duration_ms":6}
+{"time":"2026-10-02T09:13:34.557795+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7c50-71f7-b017-1294feb70a47","method":"GET","status_code":403,"duration_ms":13}
+{"time":"2026-10-02T09:13:34.768707+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7d27-7259-8bc3-398fb3b73cb0","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:35.071782+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7df9-7514-8a09-1c1bbe3f7ec5","method":"GET","status_code":503,"duration_ms":102}
+{"time":"2026-10-02T09:13:35.283739+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7f28-7ee0-951c-e13d61b73fac","method":"GET","status_code":503,"duration_ms":10}
+{"time":"2026-10-02T09:13:35.499006+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-7ffd-731c-bfde-957af1b75dd2","method":"GET","status_code":503,"duration_ms":13}
+{"time":"2026-10-02T09:13:35.712898+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-80d3-7dee-95f3-76052fa9ebee","method":"GET","status_code":503,"duration_ms":12}
+{"time":"2026-10-02T09:13:35.924886+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-81aa-7347-9c3c-e91044c8f686","method":"GET","status_code":503,"duration_ms":10}
+{"time":"2026-10-02T09:13:36.131688+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-827e-74f9-8444-dcd7fd6f3623","method":"GET","status_code":503,"duration_ms":5}
+{"time":"2026-10-02T09:13:36.341351+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-834c-7412-a8f4-f0d53d5d0f86","method":"GET","status_code":503,"duration_ms":9}
+{"time":"2026-10-02T09:13:36.565297+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-841e-7c40-83dc-7e4ff240f9ed","method":"GET","status_code":503,"duration_ms":22}
+{"time":"2026-10-02T09:13:36.871509+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-84fd-78ed-b42c-f7cad70825f8","method":"GET","status_code":503,"duration_ms":105}
+{"time":"2026-10-02T09:13:37.174144+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-862f-7b85-aefe-020da9e56deb","method":"GET","status_code":403,"duration_ms":102}
+{"time":"2026-10-02T09:13:37.472479+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-875f-7320-b66e-05fa29ca9421","method":"GET","status_code":403,"duration_ms":97}
+{"time":"2026-10-02T09:13:37.770314+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-8889-7036-874a-1df19f22abb5","method":"GET","status_code":403,"duration_ms":97}
+{"time":"2026-10-02T09:13:38.071708+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-89b2-7bcb-879c-3f48d58d573b","method":"GET","status_code":403,"duration_ms":100}
+{"time":"2026-10-02T09:13:38.375571+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-8ae0-741a-80f7-fd2423ef328e","method":"GET","status_code":403,"duration_ms":103}
+{"time":"2026-10-02T09:13:38.775979+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-8c10-75ff-b61f-8bfca3cb57d2","method":"GET","status_code":403,"duration_ms":199}
+{"time":"2026-10-02T09:13:39.484572+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-8da0-7795-8e07-028311a222b7","method":"GET","status_code":403,"duration_ms":508}
+{"time":"2026-10-02T09:13:39.694649+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9065-7530-b862-49958fbc9f39","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:39.924471+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9138-700b-87b4-71dfc6c09952","method":"GET","status_code":403,"duration_ms":28}
+{"time":"2026-10-02T09:13:40.136895+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-921d-7ce4-a3c4-77eea7802b93","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:40.344196+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-92f2-7645-a1f6-00476b89d403","method":"GET","status_code":403,"duration_ms":5}
+{"time":"2026-10-02T09:13:40.557742+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-93c1-7883-9b88-fcae8bb41971","method":"GET","status_code":403,"duration_ms":12}
+{"time":"2026-10-02T09:13:40.767013+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9497-7232-8230-2df5d9f11732","method":"GET","status_code":403,"duration_ms":7}
+{"time":"2026-10-02T09:13:41.074507+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9567-7d5d-9fec-7d00050b4f3d","method":"GET","status_code":403,"duration_ms":106}
+{"time":"2026-10-02T09:13:41.2932+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-969b-7720-83f7-fcf3005ed540","method":"GET","status_code":403,"duration_ms":17}
+{"time":"2026-10-02T09:13:41.500704+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9776-799c-ae21-57515be82e66","method":"GET","status_code":403,"duration_ms":6}
+{"time":"2026-10-02T09:13:41.714864+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9845-7668-a1be-00fde85e06da","method":"GET","status_code":403,"duration_ms":13}
+{"time":"2026-10-02T09:13:41.928248+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-991c-74ce-aa27-0ff0258a7d8a","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:42.136457+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-99f1-794e-915a-236c2dfd4129","method":"GET","status_code":403,"duration_ms":6}
+{"time":"2026-10-02T09:13:42.349571+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9ac1-7dd6-8843-d5f1059b7cea","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:42.560383+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9b96-7864-9017-689278fe871a","method":"GET","status_code":403,"duration_ms":9}
+{"time":"2026-10-02T09:13:42.775343+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9c69-7b46-b251-f556b8a2c9d0","method":"GET","status_code":403,"duration_ms":13}
+{"time":"2026-10-02T09:13:43.073971+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9d40-7412-8b14-9743a46f459a","method":"GET","status_code":403,"duration_ms":97}
+{"time":"2026-10-02T09:13:43.286434+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9e6b-7562-ad5c-2ffd7d2d6e61","method":"GET","status_code":403,"duration_ms":11}
+{"time":"2026-10-02T09:13:43.495319+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-9f3f-7b6d-a822-4072b91701b2","method":"GET","status_code":403,"duration_ms":7}
+{"time":"2026-10-02T09:13:43.705031+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-a010-7426-bd1e-39c450e0ceb7","method":"GET","status_code":403,"duration_ms":8}
+{"time":"2026-10-02T09:13:43.912291+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fa2c-a0e2-7128-96ea-55c4e978341b","method":"GET","status_code":403,"duration_ms":6}
+    sp04_fixture_chain_test.go:113: fixture inventory not published status=403 {"code":"FORBIDDEN","message":"resource or evidence query unavailable","requestId":"01a0fa2c-a0e2-7128-96ea-55c4e978341b","retryable":false,"schemaVersion":"error-envelope/v2"}
+--- FAIL: TestSP04FixtureAdaptersThroughActualRuntime (56.13s)
+FAIL
+FAIL	ops-platform/test/integration	57.059s
+FAIL

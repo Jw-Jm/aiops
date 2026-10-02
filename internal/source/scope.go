@@ -2,6 +2,7 @@ package source
 
 import (
 	"maps"
+	"ops-platform/internal/datascope"
 	"slices"
 	"strings"
 	"unicode"
@@ -9,11 +10,7 @@ import (
 
 // DataScopeMapping is a declaration, never a query grant. SP-04 adapters must
 // verify backend isolation before enabling any query capability.
-type DataScopeMapping struct {
-	NativeTenant   string              `json:"nativeTenant,omitempty"`
-	Scopes         map[string][]string `json:"scopes,omitempty"`
-	RequiredLabels map[string]string   `json:"requiredLabels,omitempty"`
-}
+type DataScopeMapping = datascope.Mapping
 
 func validScopeBinding(backend string, mapping DataScopeMapping) bool {
 	if backend != "" && !validOpaqueName(backend, 512) {

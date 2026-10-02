@@ -173,6 +173,17 @@ type InvestigationWorkerQueue struct {
 	NextAttemptAt  pgtype.Timestamptz `json:"next_attempt_at"`
 }
 
+type PlatformAdapterScopeVerification struct {
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	SourceID       pgtype.UUID        `json:"source_id"`
+	SourceRevision int64              `json:"source_revision"`
+	BindingDigest  string             `json:"binding_digest"`
+	AdapterVersion string             `json:"adapter_version"`
+	VerifiedAt     pgtype.Timestamptz `json:"verified_at"`
+	ExpiresAt      pgtype.Timestamptz `json:"expires_at"`
+	ReportDigest   string             `json:"report_digest"`
+}
+
 type PlatformClusterRegistration struct {
 	TenantID       pgtype.UUID        `json:"tenant_id"`
 	ClusterID      pgtype.UUID        `json:"cluster_id"`
@@ -203,6 +214,54 @@ type PlatformClusterRegistrationRevision struct {
 	Capabilities   []byte             `json:"capabilities"`
 }
 
+type PlatformEvidenceArchiveIntent struct {
+	TenantID             pgtype.UUID        `json:"tenant_id"`
+	EvidenceID           pgtype.UUID        `json:"evidence_id"`
+	ObjectID             pgtype.UUID        `json:"object_id"`
+	BackendLogicalID     string             `json:"backend_logical_id"`
+	Envelope             []byte             `json:"envelope"`
+	CiphertextDigest     pgtype.Text        `json:"ciphertext_digest"`
+	EncryptionKeyVersion pgtype.Text        `json:"encryption_key_version"`
+	ObjectRef            []byte             `json:"object_ref"`
+	Status               string             `json:"status"`
+	Attempts             int32              `json:"attempts"`
+	LastError            pgtype.Text        `json:"last_error"`
+	VerifiedAt           pgtype.Timestamptz `json:"verified_at"`
+	EnvelopeBytes        []byte             `json:"envelope_bytes"`
+	QueryArgs            []byte             `json:"query_args"`
+}
+
+type PlatformEvidenceDependency struct {
+	TenantID     pgtype.UUID `json:"tenant_id"`
+	ReferrerID   pgtype.UUID `json:"referrer_id"`
+	DependencyID pgtype.UUID `json:"dependency_id"`
+}
+
+type PlatformEvidenceMetadatum struct {
+	TenantID           pgtype.UUID        `json:"tenant_id"`
+	EvidenceID         pgtype.UUID        `json:"evidence_id"`
+	SourceID           pgtype.UUID        `json:"source_id"`
+	CanonicalID        string             `json:"canonical_id"`
+	Namespace          string             `json:"namespace"`
+	Metadata           []byte             `json:"metadata"`
+	ContentDigest      string             `json:"content_digest"`
+	ReplayState        string             `json:"replay_state"`
+	RetainUntil        pgtype.Timestamptz `json:"retain_until"`
+	LegalHold          bool               `json:"legal_hold"`
+	Deleting           bool               `json:"deleting"`
+	CreatedAt          pgtype.Timestamptz `json:"created_at"`
+	ProtectionSyncedAt pgtype.Timestamptz `json:"protection_synced_at"`
+}
+
+type PlatformEvidenceRetentionReference struct {
+	TenantID      pgtype.UUID        `json:"tenant_id"`
+	ReferenceKind string             `json:"reference_kind"`
+	ReferenceID   pgtype.UUID        `json:"reference_id"`
+	EvidenceID    pgtype.UUID        `json:"evidence_id"`
+	RetainUntil   pgtype.Timestamptz `json:"retain_until"`
+	Active        bool               `json:"active"`
+}
+
 type PlatformExecutionProfileVersion struct {
 	TenantID         pgtype.UUID        `json:"tenant_id"`
 	ProfileVersionID pgtype.UUID        `json:"profile_version_id"`
@@ -215,6 +274,17 @@ type PlatformExecutionProfileVersion struct {
 	Status           string             `json:"status"`
 	PublishedBy      string             `json:"published_by"`
 	PublishedAt      pgtype.Timestamptz `json:"published_at"`
+}
+
+type PlatformGraphOwnership struct {
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	ClusterUid     string             `json:"cluster_uid"`
+	OwnerEpoch     int64              `json:"owner_epoch"`
+	OwnerInstance  string             `json:"owner_instance"`
+	OwnerEndpoint  string             `json:"owner_endpoint"`
+	LeaseUid       string             `json:"lease_uid"`
+	RouteExpiresAt pgtype.Timestamptz `json:"route_expires_at"`
+	ObservedAt     pgtype.Timestamptz `json:"observed_at"`
 }
 
 type PlatformIdempotencyRequestLedger struct {
@@ -295,6 +365,28 @@ type PlatformRegistryVersion struct {
 	RetiredAt     pgtype.Timestamptz `json:"retired_at"`
 }
 
+type PlatformResourceAlias struct {
+	TenantID    pgtype.UUID `json:"tenant_id"`
+	Scope       string      `json:"scope"`
+	AliasKind   string      `json:"alias_kind"`
+	AliasValue  string      `json:"alias_value"`
+	CanonicalID string      `json:"canonical_id"`
+	SourceID    pgtype.UUID `json:"source_id"`
+	Provenance  []byte      `json:"provenance"`
+}
+
+type PlatformResourceEntity struct {
+	TenantID    pgtype.UUID        `json:"tenant_id"`
+	CanonicalID string             `json:"canonical_id"`
+	ClusterID   pgtype.UUID        `json:"cluster_id"`
+	Kind        string             `json:"kind"`
+	Namespace   string             `json:"namespace"`
+	Name        string             `json:"name"`
+	Metadata    []byte             `json:"metadata"`
+	ObservedAt  pgtype.Timestamptz `json:"observed_at"`
+	DeletedAt   pgtype.Timestamptz `json:"deleted_at"`
+}
+
 type PlatformRoleBinding struct {
 	TenantID        pgtype.UUID        `json:"tenant_id"`
 	BindingID       pgtype.UUID        `json:"binding_id"`
@@ -336,6 +428,16 @@ type PlatformSourceRegistrationRevision struct {
 	Scope              []byte             `json:"scope"`
 	ActorSubject       string             `json:"actor_subject"`
 	CreatedAt          pgtype.Timestamptz `json:"created_at"`
+}
+
+type PlatformSp04RequestLedger struct {
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	Subject        string             `json:"subject"`
+	Operation      string             `json:"operation"`
+	IdempotencyKey string             `json:"idempotency_key"`
+	RequestDigest  string             `json:"request_digest"`
+	ObjectID       pgtype.UUID        `json:"object_id"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 }
 
 type PlatformStepUpSession struct {

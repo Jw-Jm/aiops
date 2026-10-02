@@ -108,6 +108,7 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/sqlc-dev/doubleclick v1.0.0 // indirect
 	github.com/sqlc-dev/sqlc v1.31.1 // indirect
+	github.com/stmcginnis/gofish v0.26.0
 	github.com/tchap/go-patricia/v2 v2.3.3 // indirect
 	github.com/tetratelabs/wazero v1.12.0 // indirect
 	github.com/valyala/fastjson v1.6.10 // indirect

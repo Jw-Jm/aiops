@@ -1,0 +1,33 @@
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention
+2026/10/02 12:15:46 OK   00001_roles_and_schemas.sql (11.23ms)
+2026/10/02 12:15:46 goose: successfully migrated database to version: 1
+2026/10/02 12:15:46 OK   00002_platform_meta.sql (15.39ms)
+2026/10/02 12:15:46 OK   00003_finding.sql (8.2ms)
+2026/10/02 12:15:46 OK   00004_incident.sql (5.87ms)
+2026/10/02 12:15:46 OK   00005_investigation.sql (6.77ms)
+2026/10/02 12:15:46 OK   00006_action_command.sql (4.57ms)
+2026/10/02 12:15:46 OK   00007_audit.sql (7.88ms)
+2026/10/02 12:15:46 OK   00008_rls.sql (7.67ms)
+2026/10/02 12:15:46 OK   00009_idempotency_ledger.sql (7.29ms)
+2026/10/02 12:15:46 OK   00010_tenant_provisioning.sql (4.57ms)
+2026/10/02 12:15:46 OK   00011_source_registration_history.sql (6.33ms)
+2026/10/02 12:15:46 OK   00012_config_registry_lifecycle.sql (8.13ms)
+2026/10/02 12:15:46 OK   00013_audit_signed_segments.sql (8.87ms)
+2026/10/02 12:15:46 OK   00014_audit_segment_predecessors.sql (5.72ms)
+2026/10/02 12:15:46 OK   00015_source_schema_scope.sql (4.24ms)
+2026/10/02 12:15:46 OK   00016_cluster_registration_metadata.sql (4.67ms)
+2026/10/02 12:15:46 OK   00017_source_data_scope.sql (4.02ms)
+2026/10/02 12:15:46 OK   00018_sp04_resources_evidence.sql (11.31ms)
+2026/10/02 12:15:46 OK   00019_sp04_archive_ciphertext_bytes.sql (4.37ms)
+2026/10/02 12:15:46 OK   00020_sp04_request_ledger.sql (5.64ms)
+2026/10/02 12:15:46 OK   00021_sp04_archive_protection.sql (3.69ms)
+2026/10/02 12:15:46 OK   00022_sp04_legal_hold_dependencies.sql (3.37ms)
+2026/10/02 12:15:46 OK   00023_sp04_archive_query_intent.sql (3.17ms)
+2026/10/02 12:15:46 goose: successfully migrated database to version: 23
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/source-withdrawal-between-collection-and-intent
+    sp04_archive_test.go:111: withdrawn collection rebound to archive-time grant: <nil>
+--- FAIL: TestSP04ArchiveRecoveryIntegrityAndRetention (0.39s)
+    --- FAIL: TestSP04ArchiveRecoveryIntegrityAndRetention/source-withdrawal-between-collection-and-intent (0.01s)
+FAIL
+FAIL	ops-platform/test/integration	1.279s
+FAIL

@@ -1,0 +1,41 @@
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention
+2026/10/02 12:12:19 OK   00001_roles_and_schemas.sql (14.21ms)
+2026/10/02 12:12:19 goose: successfully migrated database to version: 1
+2026/10/02 12:12:19 OK   00002_platform_meta.sql (22.48ms)
+2026/10/02 12:12:19 OK   00003_finding.sql (9.2ms)
+2026/10/02 12:12:20 OK   00004_incident.sql (8.65ms)
+2026/10/02 12:12:20 OK   00005_investigation.sql (9.91ms)
+2026/10/02 12:12:20 OK   00006_action_command.sql (9.43ms)
+2026/10/02 12:12:20 OK   00007_audit.sql (18.34ms)
+2026/10/02 12:12:20 OK   00008_rls.sql (12.68ms)
+2026/10/02 12:12:20 OK   00009_idempotency_ledger.sql (9.81ms)
+2026/10/02 12:12:20 OK   00010_tenant_provisioning.sql (5.69ms)
+2026/10/02 12:12:20 OK   00011_source_registration_history.sql (11.11ms)
+2026/10/02 12:12:20 OK   00012_config_registry_lifecycle.sql (12.33ms)
+2026/10/02 12:12:20 OK   00013_audit_signed_segments.sql (22.1ms)
+2026/10/02 12:12:20 OK   00014_audit_segment_predecessors.sql (8.8ms)
+2026/10/02 12:12:20 OK   00015_source_schema_scope.sql (4.67ms)
+2026/10/02 12:12:20 OK   00016_cluster_registration_metadata.sql (4.68ms)
+2026/10/02 12:12:20 OK   00017_source_data_scope.sql (5.16ms)
+2026/10/02 12:12:20 OK   00018_sp04_resources_evidence.sql (26.6ms)
+2026/10/02 12:12:20 OK   00019_sp04_archive_ciphertext_bytes.sql (3.59ms)
+2026/10/02 12:12:20 OK   00020_sp04_request_ledger.sql (6.48ms)
+2026/10/02 12:12:20 OK   00021_sp04_archive_protection.sql (4.34ms)
+2026/10/02 12:12:20 OK   00022_sp04_legal_hold_dependencies.sql (3.25ms)
+2026/10/02 12:12:20 OK   00023_sp04_archive_query_intent.sql (3.38ms)
+2026/10/02 12:12:20 goose: successfully migrated database to version: 23
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/concurrent-first-resource-observations
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/recover-original-query-even-when-source-is-partial
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/source-expired-before-encryption
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/legal-hold-pagination-and-mutation-fencing
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/database-commit-response-lost
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/closure-active-incident-hold-race-and-delete-crash
+--- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention (0.99s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/concurrent-first-resource-observations (0.14s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/recover-original-query-even-when-source-is-partial (0.03s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/source-expired-before-encryption (0.01s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/legal-hold-pagination-and-mutation-fencing (0.08s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/database-commit-response-lost (0.02s)
+    --- PASS: TestSP04ArchiveRecoveryIntegrityAndRetention/closure-active-incident-hold-race-and-delete-crash (0.11s)
+PASS
+ok  	ops-platform/test/integration	3.038s

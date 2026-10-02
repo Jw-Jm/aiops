@@ -1,4 +1,6 @@
 workloadsEnabled: false
+global:
+  imagePullPolicy: IfNotPresent
 networkPolicyOnly: false
 workloadIdentity:
   enabled: true
@@ -27,3 +29,23 @@ components:
   command-runner:
     enabled: true
     port: 8091
+
+# SP04 uses the existing Worker. Identity and source credentials are provisioned
+# independently and never embedded in ConfigMap or Bundle values.
+sp04:
+  enabled: false
+  graphPort: 8082
+  workerReplicas: 2
+  apiIdentitySecret: ops-sp04-api-identity
+  workerIdentitySecret: ops-sp04-worker-identity
+  sourceCredentialsSecret: ops-sp04-source-credentials
+  allowedWorkerCIDRs: []
+  archiveBackendLogicalID: ""
+  clusters: []
+  sources: []
+  kubernetesAPI:
+    # Exact /32 or /128 control-plane endpoints; broad public egress is refused.
+    cidrs: []
+    port: 6443
+    localCollector: false
+  leaseNames: []

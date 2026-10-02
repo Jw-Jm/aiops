@@ -1,0 +1,28 @@
+# ops-platform/internal/app [ops-platform/internal/app.test]
+internal/app/sp04_hardware.go:45:10: undefined: archiveFailed
+internal/app/sp04_hardware.go:58:7: declared and not used: archiveFailed
+=== RUN   TestDeepFlowFixedTemplatesAndCanonicalMapping
+--- PASS: TestDeepFlowFixedTemplatesAndCanonicalMapping (0.00s)
+=== RUN   TestDeepFlowRejectsRowsViolatingOperationPredicate
+--- PASS: TestDeepFlowRejectsRowsViolatingOperationPredicate (0.00s)
+PASS
+ok  	ops-platform/internal/integrations/deepflow	0.623s
+=== RUN   TestRedfishThreeVendors
+=== RUN   TestRedfishThreeVendors/dell
+=== RUN   TestRedfishThreeVendors/hpe
+=== RUN   TestRedfishThreeVendors/lenovo
+--- PASS: TestRedfishThreeVendors (0.02s)
+    --- PASS: TestRedfishThreeVendors/dell (0.01s)
+    --- PASS: TestRedfishThreeVendors/hpe (0.00s)
+    --- PASS: TestRedfishThreeVendors/lenovo (0.00s)
+=== RUN   TestRedfishMissingUUIDDuplicateSerialAndPartialInventory
+    redfish_test.go:35: missing fixture path /redfish/v1/Systems/System.Embedded.1/Memory/DIMM1
+--- PASS: TestRedfishMissingUUIDDuplicateSerialAndPartialInventory (0.01s)
+=== RUN   TestRedfishAuthAndTimeoutDegrade
+--- PASS: TestRedfishAuthAndTimeoutDegrade (0.10s)
+=== RUN   TestDuplicateHardwareUUIDIsAnUnresolvedConflict
+--- PASS: TestDuplicateHardwareUUIDIsAnUnresolvedConflict (0.00s)
+PASS
+ok  	ops-platform/internal/integrations/redfish	1.004s
+FAIL	ops-platform/internal/app [build failed]
+FAIL

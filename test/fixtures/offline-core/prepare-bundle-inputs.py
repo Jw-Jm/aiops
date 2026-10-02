@@ -114,6 +114,11 @@ def first_party_notices(binary, target):
         notices=[p for p in directory.iterdir() if p.is_file() and p.name.upper().startswith(("LICENSE","COPYING","NOTICE","COPYRIGHT"))]
         if not notices: raise RuntimeError("linked module original notice missing: " + parts[1])
         for p in notices: text += "\n===== " + parts[1]+"@"+parts[2]+"/"+p.name+" =====\n" + p.read_text()
+    # Selected in-tree upstream snippets are not Go modules; preserve their
+    # original license/notice text in every distributed first-party artifact.
+    for notice in sorted((ROOT/"internal/upstream").rglob("*")):
+        if notice.is_file() and notice.name in ("LICENSE", "NOTICE", "COPYING"):
+            text += "\n===== selected source " + str(notice.relative_to(ROOT)) + " =====\n" + notice.read_text()
     target.write_text(text)
 
 
@@ -184,7 +189,14 @@ def main():
             payload,reference,image_digest=export(name,"ops.local/"+args.bundle_id+"/"+name+":1.0.0")
             kind="container-image";payloadkind="oci";scan="oci-archive:"+str(payload)
         sbom=OUT/(name+".spdx.json")
-        sbom.write_bytes(run([str(SYFT),scan,"-o","spdx-json"]))
+        document=json.loads(run([str(SYFT),scan,"-o","spdx-json"]))
+        # Syft's Go module inventory cannot see copied ontology/check/model
+        # source. Include the exact selected source inventory explicitly.
+        selected=json.loads((ROOT/"third_party/admission/sp04-selected-runtime.json").read_text())
+        document.setdefault("files",[])
+        for index, f in enumerate(selected["files"]):
+            document["files"].append({"SPDXID":"SPDXRef-SP04Selected-"+str(index),"fileName":f["path"],"checksums":[{"algorithm":"SHA256","checksumValue":f["sha256"]}],"licenseConcluded":f["license"],"licenseInfoInFiles":[f["license"]],"copyrightText":"Original source headers and notices accompany the selected-upstream source archive"})
+        sbom.write_text(json.dumps(document))
         material(name,kind,"1.0.0",payload,sbom,license,payloadkind)
         print("prepared local first-party",name,flush=True)
     for name in ("ops-platform","ops-dependencies"):
@@ -217,6 +229,8 @@ def main():
             entries.append({"SPDXID":"SPDXRef-File-"+str(len(entries)),"fileName":"modules/"+module["path"]+"@"+module["version"]+"/"+f["path"],"checksums":[{"algorithm":"SHA256","checksumValue":f["digest"].split(":")[1]}],"licenseConcluded":f["license"],"licenseInfoInFiles":[f["license"]],"copyrightText":"Original source headers and notices accompany this file"})
     for f in lock["standardLibraryFiles"]:
         entries.append({"SPDXID":"SPDXRef-File-"+str(len(entries)),"fileName":"toolchain/"+lock["goVersion"]+"/"+f["path"],"checksums":[{"algorithm":"SHA256","checksumValue":f["digest"].split(":")[1]}],"licenseConcluded":f["license"],"licenseInfoInFiles":[f["license"]],"copyrightText":"Original source headers and notices accompany this file"})
+    for f in lock["selectedUpstreamFiles"]:
+        entries.append({"SPDXID":"SPDXRef-File-"+str(len(entries)),"fileName":"selected-upstream/"+f["path"],"checksums":[{"algorithm":"SHA256","checksumValue":f["digest"].split(":")[1]}],"licenseConcluded":f["license"],"licenseInfoInFiles":[f["license"]],"copyrightText":"Original source headers and notices accompany this file"})
     sbom.write_text(json.dumps({"spdxVersion":"SPDX-2.3","dataLicense":"CC0-1.0","SPDXID":"SPDXRef-DOCUMENT","name":"Selected Go runtime source closure","documentNamespace":"https://ops.local/sbom/runtime-source/"+sha(source).split(":")[1],"creationInfo":{"creators":["Tool: ops-selected-runtime-lock"],"created":"2026-10-01T00:00:00Z"},"files":entries}))
     notices = OUT/"runtime-source-notices.txt"
     with tarfile.open(source) as archive:
@@ -226,6 +240,9 @@ def main():
                 name = "modules/"+module["path"]+"@"+module["version"]+"/"+notice["path"]
                 text += "\n===== "+name+" =====\n" + archive.extractfile(name).read().decode()
         text += "\n===== Go LICENSE =====\n" + archive.extractfile("toolchain/"+lock["goVersion"]+"/LICENSE").read().decode()
+        for f in lock["selectedUpstreamFiles"]:
+            if Path(f["path"]).name in ("LICENSE","NOTICE","COPYING"):
+                text += "\n===== selected source "+f["path"]+" =====\n" + archive.extractfile("selected-upstream/"+f["path"]).read().decode()
     notices.write_text(text)
     material("opa-sdk-source", "source", sdk["version"], source, sbom, notices, "source")
     head = run(["git", "rev-parse", "HEAD"]).decode().strip()

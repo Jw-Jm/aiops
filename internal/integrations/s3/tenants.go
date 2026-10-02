@@ -24,10 +24,22 @@ import (
 
 var ErrTenantIAM = errors.New("archive tenant IAM configuration or scope is invalid")
 
+type RoleCredential struct {
+	AccessKey string `json:"accessKey"`
+	SecretKey string `json:"secretKey"`
+}
+type TenantRoles struct {
+	Write   RoleCredential `json:"write"`
+	Read    RoleCredential `json:"read"`
+	Protect RoleCredential `json:"protect"`
+	Cleanup RoleCredential `json:"cleanup"`
+}
+
 type TenantCredential struct {
-	TenantID  uuid.UUID `json:"tenantId"`
-	AccessKey string    `json:"accessKey"`
-	SecretKey string    `json:"secretKey"`
+	Roles     *TenantRoles `json:"roles,omitempty"`
+	TenantID  uuid.UUID    `json:"tenantId"`
+	AccessKey string       `json:"accessKey,omitempty"`
+	SecretKey string       `json:"secretKey,omitempty"`
 }
 type TenantCredentials struct {
 	SchemaVersion string             `json:"schemaVersion"`
@@ -41,7 +53,13 @@ type tenantClient struct {
 
 // TenantClient routes immutable tenant prefixes to distinct IAM principals. It
 // has no global credential fallback. Credential provisioning is operator owned.
-type TenantClient struct{ tenants map[string]*tenantClient }
+type TenantClient struct {
+	tenants   map[string]*tenantClient
+	roles     map[string]map[string]*tenantClient
+	separated bool
+}
+
+func (c *TenantClient) RoleSeparated() bool { return c != nil && c.separated }
 
 // LoadTenantClient bounds reads even when the source is an operator-managed file.
 func LoadTenantClient(c Config, path string) (*TenantClient, error) {
@@ -71,28 +89,50 @@ func NewTenantClient(c Config, raw []byte) (*TenantClient, error) {
 	var credentials TenantCredentials
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()
-	if decoder.Decode(&credentials) != nil || credentials.SchemaVersion != "ops-archive-credentials/v1" || len(credentials.Tenants) == 0 || len(credentials.Tenants) > 4096 {
+	if decoder.Decode(&credentials) != nil || (credentials.SchemaVersion != "ops-archive-credentials/v1" && credentials.SchemaVersion != "ops-archive-credentials/v2") || len(credentials.Tenants) == 0 || len(credentials.Tenants) > 4096 {
 		return nil, ErrTenantIAM
 	}
-	out := &TenantClient{tenants: map[string]*tenantClient{}}
+	out := &TenantClient{tenants: map[string]*tenantClient{}, roles: map[string]map[string]*tenantClient{}, separated: credentials.SchemaVersion == "ops-archive-credentials/v2"}
 	accessKeys := map[string]bool{}
 	for _, credential := range credentials.Tenants {
-		if credential.TenantID == uuid.Nil || len(credential.AccessKey) == 0 || len(credential.AccessKey) > 256 || len(credential.SecretKey) == 0 || len(credential.SecretKey) > 1024 || accessKeys[credential.AccessKey] {
+		if credential.TenantID == uuid.Nil {
 			return nil, ErrTenantIAM
 		}
 		prefix := archive.TenantPrefix(credential.TenantID)
-		if _, exists := out.tenants[prefix]; exists {
+		if _, exists := out.roles[prefix]; exists {
 			return nil, ErrTenantIAM
 		}
-		accessKeys[credential.AccessKey] = true
-		config := c
-		config.AccessKey = credential.AccessKey
-		config.SecretKey = credential.SecretKey
-		client, err := NewClient(config)
-		if err != nil {
-			return nil, ErrTenantIAM
+		roles := map[string]RoleCredential{}
+		if out.separated {
+			if credential.Roles == nil || credential.AccessKey != "" || credential.SecretKey != "" {
+				return nil, ErrTenantIAM
+			}
+			roles = map[string]RoleCredential{"write": credential.Roles.Write, "read": credential.Roles.Read, "protect": credential.Roles.Protect, "cleanup": credential.Roles.Cleanup}
+		} else {
+			if credential.Roles != nil {
+				return nil, ErrTenantIAM
+			}
+			roles["legacy"] = RoleCredential{credential.AccessKey, credential.SecretKey}
 		}
-		out.tenants[prefix] = &tenantClient{client: client}
+		out.roles[prefix] = map[string]*tenantClient{}
+		for role, principal := range roles {
+			if len(principal.AccessKey) == 0 || len(principal.AccessKey) > 256 || len(principal.SecretKey) == 0 || len(principal.SecretKey) > 1024 || accessKeys[principal.AccessKey] {
+				return nil, ErrTenantIAM
+			}
+			accessKeys[principal.AccessKey] = true
+			config := c
+			config.AccessKey = principal.AccessKey
+			config.SecretKey = principal.SecretKey
+			client, err := NewClient(config)
+			if err != nil {
+				return nil, ErrTenantIAM
+			}
+			out.roles[prefix][role] = &tenantClient{client: client}
+		}
+		if !out.separated {
+			out.tenants[prefix] = out.roles[prefix]["legacy"]
+		}
+
 	}
 	return out, nil
 }
@@ -137,10 +177,16 @@ func validTenantPrefix(prefix string) bool {
 	return err == nil && prefix == strings.ToLower(prefix)
 }
 func (c *TenantClient) scoped(ctx context.Context, key string) (*Client, error) {
+	return c.scopedRole(ctx, key, "read")
+}
+func (c *TenantClient) scopedRole(ctx context.Context, key, role string) (*Client, error) {
 	if len(key) < 73 || !validTenantPrefix(key[:73]) {
 		return nil, archive.ErrTenantMismatch
 	}
-	tenant := c.tenants[key[:73]]
+	if !c.separated {
+		role = "legacy"
+	}
+	tenant := c.roles[key[:73]][role]
 	if tenant == nil {
 		return nil, ErrTenantIAM
 	}
@@ -155,11 +201,20 @@ func (c *TenantClient) scoped(ctx context.Context, key string) (*Client, error) 
 	return tenant.client, nil
 }
 func (c *TenantClient) Put(ctx context.Context, key string, body []byte, metadata map[string]string) (archive.Version, error) {
-	client, err := c.scoped(ctx, key)
+	client, err := c.scopedRole(ctx, key, "write")
 	if err != nil {
 		return archive.Version{}, err
 	}
-	return client.Put(ctx, key, body, metadata)
+	version, err := client.Put(ctx, key, body, metadata)
+	if err != nil && c.separated {
+		// Upload ambiguity is checked using the read principal, never by granting
+		// reads to the upload credential.
+		stored, readErr := c.Get(ctx, key, "")
+		if readErr == nil && bytes.Equal(stored.Body, body) && equalMetadata(stored.Metadata, metadata) {
+			return archive.Version{ETag: stored.ETag, VersionID: stored.VersionID}, nil
+		}
+	}
+	return version, err
 }
 func (c *TenantClient) Get(ctx context.Context, key, version string) (archive.StoredObject, error) {
 	client, err := c.scoped(ctx, key)
@@ -176,9 +231,24 @@ func (c *TenantClient) Head(ctx context.Context, key, version string) (archive.S
 	return client.Head(ctx, key, version)
 }
 func (c *TenantClient) Delete(ctx context.Context, key, version string) error {
-	client, err := c.scoped(ctx, key)
+	client, err := c.scopedRole(ctx, key, "cleanup")
 	if err != nil {
 		return err
 	}
 	return client.Delete(ctx, key, version)
+}
+
+func (c *TenantClient) ProtectObject(ctx context.Context, key, version string, until time.Time, hold bool) error {
+	client, err := c.scopedRole(ctx, key, "protect")
+	if err != nil {
+		return err
+	}
+	if !c.separated {
+		return client.ProtectObject(ctx, key, version, until, hold)
+	}
+	actual, err := c.Head(ctx, key, version)
+	if err != nil {
+		return err
+	}
+	return client.protectKnownObject(ctx, key, version, until, hold, actual.RetainUntil)
 }

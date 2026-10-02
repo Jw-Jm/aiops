@@ -1,0 +1,33 @@
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention
+2026/10/02 12:11:12 OK   00001_roles_and_schemas.sql (12.5ms)
+2026/10/02 12:11:12 goose: successfully migrated database to version: 1
+2026/10/02 12:11:12 OK   00002_platform_meta.sql (15.3ms)
+2026/10/02 12:11:12 OK   00003_finding.sql (7.01ms)
+2026/10/02 12:11:12 OK   00004_incident.sql (5.88ms)
+2026/10/02 12:11:12 OK   00005_investigation.sql (5.81ms)
+2026/10/02 12:11:12 OK   00006_action_command.sql (5.12ms)
+2026/10/02 12:11:12 OK   00007_audit.sql (8.29ms)
+2026/10/02 12:11:12 OK   00008_rls.sql (6.93ms)
+2026/10/02 12:11:12 OK   00009_idempotency_ledger.sql (5.43ms)
+2026/10/02 12:11:12 OK   00010_tenant_provisioning.sql (4.94ms)
+2026/10/02 12:11:12 OK   00011_source_registration_history.sql (6.31ms)
+2026/10/02 12:11:12 OK   00012_config_registry_lifecycle.sql (7.99ms)
+2026/10/02 12:11:12 OK   00013_audit_signed_segments.sql (7.84ms)
+2026/10/02 12:11:12 OK   00014_audit_segment_predecessors.sql (5.74ms)
+2026/10/02 12:11:12 OK   00015_source_schema_scope.sql (4.1ms)
+2026/10/02 12:11:12 OK   00016_cluster_registration_metadata.sql (4.36ms)
+2026/10/02 12:11:12 OK   00017_source_data_scope.sql (3.79ms)
+2026/10/02 12:11:12 OK   00018_sp04_resources_evidence.sql (11.05ms)
+2026/10/02 12:11:12 OK   00019_sp04_archive_ciphertext_bytes.sql (3.77ms)
+2026/10/02 12:11:12 OK   00020_sp04_request_ledger.sql (4.44ms)
+2026/10/02 12:11:12 OK   00021_sp04_archive_protection.sql (4.16ms)
+2026/10/02 12:11:12 OK   00022_sp04_legal_hold_dependencies.sql (3.66ms)
+2026/10/02 12:11:12 OK   00023_sp04_archive_query_intent.sql (3.86ms)
+2026/10/02 12:11:12 goose: successfully migrated database to version: 23
+=== RUN   TestSP04ArchiveRecoveryIntegrityAndRetention/concurrent-first-resource-observations
+    sp04_archive_test.go:131: same immutable UID/RV/content first-observation race not idempotent: IDEMPOTENCY_CONFLICT
+--- FAIL: TestSP04ArchiveRecoveryIntegrityAndRetention (0.52s)
+    --- FAIL: TestSP04ArchiveRecoveryIntegrityAndRetention/concurrent-first-resource-observations (0.06s)
+FAIL
+FAIL	ops-platform/test/integration	1.297s
+FAIL

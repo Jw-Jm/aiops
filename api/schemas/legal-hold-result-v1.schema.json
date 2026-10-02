@@ -1,0 +1,87 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "requestId",
+    "data",
+    "meta",
+    "protectionSync"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": [
+        "legal-hold-result/v1"
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidenceId",
+        "hold"
+      ],
+      "properties": {
+        "evidenceId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "hold": {
+          "type": "boolean"
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nextCursor",
+        "freshness",
+        "partial",
+        "warnings",
+        "degradedSources"
+      ],
+      "properties": {
+        "nextCursor": {
+          "type": "string"
+        },
+        "freshness": {
+          "type": "string",
+          "enum": [
+            "fresh",
+            "stale",
+            "unavailable"
+          ]
+        },
+        "partial": {
+          "type": "boolean"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "degradedSources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "protectionSync": {
+      "type": "string",
+      "enum": [
+        "pending"
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/legal-hold-result/v1"
+}

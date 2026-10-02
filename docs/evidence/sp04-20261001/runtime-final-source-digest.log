@@ -1,0 +1,64 @@
+=== RUN   TestSP04FullRuntimeOrbStackOIDCEvidenceAndFailover
+2026/10/02 12:25:35 OK   00001_roles_and_schemas.sql (18.29ms)
+2026/10/02 12:25:35 goose: successfully migrated database to version: 1
+2026/10/02 12:25:35 OK   00002_platform_meta.sql (25.76ms)
+2026/10/02 12:25:35 OK   00003_finding.sql (8.76ms)
+2026/10/02 12:25:35 OK   00004_incident.sql (11.35ms)
+2026/10/02 12:25:35 OK   00005_investigation.sql (11.26ms)
+2026/10/02 12:25:35 OK   00006_action_command.sql (6.81ms)
+2026/10/02 12:25:35 OK   00007_audit.sql (11.96ms)
+2026/10/02 12:25:35 OK   00008_rls.sql (9.67ms)
+2026/10/02 12:25:35 OK   00009_idempotency_ledger.sql (7.56ms)
+2026/10/02 12:25:35 OK   00010_tenant_provisioning.sql (4.39ms)
+2026/10/02 12:25:35 OK   00011_source_registration_history.sql (7.35ms)
+2026/10/02 12:25:35 OK   00012_config_registry_lifecycle.sql (8.84ms)
+2026/10/02 12:25:35 OK   00013_audit_signed_segments.sql (26.55ms)
+2026/10/02 12:25:35 OK   00014_audit_segment_predecessors.sql (6.94ms)
+2026/10/02 12:25:35 OK   00015_source_schema_scope.sql (8.07ms)
+2026/10/02 12:25:35 OK   00016_cluster_registration_metadata.sql (11.93ms)
+2026/10/02 12:25:35 OK   00017_source_data_scope.sql (5.97ms)
+2026/10/02 12:25:35 OK   00018_sp04_resources_evidence.sql (11.86ms)
+2026/10/02 12:25:35 OK   00019_sp04_archive_ciphertext_bytes.sql (4.29ms)
+2026/10/02 12:25:35 OK   00020_sp04_request_ledger.sql (4.81ms)
+2026/10/02 12:25:35 OK   00021_sp04_archive_protection.sql (4.29ms)
+2026/10/02 12:25:35 OK   00022_sp04_legal_hold_dependencies.sql (3.26ms)
+2026/10/02 12:25:35 OK   00023_sp04_archive_query_intent.sql (3.53ms)
+2026/10/02 12:25:35 goose: successfully migrated database to version: 23
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=8d6828b0b23683744702ecaffc777bdec85ebdc9f1f8be95c00264c62ca9db18 bucket=sp04-chain-dad55707 tenants=1
+{"time":"2026-10-02T12:25:40.190189+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-5a58-7c8a-9d3b-444f47d0bd19","method":"GET","status_code":503,"duration_ms":5}
+{"time":"2026-10-02T12:25:40.246158+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-02T12:25:40.394635+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-5b27-77a5-96bb-c6a3633a51d0","method":"GET","status_code":503,"duration_ms":3}
+{"time":"2026-10-02T12:25:40.60058+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-5bf4-725d-bad5-83d47c2803f2","method":"GET","status_code":503,"duration_ms":4}
+{"time":"2026-10-02T12:25:40.80483+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-5cc2-7217-a652-09454878c2ab","method":"GET","status_code":503,"duration_ms":2}
+{"time":"2026-10-02T12:25:40.876425+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-02T12:25:41.008155+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-5d8d-76a3-9734-fad75040d4d6","method":"GET","status_code":503,"duration_ms":2}
+{"time":"2026-10-02T12:25:41.212346+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-5e59-7412-a0b1-48e0f715c995","method":"GET","status_code":503,"duration_ms":3}
+{"time":"2026-10-02T12:25:41.419614+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-5f25-7b89-a5b0-ea3e6edaee7b","method":"GET","status_code":503,"duration_ms":5}
+{"time":"2026-10-02T12:25:41.624881+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-5ff5-7259-aada-7767f6fb175b","method":"GET","status_code":503,"duration_ms":3}
+{"time":"2026-10-02T12:25:41.830068+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-60c2-76ae-adf6-03b115a48b19","method":"GET","status_code":503,"duration_ms":3}
+{"time":"2026-10-02T12:25:42.044209+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-618f-7e25-8edc-af7ee94517b9","method":"GET","status_code":503,"duration_ms":12}
+{"time":"2026-10-02T12:25:42.250005+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6266-70d6-86dc-b3a09d202923","method":"GET","status_code":503,"duration_ms":3}
+{"time":"2026-10-02T12:25:42.454651+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6333-7962-8e0d-a29db2912499","method":"GET","status_code":503,"duration_ms":2}
+{"time":"2026-10-02T12:25:42.659738+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-63ff-7683-a1e5-6dcec55af47a","method":"GET","status_code":503,"duration_ms":4}
+{"time":"2026-10-02T12:25:42.865132+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-64cc-794a-9b2a-ef67a6b1e8f1","method":"GET","status_code":503,"duration_ms":4}
+{"time":"2026-10-02T12:25:43.069881+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6599-7849-ac9a-3cb489073910","method":"GET","status_code":503,"duration_ms":4}
+{"time":"2026-10-02T12:25:43.272984+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6666-73c0-89f0-a6fb4577b820","method":"GET","status_code":503,"duration_ms":2}
+{"time":"2026-10-02T12:25:43.480937+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6731-75b4-84d0-a07d320d8eba","method":"GET","status_code":503,"duration_ms":7}
+{"time":"2026-10-02T12:25:43.577255+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"storage.k8s.io/v1/storageclasses":"list_missing"}}
+{"time":"2026-10-02T12:25:43.693967+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6801-7376-8f7e-b0446e2042d7","method":"GET","status_code":503,"duration_ms":12}
+{"time":"2026-10-02T12:25:44.01888+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-68d7-781a-9a02-13a523f55483","method":"GET","status_code":200,"duration_ms":123}
+{"time":"2026-10-02T12:25:44.214983+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6953-7222-a73b-dc6c597c7549","method":"GET","status_code":200,"duration_ms":195}
+{"time":"2026-10-02T12:25:44.624248+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6a17-74a3-8a86-28f575109e22","method":"GET","status_code":200,"duration_ms":408}
+{"time":"2026-10-02T12:25:44.82352+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6bb0-7874-aa5e-2ddd1474c46c","method":"GET","status_code":200,"duration_ms":198}
+{"time":"2026-10-02T12:25:45.020073+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6c77-7bc7-b9b5-c8e6d3830578","method":"GET","status_code":200,"duration_ms":196}
+{"time":"2026-10-02T12:25:45.231359+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6d3c-7436-8a05-ea45b25c0395","method":"POST","status_code":200,"duration_ms":211}
+{"time":"2026-10-02T12:25:45.452898+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6e0f-7937-8ff2-97950a188890","method":"GET","status_code":200,"duration_ms":221}
+{"time":"2026-10-02T12:25:45.675169+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6eed-71a1-8f59-5cdeed2506d2","method":"GET","status_code":200,"duration_ms":222}
+{"time":"2026-10-02T12:25:45.853429+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-6fcb-7697-81fe-6c2672aef22b","method":"GET","status_code":200,"duration_ms":177}
+{"time":"2026-10-02T12:25:46.046625+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-707d-798d-a800-01c91e57e163","method":"GET","status_code":200,"duration_ms":192}
+{"time":"2026-10-02T12:25:46.454899+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fadc-713e-7c25-bfb3-0c4c31b1c870","method":"GET","status_code":503,"duration_ms":408}
+    sp04_runtime_test.go:278: graph request status=503 {"code":"GRAPH_NOT_READY","message":"resource or evidence query unavailable","requestId":"01a0fadc-713e-7c25-bfb3-0c4c31b1c870","retryable":true,"schemaVersion":"error-envelope/v2"}
+--- FAIL: TestSP04FullRuntimeOrbStackOIDCEvidenceAndFailover (11.98s)
+FAIL
+FAIL	ops-platform/test/integration	12.857s
+FAIL

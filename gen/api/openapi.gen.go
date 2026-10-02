@@ -15,6 +15,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Defines values for DiagnosticGraphBuildRequestRecipe.
@@ -34,112 +35,112 @@ func (e DiagnosticGraphBuildRequestRecipe) Valid() bool {
 
 // Defines values for ErrorEnvelopeCode.
 const (
-	BUDGETEXHAUSTED                 ErrorEnvelopeCode = "BUDGET_EXHAUSTED"
-	BUNDLEDIGESTMISMATCH            ErrorEnvelopeCode = "BUNDLE_DIGEST_MISMATCH"
-	BUNDLEEXTRACTIONREJECTED        ErrorEnvelopeCode = "BUNDLE_EXTRACTION_REJECTED"
-	BUNDLESIGNATUREINVALID          ErrorEnvelopeCode = "BUNDLE_SIGNATURE_INVALID"
-	CAPABILITYDISABLED              ErrorEnvelopeCode = "CAPABILITY_DISABLED"
-	COMMANDPOLICYDENIED             ErrorEnvelopeCode = "COMMAND_POLICY_DENIED"
-	CONFLICT                        ErrorEnvelopeCode = "CONFLICT"
-	EXECUTIONPROFILEDENIED          ErrorEnvelopeCode = "EXECUTION_PROFILE_DENIED"
-	EXECUTIONUNKNOWN                ErrorEnvelopeCode = "EXECUTION_UNKNOWN"
-	FORBIDDEN                       ErrorEnvelopeCode = "FORBIDDEN"
-	GRAPHNOTREADY                   ErrorEnvelopeCode = "GRAPH_NOT_READY"
-	GRAPHPARTIAL                    ErrorEnvelopeCode = "GRAPH_PARTIAL"
-	HOSTNOTONBOARDED                ErrorEnvelopeCode = "HOST_NOT_ONBOARDED"
-	IDEMPOTENCYCONFLICT             ErrorEnvelopeCode = "IDEMPOTENCY_CONFLICT"
-	IDEMPOTENCYINPROGRESS           ErrorEnvelopeCode = "IDEMPOTENCY_IN_PROGRESS"
-	IDEMPOTENCYKEYREUSED            ErrorEnvelopeCode = "IDEMPOTENCY_KEY_REUSED"
-	INTERNAL                        ErrorEnvelopeCode = "INTERNAL"
-	INVALIDARGUMENT                 ErrorEnvelopeCode = "INVALID_ARGUMENT"
-	NOTFOUND                        ErrorEnvelopeCode = "NOT_FOUND"
-	OPENBAOSEALED                   ErrorEnvelopeCode = "OPENBAO_SEALED"
-	OUTPUTTRUNCATED                 ErrorEnvelopeCode = "OUTPUT_TRUNCATED"
-	POLICYDENIED                    ErrorEnvelopeCode = "POLICY_DENIED"
-	PRECONDITIONFAILED              ErrorEnvelopeCode = "PRECONDITION_FAILED"
-	PROFILECOMPONENTCONFLICT        ErrorEnvelopeCode = "PROFILE_COMPONENT_CONFLICT"
-	RATELIMITED                     ErrorEnvelopeCode = "RATE_LIMITED"
-	RISKACKCOMMANDMISMATCH          ErrorEnvelopeCode = "RISK_ACK_COMMAND_MISMATCH"
-	RISKACKREQUIRED                 ErrorEnvelopeCode = "RISK_ACK_REQUIRED"
-	SOURCEDEGRADED                  ErrorEnvelopeCode = "SOURCE_DEGRADED"
-	SOURCENOTCONFIGURED             ErrorEnvelopeCode = "SOURCE_NOT_CONFIGURED"
-	STEPUPEXPIRED                   ErrorEnvelopeCode = "STEP_UP_EXPIRED"
-	STEPUPREQUIRED                  ErrorEnvelopeCode = "STEP_UP_REQUIRED"
-	TIMEOUT                         ErrorEnvelopeCode = "TIMEOUT"
-	UNAUTHENTICATED                 ErrorEnvelopeCode = "UNAUTHENTICATED"
-	UPSTREAMCOMPATIBILITYUNVERIFIED ErrorEnvelopeCode = "UPSTREAM_COMPATIBILITY_UNVERIFIED"
+	ErrorEnvelopeCodeBUDGETEXHAUSTED                 ErrorEnvelopeCode = "BUDGET_EXHAUSTED"
+	ErrorEnvelopeCodeBUNDLEDIGESTMISMATCH            ErrorEnvelopeCode = "BUNDLE_DIGEST_MISMATCH"
+	ErrorEnvelopeCodeBUNDLEEXTRACTIONREJECTED        ErrorEnvelopeCode = "BUNDLE_EXTRACTION_REJECTED"
+	ErrorEnvelopeCodeBUNDLESIGNATUREINVALID          ErrorEnvelopeCode = "BUNDLE_SIGNATURE_INVALID"
+	ErrorEnvelopeCodeCAPABILITYDISABLED              ErrorEnvelopeCode = "CAPABILITY_DISABLED"
+	ErrorEnvelopeCodeCOMMANDPOLICYDENIED             ErrorEnvelopeCode = "COMMAND_POLICY_DENIED"
+	ErrorEnvelopeCodeCONFLICT                        ErrorEnvelopeCode = "CONFLICT"
+	ErrorEnvelopeCodeEXECUTIONPROFILEDENIED          ErrorEnvelopeCode = "EXECUTION_PROFILE_DENIED"
+	ErrorEnvelopeCodeEXECUTIONUNKNOWN                ErrorEnvelopeCode = "EXECUTION_UNKNOWN"
+	ErrorEnvelopeCodeFORBIDDEN                       ErrorEnvelopeCode = "FORBIDDEN"
+	ErrorEnvelopeCodeGRAPHNOTREADY                   ErrorEnvelopeCode = "GRAPH_NOT_READY"
+	ErrorEnvelopeCodeGRAPHPARTIAL                    ErrorEnvelopeCode = "GRAPH_PARTIAL"
+	ErrorEnvelopeCodeHOSTNOTONBOARDED                ErrorEnvelopeCode = "HOST_NOT_ONBOARDED"
+	ErrorEnvelopeCodeIDEMPOTENCYCONFLICT             ErrorEnvelopeCode = "IDEMPOTENCY_CONFLICT"
+	ErrorEnvelopeCodeIDEMPOTENCYINPROGRESS           ErrorEnvelopeCode = "IDEMPOTENCY_IN_PROGRESS"
+	ErrorEnvelopeCodeIDEMPOTENCYKEYREUSED            ErrorEnvelopeCode = "IDEMPOTENCY_KEY_REUSED"
+	ErrorEnvelopeCodeINTERNAL                        ErrorEnvelopeCode = "INTERNAL"
+	ErrorEnvelopeCodeINVALIDARGUMENT                 ErrorEnvelopeCode = "INVALID_ARGUMENT"
+	ErrorEnvelopeCodeNOTFOUND                        ErrorEnvelopeCode = "NOT_FOUND"
+	ErrorEnvelopeCodeOPENBAOSEALED                   ErrorEnvelopeCode = "OPENBAO_SEALED"
+	ErrorEnvelopeCodeOUTPUTTRUNCATED                 ErrorEnvelopeCode = "OUTPUT_TRUNCATED"
+	ErrorEnvelopeCodePOLICYDENIED                    ErrorEnvelopeCode = "POLICY_DENIED"
+	ErrorEnvelopeCodePRECONDITIONFAILED              ErrorEnvelopeCode = "PRECONDITION_FAILED"
+	ErrorEnvelopeCodePROFILECOMPONENTCONFLICT        ErrorEnvelopeCode = "PROFILE_COMPONENT_CONFLICT"
+	ErrorEnvelopeCodeRATELIMITED                     ErrorEnvelopeCode = "RATE_LIMITED"
+	ErrorEnvelopeCodeRISKACKCOMMANDMISMATCH          ErrorEnvelopeCode = "RISK_ACK_COMMAND_MISMATCH"
+	ErrorEnvelopeCodeRISKACKREQUIRED                 ErrorEnvelopeCode = "RISK_ACK_REQUIRED"
+	ErrorEnvelopeCodeSOURCEDEGRADED                  ErrorEnvelopeCode = "SOURCE_DEGRADED"
+	ErrorEnvelopeCodeSOURCENOTCONFIGURED             ErrorEnvelopeCode = "SOURCE_NOT_CONFIGURED"
+	ErrorEnvelopeCodeSTEPUPEXPIRED                   ErrorEnvelopeCode = "STEP_UP_EXPIRED"
+	ErrorEnvelopeCodeSTEPUPREQUIRED                  ErrorEnvelopeCode = "STEP_UP_REQUIRED"
+	ErrorEnvelopeCodeTIMEOUT                         ErrorEnvelopeCode = "TIMEOUT"
+	ErrorEnvelopeCodeUNAUTHENTICATED                 ErrorEnvelopeCode = "UNAUTHENTICATED"
+	ErrorEnvelopeCodeUPSTREAMCOMPATIBILITYUNVERIFIED ErrorEnvelopeCode = "UPSTREAM_COMPATIBILITY_UNVERIFIED"
 )
 
 // Valid indicates whether the value is a known member of the ErrorEnvelopeCode enum.
 func (e ErrorEnvelopeCode) Valid() bool {
 	switch e {
-	case BUDGETEXHAUSTED:
+	case ErrorEnvelopeCodeBUDGETEXHAUSTED:
 		return true
-	case BUNDLEDIGESTMISMATCH:
+	case ErrorEnvelopeCodeBUNDLEDIGESTMISMATCH:
 		return true
-	case BUNDLEEXTRACTIONREJECTED:
+	case ErrorEnvelopeCodeBUNDLEEXTRACTIONREJECTED:
 		return true
-	case BUNDLESIGNATUREINVALID:
+	case ErrorEnvelopeCodeBUNDLESIGNATUREINVALID:
 		return true
-	case CAPABILITYDISABLED:
+	case ErrorEnvelopeCodeCAPABILITYDISABLED:
 		return true
-	case COMMANDPOLICYDENIED:
+	case ErrorEnvelopeCodeCOMMANDPOLICYDENIED:
 		return true
-	case CONFLICT:
+	case ErrorEnvelopeCodeCONFLICT:
 		return true
-	case EXECUTIONPROFILEDENIED:
+	case ErrorEnvelopeCodeEXECUTIONPROFILEDENIED:
 		return true
-	case EXECUTIONUNKNOWN:
+	case ErrorEnvelopeCodeEXECUTIONUNKNOWN:
 		return true
-	case FORBIDDEN:
+	case ErrorEnvelopeCodeFORBIDDEN:
 		return true
-	case GRAPHNOTREADY:
+	case ErrorEnvelopeCodeGRAPHNOTREADY:
 		return true
-	case GRAPHPARTIAL:
+	case ErrorEnvelopeCodeGRAPHPARTIAL:
 		return true
-	case HOSTNOTONBOARDED:
+	case ErrorEnvelopeCodeHOSTNOTONBOARDED:
 		return true
-	case IDEMPOTENCYCONFLICT:
+	case ErrorEnvelopeCodeIDEMPOTENCYCONFLICT:
 		return true
-	case IDEMPOTENCYINPROGRESS:
+	case ErrorEnvelopeCodeIDEMPOTENCYINPROGRESS:
 		return true
-	case IDEMPOTENCYKEYREUSED:
+	case ErrorEnvelopeCodeIDEMPOTENCYKEYREUSED:
 		return true
-	case INTERNAL:
+	case ErrorEnvelopeCodeINTERNAL:
 		return true
-	case INVALIDARGUMENT:
+	case ErrorEnvelopeCodeINVALIDARGUMENT:
 		return true
-	case NOTFOUND:
+	case ErrorEnvelopeCodeNOTFOUND:
 		return true
-	case OPENBAOSEALED:
+	case ErrorEnvelopeCodeOPENBAOSEALED:
 		return true
-	case OUTPUTTRUNCATED:
+	case ErrorEnvelopeCodeOUTPUTTRUNCATED:
 		return true
-	case POLICYDENIED:
+	case ErrorEnvelopeCodePOLICYDENIED:
 		return true
-	case PRECONDITIONFAILED:
+	case ErrorEnvelopeCodePRECONDITIONFAILED:
 		return true
-	case PROFILECOMPONENTCONFLICT:
+	case ErrorEnvelopeCodePROFILECOMPONENTCONFLICT:
 		return true
-	case RATELIMITED:
+	case ErrorEnvelopeCodeRATELIMITED:
 		return true
-	case RISKACKCOMMANDMISMATCH:
+	case ErrorEnvelopeCodeRISKACKCOMMANDMISMATCH:
 		return true
-	case RISKACKREQUIRED:
+	case ErrorEnvelopeCodeRISKACKREQUIRED:
 		return true
-	case SOURCEDEGRADED:
+	case ErrorEnvelopeCodeSOURCEDEGRADED:
 		return true
-	case SOURCENOTCONFIGURED:
+	case ErrorEnvelopeCodeSOURCENOTCONFIGURED:
 		return true
-	case STEPUPEXPIRED:
+	case ErrorEnvelopeCodeSTEPUPEXPIRED:
 		return true
-	case STEPUPREQUIRED:
+	case ErrorEnvelopeCodeSTEPUPREQUIRED:
 		return true
-	case TIMEOUT:
+	case ErrorEnvelopeCodeTIMEOUT:
 		return true
-	case UNAUTHENTICATED:
+	case ErrorEnvelopeCodeUNAUTHENTICATED:
 		return true
-	case UPSTREAMCOMPATIBILITYUNVERIFIED:
+	case ErrorEnvelopeCodeUPSTREAMCOMPATIBILITYUNVERIFIED:
 		return true
 	default:
 		return false
@@ -170,6 +171,114 @@ func (e InvestigationEventEventType) Valid() bool {
 	case StepCompleted:
 		return true
 	case StepStarted:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LegalHoldMetaV1Freshness.
+const (
+	LegalHoldMetaV1FreshnessFresh       LegalHoldMetaV1Freshness = "fresh"
+	LegalHoldMetaV1FreshnessStale       LegalHoldMetaV1Freshness = "stale"
+	LegalHoldMetaV1FreshnessUnavailable LegalHoldMetaV1Freshness = "unavailable"
+)
+
+// Valid indicates whether the value is a known member of the LegalHoldMetaV1Freshness enum.
+func (e LegalHoldMetaV1Freshness) Valid() bool {
+	switch e {
+	case LegalHoldMetaV1FreshnessFresh:
+		return true
+	case LegalHoldMetaV1FreshnessStale:
+		return true
+	case LegalHoldMetaV1FreshnessUnavailable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LegalHoldPageV1MetaFreshness.
+const (
+	LegalHoldPageV1MetaFreshnessFresh       LegalHoldPageV1MetaFreshness = "fresh"
+	LegalHoldPageV1MetaFreshnessStale       LegalHoldPageV1MetaFreshness = "stale"
+	LegalHoldPageV1MetaFreshnessUnavailable LegalHoldPageV1MetaFreshness = "unavailable"
+)
+
+// Valid indicates whether the value is a known member of the LegalHoldPageV1MetaFreshness enum.
+func (e LegalHoldPageV1MetaFreshness) Valid() bool {
+	switch e {
+	case LegalHoldPageV1MetaFreshnessFresh:
+		return true
+	case LegalHoldPageV1MetaFreshnessStale:
+		return true
+	case LegalHoldPageV1MetaFreshnessUnavailable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LegalHoldPageV1SchemaVersion.
+const (
+	LegalHoldPagev1 LegalHoldPageV1SchemaVersion = "legal-hold-page/v1"
+)
+
+// Valid indicates whether the value is a known member of the LegalHoldPageV1SchemaVersion enum.
+func (e LegalHoldPageV1SchemaVersion) Valid() bool {
+	switch e {
+	case LegalHoldPagev1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LegalHoldResultV1MetaFreshness.
+const (
+	LegalHoldResultV1MetaFreshnessFresh       LegalHoldResultV1MetaFreshness = "fresh"
+	LegalHoldResultV1MetaFreshnessStale       LegalHoldResultV1MetaFreshness = "stale"
+	LegalHoldResultV1MetaFreshnessUnavailable LegalHoldResultV1MetaFreshness = "unavailable"
+)
+
+// Valid indicates whether the value is a known member of the LegalHoldResultV1MetaFreshness enum.
+func (e LegalHoldResultV1MetaFreshness) Valid() bool {
+	switch e {
+	case LegalHoldResultV1MetaFreshnessFresh:
+		return true
+	case LegalHoldResultV1MetaFreshnessStale:
+		return true
+	case LegalHoldResultV1MetaFreshnessUnavailable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LegalHoldResultV1ProtectionSync.
+const (
+	Pending LegalHoldResultV1ProtectionSync = "pending"
+)
+
+// Valid indicates whether the value is a known member of the LegalHoldResultV1ProtectionSync enum.
+func (e LegalHoldResultV1ProtectionSync) Valid() bool {
+	switch e {
+	case Pending:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LegalHoldResultV1SchemaVersion.
+const (
+	LegalHoldResultv1 LegalHoldResultV1SchemaVersion = "legal-hold-result/v1"
+)
+
+// Valid indicates whether the value is a known member of the LegalHoldResultV1SchemaVersion enum.
+func (e LegalHoldResultV1SchemaVersion) Valid() bool {
+	switch e {
+	case LegalHoldResultv1:
 		return true
 	default:
 		return false
@@ -233,6 +342,144 @@ func (e RegistryDraftCreateRequestKind) Valid() bool {
 	case RegistryDraftCreateRequestKindRecipe:
 		return true
 	case RegistryDraftCreateRequestKindTool:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SP04ErrorEnvelopeV2Code.
+const (
+	SP04ErrorEnvelopeV2CodeBUDGETEXHAUSTED                 SP04ErrorEnvelopeV2Code = "BUDGET_EXHAUSTED"
+	SP04ErrorEnvelopeV2CodeBUNDLEDIGESTMISMATCH            SP04ErrorEnvelopeV2Code = "BUNDLE_DIGEST_MISMATCH"
+	SP04ErrorEnvelopeV2CodeBUNDLEEXTRACTIONREJECTED        SP04ErrorEnvelopeV2Code = "BUNDLE_EXTRACTION_REJECTED"
+	SP04ErrorEnvelopeV2CodeBUNDLESIGNATUREINVALID          SP04ErrorEnvelopeV2Code = "BUNDLE_SIGNATURE_INVALID"
+	SP04ErrorEnvelopeV2CodeCAPABILITYDISABLED              SP04ErrorEnvelopeV2Code = "CAPABILITY_DISABLED"
+	SP04ErrorEnvelopeV2CodeCOMMANDPOLICYDENIED             SP04ErrorEnvelopeV2Code = "COMMAND_POLICY_DENIED"
+	SP04ErrorEnvelopeV2CodeCONFLICT                        SP04ErrorEnvelopeV2Code = "CONFLICT"
+	SP04ErrorEnvelopeV2CodeCURSOREXPIRED                   SP04ErrorEnvelopeV2Code = "CURSOR_EXPIRED"
+	SP04ErrorEnvelopeV2CodeEXECUTIONPROFILEDENIED          SP04ErrorEnvelopeV2Code = "EXECUTION_PROFILE_DENIED"
+	SP04ErrorEnvelopeV2CodeEXECUTIONUNKNOWN                SP04ErrorEnvelopeV2Code = "EXECUTION_UNKNOWN"
+	SP04ErrorEnvelopeV2CodeFORBIDDEN                       SP04ErrorEnvelopeV2Code = "FORBIDDEN"
+	SP04ErrorEnvelopeV2CodeGRAPHNOTREADY                   SP04ErrorEnvelopeV2Code = "GRAPH_NOT_READY"
+	SP04ErrorEnvelopeV2CodeGRAPHPARTIAL                    SP04ErrorEnvelopeV2Code = "GRAPH_PARTIAL"
+	SP04ErrorEnvelopeV2CodeHOSTNOTONBOARDED                SP04ErrorEnvelopeV2Code = "HOST_NOT_ONBOARDED"
+	SP04ErrorEnvelopeV2CodeIDEMPOTENCYCONFLICT             SP04ErrorEnvelopeV2Code = "IDEMPOTENCY_CONFLICT"
+	SP04ErrorEnvelopeV2CodeIDEMPOTENCYINPROGRESS           SP04ErrorEnvelopeV2Code = "IDEMPOTENCY_IN_PROGRESS"
+	SP04ErrorEnvelopeV2CodeIDEMPOTENCYKEYREUSED            SP04ErrorEnvelopeV2Code = "IDEMPOTENCY_KEY_REUSED"
+	SP04ErrorEnvelopeV2CodeINTERNAL                        SP04ErrorEnvelopeV2Code = "INTERNAL"
+	SP04ErrorEnvelopeV2CodeINVALIDARGUMENT                 SP04ErrorEnvelopeV2Code = "INVALID_ARGUMENT"
+	SP04ErrorEnvelopeV2CodeNOTFOUND                        SP04ErrorEnvelopeV2Code = "NOT_FOUND"
+	SP04ErrorEnvelopeV2CodeOPENBAOSEALED                   SP04ErrorEnvelopeV2Code = "OPENBAO_SEALED"
+	SP04ErrorEnvelopeV2CodeOUTPUTTRUNCATED                 SP04ErrorEnvelopeV2Code = "OUTPUT_TRUNCATED"
+	SP04ErrorEnvelopeV2CodePOLICYDENIED                    SP04ErrorEnvelopeV2Code = "POLICY_DENIED"
+	SP04ErrorEnvelopeV2CodePRECONDITIONFAILED              SP04ErrorEnvelopeV2Code = "PRECONDITION_FAILED"
+	SP04ErrorEnvelopeV2CodePROFILECOMPONENTCONFLICT        SP04ErrorEnvelopeV2Code = "PROFILE_COMPONENT_CONFLICT"
+	SP04ErrorEnvelopeV2CodeRATELIMITED                     SP04ErrorEnvelopeV2Code = "RATE_LIMITED"
+	SP04ErrorEnvelopeV2CodeRISKACKCOMMANDMISMATCH          SP04ErrorEnvelopeV2Code = "RISK_ACK_COMMAND_MISMATCH"
+	SP04ErrorEnvelopeV2CodeRISKACKREQUIRED                 SP04ErrorEnvelopeV2Code = "RISK_ACK_REQUIRED"
+	SP04ErrorEnvelopeV2CodeSOURCEDEGRADED                  SP04ErrorEnvelopeV2Code = "SOURCE_DEGRADED"
+	SP04ErrorEnvelopeV2CodeSOURCENOTCONFIGURED             SP04ErrorEnvelopeV2Code = "SOURCE_NOT_CONFIGURED"
+	SP04ErrorEnvelopeV2CodeSOURCESCOPEUNVERIFIED           SP04ErrorEnvelopeV2Code = "SOURCE_SCOPE_UNVERIFIED"
+	SP04ErrorEnvelopeV2CodeSTALECONTEXT                    SP04ErrorEnvelopeV2Code = "STALE_CONTEXT"
+	SP04ErrorEnvelopeV2CodeSTEPUPEXPIRED                   SP04ErrorEnvelopeV2Code = "STEP_UP_EXPIRED"
+	SP04ErrorEnvelopeV2CodeSTEPUPREQUIRED                  SP04ErrorEnvelopeV2Code = "STEP_UP_REQUIRED"
+	SP04ErrorEnvelopeV2CodeTIMEOUT                         SP04ErrorEnvelopeV2Code = "TIMEOUT"
+	SP04ErrorEnvelopeV2CodeUNAUTHENTICATED                 SP04ErrorEnvelopeV2Code = "UNAUTHENTICATED"
+	SP04ErrorEnvelopeV2CodeUPSTREAMCOMPATIBILITYUNVERIFIED SP04ErrorEnvelopeV2Code = "UPSTREAM_COMPATIBILITY_UNVERIFIED"
+)
+
+// Valid indicates whether the value is a known member of the SP04ErrorEnvelopeV2Code enum.
+func (e SP04ErrorEnvelopeV2Code) Valid() bool {
+	switch e {
+	case SP04ErrorEnvelopeV2CodeBUDGETEXHAUSTED:
+		return true
+	case SP04ErrorEnvelopeV2CodeBUNDLEDIGESTMISMATCH:
+		return true
+	case SP04ErrorEnvelopeV2CodeBUNDLEEXTRACTIONREJECTED:
+		return true
+	case SP04ErrorEnvelopeV2CodeBUNDLESIGNATUREINVALID:
+		return true
+	case SP04ErrorEnvelopeV2CodeCAPABILITYDISABLED:
+		return true
+	case SP04ErrorEnvelopeV2CodeCOMMANDPOLICYDENIED:
+		return true
+	case SP04ErrorEnvelopeV2CodeCONFLICT:
+		return true
+	case SP04ErrorEnvelopeV2CodeCURSOREXPIRED:
+		return true
+	case SP04ErrorEnvelopeV2CodeEXECUTIONPROFILEDENIED:
+		return true
+	case SP04ErrorEnvelopeV2CodeEXECUTIONUNKNOWN:
+		return true
+	case SP04ErrorEnvelopeV2CodeFORBIDDEN:
+		return true
+	case SP04ErrorEnvelopeV2CodeGRAPHNOTREADY:
+		return true
+	case SP04ErrorEnvelopeV2CodeGRAPHPARTIAL:
+		return true
+	case SP04ErrorEnvelopeV2CodeHOSTNOTONBOARDED:
+		return true
+	case SP04ErrorEnvelopeV2CodeIDEMPOTENCYCONFLICT:
+		return true
+	case SP04ErrorEnvelopeV2CodeIDEMPOTENCYINPROGRESS:
+		return true
+	case SP04ErrorEnvelopeV2CodeIDEMPOTENCYKEYREUSED:
+		return true
+	case SP04ErrorEnvelopeV2CodeINTERNAL:
+		return true
+	case SP04ErrorEnvelopeV2CodeINVALIDARGUMENT:
+		return true
+	case SP04ErrorEnvelopeV2CodeNOTFOUND:
+		return true
+	case SP04ErrorEnvelopeV2CodeOPENBAOSEALED:
+		return true
+	case SP04ErrorEnvelopeV2CodeOUTPUTTRUNCATED:
+		return true
+	case SP04ErrorEnvelopeV2CodePOLICYDENIED:
+		return true
+	case SP04ErrorEnvelopeV2CodePRECONDITIONFAILED:
+		return true
+	case SP04ErrorEnvelopeV2CodePROFILECOMPONENTCONFLICT:
+		return true
+	case SP04ErrorEnvelopeV2CodeRATELIMITED:
+		return true
+	case SP04ErrorEnvelopeV2CodeRISKACKCOMMANDMISMATCH:
+		return true
+	case SP04ErrorEnvelopeV2CodeRISKACKREQUIRED:
+		return true
+	case SP04ErrorEnvelopeV2CodeSOURCEDEGRADED:
+		return true
+	case SP04ErrorEnvelopeV2CodeSOURCENOTCONFIGURED:
+		return true
+	case SP04ErrorEnvelopeV2CodeSOURCESCOPEUNVERIFIED:
+		return true
+	case SP04ErrorEnvelopeV2CodeSTALECONTEXT:
+		return true
+	case SP04ErrorEnvelopeV2CodeSTEPUPEXPIRED:
+		return true
+	case SP04ErrorEnvelopeV2CodeSTEPUPREQUIRED:
+		return true
+	case SP04ErrorEnvelopeV2CodeTIMEOUT:
+		return true
+	case SP04ErrorEnvelopeV2CodeUNAUTHENTICATED:
+		return true
+	case SP04ErrorEnvelopeV2CodeUPSTREAMCOMPATIBILITYUNVERIFIED:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SP04ErrorEnvelopeV2SchemaVersion.
+const (
+	ErrorEnvelopev2 SP04ErrorEnvelopeV2SchemaVersion = "error-envelope/v2"
+)
+
+// Valid indicates whether the value is a known member of the SP04ErrorEnvelopeV2SchemaVersion enum.
+func (e SP04ErrorEnvelopeV2SchemaVersion) Valid() bool {
+	switch e {
+	case ErrorEnvelopev2:
 		return true
 	default:
 		return false
@@ -515,18 +762,112 @@ type EvidenceQueryBudget struct {
 // EvidenceQueryRequest defines model for EvidenceQueryRequest.
 type EvidenceQueryRequest struct {
 	Budget        EvidenceQueryBudget `json:"budget"`
+	Limit         *int                `json:"limit,omitempty"`
+	Namespace     *string             `json:"namespace,omitempty"`
 	QueryTemplate string              `json:"queryTemplate"`
 
 	// ResourceCanonicalId RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
-	ResourceCanonicalId CanonicalID            `json:"resourceCanonicalId"`
-	TimeRange           EvidenceQueryTimeRange `json:"timeRange"`
-	Type                string                 `json:"type"`
+	ResourceCanonicalId  CanonicalID            `json:"resourceCanonicalId"`
+	SourceRegistrationId *openapi_types.UUID    `json:"sourceRegistrationId,omitempty"`
+	TimeRange            EvidenceQueryTimeRange `json:"timeRange"`
+	Type                 string                 `json:"type"`
 }
 
 // EvidenceQueryTimeRange defines model for EvidenceQueryTimeRange.
 type EvidenceQueryTimeRange struct {
 	From time.Time `json:"from"`
 	To   time.Time `json:"to"`
+}
+
+// EvidenceResultSuccessV2 defines model for EvidenceResultSuccessV2.
+type EvidenceResultSuccessV2 struct {
+	Data      EvidenceResultV2        `json:"data"`
+	Meta      *map[string]interface{} `json:"meta,omitempty"`
+	RequestId Identifier              `json:"requestId"`
+}
+
+// EvidenceResultV2 defines model for EvidenceResultV2.
+type EvidenceResultV2 struct {
+	DegradedSources []string     `json:"degradedSources"`
+	Evidence        []EvidenceV2 `json:"evidence"`
+	Freshness       interface{}  `json:"freshness"`
+	Partial         bool         `json:"partial"`
+	QueryHash       string       `json:"queryHash"`
+	SchemaVersion   interface{}  `json:"schemaVersion"`
+	Warnings        []string     `json:"warnings"`
+}
+
+// EvidenceSuccessV2 defines model for EvidenceSuccessV2.
+type EvidenceSuccessV2 struct {
+	Data      EvidenceV2              `json:"data"`
+	Meta      *map[string]interface{} `json:"meta,omitempty"`
+	RequestId Identifier              `json:"requestId"`
+}
+
+// EvidenceV2 defines model for EvidenceV2.
+type EvidenceV2 struct {
+	ArchiveRef *struct {
+		BackendLogicalId     string `json:"backendLogicalId"`
+		CiphertextDigest     string `json:"ciphertextDigest"`
+		EncryptionKeyVersion string `json:"encryptionKeyVersion"`
+		Object               struct {
+			Category    string             `json:"category"`
+			ContentType string             `json:"contentType"`
+			Digest      string             `json:"digest"`
+			Etag        *string            `json:"etag,omitempty"`
+			Key         string             `json:"key"`
+			ObjectId    openapi_types.UUID `json:"objectId"`
+			RetainUntil time.Time          `json:"retainUntil"`
+			Size        int                `json:"size"`
+			TenantId    openapi_types.UUID `json:"tenantId"`
+			VersionId   string             `json:"versionId"`
+		} `json:"object"`
+		PlaintextDigest string `json:"plaintextDigest"`
+	} `json:"archiveRef,omitempty"`
+	BackendLogicalId       string      `json:"backendLogicalId"`
+	ContentDigest          string      `json:"contentDigest"`
+	DataClass              interface{} `json:"dataClass"`
+	DerivationEvidenceRefs []string    `json:"derivationEvidenceRefs"`
+	EffectiveScope         struct {
+		AuthorizationRevision string             `json:"authorizationRevision"`
+		ClusterScoped         bool               `json:"clusterScoped"`
+		ClusterUid            string             `json:"clusterUid"`
+		Namespaces            []string           `json:"namespaces"`
+		Resources             []string           `json:"resources"`
+		TenantId              openapi_types.UUID `json:"tenantId"`
+	} `json:"effectiveScope"`
+	EvaluatedAt          time.Time             `json:"evaluatedAt"`
+	EvidenceId           openapi_types.UUID    `json:"evidenceId"`
+	FactSlice            *EvidenceV2_FactSlice `json:"factSlice,omitempty"`
+	IndependenceGroup    string                `json:"independenceGroup"`
+	ObservedFrom         time.Time             `json:"observedFrom"`
+	ObservedTo           time.Time             `json:"observedTo"`
+	QueryHash            string                `json:"queryHash"`
+	QueryTemplateVersion string                `json:"queryTemplateVersion"`
+	ReplayState          interface{}           `json:"replayState"`
+
+	// ResourceCanonicalId RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
+	ResourceCanonicalId  CanonicalID        `json:"resourceCanonicalId"`
+	SchemaVersion        interface{}        `json:"schemaVersion"`
+	SourceRegistrationId openapi_types.UUID `json:"sourceRegistrationId"`
+	SourceRetentionUntil time.Time          `json:"sourceRetentionUntil"`
+	SourceRevision       int                `json:"sourceRevision"`
+	SourceScopeDigest    *string            `json:"sourceScopeDigest,omitempty"`
+	SourceSystem         string             `json:"sourceSystem"`
+	TenantId             openapi_types.UUID `json:"tenantId"`
+	TimeReliable         bool               `json:"timeReliable"`
+	Type                 interface{}        `json:"type"`
+}
+
+// EvidenceV2FactSlice0 defines model for EvidenceV2.FactSlice.0.
+type EvidenceV2FactSlice0 map[string]interface{}
+
+// EvidenceV2FactSlice1 defines model for EvidenceV2.FactSlice.1.
+type EvidenceV2FactSlice1 = []interface{}
+
+// EvidenceV2_FactSlice defines model for EvidenceV2.FactSlice.
+type EvidenceV2_FactSlice struct {
+	union json.RawMessage
 }
 
 // FindingEnvelope Finding ingestion payload validated against finding-envelope/v1.
@@ -564,6 +905,80 @@ type InvestigationEventEventType string
 
 // JSONRequest JSON object body. Operation-specific fields are defined by the owning public contract.
 type JSONRequest map[string]interface{}
+
+// LegalHoldMetaV1 defines model for LegalHoldMetaV1.
+type LegalHoldMetaV1 struct {
+	DegradedSources []string                 `json:"degradedSources"`
+	Freshness       LegalHoldMetaV1Freshness `json:"freshness"`
+	NextCursor      string                   `json:"nextCursor"`
+	Partial         bool                     `json:"partial"`
+	Warnings        []string                 `json:"warnings"`
+}
+
+// LegalHoldMetaV1Freshness defines model for LegalHoldMetaV1.Freshness.
+type LegalHoldMetaV1Freshness string
+
+// LegalHoldPageV1 defines model for LegalHoldPageV1.
+type LegalHoldPageV1 struct {
+	Data []struct {
+		EvidenceId openapi_types.UUID `json:"evidenceId"`
+		Hold       bool               `json:"hold"`
+	} `json:"data"`
+	Meta struct {
+		DegradedSources []string                     `json:"degradedSources"`
+		Freshness       LegalHoldPageV1MetaFreshness `json:"freshness"`
+		NextCursor      string                       `json:"nextCursor"`
+		Partial         bool                         `json:"partial"`
+		Warnings        []string                     `json:"warnings"`
+	} `json:"meta"`
+	RequestId     string                       `json:"requestId"`
+	SchemaVersion LegalHoldPageV1SchemaVersion `json:"schemaVersion"`
+}
+
+// LegalHoldPageV1MetaFreshness defines model for LegalHoldPageV1.Meta.Freshness.
+type LegalHoldPageV1MetaFreshness string
+
+// LegalHoldPageV1SchemaVersion defines model for LegalHoldPageV1.SchemaVersion.
+type LegalHoldPageV1SchemaVersion string
+
+// LegalHoldRequestV1 defines model for LegalHoldRequestV1.
+type LegalHoldRequestV1 struct {
+	EvidenceId openapi_types.UUID `json:"evidenceId"`
+	Hold       bool               `json:"hold"`
+}
+
+// LegalHoldResultV1 defines model for LegalHoldResultV1.
+type LegalHoldResultV1 struct {
+	Data struct {
+		EvidenceId openapi_types.UUID `json:"evidenceId"`
+		Hold       bool               `json:"hold"`
+	} `json:"data"`
+	Meta struct {
+		DegradedSources []string                       `json:"degradedSources"`
+		Freshness       LegalHoldResultV1MetaFreshness `json:"freshness"`
+		NextCursor      string                         `json:"nextCursor"`
+		Partial         bool                           `json:"partial"`
+		Warnings        []string                       `json:"warnings"`
+	} `json:"meta"`
+	ProtectionSync LegalHoldResultV1ProtectionSync `json:"protectionSync"`
+	RequestId      string                          `json:"requestId"`
+	SchemaVersion  LegalHoldResultV1SchemaVersion  `json:"schemaVersion"`
+}
+
+// LegalHoldResultV1MetaFreshness defines model for LegalHoldResultV1.Meta.Freshness.
+type LegalHoldResultV1MetaFreshness string
+
+// LegalHoldResultV1ProtectionSync defines model for LegalHoldResultV1.ProtectionSync.
+type LegalHoldResultV1ProtectionSync string
+
+// LegalHoldResultV1SchemaVersion defines model for LegalHoldResultV1.SchemaVersion.
+type LegalHoldResultV1SchemaVersion string
+
+// LegalHoldV1 defines model for LegalHoldV1.
+type LegalHoldV1 struct {
+	EvidenceId openapi_types.UUID `json:"evidenceId"`
+	Hold       bool               `json:"hold"`
+}
 
 // PageEnvelope defines model for PageEnvelope.
 type PageEnvelope struct {
@@ -630,6 +1045,154 @@ type RegistryPublishRequest struct {
 type RegistryVersionRetireRequest struct {
 	ExpectedDigest string `json:"expectedDigest"`
 }
+
+// ResourceAttributeValueV2 Bounded JSON-safe resource quantities, including hardware byte capacities. Public v1 common extension limits remain unchanged.
+type ResourceAttributeValueV2 struct {
+	union json.RawMessage
+}
+
+// ResourceAttributeValueV20 defines model for ResourceAttributeValueV2.0.
+type ResourceAttributeValueV20 = string
+
+// ResourceAttributeValueV21 defines model for ResourceAttributeValueV2.1.
+type ResourceAttributeValueV21 = int
+
+// ResourceAttributeValueV22 defines model for ResourceAttributeValueV2.2.
+type ResourceAttributeValueV22 = float32
+
+// ResourceAttributeValueV23 defines model for ResourceAttributeValueV2.3.
+type ResourceAttributeValueV23 = bool
+
+// ResourceAttributeValueV25 defines model for ResourceAttributeValueV2.5.
+type ResourceAttributeValueV25 = []*ResourceAttributeValueV2
+
+// ResourceAttributeValueV26 defines model for ResourceAttributeValueV2.6.
+type ResourceAttributeValueV26 map[string]*ResourceAttributeValueV2
+
+// ResourceEntityV2 defines model for ResourceEntityV2.
+type ResourceEntityV2 struct {
+	ApiGroup   string                               `json:"apiGroup"`
+	Attributes map[string]*ResourceAttributeValueV2 `json:"attributes"`
+
+	// CanonicalId RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
+	CanonicalId     CanonicalID             `json:"canonicalId"`
+	Domain          string                  `json:"domain"`
+	Extensions      *map[string]interface{} `json:"extensions,omitempty"`
+	FirstObservedAt time.Time               `json:"firstObservedAt"`
+	Kind            Identifier              `json:"kind"`
+	Labels          map[string]string       `json:"labels"`
+	LastObservedAt  time.Time               `json:"lastObservedAt"`
+	Name            string                  `json:"name"`
+	Namespace       *string                 `json:"namespace"`
+	Scope           string                  `json:"scope"`
+	SourceRefs      []string                `json:"sourceRefs"`
+	StableId        string                  `json:"stableId"`
+	TenantId        string                  `json:"tenantId"`
+	UpdatedAt       *time.Time              `json:"updatedAt,omitempty"`
+}
+
+// ResourceGraphSuccessV2 defines model for ResourceGraphSuccessV2.
+type ResourceGraphSuccessV2 struct {
+	Data      ResourceGraphV2         `json:"data"`
+	Meta      *map[string]interface{} `json:"meta,omitempty"`
+	RequestId Identifier              `json:"requestId"`
+}
+
+// ResourceGraphV2 defines model for ResourceGraphV2.
+type ResourceGraphV2 struct {
+	Budgets struct {
+		EdgeCount         int       `json:"edgeCount"`
+		MaxDepth          int       `json:"maxDepth"`
+		MaxEdges          int       `json:"maxEdges"`
+		MaxNodes          int       `json:"maxNodes"`
+		NodeCount         int       `json:"nodeCount"`
+		StorageMaxDepth   int       `json:"storageMaxDepth"`
+		Truncated         bool      `json:"truncated"`
+		TruncationReasons *[]string `json:"truncationReasons,omitempty"`
+	} `json:"budgets"`
+	CollectedAt time.Time `json:"collectedAt"`
+	Conflicts   *[]struct {
+		Code       string    `json:"code"`
+		Confidence *string   `json:"confidence,omitempty"`
+		EdgeKeys   *[]string `json:"edgeKeys,omitempty"`
+		Message    string    `json:"message"`
+		NodeIds    *[]string `json:"nodeIds,omitempty"`
+	} `json:"conflicts"`
+	DegradedSources  []string             `json:"degradedSources"`
+	DependencyOnly   *[]CanonicalID       `json:"dependencyOnly,omitempty"`
+	DirectlyAffected *[]CanonicalID       `json:"directlyAffected,omitempty"`
+	Edges            []ResourceRelationV2 `json:"edges"`
+	Freshness        interface{}          `json:"freshness"`
+	GraphRevision    struct {
+		GraphGeneration int `json:"graphGeneration"`
+		OwnerEpoch      int `json:"ownerEpoch"`
+	} `json:"graphRevision"`
+	IndirectlyAffected *[]CanonicalID     `json:"indirectlyAffected,omitempty"`
+	NextCanonicalId    *string            `json:"nextCanonicalId,omitempty"`
+	Nodes              []ResourceEntityV2 `json:"nodes"`
+	OwnerInstance      string             `json:"ownerInstance"`
+	Partial            bool               `json:"partial"`
+	RankedEvidence     *[]struct {
+		Confidence *string    `json:"confidence,omitempty"`
+		EdgeKey    *string    `json:"edgeKey,omitempty"`
+		Kind       *string    `json:"kind,omitempty"`
+		Message    *string    `json:"message,omitempty"`
+		NodeId     *string    `json:"nodeId,omitempty"`
+		Rank       int        `json:"rank"`
+		Reason     *string    `json:"reason,omitempty"`
+		Score      *float32   `json:"score,omitempty"`
+		Severity   *string    `json:"severity,omitempty"`
+		Source     string     `json:"source"`
+		Timestamp  *time.Time `json:"timestamp,omitempty"`
+	} `json:"rankedEvidence"`
+	SchemaVersion interface{} `json:"schemaVersion"`
+	Warnings      []string    `json:"warnings"`
+}
+
+// ResourcePageV2 defines model for ResourcePageV2.
+type ResourcePageV2 struct {
+	Data      []ResourceEntityV2     `json:"data"`
+	Meta      map[string]interface{} `json:"meta"`
+	RequestId Identifier             `json:"requestId"`
+}
+
+// ResourceRelationV2 defines model for ResourceRelationV2.
+type ResourceRelationV2 struct {
+	Confidence float32 `json:"confidence"`
+
+	// From RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
+	From       CanonicalID `json:"from"`
+	Kind       string      `json:"kind"`
+	ObservedAt time.Time   `json:"observedAt"`
+	Provenance struct {
+		ObservedAt           time.Time          `json:"observedAt"`
+		RuleVersion          string             `json:"ruleVersion"`
+		SourceRegistrationId string             `json:"sourceRegistrationId"`
+		SourceValues         *map[string]string `json:"sourceValues"`
+	} `json:"provenance"`
+
+	// To RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
+	To        CanonicalID `json:"to"`
+	Ttl       int         `json:"ttl"`
+	ValidFrom time.Time   `json:"validFrom"`
+	ValidTo   *time.Time  `json:"validTo,omitempty"`
+}
+
+// SP04ErrorEnvelopeV2 defines model for SP04ErrorEnvelopeV2.
+type SP04ErrorEnvelopeV2 struct {
+	Code          SP04ErrorEnvelopeV2Code          `json:"code"`
+	Details       *map[string]interface{}          `json:"details,omitempty"`
+	Message       string                           `json:"message"`
+	RequestId     Identifier                       `json:"requestId"`
+	Retryable     bool                             `json:"retryable"`
+	SchemaVersion SP04ErrorEnvelopeV2SchemaVersion `json:"schemaVersion"`
+}
+
+// SP04ErrorEnvelopeV2Code defines model for SP04ErrorEnvelopeV2.Code.
+type SP04ErrorEnvelopeV2Code string
+
+// SP04ErrorEnvelopeV2SchemaVersion defines model for SP04ErrorEnvelopeV2.SchemaVersion.
+type SP04ErrorEnvelopeV2SchemaVersion string
 
 // SourceCredentialRotationRequest defines model for SourceCredentialRotationRequest.
 type SourceCredentialRotationRequest struct {
@@ -835,10 +1398,20 @@ type GetLegalHoldsParams struct {
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// GetLegalHoldsdefaultJSONResponseBody defines parameters for GetLegalHolds.
+type GetLegalHoldsdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // CreateLegalHoldParams defines parameters for CreateLegalHold.
 type CreateLegalHoldParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// CreateLegalHolddefaultJSONResponseBody defines parameters for CreateLegalHold.
+type CreateLegalHolddefaultJSONResponseBody struct {
+	union json.RawMessage
 }
 
 // GetPolicyBundlesParams defines parameters for GetPolicyBundles.
@@ -1008,10 +1581,25 @@ type BuildDiagnosticGraphParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
+// BuildDiagnosticGraphdefaultJSONResponseBody defines parameters for BuildDiagnosticGraph.
+type BuildDiagnosticGraphdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// GetEvidencedefaultJSONResponseBody defines parameters for GetEvidence.
+type GetEvidencedefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // QueryEvidenceParams defines parameters for QueryEvidence.
 type QueryEvidenceParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// QueryEvidencedefaultJSONResponseBody defines parameters for QueryEvidence.
+type QueryEvidencedefaultJSONResponseBody struct {
+	union json.RawMessage
 }
 
 // GetFindingsParams defines parameters for GetFindings.
@@ -1135,16 +1723,31 @@ type GetResourcesParams struct {
 // GetResourcesParamsOrder defines parameters for GetResources.
 type GetResourcesParamsOrder string
 
+// GetResourcesdefaultJSONResponseBody defines parameters for GetResources.
+type GetResourcesdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // GetResourceByCanonicalIDParams defines parameters for GetResourceByCanonicalID.
 type GetResourceByCanonicalIDParams struct {
 	// CanonicalId Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
 	CanonicalId CanonicalID `form:"canonicalId" json:"canonicalId"`
 }
 
+// GetResourceByCanonicalIDdefaultJSONResponseBody defines parameters for GetResourceByCanonicalID.
+type GetResourceByCanonicalIDdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // GetResourceImpactScopeParams defines parameters for GetResourceImpactScope.
 type GetResourceImpactScopeParams struct {
 	// CanonicalId Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
 	CanonicalId CanonicalID `form:"canonicalId" json:"canonicalId"`
+}
+
+// GetResourceImpactScopedefaultJSONResponseBody defines parameters for GetResourceImpactScope.
+type GetResourceImpactScopedefaultJSONResponseBody struct {
+	union json.RawMessage
 }
 
 // GetResourceNeighborsParams defines parameters for GetResourceNeighbors.
@@ -1160,6 +1763,11 @@ type GetResourceNeighborsParams struct {
 
 // GetResourceNeighborsParamsDirection defines parameters for GetResourceNeighbors.
 type GetResourceNeighborsParamsDirection string
+
+// GetResourceNeighborsdefaultJSONResponseBody defines parameters for GetResourceNeighbors.
+type GetResourceNeighborsdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
 
 // CreateActionPlanJSONRequestBody defines body for CreateActionPlan for application/json ContentType.
 type CreateActionPlanJSONRequestBody = JSONRequest
@@ -1177,7 +1785,7 @@ type CreateClusterJSONRequestBody = ClusterRegistrationRequest
 type CreateExecutionProfileJSONRequestBody = JSONRequest
 
 // CreateLegalHoldJSONRequestBody defines body for CreateLegalHold for application/json ContentType.
-type CreateLegalHoldJSONRequestBody = JSONRequest
+type CreateLegalHoldJSONRequestBody = LegalHoldRequestV1
 
 // PublishPolicyBundleJSONRequestBody defines body for PublishPolicyBundle for application/json ContentType.
 type PublishPolicyBundleJSONRequestBody = PolicyBundlePublishRequest
@@ -1314,6 +1922,234 @@ func (a PageEnvelope_Meta) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(object)
+}
+
+// AsEvidenceV2FactSlice0 returns the union data inside the EvidenceV2_FactSlice as a EvidenceV2FactSlice0
+func (t EvidenceV2_FactSlice) AsEvidenceV2FactSlice0() (EvidenceV2FactSlice0, error) {
+	var body EvidenceV2FactSlice0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromEvidenceV2FactSlice0 overwrites any union data inside the EvidenceV2_FactSlice as the provided EvidenceV2FactSlice0
+func (t *EvidenceV2_FactSlice) FromEvidenceV2FactSlice0(v EvidenceV2FactSlice0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeEvidenceV2FactSlice0 performs a merge with any union data inside the EvidenceV2_FactSlice, using the provided EvidenceV2FactSlice0
+func (t *EvidenceV2_FactSlice) MergeEvidenceV2FactSlice0(v EvidenceV2FactSlice0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsEvidenceV2FactSlice1 returns the union data inside the EvidenceV2_FactSlice as a EvidenceV2FactSlice1
+func (t EvidenceV2_FactSlice) AsEvidenceV2FactSlice1() (EvidenceV2FactSlice1, error) {
+	var body EvidenceV2FactSlice1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromEvidenceV2FactSlice1 overwrites any union data inside the EvidenceV2_FactSlice as the provided EvidenceV2FactSlice1
+func (t *EvidenceV2_FactSlice) FromEvidenceV2FactSlice1(v EvidenceV2FactSlice1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeEvidenceV2FactSlice1 performs a merge with any union data inside the EvidenceV2_FactSlice, using the provided EvidenceV2FactSlice1
+func (t *EvidenceV2_FactSlice) MergeEvidenceV2FactSlice1(v EvidenceV2FactSlice1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t EvidenceV2_FactSlice) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *EvidenceV2_FactSlice) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsResourceAttributeValueV20 returns the union data inside the ResourceAttributeValueV2 as a ResourceAttributeValueV20
+func (t ResourceAttributeValueV2) AsResourceAttributeValueV20() (ResourceAttributeValueV20, error) {
+	var body ResourceAttributeValueV20
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromResourceAttributeValueV20 overwrites any union data inside the ResourceAttributeValueV2 as the provided ResourceAttributeValueV20
+func (t *ResourceAttributeValueV2) FromResourceAttributeValueV20(v ResourceAttributeValueV20) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeResourceAttributeValueV20 performs a merge with any union data inside the ResourceAttributeValueV2, using the provided ResourceAttributeValueV20
+func (t *ResourceAttributeValueV2) MergeResourceAttributeValueV20(v ResourceAttributeValueV20) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsResourceAttributeValueV21 returns the union data inside the ResourceAttributeValueV2 as a ResourceAttributeValueV21
+func (t ResourceAttributeValueV2) AsResourceAttributeValueV21() (ResourceAttributeValueV21, error) {
+	var body ResourceAttributeValueV21
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromResourceAttributeValueV21 overwrites any union data inside the ResourceAttributeValueV2 as the provided ResourceAttributeValueV21
+func (t *ResourceAttributeValueV2) FromResourceAttributeValueV21(v ResourceAttributeValueV21) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeResourceAttributeValueV21 performs a merge with any union data inside the ResourceAttributeValueV2, using the provided ResourceAttributeValueV21
+func (t *ResourceAttributeValueV2) MergeResourceAttributeValueV21(v ResourceAttributeValueV21) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsResourceAttributeValueV22 returns the union data inside the ResourceAttributeValueV2 as a ResourceAttributeValueV22
+func (t ResourceAttributeValueV2) AsResourceAttributeValueV22() (ResourceAttributeValueV22, error) {
+	var body ResourceAttributeValueV22
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromResourceAttributeValueV22 overwrites any union data inside the ResourceAttributeValueV2 as the provided ResourceAttributeValueV22
+func (t *ResourceAttributeValueV2) FromResourceAttributeValueV22(v ResourceAttributeValueV22) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeResourceAttributeValueV22 performs a merge with any union data inside the ResourceAttributeValueV2, using the provided ResourceAttributeValueV22
+func (t *ResourceAttributeValueV2) MergeResourceAttributeValueV22(v ResourceAttributeValueV22) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsResourceAttributeValueV23 returns the union data inside the ResourceAttributeValueV2 as a ResourceAttributeValueV23
+func (t ResourceAttributeValueV2) AsResourceAttributeValueV23() (ResourceAttributeValueV23, error) {
+	var body ResourceAttributeValueV23
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromResourceAttributeValueV23 overwrites any union data inside the ResourceAttributeValueV2 as the provided ResourceAttributeValueV23
+func (t *ResourceAttributeValueV2) FromResourceAttributeValueV23(v ResourceAttributeValueV23) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeResourceAttributeValueV23 performs a merge with any union data inside the ResourceAttributeValueV2, using the provided ResourceAttributeValueV23
+func (t *ResourceAttributeValueV2) MergeResourceAttributeValueV23(v ResourceAttributeValueV23) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsResourceAttributeValueV25 returns the union data inside the ResourceAttributeValueV2 as a ResourceAttributeValueV25
+func (t ResourceAttributeValueV2) AsResourceAttributeValueV25() (ResourceAttributeValueV25, error) {
+	var body ResourceAttributeValueV25
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromResourceAttributeValueV25 overwrites any union data inside the ResourceAttributeValueV2 as the provided ResourceAttributeValueV25
+func (t *ResourceAttributeValueV2) FromResourceAttributeValueV25(v ResourceAttributeValueV25) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeResourceAttributeValueV25 performs a merge with any union data inside the ResourceAttributeValueV2, using the provided ResourceAttributeValueV25
+func (t *ResourceAttributeValueV2) MergeResourceAttributeValueV25(v ResourceAttributeValueV25) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsResourceAttributeValueV26 returns the union data inside the ResourceAttributeValueV2 as a ResourceAttributeValueV26
+func (t ResourceAttributeValueV2) AsResourceAttributeValueV26() (ResourceAttributeValueV26, error) {
+	var body ResourceAttributeValueV26
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromResourceAttributeValueV26 overwrites any union data inside the ResourceAttributeValueV2 as the provided ResourceAttributeValueV26
+func (t *ResourceAttributeValueV2) FromResourceAttributeValueV26(v ResourceAttributeValueV26) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeResourceAttributeValueV26 performs a merge with any union data inside the ResourceAttributeValueV2, using the provided ResourceAttributeValueV26
+func (t *ResourceAttributeValueV2) MergeResourceAttributeValueV26(v ResourceAttributeValueV26) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ResourceAttributeValueV2) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ResourceAttributeValueV2) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
 }
 
 // AsSourceRegistrationUpdateRequest0 returns the union data inside the SourceRegistrationUpdateRequest as a SourceRegistrationUpdateRequest0
@@ -1555,6 +2391,564 @@ func (t *SourceRegistrationUpdateRequest) UnmarshalJSON(b []byte) error {
 		}
 	}
 
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetLegalHoldsdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetLegalHoldsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetLegalHoldsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetLegalHoldsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetLegalHoldsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetLegalHoldsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetLegalHoldsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetLegalHoldsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetLegalHoldsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetLegalHoldsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetLegalHoldsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetLegalHoldsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetLegalHoldsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetLegalHoldsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the CreateLegalHolddefaultJSONResponseBody as a ErrorEnvelope
+func (t CreateLegalHolddefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the CreateLegalHolddefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *CreateLegalHolddefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the CreateLegalHolddefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *CreateLegalHolddefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the CreateLegalHolddefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t CreateLegalHolddefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the CreateLegalHolddefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *CreateLegalHolddefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the CreateLegalHolddefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *CreateLegalHolddefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateLegalHolddefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateLegalHolddefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the BuildDiagnosticGraphdefaultJSONResponseBody as a ErrorEnvelope
+func (t BuildDiagnosticGraphdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the BuildDiagnosticGraphdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *BuildDiagnosticGraphdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the BuildDiagnosticGraphdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *BuildDiagnosticGraphdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the BuildDiagnosticGraphdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t BuildDiagnosticGraphdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the BuildDiagnosticGraphdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *BuildDiagnosticGraphdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the BuildDiagnosticGraphdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *BuildDiagnosticGraphdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BuildDiagnosticGraphdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BuildDiagnosticGraphdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetEvidencedefaultJSONResponseBody as a ErrorEnvelope
+func (t GetEvidencedefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetEvidencedefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetEvidencedefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetEvidencedefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetEvidencedefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetEvidencedefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetEvidencedefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetEvidencedefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetEvidencedefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetEvidencedefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetEvidencedefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetEvidencedefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetEvidencedefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the QueryEvidencedefaultJSONResponseBody as a ErrorEnvelope
+func (t QueryEvidencedefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the QueryEvidencedefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *QueryEvidencedefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the QueryEvidencedefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *QueryEvidencedefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the QueryEvidencedefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t QueryEvidencedefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the QueryEvidencedefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *QueryEvidencedefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the QueryEvidencedefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *QueryEvidencedefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t QueryEvidencedefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *QueryEvidencedefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetResourcesdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetResourcesdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetResourcesdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetResourcesdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetResourcesdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetResourcesdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetResourcesdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetResourcesdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetResourcesdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetResourcesdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetResourcesdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetResourcesdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetResourcesdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetResourcesdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetResourceByCanonicalIDdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetResourceByCanonicalIDdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetResourceByCanonicalIDdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetResourceByCanonicalIDdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetResourceByCanonicalIDdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetResourceByCanonicalIDdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetResourceByCanonicalIDdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetResourceByCanonicalIDdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetResourceByCanonicalIDdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetResourceByCanonicalIDdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetResourceByCanonicalIDdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetResourceByCanonicalIDdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetResourceByCanonicalIDdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetResourceByCanonicalIDdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetResourceImpactScopedefaultJSONResponseBody as a ErrorEnvelope
+func (t GetResourceImpactScopedefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetResourceImpactScopedefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetResourceImpactScopedefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetResourceImpactScopedefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetResourceImpactScopedefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetResourceImpactScopedefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetResourceImpactScopedefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetResourceImpactScopedefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetResourceImpactScopedefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetResourceImpactScopedefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetResourceImpactScopedefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetResourceImpactScopedefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetResourceImpactScopedefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetResourceNeighborsdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetResourceNeighborsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetResourceNeighborsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetResourceNeighborsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetResourceNeighborsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetResourceNeighborsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetResourceNeighborsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetResourceNeighborsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetResourceNeighborsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetResourceNeighborsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetResourceNeighborsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetResourceNeighborsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetResourceNeighborsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetResourceNeighborsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
 	return err
 }
 
@@ -6058,7 +7452,7 @@ type GetLegalHoldsResponseObject interface {
 	VisitGetLegalHoldsResponse(w http.ResponseWriter) error
 }
 
-type GetLegalHolds200JSONResponse PageEnvelope
+type GetLegalHolds200JSONResponse LegalHoldPageV1
 
 func (response GetLegalHolds200JSONResponse) VisitGetLegalHoldsResponse(w http.ResponseWriter) error {
 
@@ -6073,14 +7467,14 @@ func (response GetLegalHolds200JSONResponse) VisitGetLegalHoldsResponse(w http.R
 }
 
 type GetLegalHoldsdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetLegalHoldsdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetLegalHoldsdefaultJSONResponse) VisitGetLegalHoldsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -6098,7 +7492,7 @@ type CreateLegalHoldResponseObject interface {
 	VisitCreateLegalHoldResponse(w http.ResponseWriter) error
 }
 
-type CreateLegalHold201JSONResponse SuccessEnvelope
+type CreateLegalHold201JSONResponse LegalHoldResultV1
 
 func (response CreateLegalHold201JSONResponse) VisitCreateLegalHoldResponse(w http.ResponseWriter) error {
 
@@ -6113,14 +7507,14 @@ func (response CreateLegalHold201JSONResponse) VisitCreateLegalHoldResponse(w ht
 }
 
 type CreateLegalHolddefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       CreateLegalHolddefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response CreateLegalHolddefaultJSONResponse) VisitCreateLegalHoldResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -7320,7 +8714,7 @@ type BuildDiagnosticGraphResponseObject interface {
 	VisitBuildDiagnosticGraphResponse(w http.ResponseWriter) error
 }
 
-type BuildDiagnosticGraph200JSONResponse SuccessEnvelope
+type BuildDiagnosticGraph200JSONResponse ResourceGraphSuccessV2
 
 func (response BuildDiagnosticGraph200JSONResponse) VisitBuildDiagnosticGraphResponse(w http.ResponseWriter) error {
 
@@ -7335,14 +8729,14 @@ func (response BuildDiagnosticGraph200JSONResponse) VisitBuildDiagnosticGraphRes
 }
 
 type BuildDiagnosticGraphdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       BuildDiagnosticGraphdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response BuildDiagnosticGraphdefaultJSONResponse) VisitBuildDiagnosticGraphResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -7359,7 +8753,7 @@ type GetEvidenceResponseObject interface {
 	VisitGetEvidenceResponse(w http.ResponseWriter) error
 }
 
-type GetEvidence200JSONResponse SuccessEnvelope
+type GetEvidence200JSONResponse EvidenceSuccessV2
 
 func (response GetEvidence200JSONResponse) VisitGetEvidenceResponse(w http.ResponseWriter) error {
 
@@ -7374,14 +8768,14 @@ func (response GetEvidence200JSONResponse) VisitGetEvidenceResponse(w http.Respo
 }
 
 type GetEvidencedefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetEvidencedefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetEvidencedefaultJSONResponse) VisitGetEvidenceResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -7399,7 +8793,7 @@ type QueryEvidenceResponseObject interface {
 	VisitQueryEvidenceResponse(w http.ResponseWriter) error
 }
 
-type QueryEvidence200JSONResponse SuccessEnvelope
+type QueryEvidence200JSONResponse EvidenceResultSuccessV2
 
 func (response QueryEvidence200JSONResponse) VisitQueryEvidenceResponse(w http.ResponseWriter) error {
 
@@ -7414,14 +8808,14 @@ func (response QueryEvidence200JSONResponse) VisitQueryEvidenceResponse(w http.R
 }
 
 type QueryEvidencedefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       QueryEvidencedefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response QueryEvidencedefaultJSONResponse) VisitQueryEvidenceResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -8221,7 +9615,7 @@ type GetResourcesResponseObject interface {
 	VisitGetResourcesResponse(w http.ResponseWriter) error
 }
 
-type GetResources200JSONResponse PageEnvelope
+type GetResources200JSONResponse ResourcePageV2
 
 func (response GetResources200JSONResponse) VisitGetResourcesResponse(w http.ResponseWriter) error {
 
@@ -8236,14 +9630,14 @@ func (response GetResources200JSONResponse) VisitGetResourcesResponse(w http.Res
 }
 
 type GetResourcesdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetResourcesdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetResourcesdefaultJSONResponse) VisitGetResourcesResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -8260,7 +9654,7 @@ type GetResourceByCanonicalIDResponseObject interface {
 	VisitGetResourceByCanonicalIDResponse(w http.ResponseWriter) error
 }
 
-type GetResourceByCanonicalID200JSONResponse SuccessEnvelope
+type GetResourceByCanonicalID200JSONResponse ResourceGraphSuccessV2
 
 func (response GetResourceByCanonicalID200JSONResponse) VisitGetResourceByCanonicalIDResponse(w http.ResponseWriter) error {
 
@@ -8275,14 +9669,14 @@ func (response GetResourceByCanonicalID200JSONResponse) VisitGetResourceByCanoni
 }
 
 type GetResourceByCanonicalIDdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetResourceByCanonicalIDdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetResourceByCanonicalIDdefaultJSONResponse) VisitGetResourceByCanonicalIDResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -8299,7 +9693,7 @@ type GetResourceImpactScopeResponseObject interface {
 	VisitGetResourceImpactScopeResponse(w http.ResponseWriter) error
 }
 
-type GetResourceImpactScope200JSONResponse SuccessEnvelope
+type GetResourceImpactScope200JSONResponse ResourceGraphSuccessV2
 
 func (response GetResourceImpactScope200JSONResponse) VisitGetResourceImpactScopeResponse(w http.ResponseWriter) error {
 
@@ -8314,14 +9708,14 @@ func (response GetResourceImpactScope200JSONResponse) VisitGetResourceImpactScop
 }
 
 type GetResourceImpactScopedefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetResourceImpactScopedefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetResourceImpactScopedefaultJSONResponse) VisitGetResourceImpactScopeResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -8338,7 +9732,7 @@ type GetResourceNeighborsResponseObject interface {
 	VisitGetResourceNeighborsResponse(w http.ResponseWriter) error
 }
 
-type GetResourceNeighbors200JSONResponse PageEnvelope
+type GetResourceNeighbors200JSONResponse ResourceGraphSuccessV2
 
 func (response GetResourceNeighbors200JSONResponse) VisitGetResourceNeighborsResponse(w http.ResponseWriter) error {
 
@@ -8353,14 +9747,14 @@ func (response GetResourceNeighbors200JSONResponse) VisitGetResourceNeighborsRes
 }
 
 type GetResourceNeighborsdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetResourceNeighborsdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetResourceNeighborsdefaultJSONResponse) VisitGetResourceNeighborsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")

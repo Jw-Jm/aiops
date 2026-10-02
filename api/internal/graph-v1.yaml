@@ -1,0 +1,98 @@
+openapi: 3.0.3
+info:
+  title: Worker internal Graph protocol
+  version: 1.0.0
+paths:
+  /internal/v1/graph:query:
+    post:
+      operationId: queryGraph
+      security:
+        - SignedContext: []
+      parameters:
+        - in: header
+          name: X-Graph-Context
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GraphQuery'}
+      responses:
+        '200':
+          description: User-scoped bounded result; partial is an explicit completeness failure.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GraphResult'}
+        '503': {description: GRAPH_NOT_READY}
+        '403': {description: FORBIDDEN}
+        '409': {description: STALE_CONTEXT}
+components:
+  securitySchemes:
+    SignedContext:
+      type: apiKey
+      in: header
+      name: X-Graph-Context
+      x-mutual-tls-required: true
+      description: TLS client certificate is mandatory in addition to the signed audience-bound scope context.
+  schemas:
+    GraphRevision:
+      type: object
+      required: [ownerEpoch, graphGeneration]
+      properties:
+        ownerEpoch: {type: integer, format: int64, minimum: 1}
+        graphGeneration: {type: integer, format: int64, minimum: 1}
+    Scope:
+      type: object
+      required: [tenantId, clusterUid, namespaces, resources, clusterScoped, authorizationRevision]
+      properties:
+        tenantId: {type: string}
+        clusterUid: {type: string}
+        namespaces: {type: array, items: {type: string}}
+        resources: {type: array, items: {type: string}}
+        clusterScoped: {type: boolean}
+        authorizationRevision: {type: string}
+    GraphQuery:
+      type: object
+      additionalProperties: false
+      required: [queryKind, canonicalId, expectedOwnerEpoch, maxDepth, maxNodes, maxEdges, scope, relationKinds]
+      properties:
+        direction: {type: string, enum: [in, out, both]}
+        queryKind: {type: string, enum: [entity, neighbors, dependencies, impact, diagnostic, list]}
+        canonicalId: {type: string}
+        expectedOwnerEpoch: {type: integer, format: int64, minimum: 1}
+        maxDepth: {type: integer, minimum: 1, maximum: 2}
+        maxNodes: {type: integer, minimum: 1, maximum: 200}
+        maxEdges: {type: integer, minimum: 1, maximum: 400}
+        scope: {$ref: '#/components/schemas/Scope'}
+        relationKinds: {type: array, items: {type: string}}
+        cursorRevision: {$ref: '#/components/schemas/GraphRevision'}
+        afterCanonicalId: {type: string}
+        kind: {type: string}
+        name: {type: string}
+        health: {type: string}
+        label: {type: string}
+        sort: {type: string}
+        order: {type: string, enum: [asc, desc]}
+        namespace: {type: string}
+    GraphResult:
+      type: object
+      required: [schemaVersion, graphRevision, ownerInstance, collectedAt, freshness, partial, warnings, degradedSources, nodes, edges, budgets]
+      properties:
+        schemaVersion: {type: string, enum: [resource-graph/v2]}
+        graphRevision: {$ref: '#/components/schemas/GraphRevision'}
+        ownerInstance: {type: string}
+        collectedAt: {type: string, format: date-time}
+        freshness: {type: string, enum: [fresh, stale, unavailable]}
+        partial: {type: boolean}
+        warnings: {type: array, items: {type: string}}
+        degradedSources: {type: array, items: {type: string}}
+        nodes: {type: array, items: {type: object, additionalProperties: true}}
+        edges: {type: array, items: {type: object, additionalProperties: true}}
+        budgets: {type: object, additionalProperties: true}
+        rankedEvidence: {type: array, items: {type: object, additionalProperties: true}}
+        conflicts: {type: array, items: {type: object, additionalProperties: true}}
+        directlyAffected: {type: array, items: {type: string}}
+        indirectlyAffected: {type: array, items: {type: string}}
+        dependencyOnly: {type: array, items: {type: string}}
+        nextCanonicalId: {type: string}

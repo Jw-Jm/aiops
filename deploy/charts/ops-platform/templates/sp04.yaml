@@ -1,0 +1,129 @@
+{{- if and .Values.sp04.enabled (not .Values.networkPolicyOnly) }}
+{{- if ne (int .Values.sp04.workerReplicas) 2 }}{{ fail "SP04 cluster QPS budget is admitted for exactly two Workers" }}{{- end }}
+{{- if not .Values.sp04.allowedWorkerCIDRs }}{{ fail "SP04 requires explicit Worker CIDR routing boundary" }}{{- end }}
+{{- $common := dict "Namespace" .Release.Namespace "CAFile" "/etc/sp04/identity/ca.pem" "CRLFile" "/etc/sp04/identity/crl.pem" "CertificateFile" "/etc/sp04/identity/tls.crt" "PrivateKeyFile" "/etc/sp04/identity/tls.key" "ServerName" (printf "ops-worker.%s.svc.cluster.local" .Release.Namespace) "AllowedWorkerCIDRs" .Values.sp04.allowedWorkerCIDRs "ArchiveBackendLogicalID" (required "SP04 archiveBackendLogicalID required" .Values.sp04.archiveBackendLogicalID) }}
+{{- $api := deepCopy $common }}
+{{- $_ := set $api "ContextPrivateKeyFile" "/etc/sp04/identity/context.key" }}
+{{- $worker := deepCopy $common }}
+{{- $_ := set $worker "ContextPublicKeyFile" "/etc/sp04/identity/context.pub" }}
+{{- $_ := set $worker "ListenAddress" (printf ":%d" (int .Values.sp04.graphPort)) }}
+{{- $_ := set $worker "Clusters" .Values.sp04.clusters }}
+{{- $_ := set $worker "Sources" .Values.sp04.sources }}
+{{- range .Values.sp04.clusters }}
+{{- if or (gt (int (.QPS | default 10)) 10) (gt (int (.Burst | default 25)) 25) }}{{ fail "SP04 two-Worker QPS/burst budget exceeded" }}{{- end }}
+{{- if or (not .SourceRevision) (not .BackendLogicalID) }}{{ fail "SP04 cluster source revision and logical backend required" }}{{- end }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-sp04-runtime
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
+data:
+  api.json: {{ $api | toJson | quote }}
+  worker.json: {{ $worker | toJson | quote }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ops-sp04-worker-graph-ingress
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
+spec:
+  podSelector:
+    matchLabels:
+      ops.platform.io/release: {{ .Release.Name | quote }}
+      ops.platform.io/component: worker
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              ops.platform.io/release: {{ .Release.Name | quote }}
+              ops.platform.io/component: api
+      ports:
+        - protocol: TCP
+          port: {{ .Values.sp04.graphPort }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ops-sp04-worker-kubernetes-egress
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
+spec:
+  podSelector:
+    matchLabels:
+      ops.platform.io/release: {{ .Release.Name | quote }}
+      ops.platform.io/component: worker
+  policyTypes: [Egress]
+  egress:
+    {{- range .Values.sp04.kubernetesAPI.cidrs }}
+    {{- if not (or (hasSuffix "/32" .) (hasSuffix "/128" .)) }}{{ fail "SP04 Kubernetes control-plane egress must use exact host CIDRs" }}{{- end }}
+    - to:
+        - ipBlock:
+            cidr: {{ . | quote }}
+      ports:
+        - protocol: TCP
+          port: {{ $.Values.sp04.kubernetesAPI.port }}
+    {{- end }}
+{{- if .Values.sp04.kubernetesAPI.localCollector }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ printf "%s-%s-sp04-collector" .Release.Namespace .Release.Name | quote }}
+rules:
+  - apiGroups: [""]
+    resources: [pods, nodes, services, configmaps, persistentvolumeclaims, persistentvolumes, events]
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [deployments, replicasets, statefulsets, daemonsets]
+    verbs: [get, list, watch]
+  - apiGroups: [batch]
+    resources: [jobs]
+    verbs: [get, list, watch]
+  - apiGroups: [storage.k8s.io]
+    resources: [storageclasses, csidrivers, csinodes, volumeattachments]
+    verbs: [get, list, watch]
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ printf "%s-%s-sp04-collector" .Release.Namespace .Release.Name | quote }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ printf "%s-%s-sp04-collector" .Release.Namespace .Release.Name | quote }}
+subjects:
+  - kind: ServiceAccount
+    name: ops-worker
+    namespace: {{ .Release.Namespace | quote }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ops-sp04-lease
+rules:
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    resourceNames: {{ required "SP04 local collector requires pre-provisioned leaseNames" .Values.sp04.leaseNames | toJson }}
+    verbs: [get, update]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ops-sp04-lease
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ops-sp04-lease
+subjects:
+  - kind: ServiceAccount
+    name: ops-worker
+    namespace: {{ .Release.Namespace | quote }}
+{{- end }}
+{{- end }}

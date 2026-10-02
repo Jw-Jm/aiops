@@ -146,7 +146,7 @@ func (c *Client) Get(ctx context.Context, key, version string) (archive.StoredOb
 	if int64(len(body)) > c.maxBytes {
 		return archive.StoredObject{}, archive.ErrObjectTooLarge
 	}
-	return archive.StoredObject{Body: body, Metadata: out.Metadata, ETag: aws.ToString(out.ETag), VersionID: aws.ToString(out.VersionId)}, nil
+	return archive.StoredObject{Body: body, Metadata: out.Metadata, ETag: aws.ToString(out.ETag), VersionID: aws.ToString(out.VersionId), RetainUntil: aws.ToTime(out.ObjectLockRetainUntilDate), LegalHold: out.ObjectLockLegalHoldStatus == types.ObjectLockLegalHoldStatusOn}, nil
 }
 func (c *Client) Head(ctx context.Context, key, version string) (archive.StoredObject, error) {
 	input := &sdk.HeadObjectInput{Bucket: aws.String(c.bucket), Key: aws.String(key)}
@@ -160,7 +160,7 @@ func (c *Client) Head(ctx context.Context, key, version string) (archive.StoredO
 		}
 		return archive.StoredObject{}, errors.New("S3 object metadata lookup failed")
 	}
-	return archive.StoredObject{Metadata: out.Metadata, ETag: aws.ToString(out.ETag), VersionID: aws.ToString(out.VersionId)}, nil
+	return archive.StoredObject{Metadata: out.Metadata, ETag: aws.ToString(out.ETag), VersionID: aws.ToString(out.VersionId), RetainUntil: aws.ToTime(out.ObjectLockRetainUntilDate), LegalHold: out.ObjectLockLegalHoldStatus == types.ObjectLockLegalHoldStatusOn}, nil
 }
 
 func isNotFound(err error) bool {
@@ -193,6 +193,39 @@ func (c *Client) Delete(ctx context.Context, key, version string) error {
 	_, err := c.client.DeleteObject(ctx, input)
 	if err != nil {
 		return errors.New("S3 object delete failed")
+	}
+	return nil
+}
+
+func (c *Client) ProtectObject(ctx context.Context, key, version string, until time.Time, hold bool) error {
+	if version == "" || until.IsZero() {
+		return archive.ErrInvalidObject
+	}
+	actual, err := c.Head(ctx, key, version)
+	if err != nil {
+		return err
+	}
+	return c.protectKnownObject(ctx, key, version, until, hold, actual.RetainUntil)
+}
+
+func (c *Client) protectKnownObject(ctx context.Context, key, version string, until time.Time, hold bool, actualRetainUntil time.Time) error {
+	if version == "" || until.IsZero() {
+		return archive.ErrInvalidObject
+	}
+	var err error
+	if until.After(actualRetainUntil) {
+		_, err = c.client.PutObjectRetention(ctx, &sdk.PutObjectRetentionInput{Bucket: aws.String(c.bucket), Key: aws.String(key), VersionId: aws.String(version), Retention: &types.ObjectLockRetention{Mode: types.ObjectLockRetentionModeCompliance, RetainUntilDate: &until}})
+		if err != nil {
+			return errors.New("S3 immutable retention extension failed")
+		}
+	}
+	status := types.ObjectLockLegalHoldStatusOff
+	if hold {
+		status = types.ObjectLockLegalHoldStatusOn
+	}
+	_, err = c.client.PutObjectLegalHold(ctx, &sdk.PutObjectLegalHoldInput{Bucket: aws.String(c.bucket), Key: aws.String(key), VersionId: aws.String(version), LegalHold: &types.ObjectLockLegalHold{Status: status}})
+	if err != nil {
+		return errors.New("S3 version Legal Hold failed")
 	}
 	return nil
 }
