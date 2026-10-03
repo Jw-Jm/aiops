@@ -22,6 +22,8 @@ func assertSP05PublicResponseContract(t *testing.T, path string, status int, raw
 		schema = "finding-page"
 	case strings.HasPrefix(p, "/api/v1/findings/"):
 		schema = "finding-success"
+	case p == "/api/v1/incidents:merge":
+		schema = "incident-success"
 	case p == "/api/v1/incidents":
 		schema = "incident-page"
 	case strings.HasPrefix(p, "/api/v1/incidents/"):

@@ -303,6 +303,9 @@ func TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart(t *testing.T) {
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
+	stop()
+	stop = nil
+	sp05ReviewActualHTTPMutations(t, ctx, db, workerPool, b, token.Subject, envelope, call)
 	// Current role withdrawal must deny a transport replay even with old OIDC.
 	if _, err := db.ExecContext(ctx, `UPDATE platform.role_bindings SET status='disabled',revision=revision+1 WHERE tenant_id=$1 AND subject=$2`, b.TenantID, token.Subject); err != nil {
 		t.Fatal(err)

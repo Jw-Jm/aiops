@@ -39,3 +39,30 @@ expected manifests were not regenerated from current output.
 
 VM work remains deferred/unverified; performance is user-exempt, not PASS;
 PyRCA remains disabled/excluded. None is a review defect or admitted capability.
+
+## Subsequent independent review BR-05 — necessary HTTP mutation evidence gap
+
+Reviewer `/root/sp05_runtime_boundary_review`, final-source review of 111fc5a:
+`test/integration/sp05_live_test.go:38`,
+`test/integration/sp05_response_contract_test.go:37`, and
+`internal/httpapi/sp05_mutation.go:17`. No tests actually POSTed public
+incidents:merge / {id}:split / {id}:transition. Service-level PG tests did not
+execute Foundation dispatch, path rewriting, IdempotencyMiddleware and actual
+response branches; the helper omitted merge. This is medium necessary evidence,
+not a proven implementation failure. Violates IR03/Task5.2/public Contract actual
+consumer validation. Required verification: real authenticated HTTP + PG three
+mutations; typed success/error, stale revision, same-key single mutation/replay,
+namespace-bound merge and authorization withdrawal before replay.
+
+The main agent is adding calls to the actual native OIDC/API live gate and the
+strict merge response schema helper. Final gate/independent closure remains
+pending. Hardware shared regression retains six exact contains plus one native
+DIMM component_of relation; no error allowance or numerical threshold relaxed.
+
+Host disk exhaustion interrupted a signed Bundle's internal extraction verifier,
+OrbStack and dependency gates. Only this run's superseded temporary SP05
+materials were removed after retaining signed metadata; no shared state was
+removed. User subsequently released more host space. Original owned container
+IDs were restarted and Bao's original persistent Raft state unsealed; actual
+changed ephemeral ports were rediscovered into private overrides. Interrupted
+reports remain failures, never passing proof.
