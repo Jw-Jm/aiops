@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "pyrca-gain-decision/v1",
+  "cases": 9,
+  "baselineTop3": 1.0,
+  "pyrcaTop3": 0.6666666666666666,
+  "absoluteGainPercentagePoints": -33.333333333333336,
+  "falseConfirmedIncrease": 0,
+  "domainMetrics": {
+    "dimm": {
+      "cases": 3,
+      "baselineTop3": 1.0,
+      "pyrcaTop3": 0.6666666666666666
+    },
+    "storage": {
+      "cases": 3,
+      "baselineTop3": 1.0,
+      "pyrcaTop3": 1.0
+    },
+    "node": {
+      "cases": 3,
+      "baselineTop3": 1.0,
+      "pyrcaTop3": 0.3333333333333333
+    }
+  },
+  "results": [
+    {
+      "caseId": "dimm-0",
+      "domain": "dimm",
+      "baselineTop3Hit": true,
+      "pyrcaTop3Hit": true,
+      "baselineStatus": "unresolved",
+      "pyrcaStatus": "unresolved",
+      "adjustedKeys": [
+        "dimm-ecc",
+        "cpu",
+        "csi-error",
+        "node-kernel"
+      ]
+    },
+    {
+      "caseId": "storage-1",
+      "domain": "storage",
+      "baselineTop3Hit": true,
+      "pyrcaTop3Hit": true,
+      "baselineStatus": "unresolved",
+      "pyrcaStatus": "unresolved",
+      "adjustedKeys": [
+        "cpu",
+        "csi-error",
+        "dimm-ecc",
+        "node-kernel"
+      ]
+    },
+    {
+      "caseId": "node-2",
+      "domain": "node",
+      "baselineTop3Hit": true,
+      "pyrcaTop3Hit": false,
+      "baselineStatus": "unresolved",
+      "pyrcaStatus": "unresolved",
+      "adjustedKeys": [
+        "csi-error",
+        "dimm-ecc",
+        "cpu",
+        "node-kernel"
+      ]
+    },
+    {
+      "caseId": "dimm-3",
+      "domain": "dimm",
+      "baselineTop3Hit": true,
+      "pyrcaTop3Hit": true,
+      "baselineStatus": "unresolved",
+      "pyrcaStatus": "unresolved",
+      "adjustedKeys": [
+        "csi-error",
+        "dimm-ecc",
+        "cpu",
+        "node-kernel"
+      ]
+    },
+    {
+      "caseId": "storage-4",
+      "domain": "storage",
+      "baselineTop3Hit": true,
+      "pyrcaTop3Hit": true,
+      "baselineStatus": "unresolved",
+      "pyrcaStatus": "unresolved",
+      "adjustedKeys": [
+        "node-kernel",
+        "cpu",
+        "csi-error",
+        "dimm-ecc"
+      ]
+    },
+    {
+      "caseId": "node-5",
+      "domain": "node",
+      "baselineTop3Hit": true,
+      "pyrcaTop3Hit": true,
+      "baselineStatus": "unresolved",
+      "pyrcaStatus": "unresolved",
+      "adjustedKeys": [
+        "dimm-ecc",
+        "cpu",
+        "node-kernel",
+        "csi-error"
+      ]
+    },
+    {
+      "caseId": "dimm-6",
+      "domain": "dimm",
+      "baselineTop3Hit": true,
+      "pyrcaTop3Hit": false,
+      "baselineStatus": "unresolved",
+      "pyrcaStatus": "unresolved",
+      "adjustedKeys": [
+        "node-kernel",
+        "csi-error",
+        "cpu",
+        "dimm-ecc"
+      ]
+    },
+    {
+      "caseId": "storage-7",
+      "domain": "storage",
+      "baselineTop3Hit": true,
+      "pyrcaTop3Hit": true,
+      "baselineStatus": "unresolved",
+      "pyrcaStatus": "unresolved",
+      "adjustedKeys": [
+        "dimm-ecc",
+        "cpu",
+        "csi-error",
+        "node-kernel"
+      ]
+    },
+    {
+      "caseId": "node-8",
+      "domain": "node",
+      "baselineTop3Hit": true,
+      "pyrcaTop3Hit": false,
+      "baselineStatus": "unresolved",
+      "pyrcaStatus": "unresolved",
+      "adjustedKeys": [
+        "csi-error",
+        "cpu",
+        "dimm-ecc",
+        "node-kernel"
+      ]
+    }
+  ],
+  "gainGate": false,
+  "resourceLatencyAdmission": "unverified-user-performance-waiver",
+  "fullDependencyAdmission": false,
+  "runtimeEnabled": false,
+  "limitations": [
+    "nine synthetic frozen cases, not live hardware/production validation",
+    "deterministic Top-3 baseline has a ceiling on this holdout",
+    "full PyRCA package dependencies not admitted for locked Python3.12",
+    "no resource, sustained load or P95 measurements executed"
+  ]
+}

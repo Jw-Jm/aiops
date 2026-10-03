@@ -49,3 +49,12 @@ sp04:
     port: 6443
     localCollector: false
   leaseNames: []
+
+# SP05 runs inside the existing API/Worker, without an investigator or commands.
+sp05:
+  enabled: false
+  ingestionBindings: []
+  analyzer:
+    enabled: true
+    # Filled from the admitted locked-source Worker build, never a mutable tag.
+    sha256: "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53"

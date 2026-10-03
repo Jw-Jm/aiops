@@ -73,8 +73,14 @@ func NewFoundationHandlerWithSP04(pool persistence.TxBeginner, authenticator *au
 			return nil
 		},
 	}.Wrap(http.HandlerFunc(createStepUpSession))
+	if sp04.SP05 == nil {
+		sp04.SP05 = &SP05Handlers{Pool: pool}
+	}
+	sp04.SP05.GraphAPI = sp04
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
+		case r.URL.Path == "/api/v2/findings:ingest", strings.HasPrefix(r.URL.Path, "/api/v1/findings"), strings.HasPrefix(r.URL.Path, "/api/v1/incidents"):
+			sp04.SP05.ServeHTTP(w, r)
 		case strings.HasPrefix(r.URL.Path, "/api/v1/resources"), strings.HasPrefix(r.URL.Path, "/api/v1/evidence"), r.URL.Path == "/api/v1/diagnostic-graphs:build", r.URL.Path == "/api/v1/admin/legal-holds":
 			sp04.ServeHTTP(w, r)
 		case r.URL.Path == "/api/v1/auth/step-up-sessions" && r.Method == http.MethodPost:

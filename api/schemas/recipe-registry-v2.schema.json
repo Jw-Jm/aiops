@@ -1,0 +1,426 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/recipe-registry/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "recipe-registry/v2"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "version": {
+      "enum": [
+        "v1",
+        "v2"
+      ]
+    },
+    "candidateType": {
+      "enum": [
+        "dimm_hardware_fault",
+        "csi_provisioner_failure",
+        "node_runtime_failure"
+      ]
+    },
+    "entry": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 100
+    },
+    "graphDepth": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2
+    },
+    "requiredEvidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "predicate",
+          "maxAgeSeconds",
+          "required"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "predicate": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "maxAgeSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 300
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      },
+      "minItems": 3,
+      "maxItems": 10
+    },
+    "optionalEvidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 100
+    },
+    "confirm": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 100
+    },
+    "exclude": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 100
+    },
+    "toolAllowlist": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "read_evidence",
+          "diagnostic_graph",
+          "impact_scope"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 3
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxEvidence",
+        "maxNodes",
+        "maxEdges",
+        "timeoutMs"
+      ],
+      "properties": {
+        "maxEvidence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "maxNodes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "maxEdges": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 400
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3000
+        }
+      }
+    },
+    "postCheck": {
+      "const": "fresh-required-evidence/v1"
+    },
+    "graphPlan": {
+      "enum": [
+        "single-query/v1",
+        "dimm-hosted-pods/v1"
+      ],
+      "description": "Each kernel query has depth at most 2; DIMM uses a fixed one-hop hosted Node continuation with shared budgets and revision."
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "name",
+    "version",
+    "candidateType",
+    "entry",
+    "graphDepth",
+    "requiredEvidence",
+    "optionalEvidence",
+    "confirm",
+    "exclude",
+    "toolAllowlist",
+    "budget",
+    "postCheck",
+    "graphPlan"
+  ],
+  "$comment": "SP05 v2 admits only the three reviewed executable declarations. New versions require matching consumer admission; virtualization recipes remain deferred.",
+  "allOf": [
+    {
+      "oneOf": [
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "dimm-failure",
+            "version": "v1",
+            "candidateType": "dimm_hardware_fault",
+            "entry": [
+              "DIMM",
+              "Node"
+            ],
+            "graphDepth": 2,
+            "requiredEvidence": [
+              {
+                "key": "dimm-health",
+                "predicate": "dimm-health/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "ecc-uncorrectable",
+                "predicate": "ecc-uncorrectable/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "hardware-path",
+                "predicate": "hardware-path/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "dimm-health",
+              "ecc-uncorrectable",
+              "hardware-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "fresh-required-evidence/v1",
+            "graphPlan": "dimm-hosted-pods/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "pvc-csi-failure",
+            "version": "v1",
+            "candidateType": "csi_provisioner_failure",
+            "entry": [
+              "PersistentVolumeClaim",
+              "Pod"
+            ],
+            "graphDepth": 2,
+            "requiredEvidence": [
+              {
+                "key": "pvc-pending",
+                "predicate": "pvc-pending/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "csi-error",
+                "predicate": "csi-error/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "storage-path",
+                "predicate": "storage-path/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "pvc-pending",
+              "csi-error",
+              "storage-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "fresh-required-evidence/v1",
+            "graphPlan": "single-query/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "node-failure",
+            "version": "v1",
+            "candidateType": "node_runtime_failure",
+            "entry": [
+              "Node",
+              "Pod"
+            ],
+            "graphDepth": 2,
+            "requiredEvidence": [
+              {
+                "key": "node-not-ready",
+                "predicate": "node-not-ready/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "kernel-fault",
+                "predicate": "kernel-fault/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "node-path",
+                "predicate": "node-path/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "node-not-ready",
+              "kernel-fault",
+              "node-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "fresh-required-evidence/v1",
+            "graphPlan": "single-query/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "node-failure",
+            "version": "v2",
+            "candidateType": "node_runtime_failure",
+            "entry": [
+              "Node",
+              "Pod"
+            ],
+            "graphDepth": 2,
+            "requiredEvidence": [
+              {
+                "key": "node-not-ready",
+                "predicate": "node-not-ready/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "node-causal-evidence",
+                "predicate": "node-runtime-or-located-fatal-dimm/v2",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "node-path",
+                "predicate": "node-path/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "node-not-ready",
+              "node-causal-evidence",
+              "node-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "fresh-required-evidence/v1",
+            "graphPlan": "single-query/v1"
+          }
+        }
+      ]
+    }
+  ]
+}

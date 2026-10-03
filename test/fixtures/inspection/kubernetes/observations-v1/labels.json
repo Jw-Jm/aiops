@@ -1,0 +1,244 @@
+{
+  "schemaVersion": "sp05-observations-labels/v1",
+  "clock": "2026-10-03T00:00:00Z",
+  "cases": [
+    {
+      "name": "cpu-utilization",
+      "domain": "metrics",
+      "usage": {
+        "cpu": "3900m",
+        "memory": "1Gi"
+      },
+      "allocatable": {
+        "cpu": "4",
+        "memory": "4Gi"
+      },
+      "expected": [
+        "CPUUtilizationHigh"
+      ],
+      "degraded": false
+    },
+    {
+      "name": "memory-utilization",
+      "domain": "metrics",
+      "usage": {
+        "cpu": "100m",
+        "memory": "3900Mi"
+      },
+      "allocatable": {
+        "cpu": "4",
+        "memory": "4Gi"
+      },
+      "expected": [
+        "MemoryUtilizationHigh"
+      ],
+      "degraded": false
+    },
+    {
+      "name": "both-low",
+      "domain": "metrics",
+      "usage": {
+        "cpu": "100000000n",
+        "memory": "512Mi"
+      },
+      "allocatable": {
+        "cpu": "4",
+        "memory": "4Gi"
+      },
+      "expected": [],
+      "degraded": false
+    },
+    {
+      "name": "boundary-not-high",
+      "domain": "metrics",
+      "usage": {
+        "cpu": "3600m",
+        "memory": "512Mi"
+      },
+      "allocatable": {
+        "cpu": "4",
+        "memory": "4Gi"
+      },
+      "expected": [],
+      "degraded": false
+    },
+    {
+      "name": "zero-capacity",
+      "domain": "metrics",
+      "usage": {
+        "cpu": "1",
+        "memory": "1Gi"
+      },
+      "allocatable": {
+        "cpu": "0",
+        "memory": "4Gi"
+      },
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "malformed-usage",
+      "domain": "metrics",
+      "usage": {
+        "cpu": "NaN",
+        "memory": "1Gi"
+      },
+      "allocatable": {
+        "cpu": "4",
+        "memory": "4Gi"
+      },
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "missing-memory",
+      "domain": "metrics",
+      "usage": {
+        "cpu": "3900m"
+      },
+      "allocatable": {
+        "cpu": "4",
+        "memory": "4Gi"
+      },
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "old-clock",
+      "domain": "metrics",
+      "usage": {
+        "cpu": "3900m",
+        "memory": "1Gi"
+      },
+      "allocatable": {
+        "cpu": "4",
+        "memory": "4Gi"
+      },
+      "offsetSeconds": -301,
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "recreated-node",
+      "domain": "metrics",
+      "usage": {
+        "cpu": "3900m",
+        "memory": "1Gi"
+      },
+      "allocatable": {
+        "cpu": "4",
+        "memory": "4Gi"
+      },
+      "metricName": "another-node",
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "metrics-schema-drift",
+      "domain": "metrics",
+      "usage": {
+        "cpu": "3900m",
+        "memory": "1Gi"
+      },
+      "allocatable": {
+        "cpu": "4",
+        "memory": "4Gi"
+      },
+      "metricKind": "PodMetrics",
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "control-http-200",
+      "domain": "control-plane",
+      "status": 200,
+      "expected": [],
+      "degraded": false
+    },
+    {
+      "name": "control-http-503",
+      "domain": "control-plane",
+      "status": 503,
+      "expected": [
+        "ControlPlaneUnreachable"
+      ],
+      "degraded": false
+    },
+    {
+      "name": "control-http-504",
+      "domain": "control-plane",
+      "status": 504,
+      "expected": [
+        "ControlPlaneUnreachable"
+      ],
+      "degraded": false
+    },
+    {
+      "name": "control-http-401",
+      "domain": "control-plane",
+      "status": 401,
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "control-http-403",
+      "domain": "control-plane",
+      "status": 403,
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "control-http-429",
+      "domain": "control-plane",
+      "status": 429,
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "control-http-404",
+      "domain": "control-plane",
+      "status": 404,
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "control-dial_refused",
+      "domain": "control-plane",
+      "errorClass": "dial_refused",
+      "expected": [
+        "ControlPlaneUnreachable"
+      ],
+      "degraded": false
+    },
+    {
+      "name": "control-request_timeout",
+      "domain": "control-plane",
+      "errorClass": "request_timeout",
+      "expected": [
+        "ControlPlaneUnreachable"
+      ],
+      "degraded": false
+    },
+    {
+      "name": "control-local_budget_timeout",
+      "domain": "control-plane",
+      "errorClass": "local_budget_timeout",
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "control-tls_invalid",
+      "domain": "control-plane",
+      "errorClass": "tls_invalid",
+      "expected": [],
+      "degraded": true
+    },
+    {
+      "name": "control-dns_invalid",
+      "domain": "control-plane",
+      "errorClass": "dns_invalid",
+      "expected": [],
+      "degraded": true
+    }
+  ]
+}

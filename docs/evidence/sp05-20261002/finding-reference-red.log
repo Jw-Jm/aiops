@@ -1,0 +1,36 @@
+=== RUN   TestSP05FindingRejectsMissingEvidenceWithoutPartialCommit
+2026/10/02 18:54:00 OK   00001_roles_and_schemas.sql (26.92ms)
+2026/10/02 18:54:00 goose: successfully migrated database to version: 1
+2026/10/02 18:54:00 OK   00002_platform_meta.sql (19.37ms)
+2026/10/02 18:54:00 OK   00003_finding.sql (7.55ms)
+2026/10/02 18:54:00 OK   00004_incident.sql (20.28ms)
+2026/10/02 18:54:00 OK   00005_investigation.sql (4.8ms)
+2026/10/02 18:54:00 OK   00006_action_command.sql (4.3ms)
+2026/10/02 18:54:00 OK   00007_audit.sql (7.78ms)
+2026/10/02 18:54:00 OK   00008_rls.sql (22.01ms)
+2026/10/02 18:54:00 OK   00009_idempotency_ledger.sql (25.43ms)
+2026/10/02 18:54:00 OK   00010_tenant_provisioning.sql (5.76ms)
+2026/10/02 18:54:00 OK   00011_source_registration_history.sql (22.65ms)
+2026/10/02 18:54:00 OK   00012_config_registry_lifecycle.sql (22.54ms)
+2026/10/02 18:54:00 OK   00013_audit_signed_segments.sql (31.19ms)
+2026/10/02 18:54:00 OK   00014_audit_segment_predecessors.sql (24.38ms)
+2026/10/02 18:54:00 OK   00015_source_schema_scope.sql (3.51ms)
+2026/10/02 18:54:00 OK   00016_cluster_registration_metadata.sql (23.86ms)
+2026/10/02 18:54:00 OK   00017_source_data_scope.sql (3.38ms)
+2026/10/02 18:54:00 OK   00018_sp04_resources_evidence.sql (28.39ms)
+2026/10/02 18:54:00 OK   00019_sp04_archive_ciphertext_bytes.sql (3.61ms)
+2026/10/02 18:54:00 OK   00020_sp04_request_ledger.sql (21.31ms)
+2026/10/02 18:54:00 OK   00021_sp04_archive_protection.sql (2.75ms)
+2026/10/02 18:54:00 OK   00022_sp04_legal_hold_dependencies.sql (2.39ms)
+2026/10/02 18:54:00 OK   00023_sp04_archive_query_intent.sql (2.39ms)
+2026/10/02 18:54:00 OK   00024_sp05_finding_incident.sql (35.66ms)
+2026/10/02 18:54:00 OK   00025_sp05_incident_event_time.sql (4.04ms)
+2026/10/02 18:54:00 OK   00026_sp05_source_binding_lock.sql (15.1ms)
+2026/10/02 18:54:00 OK   00027_sp05_rca_and_poll.sql (5.43ms)
+2026/10/02 18:54:00 OK   00028_sp05_operator_lock.sql (2.71ms)
+2026/10/02 18:54:00 goose: successfully migrated database to version: 28
+    sp05_reference_test.go:15: unverified evidence reference accepted: <nil>
+--- FAIL: TestSP05FindingRejectsMissingEvidenceWithoutPartialCommit (0.77s)
+FAIL
+FAIL	ops-platform/test/integration	2.132s
+FAIL

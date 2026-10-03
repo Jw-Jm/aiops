@@ -13,6 +13,17 @@ type Inventory struct {
 	DegradedSources []string          `json:"degradedSources"`
 	Warnings        []string          `json:"warnings"`
 	Health          string            `json:"health"`
+	DiagnosticFacts []DiagnosticFact  `json:"diagnosticFacts,omitempty"`
+}
+
+type DiagnosticFact struct {
+	ResourceCanonicalID string          `json:"resourceCanonicalId"`
+	RuleID              string          `json:"ruleId"`
+	Symptom             string          `json:"symptom"`
+	State               string          `json:"state"`
+	NativeURI           string          `json:"nativeUri"`
+	ObservedAt          time.Time       `json:"observedAt"`
+	Data                json.RawMessage `json:"data"`
 }
 
 func Health(state, health string) string {
@@ -32,6 +43,9 @@ func Health(state, health string) string {
 }
 func Collect(ctx context.Context, c Config) (Inventory, error) {
 	out := Inventory{Entities: []resource.Entity{}, DegradedSources: []string{}, Warnings: []string{}, Health: "unknown"}
+	if c.Diagnostics {
+		c.alarms = map[string]bool{}
+	}
 	degrade := func(code string) {
 		out.Partial = true
 		out.DegradedSources = []string{"redfish"}
@@ -64,7 +78,8 @@ func Collect(ctx context.Context, c Config) (Inventory, error) {
 			serials[s.SerialNumber]++
 		}
 	}
-	now := time.Now()
+	now := c.observationTime()
+	diagnosticMetricReads := 0
 	resolver := resource.NewResolver()
 	for _, s := range systems {
 		if normalized := resource.NormalizeHardwareUUID(s.UUID); normalized != "" && uuids[normalized] > 1 {
@@ -105,7 +120,7 @@ func Collect(ctx context.Context, c Config) (Inventory, error) {
 			var fields map[string]any
 			json.Unmarshal(body, &fields)
 			safe := map[string]any{}
-			for _, key := range []string{"Manufacturer", "Model", "CapacityMiB", "TotalCores", "TotalThreads", "CapacityBytes", "MediaType", "SpeedMbps", "Status"} {
+			for _, key := range []string{"Manufacturer", "Model", "DeviceLocator", "CapacityMiB", "TotalCores", "TotalThreads", "CapacityBytes", "MediaType", "SpeedMbps", "Status"} {
 				if v, ok := fields[key]; ok {
 					if key == "Status" {
 						if status, ok := v.(map[string]any); ok {
@@ -139,6 +154,52 @@ func Collect(ctx context.Context, c Config) (Inventory, error) {
 		} else {
 			for _, item := range items {
 				add("DIMM", item.ID, item.Name, item)
+				if !c.Diagnostics || item.ID == "" {
+					continue
+				}
+				canonical := resolution.CanonicalID
+				canonical.Kind, canonical.StableID = "DIMM", resolution.CanonicalID.StableID+"/"+item.ID
+				fact := func(rule, symptom, state, uri string, data any) {
+					if len(out.DiagnosticFacts) >= 128 {
+						degrade("diagnostic_fact_budget")
+						return
+					}
+					raw, _ := json.Marshal(data)
+					out.DiagnosticFacts = append(out.DiagnosticFacts, DiagnosticFact{ResourceCanonicalID: canonical.String(), RuleID: rule, Symptom: symptom, State: state, NativeURI: uri, ObservedAt: c.observationTime(), Data: raw})
+				}
+				if item.Status.State == "Enabled" && (item.Status.Health == "Critical" || item.Status.Health == "OK") {
+					state := "firing"
+					if item.Status.Health == "OK" {
+						state = "resolved"
+					}
+					fact("redfish/dimm-health/v1", "DIMMHealth", state, item.ODataID, map[string]any{"health": item.Status.Health, "observationClock": "collector", "nativeUri": item.ODataID})
+				} else {
+					degrade("dimm_diagnostic_health_unknown")
+				}
+				if diagnosticMetricReads >= 64 {
+					degrade("diagnostic_metric_budget")
+					continue
+				}
+				diagnosticMetricReads++
+				metrics, metricsErr := item.Metrics()
+				if metricsErr != nil || metrics == nil {
+					degrade("dimm_metrics_unavailable")
+					continue
+				}
+				alarm, present := c.alarms[metrics.ODataID]
+				if !present {
+					degrade("dimm_current_alarm_missing")
+					continue
+				}
+				if alarm != metrics.HealthData.AlarmTrips.UncorrectableECCError {
+					degrade("dimm_metrics_format_drift")
+					continue
+				}
+				state := "resolved"
+				if alarm {
+					state = "firing"
+				}
+				fact("redfish/dimm-uncorrectable-ecc/v1", "UncorrectableECC", state, metrics.ODataID, map[string]any{"uncorrectableECC": alarm, "observationClock": "collector", "nativeUri": metrics.ODataID})
 			}
 		}
 		if items, err := s.EthernetInterfaces(); err != nil {

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "golden-slice-expected/v2",
+  "scenario": "node-failure",
+  "relationKinds": [
+    "scheduled_on"
+  ],
+  "findingCount": 2,
+  "findingState": "firing",
+  "incidentCount": 2,
+  "incidentState": "open",
+  "evidenceCount": 3,
+  "candidateType": "node_runtime_failure",
+  "rcaStatus": "confirmed",
+  "variantStatus": {
+    "missing": "unresolved",
+    "conflict": "unresolved",
+    "degraded": "unresolved"
+  },
+  "impactDirect": [
+    "pod-a"
+  ],
+  "impactIndirect": [],
+  "impactPartial": false,
+  "replayCount": 2,
+  "freezeBasis": "Manually specified from Task5.7 and SP04 direct=one-hop, indirect=multi-hop semantics; not generated from business output. v1 remains intact; ADR0021 explains corrected DIMM impact.",
+  "diagnosticEntityKinds": [
+    "Node",
+    "Pod"
+  ],
+  "primaryEvidenceCount": 2,
+  "derivedEvidenceCount": 1
+}

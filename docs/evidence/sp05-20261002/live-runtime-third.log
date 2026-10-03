@@ -1,0 +1,42 @@
+=== RUN   TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart
+2026/10/02 19:14:44 OK   00001_roles_and_schemas.sql (16.27ms)
+2026/10/02 19:14:44 goose: successfully migrated database to version: 1
+2026/10/02 19:14:45 OK   00002_platform_meta.sql (18.5ms)
+2026/10/02 19:14:45 OK   00003_finding.sql (7.44ms)
+2026/10/02 19:14:45 OK   00004_incident.sql (7.17ms)
+2026/10/02 19:14:45 OK   00005_investigation.sql (6.21ms)
+2026/10/02 19:14:45 OK   00006_action_command.sql (14.88ms)
+2026/10/02 19:14:45 OK   00007_audit.sql (16.25ms)
+2026/10/02 19:14:45 OK   00008_rls.sql (27.78ms)
+2026/10/02 19:14:45 OK   00009_idempotency_ledger.sql (7.46ms)
+2026/10/02 19:14:45 OK   00010_tenant_provisioning.sql (4.92ms)
+2026/10/02 19:14:45 OK   00011_source_registration_history.sql (6.44ms)
+2026/10/02 19:14:45 OK   00012_config_registry_lifecycle.sql (23.86ms)
+2026/10/02 19:14:45 OK   00013_audit_signed_segments.sql (10.77ms)
+2026/10/02 19:14:45 OK   00014_audit_segment_predecessors.sql (10.68ms)
+2026/10/02 19:14:45 OK   00015_source_schema_scope.sql (5.95ms)
+2026/10/02 19:14:45 OK   00016_cluster_registration_metadata.sql (6.73ms)
+2026/10/02 19:14:45 OK   00017_source_data_scope.sql (6.26ms)
+2026/10/02 19:14:45 OK   00018_sp04_resources_evidence.sql (28.25ms)
+2026/10/02 19:14:45 OK   00019_sp04_archive_ciphertext_bytes.sql (2.92ms)
+2026/10/02 19:14:45 OK   00020_sp04_request_ledger.sql (6.38ms)
+2026/10/02 19:14:45 OK   00021_sp04_archive_protection.sql (5.74ms)
+2026/10/02 19:14:45 OK   00022_sp04_legal_hold_dependencies.sql (4.06ms)
+2026/10/02 19:14:45 OK   00023_sp04_archive_query_intent.sql (3.79ms)
+2026/10/02 19:14:45 OK   00024_sp05_finding_incident.sql (15.64ms)
+2026/10/02 19:14:45 OK   00025_sp05_incident_event_time.sql (6.28ms)
+2026/10/02 19:14:45 OK   00026_sp05_source_binding_lock.sql (9.03ms)
+2026/10/02 19:14:45 OK   00027_sp05_rca_and_poll.sql (8.39ms)
+2026/10/02 19:14:45 OK   00028_sp05_operator_lock.sql (10.72ms)
+2026/10/02 19:14:45 OK   00029_sp05_evidence_links.sql (9.54ms)
+2026/10/02 19:14:45 OK   00030_sp05_recipe_fence.sql (4.87ms)
+2026/10/02 19:14:45 goose: successfully migrated database to version: 30
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=ac56982a3a615ed1cf34d061044791153fd95e29dff6f4e5a7eafb153bf5caf1 bucket=sp05-chain-0877268a tenants=1
+    sp05_live_test.go:192: ERROR: common column name "tenant_id" appears more than once in left table (SQLSTATE 42702)
+    sp05_live_test.go:165: runtime database is unavailable or privileges are invalid
+{"time":"2026-10-02T19:14:51.536794+08:00","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"canceled"}
+{"time":"2026-10-02T19:14:51.53669+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+--- FAIL: TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart (7.69s)
+FAIL
+FAIL	ops-platform/test/integration	8.708s
+FAIL

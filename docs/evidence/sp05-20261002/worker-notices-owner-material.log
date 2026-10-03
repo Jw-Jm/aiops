@@ -1,0 +1,40 @@
+{"modules": 233, "sourceBundleSHA256": "sha256:2e34224848a9de13cb78e70c117c2d1e367ddab61076b691efad29fbc2f37e92", "sourceBytes": 347883520, "lockSHA256": "sha256:78c3264f0f5b7ae4041e6ec504dcb2b5e48b85c027661a7f093290b459d57121"}
+#0 building with "orbstack" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 264B done
+#1 DONE 0.1s
+
+#2 [internal] load .dockerignore
+#2 transferring context:
+#2 transferring context: 2B done
+#2 DONE 0.1s
+
+#3 [internal] load build context
+#3 transferring context: 162.02MB 0.5s done
+#3 DONE 0.5s
+
+#4 [1/3] COPY --chown=65532:65532 --chmod=0555 ops-worker /ops-worker
+#4 DONE 0.1s
+
+#5 [2/3] COPY --chown=65532:65532 --chmod=0555 k8sgpt /opt/ops/bin/k8sgpt
+#5 DONE 0.5s
+
+#6 [3/3] COPY runtime-notices /usr/share/ops/legal
+#6 DONE 0.2s
+
+#7 exporting to image
+#7 exporting layers
+#7 exporting layers 2.0s done
+#7 exporting manifest sha256:6f7e73d723f5d3217f8796f4749835c332f105df5ad8b38d8b2620ee09d35e05 0.0s done
+#7 exporting config sha256:718cf6a793d7cd803895ae5b5c0c1f11756c549a4a1f1c0b2ede12f8a50c8b9e 0.0s done
+#7 exporting attestation manifest sha256:f8dd46c2a6bbd5fd20c300c0969328a278adef78f3616bff3417f5d60ae3601b 0.0s done
+#7 exporting manifest list sha256:f5a1c06ea1667fb69015d6d54e2a26df90d9812fa068123dc711cb2d486a336e 0.0s done
+#7 naming to docker.io/library/ops-sp05-worker:20261003
+#7 naming to docker.io/library/ops-sp05-worker:20261003 done
+#7 unpacking to docker.io/library/ops-sp05-worker:20261003
+#7 unpacking to docker.io/library/ops-sp05-worker:20261003 0.5s done
+#7 DONE 2.6s
+
+View build details: docker-desktop://dashboard/build/orbstack/orbstack/28pg3mjmjwoc1ayc43ub3kso0
+{"image": "sha256:f5a1c06ea1667fb69015d6d54e2a26df90d9812fa068123dc711cb2d486a336e", "analyzerSHA256": "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53", "sourceClosure": "/private/tmp/ops-sp05-worker-material-20261003/k8sgpt-runtime-source.tar", "state": "built-awaiting-runtime-and-distribution-gates"}

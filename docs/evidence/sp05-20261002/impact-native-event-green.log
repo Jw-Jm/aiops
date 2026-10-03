@@ -1,0 +1,291 @@
+SIGQUIT: quit
+PC=0x18b3c350c m=0 sigcode=0
+
+goroutine 0 gp=0x105d33700 m=0 mp=0x105d34320 [idle]:
+runtime.pthread_cond_wait(0x105d34888, 0x105d34848)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/sys_darwin.go:470 +0x20 fp=0x16b455800 sp=0x16b4557d0 pc=0x104a15440
+runtime.semasleep(0xffffffffffffffff)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/os_darwin.go:72 +0x9c fp=0x16b455860 sp=0x16b455800 pc=0x1049f183c
+runtime.notesleep(0x105d34478)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/lock_sema.go:62 +0xac fp=0x16b455890 sp=0x16b455860 pc=0x1049c3bec
+runtime.mPark(...)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:1985
+runtime.stopm()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:3023 +0x84 fp=0x16b4558c0 sp=0x16b455890 pc=0x1049fb8c4
+runtime.findRunnable()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:3811 +0xff0 fp=0x16b455a90 sp=0x16b4558c0 pc=0x1049fd630
+runtime.schedule()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:4179 +0x90 fp=0x16b455ad0 sp=0x16b455a90 pc=0x1049fe990
+runtime.park_m(0x2cc189ce54a0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:4319 +0x23c fp=0x16b455b30 sp=0x16b455ad0 pc=0x1049fee0c
+runtime.mcall()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:319 +0x54 fp=0x16b455b40 sp=0x16b455b30 pc=0x104a35044
+
+goroutine 1 gp=0x2cc189ce41e0 m=nil [chan receive, 2 minutes]:
+runtime.gopark(0x104a37c80?, 0x2cc18a191908?, 0x1f?, 0x60?, 0x2cc18a17f008?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc18a1918c0 sp=0x2cc18a1918a0 pc=0x104a2f908
+runtime.chanrecv(0x2cc18a228f00, 0x2cc18a1919c7, 0x1)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/chan.go:667 +0x470 fp=0x2cc18a191940 sp=0x2cc18a1918c0 pc=0x1049be970
+runtime.chanrecv1(0x18?, 0x105b95940?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/chan.go:509 +0x14 fp=0x2cc18a191970 sp=0x2cc18a191940 pc=0x1049be4c4
+testing.(*T).Run(0x2cc18a0eb208, {0x1051e66b1?, 0x2cc18a2dfa88?}, 0x105c25e20)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2266 +0x3cc fp=0x2cc18a191a50 sp=0x2cc18a191970 pc=0x104ae2c8c
+testing.runTests.func1(0x2cc18a0eb208)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2742 +0x38 fp=0x2cc18a191a90 sp=0x2cc18a191a50 pc=0x104ae7f08
+testing.tRunner(0x2cc18a0eb208, 0x2cc18a2dfbb8)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2193 +0xc4 fp=0x2cc18a191ae0 sp=0x2cc18a191a90 pc=0x104ae2854
+testing.runTests({0x1051bef95, 0xc}, {0x1051ce9ee, 0x1b}, 0x2cc18a21a5b8, {0x105d20de0, 0x19, 0x19}, {0x2cc18a2dfc58?, 0x2cc189e47740?, ...})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2740 +0x400 fp=0x2cc18a191be0 sp=0x2cc18a191ae0 pc=0x104ae47b0
+testing.(*M).Run(0x2cc18a244aa0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2600 +0x578 fp=0x2cc18a191e20 sp=0x2cc18a191be0 pc=0x104ae37f8
+main.main()
+	_testmain.go:94 +0x80 fp=0x2cc18a191ea0 sp=0x2cc18a191e20 pc=0x10515c740
+runtime.main()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:302 +0x380 fp=0x2cc18a191fd0 sp=0x2cc18a191ea0 pc=0x1049f6df0
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc18a191fd0 sp=0x2cc18a191fd0 pc=0x104a37164
+
+goroutine 18 gp=0x2cc189d943c0 m=nil [force gc (idle), 2 minutes]:
+runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189d56790 sp=0x2cc189d56770 pc=0x104a2f908
+runtime.goparkunlock(...)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:480
+runtime.forcegchelper()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:387 +0xb4 fp=0x2cc189d567d0 sp=0x2cc189d56790 pc=0x1049f70d4
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189d567d0 sp=0x2cc189d567d0 pc=0x104a37164
+created by runtime.init.7 in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:375 +0x24
+
+goroutine 19 gp=0x2cc189d945a0 m=nil [GC sweep wait]:
+runtime.gopark(0x1?, 0x0?, 0x0?, 0x0?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189d56f70 sp=0x2cc189d56f50 pc=0x104a2f908
+runtime.goparkunlock(...)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:480
+runtime.bgsweep(0x2cc189da4000)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgcsweep.go:324 +0x178 fp=0x2cc189d56fb0 sp=0x2cc189d56f70 pc=0x1049e0a08
+runtime.gcenable.gowrap1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:214 +0x20 fp=0x2cc189d56fd0 sp=0x2cc189d56fb0 pc=0x104a25260
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189d56fd0 sp=0x2cc189d56fd0 pc=0x104a37164
+created by runtime.gcenable in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:214 +0x6c
+
+goroutine 20 gp=0x2cc189d94780 m=nil [GC scavenge wait]:
+runtime.gopark(0x10000?, 0x1f60c1?, 0x0?, 0x0?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189d59760 sp=0x2cc189d59740 pc=0x104a2f908
+runtime.goparkunlock(...)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:480
+runtime.(*scavengerState).park(0x105d32d40)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgcscavenge.go:425 +0x5c fp=0x2cc189d59790 sp=0x2cc189d59760 pc=0x1049de57c
+runtime.bgscavenge(0x2cc189da4000)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgcscavenge.go:658 +0xac fp=0x2cc189d597b0 sp=0x2cc189d59790 pc=0x1049deb0c
+runtime.gcenable.gowrap2()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:215 +0x20 fp=0x2cc189d597d0 sp=0x2cc189d597b0 pc=0x104a25220
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189d597d0 sp=0x2cc189d597d0 pc=0x104a37164
+created by runtime.gcenable in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:215 +0xac
+
+goroutine 34 gp=0x2cc189e02000 m=nil [GOMAXPROCS updater (idle), 2 minutes]:
+runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189e08770 sp=0x2cc189e08750 pc=0x104a2f908
+runtime.goparkunlock(...)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:480
+runtime.updateMaxProcsGoroutine()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:7146 +0xf4 fp=0x2cc189e087d0 sp=0x2cc189e08770 pc=0x104a04aa4
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189e087d0 sp=0x2cc189e087d0 pc=0x104a37164
+created by runtime.defaultGOMAXPROCSUpdateEnable in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:7134 +0x48
+
+goroutine 35 gp=0x2cc189e025a0 m=nil [finalizer wait, 2 minutes]:
+runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189e08d80 sp=0x2cc189e08d60 pc=0x104a2f908
+runtime.runFinalizers()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mfinal.go:210 +0x100 fp=0x2cc189e08fd0 sp=0x2cc189e08d80 pc=0x1049d1b10
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189e08fd0 sp=0x2cc189e08fd0 pc=0x104a37164
+created by runtime.createfing in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mfinal.go:172 +0x78
+
+goroutine 36 gp=0x2cc189ef3a40 m=nil [cleanup wait, 2 minutes]:
+runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189e09750 sp=0x2cc189e09730 pc=0x104a2f908
+runtime.goparkunlock(...)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:480
+runtime.(*cleanupQueue).dequeue(0x105d33540)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mcleanup.go:522 +0x160 fp=0x2cc189e09790 sp=0x2cc189e09750 pc=0x1049ce310
+runtime.runCleanups()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mcleanup.go:718 +0x40 fp=0x2cc189e097d0 sp=0x2cc189e09790 pc=0x1049cea60
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189e097d0 sp=0x2cc189e097d0 pc=0x104a37164
+created by runtime.(*cleanupQueue).createGs in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mcleanup.go:672 +0x108
+
+goroutine 37 gp=0x2cc18a17a000 m=nil [GC worker (idle)]:
+runtime.gopark(0x190738de3e687?, 0x3?, 0x10?, 0xc4?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189e09f20 sp=0x2cc189e09f00 pc=0x104a2f908
+runtime.gcBgMarkWorker(0x2cc189e0ccb0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1807 +0xe0 fp=0x2cc189e09fb0 sp=0x2cc189e09f20 pc=0x1049d4df0
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x20 fp=0x2cc189e09fd0 sp=0x2cc189e09fb0 pc=0x104a25790
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189e09fd0 sp=0x2cc189e09fd0 pc=0x104a37164
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x130
+
+goroutine 2 gp=0x2cc189ce54a0 m=nil [GC worker (idle)]:
+runtime.gopark(0x190738d7f5ac8?, 0x3?, 0x57?, 0x2?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189d5af20 sp=0x2cc189d5af00 pc=0x104a2f908
+runtime.gcBgMarkWorker(0x2cc189e0ccb0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1807 +0xe0 fp=0x2cc189d5afb0 sp=0x2cc189d5af20 pc=0x1049d4df0
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x20 fp=0x2cc189d5afd0 sp=0x2cc189d5afb0 pc=0x104a25790
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189d5afd0 sp=0x2cc189d5afd0 pc=0x104a37164
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x130
+
+goroutine 21 gp=0x2cc189d94960 m=nil [GC worker (idle)]:
+runtime.gopark(0x190738de85d98?, 0x3?, 0x22?, 0x2a?, 0x104a272f0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189d5a720 sp=0x2cc189d5a700 pc=0x104a2f908
+runtime.gcBgMarkWorker(0x2cc189e0ccb0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1807 +0xe0 fp=0x2cc189d5a7b0 sp=0x2cc189d5a720 pc=0x1049d4df0
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x20 fp=0x2cc189d5a7d0 sp=0x2cc189d5a7b0 pc=0x104a25790
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189d5a7d0 sp=0x2cc189d5a7d0 pc=0x104a37164
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x130
+
+goroutine 38 gp=0x2cc18a17a1e0 m=nil [GC worker (idle)]:
+runtime.gopark(0x190738de97d07?, 0x3?, 0x4e?, 0x9b?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189e0a720 sp=0x2cc189e0a700 pc=0x104a2f908
+runtime.gcBgMarkWorker(0x2cc189e0ccb0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1807 +0xe0 fp=0x2cc189e0a7b0 sp=0x2cc189e0a720 pc=0x1049d4df0
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x20 fp=0x2cc189e0a7d0 sp=0x2cc189e0a7b0 pc=0x104a25790
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189e0a7d0 sp=0x2cc189e0a7d0 pc=0x104a37164
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x130
+
+goroutine 3 gp=0x2cc189ce5680 m=nil [GC worker (idle)]:
+runtime.gopark(0x190738de3e65d?, 0x3?, 0x88?, 0x84?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189d5b720 sp=0x2cc189d5b700 pc=0x104a2f908
+runtime.gcBgMarkWorker(0x2cc189e0ccb0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1807 +0xe0 fp=0x2cc189d5b7b0 sp=0x2cc189d5b720 pc=0x1049d4df0
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x20 fp=0x2cc189d5b7d0 sp=0x2cc189d5b7b0 pc=0x104a25790
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189d5b7d0 sp=0x2cc189d5b7d0 pc=0x104a37164
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x130
+
+goroutine 22 gp=0x2cc189d94b40 m=nil [GC worker (idle)]:
+runtime.gopark(0x190738de8f6ea?, 0x3?, 0xec?, 0x2c?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189d57f20 sp=0x2cc189d57f00 pc=0x104a2f908
+runtime.gcBgMarkWorker(0x2cc189e0ccb0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1807 +0xe0 fp=0x2cc189d57fb0 sp=0x2cc189d57f20 pc=0x1049d4df0
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x20 fp=0x2cc189d57fd0 sp=0x2cc189d57fb0 pc=0x104a25790
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189d57fd0 sp=0x2cc189d57fd0 pc=0x104a37164
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x130
+
+goroutine 39 gp=0x2cc18a17a3c0 m=nil [GC worker (idle)]:
+runtime.gopark(0x190738de86b97?, 0x3?, 0x71?, 0x72?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189e0af20 sp=0x2cc189e0af00 pc=0x104a2f908
+runtime.gcBgMarkWorker(0x2cc189e0ccb0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1807 +0xe0 fp=0x2cc189e0afb0 sp=0x2cc189e0af20 pc=0x1049d4df0
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x20 fp=0x2cc189e0afd0 sp=0x2cc189e0afb0 pc=0x104a25790
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189e0afd0 sp=0x2cc189e0afd0 pc=0x104a37164
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x130
+
+goroutine 4 gp=0x2cc189ce5860 m=nil [GC worker (idle)]:
+runtime.gopark(0x190738de8ac35?, 0x3?, 0x66?, 0x7a?, 0x0?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/proc.go:474 +0xb8 fp=0x2cc189d5bf20 sp=0x2cc189d5bf00 pc=0x104a2f908
+runtime.gcBgMarkWorker(0x2cc189e0ccb0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1807 +0xe0 fp=0x2cc189d5bfb0 sp=0x2cc189d5bf20 pc=0x1049d4df0
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x20 fp=0x2cc189d5bfd0 sp=0x2cc189d5bfb0 pc=0x104a25790
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189d5bfd0 sp=0x2cc189d5bfd0 pc=0x104a37164
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/mgc.go:1711 +0x130
+
+goroutine 183 gp=0x2cc18a17ad20 m=nil [runnable]:
+internal/stringslite.Index({0x1051ee8ce, 0x14}, {0x10524b820, 0x1})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/internal/stringslite/strings.go:28 +0x32c fp=0x2cc189d33a70 sp=0x2cc189d33a70 pc=0x1049bb46c
+strings.Index(...)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/strings/strings.go:1264
+strings.genSplit({0x1051ee8aa, 0x38}, {0x10524b820, 0x1}, 0x0, 0x2cc189d33c48?)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/strings/strings.go:290 +0x104 fp=0x2cc189d33ad0 sp=0x2cc189d33a70 pc=0x104abedf4
+strings.Split(...)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/strings/strings.go:342
+github.com/aalpar/ariadne.splitFieldPath(...)
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/rules.go:927
+github.com/aalpar/ariadne.extractRawValues(0x2cc18f6fb5c0, {0x1051ee8aa?, 0x1051b64b5?})
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/rules.go:797 +0x48 fp=0x2cc189d33b10 sp=0x2cc189d33ad0 pc=0x104e96448
+github.com/aalpar/ariadne.resolveRef({{0x0, 0x0}, {0x1051b6830, 0x3}, {0x1051b6d9e, 0x4}, {0x2cc18a619500, 0x9}}, 0x2cc18cd1ec88, {{0x0, ...}, ...}, ...)
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/rules.go:226 +0x120 fp=0x2cc189d33ca0 sp=0x2cc189d33b10 pc=0x104e92270
+github.com/aalpar/ariadne.(*ruleResolver).Resolve(0x2cc19250d650, 0x2cc18cd1ec88, {0x105c1fa80, 0x2cc18defe5e0})
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/rules.go:118 +0x28c fp=0x2cc189d33ea0 sp=0x2cc189d33ca0 pc=0x104e913dc
+github.com/aalpar/ariadne.(*structuralResolver).Resolve(0x105d5b6a0?, 0x2cc18cd1ec88, {0x105c1fa80, 0x2cc18defe5e0})
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/structural.go:269 +0x30 fp=0x2cc189d33f00 sp=0x2cc189d33ea0 pc=0x104e97bd0
+github.com/aalpar/ariadne.(*Graph).Load(0x2cc18a165110, {0x2cc18c900000, 0x4e1b, 0x5c00})
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/graph.go:385 +0x75c fp=0x2cc189d343f0 sp=0x2cc189d33f00 pc=0x104e8f9cc
+ops-platform/internal/graph.(*Graph).Replace(0x2cc18a1b4000, {0x105c1ee28, 0x105d5b6a0}, 0x1, {0x0, {{0x1051b6d8e, 0x4}, {0x1051b64b5, 0x2}, {0x1051be22d, ...}}, ...})
+	/Users/mssc/Documents/Code/ops/platform/internal/graph/ariadne_adapter.go:292 +0x1684 fp=0x2cc189d34d90 sp=0x2cc189d343f0 pc=0x105137904
+ops-platform/internal/graph.TestUpstreamConformanceAnd20KPlatformGeneration(0x2cc18a1c4008)
+	/Users/mssc/Documents/Code/ops/platform/internal/graph/upstream_conformance_test.go:115 +0xf6c fp=0x2cc189d35f60 sp=0x2cc189d34d90 pc=0x1051580cc
+testing.tRunner(0x2cc18a1c4008, 0x105c25e20)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2193 +0xc4 fp=0x2cc189d35fb0 sp=0x2cc189d35f60 pc=0x104ae2854
+testing.(*T).Run.gowrap1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2258 +0x20 fp=0x2cc189d35fd0 sp=0x2cc189d35fb0 pc=0x104ae7cc0
+runtime.goexit({})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/runtime/asm_arm64.s:1039 +0x4 fp=0x2cc189d35fd0 sp=0x2cc189d35fd0 pc=0x104a37164
+created by testing.(*T).Run in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2258 +0x3b8
+
+r0      0x104
+r1      0x0
+r2      0x13a00
+r3      0x0
+r4      0x0
+r5      0xa0
+r6      0x0
+r7      0x0
+r8      0x16b4556e8
+r9      0x0
+r10     0x0
+r11     0x2
+r12     0x2
+r13     0x0
+r14     0x0
+r15     0x0
+r16     0x131
+r17     0x1f9483310
+r18     0x0
+r19     0x105d34848
+r20     0x105d34888
+r21     0x1f7e42260
+r22     0x0
+r23     0x0
+r24     0x13a00
+r25     0x13a01
+r26     0x13b00
+r27     0x105d04000
+r28     0x105d33700
+r29     0x16b455760
+lr      0x18b404128
+sp      0x16b4556d0
+pc      0x18b3c350c
+fault   0x18b3c350c
+FAIL	ops-platform/internal/graph	138.492s
+FAIL

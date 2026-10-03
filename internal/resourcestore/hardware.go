@@ -82,6 +82,9 @@ func (r Repository) HardwareRelations(ctx context.Context, b evidence.Binding, e
 		root, found := roots[parent]
 		if id.Kind != "PhysicalServer" && found {
 			result = append(result, resource.Relation{From: root.CanonicalID, To: e.CanonicalID, Kind: "contains", Confidence: 1, ObservedAt: e.UpdatedAt, ValidFrom: e.UpdatedAt, TTLSeconds: 600, Provenance: resource.Provenance{SourceRegistrationID: b.SourceID, RuleVersion: "redfish-member/v1", ObservedAt: e.UpdatedAt, SourceValues: map[string]string{"parentUUID": parent}}})
+			if id.Kind == "DIMM" {
+				result = append(result, resource.Relation{From: e.CanonicalID, To: root.CanonicalID, Kind: "component_of", Confidence: 1, ObservedAt: e.UpdatedAt, ValidFrom: e.UpdatedAt, TTLSeconds: 600, Provenance: resource.Provenance{SourceRegistrationID: b.SourceID, RuleVersion: "redfish-dimm-component/v1", ObservedAt: e.UpdatedAt, SourceValues: map[string]string{"parentUUID": parent}}})
+			}
 		}
 	}
 	err := persistence.WithTenantTx(ctx, r.Pool, uuid.MustParse(b.Tenant), func(tx pgx.Tx) error {

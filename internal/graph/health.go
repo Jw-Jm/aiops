@@ -14,7 +14,7 @@ func (g *Graph) availabilityFailure(epoch int64) string {
 	if g.epoch != epoch {
 		return "owner_epoch_changed"
 	}
-	if !time.Now().Before(g.deadline) {
+	if !g.now().Before(g.deadline) {
 		return "owner_deadline_expired"
 	}
 	return "owner_state_changed"

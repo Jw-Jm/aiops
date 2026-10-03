@@ -171,7 +171,7 @@ func (trust Ed25519TrustStore) Verify(ctx context.Context, keyID string, message
 }
 
 func ValidateContent(kind Kind, content json.RawMessage) error {
-	schemaID, ok := schemaID(kind)
+	schemaID, ok := schemaForContent(kind, content)
 	if !ok {
 		return ErrInvalidInput
 	}
@@ -195,7 +195,7 @@ func SigningPayload(tenantID uuid.UUID, kind Kind, logicalName string, content j
 	}
 	digestBytes := sha256.Sum256(canonical)
 	digest := "sha256:" + hex.EncodeToString(digestBytes[:])
-	schema, _ := schemaID(kind)
+	schema, _ := schemaForContent(kind, content)
 	publication := struct {
 		Domain      string `json:"domain"`
 		TenantID    string `json:"tenantId"`
@@ -235,4 +235,17 @@ func validKind(kind Kind) bool {
 
 func validLogicalName(value string) bool {
 	return logicalNamePattern.MatchString(value)
+}
+
+func schemaForContent(kind Kind, content json.RawMessage) (string, bool) {
+	var header struct {
+		SchemaVersion string `json:"schemaVersion"`
+	}
+	if json.Unmarshal(content, &header) != nil {
+		return "", false
+	}
+	if kind == KindRecipe && header.SchemaVersion == "recipe-registry/v2" {
+		return "https://ops.local/schemas/recipe-registry/v2", true
+	}
+	return schemaID(kind)
 }

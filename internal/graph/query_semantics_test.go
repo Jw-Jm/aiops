@@ -76,3 +76,25 @@ func TestNeighborsDirectionFilterDepthAndBudget(t *testing.T) {
 		t.Fatalf("node budget ignored: %+v %v", got, err)
 	}
 }
+
+func TestImpactDoesNotPropagateFaultsToObservationEvents(t *testing.T) {
+	g, q := semanticGraph(t)
+	event := object("Event", "apps", "node-warning", "event-a", nil)
+	event.Object["involvedObject"] = map[string]any{"apiVersion": "v1", "kind": "Node", "name": "node-a", "uid": "node-a"}
+	if err := g.Replace(context.Background(), 1, kubernetes.Snapshot{GVR: kubernetes.GVR{Version: "v1", Resource: "events"}, Objects: []unstructured.Unstructured{event}, State: kubernetes.GVRState{LastListCompletedAt: time.Now(), LastConnectivityProbeAt: time.Now(), WatchConnected: true, WatchContinuous: true}}); err != nil {
+		t.Fatal(err)
+	}
+	got, err := g.Query(context.Background(), q)
+	if err != nil {
+		t.Fatal(err)
+	}
+	eventID := resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Event", StableID: "event-a"}.String()
+	if slices.Contains(got.DirectlyAffected, eventID) || slices.Contains(got.IndirectlyAffected, eventID) {
+		t.Fatalf("observation event classified as affected resource: %+v", got)
+	}
+	q.QueryKind = "diagnostic"
+	diagnostic, err := g.Query(context.Background(), q)
+	if err != nil || !slices.ContainsFunc(diagnostic.Nodes, func(n resource.Entity) bool { return n.CanonicalID == eventID }) {
+		t.Fatalf("diagnostic lost native observation: %+v %v", diagnostic, err)
+	}
+}

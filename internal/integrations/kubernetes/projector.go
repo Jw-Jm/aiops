@@ -29,7 +29,7 @@ func Project(obj unstructured.Unstructured, observed time.Time) (unstructured.Un
 	out.SetOwnerReferences(obj.GetOwnerReferences())
 	out.SetCreationTimestamp(obj.GetCreationTimestamp())
 	out.SetDeletionTimestamp(obj.GetDeletionTimestamp())
-	paths := [][]string{{"spec", "nodeName"}, {"spec", "providerID"}, {"spec", "selector"}, {"spec", "volumeName"}, {"spec", "storageClassName"}, {"spec", "csi", "driver"}, {"spec", "claimRef"}, {"spec", "serviceAccountName"}, {"spec", "scaleTargetRef"}, {"status", "phase"}, {"status", "nodeInfo", "systemUUID"}, {"status", "nodeInfo", "machineID"}, {"status", "addresses"}, {"involvedObject"}, {"regarding"}, {"reason"}, {"type"}, {"lastTimestamp"}, {"eventTime"}, {"count"}, {"provisioner"}, {"subjects"}, {"roleRef"}, {"endpoints"}, {"addressType"}}
+	paths := [][]string{{"spec", "nodeName"}, {"spec", "providerID"}, {"spec", "selector"}, {"spec", "volumeName"}, {"spec", "storageClassName"}, {"spec", "csi", "driver"}, {"spec", "claimRef"}, {"spec", "serviceAccountName"}, {"spec", "scaleTargetRef"}, {"status", "phase"}, {"status", "nodeInfo", "systemUUID"}, {"status", "nodeInfo", "machineID"}, {"status", "addresses"}, {"involvedObject"}, {"regarding"}, {"reason"}, {"reportingController"}, {"type"}, {"lastTimestamp"}, {"firstTimestamp"}, {"eventTime"}, {"count"}, {"provisioner"}, {"subjects"}, {"roleRef"}, {"endpoints"}, {"addressType"}}
 	for _, path := range paths {
 		value, found, err := unstructured.NestedFieldCopy(obj.Object, path...)
 		if err != nil {
@@ -73,7 +73,7 @@ func Project(obj unstructured.Unstructured, observed time.Time) (unstructured.Un
 	for _, c := range conditions {
 		if m, ok := c.(map[string]any); ok {
 			item := map[string]any{}
-			for _, k := range []string{"type", "status", "lastTransitionTime"} {
+			for _, k := range []string{"type", "status", "reason", "lastTransitionTime"} {
 				if value, ok := m[k].(string); ok && len(value) <= 128 {
 					item[k] = value
 				}

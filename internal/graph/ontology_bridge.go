@@ -84,6 +84,12 @@ func (r *ontologyReader) Neighbors(id model.CanonicalID) []model.Edge {
 		if !fok || !tok {
 			continue
 		}
+		// Event references record observations of their subjects; they do not
+		// describe fault propagation to another affected resource. Keep them in
+		// diagnostic queries while excluding them from impact expansion.
+		if r.queryKind == "impact" && from.GetKind() == "Event" {
+			continue
+		}
 		// Pinned resolvers locate references by GVK/namespace/name. The platform
 		// identity projection fences references that also declare an immutable UID,
 		// so an Event/claim cannot attach to a same-name replacement object.
@@ -152,10 +158,16 @@ func (r *ontologyReader) Neighbors(id model.CanonicalID) []model.Edge {
 		out = append(out, model.Edge{From: modelID(fid.String()), To: modelID(tid.String()), Kind: kind, Provenance: model.EdgeProvenance{SourceType: source, State: state, Resolver: edge.Resolver}})
 	}
 	for _, edge := range r.owner.overlays {
-		if (r.queryKind == "impact" || r.direction == "in") && edge.To != id.String() {
+		// Native references point from dependent to dependency. Physical
+		// component_of and hosts instead point in fault propagation order.
+		forwardFault := edge.Kind == "component_of" || edge.Kind == "hosts"
+		if r.queryKind == "impact" && ((!forwardFault && edge.To != id.String()) || (forwardFault && edge.From != id.String())) {
 			continue
 		}
-		if (r.queryKind == "dependencies" || r.direction == "out") && edge.From != id.String() {
+		if r.queryKind == "dependencies" && ((!forwardFault && edge.From != id.String()) || (forwardFault && edge.To != id.String())) {
+			continue
+		}
+		if r.direction == "in" && edge.To != id.String() || r.direction == "out" && edge.From != id.String() {
 			continue
 		}
 		if edge.From != id.String() && edge.To != id.String() {

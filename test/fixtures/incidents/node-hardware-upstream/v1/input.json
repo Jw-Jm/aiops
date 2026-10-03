@@ -1,0 +1,522 @@
+{
+  "schemaVersion": "golden-slice-input/v3",
+  "scenario": "node-hardware-upstream",
+  "inputClock": "2026-10-02T00:00:00Z",
+  "tenant": "11111111-1111-4111-8111-111111111111",
+  "clusterUid": "golden-cluster",
+  "namespace": "apps",
+  "primaryUid": "node-a",
+  "facts": [
+    {
+      "nativeType": "kubernetes.Node",
+      "uid": "node-a",
+      "ready": false
+    },
+    {
+      "nativeType": "victorialogs.native-kernel",
+      "uid": "node-a",
+      "_time": "2026-10-02T00:00:00Z",
+      "_msg": "BUG: unable to handle kernel NULL pointer dereference at 0000"
+    }
+  ],
+  "graphClock": "2026-10-02T00:00:00Z",
+  "pod": {
+    "uid": "pod-a",
+    "namespace": "apps",
+    "nodeName": "node-a",
+    "pvc": null
+  },
+  "serverUuid": "550e8400-e29b-41d4-a716-446655440000",
+  "variants": {
+    "missing": "omit current uncorrectable ECC Metric",
+    "conflict": "retain both located hardware proof and an independent native KernelOops",
+    "degraded": "mark necessary Redfish source unavailable"
+  },
+  "sourceSemantics": "Protocol/model Fixture, not physical BMC or Node fault injection; deterministic test clocks are injected at constructors only. Database receivedAt remains the actual server clock.",
+  "identityAliases": {
+    "server-a": "550e8400-e29b-41d4-a716-446655440000",
+    "node-a": "node-a",
+    "pod-a": "pod-a",
+    "pvc-a": "pvc-a",
+    "storage-a": "storage-a"
+  },
+  "sourceBindings": {
+    "kubernetes": "22222222-2222-4222-8222-222222222222",
+    "redfish": "33333333-3333-4333-8333-333333333333",
+    "victorialogs": "44444444-4444-4444-8444-444444444444"
+  },
+  "nativeKernelRows": [
+    {
+      "_time": "2026-10-02T00:00:00Z",
+      "_TRANSPORT": "kernel",
+      "_msg": "[Hardware Error]: event severity: fatal\n[Hardware Error]: Error 0, type: fatal\n[Hardware Error]: section_type: memory error\n[Hardware Error]: DIMM location: BANK_0 DIMM_A1"
+    }
+  ],
+  "conflictSnapshot": {
+    "gvr": {
+      "Version": "v1",
+      "Resource": "nodes"
+    },
+    "objects": [
+      {
+        "apiVersion": "v1",
+        "kind": "Node",
+        "metadata": {
+          "name": "node-a",
+          "uid": "node-a",
+          "namespace": "",
+          "resourceVersion": "2",
+          "creationTimestamp": "2026-10-02T00:00:00Z",
+          "annotations": {
+            "ops.internal/observed-at": "2026-10-02T00:00:01Z",
+            "ops.internal/source-id": "22222222-2222-4222-8222-222222222222"
+          }
+        },
+        "status": {
+          "nodeInfo": {
+            "systemUUID": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "conditions": [
+            {
+              "type": "Ready",
+              "status": "True",
+              "lastTransitionTime": "2026-10-02T00:00:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "nativeSnapshots": [
+    {
+      "gvr": {
+        "Version": "v1",
+        "Resource": "nodes"
+      },
+      "objects": [
+        {
+          "apiVersion": "v1",
+          "kind": "Node",
+          "metadata": {
+            "name": "node-a",
+            "uid": "node-a",
+            "namespace": "",
+            "resourceVersion": "1",
+            "creationTimestamp": "2026-10-02T00:00:00Z",
+            "annotations": {
+              "ops.internal/observed-at": "2026-10-02T00:00:00Z",
+              "ops.internal/source-id": "22222222-2222-4222-8222-222222222222"
+            }
+          },
+          "status": {
+            "nodeInfo": {
+              "systemUUID": "550e8400-e29b-41d4-a716-446655440000"
+            },
+            "conditions": [
+              {
+                "type": "Ready",
+                "status": "False",
+                "lastTransitionTime": "2026-10-02T00:00:00Z"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "gvr": {
+        "Version": "v1",
+        "Resource": "pods"
+      },
+      "objects": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "pod-a",
+            "uid": "pod-a",
+            "namespace": "apps",
+            "resourceVersion": "1",
+            "creationTimestamp": "2026-10-02T00:00:00Z",
+            "annotations": {
+              "ops.internal/observed-at": "2026-10-02T00:00:00Z",
+              "ops.internal/source-id": "22222222-2222-4222-8222-222222222222"
+            }
+          },
+          "spec": {
+            "nodeName": "node-a"
+          },
+          "status": {
+            "phase": "Running"
+          }
+        }
+      ]
+    }
+  ],
+  "conflictClock": "2026-10-02T00:00:01Z",
+  "nativeRedfishRoutes": {
+    "/redfish/v1/": {
+      "@odata.id": "/redfish/v1/",
+      "Systems": {
+        "@odata.id": "/redfish/v1/Systems"
+      }
+    },
+    "/redfish/v1/Systems": {
+      "Members": [
+        {
+          "@odata.id": "/redfish/v1/Systems/System.Embedded.1"
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Processors": {
+      "Members": [
+        {
+          "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU1"
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Processors/CPU1": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU1",
+      "Id": "CPU1",
+      "Name": "CPU1",
+      "Manufacturer": "DELL",
+      "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+      },
+      "TotalCores": 16,
+      "TotalThreads": 32
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Memory": {
+      "Members": [
+        {
+          "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1"
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1",
+      "Id": "DIMM1",
+      "Name": "DIMM1",
+      "Manufacturer": "DELL",
+      "Status": {
+        "State": "Enabled",
+        "Health": "Critical"
+      },
+      "CapacityMiB": 32768,
+      "Metrics": {
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1/MemoryMetrics"
+      },
+      "DeviceLocator": "DIMM_A1"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces": {
+      "Members": [
+        {
+          "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC1"
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC1": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC1",
+      "Id": "NIC1",
+      "Name": "NIC1",
+      "Manufacturer": "DELL",
+      "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+      },
+      "SpeedMbps": 10000
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Storage": {
+      "Members": [
+        {
+          "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/controller1"
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Storage/controller1": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/controller1",
+      "Id": "controller1",
+      "Drives": [
+        {
+          "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Drives/disk1"
+        }
+      ]
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Drives/disk1": {
+      "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Drives/disk1",
+      "Id": "disk1",
+      "Name": "disk1",
+      "CapacityBytes": 1000000000000,
+      "MediaType": "SSD",
+      "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+      }
+    },
+    "/redfish/v1/Chassis/System.Embedded.1": {
+      "@odata.id": "/redfish/v1/Chassis/System.Embedded.1",
+      "Id": "System.Embedded.1",
+      "Power": {
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Power"
+      },
+      "Thermal": {
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Thermal"
+      }
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Power": {
+      "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Power",
+      "PowerSupplies": [
+        {
+          "MemberId": "PSU1",
+          "Name": "PSU1",
+          "Status": {
+            "State": "Enabled",
+            "Health": "OK"
+          }
+        }
+      ],
+      "PowerControl": []
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Thermal": {
+      "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Thermal",
+      "Fans": [
+        {
+          "MemberId": "Fan1",
+          "Name": "Fan1",
+          "Status": {
+            "State": "Enabled",
+            "Health": "OK"
+          }
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1",
+      "Id": "System.Embedded.1",
+      "Name": "PowerEdge R760",
+      "Manufacturer": "DELL",
+      "Model": "PowerEdge R760",
+      "UUID": "550e8400-e29b-41d4-a716-446655440000",
+      "SerialNumber": "000123",
+      "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+      },
+      "Links": {
+        "Chassis": [
+          {
+            "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+          }
+        ]
+      },
+      "Processors": {
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors"
+      },
+      "Memory": {
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Memory"
+      },
+      "EthernetInterfaces": {
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"
+      },
+      "Storage": {
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage"
+      }
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1/MemoryMetrics": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1/MemoryMetrics",
+      "Id": "Metrics",
+      "HealthData": {
+        "AlarmTrips": {
+          "UncorrectableECCError": true
+        }
+      }
+    }
+  },
+  "conflictRedfishRoutes": {
+    "/redfish/v1/": {
+      "@odata.id": "/redfish/v1/",
+      "Systems": {
+        "@odata.id": "/redfish/v1/Systems"
+      }
+    },
+    "/redfish/v1/Systems": {
+      "Members": [
+        {
+          "@odata.id": "/redfish/v1/Systems/System.Embedded.1"
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Processors": {
+      "Members": [
+        {
+          "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU1"
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Processors/CPU1": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU1",
+      "Id": "CPU1",
+      "Name": "CPU1",
+      "Manufacturer": "DELL",
+      "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+      },
+      "TotalCores": 16,
+      "TotalThreads": 32
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Memory": {
+      "Members": [
+        {
+          "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1"
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1",
+      "Id": "DIMM1",
+      "Name": "DIMM1",
+      "Manufacturer": "DELL",
+      "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+      },
+      "CapacityMiB": 32768,
+      "Metrics": {
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1/MemoryMetrics"
+      },
+      "DeviceLocator": "DIMM_A1"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces": {
+      "Members": [
+        {
+          "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC1"
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC1": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC1",
+      "Id": "NIC1",
+      "Name": "NIC1",
+      "Manufacturer": "DELL",
+      "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+      },
+      "SpeedMbps": 10000
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Storage": {
+      "Members": [
+        {
+          "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/controller1"
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Storage/controller1": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/controller1",
+      "Id": "controller1",
+      "Drives": [
+        {
+          "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Drives/disk1"
+        }
+      ]
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Drives/disk1": {
+      "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Drives/disk1",
+      "Id": "disk1",
+      "Name": "disk1",
+      "CapacityBytes": 1000000000000,
+      "MediaType": "SSD",
+      "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+      }
+    },
+    "/redfish/v1/Chassis/System.Embedded.1": {
+      "@odata.id": "/redfish/v1/Chassis/System.Embedded.1",
+      "Id": "System.Embedded.1",
+      "Power": {
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Power"
+      },
+      "Thermal": {
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Thermal"
+      }
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Power": {
+      "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Power",
+      "PowerSupplies": [
+        {
+          "MemberId": "PSU1",
+          "Name": "PSU1",
+          "Status": {
+            "State": "Enabled",
+            "Health": "OK"
+          }
+        }
+      ],
+      "PowerControl": []
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Thermal": {
+      "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Thermal",
+      "Fans": [
+        {
+          "MemberId": "Fan1",
+          "Name": "Fan1",
+          "Status": {
+            "State": "Enabled",
+            "Health": "OK"
+          }
+        }
+      ]
+    },
+    "/redfish/v1/Systems/System.Embedded.1": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1",
+      "Id": "System.Embedded.1",
+      "Name": "PowerEdge R760",
+      "Manufacturer": "DELL",
+      "Model": "PowerEdge R760",
+      "UUID": "550e8400-e29b-41d4-a716-446655440000",
+      "SerialNumber": "000123",
+      "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+      },
+      "Links": {
+        "Chassis": [
+          {
+            "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+          }
+        ]
+      },
+      "Processors": {
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors"
+      },
+      "Memory": {
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Memory"
+      },
+      "EthernetInterfaces": {
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces"
+      },
+      "Storage": {
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage"
+      }
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1/MemoryMetrics": {
+      "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Memory/DIMM1/MemoryMetrics",
+      "Id": "Metrics",
+      "HealthData": {
+        "AlarmTrips": {
+          "UncorrectableECCError": true
+        }
+      }
+    }
+  },
+  "runtimeConflictRows": [
+    {
+      "_time": "2026-10-02T00:00:00Z",
+      "_TRANSPORT": "kernel",
+      "_msg": "BUG: unable to handle kernel NULL pointer dereference at 0000"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"context"
 	"slices"
 	"time"
 )
@@ -13,10 +14,10 @@ func (g *Graph) RevalidateResponse(out *Result) error {
 	if out == nil {
 		return ErrNotReady
 	}
-	g.expireExternal(time.Now())
+	g.expireExternal(g.now())
 	g.mu.RLock()
 	defer g.mu.RUnlock()
-	now := time.Now()
+	now := g.now()
 	if g.current == nil || !now.Before(g.deadline) {
 		return ErrNotReady
 	}
@@ -39,4 +40,27 @@ func (g *Graph) RevalidateResponse(out *Result) error {
 		}
 	}
 	return nil
+}
+
+// WithCurrentResponse holds the immutable local graph revision across a
+// confirmed database commit. Collection/revocation cannot change its readiness
+// or source state between final validation and publication. The database call
+// is bounded by both the caller's budget and the remaining owner lifetime.
+func (g *Graph) WithCurrentResponse(ctx context.Context, out Result, commit func(context.Context) error) error {
+	if commit == nil {
+		return ErrNotReady
+	}
+	g.expireExternal(g.now())
+	g.mu.RLock()
+	defer g.mu.RUnlock()
+	now := g.now()
+	if g.current == nil || !now.Before(g.deadline) {
+		return ErrNotReady
+	}
+	if out.OwnerInstance != g.instance || out.GraphRevision.OwnerEpoch != g.epoch || out.GraphRevision.GraphGeneration != g.current.revision.GraphGeneration || !g.ready(now) || len(g.degraded) > 0 || out.Partial || out.Freshness != "fresh" || len(out.DegradedSources) > 0 {
+		return ErrStale
+	}
+	bounded, cancel := context.WithTimeout(ctx, g.deadline.Sub(now))
+	defer cancel()
+	return commit(bounded)
 }

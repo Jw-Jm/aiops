@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "state": "selected-source-development-admission",
+  "scope": "SP05 nonvirtual selected Keep status value-model translation and ontology export bridge only; no Keep platform dependency or service admitted",
+  "historicalLocks": [
+    "docs/poc/inspection-reuse-lock.yaml",
+    "docs/poc/graph-reuse-lock.yaml"
+  ],
+  "sources": [
+    {
+      "source": "https://github.com/keephq/keep",
+      "commit": "118b2dc0c7a45f8a22b6317b983cdba6f5b54b5e",
+      "upstreamPath": "keep/api/models/db/incident.py",
+      "upstreamSHA256": "491374046880eab359bc30525b0c0546f980a5f8da65d9162165c9c576c833eb",
+      "decision": "Translate only get_active/get_closed literal value-model; full module imports SQLModel,SQLAlchemy,Keep alert/rule/tenant and exceeds thin-layer scope; lifecycle/CAS remain platform contract adapter",
+      "license": "MIT",
+      "runtimeImportClosure": []
+    },
+    {
+      "source": "https://github.com/Colvin-Y/kubernetes-ontology",
+      "commit": "346236312685a2e2e824c46b9ecdb3e8e8a10c76",
+      "decision": "Exports call unchanged admitted rankEvidence and analyzeHelmContext; no scoring/conflict implementation copied or replaced",
+      "license": "Apache-2.0",
+      "runtimeImportClosure": [
+        "internal/upstream/ontology/api",
+        "internal/upstream/ontology/service/diagnostic"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "internal/upstream/keepmodel/status.go",
+      "sha256": "82b7021f2e092c7849d4ed37b82d0085b27c9a11b22ae906baaaa2eaa8d46bb4",
+      "license": "MIT"
+    },
+    {
+      "path": "internal/upstream/keepmodel/LICENSE",
+      "sha256": "2fcc30d214f74aa3145f0e8c2ddaead78ad0d92b43322ef0639cdabba80f330c",
+      "license": "MIT"
+    },
+    {
+      "path": "internal/upstream/ontology/service/diagnostic/sp05_evidence.go",
+      "sha256": "87c015de906c8c47b60ae5682bd2a8a6e378881fabefb9f3a6f8e90ea91f5c57",
+      "license": "Apache-2.0"
+    }
+  ],
+  "records": []
+}

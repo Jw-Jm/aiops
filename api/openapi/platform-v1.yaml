@@ -1026,7 +1026,8 @@ components:
             type: string
             enum:
             - finding-envelope/v1
-          maxItems: 1
+            - finding-envelope/v2
+          maxItems: 2
         backendLogicalId:
           description: Stable backend identity; an empty legacy value grants no query
             capability.
@@ -1118,12 +1119,13 @@ components:
         allowedSchemas:
           type: array
           minItems: 1
-          maxItems: 1
+          maxItems: 2
           uniqueItems: true
           items:
             type: string
             enum:
             - finding-envelope/v1
+            - finding-envelope/v2
         authRef:
           pattern: ^openbao://[A-Za-z0-9_./-]+$
           type: string
@@ -1176,12 +1178,13 @@ components:
         allowedSchemas:
           type: array
           minItems: 1
-          maxItems: 1
+          maxItems: 2
           uniqueItems: true
           items:
             type: string
             enum:
             - finding-envelope/v1
+            - finding-envelope/v2
         clusterId:
           oneOf:
           - $ref: '#/components/schemas/Identifier'
@@ -1678,6 +1681,318 @@ components:
         maxProperties: 64
       description: Bounded JSON-safe resource quantities, including hardware byte
         capacities. Public v1 common extension limits remain unchanged.
+    FindingEnvelopeV2:
+      type: object
+      additionalProperties: false
+      properties:
+        eventId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        idempotencyKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+        tenantId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        sourceRegistrationId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        clusterUid:
+          type: string
+          minLength: 1
+          maxLength: 512
+        resourceCanonicalId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        namespace:
+          type: string
+          maxLength: 253
+        ruleId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        ruleFamily:
+          type: string
+          minLength: 1
+          maxLength: 512
+        normalizedSymptom:
+          type: string
+          minLength: 1
+          maxLength: 512
+        occurrenceId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        severity:
+          enum:
+          - critical
+          - warning
+          - info
+          - unknown
+        payloadDigest:
+          type: string
+          minLength: 1
+          maxLength: 512
+        schemaVersion:
+          const: finding-envelope/v2
+        startsAt:
+          type: string
+          format: date-time
+        observedAt:
+          type: string
+          format: date-time
+        sourceSequence:
+          type: integer
+          minimum: 0
+        timeReliable:
+          type: boolean
+        lifecycleState:
+          enum:
+          - firing
+          - resolved
+        payload:
+          type: object
+        evidenceRefs:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 512
+          maxItems: 100
+      required:
+      - eventId
+      - idempotencyKey
+      - resourceCanonicalId
+      - namespace
+      - ruleId
+      - ruleFamily
+      - normalizedSymptom
+      - occurrenceId
+      - severity
+      - schemaVersion
+      - startsAt
+      - observedAt
+      - sourceSequence
+      - timeReliable
+      - lifecycleState
+      - payload
+      - evidenceRefs
+    DiagnosticRecipeV2:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          const: recipe-registry/v2
+        name:
+          type: string
+          minLength: 1
+          maxLength: 512
+        version:
+          enum: [v1, v2]
+        candidateType:
+          enum:
+          - dimm_hardware_fault
+          - csi_provisioner_failure
+          - node_runtime_failure
+        entry:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 512
+          maxItems: 100
+        graphDepth:
+          type: integer
+          minimum: 1
+          maximum: 2
+        graphPlan:
+          type: string
+          enum: [single-query/v1, dimm-hosted-pods/v1]
+          description: Fixed shared-budget plan; each kernel query has depth at most 2.
+        requiredEvidence:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - key
+            - predicate
+            - maxAgeSeconds
+            - required
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 512
+              predicate:
+                type: string
+                minLength: 1
+                maxLength: 512
+              maxAgeSeconds:
+                type: integer
+                minimum: 1
+                maximum: 300
+              required:
+                type: boolean
+          minItems: 3
+          maxItems: 10
+        optionalEvidence:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 512
+          maxItems: 100
+        confirm:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 512
+          maxItems: 100
+        exclude:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 512
+          maxItems: 100
+        toolAllowlist:
+          type: array
+          items:
+            enum:
+            - read_evidence
+            - diagnostic_graph
+            - impact_scope
+          minItems: 1
+          maxItems: 3
+        budget:
+          type: object
+          additionalProperties: false
+          required:
+          - maxEvidence
+          - maxNodes
+          - maxEdges
+          - timeoutMs
+          properties:
+            maxEvidence:
+              type: integer
+              minimum: 1
+              maximum: 64
+            maxNodes:
+              type: integer
+              minimum: 1
+              maximum: 200
+            maxEdges:
+              type: integer
+              minimum: 1
+              maximum: 400
+            timeoutMs:
+              type: integer
+              minimum: 1
+              maximum: 3000
+        postCheck:
+          const: fresh-required-evidence/v1
+      required:
+      - schemaVersion
+      - name
+      - version
+      - candidateType
+      - entry
+      - graphDepth
+      - graphPlan
+      - requiredEvidence
+      - optionalEvidence
+      - confirm
+      - exclude
+      - toolAllowlist
+      - budget
+      - postCheck
+    IncidentMergeV2:
+      type: object
+      additionalProperties: false
+      properties:
+        sourceIncidentId:
+          type: string
+          format: uuid
+        targetIncidentId:
+          type: string
+          format: uuid
+        targetRevision:
+          type: integer
+          minimum: 1
+        expectedRevision:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 1
+      required:
+      - sourceIncidentId
+      - targetIncidentId
+      - targetRevision
+      - expectedRevision
+      - reason
+    IncidentSplitV2:
+      type: object
+      additionalProperties: false
+      properties:
+        findingIds:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+        expectedRevision:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 1
+      required:
+      - findingIds
+      - expectedRevision
+      - reason
+    IncidentTransitionV2:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedRevision
+      - state
+      - reason
+      - evidenceRefs
+      properties:
+        expectedRevision:
+          type: integer
+          minimum: 1
+        state:
+          enum:
+          - open
+          - acknowledged
+          - mitigating
+          - suppressed
+          - resolved
+          - closed
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        evidenceRefs:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        suppressedUntil:
+          type: string
+          format: date-time
   securitySchemes:
     BearerAuth:
       bearerFormat: JWT
@@ -1685,7 +2000,7 @@ components:
       type: http
 info:
   title: Smart Operations Platform API
-  version: 1.1.0
+  version: 1.3.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 openapi: 3.1.0
 paths:
@@ -3181,6 +3496,12 @@ paths:
       operationId: getFindings
       parameters:
       - in: query
+        name: clusterUid
+        required: true
+        schema:
+          type: string
+          minLength: 1
+      - in: query
         name: state
         schema:
           type: string
@@ -3272,6 +3593,8 @@ paths:
   /api/v1/findings:ingest:
     post:
       operationId: ingestFinding
+      deprecated: true
+      description: Historical Contract retained. Runtime returns CAPABILITY_DISABLED; explicitly bound SP05 publishers use the additive v2 endpoint.
       parameters:
       - description: Stable key for replay-safe write handling.
         in: header
@@ -3305,20 +3628,58 @@ paths:
       tags:
       - Findings
       x-idempotency: required
+  /api/v2/findings:ingest:
+    post:
+      operationId: ingestFindingV2
+      parameters:
+      - description: Stable key for replay-safe write handling.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindingEnvelopeV2'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: ingestFindingV2
+      tags:
+      - Findings
+      x-idempotency: required
   /api/v1/incidents:
     get:
       operationId: getIncidents
       parameters:
+      - in: query
+        name: clusterUid
+        required: true
+        schema:
+          type: string
+          minLength: 1
       - in: query
         name: state
         schema:
           type: string
       - in: query
         name: severity
-        schema:
-          type: string
-      - in: query
-        name: clusterUid
         schema:
           type: string
       - allowReserved: false
@@ -3651,7 +4012,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JSONRequest'
+              $ref: '#/components/schemas/IncidentSplitV2'
         required: true
       responses:
         '200':
@@ -3693,7 +4054,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IncidentTransitionRequest'
+              oneOf:
+              - $ref: '#/components/schemas/IncidentTransitionRequest'
+              - $ref: '#/components/schemas/IncidentTransitionV2'
         required: true
       responses:
         '200':
@@ -3729,7 +4092,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JSONRequest'
+              $ref: '#/components/schemas/IncidentMergeV2'
         required: true
       responses:
         '200':

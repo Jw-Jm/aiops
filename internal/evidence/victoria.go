@@ -93,7 +93,11 @@ func (a *Victoria) Query(ctx context.Context, q Query) (Result, error) {
 		return out, ErrScopeUnverified
 	}
 	mapping := a.binding.ScopeMapping
-	if mapping.RequiredLabels["tenant"] != a.binding.Tenant || !slices.Contains(mapping.Scopes["cluster"], id.Scope) || !slices.Contains(mapping.Scopes["namespace"], q.Namespace) {
+	nodeLogs := q.Template == "node-kernel-logs/v1"
+	if nodeLogs && (a.name != "victorialogs" || id.Domain != "k8s" || id.APIGroup != "core" || id.Kind != "Node" || q.Namespace != "" || !q.Scope.ClusterScoped) {
+		return out, ErrScopeUnverified
+	}
+	if mapping.RequiredLabels["tenant"] != a.binding.Tenant || !slices.Contains(mapping.Scopes["cluster"], id.Scope) || (!nodeLogs && !slices.Contains(mapping.Scopes["namespace"], q.Namespace)) {
 		return out, ErrScopeUnverified
 	}
 	// This adapter qualifies exact equality labels only. Native accounts or other
@@ -112,6 +116,12 @@ func (a *Victoria) Query(ctx context.Context, q Query) (Result, error) {
 			return out, ErrScopeUnverified
 		}
 		labels[k] = v
+	}
+	if nodeLogs {
+		if prior, ok := labels["_TRANSPORT"]; ok && prior != "kernel" {
+			return out, ErrScopeUnverified
+		}
+		labels["_TRANSPORT"] = "kernel"
 	}
 	keys := []string{}
 	for k := range labels {
@@ -146,7 +156,7 @@ func (a *Victoria) Query(ctx context.Context, q Query) (Result, error) {
 		query = metric + selector
 		path = "/api/v1/query_range"
 	case "victorialogs":
-		if q.Template != "resource-logs/v1" && q.Template != "kernel-logs/v1" {
+		if q.Template != "resource-logs/v1" && q.Template != "kernel-logs/v1" && !nodeLogs {
 			return out, ErrArgument
 		}
 		query = selector
@@ -293,7 +303,10 @@ func (a *Victoria) Query(ctx context.Context, q Query) (Result, error) {
 				out.Warnings = append(out.Warnings, "message_budget_exhausted")
 			}
 			safe := map[string]any{"_time": observed.UTC().Format(time.RFC3339Nano), "_msg": message}
-			if q.Template == "kernel-logs/v1" {
+			if nodeLogs {
+				safe["_TRANSPORT"] = "kernel"
+			}
+			if q.Template == "kernel-logs/v1" || nodeLogs {
 				evaluation, err := hardware.MatchKernelLog(&message)
 				if err != nil {
 					return degrade("rule_mapping_unavailable")

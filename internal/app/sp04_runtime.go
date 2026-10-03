@@ -22,6 +22,7 @@ import (
 	"ops-platform/internal/graph"
 	"ops-platform/internal/httpapi"
 	"ops-platform/internal/integrations/deepflow"
+	"ops-platform/internal/integrations/k8sgpt"
 	"ops-platform/internal/integrations/kubernetes"
 	"ops-platform/internal/integrations/redfish"
 	"ops-platform/internal/observability"
@@ -50,6 +51,7 @@ type SP04Source struct {
 	FrozenEndpoints []deepflow.Endpoint
 }
 type SP04Config struct {
+	SP05                                                                                                                                                                        *SP05Config
 	ListenAddress, OwnerEndpoint, ServerName, CertificateFile, PrivateKeyFile, CAFile, CRLFile, Namespace, ContextPrivateKeyFile, ContextPublicKeyFile, ArchiveBackendLogicalID string
 	AllowedWorkerCIDRs                                                                                                                                                          []string
 	Clusters                                                                                                                                                                    []SP04Cluster
@@ -74,6 +76,21 @@ func loadSP04() (*SP04Config, error) {
 	var trailing any
 	if decoder.Decode(&trailing) != io.EOF {
 		return nil, errors.New("SP04 runtime configuration has trailing payload")
+	}
+	if c.SP05 != nil {
+		if c.SP05.Analyzer.Enabled && (!c.SP05.Enabled || c.SP05.Analyzer.SHA256 != k8sgpt.LockedBinarySHA256) {
+			return nil, errors.New("SP05 Analyzer requires an enabled phase and admitted binary SHA256")
+		}
+		seen := map[string]bool{}
+		for _, b := range c.SP05.IngestionBindings {
+			if _, err := uuid.Parse(b.Tenant); err != nil {
+				return nil, errors.New("SP05 tenant binding invalid")
+			}
+			if _, err := uuid.Parse(b.SourceID); err != nil || b.Subject == "" || b.RegistrationRevision < 1 || b.CredentialRevision < 1 || seen[b.Tenant+"|"+b.Subject] {
+				return nil, errors.New("SP05 source binding invalid")
+			}
+			seen[b.Tenant+"|"+b.Subject] = true
+		}
 	}
 	if override := os.Getenv("SP04_OWNER_ENDPOINT"); override != "" {
 		c.OwnerEndpoint = override
@@ -160,10 +177,14 @@ func (c *SP04Config) endpointAllowed(raw string) bool {
 	return false
 }
 func NewSP04API(ctx context.Context, pool *pgxpool.Pool) (*httpapi.SP04Handlers, error) {
-	h := &httpapi.SP04Handlers{Pool: pool}
+	h := &httpapi.SP04Handlers{Pool: pool, SP05: &httpapi.SP05Handlers{Pool: pool}}
 	c, err := loadSP04()
 	if err != nil || c == nil {
 		return h, err
+	}
+	if c.SP05 != nil {
+		h.SP05.Enabled = c.SP05.Enabled
+		h.SP05.Bindings = c.SP05.IngestionBindings
 	}
 	config, _, err := c.tls(ctx, false)
 	if err != nil {
@@ -312,12 +333,24 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 		lease := &graph.Lease{Client: client, Graph: g, Mirror: graph.Repository{Pool: pool}, Namespace: cluster.LeaseNamespace, Name: cluster.LeaseName, Endpoint: c.OwnerEndpoint, Logger: runtime.Logger}
 		handlers[cluster.Tenant+"|"+cluster.ClusterUID] = graph.InternalHandler{Graph: g, Lease: lease, Key: key, Authorization: graph.Authorization{Pool: pool}, Trust: trust, ValidateSources: validateSources, Metrics: runtime.Metrics, Logger: runtime.Logger}
 		archiveQueue := newProjectionArchiveQueue(runContext, cluster, g, archive, &group)
+		if c.SP05 != nil && c.SP05.Enabled {
+			startSP05OfficialObservations(runContext, archive, cluster, client, runtime, &group)
+		}
 		for _, gvr := range kubernetes.CoreRequiredGVRs() {
 			gvr := gvr
 			group.Add(1)
 			go func() {
 				defer group.Done()
 				sink := collectorSink(runContext, cluster, g, resourcestore.Repository{Pool: pool, ExpectedRevision: cluster.SourceRevision, BackendLogicalID: cluster.BackendLogicalID}, archiveQueue)
+				if c.SP05 != nil && c.SP05.Enabled {
+					original := sink
+					sink = func(s kubernetes.Snapshot) error {
+						if err := original(s); err != nil {
+							return err
+						}
+						return InspectSP05Snapshot(runContext, cluster, s, archive)
+					}
+				}
 				for runContext.Err() == nil {
 					err := client.Run(runContext, gvr, sink)
 					if err != nil && runContext.Err() == nil {
@@ -434,6 +467,7 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 					return nil, errors.New("Redfish scope unverified")
 				}
 				config := redfish.Config{Endpoint: source.Binding.Endpoint, Tenant: source.Binding.Tenant, Scope: source.Binding.ScopeMapping.Scopes["cluster"][0], SourceID: source.Binding.SourceID, Username: credential.Username, Password: credential.Password, Client: client}
+				config.Diagnostics = c.SP05 != nil && c.SP05.Enabled
 				adapter = &redfish.Adapter{Binding: source.Binding, Config: config, Authorize: repo.Authorize, Mode: source.Mode}
 				candidate = &redfish.Adapter{Binding: source.Binding, Config: config, Authorize: repo.CheckBinding, Mode: source.Mode}
 			}
@@ -494,6 +528,9 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 			}
 		}
 	}()
+	if err := startSP05Worker(runContext, pool, archive, c, handlers, adapters, runtime, &group); err != nil {
+		return nil, err
+	}
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/internal/v1/evidence:query" || r.URL.Path == "/internal/v1/evidence:read" {
 			serveWorkerEvidence(w, r, trust, key, pool, adapters, archive, handlers, runtime.Metrics)

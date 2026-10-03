@@ -1,0 +1,13 @@
+fatal: not a git repository (or any of the parent directories): .git
+Traceback (most recent call last):
+  File "/Users/mssc/Documents/Code/ops/platform/scripts/prepare-k8sgpt-runtime.py", line 74, in <module>
+    prepare(parser.parse_args())
+  File "/Users/mssc/Documents/Code/ops/platform/scripts/prepare-k8sgpt-runtime.py", line 30, in prepare
+    source=subprocess.check_output(['git','-C',str(args.source),'archive','--format=tar',cap['commit']])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', '-C', '/tmp/ops-sp02-task29/k8sgpt', 'archive', '--format=tar', 'f071b32aa85d77b197cd2d0f9868294f7b55c5eb']' returned non-zero exit status 128.

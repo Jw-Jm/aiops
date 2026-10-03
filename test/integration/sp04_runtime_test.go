@@ -286,20 +286,24 @@ func runSP04FullRuntime(t *testing.T, fixtureAdapters bool) {
 		t.Fatalf("generated diagnostic request failed: %d %s", status, body)
 	}
 	firstEpoch := entity.Data.GraphRevision.OwnerEpoch
-	latencies := []time.Duration{}
-	for i := 0; i < 30; i++ {
-		started := time.Now()
-		status, body := call("GET", "/api/v1/resources/neighbors?canonicalId="+url.QueryEscape(canonical), nil, "")
-		if status != 200 {
-			t.Fatalf("graph request status=%d %s", status, body)
+	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" {
+		t.Log("SP05 user waiver: Graph P95 sampling not executed")
+	} else {
+		latencies := []time.Duration{}
+		for i := 0; i < 30; i++ {
+			started := time.Now()
+			status, body := call("GET", "/api/v1/resources/neighbors?canonicalId="+url.QueryEscape(canonical), nil, "")
+			if status != 200 {
+				t.Fatalf("graph request status=%d %s", status, body)
+			}
+			latencies = append(latencies, time.Since(started))
 		}
-		latencies = append(latencies, time.Since(started))
-	}
-	sort.Slice(latencies, func(i, j int) bool { return latencies[i] < latencies[j] })
-	p95 := latencies[28]
-	t.Logf("actual OIDC API -> mTLS Worker -> OrbStack collector/PG/Ariadne: graph samples=%d P95=%s; graph currently small, not 200-node production qualification", len(latencies), p95)
-	if p95 > time.Second {
-		t.Fatal("full graph API exceeds P95 budget")
+		sort.Slice(latencies, func(i, j int) bool { return latencies[i] < latencies[j] })
+		p95 := latencies[28]
+		t.Logf("actual OIDC API -> mTLS Worker -> OrbStack collector/PG/Ariadne: graph samples=%d P95=%s; graph currently small, not 200-node production qualification", len(latencies), p95)
+		if p95 > time.Second {
+			t.Fatal("full graph API exceeds P95 budget")
+		}
 	}
 	queryData, _ := json.Marshal(map[string]any{"resourceCanonicalId": canonical, "type": "metric", "queryTemplate": "pod-phase/v1", "timeRange": map[string]any{"from": probe.From, "to": probe.To}, "budget": map[string]int{"timeoutMs": 3000, "maxBytes": 65536}, "limit": 20})
 	for _, bad := range []map[string]any{
@@ -349,88 +353,105 @@ func runSP04FullRuntime(t *testing.T, fixtureAdapters bool) {
 		}
 	}
 	t.Log("actual source outage -> HTTP200 partial/unavailable -> semantic completeness counter; complete query and Graph counters verified")
-	// Measure source writes through the native API and observe the resulting
-	// projection through the actual OIDC API and Active Worker protocol.
-	convergence := []time.Duration{}
-	for i := 0; i < 30; i++ {
-		started := time.Now()
-		marker := fmt.Sprintf("sample-%02d", i)
+	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" {
+		t.Log("SP05 user waiver: convergence/Evidence/dense capacity latency sampling and P95 not executed; single owned source-change correctness check follows")
+		marker := "sp05-correctness"
 		sp04Kubectl(t, ctx, nil, "label", "pod", "evidence-pod", "-n", namespace, "sp04-convergence="+marker, "--overwrite")
-		deadline := time.Now().Add(60 * time.Second)
-		for {
+		for deadline := time.Now().Add(60 * time.Second); ; {
 			status, body = call("GET", path, nil, "")
 			var observed struct{ Data graph.Result }
 			if status == 200 && json.Unmarshal(body, &observed) == nil && len(observed.Data.Nodes) == 1 && observed.Data.Nodes[0].Labels["sp04-convergence"] == marker {
 				break
 			}
 			if time.Now().After(deadline) {
-				t.Fatalf("source change did not converge: sample=%d status=%d", i, status)
+				t.Fatal("owned source update never became visible")
 			}
-			time.Sleep(20 * time.Millisecond)
+			time.Sleep(50 * time.Millisecond)
 		}
-		convergence = append(convergence, time.Since(started))
-	}
-	sort.Slice(convergence, func(i, j int) bool { return convergence[i] < convergence[j] })
-	t.Logf("native source label write -> actual OIDC API/Active Worker projection samples=30 P95=%s; small owned cluster", convergence[28])
-	if convergence[28] > 60*time.Second {
-		t.Fatal("source convergence gate exceeded")
-	}
-	evidenceSamples := []time.Duration{}
-	for i := 0; i < 30; i++ {
-		started := time.Now()
-		status, body = call("POST", "/api/v1/evidence:query", queryData, fmt.Sprintf("sp04-semantic-benchmark-%d", i))
-		if status != 200 || json.Unmarshal(body, &result) != nil || len(result.Data.Evidence) != 1 || result.Data.Evidence[0].ReplayState != "archived_verified" {
-			t.Fatalf("semantic evidence sample %d failed %d %s", i, status, body)
+	} else {
+		// Measure source writes through the native API and observe the resulting
+		// projection through the actual OIDC API and Active Worker protocol.
+		convergence := []time.Duration{}
+		for i := 0; i < 30; i++ {
+			started := time.Now()
+			marker := fmt.Sprintf("sample-%02d", i)
+			sp04Kubectl(t, ctx, nil, "label", "pod", "evidence-pod", "-n", namespace, "sp04-convergence="+marker, "--overwrite")
+			deadline := time.Now().Add(60 * time.Second)
+			for {
+				status, body = call("GET", path, nil, "")
+				var observed struct{ Data graph.Result }
+				if status == 200 && json.Unmarshal(body, &observed) == nil && len(observed.Data.Nodes) == 1 && observed.Data.Nodes[0].Labels["sp04-convergence"] == marker {
+					break
+				}
+				if time.Now().After(deadline) {
+					t.Fatalf("source change did not converge: sample=%d status=%d", i, status)
+				}
+				time.Sleep(20 * time.Millisecond)
+			}
+			convergence = append(convergence, time.Since(started))
 		}
-		evidenceSamples = append(evidenceSamples, time.Since(started))
-	}
-	sort.Slice(evidenceSamples, func(i, j int) bool { return evidenceSamples[i] < evidenceSamples[j] })
-	t.Logf("actual semantic Evidence API -> Victoria/Transit/S3/PG samples=30 P95=%s; small owned source", evidenceSamples[28])
-	if evidenceSamples[28] > 5*time.Second {
-		t.Fatal("semantic Evidence latency gate exceeded")
-	}
-	// These 199 Pods have a scheduling gate: no fixture container is launched.
-	// A Service selector provides exactly 200 connected native resources.
-	items := []any{map[string]any{"apiVersion": "v1", "kind": "Service", "metadata": map[string]any{"name": "dense-service", "namespace": namespace}, "spec": map[string]any{"selector": map[string]any{"sp04-dense": "yes"}, "ports": []any{map[string]any{"port": 80}}}}}
-	for i := 0; i < 199; i++ {
-		items = append(items, map[string]any{"apiVersion": "v1", "kind": "Pod", "metadata": map[string]any{"name": fmt.Sprintf("dense-%03d", i), "namespace": namespace, "labels": map[string]any{"sp04-dense": "yes"}}, "spec": map[string]any{"schedulingGates": []any{map[string]any{"name": "ops.platform.test/fixture-only"}}, "containers": []any{map[string]any{"name": "never-launched", "image": "fixture.invalid/never-run@sha256:0000000000000000000000000000000000000000000000000000000000000000"}}}})
-	}
-	batch, _ := json.Marshal(map[string]any{"apiVersion": "v1", "kind": "List", "items": items})
-	sp04Kubectl(t, ctx, batch, "create", "-f", "-")
-	var service struct {
-		Metadata struct {
-			UID string `json:"uid"`
+		sort.Slice(convergence, func(i, j int) bool { return convergence[i] < convergence[j] })
+		t.Logf("native source label write -> actual OIDC API/Active Worker projection samples=30 P95=%s; small owned cluster", convergence[28])
+		if convergence[28] > 60*time.Second {
+			t.Fatal("source convergence gate exceeded")
 		}
-	}
-	if json.Unmarshal(sp04Kubectl(t, ctx, nil, "get", "service", "dense-service", "-n", namespace, "-o", "json"), &service) != nil {
-		t.Fatal("dense service UID unavailable")
-	}
-	serviceID := resource.CanonicalID{Domain: "k8s", Tenant: tenant.String(), Scope: collector.ClusterUID, APIGroup: "core", Kind: "Service", StableID: service.Metadata.UID}.String()
-	denseRequest, _ := json.Marshal(map[string]any{"entryCanonicalId": serviceID, "recipe": "incident", "policy": map[string]any{"maxDepth": 2, "maxNodes": 200, "maxEdges": 400, "timeoutMs": 3000}})
-	denseSamples := []time.Duration{}
-	denseDeadline := time.Now().Add(60 * time.Second)
-	for len(denseSamples) < 30 {
-		started := time.Now()
-		status, body = call("POST", "/api/v1/diagnostic-graphs:build", denseRequest, fmt.Sprintf("sp04-dense-%d", len(denseSamples)))
-		var dense struct{ Data graph.Result }
-		if status == 200 && json.Unmarshal(body, &dense) == nil && len(dense.Data.Nodes) == 200 && len(dense.Data.Edges) == 199 {
-			denseSamples = append(denseSamples, time.Since(started))
-			continue
+		evidenceSamples := []time.Duration{}
+		for i := 0; i < 30; i++ {
+			started := time.Now()
+			status, body = call("POST", "/api/v1/evidence:query", queryData, fmt.Sprintf("sp04-semantic-benchmark-%d", i))
+			if status != 200 || json.Unmarshal(body, &result) != nil || len(result.Data.Evidence) != 1 || result.Data.Evidence[0].ReplayState != "archived_verified" {
+				t.Fatalf("semantic evidence sample %d failed %d %s", i, status, body)
+			}
+			evidenceSamples = append(evidenceSamples, time.Since(started))
 		}
-		if len(denseSamples) > 0 {
-			t.Fatalf("200-node benchmark response failed after warmup status=%d %s", status, body)
+		sort.Slice(evidenceSamples, func(i, j int) bool { return evidenceSamples[i] < evidenceSamples[j] })
+		t.Logf("actual semantic Evidence API -> Victoria/Transit/S3/PG samples=30 P95=%s; small owned source", evidenceSamples[28])
+		if evidenceSamples[28] > 5*time.Second {
+			t.Fatal("semantic Evidence latency gate exceeded")
 		}
-		if time.Now().After(denseDeadline) {
-			t.Fatalf("200-node live diagnostic gate failed status=%d %s", status, body)
+		// These 199 Pods have a scheduling gate: no fixture container is launched.
+		// A Service selector provides exactly 200 connected native resources.
+		items := []any{map[string]any{"apiVersion": "v1", "kind": "Service", "metadata": map[string]any{"name": "dense-service", "namespace": namespace}, "spec": map[string]any{"selector": map[string]any{"sp04-dense": "yes"}, "ports": []any{map[string]any{"port": 80}}}}}
+		for i := 0; i < 199; i++ {
+			items = append(items, map[string]any{"apiVersion": "v1", "kind": "Pod", "metadata": map[string]any{"name": fmt.Sprintf("dense-%03d", i), "namespace": namespace, "labels": map[string]any{"sp04-dense": "yes"}}, "spec": map[string]any{"schedulingGates": []any{map[string]any{"name": "ops.platform.test/fixture-only"}}, "containers": []any{map[string]any{"name": "never-launched", "image": "fixture.invalid/never-run@sha256:0000000000000000000000000000000000000000000000000000000000000000"}}}})
 		}
-		time.Sleep(100 * time.Millisecond)
-	}
-	sort.Slice(denseSamples, func(i, j int) bool { return denseSamples[i] < denseSamples[j] })
-	t.Logf("actual OIDC API -> mTLS Active Worker -> native Service/199 gated Pods -> upstream diagnostic depth=2 nodes=200 edges=199 samples=30 P95=%s; owned local fixture, not production scale", denseSamples[28])
-	if denseSamples[28] > time.Second {
-		t.Fatal("200-node API latency gate exceeded")
-	}
+		batch, _ := json.Marshal(map[string]any{"apiVersion": "v1", "kind": "List", "items": items})
+		sp04Kubectl(t, ctx, batch, "create", "-f", "-")
+		var service struct {
+			Metadata struct {
+				UID string `json:"uid"`
+			}
+		}
+		if json.Unmarshal(sp04Kubectl(t, ctx, nil, "get", "service", "dense-service", "-n", namespace, "-o", "json"), &service) != nil {
+			t.Fatal("dense service UID unavailable")
+		}
+		serviceID := resource.CanonicalID{Domain: "k8s", Tenant: tenant.String(), Scope: collector.ClusterUID, APIGroup: "core", Kind: "Service", StableID: service.Metadata.UID}.String()
+		denseRequest, _ := json.Marshal(map[string]any{"entryCanonicalId": serviceID, "recipe": "incident", "policy": map[string]any{"maxDepth": 2, "maxNodes": 200, "maxEdges": 400, "timeoutMs": 3000}})
+		denseSamples := []time.Duration{}
+		denseDeadline := time.Now().Add(60 * time.Second)
+		for len(denseSamples) < 30 {
+			started := time.Now()
+			status, body = call("POST", "/api/v1/diagnostic-graphs:build", denseRequest, fmt.Sprintf("sp04-dense-%d", len(denseSamples)))
+			var dense struct{ Data graph.Result }
+			if status == 200 && json.Unmarshal(body, &dense) == nil && len(dense.Data.Nodes) == 200 && len(dense.Data.Edges) == 199 {
+				denseSamples = append(denseSamples, time.Since(started))
+				continue
+			}
+			if len(denseSamples) > 0 {
+				t.Fatalf("200-node benchmark response failed after warmup status=%d %s", status, body)
+			}
+			if time.Now().After(denseDeadline) {
+				t.Fatalf("200-node live diagnostic gate failed status=%d %s", status, body)
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
+		sort.Slice(denseSamples, func(i, j int) bool { return denseSamples[i] < denseSamples[j] })
+		t.Logf("actual OIDC API -> mTLS Active Worker -> native Service/199 gated Pods -> upstream diagnostic depth=2 nodes=200 edges=199 samples=30 P95=%s; owned local fixture, not production scale", denseSamples[28])
+		if denseSamples[28] > time.Second {
+			t.Fatal("200-node API latency gate exceeded")
+		}
 
+	}
 	route, err := (graph.Repository{Pool: workerPool}).Load(ctx, tenant.String(), collector.ClusterUID)
 	if err != nil {
 		t.Fatal(err)

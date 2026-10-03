@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "golden-slice/v1",
+  "scenario": "node-failure",
+  "clock": "2026-10-02T00:00:00Z",
+  "ruleVersion": "v1",
+  "expected": {
+    "entityKinds": [
+      "Node",
+      "Pod"
+    ],
+    "relationKinds": [
+      "scheduled_on"
+    ],
+    "findingState": "firing",
+    "incidentState": "open",
+    "candidateType": "node_runtime_failure",
+    "requiredPredicates": [
+      "node-not-ready",
+      "kernel-fault",
+      "node-path"
+    ],
+    "rcaStatus": "confirmed",
+    "missingStatus": "unresolved",
+    "conflictStatus": "unresolved",
+    "degradedStatus": "unresolved",
+    "impactDirect": [
+      "pod-a"
+    ],
+    "impactPartial": false
+  },
+  "provenance": "Manually frozen from 06 sections20\u201322 and 10Task5.7 before business implementation; no generated production output"
+}

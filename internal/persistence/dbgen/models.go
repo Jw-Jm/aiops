@@ -92,6 +92,12 @@ type AuditTenantHead struct {
 	LastTenantSeq int64       `json:"last_tenant_seq"`
 }
 
+type FindingEvidenceRef struct {
+	TenantID   pgtype.UUID `json:"tenant_id"`
+	FindingID  pgtype.UUID `json:"finding_id"`
+	EvidenceID pgtype.UUID `json:"evidence_id"`
+}
+
 type FindingInbox struct {
 	TenantID      pgtype.UUID        `json:"tenant_id"`
 	EventID       string             `json:"event_id"`
@@ -103,33 +109,93 @@ type FindingInbox struct {
 }
 
 type FindingOutbox struct {
-	TenantID      pgtype.UUID        `json:"tenant_id"`
-	OutboxID      pgtype.UUID        `json:"outbox_id"`
-	FindingID     pgtype.UUID        `json:"finding_id"`
-	EventType     string             `json:"event_type"`
-	SchemaVersion string             `json:"schema_version"`
-	Payload       []byte             `json:"payload"`
-	State         string             `json:"state"`
-	Attempts      int32              `json:"attempts"`
-	NextAttemptAt pgtype.Timestamptz `json:"next_attempt_at"`
-	ClaimToken    pgtype.UUID        `json:"claim_token"`
-	ClaimedAt     pgtype.Timestamptz `json:"claimed_at"`
-	DeliveredAt   pgtype.Timestamptz `json:"delivered_at"`
-	LastErrorCode pgtype.Text        `json:"last_error_code"`
-	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	TenantID          pgtype.UUID        `json:"tenant_id"`
+	OutboxID          pgtype.UUID        `json:"outbox_id"`
+	FindingID         pgtype.UUID        `json:"finding_id"`
+	EventType         string             `json:"event_type"`
+	SchemaVersion     string             `json:"schema_version"`
+	Payload           []byte             `json:"payload"`
+	State             string             `json:"state"`
+	Attempts          int32              `json:"attempts"`
+	NextAttemptAt     pgtype.Timestamptz `json:"next_attempt_at"`
+	ClaimToken        pgtype.UUID        `json:"claim_token"`
+	ClaimedAt         pgtype.Timestamptz `json:"claimed_at"`
+	DeliveredAt       pgtype.Timestamptz `json:"delivered_at"`
+	LastErrorCode     pgtype.Text        `json:"last_error_code"`
+	CreatedAt         pgtype.Timestamptz `json:"created_at"`
+	AggregateRevision int64              `json:"aggregate_revision"`
+}
+
+type FindingPollOccurrence struct {
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	SourceID       pgtype.UUID        `json:"source_id"`
+	SignalKey      string             `json:"signal_key"`
+	OccurrenceID   pgtype.UUID        `json:"occurrence_id"`
+	StartsAt       pgtype.Timestamptz `json:"starts_at"`
+	Active         bool               `json:"active"`
+	LastResolvedAt pgtype.Timestamptz `json:"last_resolved_at"`
 }
 
 type FindingRecord struct {
-	TenantID      pgtype.UUID        `json:"tenant_id"`
-	FindingID     pgtype.UUID        `json:"finding_id"`
-	SourceID      pgtype.UUID        `json:"source_id"`
-	ClusterID     pgtype.UUID        `json:"cluster_id"`
-	SchemaVersion string             `json:"schema_version"`
-	EventID       string             `json:"event_id"`
-	Payload       []byte             `json:"payload"`
-	ObservedAt    pgtype.Timestamptz `json:"observed_at"`
-	ReceivedAt    pgtype.Timestamptz `json:"received_at"`
-	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	TenantID            pgtype.UUID        `json:"tenant_id"`
+	FindingID           pgtype.UUID        `json:"finding_id"`
+	SourceID            pgtype.UUID        `json:"source_id"`
+	ClusterID           pgtype.UUID        `json:"cluster_id"`
+	SchemaVersion       string             `json:"schema_version"`
+	EventID             string             `json:"event_id"`
+	Payload             []byte             `json:"payload"`
+	ObservedAt          pgtype.Timestamptz `json:"observed_at"`
+	ReceivedAt          pgtype.Timestamptz `json:"received_at"`
+	CreatedAt           pgtype.Timestamptz `json:"created_at"`
+	SourceFingerprint   pgtype.Text        `json:"source_fingerprint"`
+	OccurrenceID        pgtype.Text        `json:"occurrence_id"`
+	AggregateRevision   int64              `json:"aggregate_revision"`
+	LifecycleState      pgtype.Text        `json:"lifecycle_state"`
+	ResourceCanonicalID pgtype.Text        `json:"resource_canonical_id"`
+	Namespace           string             `json:"namespace"`
+	ClusterUid          pgtype.Text        `json:"cluster_uid"`
+	SourceSequence      int64              `json:"source_sequence"`
+	SemanticDigest      pgtype.Text        `json:"semantic_digest"`
+}
+
+type FindingRejection struct {
+	TenantID   pgtype.UUID        `json:"tenant_id"`
+	SourceID   pgtype.UUID        `json:"source_id"`
+	Digest     string             `json:"digest"`
+	ErrorCode  string             `json:"error_code"`
+	ReceivedAt pgtype.Timestamptz `json:"received_at"`
+}
+
+type FindingTimeline struct {
+	TenantID          pgtype.UUID        `json:"tenant_id"`
+	FindingID         pgtype.UUID        `json:"finding_id"`
+	EventID           string             `json:"event_id"`
+	SourceID          pgtype.UUID        `json:"source_id"`
+	Disposition       string             `json:"disposition"`
+	AggregateRevision int64              `json:"aggregate_revision"`
+	Digest            string             `json:"digest"`
+	ObservedAt        pgtype.Timestamptz `json:"observed_at"`
+	ReceivedAt        pgtype.Timestamptz `json:"received_at"`
+}
+
+type FindingTransportKey struct {
+	TenantID  pgtype.UUID `json:"tenant_id"`
+	SourceID  pgtype.UUID `json:"source_id"`
+	KeyKind   string      `json:"key_kind"`
+	KeyValue  string      `json:"key_value"`
+	Digest    string      `json:"digest"`
+	FindingID pgtype.UUID `json:"finding_id"`
+}
+
+type IncidentAppliedRevision struct {
+	TenantID          pgtype.UUID `json:"tenant_id"`
+	FindingID         pgtype.UUID `json:"finding_id"`
+	AggregateRevision int64       `json:"aggregate_revision"`
+}
+
+type IncidentCorrelationSubject struct {
+	TenantID    pgtype.UUID `json:"tenant_id"`
+	Fingerprint string      `json:"fingerprint"`
 }
 
 type IncidentFindingLink struct {
@@ -139,15 +205,84 @@ type IncidentFindingLink struct {
 	LinkedAt   pgtype.Timestamptz `json:"linked_at"`
 }
 
-type IncidentRecord struct {
+type IncidentInbox struct {
+	TenantID          pgtype.UUID `json:"tenant_id"`
+	ConsumerName      string      `json:"consumer_name"`
+	EventID           pgtype.UUID `json:"event_id"`
+	FindingID         pgtype.UUID `json:"finding_id"`
+	AggregateRevision int64       `json:"aggregate_revision"`
+	IncidentID        pgtype.UUID `json:"incident_id"`
+	Disposition       string      `json:"disposition"`
+}
+
+type IncidentOutbox struct {
 	TenantID   pgtype.UUID        `json:"tenant_id"`
+	EventID    pgtype.UUID        `json:"event_id"`
 	IncidentID pgtype.UUID        `json:"incident_id"`
-	State      string             `json:"state"`
 	Revision   int64              `json:"revision"`
-	Summary    string             `json:"summary"`
 	Payload    []byte             `json:"payload"`
+	State      string             `json:"state"`
 	CreatedAt  pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
+}
+
+type IncidentRcaEvidenceRef struct {
+	TenantID   pgtype.UUID `json:"tenant_id"`
+	IncidentID pgtype.UUID `json:"incident_id"`
+	Revision   int64       `json:"revision"`
+	EvidenceID pgtype.UUID `json:"evidence_id"`
+}
+
+type IncidentRcaRevision struct {
+	TenantID             pgtype.UUID        `json:"tenant_id"`
+	IncidentID           pgtype.UUID        `json:"incident_id"`
+	Revision             int64              `json:"revision"`
+	EvaluationKey        string             `json:"evaluation_key"`
+	InputDigest          string             `json:"input_digest"`
+	BaseIncidentRevision int64              `json:"base_incident_revision"`
+	RecipeVersionID      pgtype.UUID        `json:"recipe_version_id"`
+	RecipeDigest         string             `json:"recipe_digest"`
+	Actor                string             `json:"actor"`
+	Source               string             `json:"source"`
+	Provenance           []byte             `json:"provenance"`
+	InputManifest        []byte             `json:"input_manifest"`
+	Result               []byte             `json:"result"`
+	Superseded           bool               `json:"superseded"`
+	CreatedAt            pgtype.Timestamptz `json:"created_at"`
+}
+
+type IncidentRecord struct {
+	TenantID            pgtype.UUID        `json:"tenant_id"`
+	IncidentID          pgtype.UUID        `json:"incident_id"`
+	State               string             `json:"state"`
+	Revision            int64              `json:"revision"`
+	Summary             string             `json:"summary"`
+	Payload             []byte             `json:"payload"`
+	CreatedAt           pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt           pgtype.Timestamptz `json:"updated_at"`
+	Fingerprint         pgtype.Text        `json:"fingerprint"`
+	PolicyVersion       pgtype.Text        `json:"policy_version"`
+	ClusterUid          pgtype.Text        `json:"cluster_uid"`
+	ResourceCanonicalID pgtype.Text        `json:"resource_canonical_id"`
+	Namespace           string             `json:"namespace"`
+	ResolvedAt          pgtype.Timestamptz `json:"resolved_at"`
+	RecoveryKnownAt     pgtype.Timestamptz `json:"recovery_known_at"`
+	CurrentRcaRevision  int64              `json:"current_rca_revision"`
+	SuppressedUntil     pgtype.Timestamptz `json:"suppressed_until"`
+	StartedAt           pgtype.Timestamptz `json:"started_at"`
+	LastObservedAt      pgtype.Timestamptz `json:"last_observed_at"`
+	LastRcaCheckedAt    pgtype.Timestamptz `json:"last_rca_checked_at"`
+}
+
+type IncidentTimeline struct {
+	TenantID      pgtype.UUID        `json:"tenant_id"`
+	IncidentID    pgtype.UUID        `json:"incident_id"`
+	TimelineID    pgtype.UUID        `json:"timeline_id"`
+	Kind          string             `json:"kind"`
+	Actor         string             `json:"actor"`
+	PolicyVersion string             `json:"policy_version"`
+	Reason        string             `json:"reason"`
+	Payload       []byte             `json:"payload"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
 }
 
 type InvestigationJob struct {

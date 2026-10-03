@@ -1,7 +1,9 @@
 package redfish
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/stmcginnis/gofish"
 	"io"
@@ -15,11 +17,23 @@ import (
 type Config struct {
 	Endpoint, Tenant, Scope, SourceID, Username, Password string
 	Client                                                *http.Client
+	Diagnostics                                           bool
+	Clock                                                 func() time.Time
+	alarms                                                map[string]bool
 }
+
+func (c Config) observationTime() time.Time {
+	if c.Clock != nil {
+		return c.Clock().UTC()
+	}
+	return time.Now().UTC()
+}
+
 type readOnlyTransport struct {
 	base               http.RoundTripper
 	origin             *url.URL
 	username, password string
+	alarms             map[string]bool
 }
 
 func (t readOnlyTransport) RoundTrip(r *http.Request) (*http.Response, error) {
@@ -37,6 +51,28 @@ func (t readOnlyTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	res, err := t.base.RoundTrip(copy)
 	if err == nil && res.Body != nil {
 		res.Body = &boundedBody{Reader: io.LimitReader(res.Body, (1<<20)+1), Closer: res.Body}
+		if t.alarms != nil {
+			body, readErr := io.ReadAll(res.Body)
+			res.Body.Close()
+			if readErr != nil {
+				return nil, readErr
+			}
+			if len(body) > 1<<20 {
+				return nil, errors.New("Redfish response exceeds byte budget")
+			}
+			res.Body = io.NopCloser(bytes.NewReader(body))
+			// Gofish's bool value cannot distinguish absent from false. Preserve
+			// just field presence at the native transport boundary; Gofish remains
+			// the typed collection/metrics parser. No raw source body is retained.
+			var presence struct {
+				HealthData struct {
+					AlarmTrips struct{ UncorrectableECCError *bool }
+				}
+			}
+			if json.Unmarshal(body, &presence) == nil && presence.HealthData.AlarmTrips.UncorrectableECCError != nil {
+				t.alarms[r.URL.Path] = *presence.HealthData.AlarmTrips.UncorrectableECCError
+			}
+		}
 	}
 	return res, err
 }
@@ -64,7 +100,7 @@ func connect(ctx context.Context, c Config) (*gofish.APIClient, context.CancelFu
 	if base == nil {
 		base = http.DefaultTransport
 	}
-	client.Transport = readOnlyTransport{base: base, origin: u, username: c.Username, password: c.Password}
+	client.Transport = readOnlyTransport{base: base, origin: u, username: c.Username, password: c.Password, alarms: c.alarms}
 	client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
 	fish, err := gofish.ConnectContext(deadline, gofish.ClientConfig{Endpoint: strings.TrimSuffix(c.Endpoint, "/"), Username: c.Username, Password: c.Password, BasicAuth: true, HTTPClient: &client, NoModifyTransport: true, MaxConcurrentRequests: 1})
 	return fish, cancel, err

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"ops-platform/internal/evidence"
+	"ops-platform/internal/finding"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/integrations/redfish"
 	"ops-platform/internal/observability"
@@ -51,6 +52,13 @@ func collectHardware(ctx context.Context, group *sync.WaitGroup, adapter *redfis
 						}
 						metrics.RecordOperation("resource", "resolve", "ok")
 						archiveFailed := false
+						for _, fact := range inventory.DiagnosticFacts {
+							candidate := finding.FindingCandidate{ResourceCanonicalID: fact.ResourceCanonicalID, RuleID: fact.RuleID, RuleFamily: "hardware", NormalizedSymptom: fact.Symptom, State: fact.State, NativeIdentity: fact.NativeURI + "/" + evidence.Digest(fact.Data), IndependenceGroup: fact.NativeURI, ObservedAt: fact.ObservedAt, TimeReliable: adapter.Mode != "fixture_only", QueryTemplateVersion: "sp05-hardware/v1", Data: fact.Data}
+							if err := SubmitSP05Candidate(pass, archive, adapter.Binding, candidate); err != nil {
+								archiveFailed = true
+								metrics.RecordOperation("archive", "write", "unavailable")
+							}
+						}
 						for _, entity := range inventory.Entities {
 							if entity.Kind != "PhysicalServer" {
 								continue

@@ -127,6 +127,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path)
     parser.add_argument("--reuse-reviewed-spec", type=Path)
+    parser.add_argument("--sp05-worker-material", type=Path, help="Exact prepared unchanged Analyzer and source material directory")
     parser.add_argument("--bundle-id", default="task27-core-arm64-20260929")
     args = parser.parse_args()
     if args.out:
@@ -181,23 +182,41 @@ def main():
         binary=OUT/(name+"-binary")
         run(["go","build","-trimpath","-buildvcs=false","-ldflags=-s -w","-o",str(binary),"./cmd/"+cmd])
         license=OUT/(name+"-notices.txt");first_party_notices(binary,license)
+        if name=="platform-worker" and args.sp05_worker_material:
+            analyzer=args.sp05_worker_material/"k8sgpt"
+            if sha(analyzer)!="sha256:6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53":raise RuntimeError("Worker Analyzer executable drift")
+            with tarfile.open(args.sp05_worker_material/"k8sgpt-runtime-source.tar") as original:
+                text=license.read_text()
+                for member in original.getmembers():
+                    if member.isfile() and member.name.startswith("notices/"):
+                        text+="\n===== unchanged CLI "+member.name+" =====\n"+original.extractfile(member).read().decode()
+                license.write_text(text)
         if name=="opsctl": payload=binary;kind="binary";payloadkind="binary";scan="file:"+str(binary)
         else:
             context=OUT/(name+"-context");context.mkdir(exist_ok=True)
             shutil.copyfile(binary,context/"ops-process")
-            run(["docker","--context","orbstack","build","--network=none","--pull=false","--provenance=false","--platform=linux/arm64","--file",str(ROOT/"build/images/offline-runtime.Dockerfile"),"--tag","ops.local/"+args.bundle_id+"/"+name+":1.0.0",str(context)])
+            notices=context/"runtime-notices";notices.mkdir()
+            shutil.copyfile(license,notices/"FIRST-PARTY-NOTICES.txt")
+            dockerfile=ROOT/"build/images/offline-runtime.Dockerfile"
+            if name=="platform-worker" and args.sp05_worker_material:
+                shutil.copyfile(args.sp05_worker_material/"k8sgpt",context/"k8sgpt")
+                shutil.copytree(args.sp05_worker_material/"runtime-notices",notices,dirs_exist_ok=True)
+                dockerfile=ROOT/"build/images/offline-sp05-worker.Dockerfile"
+            run(["docker","--context","orbstack","build","--network=none","--pull=false","--provenance=false","--platform=linux/arm64","--file",str(dockerfile),"--tag","ops.local/"+args.bundle_id+"/"+name+":1.0.0",str(context)])
             payload,reference,image_digest=export(name,"ops.local/"+args.bundle_id+"/"+name+":1.0.0")
             kind="container-image";payloadkind="oci";scan="oci-archive:"+str(payload)
         sbom=OUT/(name+".spdx.json")
         document=json.loads(run([str(SYFT),scan,"-o","spdx-json"]))
         # Syft's Go module inventory cannot see copied ontology/check/model
         # source. Include the exact selected source inventory explicitly.
-        selected=json.loads((ROOT/"third_party/admission/sp04-selected-runtime.json").read_text())
+        selected={"files":[]}
+        for admission in ["sp04-selected-runtime.json","sp05-selected-runtime.json"]:
+            selected["files"]+=json.loads((ROOT/"third_party/admission"/admission).read_text())["files"]
         document.setdefault("files",[])
         for index, f in enumerate(selected["files"]):
             document["files"].append({"SPDXID":"SPDXRef-SP04Selected-"+str(index),"fileName":f["path"],"checksums":[{"algorithm":"SHA256","checksumValue":f["sha256"]}],"licenseConcluded":f["license"],"licenseInfoInFiles":[f["license"]],"copyrightText":"Original source headers and notices accompany the selected-upstream source archive"})
         sbom.write_text(json.dumps(document))
-        material(name,kind,"1.0.0",payload,sbom,license,payloadkind)
+        material(name,kind,"1.1.0" if name=="platform-worker" and args.sp05_worker_material else "1.0.0",payload,sbom,license,payloadkind)
         print("prepared local first-party",name,flush=True)
     for name in ("ops-platform","ops-dependencies"):
         out=run(["helm","package","deploy/charts/"+name,"--destination",str(OUT)]).decode()
@@ -245,9 +264,31 @@ def main():
                 text += "\n===== selected source "+f["path"]+" =====\n" + archive.extractfile("selected-upstream/"+f["path"]).read().decode()
     notices.write_text(text)
     material("opa-sdk-source", "source", sdk["version"], source, sbom, notices, "source")
+    if args.sp05_worker_material:
+        cli=catalog["k8sgpt"]
+        source=args.sp05_worker_material/"k8sgpt-runtime-source.tar"
+        if cli["state"]!="qualified" or sha(source)!=cli["correspondingSourceBundleSHA256"]:raise RuntimeError("fixed Analyzer corresponding source differs from Catalog")
+        cli_lock=json.loads((args.sp05_worker_material/"k8sgpt-runtime-source.lock.json").read_text())
+        packages=[]
+        for index,m in enumerate(cli_lock["modules"]):
+            packages.append({"SPDXID":"SPDXRef-Module-"+str(index),"name":m["path"],"versionInfo":m["version"],"downloadLocation":"https://proxy.golang.org/"+m["path"]+"/@v/"+m["version"]+".zip","checksums":[{"algorithm":"SHA256","checksumValue":m["artifactSHA256"].split(":")[1]}],"licenseConcluded":m["license"],"licenseDeclared":m["license"],"filesAnalyzed":False,"copyrightText":"Complete original source and notices accompany this unchanged publisher artifact"})
+        cli_sbom=OUT/"k8sgpt-source.spdx.json"
+        cli_sbom.write_text(json.dumps({"spdxVersion":"SPDX-2.3","dataLicense":"CC0-1.0","SPDXID":"SPDXRef-DOCUMENT","name":"Unchanged K8sGPT complete source closure","documentNamespace":"https://ops.local/sbom/k8sgpt-source/"+sha(source).split(":")[1],"creationInfo":{"creators":["Tool: ops-fixed-cli-source-lock"],"created":"2026-10-03T00:00:00Z"},"packages":packages}))
+        cli_notices=OUT/"k8sgpt-source-notices.txt"
+        with tarfile.open(source) as original:
+            text="Unchanged no-LLM CLI source distribution. Complete publisher ZIP artifacts (including MPL source) accompany this material.\n"
+            for m in original.getmembers():
+                if m.isfile() and (m.name.startswith("notices/") or m.name=="toolchain/go1.27.1/LICENSE"):
+                    text+="\n===== "+m.name+" =====\n"+original.extractfile(m).read().decode()
+        cli_notices.write_text(text)
+        material("k8sgpt-source","source",cli["version"],source,cli_sbom,cli_notices,"source")
     head = run(["git", "rev-parse", "HEAD"]).decode().strip()
     if run(["git", "status", "--porcelain"]).strip(): raise RuntimeError("current first-party sources must be committed before preparation")
-    (OUT/"source-binding.json").write_text(json.dumps({"sourceCommit":head,"runtimeSourceDigest":sha(source),"buildSpecBundleID":args.bundle_id,"goVersion":run(["go","version"]).decode().strip(),"network":"Go proxy/sumdb off; Docker build network none; no pull","target":"linux/arm64 CGO_ENABLED=0"},indent=2))
+    binding={"sourceCommit":head,"runtimeSourceDigest":sha(runtime/"runtime-go-source.tar"),"buildSpecBundleID":args.bundle_id,"goVersion":run(["go","version"]).decode().strip(),"network":"Go proxy/sumdb off; Docker build network none; no pull","target":"linux/arm64 CGO_ENABLED=0"}
+    if args.sp05_worker_material:
+        binding["analyzerSourceDigest"]=sha(args.sp05_worker_material/"k8sgpt-runtime-source.tar")
+        binding["analyzerBinaryDigest"]=sha(args.sp05_worker_material/"k8sgpt")
+    (OUT/"source-binding.json").write_text(json.dumps(binding,indent=2))
     (OUT/"build-spec.json").write_text(json.dumps(spec,indent=2)+"\n")
     print("local inputs complete",len(spec["materials"]),"materials",len(spec["files"]),"authenticated files",flush=True)
 

@@ -26,6 +26,7 @@ import (
 
 	"crypto/x509"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pressly/goose/v3"
 	"gopkg.in/yaml.v3"
 	"ops-platform/internal/app"
@@ -34,6 +35,7 @@ import (
 	"ops-platform/internal/datascope"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/integrations/k8sgpt"
 	"ops-platform/internal/integrations/openbao"
 	"ops-platform/internal/profile"
 	"ops-platform/internal/resource"
@@ -351,6 +353,25 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 		return out
 	}
 	values := map[string]any{"workloadsEnabled": true, "global": map[string]any{"imagePullPolicy": "Never"}, "components": map[string]any{"api": map[string]any{"image": images["api"]}, "worker": map[string]any{"image": images["worker"]}, "web": map[string]any{"enabled": false}, "investigator": map[string]any{"enabled": false}, "command-runner": map[string]any{"enabled": false}}, "networkPolicy": map[string]any{"managedDependencyReleases": []string{}}, "runtime": map[string]any{"profile": string(runtimeProfile), "oidcIssuerURL": issuer, "oidcCABundle": string(oidcCA), "openbaoAddress": baoEndpoint, "openbaoCABundle": string(baoCA), "archiveEndpoint": archiveEndpoint, "archiveCABundle": string(s3Fixture.CA), "archiveBucket": bucket}, "sp04": map[string]any{"enabled": true, "allowedWorkerCIDRs": []string{"192.168.194.0/25"}, "archiveBackendLogicalID": "native-archive", "clusters": []any{jsonValue(collector)}, "sources": []any{jsonValue(sourceConfig)}, "leaseNames": []string{"sp04-graph"}, "kubernetesAPI": map[string]any{"localCollector": true, "cidrs": []string{"192.168.139.2/32"}, "port": 26443}}}
+	if os.Getenv("SP05_NATIVE_CHART") == "1" {
+		// This new owned source grant is explicit; existing registrations never
+		// gain v2 automatically from a database migration or stage flag.
+		if _, e = db.ExecContext(ctx, `UPDATE platform.source_registrations SET allowed_schemas=ARRAY['finding-envelope/v2'] WHERE tenant_id=$1 AND source_id=$2`, tenant, source); e != nil {
+			t.Fatal(e)
+		}
+		registryPool, e := pgxpool.NewWithConfig(ctx, runtimePoolConfig(t, ctx, db, dsn, "worker_runtime_role"))
+		if e != nil {
+			t.Fatal(e)
+		}
+		t.Cleanup(registryPool.Close)
+		_, registryTrust := sp05GoldenRegistry(t, ctx, db, registryPool, tenant)
+		keys := map[string]string{}
+		for name, key := range registryTrust.Keys {
+			keys[name] = base64.StdEncoding.EncodeToString(key)
+		}
+		values["runtime"].(map[string]any)["registryTrust"] = keys
+		values["sp05"] = map[string]any{"enabled": true, "analyzer": map[string]any{"enabled": true, "sha256": k8sgpt.LockedBinarySHA256}}
+	}
 	// Exact host bridge allowlist is owned test configuration for loopback-published
 	// fixtures. It does not permit arbitrary external hosts, ports, or public egress.
 	ports := []any{}
@@ -503,6 +524,53 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 		t.Fatal("native evidence result invalid")
 	}
 	t.Logf("native evidence accepted bytes=%d", len(b))
+	if os.Getenv("SP05_NATIVE_CHART") == "1" {
+		faultPodRaw := create(map[string]any{"apiVersion": "v1", "kind": "Pod", "metadata": map[string]any{"name": "sp05-native-chart-fault", "namespace": ns}, "spec": map[string]any{"automountServiceAccountToken": false, "restartPolicy": "Never", "containers": []any{map[string]any{"name": "never-pulled", "image": "fixture.invalid/sp05-native-chart:missing", "imagePullPolicy": "Never"}}}})
+		var faultPod struct{ Metadata struct{ UID string } }
+		if json.Unmarshal(faultPodRaw, &faultPod) != nil || faultPod.Metadata.UID == "" {
+			t.Fatal("owned SP05 native Pod identity absent")
+		}
+		faultID := resource.CanonicalID{Domain: "k8s", Tenant: tenant.String(), Scope: collector.ClusterUID, APIGroup: "core", Kind: "Pod", StableID: faultPod.Metadata.UID}.String()
+		var incidentID, evidenceID string
+		for deadline := time.Now().Add(90 * time.Second); ; {
+			e = db.QueryRowContext(ctx, `SELECT COALESCE(min(l.incident_id::text),''),COALESCE(min(m.evidence_id::text),'') FROM finding.records f JOIN incident.finding_links l USING(tenant_id,finding_id) JOIN finding.evidence_refs r USING(tenant_id,finding_id) JOIN platform.evidence_metadata m ON m.tenant_id=r.tenant_id AND m.evidence_id=r.evidence_id AND m.replay_state='archived_verified' WHERE f.tenant_id=$1 AND f.resource_canonical_id=$2 AND f.payload->>'ruleId'='k8sgpt/PodRuntimeFault/v1' AND f.lifecycle_state='firing'`, tenant, faultID).Scan(&incidentID, &evidenceID)
+			if e != nil {
+				t.Fatal(e)
+			}
+			if incidentID != "" && evidenceID != "" {
+				break
+			}
+			if time.Now().After(deadline) {
+				t.Fatal("shipped Worker main/Chart fixed Analyzer did not reach durable Incident/immutable Evidence")
+			}
+			time.Sleep(250 * time.Millisecond)
+		}
+		for _, path := range []string{"/api/v1/findings?clusterUid=" + url.QueryEscape(collector.ClusterUID) + "&resourceCanonicalId=" + url.QueryEscape(faultID), "/api/v1/incidents/" + incidentID, "/api/v1/evidence/" + evidenceID} {
+			if status, body := call("GET", path, nil); status != 200 {
+				t.Fatalf("shipped SP05 API consumer path=%s status=%d %s", path, status, body)
+			}
+		}
+		for deadline := time.Now().Add(60 * time.Second); ; {
+			status, body := call("GET", "/api/v1/incidents/"+incidentID+"/rca", nil)
+			if status == 200 {
+				var view struct {
+					Data struct {
+						Revision struct{ Result struct{ Status string } }
+					}
+				}
+				if json.Unmarshal(body, &view) != nil || view.Data.Revision.Result.Status != "unresolved" {
+					t.Fatal("supplemental Pod runtime symptom falsely confirmed a Node cause")
+				}
+				break
+			}
+			if time.Now().After(deadline) {
+				t.Fatalf("shipped registry -> deterministic RCA consumer unavailable: %d %s", status, body)
+			}
+			time.Sleep(250 * time.Millisecond)
+		}
+		t.Log("current signed image/Chart -> actual platform-worker main and JWT bootstrap -> fixed unchanged CLI in finite read-only Pod -> Finding/Incident/archive -> signed Recipe -> honest unresolved RCA -> OIDC API; native positive Metrics-server remains unverified")
+	}
+
 	var verified int
 	if e = db.QueryRowContext(ctx, `SELECT count(*) FROM platform.evidence_metadata WHERE tenant_id=$1 AND replay_state='archived_verified'`, tenant).Scan(&verified); e != nil || verified < 1 {
 		t.Fatalf("native projected-login archive not verified: %d %v", verified, e)

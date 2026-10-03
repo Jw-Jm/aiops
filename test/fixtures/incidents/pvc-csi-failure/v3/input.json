@@ -1,0 +1,276 @@
+{
+  "schemaVersion": "golden-slice-input/v3",
+  "scenario": "pvc-csi-failure",
+  "inputClock": "2026-10-02T00:00:00Z",
+  "tenant": "11111111-1111-4111-8111-111111111111",
+  "clusterUid": "golden-cluster",
+  "namespace": "apps",
+  "primaryUid": "pvc-a",
+  "facts": [
+    {
+      "nativeType": "kubernetes.PersistentVolumeClaim",
+      "uid": "pvc-a",
+      "namespace": "apps",
+      "phase": "Pending",
+      "storageClassName": "storage-a"
+    },
+    {
+      "nativeType": "kubernetes.Event",
+      "uid": "event-a",
+      "namespace": "apps",
+      "involvedObject": {
+        "kind": "PersistentVolumeClaim",
+        "uid": "pvc-a",
+        "namespace": "apps"
+      },
+      "reason": "ProvisioningFailed",
+      "type": "Warning"
+    }
+  ],
+  "graphClock": "2026-10-02T00:00:00Z",
+  "pod": {
+    "uid": "pod-a",
+    "namespace": "apps",
+    "nodeName": "node-a",
+    "pvc": "pvc-a"
+  },
+  "serverUuid": "550e8400-e29b-41d4-a716-446655440000",
+  "variants": [
+    "valid",
+    "missing",
+    "conflict",
+    "degraded"
+  ],
+  "sourceSemantics": "Protocol/model Fixture, not physical BMC or Node fault injection; deterministic test clocks are injected at constructors only. Database receivedAt remains the actual server clock.",
+  "identityAliases": {
+    "server-a": "550e8400-e29b-41d4-a716-446655440000",
+    "node-a": "node-a",
+    "pod-a": "pod-a",
+    "pvc-a": "pvc-a",
+    "storage-a": "storage-a"
+  },
+  "sourceBindings": {
+    "kubernetes": "22222222-2222-4222-8222-222222222222",
+    "redfish": "33333333-3333-4333-8333-333333333333",
+    "victorialogs": "44444444-4444-4444-8444-444444444444"
+  },
+  "conflictSnapshot": {
+    "gvr": {
+      "Version": "v1",
+      "Resource": "persistentvolumeclaims"
+    },
+    "objects": [
+      {
+        "apiVersion": "v1",
+        "kind": "PersistentVolumeClaim",
+        "metadata": {
+          "name": "pvc-a",
+          "uid": "pvc-a",
+          "namespace": "apps",
+          "resourceVersion": "2",
+          "creationTimestamp": "2026-10-02T00:00:00Z",
+          "annotations": {
+            "ops.internal/observed-at": "2026-10-02T00:00:01Z",
+            "ops.internal/source-id": "22222222-2222-4222-8222-222222222222"
+          }
+        },
+        "spec": {
+          "storageClassName": "storage-a"
+        },
+        "status": {
+          "phase": "Bound"
+        }
+      }
+    ]
+  },
+  "nativeSnapshots": [
+    {
+      "gvr": {
+        "Version": "v1",
+        "Resource": "nodes"
+      },
+      "objects": [
+        {
+          "apiVersion": "v1",
+          "kind": "Node",
+          "metadata": {
+            "name": "node-a",
+            "uid": "node-a",
+            "namespace": "",
+            "resourceVersion": "1",
+            "creationTimestamp": "2026-10-02T00:00:00Z",
+            "annotations": {
+              "ops.internal/observed-at": "2026-10-02T00:00:00Z",
+              "ops.internal/source-id": "22222222-2222-4222-8222-222222222222"
+            }
+          },
+          "status": {
+            "nodeInfo": {
+              "systemUUID": "550e8400-e29b-41d4-a716-446655440000"
+            },
+            "conditions": [
+              {
+                "type": "Ready",
+                "status": "True",
+                "lastTransitionTime": "2026-10-02T00:00:00Z"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "gvr": {
+        "Version": "v1",
+        "Resource": "pods"
+      },
+      "objects": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "name": "pod-a",
+            "uid": "pod-a",
+            "namespace": "apps",
+            "resourceVersion": "1",
+            "creationTimestamp": "2026-10-02T00:00:00Z",
+            "annotations": {
+              "ops.internal/observed-at": "2026-10-02T00:00:00Z",
+              "ops.internal/source-id": "22222222-2222-4222-8222-222222222222"
+            }
+          },
+          "spec": {
+            "nodeName": "node-a",
+            "volumes": [
+              {
+                "name": "data",
+                "persistentVolumeClaim": {
+                  "claimName": "pvc-a"
+                }
+              }
+            ]
+          },
+          "status": {
+            "phase": "Running"
+          }
+        }
+      ]
+    },
+    {
+      "gvr": {
+        "Version": "v1",
+        "Resource": "persistentvolumeclaims"
+      },
+      "objects": [
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "metadata": {
+            "name": "pvc-a",
+            "uid": "pvc-a",
+            "namespace": "apps",
+            "resourceVersion": "1",
+            "creationTimestamp": "2026-10-02T00:00:00Z",
+            "annotations": {
+              "ops.internal/observed-at": "2026-10-02T00:00:00Z",
+              "ops.internal/source-id": "22222222-2222-4222-8222-222222222222"
+            }
+          },
+          "spec": {
+            "storageClassName": "storage-a"
+          },
+          "status": {
+            "phase": "Pending"
+          }
+        }
+      ]
+    },
+    {
+      "gvr": {
+        "Group": "storage.k8s.io",
+        "Version": "v1",
+        "Resource": "storageclasses"
+      },
+      "objects": [
+        {
+          "apiVersion": "storage.k8s.io/v1",
+          "kind": "StorageClass",
+          "metadata": {
+            "name": "storage-a",
+            "uid": "storage-a",
+            "namespace": "",
+            "resourceVersion": "1",
+            "creationTimestamp": "2026-10-02T00:00:00Z",
+            "annotations": {
+              "ops.internal/observed-at": "2026-10-02T00:00:00Z",
+              "ops.internal/source-id": "22222222-2222-4222-8222-222222222222"
+            }
+          },
+          "provisioner": "csi.fixture.example"
+        }
+      ]
+    },
+    {
+      "gvr": {
+        "Group": "storage.k8s.io",
+        "Version": "v1",
+        "Resource": "csidrivers"
+      },
+      "objects": [
+        {
+          "apiVersion": "storage.k8s.io/v1",
+          "kind": "CSIDriver",
+          "metadata": {
+            "name": "csi.fixture.example",
+            "uid": "driver-a",
+            "namespace": "",
+            "resourceVersion": "1",
+            "creationTimestamp": "2026-10-02T00:00:00Z",
+            "annotations": {
+              "ops.internal/observed-at": "2026-10-02T00:00:00Z",
+              "ops.internal/source-id": "22222222-2222-4222-8222-222222222222"
+            }
+          },
+          "spec": {
+            "attachRequired": true
+          }
+        }
+      ]
+    },
+    {
+      "gvr": {
+        "Version": "v1",
+        "Resource": "events"
+      },
+      "objects": [
+        {
+          "apiVersion": "v1",
+          "kind": "Event",
+          "metadata": {
+            "name": "provisioning-failed",
+            "uid": "event-a",
+            "namespace": "apps",
+            "resourceVersion": "1",
+            "creationTimestamp": "2026-10-02T00:00:00Z",
+            "annotations": {
+              "ops.internal/observed-at": "2026-10-02T00:00:00Z",
+              "ops.internal/source-id": "22222222-2222-4222-8222-222222222222"
+            }
+          },
+          "involvedObject": {
+            "kind": "PersistentVolumeClaim",
+            "name": "pvc-a",
+            "namespace": "apps",
+            "uid": "pvc-a"
+          },
+          "reason": "ProvisioningFailed",
+          "type": "Warning",
+          "reportingController": "csi.fixture.example",
+          "firstTimestamp": "2026-10-02T00:00:00Z",
+          "lastTimestamp": "2026-10-02T00:00:00Z"
+        }
+      ]
+    }
+  ],
+  "conflictClock": "2026-10-02T00:00:01Z"
+}

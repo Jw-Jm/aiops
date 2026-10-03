@@ -38,9 +38,10 @@ func TransactionFromContext(ctx context.Context) (pgx.Tx, bool) {
 // IdempotencyMiddleware binds each mutating request to an authenticated tenant and subject, then
 // commits the ledger result in the same transaction as the handler's database changes.
 type IdempotencyMiddleware struct {
-	Pool      persistence.TxBeginner
-	Resolve   func(*http.Request) (persistence.Scope, error)
-	Authorize func(*http.Request, persistence.Scope) error
+	Pool        persistence.TxBeginner
+	Resolve     func(*http.Request) (persistence.Scope, error)
+	Authorize   func(*http.Request, persistence.Scope) error
+	AuthorizeTx func(*http.Request, pgx.Tx, persistence.Scope) error
 }
 
 func (m IdempotencyMiddleware) Wrap(next http.Handler) http.Handler {
@@ -90,6 +91,12 @@ func (m IdempotencyMiddleware) Wrap(next http.Handler) http.Handler {
 		var output *capturedResponse
 		var decision persistence.Decision
 		err = persistence.WithTenantTx(r.Context(), m.Pool, scope.TenantID, func(tx pgx.Tx) error {
+			if m.AuthorizeTx != nil {
+				if err := m.AuthorizeTx(r, tx, scope); err != nil {
+					output = idempotencyErrorResponse(http.StatusForbidden, "FORBIDDEN", "request is not authorized", false, requestID)
+					return nil
+				}
+			}
 			var beginErr error
 			decision, beginErr = persistence.Begin(r.Context(), tx, scope, keyValues[0], digest)
 			if beginErr != nil {

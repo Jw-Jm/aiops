@@ -109,7 +109,17 @@ type SourceUpdateCommand struct {
 }
 
 func validAllowedSchemas(values []string) bool {
-	return len(values) == 1 && values[0] == "finding-envelope/v1"
+	if len(values) < 1 || len(values) > 2 {
+		return false
+	}
+	seen := map[string]bool{}
+	for _, v := range values {
+		if (v != "finding-envelope/v1" && v != "finding-envelope/v2") || seen[v] {
+			return false
+		}
+		seen[v] = true
+	}
+	return true
 }
 
 type CredentialRotationCommand struct {

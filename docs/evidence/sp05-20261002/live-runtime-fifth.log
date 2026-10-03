@@ -1,0 +1,93 @@
+=== RUN   TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart
+2026/10/02 19:18:08 OK   00001_roles_and_schemas.sql (17.8ms)
+2026/10/02 19:18:08 goose: successfully migrated database to version: 1
+2026/10/02 19:18:08 OK   00002_platform_meta.sql (32.71ms)
+2026/10/02 19:18:08 OK   00003_finding.sql (13.89ms)
+2026/10/02 19:18:08 OK   00004_incident.sql (7.62ms)
+2026/10/02 19:18:08 OK   00005_investigation.sql (8.36ms)
+2026/10/02 19:18:08 OK   00006_action_command.sql (7.64ms)
+2026/10/02 19:18:08 OK   00007_audit.sql (12.51ms)
+2026/10/02 19:18:08 OK   00008_rls.sql (17.59ms)
+2026/10/02 19:18:08 OK   00009_idempotency_ledger.sql (11.56ms)
+2026/10/02 19:18:08 OK   00010_tenant_provisioning.sql (4.47ms)
+2026/10/02 19:18:08 OK   00011_source_registration_history.sql (5.96ms)
+2026/10/02 19:18:08 OK   00012_config_registry_lifecycle.sql (16.75ms)
+2026/10/02 19:18:08 OK   00013_audit_signed_segments.sql (16.49ms)
+2026/10/02 19:18:08 OK   00014_audit_segment_predecessors.sql (8.8ms)
+2026/10/02 19:18:08 OK   00015_source_schema_scope.sql (3.87ms)
+2026/10/02 19:18:08 OK   00016_cluster_registration_metadata.sql (7.61ms)
+2026/10/02 19:18:08 OK   00017_source_data_scope.sql (5.71ms)
+2026/10/02 19:18:08 OK   00018_sp04_resources_evidence.sql (13.41ms)
+2026/10/02 19:18:08 OK   00019_sp04_archive_ciphertext_bytes.sql (4.38ms)
+2026/10/02 19:18:08 OK   00020_sp04_request_ledger.sql (4.93ms)
+2026/10/02 19:18:08 OK   00021_sp04_archive_protection.sql (4.49ms)
+2026/10/02 19:18:08 OK   00022_sp04_legal_hold_dependencies.sql (8.93ms)
+2026/10/02 19:18:08 OK   00023_sp04_archive_query_intent.sql (6.1ms)
+2026/10/02 19:18:08 OK   00024_sp05_finding_incident.sql (22.29ms)
+2026/10/02 19:18:08 OK   00025_sp05_incident_event_time.sql (4.43ms)
+2026/10/02 19:18:08 OK   00026_sp05_source_binding_lock.sql (5.08ms)
+2026/10/02 19:18:08 OK   00027_sp05_rca_and_poll.sql (13.97ms)
+2026/10/02 19:18:08 OK   00028_sp05_operator_lock.sql (5.46ms)
+2026/10/02 19:18:08 OK   00029_sp05_evidence_links.sql (4.66ms)
+2026/10/02 19:18:08 OK   00030_sp05_recipe_fence.sql (3.56ms)
+2026/10/02 19:18:08 goose: successfully migrated database to version: 30
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=97e5a80f3c4b4005b6bffbd621743dfd11f04b4def441339b26f9851d2b139bf bucket=sp05-chain-ef0d5a48 tenants=1
+{"time":"2026-10-02T19:18:15.701051+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-02T19:18:17.368505+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/pods","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:17.625428+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-02T19:18:18.348046+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/persistentvolumeclaims","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:19.467172+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/pods","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:19.553632+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/persistentvolumeclaims","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:20.58632+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/pods","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:20.804757+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/persistentvolumeclaims","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:22.382056+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/persistentvolumeclaims","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:22.50273+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/pods","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:23.49508+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/persistentvolumeclaims","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:23.90502+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/pods","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:24.801886+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/persistentvolumeclaims","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:25.408642+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/pods","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:26.024834+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fc56-3f31-723e-b945-d1f7ed180472","method":"GET","status_code":200,"duration_ms":183}
+{"time":"2026-10-02T19:18:26.349978+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fc56-40b2-791c-bd32-8d7ad6071f42","method":"GET","status_code":200,"duration_ms":123}
+{"time":"2026-10-02T19:18:26.452588+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/persistentvolumeclaims","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:26.775191+08:00","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/pods","errorClass":"*errors.errorString"}
+{"time":"2026-10-02T19:18:26.86152+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fc56-41f7-7338-9ff8-8334e23cfb5e","method":"GET","status_code":200,"duration_ms":310}
+{"time":"2026-10-02T19:18:27.181076+08:00","level":"INFO","msg":"http request complete","request_id":"01a0fc56-43f8-7084-acad-e2e236ed3f3d","method":"GET","status_code":200,"duration_ms":117}
+    sp05_live_test.go:216: real scheduling condition not ingested: 0 <nil>
+--- FAIL: TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart (19.87s)
+=== RUN   TestSP05PollBirthClockSurvivesPostgreSQLPrecisionAndRestart
+2026/10/02 19:18:28 OK   00001_roles_and_schemas.sql (20.97ms)
+2026/10/02 19:18:28 goose: successfully migrated database to version: 1
+2026/10/02 19:18:28 OK   00002_platform_meta.sql (24.41ms)
+2026/10/02 19:18:28 OK   00003_finding.sql (17.78ms)
+2026/10/02 19:18:28 OK   00004_incident.sql (10.47ms)
+2026/10/02 19:18:28 OK   00005_investigation.sql (19.62ms)
+2026/10/02 19:18:28 OK   00006_action_command.sql (16.09ms)
+2026/10/02 19:18:28 OK   00007_audit.sql (17.32ms)
+2026/10/02 19:18:28 OK   00008_rls.sql (22.3ms)
+2026/10/02 19:18:28 OK   00009_idempotency_ledger.sql (8.59ms)
+2026/10/02 19:18:28 OK   00010_tenant_provisioning.sql (6.05ms)
+2026/10/02 19:18:28 OK   00011_source_registration_history.sql (10.9ms)
+2026/10/02 19:18:28 OK   00012_config_registry_lifecycle.sql (20.49ms)
+2026/10/02 19:18:28 OK   00013_audit_signed_segments.sql (14.52ms)
+2026/10/02 19:18:28 OK   00014_audit_segment_predecessors.sql (18.4ms)
+2026/10/02 19:18:28 OK   00015_source_schema_scope.sql (5.11ms)
+2026/10/02 19:18:28 OK   00016_cluster_registration_metadata.sql (5.76ms)
+2026/10/02 19:18:28 OK   00017_source_data_scope.sql (12.01ms)
+2026/10/02 19:18:28 OK   00018_sp04_resources_evidence.sql (19.94ms)
+2026/10/02 19:18:28 OK   00019_sp04_archive_ciphertext_bytes.sql (3.95ms)
+2026/10/02 19:18:28 OK   00020_sp04_request_ledger.sql (7.42ms)
+2026/10/02 19:18:28 OK   00021_sp04_archive_protection.sql (10.82ms)
+2026/10/02 19:18:28 OK   00022_sp04_legal_hold_dependencies.sql (8.52ms)
+2026/10/02 19:18:28 OK   00023_sp04_archive_query_intent.sql (4.35ms)
+2026/10/02 19:18:28 OK   00024_sp05_finding_incident.sql (35.52ms)
+2026/10/02 19:18:28 OK   00025_sp05_incident_event_time.sql (6.95ms)
+2026/10/02 19:18:28 OK   00026_sp05_source_binding_lock.sql (9.66ms)
+2026/10/02 19:18:28 OK   00027_sp05_rca_and_poll.sql (9.8ms)
+2026/10/02 19:18:28 OK   00028_sp05_operator_lock.sql (5.91ms)
+2026/10/02 19:18:28 OK   00029_sp05_evidence_links.sql (6.09ms)
+2026/10/02 19:18:28 OK   00030_sp05_recipe_fence.sql (4.87ms)
+2026/10/02 19:18:28 goose: successfully migrated database to version: 30
+--- PASS: TestSP05PollBirthClockSurvivesPostgreSQLPrecisionAndRestart (0.64s)
+FAIL
+FAIL	ops-platform/test/integration	21.554s
+FAIL

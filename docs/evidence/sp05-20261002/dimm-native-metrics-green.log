@@ -1,0 +1,47 @@
+=== RUN   TestRedfishThreeVendors
+=== RUN   TestRedfishThreeVendors/dell
+=== RUN   TestRedfishThreeVendors/hpe
+=== RUN   TestRedfishThreeVendors/lenovo
+--- PASS: TestRedfishThreeVendors (0.04s)
+    --- PASS: TestRedfishThreeVendors/dell (0.02s)
+    --- PASS: TestRedfishThreeVendors/hpe (0.01s)
+    --- PASS: TestRedfishThreeVendors/lenovo (0.01s)
+=== RUN   TestRedfishAuthenticatesInitialServiceRootRead
+--- PASS: TestRedfishAuthenticatesInitialServiceRootRead (0.08s)
+=== RUN   TestRedfishMissingUUIDDuplicateSerialAndPartialInventory
+    redfish_test.go:35: missing fixture path /redfish/v1/Systems/System.Embedded.1/Memory/DIMM1
+--- PASS: TestRedfishMissingUUIDDuplicateSerialAndPartialInventory (0.03s)
+=== RUN   TestRedfishAuthAndTimeoutDegrade
+--- PASS: TestRedfishAuthAndTimeoutDegrade (0.10s)
+=== RUN   TestDuplicateHardwareUUIDIsAnUnresolvedConflict
+--- PASS: TestDuplicateHardwareUUIDIsAnUnresolvedConflict (0.00s)
+=== RUN   TestUnsupportedSourceMappingFailsBeforeBMCIO
+=== RUN   TestUnsupportedSourceMappingFailsBeforeBMCIO/nativeTenant
+=== RUN   TestUnsupportedSourceMappingFailsBeforeBMCIO/labels
+=== RUN   TestUnsupportedSourceMappingFailsBeforeBMCIO/account
+=== RUN   TestUnsupportedSourceMappingFailsBeforeBMCIO/project
+=== RUN   TestUnsupportedSourceMappingFailsBeforeBMCIO/organization
+=== RUN   TestUnsupportedSourceMappingFailsBeforeBMCIO/team
+=== RUN   TestUnsupportedSourceMappingFailsBeforeBMCIO/namespace
+=== RUN   TestUnsupportedSourceMappingFailsBeforeBMCIO/cluster
+--- PASS: TestUnsupportedSourceMappingFailsBeforeBMCIO (0.00s)
+    --- PASS: TestUnsupportedSourceMappingFailsBeforeBMCIO/nativeTenant (0.00s)
+    --- PASS: TestUnsupportedSourceMappingFailsBeforeBMCIO/labels (0.00s)
+    --- PASS: TestUnsupportedSourceMappingFailsBeforeBMCIO/account (0.00s)
+    --- PASS: TestUnsupportedSourceMappingFailsBeforeBMCIO/project (0.00s)
+    --- PASS: TestUnsupportedSourceMappingFailsBeforeBMCIO/organization (0.00s)
+    --- PASS: TestUnsupportedSourceMappingFailsBeforeBMCIO/team (0.00s)
+    --- PASS: TestUnsupportedSourceMappingFailsBeforeBMCIO/namespace (0.00s)
+    --- PASS: TestUnsupportedSourceMappingFailsBeforeBMCIO/cluster (0.00s)
+=== RUN   TestSP05DIMMReadsTypedCurrentAlarmAndDoesNotUseLifetimeCount
+=== RUN   TestSP05DIMMReadsTypedCurrentAlarmAndDoesNotUseLifetimeCount/active
+=== RUN   TestSP05DIMMReadsTypedCurrentAlarmAndDoesNotUseLifetimeCount/lifetime-only
+=== RUN   TestSP05DIMMReadsTypedCurrentAlarmAndDoesNotUseLifetimeCount/missing
+=== RUN   TestSP05DIMMReadsTypedCurrentAlarmAndDoesNotUseLifetimeCount/healthy
+--- PASS: TestSP05DIMMReadsTypedCurrentAlarmAndDoesNotUseLifetimeCount (0.05s)
+    --- PASS: TestSP05DIMMReadsTypedCurrentAlarmAndDoesNotUseLifetimeCount/active (0.02s)
+    --- PASS: TestSP05DIMMReadsTypedCurrentAlarmAndDoesNotUseLifetimeCount/lifetime-only (0.01s)
+    --- PASS: TestSP05DIMMReadsTypedCurrentAlarmAndDoesNotUseLifetimeCount/missing (0.01s)
+    --- PASS: TestSP05DIMMReadsTypedCurrentAlarmAndDoesNotUseLifetimeCount/healthy (0.01s)
+PASS
+ok  	ops-platform/internal/integrations/redfish	2.150s

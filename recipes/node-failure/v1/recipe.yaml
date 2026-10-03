@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "recipe-registry/v2",
+  "name": "node-failure",
+  "version": "v1",
+  "candidateType": "node_runtime_failure",
+  "entry": [
+    "Node",
+    "Pod"
+  ],
+  "graphDepth": 2,
+  "requiredEvidence": [
+    {
+      "key": "node-not-ready",
+      "predicate": "node-not-ready/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "kernel-fault",
+      "predicate": "kernel-fault/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "node-path",
+      "predicate": "node-path/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    }
+  ],
+  "optionalEvidence": [
+    "metric-context",
+    "recent-change"
+  ],
+  "confirm": [
+    "node-not-ready",
+    "kernel-fault",
+    "node-path"
+  ],
+  "exclude": [
+    "healthy-primary",
+    "conflicting-required-facts",
+    "invalid-path",
+    "unreliable-clock"
+  ],
+  "toolAllowlist": [
+    "read_evidence",
+    "diagnostic_graph",
+    "impact_scope"
+  ],
+  "budget": {
+    "maxEvidence": 64,
+    "maxNodes": 200,
+    "maxEdges": 400,
+    "timeoutMs": 3000
+  },
+  "postCheck": "fresh-required-evidence/v1",
+  "graphPlan": "single-query/v1"
+}

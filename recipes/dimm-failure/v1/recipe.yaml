@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "recipe-registry/v2",
+  "name": "dimm-failure",
+  "version": "v1",
+  "candidateType": "dimm_hardware_fault",
+  "entry": [
+    "DIMM",
+    "Node"
+  ],
+  "graphDepth": 2,
+  "requiredEvidence": [
+    {
+      "key": "dimm-health",
+      "predicate": "dimm-health/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "ecc-uncorrectable",
+      "predicate": "ecc-uncorrectable/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "hardware-path",
+      "predicate": "hardware-path/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    }
+  ],
+  "optionalEvidence": [
+    "metric-context",
+    "recent-change"
+  ],
+  "confirm": [
+    "dimm-health",
+    "ecc-uncorrectable",
+    "hardware-path"
+  ],
+  "exclude": [
+    "healthy-primary",
+    "conflicting-required-facts",
+    "invalid-path",
+    "unreliable-clock"
+  ],
+  "toolAllowlist": [
+    "read_evidence",
+    "diagnostic_graph",
+    "impact_scope"
+  ],
+  "budget": {
+    "maxEvidence": 64,
+    "maxNodes": 200,
+    "maxEdges": 400,
+    "timeoutMs": 3000
+  },
+  "postCheck": "fresh-required-evidence/v1",
+  "graphPlan": "dimm-hosted-pods/v1"
+}

@@ -1,0 +1,61 @@
+=== RUN   TestSP05FindingAtomicConcurrentTransportAndRecovery
+2026/10/02 18:19:34 OK   00001_roles_and_schemas.sql (12.81ms)
+2026/10/02 18:19:34 goose: successfully migrated database to version: 1
+2026/10/02 18:19:35 OK   00002_platform_meta.sql (30.39ms)
+2026/10/02 18:19:35 OK   00003_finding.sql (15.04ms)
+2026/10/02 18:19:35 OK   00004_incident.sql (15.61ms)
+2026/10/02 18:19:35 OK   00005_investigation.sql (4.67ms)
+2026/10/02 18:19:35 OK   00006_action_command.sql (4.23ms)
+2026/10/02 18:19:35 OK   00007_audit.sql (27.74ms)
+2026/10/02 18:19:35 OK   00008_rls.sql (7.2ms)
+2026/10/02 18:19:35 OK   00009_idempotency_ledger.sql (25.04ms)
+2026/10/02 18:19:35 OK   00010_tenant_provisioning.sql (22.87ms)
+2026/10/02 18:19:35 OK   00011_source_registration_history.sql (6.33ms)
+2026/10/02 18:19:35 OK   00012_config_registry_lifecycle.sql (14.3ms)
+2026/10/02 18:19:35 OK   00013_audit_signed_segments.sql (16.2ms)
+2026/10/02 18:19:35 OK   00014_audit_segment_predecessors.sql (5.18ms)
+2026/10/02 18:19:35 OK   00015_source_schema_scope.sql (7.79ms)
+2026/10/02 18:19:35 OK   00016_cluster_registration_metadata.sql (5.65ms)
+2026/10/02 18:19:35 OK   00017_source_data_scope.sql (9.36ms)
+2026/10/02 18:19:35 OK   00018_sp04_resources_evidence.sql (30ms)
+2026/10/02 18:19:35 OK   00019_sp04_archive_ciphertext_bytes.sql (3.2ms)
+2026/10/02 18:19:35 OK   00020_sp04_request_ledger.sql (9.01ms)
+2026/10/02 18:19:35 OK   00021_sp04_archive_protection.sql (13.09ms)
+2026/10/02 18:19:35 OK   00022_sp04_legal_hold_dependencies.sql (2.75ms)
+2026/10/02 18:19:35 OK   00023_sp04_archive_query_intent.sql (12.67ms)
+2026/10/02 18:19:35 OK   00024_sp05_finding_incident.sql (23.26ms)
+2026/10/02 18:19:35 goose: successfully migrated database to version: 24
+    sp05_finding_test.go:44: SOURCE_SCOPE_UNVERIFIED
+--- FAIL: TestSP05FindingAtomicConcurrentTransportAndRecovery (0.71s)
+=== RUN   TestSP05ResolvedBeforeFiringAndTenantIsolation
+2026/10/02 18:19:35 OK   00001_roles_and_schemas.sql (35.38ms)
+2026/10/02 18:19:35 goose: successfully migrated database to version: 1
+2026/10/02 18:19:35 OK   00002_platform_meta.sql (35.29ms)
+2026/10/02 18:19:35 OK   00003_finding.sql (29.46ms)
+2026/10/02 18:19:35 OK   00004_incident.sql (7.81ms)
+2026/10/02 18:19:35 OK   00005_investigation.sql (18.78ms)
+2026/10/02 18:19:35 OK   00006_action_command.sql (5.42ms)
+2026/10/02 18:19:35 OK   00007_audit.sql (7.14ms)
+2026/10/02 18:19:35 OK   00008_rls.sql (27.35ms)
+2026/10/02 18:19:35 OK   00009_idempotency_ledger.sql (31.55ms)
+2026/10/02 18:19:35 OK   00010_tenant_provisioning.sql (3.96ms)
+2026/10/02 18:19:35 OK   00011_source_registration_history.sql (6.85ms)
+2026/10/02 18:19:35 OK   00012_config_registry_lifecycle.sql (24.03ms)
+2026/10/02 18:19:35 OK   00013_audit_signed_segments.sql (8.59ms)
+2026/10/02 18:19:35 OK   00014_audit_segment_predecessors.sql (4.09ms)
+2026/10/02 18:19:35 OK   00015_source_schema_scope.sql (2.95ms)
+2026/10/02 18:19:35 OK   00016_cluster_registration_metadata.sql (11.02ms)
+2026/10/02 18:19:35 OK   00017_source_data_scope.sql (16.65ms)
+2026/10/02 18:19:35 OK   00018_sp04_resources_evidence.sql (29.07ms)
+2026/10/02 18:19:35 OK   00019_sp04_archive_ciphertext_bytes.sql (2.84ms)
+2026/10/02 18:19:35 OK   00020_sp04_request_ledger.sql (4.06ms)
+2026/10/02 18:19:35 OK   00021_sp04_archive_protection.sql (3.16ms)
+2026/10/02 18:19:35 OK   00022_sp04_legal_hold_dependencies.sql (2.37ms)
+2026/10/02 18:19:35 OK   00023_sp04_archive_query_intent.sql (2.47ms)
+2026/10/02 18:19:35 OK   00024_sp05_finding_incident.sql (11.59ms)
+2026/10/02 18:19:35 goose: successfully migrated database to version: 24
+    sp05_finding_test.go:66: SOURCE_SCOPE_UNVERIFIED
+--- FAIL: TestSP05ResolvedBeforeFiringAndTenantIsolation (0.61s)
+FAIL
+FAIL	ops-platform/test/integration	2.697s
+FAIL

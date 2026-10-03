@@ -1,9 +1,11 @@
 package graph
 
 import (
+	"encoding/json"
 	"errors"
 	"ops-platform/internal/resource"
 	"slices"
+	"strings"
 	"time"
 )
 
@@ -13,13 +15,13 @@ func (g *Graph) AddExternal(epoch int64, edges []resource.Relation) error {
 	return g.addExternalLocked(epoch, edges)
 }
 func (g *Graph) addExternalLocked(epoch int64, edges []resource.Relation) error {
-	if epoch != g.epoch || !time.Now().Before(g.deadline) {
+	if epoch != g.epoch || !g.now().Before(g.deadline) {
 		return ErrStale
 	}
 	if len(edges) > 400 {
 		return errors.New("external edge budget exhausted")
 	}
-	now := time.Now()
+	now := g.now()
 	valid := []resource.Relation{}
 	for _, e := range edges {
 		from, err := resource.ParseCanonicalID(e.From)
@@ -38,6 +40,41 @@ func (g *Graph) addExternalLocked(epoch int64, edges []resource.Relation) error 
 		}
 		valid = append(valid, e)
 	}
+	// Delivery order and exact duplicate facts cannot invalidate a current
+	// frozen proof. Genuine provenance, observation, TTL or endpoint changes do.
+	normalize := func(edges []resource.Relation) ([]string, error) {
+		keys := make([]string, 0, len(edges))
+		for _, e := range edges {
+			raw, err := json.Marshal(e)
+			if err != nil {
+				return nil, ErrScope
+			}
+			keys = append(keys, string(raw))
+		}
+		slices.Sort(keys)
+		return slices.Compact(keys), nil
+	}
+	oldKeys, err := normalize(g.overlays)
+	if err != nil {
+		return err
+	}
+	newKeys, err := normalize(valid)
+	if err != nil {
+		return err
+	}
+	if slices.Equal(oldKeys, newKeys) {
+		return nil
+	}
+	slices.SortFunc(valid, func(a, b resource.Relation) int {
+		left, _ := json.Marshal(a)
+		right, _ := json.Marshal(b)
+		return strings.Compare(string(left), string(right))
+	})
+	valid = slices.CompactFunc(valid, func(a, b resource.Relation) bool {
+		left, _ := json.Marshal(a)
+		right, _ := json.Marshal(b)
+		return string(left) == string(right)
+	})
 	g.overlays = slices.Clone(valid)
 	g.bumpGeneration()
 	return nil
@@ -96,7 +133,7 @@ func (g *Graph) ObserveExternalSource(epoch int64, source string, edges []resour
 	if source == "" {
 		return ErrScope
 	}
-	now := time.Now()
+	now := g.now()
 	merged := map[string]resource.Relation{}
 	key := func(e resource.Relation) string {
 		return e.Provenance.SourceRegistrationID + "|" + e.From + "|" + e.Kind + "|" + e.To

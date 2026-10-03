@@ -1,3 +1,4 @@
+{{- if and .Values.sp05.enabled (not .Values.sp04.enabled) }}{{ fail "SP05 requires the existing SP04 Graph/Evidence runtime" }}{{- end }}
 {{- if and .Values.workloadsEnabled (not .Values.networkPolicyOnly) }}
 {{- range $name := list "api" "worker" "web" }}
 {{- $component := index $.Values.components $name }}
@@ -78,6 +79,8 @@ spec:
             - name: SSL_CERT_FILE
               value: /etc/ops/oidc-ca.pem
             {{ end }}
+            {{ end }}
+            {{ if or (eq $name "api") (and (eq $name "worker") $.Values.sp05.enabled) }}
             - name: PLATFORM_REGISTRY_TRUST_FILE
               value: /etc/ops/registry-trust.json
             {{ end }}

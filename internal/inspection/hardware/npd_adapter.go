@@ -3,7 +3,9 @@ package hardware
 import (
 	"embed"
 	"encoding/json"
+	"errors"
 	"regexp"
+	"strings"
 )
 
 //go:embed kernel-monitor.json
@@ -36,6 +38,29 @@ func MatchKernelLog(line *string) ([]CheckResult, error) {
 	// Absence of a matching log is not proof that the host is healthy.
 	if len(out) == 0 {
 		out = append(out, CheckResult{RuleID: "kernel-monitor", RuleVersion: "npd-v1.35.3", Status: "unknown", Degraded: true})
+	}
+	return out, nil
+}
+
+// MatchKernelRecord preserves native multiline record boundaries while replaying
+// the unchanged NPD single-line rules. It never joins unrelated log rows.
+func MatchKernelRecord(message string) ([]CheckResult, error) {
+	if len(message) > 4096 || strings.Count(message, "\n") >= 64 {
+		return nil, errors.New("kernel record budget exhausted")
+	}
+	out := []CheckResult{}
+	seen := map[string]bool{}
+	for _, line := range strings.Split(message, "\n") {
+		matches, err := MatchKernelLog(&line)
+		if err != nil {
+			return nil, err
+		}
+		for _, match := range matches {
+			if !match.Degraded && !seen[match.RuleID] {
+				seen[match.RuleID] = true
+				out = append(out, match)
+			}
+		}
 	}
 	return out, nil
 }

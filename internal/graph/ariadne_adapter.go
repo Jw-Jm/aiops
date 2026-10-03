@@ -103,6 +103,7 @@ type snapshot struct {
 	revision   Revision
 }
 type Graph struct {
+	now                       func() time.Time
 	mu                        sync.RWMutex
 	buildGate                 chan struct{}
 	rebuilding                bool
@@ -117,7 +118,16 @@ type Graph struct {
 }
 
 func New(tenant, cluster, instance string, required []kubernetes.GVR) *Graph {
-	return &Graph{buildGate: make(chan struct{}, 1), tenant: tenant, cluster: cluster, instance: instance, required: slices.Clone(required), states: map[string]kubernetes.GVRState{}, degraded: map[string]string{}}
+	return NewWithClock(tenant, cluster, instance, required, time.Now)
+}
+
+// NewWithClock binds a trusted process clock at construction. Production always
+// uses New; no request, configuration file or environment can override this clock.
+func NewWithClock(tenant, cluster, instance string, required []kubernetes.GVR, clock func() time.Time) *Graph {
+	if clock == nil {
+		panic("graph clock is required")
+	}
+	return &Graph{now: clock, buildGate: make(chan struct{}, 1), tenant: tenant, cluster: cluster, instance: instance, required: slices.Clone(required), states: map[string]kubernetes.GVRState{}, degraded: map[string]string{}}
 }
 func (g *Graph) SetOwner(epoch int64, deadline time.Time) {
 	g.mu.Lock()
@@ -318,10 +328,10 @@ func (g *Graph) id(o *unstructured.Unstructured) (resource.CanonicalID, error) {
 	return id, resource.ValidateCanonicalID(id)
 }
 func (g *Graph) Query(ctx context.Context, q Query) (Result, error) {
-	g.expireExternal(time.Now())
+	g.expireExternal(g.now())
 	g.mu.RLock()
 	defer g.mu.RUnlock()
-	now := time.Now()
+	now := g.now()
 	if q.QueryKind != "" && !slices.Contains([]string{"entity", "neighbors", "impact", "dependencies", "diagnostic", "list"}, q.QueryKind) {
 		return Result{}, errors.New("INVALID_ARGUMENT")
 	}

@@ -33,6 +33,24 @@ func (e DiagnosticGraphBuildRequestRecipe) Valid() bool {
 	}
 }
 
+// Defines values for DiagnosticRecipeV2GraphPlan.
+const (
+	DimmHostedPodsv1 DiagnosticRecipeV2GraphPlan = "dimm-hosted-pods/v1"
+	SingleQueryv1    DiagnosticRecipeV2GraphPlan = "single-query/v1"
+)
+
+// Valid indicates whether the value is a known member of the DiagnosticRecipeV2GraphPlan enum.
+func (e DiagnosticRecipeV2GraphPlan) Valid() bool {
+	switch e {
+	case DimmHostedPodsv1:
+		return true
+	case SingleQueryv1:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ErrorEnvelopeCode.
 const (
 	ErrorEnvelopeCodeBUDGETEXHAUSTED                 ErrorEnvelopeCode = "BUDGET_EXHAUSTED"
@@ -489,12 +507,15 @@ func (e SP04ErrorEnvelopeV2SchemaVersion) Valid() bool {
 // Defines values for SourceRegistrationAllowedSchemas.
 const (
 	SourceRegistrationAllowedSchemasFindingEnvelopev1 SourceRegistrationAllowedSchemas = "finding-envelope/v1"
+	SourceRegistrationAllowedSchemasFindingEnvelopev2 SourceRegistrationAllowedSchemas = "finding-envelope/v2"
 )
 
 // Valid indicates whether the value is a known member of the SourceRegistrationAllowedSchemas enum.
 func (e SourceRegistrationAllowedSchemas) Valid() bool {
 	switch e {
 	case SourceRegistrationAllowedSchemasFindingEnvelopev1:
+		return true
+	case SourceRegistrationAllowedSchemasFindingEnvelopev2:
 		return true
 	default:
 		return false
@@ -570,12 +591,15 @@ func (e SourceRegistrationStatus) Valid() bool {
 // Defines values for SourceRegistrationRequestAllowedSchemas.
 const (
 	SourceRegistrationRequestAllowedSchemasFindingEnvelopev1 SourceRegistrationRequestAllowedSchemas = "finding-envelope/v1"
+	SourceRegistrationRequestAllowedSchemasFindingEnvelopev2 SourceRegistrationRequestAllowedSchemas = "finding-envelope/v2"
 )
 
 // Valid indicates whether the value is a known member of the SourceRegistrationRequestAllowedSchemas enum.
 func (e SourceRegistrationRequestAllowedSchemas) Valid() bool {
 	switch e {
 	case SourceRegistrationRequestAllowedSchemasFindingEnvelopev1:
+		return true
+	case SourceRegistrationRequestAllowedSchemasFindingEnvelopev2:
 		return true
 	default:
 		return false
@@ -624,12 +648,15 @@ func (e SourceRegistrationRequestSourceType) Valid() bool {
 // Defines values for SourceRegistrationUpdateRequestAllowedSchemas.
 const (
 	SourceRegistrationUpdateRequestAllowedSchemasFindingEnvelopev1 SourceRegistrationUpdateRequestAllowedSchemas = "finding-envelope/v1"
+	SourceRegistrationUpdateRequestAllowedSchemasFindingEnvelopev2 SourceRegistrationUpdateRequestAllowedSchemas = "finding-envelope/v2"
 )
 
 // Valid indicates whether the value is a known member of the SourceRegistrationUpdateRequestAllowedSchemas enum.
 func (e SourceRegistrationUpdateRequestAllowedSchemas) Valid() bool {
 	switch e {
 	case SourceRegistrationUpdateRequestAllowedSchemasFindingEnvelopev1:
+		return true
+	case SourceRegistrationUpdateRequestAllowedSchemasFindingEnvelopev2:
 		return true
 	default:
 		return false
@@ -740,6 +767,39 @@ type DiagnosticGraphBuildRequest struct {
 
 // DiagnosticGraphBuildRequestRecipe defines model for DiagnosticGraphBuildRequest.Recipe.
 type DiagnosticGraphBuildRequestRecipe string
+
+// DiagnosticRecipeV2 defines model for DiagnosticRecipeV2.
+type DiagnosticRecipeV2 struct {
+	Budget struct {
+		MaxEdges    int `json:"maxEdges"`
+		MaxEvidence int `json:"maxEvidence"`
+		MaxNodes    int `json:"maxNodes"`
+		TimeoutMs   int `json:"timeoutMs"`
+	} `json:"budget"`
+	CandidateType interface{} `json:"candidateType"`
+	Confirm       []string    `json:"confirm"`
+	Entry         []string    `json:"entry"`
+	Exclude       []string    `json:"exclude"`
+	GraphDepth    int         `json:"graphDepth"`
+
+	// GraphPlan Fixed shared-budget plan; each kernel query has depth at most 2.
+	GraphPlan        DiagnosticRecipeV2GraphPlan `json:"graphPlan"`
+	Name             string                      `json:"name"`
+	OptionalEvidence []string                    `json:"optionalEvidence"`
+	PostCheck        interface{}                 `json:"postCheck"`
+	RequiredEvidence []struct {
+		Key           string `json:"key"`
+		MaxAgeSeconds int    `json:"maxAgeSeconds"`
+		Predicate     string `json:"predicate"`
+		Required      bool   `json:"required"`
+	} `json:"requiredEvidence"`
+	SchemaVersion interface{}   `json:"schemaVersion"`
+	ToolAllowlist []interface{} `json:"toolAllowlist"`
+	Version       interface{}   `json:"version"`
+}
+
+// DiagnosticRecipeV2GraphPlan Fixed shared-budget plan; each kernel query has depth at most 2.
+type DiagnosticRecipeV2GraphPlan string
 
 // ErrorEnvelope defines model for ErrorEnvelope.
 type ErrorEnvelope struct {
@@ -873,6 +933,31 @@ type EvidenceV2_FactSlice struct {
 // FindingEnvelope Finding ingestion payload validated against finding-envelope/v1.
 type FindingEnvelope map[string]interface{}
 
+// FindingEnvelopeV2 defines model for FindingEnvelopeV2.
+type FindingEnvelopeV2 struct {
+	ClusterUid           *string                `json:"clusterUid,omitempty"`
+	EventId              string                 `json:"eventId"`
+	EvidenceRefs         []string               `json:"evidenceRefs"`
+	IdempotencyKey       string                 `json:"idempotencyKey"`
+	LifecycleState       interface{}            `json:"lifecycleState"`
+	Namespace            string                 `json:"namespace"`
+	NormalizedSymptom    string                 `json:"normalizedSymptom"`
+	ObservedAt           time.Time              `json:"observedAt"`
+	OccurrenceId         string                 `json:"occurrenceId"`
+	Payload              map[string]interface{} `json:"payload"`
+	PayloadDigest        *string                `json:"payloadDigest,omitempty"`
+	ResourceCanonicalId  string                 `json:"resourceCanonicalId"`
+	RuleFamily           string                 `json:"ruleFamily"`
+	RuleId               string                 `json:"ruleId"`
+	SchemaVersion        interface{}            `json:"schemaVersion"`
+	Severity             interface{}            `json:"severity"`
+	SourceRegistrationId *string                `json:"sourceRegistrationId,omitempty"`
+	SourceSequence       int                    `json:"sourceSequence"`
+	StartsAt             time.Time              `json:"startsAt"`
+	TenantId             *string                `json:"tenantId,omitempty"`
+	TimeReliable         bool                   `json:"timeReliable"`
+}
+
 // GraphBudget defines model for GraphBudget.
 type GraphBudget struct {
 	MaxDepth  int `json:"maxDepth"`
@@ -884,11 +969,36 @@ type GraphBudget struct {
 // Identifier defines model for Identifier.
 type Identifier = string
 
+// IncidentMergeV2 defines model for IncidentMergeV2.
+type IncidentMergeV2 struct {
+	ExpectedRevision int                `json:"expectedRevision"`
+	Reason           string             `json:"reason"`
+	SourceIncidentId openapi_types.UUID `json:"sourceIncidentId"`
+	TargetIncidentId openapi_types.UUID `json:"targetIncidentId"`
+	TargetRevision   int                `json:"targetRevision"`
+}
+
+// IncidentSplitV2 defines model for IncidentSplitV2.
+type IncidentSplitV2 struct {
+	ExpectedRevision int                  `json:"expectedRevision"`
+	FindingIds       []openapi_types.UUID `json:"findingIds"`
+	Reason           string               `json:"reason"`
+}
+
 // IncidentTransitionRequest defines model for IncidentTransitionRequest.
 type IncidentTransitionRequest struct {
 	ExpectedRevision int    `json:"expectedRevision"`
 	Reason           string `json:"reason"`
 	TargetState      string `json:"targetState"`
+}
+
+// IncidentTransitionV2 defines model for IncidentTransitionV2.
+type IncidentTransitionV2 struct {
+	EvidenceRefs     []openapi_types.UUID `json:"evidenceRefs"`
+	ExpectedRevision int                  `json:"expectedRevision"`
+	Reason           string               `json:"reason"`
+	State            interface{}          `json:"state"`
+	SuppressedUntil  *time.Time           `json:"suppressedUntil,omitempty"`
 }
 
 // InvestigationEvent defines model for InvestigationEvent.
@@ -1604,8 +1714,9 @@ type QueryEvidencedefaultJSONResponseBody struct {
 
 // GetFindingsParams defines parameters for GetFindings.
 type GetFindingsParams struct {
-	State    *string `form:"state,omitempty" json:"state,omitempty"`
-	Severity *string `form:"severity,omitempty" json:"severity,omitempty"`
+	ClusterUid string  `form:"clusterUid" json:"clusterUid"`
+	State      *string `form:"state,omitempty" json:"state,omitempty"`
+	Severity   *string `form:"severity,omitempty" json:"severity,omitempty"`
 
 	// ResourceCanonicalId Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
 	ResourceCanonicalId *CanonicalID `form:"resourceCanonicalId,omitempty" json:"resourceCanonicalId,omitempty"`
@@ -1627,9 +1738,9 @@ type IngestFindingParams struct {
 
 // GetIncidentsParams defines parameters for GetIncidents.
 type GetIncidentsParams struct {
+	ClusterUid string  `form:"clusterUid" json:"clusterUid"`
 	State      *string `form:"state,omitempty" json:"state,omitempty"`
 	Severity   *string `form:"severity,omitempty" json:"severity,omitempty"`
-	ClusterUid *string `form:"clusterUid,omitempty" json:"clusterUid,omitempty"`
 
 	// ResourceCanonicalId Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
 	ResourceCanonicalId *CanonicalID `form:"resourceCanonicalId,omitempty" json:"resourceCanonicalId,omitempty"`
@@ -1677,6 +1788,11 @@ type GetIncidentTimelineParams struct {
 type SplitIncidentParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// TransitionIncidentJSONBody defines parameters for TransitionIncident.
+type TransitionIncidentJSONBody struct {
+	union json.RawMessage
 }
 
 // TransitionIncidentParams defines parameters for TransitionIncident.
@@ -1769,6 +1885,12 @@ type GetResourceNeighborsdefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
+// IngestFindingV2Params defines parameters for IngestFindingV2.
+type IngestFindingV2Params struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
 // CreateActionPlanJSONRequestBody defines body for CreateActionPlan for application/json ContentType.
 type CreateActionPlanJSONRequestBody = JSONRequest
 
@@ -1842,19 +1964,24 @@ type BuildDiagnosticGraphJSONRequestBody = DiagnosticGraphBuildRequest
 type QueryEvidenceJSONRequestBody = EvidenceQueryRequest
 
 // IngestFindingJSONRequestBody defines body for IngestFinding for application/json ContentType.
+//
+// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type IngestFindingJSONRequestBody = FindingEnvelope
 
 // CreateInvestigationJSONRequestBody defines body for CreateInvestigation for application/json ContentType.
 type CreateInvestigationJSONRequestBody = JSONRequest
 
 // SplitIncidentJSONRequestBody defines body for SplitIncident for application/json ContentType.
-type SplitIncidentJSONRequestBody = JSONRequest
+type SplitIncidentJSONRequestBody = IncidentSplitV2
 
 // TransitionIncidentJSONRequestBody defines body for TransitionIncident for application/json ContentType.
-type TransitionIncidentJSONRequestBody = IncidentTransitionRequest
+type TransitionIncidentJSONRequestBody TransitionIncidentJSONBody
 
 // MergeIncidentsJSONRequestBody defines body for MergeIncidents for application/json ContentType.
-type MergeIncidentsJSONRequestBody = JSONRequest
+type MergeIncidentsJSONRequestBody = IncidentMergeV2
+
+// IngestFindingV2JSONRequestBody defines body for IngestFindingV2 for application/json ContentType.
+type IngestFindingV2JSONRequestBody = FindingEnvelopeV2
 
 // Getter for additional properties for PageEnvelope_Meta. Returns the specified
 // element and whether it was found
@@ -2704,6 +2831,68 @@ func (t *QueryEvidencedefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsIncidentTransitionRequest returns the union data inside the TransitionIncidentJSONBody as a IncidentTransitionRequest
+func (t TransitionIncidentJSONBody) AsIncidentTransitionRequest() (IncidentTransitionRequest, error) {
+	var body IncidentTransitionRequest
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIncidentTransitionRequest overwrites any union data inside the TransitionIncidentJSONBody as the provided IncidentTransitionRequest
+func (t *TransitionIncidentJSONBody) FromIncidentTransitionRequest(v IncidentTransitionRequest) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIncidentTransitionRequest performs a merge with any union data inside the TransitionIncidentJSONBody, using the provided IncidentTransitionRequest
+func (t *TransitionIncidentJSONBody) MergeIncidentTransitionRequest(v IncidentTransitionRequest) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIncidentTransitionV2 returns the union data inside the TransitionIncidentJSONBody as a IncidentTransitionV2
+func (t TransitionIncidentJSONBody) AsIncidentTransitionV2() (IncidentTransitionV2, error) {
+	var body IncidentTransitionV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIncidentTransitionV2 overwrites any union data inside the TransitionIncidentJSONBody as the provided IncidentTransitionV2
+func (t *TransitionIncidentJSONBody) FromIncidentTransitionV2(v IncidentTransitionV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIncidentTransitionV2 performs a merge with any union data inside the TransitionIncidentJSONBody, using the provided IncidentTransitionV2
+func (t *TransitionIncidentJSONBody) MergeIncidentTransitionV2(v IncidentTransitionV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t TransitionIncidentJSONBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *TransitionIncidentJSONBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsErrorEnvelope returns the union data inside the GetResourcesdefaultJSONResponseBody as a ErrorEnvelope
 func (t GetResourcesdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
 	var body ErrorEnvelope
@@ -3088,6 +3277,8 @@ type ServerInterface interface {
 	GetFinding(w http.ResponseWriter, r *http.Request, findingId string)
 	// IngestFinding ingestFinding
 	// (POST /api/v1/findings:ingest)
+	//
+	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	IngestFinding(w http.ResponseWriter, r *http.Request, params IngestFindingParams)
 	// GetIncidents getIncidents
 	// (GET /api/v1/incidents)
@@ -3149,6 +3340,9 @@ type ServerInterface interface {
 	// GetResourceNeighbors getResourceNeighbors
 	// (GET /api/v1/resources/neighbors)
 	GetResourceNeighbors(w http.ResponseWriter, r *http.Request, params GetResourceNeighborsParams)
+	// IngestFindingV2 ingestFindingV2
+	// (POST /api/v2/findings:ingest)
+	IngestFindingV2(w http.ResponseWriter, r *http.Request, params IngestFindingV2Params)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -3421,6 +3615,8 @@ func (_ Unimplemented) GetFinding(w http.ResponseWriter, r *http.Request, findin
 
 // IngestFinding ingestFinding
 // (POST /api/v1/findings:ingest)
+//
+// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (_ Unimplemented) IngestFinding(w http.ResponseWriter, r *http.Request, params IngestFindingParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -3542,6 +3738,12 @@ func (_ Unimplemented) GetResourceImpactScope(w http.ResponseWriter, r *http.Req
 // GetResourceNeighbors getResourceNeighbors
 // (GET /api/v1/resources/neighbors)
 func (_ Unimplemented) GetResourceNeighbors(w http.ResponseWriter, r *http.Request, params GetResourceNeighborsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// IngestFindingV2 ingestFindingV2
+// (POST /api/v2/findings:ingest)
+func (_ Unimplemented) IngestFindingV2(w http.ResponseWriter, r *http.Request, params IngestFindingV2Params) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -5490,6 +5692,19 @@ func (siw *ServerInterfaceWrapper) GetFindings(w http.ResponseWriter, r *http.Re
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetFindingsParams
 
+	// ------------- Required query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
 	// ------------- Optional query parameter "state" -------------
 
 	err = runtime.BindQueryParameterWithOptions("form", true, false, "state", r.URL.Query(), &params.State, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
@@ -5698,6 +5913,19 @@ func (siw *ServerInterfaceWrapper) GetIncidents(w http.ResponseWriter, r *http.R
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetIncidentsParams
 
+	// ------------- Required query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
 	// ------------- Optional query parameter "state" -------------
 
 	err = runtime.BindQueryParameterWithOptions("form", true, false, "state", r.URL.Query(), &params.State, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
@@ -5720,19 +5948,6 @@ func (siw *ServerInterfaceWrapper) GetIncidents(w http.ResponseWriter, r *http.R
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "severity"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "severity", Err: err})
-		}
-		return
-	}
-
-	// ------------- Optional query parameter "clusterUid" -------------
-
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
-	if err != nil {
-		var requiredError *runtime.RequiredParameterError
-		if errors.As(err, &requiredError) {
-			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
-		} else {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
 		}
 		return
 	}
@@ -6813,6 +7028,51 @@ func (siw *ServerInterfaceWrapper) GetResourceNeighbors(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
+// IngestFindingV2 operation middleware
+func (siw *ServerInterfaceWrapper) IngestFindingV2(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params IngestFindingV2Params
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.IngestFindingV2(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -7060,6 +7320,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/findings:ingest", wrapper.IngestFinding)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v2/findings:ingest", wrapper.IngestFindingV2)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/incidents", wrapper.GetIncidents)
@@ -9763,6 +10026,46 @@ func (response GetResourceNeighborsdefaultJSONResponse) VisitGetResourceNeighbor
 	return err
 }
 
+type IngestFindingV2RequestObject struct {
+	Params IngestFindingV2Params
+	Body   *IngestFindingV2JSONRequestBody
+}
+
+type IngestFindingV2ResponseObject interface {
+	VisitIngestFindingV2Response(w http.ResponseWriter) error
+}
+
+type IngestFindingV2200JSONResponse SuccessEnvelope
+
+func (response IngestFindingV2200JSONResponse) VisitIngestFindingV2Response(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IngestFindingV2defaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response IngestFindingV2defaultJSONResponse) VisitIngestFindingV2Response(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// CreateActionPlan createActionPlan
@@ -9899,6 +10202,8 @@ type StrictServerInterface interface {
 	GetFinding(ctx context.Context, request GetFindingRequestObject) (GetFindingResponseObject, error)
 	// IngestFinding ingestFinding
 	// (POST /api/v1/findings:ingest)
+	//
+	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	IngestFinding(ctx context.Context, request IngestFindingRequestObject) (IngestFindingResponseObject, error)
 	// GetIncidents getIncidents
 	// (GET /api/v1/incidents)
@@ -9960,6 +10265,9 @@ type StrictServerInterface interface {
 	// GetResourceNeighbors getResourceNeighbors
 	// (GET /api/v1/resources/neighbors)
 	GetResourceNeighbors(ctx context.Context, request GetResourceNeighborsRequestObject) (GetResourceNeighborsResponseObject, error)
+	// IngestFindingV2 ingestFindingV2
+	// (POST /api/v2/findings:ingest)
+	IngestFindingV2(ctx context.Context, request IngestFindingV2RequestObject) (IngestFindingV2ResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -11901,6 +12209,39 @@ func (sh *strictHandler) GetResourceNeighbors(w http.ResponseWriter, r *http.Req
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetResourceNeighborsResponseObject); ok {
 		if err := validResponse.VisitGetResourceNeighborsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// IngestFindingV2 operation middleware
+func (sh *strictHandler) IngestFindingV2(w http.ResponseWriter, r *http.Request, params IngestFindingV2Params) {
+	var request IngestFindingV2RequestObject
+
+	request.Params = params
+
+	var body IngestFindingV2JSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.IngestFindingV2(ctx, request.(IngestFindingV2RequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "IngestFindingV2")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(IngestFindingV2ResponseObject); ok {
+		if err := validResponse.VisitIngestFindingV2Response(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

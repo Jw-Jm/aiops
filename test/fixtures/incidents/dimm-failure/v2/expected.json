@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "golden-slice-expected/v2",
+  "scenario": "dimm-failure",
+  "relationKinds": [
+    "component_of",
+    "hosts",
+    "scheduled_on"
+  ],
+  "findingCount": 2,
+  "findingState": "firing",
+  "incidentCount": 2,
+  "incidentState": "open",
+  "evidenceCount": 2,
+  "candidateType": "dimm_hardware_fault",
+  "rcaStatus": "confirmed",
+  "variantStatus": {
+    "missing": "unresolved",
+    "conflict": "unresolved",
+    "degraded": "unresolved"
+  },
+  "impactDirect": [
+    "server-a"
+  ],
+  "impactIndirect": [
+    "node-a",
+    "pod-a"
+  ],
+  "impactPartial": false,
+  "replayCount": 2,
+  "freezeBasis": "Manually specified from Task5.7 and SP04 direct=one-hop, indirect=multi-hop semantics; not generated from business output. v1 remains intact; ADR0021 explains corrected DIMM impact.",
+  "diagnosticEntityKinds": [
+    "DIMM",
+    "PhysicalServer",
+    "Node",
+    "Pod"
+  ],
+  "primaryEvidenceCount": 2,
+  "derivedEvidenceCount": 0
+}

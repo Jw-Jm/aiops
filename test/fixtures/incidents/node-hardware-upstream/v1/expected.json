@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "node-hardware-upstream-expected/v1",
+  "primaryCanonicalId": "k8s+v1://11111111-1111-4111-8111-111111111111/golden-cluster/core/Node/node-a",
+  "hardwareRootCanonicalId": "hardware+v1://11111111-1111-4111-8111-111111111111/golden-cluster/redfish/DIMM/550e8400-e29b-41d4-a716-446655440000%2FDIMM1",
+  "nativeEntityCanonicalIds": [
+    "hardware+v1://11111111-1111-4111-8111-111111111111/golden-cluster/redfish/CPU/550e8400-e29b-41d4-a716-446655440000%2FCPU1",
+    "hardware+v1://11111111-1111-4111-8111-111111111111/golden-cluster/redfish/DIMM/550e8400-e29b-41d4-a716-446655440000%2FDIMM1",
+    "hardware+v1://11111111-1111-4111-8111-111111111111/golden-cluster/redfish/Disk/550e8400-e29b-41d4-a716-446655440000%2Fdisk1",
+    "hardware+v1://11111111-1111-4111-8111-111111111111/golden-cluster/redfish/Fan/550e8400-e29b-41d4-a716-446655440000%2FFan1",
+    "hardware+v1://11111111-1111-4111-8111-111111111111/golden-cluster/redfish/NIC/550e8400-e29b-41d4-a716-446655440000%2FNIC1",
+    "hardware+v1://11111111-1111-4111-8111-111111111111/golden-cluster/redfish/PSU/550e8400-e29b-41d4-a716-446655440000%2FPSU1",
+    "hardware+v1://11111111-1111-4111-8111-111111111111/golden-cluster/redfish/PhysicalServer/550e8400-e29b-41d4-a716-446655440000",
+    "k8s+v1://11111111-1111-4111-8111-111111111111/golden-cluster/core/Node/node-a",
+    "k8s+v1://11111111-1111-4111-8111-111111111111/golden-cluster/core/Pod/pod-a"
+  ],
+  "semanticFindingRules": [
+    "kubernetes/NotReady/v1",
+    "npd/CperHardwareErrorFatal/v1",
+    "redfish/dimm-health/v1",
+    "redfish/dimm-uncorrectable-ecc/v1"
+  ],
+  "findingCount": 4,
+  "incidentCount": 4,
+  "primaryEvidenceCount": 4,
+  "derivedEvidenceCount": 1,
+  "evidenceCount": 5,
+  "nodeCandidateType": "dimm_hardware_fault",
+  "nodeStatus": {
+    "valid": "confirmed",
+    "missing": "unresolved",
+    "conflict": "unresolved",
+    "degraded": "unresolved"
+  },
+  "nodePartial": {
+    "valid": false,
+    "missing": true,
+    "conflict": true,
+    "degraded": true
+  },
+  "requiredProvenance": [
+    "current native Node Ready=False",
+    "kernel origin and fatal located memory section",
+    "current Redfish health and explicitly present uncorrectable ECC",
+    "component_of -> hosts exact Node path",
+    "real archived Evidence refs and 365-day dependency retention"
+  ],
+  "frozenBasis": "Manually specified before this alternate native DB/Graph/Archive vertical entry, using existing frozen inputs and executable predicate requirements; not derived from business output."
+}

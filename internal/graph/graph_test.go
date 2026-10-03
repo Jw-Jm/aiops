@@ -6,6 +6,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"ops-platform/internal/integrations/kubernetes"
 	"ops-platform/internal/resource"
+	"os"
 	"sort"
 	"testing"
 	"time"
@@ -221,6 +222,9 @@ func TestEventUIDDoesNotRelateToRecreatedResource(t *testing.T) {
 }
 
 func TestDiagnosticGraphAt200NodeBudgetLatency(t *testing.T) {
+	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" {
+		t.Skip("SP05 user waived dedicated performance measurements; not an acceptance pass")
+	}
 	pods := kubernetes.GVR{Version: "v1", Resource: "pods"}
 	nodes := kubernetes.GVR{Version: "v1", Resource: "nodes"}
 	g := New("tenant-a", "cluster-a", "worker", []kubernetes.GVR{pods, nodes})

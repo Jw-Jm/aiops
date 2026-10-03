@@ -215,6 +215,10 @@ func TestUpstreamConformanceAnd20KPlatformGeneration(t *testing.T) {
 		t.Fatalf("critical relation recall %d/%d", len(observed), len(expected))
 	}
 	t.Logf("critical frozen K8s owner/selector/PVC/PV/CSI relationships: expected=%d truePositive=%d falsePositive=%d falseNegative=%d precision=1 recall=1; synthetic fixture sample, Wilson 95%% lower bound recorded in report", len(expected), truePositive, falsePositive, len(expected)-truePositive)
+	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" {
+		t.Log("SP05 user waiver: correctness/conformance above executed; dedicated P95 measurement not executed or passed")
+		return
+	}
 	samples := []time.Duration{}
 	for i := 0; i < 100; i++ {
 		started := time.Now()

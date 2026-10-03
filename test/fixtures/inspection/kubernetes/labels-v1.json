@@ -1,0 +1,427 @@
+[
+  {
+    "domain": "node",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Node",
+      "metadata": {
+        "uid": "frozen-0",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "False",
+            "lastTransitionTime": "2026-10-02T00:00:00Z"
+          }
+        ]
+      }
+    },
+    "expected": [
+      "NotReady"
+    ]
+  },
+  {
+    "domain": "node",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Node",
+      "metadata": {
+        "uid": "frozen-1",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ]
+      }
+    },
+    "expected": []
+  },
+  {
+    "domain": "node",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Node",
+      "metadata": {
+        "uid": "frozen-2",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "MemoryPressure",
+            "status": "True",
+            "lastTransitionTime": "2026-10-02T00:00:00Z"
+          }
+        ]
+      }
+    },
+    "expected": [
+      "MemoryPressure"
+    ]
+  },
+  {
+    "domain": "node",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Node",
+      "metadata": {
+        "uid": "frozen-3",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "MemoryPressure",
+            "status": "False"
+          }
+        ]
+      }
+    },
+    "expected": []
+  },
+  {
+    "domain": "node",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Node",
+      "metadata": {
+        "uid": "frozen-4",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "DiskPressure",
+            "status": "True",
+            "lastTransitionTime": "2026-10-02T00:00:00Z"
+          }
+        ]
+      }
+    },
+    "expected": [
+      "DiskPressure"
+    ]
+  },
+  {
+    "domain": "node",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Node",
+      "metadata": {
+        "uid": "frozen-5",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "DiskPressure",
+            "status": "False"
+          }
+        ]
+      }
+    },
+    "expected": []
+  },
+  {
+    "domain": "node",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Node",
+      "metadata": {
+        "uid": "frozen-6",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "PIDPressure",
+            "status": "True",
+            "lastTransitionTime": "2026-10-02T00:00:00Z"
+          }
+        ]
+      }
+    },
+    "expected": [
+      "PIDPressure"
+    ]
+  },
+  {
+    "domain": "node",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Node",
+      "metadata": {
+        "uid": "frozen-7",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "PIDPressure",
+            "status": "False"
+          }
+        ]
+      }
+    },
+    "expected": []
+  },
+  {
+    "domain": "node",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Node",
+      "metadata": {
+        "uid": "frozen-8",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {}
+    },
+    "expected": []
+  },
+  {
+    "domain": "node",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Node",
+      "metadata": {
+        "uid": "frozen-9",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "Unknown"
+          }
+        ]
+      }
+    },
+    "expected": [
+      "NodeReadyUnknown"
+    ]
+  },
+  {
+    "domain": "scheduling",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "uid": "frozen-10",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "False",
+            "reason": "Unschedulable",
+            "lastTransitionTime": "2026-10-02T00:00:00Z"
+          }
+        ]
+      }
+    },
+    "expected": [
+      "Unschedulable"
+    ]
+  },
+  {
+    "domain": "scheduling",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "uid": "frozen-11",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True"
+          }
+        ],
+        "phase": "Running"
+      }
+    },
+    "expected": []
+  },
+  {
+    "domain": "scheduling",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "uid": "frozen-12",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {}
+    },
+    "expected": []
+  },
+  {
+    "domain": "storage",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "uid": "frozen-13",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "phase": "Pending"
+      }
+    },
+    "expected": [
+      "PVCUnbound"
+    ]
+  },
+  {
+    "domain": "storage",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "uid": "frozen-14",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {
+        "phase": "Bound"
+      }
+    },
+    "expected": []
+  },
+  {
+    "domain": "storage",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Event",
+      "metadata": {
+        "uid": "frozen-15",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {},
+      "reason": "FailedMount",
+      "type": "Warning",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "PersistentVolumeClaim",
+        "name": "claim",
+        "uid": "claim-uid",
+        "namespace": "apps"
+      },
+      "lastTimestamp": "2026-10-02T00:00:00Z"
+    },
+    "expected": [
+      "FailedMount"
+    ]
+  },
+  {
+    "domain": "storage",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Event",
+      "metadata": {
+        "uid": "frozen-16",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {},
+      "reason": "FailedAttachVolume",
+      "type": "Warning",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "PersistentVolumeClaim",
+        "name": "claim",
+        "uid": "claim-uid",
+        "namespace": "apps"
+      },
+      "lastTimestamp": "2026-10-02T00:00:00Z"
+    },
+    "expected": [
+      "FailedAttachVolume"
+    ]
+  },
+  {
+    "domain": "storage",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Event",
+      "metadata": {
+        "uid": "frozen-17",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {},
+      "reason": "ProvisioningFailed",
+      "type": "Warning",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "PersistentVolumeClaim",
+        "name": "claim",
+        "uid": "claim-uid",
+        "namespace": "apps"
+      },
+      "lastTimestamp": "2026-10-02T00:00:00Z"
+    },
+    "expected": [
+      "ProvisioningFailed"
+    ]
+  },
+  {
+    "domain": "storage",
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Event",
+      "metadata": {
+        "uid": "frozen-18",
+        "name": "test",
+        "namespace": "apps",
+        "resourceVersion": "1"
+      },
+      "status": {},
+      "reason": "ProvisioningSucceeded",
+      "type": "Normal"
+    },
+    "expected": []
+  }
+]

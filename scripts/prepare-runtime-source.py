@@ -137,25 +137,35 @@ def prepare(out):
         contents["toolchain/"+compiler+"/"+relative] = (goroot/relative).read_bytes()
     # In-tree upstream snippets are not Go modules. Bind their selected bytes,
     # provenance and original notices alongside the module source closure.
-    admission_path = Path("third_party/admission/sp04-selected-runtime.json")
-    admission = json.loads(admission_path.read_text())
+    admission_paths = [Path("third_party/admission/sp04-selected-runtime.json"),
+        Path("third_party/admission/sp05-selected-runtime.json")]
     selected_lock = []
-    for item in admission["files"]:
-        source = Path(item["path"])
-        data = source.read_bytes()
-        if digest(data) != "sha256:"+item["sha256"]:
-            raise ValueError("selected upstream runtime source has drifted: "+str(source))
-        contents["selected-upstream/"+str(source)] = data
-        selected_lock.append({"path":str(source),"digest":digest(data),"license":item["license"]})
-    for item in admission["records"]:
-        data = Path(item["path"]).read_bytes()
-        if digest(data) != "sha256:"+item["sha256"]: raise ValueError("selected upstream provenance has drifted")
-        contents["selected-upstream/"+item["path"]] = data
-    contents["selected-upstream/"+str(admission_path)] = admission_path.read_bytes()
+    admission_digests = []
+    for admission_path in admission_paths:
+        admission = json.loads(admission_path.read_text())
+        admission_digests.append({"path":str(admission_path),"digest":digest(admission_path.read_bytes())})
+        for item in admission["files"]:
+            source = Path(item["path"])
+            data = source.read_bytes()
+            if digest(data) != "sha256:"+item["sha256"]:
+                raise ValueError("selected upstream runtime source has drifted: "+str(source))
+            contents["selected-upstream/"+str(source)] = data
+            selected_lock.append({"path":str(source),"digest":digest(data),"license":item["license"]})
+        for item in admission["records"]:
+            data = Path(item["path"]).read_bytes()
+            if digest(data) != "sha256:"+item["sha256"]: raise ValueError("selected upstream provenance has drifted")
+            contents["selected-upstream/"+item["path"]] = data
+        contents["selected-upstream/"+str(admission_path)] = admission_path.read_bytes()
+    actual_selected = {str((Path(p["Dir"])/f).relative_to(Path.cwd()))
+        for p in packages if p.get("Module",{}).get("Main") and "/internal/upstream/" in p.get("Dir","")
+        for f in p.get("GoFiles",[])}
+    admitted_selected = {item["path"] for item in selected_lock if item["path"].endswith(".go")}
+    if actual_selected != admitted_selected:
+        raise ValueError("in-tree upstream compiled source differs from the reviewed selected-file closure")
     lock = {"schemaVersion": 1, "architecture": "linux/arm64", "cgoEnabled": False,
         "goVersion": compiler, "licenseReviewSHA256": digest(Path("third_party/admission/platform-runtime-go-license-review.json").read_bytes()),
         "modules": locked_modules, "standardLibraryFiles": std_lock,
-        "selectedUpstreamFiles": selected_lock, "selectedUpstreamAdmissionSHA256":digest(admission_path.read_bytes()),
+        "selectedUpstreamFiles": selected_lock, "selectedUpstreamAdmissions":admission_digests,
         "buildInstructions": "Use go1.27.1, GOOS=linux GOARCH=arm64 CGO_ENABLED=0. Replace all locked modules with their selected local module directories before offline compilation. Only this target is qualified."}
     raw = (json.dumps(lock, indent=2)+"\n").encode()
     contents["runtime-go.lock.json"] = raw

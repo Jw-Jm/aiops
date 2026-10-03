@@ -217,6 +217,17 @@ func validateCatalogAdmissionWithCatalog(materials []Material, catalog *supplych
 			}
 		}
 	}
+	// Historical 1.0.0 Worker materials predate the optional SP05 CLI. New
+	// versions distribute its immutable executable and must carry its exact
+	// original source/license closure, even though it is embedded in the image.
+	for _, material := range materials {
+		if material.Name == "platform-worker" && material.Version != "1.0.0" {
+			analyzer, ok := catalog.Component("k8sgpt")
+			if !ok || analyzer.State != "qualified" || analyzer.CorrespondingSourceBundleSHA256 == "" || !selected["k8sgpt-source"] {
+				return errors.New("SP05 Worker requires qualified fixed Analyzer and its complete corresponding-source material")
+			}
+		}
+	}
 	if selected["deepflow"] && selected["deepflow-app"] {
 		return errors.New("DeepFlow bundle must not contain deepflow-app")
 	}

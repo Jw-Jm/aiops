@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 
@@ -30,7 +31,7 @@ func TestRuntimeSourceBindsQualifiedSDKAndTargetArchitecture(t *testing.T) {
 		t.Fatal(err)
 	}
 	sdk, _ := catalog.Component("opa-sdk")
-	goMaterial := Material{Name: "platform-api", Kind: "container-image", Architecture: "linux/arm64"}
+	goMaterial := Material{Name: "platform-api", Kind: "container-image", Version: "1.0.0", Architecture: "linux/arm64"}
 	source := Material{Name: "opa-sdk-source", Kind: "source", Version: sdk.Version, Digest: sdk.CorrespondingSourceBundleSHA256, Architecture: "linux/arm64"}
 	if err := validateCatalogAdmissionWithCatalog([]Material{goMaterial, source}, catalog); err != nil {
 		t.Fatal(err)
@@ -90,3 +91,32 @@ type sourcePreparationError struct {
 }
 
 func (err *sourcePreparationError) Error() string { return err.output + err.cause.Error() }
+
+func TestSP05WorkerCannotOmitAnalyzerCorrespondingSource(t *testing.T) {
+	catalog, err := loadEmbeddedCatalog()
+	if err != nil {
+		t.Fatal(err)
+	}
+	sdk, _ := catalog.Component("opa-sdk")
+	materials := []Material{{Name: "platform-worker", Kind: "container-image", Version: "1.1.0", Architecture: "linux/arm64"}, {Name: "opa-sdk-source", Kind: "source", Version: sdk.Version, Digest: sdk.CorrespondingSourceBundleSHA256, Architecture: "linux/arm64"}}
+	if err := validateCatalogAdmissionWithCatalog(materials, catalog); err == nil {
+		t.Fatal("SP05 Worker admitted without unchanged CLI's complete licensed source closure")
+	}
+}
+
+func TestSP05WorkerSourceAdmissionBindsExactCLIClosure(t *testing.T) {
+	catalog, err := loadEmbeddedCatalog()
+	if err != nil {
+		t.Fatal(err)
+	}
+	sdk, _ := catalog.Component("opa-sdk")
+	cli, _ := catalog.Component("k8sgpt")
+	materials := []Material{{Name: "platform-worker", Kind: "container-image", Version: "1.1.0", Architecture: "linux/arm64"}, {Name: "opa-sdk-source", Kind: "source", Version: sdk.Version, Digest: sdk.CorrespondingSourceBundleSHA256, Architecture: "linux/arm64"}, {Name: "k8sgpt-source", Kind: "source", Version: cli.Version, Digest: cli.CorrespondingSourceBundleSHA256, Architecture: "linux/arm64"}}
+	if err := validateCatalogAdmissionWithCatalog(materials, catalog); err != nil {
+		t.Fatal(err)
+	}
+	materials[2].Digest = "sha256:" + strings.Repeat("1", 64)
+	if err := validateCatalogAdmissionWithCatalog(materials, catalog); err == nil {
+		t.Fatal("changed corresponding-source bytes admitted")
+	}
+}

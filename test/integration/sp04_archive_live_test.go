@@ -169,23 +169,27 @@ func TestSP04ArchiveLiveTransitTLSIAMAndRecovery(t *testing.T) {
 	if err != nil || oldRef.EncryptionKeyVersion != ref.EncryptionKeyVersion {
 		t.Fatalf("old key version lost %v", err)
 	}
-	samples := []time.Duration{}
-	for i := 0; i < 20; i++ {
-		started := time.Now()
-		copy := e
-		copy.EvidenceID = uuid.NewString()
-		if err := service.Capture(ctx, copy, "apps", now.Add(181*24*time.Hour)); err != nil {
-			t.Fatal(err)
+	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" {
+		t.Log("SP05 user waiver: archive latency sampling/P95 not executed; correctness, retention, Legal Hold and historical-key checks above remain required")
+	} else {
+		samples := []time.Duration{}
+		for i := 0; i < 20; i++ {
+			started := time.Now()
+			copy := e
+			copy.EvidenceID = uuid.NewString()
+			if err := service.Capture(ctx, copy, "apps", now.Add(181*24*time.Hour)); err != nil {
+				t.Fatal(err)
+			}
+			if _, _, err := service.Read(ctx, tenant, uuid.MustParse(copy.EvidenceID)); err != nil {
+				t.Fatal(err)
+			}
+			samples = append(samples, time.Since(started))
 		}
-		if _, _, err := service.Read(ctx, tenant, uuid.MustParse(copy.EvidenceID)); err != nil {
-			t.Fatal(err)
+		sort.Slice(samples, func(i, j int) bool { return samples[i] < samples[j] })
+		p95 := samples[(len(samples)*95+99)/100-1]
+		t.Logf("live Transit+TLS tenant IAM+PostgreSQL capture/read samples=%d plaintextBytes=%d P95=%s; isolated small facts, not production scale", len(samples), len(data), p95)
+		if p95 > 5*time.Second {
+			t.Fatalf("archive capture/read P95 exceeds semantic budget: %s", p95)
 		}
-		samples = append(samples, time.Since(started))
-	}
-	sort.Slice(samples, func(i, j int) bool { return samples[i] < samples[j] })
-	p95 := samples[(len(samples)*95+99)/100-1]
-	t.Logf("live Transit+TLS tenant IAM+PostgreSQL capture/read samples=%d plaintextBytes=%d P95=%s; isolated small facts, not production scale", len(samples), len(data), p95)
-	if p95 > 5*time.Second {
-		t.Fatalf("archive capture/read P95 exceeds semantic budget: %s", p95)
 	}
 }

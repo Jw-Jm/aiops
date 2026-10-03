@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "golden-slice/v1",
+  "scenario": "pvc-csi-failure",
+  "clock": "2026-10-02T00:00:00Z",
+  "ruleVersion": "v1",
+  "expected": {
+    "entityKinds": [
+      "PersistentVolumeClaim",
+      "StorageClass",
+      "Pod"
+    ],
+    "relationKinds": [
+      "mounts_pvc",
+      "uses_storage_class"
+    ],
+    "findingState": "firing",
+    "incidentState": "open",
+    "candidateType": "csi_provisioner_failure",
+    "requiredPredicates": [
+      "pvc-pending",
+      "csi-error",
+      "storage-path"
+    ],
+    "rcaStatus": "confirmed",
+    "missingStatus": "unresolved",
+    "conflictStatus": "unresolved",
+    "degradedStatus": "unresolved",
+    "impactDirect": [
+      "pod-a"
+    ],
+    "impactPartial": false
+  },
+  "provenance": "Manually frozen from 06 sections20\u201322 and 10Task5.7 before business implementation; no generated production output"
+}
