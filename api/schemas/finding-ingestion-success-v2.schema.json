@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/finding-ingestion-success/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "finding": {
+          "$ref": "https://ops.local/schemas/finding/v2"
+        },
+        "disposition": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "duplicate",
+            "stale"
+          ]
+        }
+      },
+      "required": [
+        "finding",
+        "disposition"
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nextCursor": {
+          "type": "string"
+        }
+      },
+      "required": []
+    }
+  },
+  "required": [
+    "data",
+    "requestId"
+  ]
+}

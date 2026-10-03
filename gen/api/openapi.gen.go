@@ -18,6 +18,36 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for CurrentRCAV2SchemaVersion.
+const (
+	CurrentRcav2 CurrentRCAV2SchemaVersion = "current-rca/v2"
+)
+
+// Valid indicates whether the value is a known member of the CurrentRCAV2SchemaVersion enum.
+func (e CurrentRCAV2SchemaVersion) Valid() bool {
+	switch e {
+	case CurrentRcav2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CurrentRCAV2Semantics.
+const (
+	FrozenRevisionWithCurrentReferenceAuthorization CurrentRCAV2Semantics = "frozen-revision-with-current-reference-authorization"
+)
+
+// Valid indicates whether the value is a known member of the CurrentRCAV2Semantics enum.
+func (e CurrentRCAV2Semantics) Valid() bool {
+	switch e {
+	case FrozenRevisionWithCurrentReferenceAuthorization:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for DiagnosticGraphBuildRequestRecipe.
 const (
 	Incident DiagnosticGraphBuildRequestRecipe = "incident"
@@ -165,6 +195,180 @@ func (e ErrorEnvelopeCode) Valid() bool {
 	}
 }
 
+// Defines values for FindingIngestionSuccessV2DataDisposition.
+const (
+	FindingIngestionSuccessV2DataDispositionAccepted  FindingIngestionSuccessV2DataDisposition = "accepted"
+	FindingIngestionSuccessV2DataDispositionDuplicate FindingIngestionSuccessV2DataDisposition = "duplicate"
+	FindingIngestionSuccessV2DataDispositionStale     FindingIngestionSuccessV2DataDisposition = "stale"
+)
+
+// Valid indicates whether the value is a known member of the FindingIngestionSuccessV2DataDisposition enum.
+func (e FindingIngestionSuccessV2DataDisposition) Valid() bool {
+	switch e {
+	case FindingIngestionSuccessV2DataDispositionAccepted:
+		return true
+	case FindingIngestionSuccessV2DataDispositionDuplicate:
+		return true
+	case FindingIngestionSuccessV2DataDispositionStale:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FindingRevisionV2LifecycleState.
+const (
+	FindingRevisionV2LifecycleStateFiring   FindingRevisionV2LifecycleState = "firing"
+	FindingRevisionV2LifecycleStateResolved FindingRevisionV2LifecycleState = "resolved"
+)
+
+// Valid indicates whether the value is a known member of the FindingRevisionV2LifecycleState enum.
+func (e FindingRevisionV2LifecycleState) Valid() bool {
+	switch e {
+	case FindingRevisionV2LifecycleStateFiring:
+		return true
+	case FindingRevisionV2LifecycleStateResolved:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FindingV2SchemaVersion.
+const (
+	FindingV2SchemaVersionFindingEnvelopev2 FindingV2SchemaVersion = "finding-envelope/v2"
+)
+
+// Valid indicates whether the value is a known member of the FindingV2SchemaVersion enum.
+func (e FindingV2SchemaVersion) Valid() bool {
+	switch e {
+	case FindingV2SchemaVersionFindingEnvelopev2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IncidentSummaryV2SchemaVersion.
+const (
+	IncidentSummaryV2SchemaVersionIncidentv2 IncidentSummaryV2SchemaVersion = "incident/v2"
+)
+
+// Valid indicates whether the value is a known member of the IncidentSummaryV2SchemaVersion enum.
+func (e IncidentSummaryV2SchemaVersion) Valid() bool {
+	switch e {
+	case IncidentSummaryV2SchemaVersionIncidentv2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IncidentSummaryV2Severity.
+const (
+	Critical IncidentSummaryV2Severity = "critical"
+	Info     IncidentSummaryV2Severity = "info"
+	Unknown  IncidentSummaryV2Severity = "unknown"
+	Warning  IncidentSummaryV2Severity = "warning"
+)
+
+// Valid indicates whether the value is a known member of the IncidentSummaryV2Severity enum.
+func (e IncidentSummaryV2Severity) Valid() bool {
+	switch e {
+	case Critical:
+		return true
+	case Info:
+		return true
+	case Unknown:
+		return true
+	case Warning:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IncidentSummaryV2State.
+const (
+	IncidentSummaryV2StateAcknowledged  IncidentSummaryV2State = "acknowledged"
+	IncidentSummaryV2StateClosed        IncidentSummaryV2State = "closed"
+	IncidentSummaryV2StateInvestigating IncidentSummaryV2State = "investigating"
+	IncidentSummaryV2StateMitigating    IncidentSummaryV2State = "mitigating"
+	IncidentSummaryV2StateOpen          IncidentSummaryV2State = "open"
+	IncidentSummaryV2StateResolved      IncidentSummaryV2State = "resolved"
+	IncidentSummaryV2StateSuppressed    IncidentSummaryV2State = "suppressed"
+)
+
+// Valid indicates whether the value is a known member of the IncidentSummaryV2State enum.
+func (e IncidentSummaryV2State) Valid() bool {
+	switch e {
+	case IncidentSummaryV2StateAcknowledged:
+		return true
+	case IncidentSummaryV2StateClosed:
+		return true
+	case IncidentSummaryV2StateInvestigating:
+		return true
+	case IncidentSummaryV2StateMitigating:
+		return true
+	case IncidentSummaryV2StateOpen:
+		return true
+	case IncidentSummaryV2StateResolved:
+		return true
+	case IncidentSummaryV2StateSuppressed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IncidentV2SchemaVersion.
+const (
+	IncidentV2SchemaVersionIncidentv2 IncidentV2SchemaVersion = "incident/v2"
+)
+
+// Valid indicates whether the value is a known member of the IncidentV2SchemaVersion enum.
+func (e IncidentV2SchemaVersion) Valid() bool {
+	switch e {
+	case IncidentV2SchemaVersionIncidentv2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IncidentV2State.
+const (
+	IncidentV2StateAcknowledged  IncidentV2State = "acknowledged"
+	IncidentV2StateClosed        IncidentV2State = "closed"
+	IncidentV2StateInvestigating IncidentV2State = "investigating"
+	IncidentV2StateMitigating    IncidentV2State = "mitigating"
+	IncidentV2StateOpen          IncidentV2State = "open"
+	IncidentV2StateResolved      IncidentV2State = "resolved"
+	IncidentV2StateSuppressed    IncidentV2State = "suppressed"
+)
+
+// Valid indicates whether the value is a known member of the IncidentV2State enum.
+func (e IncidentV2State) Valid() bool {
+	switch e {
+	case IncidentV2StateAcknowledged:
+		return true
+	case IncidentV2StateClosed:
+		return true
+	case IncidentV2StateInvestigating:
+		return true
+	case IncidentV2StateMitigating:
+		return true
+	case IncidentV2StateOpen:
+		return true
+	case IncidentV2StateResolved:
+		return true
+	case IncidentV2StateSuppressed:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for InvestigationEventEventType.
 const (
 	EvidenceAdded InvestigationEventEventType = "evidence.added"
@@ -297,6 +501,102 @@ const (
 func (e LegalHoldResultV1SchemaVersion) Valid() bool {
 	switch e {
 	case LegalHoldResultv1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RCACandidateV2Source.
+const (
+	RCACandidateV2SourceDeterministic RCACandidateV2Source = "deterministic"
+)
+
+// Valid indicates whether the value is a known member of the RCACandidateV2Source enum.
+func (e RCACandidateV2Source) Valid() bool {
+	switch e {
+	case RCACandidateV2SourceDeterministic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RCAEvaluationV2SchemaVersion.
+const (
+	RcaEvaluationv2 RCAEvaluationV2SchemaVersion = "rca-evaluation/v2"
+)
+
+// Valid indicates whether the value is a known member of the RCAEvaluationV2SchemaVersion enum.
+func (e RCAEvaluationV2SchemaVersion) Valid() bool {
+	switch e {
+	case RcaEvaluationv2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RCAEvaluationV2Status.
+const (
+	Confirmed  RCAEvaluationV2Status = "confirmed"
+	Probable   RCAEvaluationV2Status = "probable"
+	Unresolved RCAEvaluationV2Status = "unresolved"
+)
+
+// Valid indicates whether the value is a known member of the RCAEvaluationV2Status enum.
+func (e RCAEvaluationV2Status) Valid() bool {
+	switch e {
+	case Confirmed:
+		return true
+	case Probable:
+		return true
+	case Unresolved:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RCAInputV2SchemaVersion.
+const (
+	RcaInputv2 RCAInputV2SchemaVersion = "rca-input/v2"
+)
+
+// Valid indicates whether the value is a known member of the RCAInputV2SchemaVersion enum.
+func (e RCAInputV2SchemaVersion) Valid() bool {
+	switch e {
+	case RcaInputv2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RCARevisionV2SchemaVersion.
+const (
+	RcaRevisionv2 RCARevisionV2SchemaVersion = "rca-revision/v2"
+)
+
+// Valid indicates whether the value is a known member of the RCARevisionV2SchemaVersion enum.
+func (e RCARevisionV2SchemaVersion) Valid() bool {
+	switch e {
+	case RcaRevisionv2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RCARevisionV2Source.
+const (
+	RCARevisionV2SourceDeterministic RCARevisionV2Source = "deterministic"
+)
+
+// Valid indicates whether the value is a known member of the RCARevisionV2Source enum.
+func (e RCARevisionV2Source) Valid() bool {
+	switch e {
+	case RCARevisionV2SourceDeterministic:
 		return true
 	default:
 		return false
@@ -681,6 +981,51 @@ func (e SourceRegistrationUpdateRequestStatus) Valid() bool {
 	}
 }
 
+// Defines values for UnavailableGraphV2Freshness.
+const (
+	UnavailableGraphV2FreshnessUnavailable UnavailableGraphV2Freshness = "unavailable"
+)
+
+// Valid indicates whether the value is a known member of the UnavailableGraphV2Freshness enum.
+func (e UnavailableGraphV2Freshness) Valid() bool {
+	switch e {
+	case UnavailableGraphV2FreshnessUnavailable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnavailableGraphV2Partial.
+const (
+	True UnavailableGraphV2Partial = true
+)
+
+// Valid indicates whether the value is a known member of the UnavailableGraphV2Partial enum.
+func (e UnavailableGraphV2Partial) Valid() bool {
+	switch e {
+	case True:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnavailableGraphV2SchemaVersion.
+const (
+	RcaGraphUnavailablev2 UnavailableGraphV2SchemaVersion = "rca-graph-unavailable/v2"
+)
+
+// Valid indicates whether the value is a known member of the UnavailableGraphV2SchemaVersion enum.
+func (e UnavailableGraphV2SchemaVersion) Valid() bool {
+	switch e {
+	case RcaGraphUnavailablev2:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GetResourcesParamsOrder.
 const (
 	Asc  GetResourcesParamsOrder = "asc"
@@ -757,6 +1102,34 @@ type CommandExecutionRequest struct {
 	Target CanonicalID `json:"target"`
 }
 
+// CurrentRCASuccessV2 defines model for CurrentRCASuccessV2.
+type CurrentRCASuccessV2 struct {
+	Data CurrentRCAV2 `json:"data"`
+	Meta *struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta,omitempty"`
+	RequestId string `json:"requestId"`
+}
+
+// CurrentRCAV2 defines model for CurrentRCAV2.
+type CurrentRCAV2 struct {
+	CurrentDegradedSources []string `json:"currentDegradedSources"`
+	CurrentEligible        bool     `json:"currentEligible"`
+	CurrentGraphRevision   *struct {
+		GraphGeneration int `json:"graphGeneration"`
+		OwnerEpoch      int `json:"ownerEpoch"`
+	} `json:"currentGraphRevision,omitempty"`
+	Revision      RCARevisionV2             `json:"revision"`
+	SchemaVersion CurrentRCAV2SchemaVersion `json:"schemaVersion"`
+	Semantics     CurrentRCAV2Semantics     `json:"semantics"`
+}
+
+// CurrentRCAV2SchemaVersion defines model for CurrentRCAV2.SchemaVersion.
+type CurrentRCAV2SchemaVersion string
+
+// CurrentRCAV2Semantics defines model for CurrentRCAV2.Semantics.
+type CurrentRCAV2Semantics string
+
 // DiagnosticGraphBuildRequest defines model for DiagnosticGraphBuildRequest.
 type DiagnosticGraphBuildRequest struct {
 	// EntryCanonicalId RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
@@ -767,6 +1140,11 @@ type DiagnosticGraphBuildRequest struct {
 
 // DiagnosticGraphBuildRequestRecipe defines model for DiagnosticGraphBuildRequest.Recipe.
 type DiagnosticGraphBuildRequestRecipe string
+
+// DiagnosticGraphSnapshotV2 defines model for DiagnosticGraphSnapshotV2.
+type DiagnosticGraphSnapshotV2 struct {
+	union json.RawMessage
+}
 
 // DiagnosticRecipeV2 defines model for DiagnosticRecipeV2.
 type DiagnosticRecipeV2 struct {
@@ -812,6 +1190,25 @@ type ErrorEnvelope struct {
 
 // ErrorEnvelopeCode defines model for ErrorEnvelope.Code.
 type ErrorEnvelopeCode string
+
+// EvidenceBundleV2 defines model for EvidenceBundleV2.
+type EvidenceBundleV2 struct {
+	Conflicts       []EvidenceConflictV2 `json:"conflicts"`
+	Contradicting   []openapi_types.UUID `json:"contradicting"`
+	DegradedSources []string             `json:"degradedSources"`
+	Missing         []string             `json:"missing"`
+	Ranked          []RankedEvidenceV2   `json:"ranked"`
+	Supporting      []openapi_types.UUID `json:"supporting"`
+}
+
+// EvidenceConflictV2 defines model for EvidenceConflictV2.
+type EvidenceConflictV2 struct {
+	Code       string    `json:"code"`
+	Confidence *string   `json:"confidence,omitempty"`
+	EdgeKeys   *[]string `json:"edgeKeys,omitempty"`
+	Message    string    `json:"message"`
+	NodeIds    *[]string `json:"nodeIds,omitempty"`
+}
 
 // EvidenceQueryBudget defines model for EvidenceQueryBudget.
 type EvidenceQueryBudget struct {
@@ -958,6 +1355,92 @@ type FindingEnvelopeV2 struct {
 	TimeReliable         bool                   `json:"timeReliable"`
 }
 
+// FindingIngestionSuccessV2 defines model for FindingIngestionSuccessV2.
+type FindingIngestionSuccessV2 struct {
+	Data struct {
+		Disposition FindingIngestionSuccessV2DataDisposition `json:"disposition"`
+		Finding     FindingV2                                `json:"finding"`
+	} `json:"data"`
+	Meta *struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta,omitempty"`
+	RequestId string `json:"requestId"`
+}
+
+// FindingIngestionSuccessV2DataDisposition defines model for FindingIngestionSuccessV2.Data.Disposition.
+type FindingIngestionSuccessV2DataDisposition string
+
+// FindingPageV2 defines model for FindingPageV2.
+type FindingPageV2 struct {
+	Data []FindingV2 `json:"data"`
+	Meta struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta"`
+	RequestId string `json:"requestId"`
+}
+
+// FindingRevisionV2 defines model for FindingRevisionV2.
+type FindingRevisionV2 struct {
+	AggregateRevision    int                             `json:"aggregateRevision"`
+	Digest               string                          `json:"digest"`
+	FindingId            openapi_types.UUID              `json:"findingId"`
+	LifecycleState       FindingRevisionV2LifecycleState `json:"lifecycleState"`
+	Namespace            string                          `json:"namespace"`
+	ObservedAt           time.Time                       `json:"observedAt"`
+	OccurrenceId         string                          `json:"occurrenceId"`
+	ResourceCanonicalId  string                          `json:"resourceCanonicalId"`
+	SourceFingerprint    string                          `json:"sourceFingerprint"`
+	SourceRegistrationId openapi_types.UUID              `json:"sourceRegistrationId"`
+	SourceRevision       int                             `json:"sourceRevision"`
+}
+
+// FindingRevisionV2LifecycleState defines model for FindingRevisionV2.LifecycleState.
+type FindingRevisionV2LifecycleState string
+
+// FindingSuccessV2 defines model for FindingSuccessV2.
+type FindingSuccessV2 struct {
+	Data FindingV2 `json:"data"`
+	Meta *struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta,omitempty"`
+	RequestId string `json:"requestId"`
+}
+
+// FindingV2 defines model for FindingV2.
+type FindingV2 struct {
+	AggregateRevision    int                    `json:"aggregateRevision"`
+	ClusterUid           string                 `json:"clusterUid"`
+	Digest               string                 `json:"digest"`
+	EventId              string                 `json:"eventId"`
+	EvidenceRefs         []string               `json:"evidenceRefs"`
+	FindingId            openapi_types.UUID     `json:"findingId"`
+	FirstReceivedAt      time.Time              `json:"firstReceivedAt"`
+	IdempotencyKey       string                 `json:"idempotencyKey"`
+	LifecycleState       interface{}            `json:"lifecycleState"`
+	Namespace            string                 `json:"namespace"`
+	NormalizedSymptom    string                 `json:"normalizedSymptom"`
+	ObservedAt           time.Time              `json:"observedAt"`
+	OccurrenceId         string                 `json:"occurrenceId"`
+	Payload              map[string]interface{} `json:"payload"`
+	PayloadDigest        *string                `json:"payloadDigest,omitempty"`
+	ReceivedAt           time.Time              `json:"receivedAt"`
+	ResourceCanonicalId  string                 `json:"resourceCanonicalId"`
+	RuleFamily           string                 `json:"ruleFamily"`
+	RuleId               string                 `json:"ruleId"`
+	SchemaVersion        FindingV2SchemaVersion `json:"schemaVersion"`
+	Severity             interface{}            `json:"severity"`
+	SourceFingerprint    string                 `json:"sourceFingerprint"`
+	SourceRegistrationId string                 `json:"sourceRegistrationId"`
+	SourceRevision       int                    `json:"sourceRevision"`
+	SourceSequence       int                    `json:"sourceSequence"`
+	StartsAt             time.Time              `json:"startsAt"`
+	TenantId             string                 `json:"tenantId"`
+	TimeReliable         bool                   `json:"timeReliable"`
+}
+
+// FindingV2SchemaVersion defines model for FindingV2.SchemaVersion.
+type FindingV2SchemaVersion string
+
 // GraphBudget defines model for GraphBudget.
 type GraphBudget struct {
 	MaxDepth  int `json:"maxDepth"`
@@ -966,8 +1449,24 @@ type GraphBudget struct {
 	TimeoutMs int `json:"timeoutMs"`
 }
 
+// GraphSourceAuthorityV2 defines model for GraphSourceAuthorityV2.
+type GraphSourceAuthorityV2 struct {
+	Revision             int                `json:"revision"`
+	ScopeDigest          string             `json:"scopeDigest"`
+	SourceRegistrationId openapi_types.UUID `json:"sourceRegistrationId"`
+}
+
 // Identifier defines model for Identifier.
 type Identifier = string
+
+// IncidentEvidencePageV2 defines model for IncidentEvidencePageV2.
+type IncidentEvidencePageV2 struct {
+	Data []EvidenceV2 `json:"data"`
+	Meta struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta"`
+	RequestId string `json:"requestId"`
+}
 
 // IncidentMergeV2 defines model for IncidentMergeV2.
 type IncidentMergeV2 struct {
@@ -978,11 +1477,76 @@ type IncidentMergeV2 struct {
 	TargetRevision   int                `json:"targetRevision"`
 }
 
+// IncidentPageV2 defines model for IncidentPageV2.
+type IncidentPageV2 struct {
+	Data []IncidentSummaryV2 `json:"data"`
+	Meta struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta"`
+	RequestId string `json:"requestId"`
+}
+
 // IncidentSplitV2 defines model for IncidentSplitV2.
 type IncidentSplitV2 struct {
 	ExpectedRevision int                  `json:"expectedRevision"`
 	FindingIds       []openapi_types.UUID `json:"findingIds"`
 	Reason           string               `json:"reason"`
+}
+
+// IncidentSuccessV2 defines model for IncidentSuccessV2.
+type IncidentSuccessV2 struct {
+	Data IncidentV2 `json:"data"`
+	Meta *struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta,omitempty"`
+	RequestId string `json:"requestId"`
+}
+
+// IncidentSummaryV2 defines model for IncidentSummaryV2.
+type IncidentSummaryV2 struct {
+	ClusterUid          string                         `json:"clusterUid"`
+	CreatedAt           time.Time                      `json:"createdAt"`
+	CurrentRcaRevision  int                            `json:"currentRcaRevision"`
+	Fingerprint         string                         `json:"fingerprint"`
+	IncidentId          openapi_types.UUID             `json:"incidentId"`
+	Namespace           string                         `json:"namespace"`
+	PolicyVersion       string                         `json:"policyVersion"`
+	ResourceCanonicalId string                         `json:"resourceCanonicalId"`
+	Revision            int                            `json:"revision"`
+	SchemaVersion       IncidentSummaryV2SchemaVersion `json:"schemaVersion"`
+	Severity            IncidentSummaryV2Severity      `json:"severity"`
+	State               IncidentSummaryV2State         `json:"state"`
+	TenantId            openapi_types.UUID             `json:"tenantId"`
+	UpdatedAt           time.Time                      `json:"updatedAt"`
+}
+
+// IncidentSummaryV2SchemaVersion defines model for IncidentSummaryV2.SchemaVersion.
+type IncidentSummaryV2SchemaVersion string
+
+// IncidentSummaryV2Severity defines model for IncidentSummaryV2.Severity.
+type IncidentSummaryV2Severity string
+
+// IncidentSummaryV2State defines model for IncidentSummaryV2.State.
+type IncidentSummaryV2State string
+
+// IncidentTimelinePageV2 defines model for IncidentTimelinePageV2.
+type IncidentTimelinePageV2 struct {
+	Data []IncidentTimelineV2 `json:"data"`
+	Meta struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta"`
+	RequestId string `json:"requestId"`
+}
+
+// IncidentTimelineV2 defines model for IncidentTimelineV2.
+type IncidentTimelineV2 struct {
+	Actor         string                 `json:"actor"`
+	CreatedAt     time.Time              `json:"createdAt"`
+	Kind          string                 `json:"kind"`
+	Payload       map[string]interface{} `json:"payload"`
+	PolicyVersion string                 `json:"policyVersion"`
+	Reason        string                 `json:"reason"`
+	TimelineId    openapi_types.UUID     `json:"timelineId"`
 }
 
 // IncidentTransitionRequest defines model for IncidentTransitionRequest.
@@ -1000,6 +1564,34 @@ type IncidentTransitionV2 struct {
 	State            interface{}          `json:"state"`
 	SuppressedUntil  *time.Time           `json:"suppressedUntil,omitempty"`
 }
+
+// IncidentV2 defines model for IncidentV2.
+type IncidentV2 struct {
+	ClusterUid          string                  `json:"clusterUid"`
+	CreatedAt           time.Time               `json:"createdAt"`
+	CurrentRcaRevision  int                     `json:"currentRcaRevision"`
+	Fingerprint         string                  `json:"fingerprint"`
+	IncidentId          openapi_types.UUID      `json:"incidentId"`
+	LastObservedAt      time.Time               `json:"lastObservedAt"`
+	Namespace           string                  `json:"namespace"`
+	PolicyVersion       string                  `json:"policyVersion"`
+	RecoveryKnownAt     *time.Time              `json:"recoveryKnownAt"`
+	ResolvedAt          *time.Time              `json:"resolvedAt"`
+	ResourceCanonicalId string                  `json:"resourceCanonicalId"`
+	Revision            int                     `json:"revision"`
+	SchemaVersion       IncidentV2SchemaVersion `json:"schemaVersion"`
+	StartedAt           time.Time               `json:"startedAt"`
+	State               IncidentV2State         `json:"state"`
+	SuppressedUntil     *time.Time              `json:"suppressedUntil"`
+	TenantId            openapi_types.UUID      `json:"tenantId"`
+	UpdatedAt           time.Time               `json:"updatedAt"`
+}
+
+// IncidentV2SchemaVersion defines model for IncidentV2.SchemaVersion.
+type IncidentV2SchemaVersion string
+
+// IncidentV2State defines model for IncidentV2.State.
+type IncidentV2State string
 
 // InvestigationEvent defines model for InvestigationEvent.
 type InvestigationEvent struct {
@@ -1109,6 +1701,110 @@ type PolicyBundlePublishRequest struct {
 	ExpectedRevision int64      `json:"expectedRevision"`
 	Signature        []byte     `json:"signature"`
 	SignerKeyId      string     `json:"signerKeyId"`
+}
+
+// RCACandidateV2 defines model for RCACandidateV2.
+type RCACandidateV2 struct {
+	CandidateKey        string               `json:"candidateKey"`
+	CandidateType       string               `json:"candidateType"`
+	EvidenceRefs        []openapi_types.UUID `json:"evidenceRefs"`
+	Provenance          []string             `json:"provenance"`
+	ResourceCanonicalId string               `json:"resourceCanonicalId"`
+	Score               float32              `json:"score"`
+	Source              RCACandidateV2Source `json:"source"`
+}
+
+// RCACandidateV2Source defines model for RCACandidateV2.Source.
+type RCACandidateV2Source string
+
+// RCAEvaluationV2 defines model for RCAEvaluationV2.
+type RCAEvaluationV2 struct {
+	Candidates     []RCACandidateV2             `json:"candidates"`
+	EvidenceBundle EvidenceBundleV2             `json:"evidenceBundle"`
+	GraphPlan      string                       `json:"graphPlan"`
+	Impact         DiagnosticGraphSnapshotV2    `json:"impact"`
+	Partial        bool                         `json:"partial"`
+	RecipeDigest   string                       `json:"recipeDigest"`
+	RecipeVersion  string                       `json:"recipeVersion"`
+	SchemaVersion  RCAEvaluationV2SchemaVersion `json:"schemaVersion"`
+	Status         RCAEvaluationV2Status        `json:"status"`
+}
+
+// RCAEvaluationV2SchemaVersion defines model for RCAEvaluationV2.SchemaVersion.
+type RCAEvaluationV2SchemaVersion string
+
+// RCAEvaluationV2Status defines model for RCAEvaluationV2.Status.
+type RCAEvaluationV2Status string
+
+// RCAInputV2 defines model for RCAInputV2.
+type RCAInputV2 struct {
+	EvaluatedAt         time.Time                 `json:"evaluatedAt"`
+	Evidence            []EvidenceV2              `json:"evidence"`
+	FindingRevisions    []FindingRevisionV2       `json:"findingRevisions"`
+	From                time.Time                 `json:"from"`
+	Graph               DiagnosticGraphSnapshotV2 `json:"graph"`
+	GraphSources        []GraphSourceAuthorityV2  `json:"graphSources"`
+	ResourceCanonicalId string                    `json:"resourceCanonicalId"`
+	SchemaVersion       RCAInputV2SchemaVersion   `json:"schemaVersion"`
+	To                  time.Time                 `json:"to"`
+}
+
+// RCAInputV2SchemaVersion defines model for RCAInputV2.SchemaVersion.
+type RCAInputV2SchemaVersion string
+
+// RCARevisionPageV2 defines model for RCARevisionPageV2.
+type RCARevisionPageV2 struct {
+	Data []RCARevisionV2 `json:"data"`
+	Meta struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta"`
+	RequestId string `json:"requestId"`
+}
+
+// RCARevisionSuccessV2 defines model for RCARevisionSuccessV2.
+type RCARevisionSuccessV2 struct {
+	Data RCARevisionV2 `json:"data"`
+	Meta *struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta,omitempty"`
+	RequestId string `json:"requestId"`
+}
+
+// RCARevisionV2 defines model for RCARevisionV2.
+type RCARevisionV2 struct {
+	Actor                string                     `json:"actor"`
+	BaseIncidentRevision int                        `json:"baseIncidentRevision"`
+	CreatedAt            time.Time                  `json:"createdAt"`
+	IncidentId           openapi_types.UUID         `json:"incidentId"`
+	InputDigest          string                     `json:"inputDigest"`
+	InputManifest        RCAInputV2                 `json:"inputManifest"`
+	Result               RCAEvaluationV2            `json:"result"`
+	Revision             int                        `json:"revision"`
+	SchemaVersion        RCARevisionV2SchemaVersion `json:"schemaVersion"`
+	Source               RCARevisionV2Source        `json:"source"`
+	Superseded           bool                       `json:"superseded"`
+	TenantId             openapi_types.UUID         `json:"tenantId"`
+}
+
+// RCARevisionV2SchemaVersion defines model for RCARevisionV2.SchemaVersion.
+type RCARevisionV2SchemaVersion string
+
+// RCARevisionV2Source defines model for RCARevisionV2.Source.
+type RCARevisionV2Source string
+
+// RankedEvidenceV2 defines model for RankedEvidenceV2.
+type RankedEvidenceV2 struct {
+	Confidence *string    `json:"confidence,omitempty"`
+	EdgeKey    *string    `json:"edgeKey,omitempty"`
+	Kind       *string    `json:"kind,omitempty"`
+	Message    *string    `json:"message,omitempty"`
+	NodeId     *string    `json:"nodeId,omitempty"`
+	Rank       int        `json:"rank"`
+	Reason     *string    `json:"reason,omitempty"`
+	Score      *float32   `json:"score,omitempty"`
+	Severity   *string    `json:"severity,omitempty"`
+	Source     string     `json:"source"`
+	Timestamp  *time.Time `json:"timestamp,omitempty"`
 }
 
 // RegistryActivationRequest defines model for RegistryActivationRequest.
@@ -1457,6 +2153,66 @@ type SuccessEnvelope struct {
 	RequestId Identifier              `json:"requestId"`
 }
 
+// UnavailableGraphV2 defines model for UnavailableGraphV2.
+type UnavailableGraphV2 struct {
+	Budgets struct {
+		EdgeCount         int       `json:"edgeCount"`
+		MaxDepth          int       `json:"maxDepth"`
+		MaxEdges          int       `json:"maxEdges"`
+		MaxNodes          int       `json:"maxNodes"`
+		NodeCount         int       `json:"nodeCount"`
+		StorageMaxDepth   int       `json:"storageMaxDepth"`
+		Truncated         bool      `json:"truncated"`
+		TruncationReasons *[]string `json:"truncationReasons,omitempty"`
+	} `json:"budgets"`
+	CollectedAt time.Time `json:"collectedAt"`
+	Conflicts   []struct {
+		Code       string    `json:"code"`
+		Confidence *string   `json:"confidence,omitempty"`
+		EdgeKeys   *[]string `json:"edgeKeys,omitempty"`
+		Message    string    `json:"message"`
+		NodeIds    *[]string `json:"nodeIds,omitempty"`
+	} `json:"conflicts"`
+	DegradedSources  []string                    `json:"degradedSources"`
+	DependencyOnly   *[]string                   `json:"dependencyOnly,omitempty"`
+	DirectlyAffected *[]string                   `json:"directlyAffected,omitempty"`
+	Edges            []ResourceRelationV2        `json:"edges"`
+	Freshness        UnavailableGraphV2Freshness `json:"freshness"`
+	GraphRevision    struct {
+		GraphGeneration int `json:"graphGeneration"`
+		OwnerEpoch      int `json:"ownerEpoch"`
+	} `json:"graphRevision"`
+	IndirectlyAffected *[]string                 `json:"indirectlyAffected,omitempty"`
+	NextCanonicalId    *string                   `json:"nextCanonicalId,omitempty"`
+	Nodes              []ResourceEntityV2        `json:"nodes"`
+	OwnerInstance      string                    `json:"ownerInstance"`
+	Partial            UnavailableGraphV2Partial `json:"partial"`
+	RankedEvidence     []struct {
+		Confidence *string    `json:"confidence,omitempty"`
+		EdgeKey    *string    `json:"edgeKey,omitempty"`
+		Kind       *string    `json:"kind,omitempty"`
+		Message    *string    `json:"message,omitempty"`
+		NodeId     *string    `json:"nodeId,omitempty"`
+		Rank       int        `json:"rank"`
+		Reason     *string    `json:"reason,omitempty"`
+		Score      *float32   `json:"score,omitempty"`
+		Severity   *string    `json:"severity,omitempty"`
+		Source     string     `json:"source"`
+		Timestamp  *time.Time `json:"timestamp,omitempty"`
+	} `json:"rankedEvidence"`
+	SchemaVersion UnavailableGraphV2SchemaVersion `json:"schemaVersion"`
+	Warnings      []string                        `json:"warnings"`
+}
+
+// UnavailableGraphV2Freshness defines model for UnavailableGraphV2.Freshness.
+type UnavailableGraphV2Freshness string
+
+// UnavailableGraphV2Partial defines model for UnavailableGraphV2.Partial.
+type UnavailableGraphV2Partial bool
+
+// UnavailableGraphV2SchemaVersion defines model for UnavailableGraphV2.SchemaVersion.
+type UnavailableGraphV2SchemaVersion string
+
 // CreateActionPlanParams defines parameters for CreateActionPlan.
 type CreateActionPlanParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
@@ -1730,10 +2486,25 @@ type GetFindingsParams struct {
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// GetFindingsdefaultJSONResponseBody defines parameters for GetFindings.
+type GetFindingsdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// GetFindingdefaultJSONResponseBody defines parameters for GetFinding.
+type GetFindingdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // IngestFindingParams defines parameters for IngestFinding.
 type IngestFindingParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// IngestFindingdefaultJSONResponseBody defines parameters for IngestFinding.
+type IngestFindingdefaultJSONResponseBody struct {
+	union json.RawMessage
 }
 
 // GetIncidentsParams defines parameters for GetIncidents.
@@ -1753,11 +2524,26 @@ type GetIncidentsParams struct {
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// GetIncidentsdefaultJSONResponseBody defines parameters for GetIncidents.
+type GetIncidentsdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// GetIncidentdefaultJSONResponseBody defines parameters for GetIncident.
+type GetIncidentdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // GetIncidentEvidenceParams defines parameters for GetIncidentEvidence.
 type GetIncidentEvidenceParams struct {
 	// Cursor Opaque cursor for keyset pagination.
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// GetIncidentEvidencedefaultJSONResponseBody defines parameters for GetIncidentEvidence.
+type GetIncidentEvidencedefaultJSONResponseBody struct {
+	union json.RawMessage
 }
 
 // CreateInvestigationParams defines parameters for CreateInvestigation.
@@ -1766,11 +2552,26 @@ type CreateInvestigationParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
+// GetIncidentRCAdefaultJSONResponseBody defines parameters for GetIncidentRCA.
+type GetIncidentRCAdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // GetRCARevisionsParams defines parameters for GetRCARevisions.
 type GetRCARevisionsParams struct {
 	// Cursor Opaque cursor for keyset pagination.
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// GetRCARevisionsdefaultJSONResponseBody defines parameters for GetRCARevisions.
+type GetRCARevisionsdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// GetRCARevisiondefaultJSONResponseBody defines parameters for GetRCARevision.
+type GetRCARevisiondefaultJSONResponseBody struct {
+	union json.RawMessage
 }
 
 // GetIncidentTimelineParams defines parameters for GetIncidentTimeline.
@@ -1784,10 +2585,20 @@ type GetIncidentTimelineParams struct {
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// GetIncidentTimelinedefaultJSONResponseBody defines parameters for GetIncidentTimeline.
+type GetIncidentTimelinedefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // SplitIncidentParams defines parameters for SplitIncident.
 type SplitIncidentParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// SplitIncidentdefaultJSONResponseBody defines parameters for SplitIncident.
+type SplitIncidentdefaultJSONResponseBody struct {
+	union json.RawMessage
 }
 
 // TransitionIncidentJSONBody defines parameters for TransitionIncident.
@@ -1801,10 +2612,20 @@ type TransitionIncidentParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
+// TransitionIncidentdefaultJSONResponseBody defines parameters for TransitionIncident.
+type TransitionIncidentdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // MergeIncidentsParams defines parameters for MergeIncidents.
 type MergeIncidentsParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// MergeIncidentsdefaultJSONResponseBody defines parameters for MergeIncidents.
+type MergeIncidentsdefaultJSONResponseBody struct {
+	union json.RawMessage
 }
 
 // GetInvestigationStepsParams defines parameters for GetInvestigationSteps.
@@ -1889,6 +2710,11 @@ type GetResourceNeighborsdefaultJSONResponseBody struct {
 type IngestFindingV2Params struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// IngestFindingV2defaultJSONResponseBody defines parameters for IngestFindingV2.
+type IngestFindingV2defaultJSONResponseBody struct {
+	union json.RawMessage
 }
 
 // CreateActionPlanJSONRequestBody defines body for CreateActionPlan for application/json ContentType.
@@ -2049,6 +2875,68 @@ func (a PageEnvelope_Meta) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(object)
+}
+
+// AsResourceGraphV2 returns the union data inside the DiagnosticGraphSnapshotV2 as a ResourceGraphV2
+func (t DiagnosticGraphSnapshotV2) AsResourceGraphV2() (ResourceGraphV2, error) {
+	var body ResourceGraphV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromResourceGraphV2 overwrites any union data inside the DiagnosticGraphSnapshotV2 as the provided ResourceGraphV2
+func (t *DiagnosticGraphSnapshotV2) FromResourceGraphV2(v ResourceGraphV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeResourceGraphV2 performs a merge with any union data inside the DiagnosticGraphSnapshotV2, using the provided ResourceGraphV2
+func (t *DiagnosticGraphSnapshotV2) MergeResourceGraphV2(v ResourceGraphV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUnavailableGraphV2 returns the union data inside the DiagnosticGraphSnapshotV2 as a UnavailableGraphV2
+func (t DiagnosticGraphSnapshotV2) AsUnavailableGraphV2() (UnavailableGraphV2, error) {
+	var body UnavailableGraphV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUnavailableGraphV2 overwrites any union data inside the DiagnosticGraphSnapshotV2 as the provided UnavailableGraphV2
+func (t *DiagnosticGraphSnapshotV2) FromUnavailableGraphV2(v UnavailableGraphV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUnavailableGraphV2 performs a merge with any union data inside the DiagnosticGraphSnapshotV2, using the provided UnavailableGraphV2
+func (t *DiagnosticGraphSnapshotV2) MergeUnavailableGraphV2(v UnavailableGraphV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DiagnosticGraphSnapshotV2) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DiagnosticGraphSnapshotV2) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
 }
 
 // AsEvidenceV2FactSlice0 returns the union data inside the EvidenceV2_FactSlice as a EvidenceV2FactSlice0
@@ -2831,6 +3719,688 @@ func (t *QueryEvidencedefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsErrorEnvelope returns the union data inside the GetFindingsdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetFindingsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetFindingsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetFindingsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetFindingsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetFindingsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetFindingsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetFindingsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetFindingsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetFindingsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetFindingsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetFindingsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetFindingsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetFindingsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetFindingdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetFindingdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetFindingdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetFindingdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetFindingdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetFindingdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetFindingdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetFindingdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetFindingdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetFindingdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetFindingdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetFindingdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetFindingdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetFindingdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the IngestFindingdefaultJSONResponseBody as a ErrorEnvelope
+func (t IngestFindingdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the IngestFindingdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *IngestFindingdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the IngestFindingdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *IngestFindingdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the IngestFindingdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t IngestFindingdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the IngestFindingdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *IngestFindingdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the IngestFindingdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *IngestFindingdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t IngestFindingdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *IngestFindingdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetIncidentsdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetIncidentsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetIncidentsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetIncidentsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetIncidentsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetIncidentsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetIncidentsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetIncidentsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetIncidentsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetIncidentsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetIncidentsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetIncidentsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetIncidentdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetIncidentdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetIncidentdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetIncidentdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetIncidentdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetIncidentdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetIncidentdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetIncidentdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetIncidentdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetIncidentdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetIncidentdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetIncidentdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetIncidentEvidencedefaultJSONResponseBody as a ErrorEnvelope
+func (t GetIncidentEvidencedefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetIncidentEvidencedefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetIncidentEvidencedefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetIncidentEvidencedefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetIncidentEvidencedefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetIncidentEvidencedefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetIncidentEvidencedefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetIncidentEvidencedefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentEvidencedefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetIncidentEvidencedefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentEvidencedefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetIncidentEvidencedefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetIncidentEvidencedefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetIncidentRCAdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetIncidentRCAdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetIncidentRCAdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetIncidentRCAdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetIncidentRCAdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetIncidentRCAdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetIncidentRCAdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetIncidentRCAdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetIncidentRCAdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentRCAdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetIncidentRCAdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentRCAdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetIncidentRCAdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetIncidentRCAdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetRCARevisionsdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetRCARevisionsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetRCARevisionsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetRCARevisionsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetRCARevisionsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetRCARevisionsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetRCARevisionsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetRCARevisionsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetRCARevisionsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetRCARevisionsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetRCARevisionsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetRCARevisionsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetRCARevisionsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetRCARevisionsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetRCARevisiondefaultJSONResponseBody as a ErrorEnvelope
+func (t GetRCARevisiondefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetRCARevisiondefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetRCARevisiondefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetRCARevisiondefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetRCARevisiondefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetRCARevisiondefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetRCARevisiondefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetRCARevisiondefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetRCARevisiondefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetRCARevisiondefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetRCARevisiondefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetRCARevisiondefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetRCARevisiondefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetIncidentTimelinedefaultJSONResponseBody as a ErrorEnvelope
+func (t GetIncidentTimelinedefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetIncidentTimelinedefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetIncidentTimelinedefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetIncidentTimelinedefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetIncidentTimelinedefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetIncidentTimelinedefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetIncidentTimelinedefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetIncidentTimelinedefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentTimelinedefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetIncidentTimelinedefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentTimelinedefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetIncidentTimelinedefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetIncidentTimelinedefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the SplitIncidentdefaultJSONResponseBody as a ErrorEnvelope
+func (t SplitIncidentdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the SplitIncidentdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *SplitIncidentdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the SplitIncidentdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *SplitIncidentdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the SplitIncidentdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t SplitIncidentdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the SplitIncidentdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *SplitIncidentdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the SplitIncidentdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *SplitIncidentdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SplitIncidentdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *SplitIncidentdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsIncidentTransitionRequest returns the union data inside the TransitionIncidentJSONBody as a IncidentTransitionRequest
 func (t TransitionIncidentJSONBody) AsIncidentTransitionRequest() (IncidentTransitionRequest, error) {
 	var body IncidentTransitionRequest
@@ -2889,6 +4459,130 @@ func (t TransitionIncidentJSONBody) MarshalJSON() ([]byte, error) {
 }
 
 func (t *TransitionIncidentJSONBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the TransitionIncidentdefaultJSONResponseBody as a ErrorEnvelope
+func (t TransitionIncidentdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the TransitionIncidentdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *TransitionIncidentdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the TransitionIncidentdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *TransitionIncidentdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the TransitionIncidentdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t TransitionIncidentdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the TransitionIncidentdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *TransitionIncidentdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the TransitionIncidentdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *TransitionIncidentdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t TransitionIncidentdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *TransitionIncidentdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the MergeIncidentsdefaultJSONResponseBody as a ErrorEnvelope
+func (t MergeIncidentsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the MergeIncidentsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *MergeIncidentsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the MergeIncidentsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *MergeIncidentsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the MergeIncidentsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t MergeIncidentsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the MergeIncidentsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *MergeIncidentsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the MergeIncidentsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *MergeIncidentsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t MergeIncidentsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *MergeIncidentsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -3137,6 +4831,68 @@ func (t GetResourceNeighborsdefaultJSONResponseBody) MarshalJSON() ([]byte, erro
 }
 
 func (t *GetResourceNeighborsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the IngestFindingV2defaultJSONResponseBody as a ErrorEnvelope
+func (t IngestFindingV2defaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the IngestFindingV2defaultJSONResponseBody as the provided ErrorEnvelope
+func (t *IngestFindingV2defaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the IngestFindingV2defaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *IngestFindingV2defaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the IngestFindingV2defaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t IngestFindingV2defaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the IngestFindingV2defaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *IngestFindingV2defaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the IngestFindingV2defaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *IngestFindingV2defaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t IngestFindingV2defaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *IngestFindingV2defaultJSONResponseBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -9095,7 +10851,7 @@ type GetFindingsResponseObject interface {
 	VisitGetFindingsResponse(w http.ResponseWriter) error
 }
 
-type GetFindings200JSONResponse PageEnvelope
+type GetFindings200JSONResponse FindingPageV2
 
 func (response GetFindings200JSONResponse) VisitGetFindingsResponse(w http.ResponseWriter) error {
 
@@ -9110,14 +10866,14 @@ func (response GetFindings200JSONResponse) VisitGetFindingsResponse(w http.Respo
 }
 
 type GetFindingsdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetFindingsdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetFindingsdefaultJSONResponse) VisitGetFindingsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9134,7 +10890,7 @@ type GetFindingResponseObject interface {
 	VisitGetFindingResponse(w http.ResponseWriter) error
 }
 
-type GetFinding200JSONResponse SuccessEnvelope
+type GetFinding200JSONResponse FindingSuccessV2
 
 func (response GetFinding200JSONResponse) VisitGetFindingResponse(w http.ResponseWriter) error {
 
@@ -9149,14 +10905,14 @@ func (response GetFinding200JSONResponse) VisitGetFindingResponse(w http.Respons
 }
 
 type GetFindingdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetFindingdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetFindingdefaultJSONResponse) VisitGetFindingResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9189,14 +10945,14 @@ func (response IngestFinding200JSONResponse) VisitIngestFindingResponse(w http.R
 }
 
 type IngestFindingdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       IngestFindingdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response IngestFindingdefaultJSONResponse) VisitIngestFindingResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9213,7 +10969,7 @@ type GetIncidentsResponseObject interface {
 	VisitGetIncidentsResponse(w http.ResponseWriter) error
 }
 
-type GetIncidents200JSONResponse PageEnvelope
+type GetIncidents200JSONResponse IncidentPageV2
 
 func (response GetIncidents200JSONResponse) VisitGetIncidentsResponse(w http.ResponseWriter) error {
 
@@ -9228,14 +10984,14 @@ func (response GetIncidents200JSONResponse) VisitGetIncidentsResponse(w http.Res
 }
 
 type GetIncidentsdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetIncidentsdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetIncidentsdefaultJSONResponse) VisitGetIncidentsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9252,7 +11008,7 @@ type GetIncidentResponseObject interface {
 	VisitGetIncidentResponse(w http.ResponseWriter) error
 }
 
-type GetIncident200JSONResponse SuccessEnvelope
+type GetIncident200JSONResponse IncidentSuccessV2
 
 func (response GetIncident200JSONResponse) VisitGetIncidentResponse(w http.ResponseWriter) error {
 
@@ -9267,14 +11023,14 @@ func (response GetIncident200JSONResponse) VisitGetIncidentResponse(w http.Respo
 }
 
 type GetIncidentdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetIncidentdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetIncidentdefaultJSONResponse) VisitGetIncidentResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9292,7 +11048,7 @@ type GetIncidentEvidenceResponseObject interface {
 	VisitGetIncidentEvidenceResponse(w http.ResponseWriter) error
 }
 
-type GetIncidentEvidence200JSONResponse PageEnvelope
+type GetIncidentEvidence200JSONResponse IncidentEvidencePageV2
 
 func (response GetIncidentEvidence200JSONResponse) VisitGetIncidentEvidenceResponse(w http.ResponseWriter) error {
 
@@ -9307,14 +11063,14 @@ func (response GetIncidentEvidence200JSONResponse) VisitGetIncidentEvidenceRespo
 }
 
 type GetIncidentEvidencedefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetIncidentEvidencedefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetIncidentEvidencedefaultJSONResponse) VisitGetIncidentEvidenceResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9372,7 +11128,7 @@ type GetIncidentRCAResponseObject interface {
 	VisitGetIncidentRCAResponse(w http.ResponseWriter) error
 }
 
-type GetIncidentRCA200JSONResponse SuccessEnvelope
+type GetIncidentRCA200JSONResponse CurrentRCASuccessV2
 
 func (response GetIncidentRCA200JSONResponse) VisitGetIncidentRCAResponse(w http.ResponseWriter) error {
 
@@ -9387,14 +11143,14 @@ func (response GetIncidentRCA200JSONResponse) VisitGetIncidentRCAResponse(w http
 }
 
 type GetIncidentRCAdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetIncidentRCAdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetIncidentRCAdefaultJSONResponse) VisitGetIncidentRCAResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9412,7 +11168,7 @@ type GetRCARevisionsResponseObject interface {
 	VisitGetRCARevisionsResponse(w http.ResponseWriter) error
 }
 
-type GetRCARevisions200JSONResponse PageEnvelope
+type GetRCARevisions200JSONResponse RCARevisionPageV2
 
 func (response GetRCARevisions200JSONResponse) VisitGetRCARevisionsResponse(w http.ResponseWriter) error {
 
@@ -9427,14 +11183,14 @@ func (response GetRCARevisions200JSONResponse) VisitGetRCARevisionsResponse(w ht
 }
 
 type GetRCARevisionsdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetRCARevisionsdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetRCARevisionsdefaultJSONResponse) VisitGetRCARevisionsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9452,7 +11208,7 @@ type GetRCARevisionResponseObject interface {
 	VisitGetRCARevisionResponse(w http.ResponseWriter) error
 }
 
-type GetRCARevision200JSONResponse SuccessEnvelope
+type GetRCARevision200JSONResponse RCARevisionSuccessV2
 
 func (response GetRCARevision200JSONResponse) VisitGetRCARevisionResponse(w http.ResponseWriter) error {
 
@@ -9467,14 +11223,14 @@ func (response GetRCARevision200JSONResponse) VisitGetRCARevisionResponse(w http
 }
 
 type GetRCARevisiondefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetRCARevisiondefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetRCARevisiondefaultJSONResponse) VisitGetRCARevisionResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9492,7 +11248,7 @@ type GetIncidentTimelineResponseObject interface {
 	VisitGetIncidentTimelineResponse(w http.ResponseWriter) error
 }
 
-type GetIncidentTimeline200JSONResponse PageEnvelope
+type GetIncidentTimeline200JSONResponse IncidentTimelinePageV2
 
 func (response GetIncidentTimeline200JSONResponse) VisitGetIncidentTimelineResponse(w http.ResponseWriter) error {
 
@@ -9507,14 +11263,14 @@ func (response GetIncidentTimeline200JSONResponse) VisitGetIncidentTimelineRespo
 }
 
 type GetIncidentTimelinedefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetIncidentTimelinedefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetIncidentTimelinedefaultJSONResponse) VisitGetIncidentTimelineResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9533,7 +11289,7 @@ type SplitIncidentResponseObject interface {
 	VisitSplitIncidentResponse(w http.ResponseWriter) error
 }
 
-type SplitIncident200JSONResponse SuccessEnvelope
+type SplitIncident200JSONResponse IncidentSuccessV2
 
 func (response SplitIncident200JSONResponse) VisitSplitIncidentResponse(w http.ResponseWriter) error {
 
@@ -9548,14 +11304,14 @@ func (response SplitIncident200JSONResponse) VisitSplitIncidentResponse(w http.R
 }
 
 type SplitIncidentdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       SplitIncidentdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response SplitIncidentdefaultJSONResponse) VisitSplitIncidentResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9574,7 +11330,7 @@ type TransitionIncidentResponseObject interface {
 	VisitTransitionIncidentResponse(w http.ResponseWriter) error
 }
 
-type TransitionIncident200JSONResponse SuccessEnvelope
+type TransitionIncident200JSONResponse IncidentSuccessV2
 
 func (response TransitionIncident200JSONResponse) VisitTransitionIncidentResponse(w http.ResponseWriter) error {
 
@@ -9589,14 +11345,14 @@ func (response TransitionIncident200JSONResponse) VisitTransitionIncidentRespons
 }
 
 type TransitionIncidentdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       TransitionIncidentdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response TransitionIncidentdefaultJSONResponse) VisitTransitionIncidentResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -9614,7 +11370,7 @@ type MergeIncidentsResponseObject interface {
 	VisitMergeIncidentsResponse(w http.ResponseWriter) error
 }
 
-type MergeIncidents200JSONResponse SuccessEnvelope
+type MergeIncidents200JSONResponse IncidentSuccessV2
 
 func (response MergeIncidents200JSONResponse) VisitMergeIncidentsResponse(w http.ResponseWriter) error {
 
@@ -9629,14 +11385,14 @@ func (response MergeIncidents200JSONResponse) VisitMergeIncidentsResponse(w http
 }
 
 type MergeIncidentsdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       MergeIncidentsdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response MergeIncidentsdefaultJSONResponse) VisitMergeIncidentsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -10035,7 +11791,7 @@ type IngestFindingV2ResponseObject interface {
 	VisitIngestFindingV2Response(w http.ResponseWriter) error
 }
 
-type IngestFindingV2200JSONResponse SuccessEnvelope
+type IngestFindingV2200JSONResponse FindingIngestionSuccessV2
 
 func (response IngestFindingV2200JSONResponse) VisitIngestFindingV2Response(w http.ResponseWriter) error {
 
@@ -10050,14 +11806,14 @@ func (response IngestFindingV2200JSONResponse) VisitIngestFindingV2Response(w ht
 }
 
 type IngestFindingV2defaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       IngestFindingV2defaultJSONResponseBody
 	StatusCode int
 }
 
 func (response IngestFindingV2defaultJSONResponse) VisitIngestFindingV2Response(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")

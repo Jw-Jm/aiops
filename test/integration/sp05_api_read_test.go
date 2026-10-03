@@ -5,9 +5,11 @@ import (
 	"github.com/google/uuid"
 	"net/http/httptest"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/contract"
 	"ops-platform/internal/finding"
 	"ops-platform/internal/httpapi"
 	"ops-platform/internal/incident"
+	"strings"
 	"testing"
 )
 
@@ -31,11 +33,33 @@ func TestSP05APIListFiltersAndAllLinkedNamespaceAuthorization(t *testing.T) {
 	}
 	h := httpapi.SP05Handlers{Pool: pool, Enabled: true}
 	request := func(path string) ([]json.RawMessage, int) {
-		r := httptest.NewRequest("GET", path, nil).WithContext(auth.WithRequestContext(ctx, auth.RequestContext{TenantID: b.TenantID, Subject: "read-operator", Roles: []auth.Role{auth.Operator}}))
+		r := httptest.NewRequest("GET", path, nil).WithContext(auth.WithRequestContext(ctx, auth.RequestContext{TenantID: b.TenantID, Subject: "read-operator", RequestID: uuid.NewString(), Roles: []auth.Role{auth.Operator}}))
 		w := httptest.NewRecorder()
 		h.ServeHTTP(w, r)
 		var out struct{ Data []json.RawMessage }
 		_ = json.Unmarshal(w.Body.Bytes(), &out)
+		if w.Code >= 400 {
+			if err := contract.Validate("https://ops.local/schemas/error-envelope/v2", w.Body.Bytes()); err != nil {
+				t.Errorf("SP05 error Contract: %v", err)
+			}
+		}
+		if w.Code == 200 {
+			schema := "https://ops.local/schemas/finding-page/v2"
+			if strings.HasPrefix(path, "/api/v1/incidents") {
+				schema = "https://ops.local/schemas/incident-page/v2"
+			}
+			if err := contract.Validate(schema, w.Body.Bytes()); err != nil {
+				t.Errorf("SP05 actual page Contract: %v", err)
+			}
+
+			var page map[string]json.RawMessage
+			_ = json.Unmarshal(w.Body.Bytes(), &page)
+			var meta map[string]json.RawMessage
+			_ = json.Unmarshal(page["meta"], &meta)
+			if v, exists := meta["nextCursor"]; exists && string(v) == "null" {
+				t.Error("last/empty page violates string-only cursor Contract")
+			}
+		}
 		return out.Data, w.Code
 	}
 	items, status := request("/api/v1/findings?clusterUid=" + b.ClusterUID + "&severity=critical")

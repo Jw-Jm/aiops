@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/rca-input/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "rca-input/v2"
+    },
+    "findingRevisions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "$ref": "https://ops.local/schemas/finding-revision/v2"
+      }
+    },
+    "graphSources": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "https://ops.local/schemas/graph-source-authority/v2"
+      }
+    },
+    "resourceCanonicalId": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "$ref": "https://ops.local/schemas/evidence/v2"
+      }
+    },
+    "graph": {
+      "$ref": "https://ops.local/schemas/diagnostic-graph-snapshot/v2"
+    },
+    "from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "to": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "findingRevisions",
+    "graphSources",
+    "resourceCanonicalId",
+    "evidence",
+    "graph",
+    "from",
+    "to",
+    "evaluatedAt"
+  ]
+}

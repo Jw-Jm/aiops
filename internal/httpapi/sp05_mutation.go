@@ -18,7 +18,7 @@ func (h *SP05Handlers) serveMutation(w http.ResponseWriter, r *http.Request) {
 	originalPath := r.URL.Path
 	raw, err := io.ReadAll(io.LimitReader(r.Body, (64<<10)+1))
 	if err != nil || len(raw) > 64<<10 || !json.Valid(raw) {
-		writeTenantError(w, 400, "INVALID_ARGUMENT", "invalid incident mutation", false, "")
+		writeSP04Error(w, 400, "INVALID_ARGUMENT", "invalid incident mutation", false, "")
 		return
 	}
 	request := r.Clone(r.Context())
@@ -32,7 +32,7 @@ func (h *SP05Handlers) serveMutation(w http.ResponseWriter, r *http.Request) {
 			Target string `json:"targetIncidentId"`
 		}
 		if json.Unmarshal(raw, &body) != nil {
-			writeTenantError(w, 400, "INVALID_ARGUMENT", "invalid merge", false, "")
+			writeSP04Error(w, 400, "INVALID_ARGUMENT", "invalid merge", false, "")
 			return
 		}
 		ids = []string{body.Source, body.Target}
@@ -46,14 +46,14 @@ func (h *SP05Handlers) serveMutation(w http.ResponseWriter, r *http.Request) {
 		}
 		parts := strings.Split(strings.TrimPrefix(request.URL.Path, "/api/v1/incidents/"), "/")
 		if len(parts) != 2 || (parts[1] != "transition" && parts[1] != "split") {
-			writeTenantError(w, 404, "NOT_FOUND", "incident action unavailable", false, "")
+			writeSP04Error(w, 404, "NOT_FOUND", "incident action unavailable", false, "")
 			return
 		}
 		ids = []string{parts[0]}
 	}
 	for _, id := range ids {
 		if _, err := uuid.Parse(id); err != nil {
-			writeTenantError(w, 400, "INVALID_ARGUMENT", "invalid incident identity", false, "")
+			writeSP04Error(w, 400, "INVALID_ARGUMENT", "invalid incident identity", false, "")
 			return
 		}
 	}

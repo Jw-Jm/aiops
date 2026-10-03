@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/incident-timeline/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "timelineId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "actor": {
+      "type": "string"
+    },
+    "policyVersion": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "timelineId",
+    "kind",
+    "actor",
+    "policyVersion",
+    "reason",
+    "payload",
+    "createdAt"
+  ]
+}

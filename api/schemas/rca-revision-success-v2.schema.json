@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/rca-revision-success/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "$ref": "https://ops.local/schemas/rca-revision/v2"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nextCursor": {
+          "type": "string"
+        }
+      },
+      "required": []
+    }
+  },
+  "required": [
+    "data",
+    "requestId"
+  ]
+}

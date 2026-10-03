@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/ranked-evidence/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "type": "string"
+    },
+    "nodeId": {
+      "type": "string"
+    },
+    "edgeKey": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "string"
+    },
+    "rank": {
+      "type": "integer"
+    },
+    "score": {
+      "type": "number"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "rank",
+    "source"
+  ]
+}

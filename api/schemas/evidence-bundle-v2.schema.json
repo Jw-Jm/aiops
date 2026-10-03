@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/evidence-bundle/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "supporting": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "contradicting": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "missing": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "degradedSources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ranked": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/ranked-evidence/v2"
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/evidence-conflict/v2"
+      }
+    }
+  },
+  "required": [
+    "supporting",
+    "contradicting",
+    "missing",
+    "degradedSources",
+    "ranked",
+    "conflicts"
+  ]
+}

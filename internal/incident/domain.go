@@ -11,8 +11,8 @@ var ErrRevision = errors.New("REVISION_CONFLICT")
 var ErrTransition = errors.New("INVALID_STATE_TRANSITION")
 
 const PolicyVersion = "correlation/nonvirtual/v1"
-const CorrelationWindow = 30 * time.Minute
-const ReopenWindow = time.Hour
+const CorrelationWindow = 10 * time.Minute
+const ReopenWindow = 30 * time.Minute
 const SettleWindow = 5 * time.Minute
 
 // The licensed Community active/closed model is consumed at this narrow boundary.
@@ -24,7 +24,7 @@ func Fingerprint(f finding.Finding, policy string) string {
 	return finding.Hash([]string{f.TenantID, f.ClusterUID, f.ResourceCanonicalID, f.RuleFamily, f.NormalizedSymptom, policy})
 }
 func CanTransition(from, to string) bool {
-	whitelist := map[string][]string{"open": {"acknowledged", "mitigating", "suppressed", "resolved"}, "acknowledged": {"mitigating", "suppressed", "resolved"}, "mitigating": {"suppressed", "resolved"}, "suppressed": {"open"}, "resolved": {"open", "closed"}, "closed": {}}
+	whitelist := map[string][]string{"open": {"acknowledged", "mitigating", "suppressed", "resolved"}, "acknowledged": {"mitigating", "suppressed", "resolved"}, "mitigating": {"suppressed", "resolved"}, "suppressed": {"open", "closed"}, "resolved": {"open", "closed"}, "closed": {}}
 	for _, s := range whitelist[from] {
 		if s == to {
 			return true

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/finding-revision/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "findingId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "aggregateRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "occurrenceId": {
+      "type": "string"
+    },
+    "sourceFingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "sourceRegistrationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "resourceCanonicalId": {
+      "type": "string"
+    },
+    "namespace": {
+      "type": "string"
+    },
+    "lifecycleState": {
+      "type": "string",
+      "enum": [
+        "firing",
+        "resolved"
+      ]
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "findingId",
+    "aggregateRevision",
+    "occurrenceId",
+    "sourceFingerprint",
+    "sourceRegistrationId",
+    "sourceRevision",
+    "resourceCanonicalId",
+    "namespace",
+    "lifecycleState",
+    "digest",
+    "observedAt"
+  ]
+}

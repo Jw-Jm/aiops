@@ -16,12 +16,15 @@ import (
 )
 
 type Input struct {
-	ResourceCanonicalID string              `json:"resourceCanonicalId"`
-	Evidence            []evidence.Evidence `json:"evidence"`
-	Graph               graph.Result        `json:"graph"`
-	From                time.Time           `json:"from"`
-	To                  time.Time           `json:"to"`
-	EvaluatedAt         time.Time           `json:"evaluatedAt"`
+	SchemaVersion       string                  `json:"schemaVersion"`
+	FindingRevisions    []FindingInput          `json:"findingRevisions"`
+	GraphSources        []graph.SourceAuthority `json:"graphSources"`
+	ResourceCanonicalID string                  `json:"resourceCanonicalId"`
+	Evidence            []evidence.Evidence     `json:"evidence"`
+	Graph               graph.Result            `json:"graph"`
+	From                time.Time               `json:"from"`
+	To                  time.Time               `json:"to"`
+	EvaluatedAt         time.Time               `json:"evaluatedAt"`
 }
 type Bundle struct {
 	Supporting      []string                 `json:"supporting"`
@@ -132,8 +135,8 @@ func Evaluate(r Recipe, input Input) (Result, error) {
 			out.Bundle.Missing = append(out.Bundle.Missing, req.Key)
 		}
 	}
-	out.Bundle.Ranked = diagnostic.RankEvidence(nodes, nil)
-	out.Bundle.Conflicts = diagnostic.EvidenceConflicts(nodes, nil)
+	out.Bundle.Ranked = append([]api.RankedEvidence{}, diagnostic.RankEvidence(nodes, nil)...)
+	out.Bundle.Conflicts = append([]api.DiagnosticConflict{}, diagnostic.EvidenceConflicts(nodes, nil)...)
 	if len(out.Bundle.Contradicting) > 0 {
 		out.Bundle.Conflicts = append(out.Bundle.Conflicts, api.DiagnosticConflict{Code: "recipe_condition_conflict", Message: "required recipe facts contradicted", NodeIDs: append([]string(nil), out.Bundle.Contradicting...), Confidence: "conflicting"})
 	}

@@ -77,6 +77,15 @@ func (s Service) Change(ctx context.Context, scope graph.Scope, subject, id stri
 		if c.State == "open" && i.State == "resolved" {
 			return ErrTransition
 		} // only a new trustworthy occurrence may reopen
+		if i.State == "suppressed" {
+			active, err := linkedActivity(ctx, tx, tenant, id)
+			if err != nil {
+				return err
+			}
+			if c.State == "open" && !active || c.State == "closed" && (active || i.SuppressedUntil == nil || time.Now().Before(*i.SuppressedUntil)) {
+				return ErrTransition
+			}
+		}
 		if c.State == "suppressed" && (c.SuppressedUntil == nil || !c.SuppressedUntil.After(time.Now()) || c.SuppressedUntil.Sub(time.Now()) > 30*24*time.Hour) {
 			return ErrTransition
 		}
@@ -146,13 +155,25 @@ func (s Service) RecoveryPass(ctx context.Context, tenant uuid.UUID, healthy fun
 				return err
 			}
 			if i.State == "suppressed" && i.SuppressedUntil != nil && !time.Now().Before(*i.SuppressedUntil) {
-				i.State = "open"
+				active, err := linkedActivity(ctx, tx, tenant, i.IncidentID)
+				if err != nil {
+					return err
+				}
+				i.State = "closed"
+				if active {
+					i.State = "open"
+				}
 				i.SuppressedUntil = nil
 				i.Revision++
 				if err := Save(ctx, tx, i); err != nil {
 					return err
 				}
-				if err := Append(ctx, tx, i, "suppression_expired", "correlation/v1", "suppression_expired", map[string]any{}); err != nil {
+				if !Active(i.State) {
+					if err := releaseReferences(ctx, tx, tenant, i.IncidentID); err != nil {
+						return err
+					}
+				}
+				if err := Append(ctx, tx, i, "suppression_expired", "correlation/v1", "suppression_expired", map[string]any{"to": i.State, "activeFindings": active}); err != nil {
 					return err
 				}
 				continue
@@ -241,6 +262,9 @@ func (s Service) Merge(ctx context.Context, scope graph.Scope, subject, targetID
 		source.Revision++
 		target.Revision++
 		target.RecoveryKnownAt = nil
+		if err := recomputeRecovery(ctx, tx, tenant, &target); err != nil {
+			return err
+		}
 		for _, i := range []Incident{source, target} {
 			if err := Save(ctx, tx, i); err != nil {
 				return err

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/rca-revision/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "rca-revision/v2"
+    },
+    "tenantId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "incidentId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "baseIncidentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "inputDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "actor": {
+      "type": "string"
+    },
+    "source": {
+      "const": "deterministic"
+    },
+    "superseded": {
+      "type": "boolean"
+    },
+    "inputManifest": {
+      "$ref": "https://ops.local/schemas/rca-input/v2"
+    },
+    "result": {
+      "$ref": "https://ops.local/schemas/rca-evaluation/v2"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "tenantId",
+    "incidentId",
+    "revision",
+    "baseIncidentRevision",
+    "inputDigest",
+    "actor",
+    "source",
+    "superseded",
+    "inputManifest",
+    "result",
+    "createdAt"
+  ]
+}

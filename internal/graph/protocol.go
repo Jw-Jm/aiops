@@ -143,14 +143,23 @@ func VerifyContext(key ed25519.PublicKey, token, audience string, payload []byte
 }
 
 type InternalHandler struct {
-	Graph           *Graph
-	Lease           *Lease
-	Key             ed25519.PublicKey
-	Authorization   Authorization
-	Trust           auth.WorkloadTrust
-	ValidateSources func(context.Context) error
-	Metrics         *observability.Metrics
-	Logger          *slog.Logger
+	SourceAuthorities []SourceAuthority
+	Graph             *Graph
+	Lease             *Lease
+	Key               ed25519.PublicKey
+	Authorization     Authorization
+	Trust             auth.WorkloadTrust
+	ValidateSources   func(context.Context) error
+	Metrics           *observability.Metrics
+	Logger            *slog.Logger
+}
+
+// Frozen collection authority is process configuration, not a caller grant.
+// It accompanies RCA inputs without changing the frozen Graph response wire shape.
+type SourceAuthority struct {
+	SourceRegistrationID string `json:"sourceRegistrationId"`
+	Revision             int64  `json:"revision"`
+	ScopeDigest          string `json:"scopeDigest"`
 }
 
 func (h InternalHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

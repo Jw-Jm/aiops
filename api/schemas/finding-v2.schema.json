@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/finding/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "tenantId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "sourceRegistrationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "clusterUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "resourceCanonicalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "namespace": {
+      "type": "string",
+      "maxLength": 253
+    },
+    "ruleId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "ruleFamily": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "normalizedSymptom": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "occurrenceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "severity": {
+      "enum": [
+        "critical",
+        "warning",
+        "info",
+        "unknown"
+      ]
+    },
+    "payloadDigest": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "schemaVersion": {
+      "const": "finding-envelope/v2"
+    },
+    "startsAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sourceSequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "timeReliable": {
+      "type": "boolean"
+    },
+    "lifecycleState": {
+      "enum": [
+        "firing",
+        "resolved"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 100
+    },
+    "findingId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sourceFingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "aggregateRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "receivedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "firstReceivedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "eventId",
+    "idempotencyKey",
+    "resourceCanonicalId",
+    "namespace",
+    "ruleId",
+    "ruleFamily",
+    "normalizedSymptom",
+    "occurrenceId",
+    "severity",
+    "schemaVersion",
+    "startsAt",
+    "observedAt",
+    "sourceSequence",
+    "timeReliable",
+    "lifecycleState",
+    "payload",
+    "evidenceRefs",
+    "tenantId",
+    "sourceRegistrationId",
+    "clusterUid",
+    "findingId",
+    "sourceFingerprint",
+    "aggregateRevision",
+    "receivedAt",
+    "firstReceivedAt",
+    "sourceRevision",
+    "digest"
+  ]
+}

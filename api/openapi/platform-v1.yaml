@@ -1793,7 +1793,9 @@ components:
           minLength: 1
           maxLength: 512
         version:
-          enum: [v1, v2]
+          enum:
+          - v1
+          - v2
         candidateType:
           enum:
           - dimm_hardware_fault
@@ -1812,8 +1814,11 @@ components:
           maximum: 2
         graphPlan:
           type: string
-          enum: [single-query/v1, dimm-hosted-pods/v1]
-          description: Fixed shared-budget plan; each kernel query has depth at most 2.
+          enum:
+          - single-query/v1
+          - dimm-hosted-pods/v1
+          description: Fixed shared-budget plan; each kernel query has depth at most
+            2.
         requiredEvidence:
           type: array
           items:
@@ -1993,6 +1998,1095 @@ components:
         suppressedUntil:
           type: string
           format: date-time
+    FindingV2:
+      type: object
+      additionalProperties: false
+      properties:
+        eventId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        idempotencyKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+        tenantId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        sourceRegistrationId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        clusterUid:
+          type: string
+          minLength: 1
+          maxLength: 512
+        resourceCanonicalId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        namespace:
+          type: string
+          maxLength: 253
+        ruleId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        ruleFamily:
+          type: string
+          minLength: 1
+          maxLength: 512
+        normalizedSymptom:
+          type: string
+          minLength: 1
+          maxLength: 512
+        occurrenceId:
+          type: string
+          minLength: 1
+          maxLength: 512
+        severity:
+          enum:
+          - critical
+          - warning
+          - info
+          - unknown
+        payloadDigest:
+          type: string
+          minLength: 1
+          maxLength: 512
+        schemaVersion:
+          enum:
+          - finding-envelope/v2
+          type: string
+        startsAt:
+          type: string
+          format: date-time
+        observedAt:
+          type: string
+          format: date-time
+        sourceSequence:
+          type: integer
+          minimum: 0
+        timeReliable:
+          type: boolean
+        lifecycleState:
+          enum:
+          - firing
+          - resolved
+        payload:
+          type: object
+        evidenceRefs:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 512
+          maxItems: 100
+        findingId:
+          type: string
+          format: uuid
+        sourceFingerprint:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+        aggregateRevision:
+          type: integer
+          minimum: 1
+        receivedAt:
+          type: string
+          format: date-time
+        firstReceivedAt:
+          type: string
+          format: date-time
+        sourceRevision:
+          type: integer
+          minimum: 1
+        digest:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+      required:
+      - eventId
+      - idempotencyKey
+      - resourceCanonicalId
+      - namespace
+      - ruleId
+      - ruleFamily
+      - normalizedSymptom
+      - occurrenceId
+      - severity
+      - schemaVersion
+      - startsAt
+      - observedAt
+      - sourceSequence
+      - timeReliable
+      - lifecycleState
+      - payload
+      - evidenceRefs
+      - tenantId
+      - sourceRegistrationId
+      - clusterUid
+      - findingId
+      - sourceFingerprint
+      - aggregateRevision
+      - receivedAt
+      - firstReceivedAt
+      - sourceRevision
+      - digest
+    IncidentSummaryV2:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          enum:
+          - incident/v2
+          type: string
+        tenantId:
+          type: string
+          format: uuid
+        incidentId:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum:
+          - open
+          - acknowledged
+          - investigating
+          - mitigating
+          - suppressed
+          - resolved
+          - closed
+        revision:
+          type: integer
+          minimum: 1
+        fingerprint:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+        policyVersion:
+          type: string
+        clusterUid:
+          type: string
+        resourceCanonicalId:
+          type: string
+        namespace:
+          type: string
+        currentRcaRevision:
+          type: integer
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        severity:
+          type: string
+          enum:
+          - critical
+          - warning
+          - info
+          - unknown
+      required:
+      - schemaVersion
+      - tenantId
+      - incidentId
+      - state
+      - revision
+      - fingerprint
+      - policyVersion
+      - clusterUid
+      - resourceCanonicalId
+      - namespace
+      - currentRcaRevision
+      - createdAt
+      - updatedAt
+      - severity
+    IncidentV2:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          enum:
+          - incident/v2
+          type: string
+        tenantId:
+          type: string
+          format: uuid
+        incidentId:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum:
+          - open
+          - acknowledged
+          - investigating
+          - mitigating
+          - suppressed
+          - resolved
+          - closed
+        revision:
+          type: integer
+          minimum: 1
+        fingerprint:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+        policyVersion:
+          type: string
+        clusterUid:
+          type: string
+        resourceCanonicalId:
+          type: string
+        namespace:
+          type: string
+        currentRcaRevision:
+          type: integer
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        recoveryKnownAt:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        suppressedUntil:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        startedAt:
+          type: string
+          format: date-time
+        lastObservedAt:
+          type: string
+          format: date-time
+      required:
+      - schemaVersion
+      - tenantId
+      - incidentId
+      - state
+      - revision
+      - fingerprint
+      - policyVersion
+      - clusterUid
+      - resourceCanonicalId
+      - namespace
+      - currentRcaRevision
+      - createdAt
+      - updatedAt
+      - resolvedAt
+      - recoveryKnownAt
+      - suppressedUntil
+      - startedAt
+      - lastObservedAt
+    FindingRevisionV2:
+      type: object
+      additionalProperties: false
+      properties:
+        findingId:
+          type: string
+          format: uuid
+        aggregateRevision:
+          type: integer
+          minimum: 1
+        occurrenceId:
+          type: string
+        sourceFingerprint:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+        sourceRegistrationId:
+          type: string
+          format: uuid
+        sourceRevision:
+          type: integer
+          minimum: 1
+        resourceCanonicalId:
+          type: string
+        namespace:
+          type: string
+        lifecycleState:
+          type: string
+          enum:
+          - firing
+          - resolved
+        digest:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+        observedAt:
+          type: string
+          format: date-time
+      required:
+      - findingId
+      - aggregateRevision
+      - occurrenceId
+      - sourceFingerprint
+      - sourceRegistrationId
+      - sourceRevision
+      - resourceCanonicalId
+      - namespace
+      - lifecycleState
+      - digest
+      - observedAt
+    GraphSourceAuthorityV2:
+      type: object
+      additionalProperties: false
+      properties:
+        sourceRegistrationId:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        scopeDigest:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+      required:
+      - sourceRegistrationId
+      - revision
+      - scopeDigest
+    UnavailableGraphV2:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          enum:
+          - rca-graph-unavailable/v2
+          type: string
+        graphRevision:
+          type: object
+          additionalProperties: false
+          required:
+          - ownerEpoch
+          - graphGeneration
+          properties:
+            ownerEpoch:
+              type: integer
+              minimum: 0
+            graphGeneration:
+              type: integer
+              minimum: 0
+        ownerInstance:
+          type: string
+        collectedAt:
+          type: string
+          format: date-time
+        freshness:
+          enum:
+          - unavailable
+          type: string
+        partial:
+          enum:
+          - true
+          type: boolean
+        warnings:
+          type: array
+          items:
+            type: string
+          nullable: true
+        degradedSources:
+          type: array
+          items:
+            type: string
+          nullable: true
+        nodes:
+          type: array
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/ResourceEntityV2'
+          nullable: true
+        edges:
+          type: array
+          maxItems: 400
+          items:
+            $ref: '#/components/schemas/ResourceRelationV2'
+          nullable: true
+        budgets:
+          type: object
+          additionalProperties: false
+          properties:
+            maxDepth:
+              type: integer
+              minimum: 0
+            storageMaxDepth:
+              type: integer
+              minimum: 0
+            maxNodes:
+              type: integer
+              minimum: 0
+            maxEdges:
+              type: integer
+              minimum: 0
+            nodeCount:
+              type: integer
+              minimum: 0
+            edgeCount:
+              type: integer
+              minimum: 0
+            truncated:
+              type: boolean
+            truncationReasons:
+              type: array
+              items:
+                type: string
+          required:
+          - maxDepth
+          - storageMaxDepth
+          - maxNodes
+          - maxEdges
+          - nodeCount
+          - edgeCount
+          - truncated
+        rankedEvidence:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              source:
+                type: string
+              nodeId:
+                type: string
+              edgeKey:
+                type: string
+              kind:
+                type: string
+              severity:
+                type: string
+              reason:
+                type: string
+              message:
+                type: string
+              confidence:
+                type: string
+              rank:
+                type: integer
+              score:
+                type: number
+              timestamp:
+                type: string
+                format: date-time
+            required:
+            - rank
+            - source
+          nullable: true
+        conflicts:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+              nodeIds:
+                type: array
+                items:
+                  type: string
+              edgeKeys:
+                type: array
+                items:
+                  type: string
+              confidence:
+                type: string
+            required:
+            - code
+            - message
+          nullable: true
+        nextCanonicalId:
+          type: string
+        directlyAffected:
+          type: array
+          maxItems: 200
+          items:
+            type: string
+          nullable: true
+        indirectlyAffected:
+          type: array
+          maxItems: 200
+          items:
+            type: string
+          nullable: true
+        dependencyOnly:
+          type: array
+          maxItems: 200
+          items:
+            type: string
+          nullable: true
+      required:
+      - schemaVersion
+      - graphRevision
+      - ownerInstance
+      - collectedAt
+      - freshness
+      - partial
+      - warnings
+      - degradedSources
+      - nodes
+      - edges
+      - budgets
+      - rankedEvidence
+      - conflicts
+    DiagnosticGraphSnapshotV2:
+      oneOf:
+      - $ref: '#/components/schemas/ResourceGraphV2'
+      - $ref: '#/components/schemas/UnavailableGraphV2'
+    RCAInputV2:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          enum:
+          - rca-input/v2
+          type: string
+        findingRevisions:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/FindingRevisionV2'
+        graphSources:
+          type: array
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/GraphSourceAuthorityV2'
+        resourceCanonicalId:
+          type: string
+        evidence:
+          type: array
+          maxItems: 64
+          items:
+            $ref: '#/components/schemas/EvidenceV2'
+        graph:
+          $ref: '#/components/schemas/DiagnosticGraphSnapshotV2'
+        from:
+          type: string
+          format: date-time
+        to:
+          type: string
+          format: date-time
+        evaluatedAt:
+          type: string
+          format: date-time
+      required:
+      - schemaVersion
+      - findingRevisions
+      - graphSources
+      - resourceCanonicalId
+      - evidence
+      - graph
+      - from
+      - to
+      - evaluatedAt
+    RankedEvidenceV2:
+      type: object
+      additionalProperties: false
+      properties:
+        source:
+          type: string
+        nodeId:
+          type: string
+        edgeKey:
+          type: string
+        kind:
+          type: string
+        severity:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        confidence:
+          type: string
+        rank:
+          type: integer
+        score:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+      required:
+      - rank
+      - source
+    EvidenceConflictV2:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        nodeIds:
+          type: array
+          items:
+            type: string
+        edgeKeys:
+          type: array
+          items:
+            type: string
+        confidence:
+          type: string
+      required:
+      - code
+      - message
+    EvidenceBundleV2:
+      type: object
+      additionalProperties: false
+      properties:
+        supporting:
+          type: array
+          items:
+            type: string
+            format: uuid
+        contradicting:
+          type: array
+          items:
+            type: string
+            format: uuid
+        missing:
+          type: array
+          items:
+            type: string
+        degradedSources:
+          type: array
+          items:
+            type: string
+        ranked:
+          type: array
+          items:
+            $ref: '#/components/schemas/RankedEvidenceV2'
+        conflicts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvidenceConflictV2'
+      required:
+      - supporting
+      - contradicting
+      - missing
+      - degradedSources
+      - ranked
+      - conflicts
+    RCACandidateV2:
+      type: object
+      additionalProperties: false
+      properties:
+        candidateKey:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+        candidateType:
+          type: string
+        resourceCanonicalId:
+          type: string
+        source:
+          enum:
+          - deterministic
+          type: string
+        evidenceRefs:
+          type: array
+          items:
+            type: string
+            format: uuid
+        score:
+          type: number
+        provenance:
+          type: array
+          items:
+            type: string
+      required:
+      - candidateKey
+      - candidateType
+      - resourceCanonicalId
+      - source
+      - evidenceRefs
+      - score
+      - provenance
+    RCAEvaluationV2:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          enum:
+          - rca-evaluation/v2
+          type: string
+        status:
+          type: string
+          enum:
+          - confirmed
+          - probable
+          - unresolved
+        partial:
+          type: boolean
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/RCACandidateV2'
+        evidenceBundle:
+          $ref: '#/components/schemas/EvidenceBundleV2'
+        recipeVersion:
+          type: string
+        recipeDigest:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+        impact:
+          $ref: '#/components/schemas/DiagnosticGraphSnapshotV2'
+        graphPlan:
+          type: string
+      required:
+      - schemaVersion
+      - status
+      - partial
+      - candidates
+      - evidenceBundle
+      - recipeVersion
+      - recipeDigest
+      - impact
+      - graphPlan
+    RCARevisionV2:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          enum:
+          - rca-revision/v2
+          type: string
+        tenantId:
+          type: string
+          format: uuid
+        incidentId:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        baseIncidentRevision:
+          type: integer
+          minimum: 1
+        inputDigest:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+        actor:
+          type: string
+        source:
+          enum:
+          - deterministic
+          type: string
+        superseded:
+          type: boolean
+        inputManifest:
+          $ref: '#/components/schemas/RCAInputV2'
+        result:
+          $ref: '#/components/schemas/RCAEvaluationV2'
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - schemaVersion
+      - tenantId
+      - incidentId
+      - revision
+      - baseIncidentRevision
+      - inputDigest
+      - actor
+      - source
+      - superseded
+      - inputManifest
+      - result
+      - createdAt
+    CurrentRCAV2:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          enum:
+          - current-rca/v2
+          type: string
+        revision:
+          $ref: '#/components/schemas/RCARevisionV2'
+        currentEligible:
+          type: boolean
+        currentDegradedSources:
+          type: array
+          items:
+            type: string
+        currentGraphRevision:
+          type: object
+          additionalProperties: false
+          required:
+          - ownerEpoch
+          - graphGeneration
+          properties:
+            ownerEpoch:
+              type: integer
+              minimum: 1
+            graphGeneration:
+              type: integer
+              minimum: 1
+        semantics:
+          enum:
+          - frozen-revision-with-current-reference-authorization
+          type: string
+      required:
+      - schemaVersion
+      - revision
+      - currentEligible
+      - currentDegradedSources
+      - semantics
+    IncidentTimelineV2:
+      type: object
+      additionalProperties: false
+      properties:
+        timelineId:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        actor:
+          type: string
+        policyVersion:
+          type: string
+        reason:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - timelineId
+      - kind
+      - actor
+      - policyVersion
+      - reason
+      - payload
+      - createdAt
+    FindingSuccessV2:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/FindingV2'
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+      required:
+      - data
+      - requestId
+    IncidentSuccessV2:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/IncidentV2'
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+      required:
+      - data
+      - requestId
+    RCARevisionSuccessV2:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/RCARevisionV2'
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+      required:
+      - data
+      - requestId
+    CurrentRCASuccessV2:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/CurrentRCAV2'
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+      required:
+      - data
+      - requestId
+    FindingPageV2:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindingV2'
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+      required:
+      - data
+      - requestId
+      - meta
+    IncidentPageV2:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentSummaryV2'
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+      required:
+      - data
+      - requestId
+      - meta
+    RCARevisionPageV2:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RCARevisionV2'
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+      required:
+      - data
+      - requestId
+      - meta
+    IncidentTimelinePageV2:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentTimelineV2'
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+      required:
+      - data
+      - requestId
+      - meta
+    IncidentEvidencePageV2:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvidenceV2'
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+      required:
+      - data
+      - requestId
+      - meta
+    FindingIngestionSuccessV2:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            finding:
+              $ref: '#/components/schemas/FindingV2'
+            disposition:
+              type: string
+              enum:
+              - accepted
+              - duplicate
+              - stale
+          required:
+          - finding
+          - disposition
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+      required:
+      - data
+      - requestId
   securitySchemes:
     BearerAuth:
       bearerFormat: JWT
@@ -3549,13 +4643,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PageEnvelope'
+                $ref: '#/components/schemas/FindingPageV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -3577,13 +4673,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/FindingSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -3594,7 +4692,8 @@ paths:
     post:
       operationId: ingestFinding
       deprecated: true
-      description: Historical Contract retained. Runtime returns CAPABILITY_DISABLED; explicitly bound SP05 publishers use the additive v2 endpoint.
+      description: Historical Contract retained. Runtime returns CAPABILITY_DISABLED;
+        explicitly bound SP05 publishers use the additive v2 endpoint.
       parameters:
       - description: Stable key for replay-safe write handling.
         in: header
@@ -3620,7 +4719,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -3650,13 +4751,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/FindingIngestionSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -3718,13 +4821,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PageEnvelope'
+                $ref: '#/components/schemas/IncidentPageV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -3746,13 +4851,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/IncidentSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -3784,13 +4891,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PageEnvelope'
+                $ref: '#/components/schemas/IncidentEvidencePageV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -3854,13 +4963,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/CurrentRCASuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -3892,13 +5003,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PageEnvelope'
+                $ref: '#/components/schemas/RCARevisionPageV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -3926,13 +5039,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/RCARevisionSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -3978,13 +5093,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PageEnvelope'
+                $ref: '#/components/schemas/IncidentTimelinePageV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -4019,13 +5136,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/IncidentSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -4063,13 +5182,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/IncidentSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -4099,13 +5220,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/IncidentSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []

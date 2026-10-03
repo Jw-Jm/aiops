@@ -1,6 +1,7 @@
 package finding
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -78,9 +79,12 @@ func SemanticDigest(e Envelope) string {
 	e.TenantID = ""
 	e.SourceRegistrationID = ""
 	e.ClusterUID = ""
-	// encoding/json canonicalizes object keys and number syntax after decoding.
+	// Sort object keys and discard whitespace without rounding publisher numeric
+	// facts through float64. Exact JSON number spellings remain digest-significant.
 	var v any
-	_ = json.Unmarshal(e.Payload, &v)
+	decoder := json.NewDecoder(bytes.NewReader(e.Payload))
+	decoder.UseNumber()
+	_ = decoder.Decode(&v)
 	e.Payload, _ = json.Marshal(v)
 	return Hash(e)
 }

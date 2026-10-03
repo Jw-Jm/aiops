@@ -83,6 +83,11 @@ func TestSP05RCARegistryImmutableEvidenceAppendOnlyAndReplayRevocation(t *testin
 		t.Fatal(err)
 	}
 	repo.Trust = trust
+	input.SchemaVersion = "rca-input/v2"
+	input.FindingRevisions, err = repo.FreezeFindings(ctx, b.TenantID, id)
+	if err != nil {
+		t.Fatal(err)
+	}
 	wrongPrimary := input
 	wrongPrimary.ResourceCanonicalID = sp05Envelope(b, "other-primary", "other-primary").ResourceCanonicalID + "-other"
 	if _, err := repo.Commit(ctx, b.TenantID, id, "worker", "wrong-primary", i.Revision, 0, &version.VersionID, recipe, wrongPrimary); !errors.Is(err, rca.ErrStale) {

@@ -331,7 +331,11 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 		}
 		g := graph.New(cluster.Tenant, cluster.ClusterUID, uuid.NewString(), kubernetes.CoreRequiredGVRs())
 		lease := &graph.Lease{Client: client, Graph: g, Mirror: graph.Repository{Pool: pool}, Namespace: cluster.LeaseNamespace, Name: cluster.LeaseName, Endpoint: c.OwnerEndpoint, Logger: runtime.Logger}
-		handlers[cluster.Tenant+"|"+cluster.ClusterUID] = graph.InternalHandler{Graph: g, Lease: lease, Key: key, Authorization: graph.Authorization{Pool: pool}, Trust: trust, ValidateSources: validateSources, Metrics: runtime.Metrics, Logger: runtime.Logger}
+		authorities := []graph.SourceAuthority{}
+		for _, b := range graphBindings {
+			authorities = append(authorities, graph.SourceAuthority{SourceRegistrationID: b.SourceID, Revision: b.Revision, ScopeDigest: evidence.BindingScopeDigest(b)})
+		}
+		handlers[cluster.Tenant+"|"+cluster.ClusterUID] = graph.InternalHandler{SourceAuthorities: authorities, Graph: g, Lease: lease, Key: key, Authorization: graph.Authorization{Pool: pool}, Trust: trust, ValidateSources: validateSources, Metrics: runtime.Metrics, Logger: runtime.Logger}
 		archiveQueue := newProjectionArchiveQueue(runContext, cluster, g, archive, &group)
 		if c.SP05 != nil && c.SP05.Enabled {
 			startSP05OfficialObservations(runContext, archive, cluster, client, runtime, &group)

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/graph-source-authority/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sourceRegistrationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "scopeDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "sourceRegistrationId",
+    "revision",
+    "scopeDigest"
+  ]
+}

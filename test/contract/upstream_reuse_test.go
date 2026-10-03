@@ -516,10 +516,18 @@ func assertInspectionCatalogCandidates(t *testing.T, root string, ids []string, 
 			continue
 		}
 		capability := byID[id]
-		if component.State != "candidate" || component.Source != capability.Source || component.Version != capability.Version || component.Commit != capability.Commit || component.Digest != "sha256:"+capability.SourceArchiveSHA256 || component.SourceArchiveSHA256 != "sha256:"+capability.SourceArchiveSHA256 || component.License != capability.License {
-			t.Errorf("component catalog entry %s disagrees with review lock or is no longer candidate: state=%s source=%s version=%s commit=%s digest=%s archive=%s license=%s", name, component.State, component.Source, component.Version, component.Commit, component.Digest, component.SourceArchiveSHA256, component.License)
+		expectedState := "candidate"
+		if id == "k8sgpt-analyzer" {
+			expectedState = "qualified"
 		}
-		if err := catalog.ValidateBundle([]string{name}); err == nil || !strings.Contains(err.Error(), "candidate component") {
+		if component.State != expectedState || component.Source != capability.Source || component.Version != capability.Version || component.Commit != capability.Commit || component.Digest != "sha256:"+capability.SourceArchiveSHA256 || component.SourceArchiveSHA256 != "sha256:"+capability.SourceArchiveSHA256 || component.License != capability.License {
+			t.Errorf("component catalog entry %s disagrees with locked source or explicit runtime admission: state=%s source=%s version=%s commit=%s digest=%s archive=%s license=%s", name, component.State, component.Source, component.Version, component.Commit, component.Digest, component.SourceArchiveSHA256, component.License)
+		}
+		if err := catalog.ValidateBundle([]string{name}); id == "k8sgpt-analyzer" {
+			if err != nil || component.CorrespondingSourceBundleSHA256 != "sha256:2e34224848a9de13cb78e70c117c2d1e367ddab61076b691efad29fbc2f37e92" {
+				t.Errorf("unchanged CLI source admission missing: %v", err)
+			}
+		} else if err == nil || !strings.Contains(err.Error(), "candidate component") {
 			t.Errorf("candidate %s was not rejected from Bundle: %v", name, err)
 		}
 	}
@@ -564,7 +572,11 @@ func assertThirdPartyManifestLock(t *testing.T, root string, ids []string, byID 
 			t.Errorf("third-party manifest lacks %s", manifestName[id])
 			continue
 		}
-		if row.Status != "candidate" || row.Source != capability.Source || row.Version != capability.Version || row.Commit != capability.Commit || row.GitArchiveSHA256 != capability.SourceArchiveSHA256 || row.License != capability.License || row.LicenseEvidence != capability.LicenseEvidence || row.LicenseEvidenceSHA256 != capability.LicenseEvidenceSHA256 || row.Lock != "docs/poc/inspection-reuse-lock.yaml#"+id || len(row.Fixtures) == 0 || row.Use == "selected upstream test/model/rule baseline; runtime disabled" {
+		expectedState := "candidate"
+		if id == "k8sgpt-analyzer" {
+			expectedState = "qualified"
+		}
+		if row.Status != expectedState || row.Source != capability.Source || row.Version != capability.Version || row.Commit != capability.Commit || row.GitArchiveSHA256 != capability.SourceArchiveSHA256 || row.License != capability.License || row.LicenseEvidence != capability.LicenseEvidence || row.LicenseEvidenceSHA256 != capability.LicenseEvidenceSHA256 || row.Lock != "docs/poc/inspection-reuse-lock.yaml#"+id || len(row.Fixtures) == 0 || row.Use == "selected upstream test/model/rule baseline; runtime disabled" {
 			t.Errorf("third-party manifest entry %s disagrees with the locked reuse boundary", row.Name)
 		}
 		if row.Source == "" || !commitPattern.MatchString(row.Commit) || !shaPattern.MatchString(row.GitArchiveSHA256) || !shaPattern.MatchString(row.LicenseEvidenceSHA256) {

@@ -480,6 +480,9 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 		}
 		defer response.Body.Close()
 		b, _ := io.ReadAll(io.LimitReader(response.Body, 1<<20))
+		if os.Getenv("SP05_NATIVE_CHART") == "1" {
+			assertSP05PublicResponseContract(t, path, response.StatusCode, b)
+		}
 		return response.StatusCode, b
 	}
 	resourcePath := "/api/v1/resources/by-canonical-id?canonicalId=" + url.QueryEscape(canonical)

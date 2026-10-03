@@ -42,6 +42,11 @@ func (h *SP05Handlers) authorizeIncidentRead(ctx context.Context, actor auth.Req
 	})
 }
 func (h *SP05Handlers) authorizeRCARead(ctx context.Context, actor auth.RequestContext, scope graph.Scope, rev rca.Revision) error {
+	if err := persistence.WithTenantTx(ctx, h.Pool, actor.TenantID, func(tx pgx.Tx) error {
+		return rca.CheckGraphSources(ctx, tx, actor.TenantID, rev.InputManifest.GraphSources, rev.InputManifest.Graph)
+	}); err != nil {
+		return graph.ErrScope
+	}
 	for _, e := range rev.InputManifest.Evidence {
 		id, err := uuid.Parse(e.EvidenceID)
 		if err != nil {
@@ -182,7 +187,7 @@ func currentRCAView(i incident.Incident, rev rca.Revision) any {
 	}
 	// A historical frozen result is preserved; current eligibility is explicitly
 	// separate and cannot recycle its old freshness as current causal evidence.
-	return map[string]any{"revision": rev, "currentEligible": false, "baseEligible": eligible, "currentDegradedSources": append(reasons, "current-runtime-unverified"), "semantics": "frozen-revision-with-current-reference-authorization"}
+	return map[string]any{"schemaVersion": "current-rca/v2", "revision": rev, "currentEligible": false, "baseEligible": eligible, "currentDegradedSources": append(reasons, "current-runtime-unverified"), "semantics": "frozen-revision-with-current-reference-authorization"}
 }
 
 var _ = strings.Compare
@@ -208,8 +213,12 @@ func (h *SP05Handlers) currentRCAView(ctx context.Context, actor auth.RequestCon
 	if !baseEligible {
 		return view, nil
 	}
+	currentFindings, err := (rca.Repository{Pool: h.Pool}).FreezeFindings(ctx, actor.TenantID, i.IncidentID)
+	if err != nil || rev.InputManifest.SchemaVersion != "rca-input/v2" || finding.Hash(currentFindings) != finding.Hash(rev.InputManifest.FindingRevisions) {
+		return fail("current-finding-revisions-changed-or-unapplied")
+	}
 	recipeCurrent := false
-	err := persistence.WithTenantTx(ctx, h.Pool, actor.TenantID, func(tx pgx.Tx) error {
+	err = persistence.WithTenantTx(ctx, h.Pool, actor.TenantID, func(tx pgx.Tx) error {
 		return tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM incident.rca_revisions r JOIN platform.registry_versions v ON v.tenant_id=r.tenant_id AND v.version_id=r.recipe_version_id JOIN platform.cluster_registrations c ON c.tenant_id=r.tenant_id AND c.cluster_uid=$4 WHERE r.tenant_id=$1 AND r.incident_id=$2 AND r.revision=$3 AND v.retired_at IS NULL AND v.version_id=(SELECT a.version_id FROM platform.registry_activations a WHERE a.tenant_id=r.tenant_id AND a.kind='recipe' AND a.logical_name=v.logical_name AND (a.scope_type='tenant' OR (a.cluster_id=c.cluster_id AND (a.scope_type='cluster' OR a.namespace=$5))) ORDER BY CASE a.scope_type WHEN 'namespace' THEN 3 WHEN 'cluster' THEN 2 ELSE 1 END DESC LIMIT 1))`, actor.TenantID, i.IncidentID, rev.Revision, i.ClusterUID, i.Namespace).Scan(&recipeCurrent)
 	})
 	if err != nil || !recipeCurrent {

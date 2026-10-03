@@ -88,10 +88,20 @@ func (s Service) Split(ctx context.Context, scope graph.Scope, subject, id, reas
 		}
 		i.Revision++
 		i.RecoveryKnownAt = nil
-		if err := Save(ctx, tx, i); err != nil {
-			return err
-		}
 		for _, item := range []Incident{i, out} {
+			if err := recomputeRecovery(ctx, tx, tenant, &item); err != nil {
+				return err
+			}
+			if item.IncidentID == out.IncidentID {
+				// The child is still being created in this transaction. Initialize
+				// its clock without treating initial revision 1 as a subsequent CAS.
+				if _, err := tx.Exec(ctx, `UPDATE incident.records SET recovery_known_at=$3 WHERE tenant_id=$1 AND incident_id=$2 AND revision=1`, tenant, item.IncidentID, item.RecoveryKnownAt); err != nil {
+					return err
+				}
+				out = item
+			} else if err := Save(ctx, tx, item); err != nil {
+				return err
+			}
 			if err := Append(ctx, tx, item, "split", subject, reason, map[string]any{"sourceId": id, "targetId": newID, "findingIds": refs}); err != nil {
 				return err
 			}

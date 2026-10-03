@@ -8,6 +8,7 @@ import type {
   ClusterRegistrationRequest,
   CommandExecutionRequest,
   CreateStepUpSessionBody,
+  CurrentRCASuccessV2,
   DiagnosticGraphBuildRequest,
   ErrorEnvelope,
   EvidenceQueryRequest,
@@ -15,6 +16,9 @@ import type {
   EvidenceSuccessV2,
   FindingEnvelope,
   FindingEnvelopeV2,
+  FindingIngestionSuccessV2,
+  FindingPageV2,
+  FindingSuccessV2,
   GetAuditRecordsParams,
   GetClustersParams,
   GetExecutionProfilesParams,
@@ -36,8 +40,12 @@ import type {
   GetTenantsParams,
   GetToolsParams,
   Identifier,
+  IncidentEvidencePageV2,
   IncidentMergeV2,
+  IncidentPageV2,
   IncidentSplitV2,
+  IncidentSuccessV2,
+  IncidentTimelinePageV2,
   IncidentTransitionRequest,
   IncidentTransitionV2,
   JSONRequest,
@@ -46,6 +54,8 @@ import type {
   LegalHoldResultV1,
   PageEnvelope,
   PolicyBundlePublishRequest,
+  RCARevisionPageV2,
+  RCARevisionSuccessV2,
   RegistryActivationRequest,
   RegistryDraftCreateRequest,
   RegistryDraftUpdateRequest,
@@ -2585,12 +2595,12 @@ const res = await fetch(getQueryEvidenceUrl(),
 
 
 export type getFindingsResponse200 = {
-  data: PageEnvelope
+  data: FindingPageV2
   status: 200
 }
 
 export type getFindingsResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -2642,12 +2652,12 @@ export const getFindings = async (params: GetFindingsParams, options?: RequestIn
 
 
 export type getFindingResponse200 = {
-  data: SuccessEnvelope
+  data: FindingSuccessV2
   status: 200
 }
 
 export type getFindingResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -2697,7 +2707,7 @@ export type ingestFindingResponse200 = {
 }
 
 export type ingestFindingResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -2758,12 +2768,12 @@ const res = await fetch(getIngestFindingUrl(),
 
 
 export type ingestFindingV2Response200 = {
-  data: SuccessEnvelope
+  data: FindingIngestionSuccessV2
   status: 200
 }
 
 export type ingestFindingV2ResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -2822,12 +2832,12 @@ const res = await fetch(getIngestFindingV2Url(),
 
 
 export type getIncidentsResponse200 = {
-  data: PageEnvelope
+  data: IncidentPageV2
   status: 200
 }
 
 export type getIncidentsResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -2879,12 +2889,12 @@ export const getIncidents = async (params: GetIncidentsParams, options?: Request
 
 
 export type getIncidentResponse200 = {
-  data: SuccessEnvelope
+  data: IncidentSuccessV2
   status: 200
 }
 
 export type getIncidentResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -2929,12 +2939,12 @@ export const getIncident = async (incidentId: string, options?: RequestInit): Pr
 
 
 export type getIncidentEvidenceResponse200 = {
-  data: PageEnvelope
+  data: IncidentEvidencePageV2
   status: 200
 }
 
 export type getIncidentEvidenceResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3053,12 +3063,12 @@ const res = await fetch(getCreateInvestigationUrl(incidentId),
 
 
 export type getIncidentRCAResponse200 = {
-  data: SuccessEnvelope
+  data: CurrentRCASuccessV2
   status: 200
 }
 
 export type getIncidentRCAResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3103,12 +3113,12 @@ export const getIncidentRCA = async (incidentId: string, options?: RequestInit):
 
 
 export type getRCARevisionsResponse200 = {
-  data: PageEnvelope
+  data: RCARevisionPageV2
   status: 200
 }
 
 export type getRCARevisionsResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3162,12 +3172,12 @@ export const getRCARevisions = async (incidentId: string,
 
 
 export type getRCARevisionResponse200 = {
-  data: SuccessEnvelope
+  data: RCARevisionSuccessV2
   status: 200
 }
 
 export type getRCARevisionResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3214,12 +3224,12 @@ export const getRCARevision = async (incidentId: string,
 
 
 export type getIncidentTimelineResponse200 = {
-  data: PageEnvelope
+  data: IncidentTimelinePageV2
   status: 200
 }
 
 export type getIncidentTimelineResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3273,12 +3283,12 @@ export const getIncidentTimeline = async (incidentId: string,
 
 
 export type splitIncidentResponse200 = {
-  data: SuccessEnvelope
+  data: IncidentSuccessV2
   status: 200
 }
 
 export type splitIncidentResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3338,12 +3348,12 @@ const res = await fetch(getSplitIncidentUrl(incidentId),
 
 
 export type transitionIncidentResponse200 = {
-  data: SuccessEnvelope
+  data: IncidentSuccessV2
   status: 200
 }
 
 export type transitionIncidentResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3403,12 +3413,12 @@ const res = await fetch(getTransitionIncidentUrl(incidentId),
 
 
 export type mergeIncidentsResponse200 = {
-  data: SuccessEnvelope
+  data: IncidentSuccessV2
   status: 200
 }
 
 export type mergeIncidentsResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 

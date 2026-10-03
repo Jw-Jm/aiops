@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/rca-evaluation/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "rca-evaluation/v2"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "probable",
+        "unresolved"
+      ]
+    },
+    "partial": {
+      "type": "boolean"
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ops.local/schemas/rca-candidate/v2"
+      }
+    },
+    "evidenceBundle": {
+      "$ref": "https://ops.local/schemas/evidence-bundle/v2"
+    },
+    "recipeVersion": {
+      "type": "string"
+    },
+    "recipeDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "impact": {
+      "$ref": "https://ops.local/schemas/diagnostic-graph-snapshot/v2"
+    },
+    "graphPlan": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "status",
+    "partial",
+    "candidates",
+    "evidenceBundle",
+    "recipeVersion",
+    "recipeDigest",
+    "impact",
+    "graphPlan"
+  ]
+}

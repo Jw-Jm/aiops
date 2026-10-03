@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/incident-summary/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "incident/v2"
+    },
+    "tenantId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "incidentId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "acknowledged",
+        "investigating",
+        "mitigating",
+        "suppressed",
+        "resolved",
+        "closed"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "policyVersion": {
+      "type": "string"
+    },
+    "clusterUid": {
+      "type": "string"
+    },
+    "resourceCanonicalId": {
+      "type": "string"
+    },
+    "namespace": {
+      "type": "string"
+    },
+    "currentRcaRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "warning",
+        "info",
+        "unknown"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "tenantId",
+    "incidentId",
+    "state",
+    "revision",
+    "fingerprint",
+    "policyVersion",
+    "clusterUid",
+    "resourceCanonicalId",
+    "namespace",
+    "currentRcaRevision",
+    "createdAt",
+    "updatedAt",
+    "severity"
+  ]
+}

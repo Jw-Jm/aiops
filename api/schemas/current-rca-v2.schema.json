@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/current-rca/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "current-rca/v2"
+    },
+    "revision": {
+      "$ref": "https://ops.local/schemas/rca-revision/v2"
+    },
+    "currentEligible": {
+      "type": "boolean"
+    },
+    "currentDegradedSources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "currentGraphRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ownerEpoch",
+        "graphGeneration"
+      ],
+      "properties": {
+        "ownerEpoch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "graphGeneration": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "semantics": {
+      "const": "frozen-revision-with-current-reference-authorization"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "revision",
+    "currentEligible",
+    "currentDegradedSources",
+    "semantics"
+  ]
+}

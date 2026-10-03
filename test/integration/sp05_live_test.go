@@ -182,6 +182,7 @@ func TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart(t *testing.T) {
 		}
 		defer response.Body.Close()
 		raw, _ := io.ReadAll(io.LimitReader(response.Body, 1<<20))
+		assertSP05PublicResponseContract(t, path, response.StatusCode, raw)
 		return response.StatusCode, raw
 	}
 	canonical := resource.CanonicalID{Domain: "k8s", Tenant: b.TenantID.String(), Scope: b.ClusterUID, APIGroup: "core", Kind: "PersistentVolumeClaim", StableID: pvcObject.Metadata.UID}.String()

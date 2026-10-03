@@ -17,6 +17,7 @@ import (
 	"ops-platform/internal/archive"
 	"ops-platform/internal/auth"
 	"ops-platform/internal/configregistry"
+	"ops-platform/internal/contract"
 	protect "ops-platform/internal/crypto"
 	"ops-platform/internal/datascope"
 	"ops-platform/internal/evidence"
@@ -97,7 +98,7 @@ func TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay(t *testing.T) {
 	}
 }
 
-func sp05GoldenVertical(t *testing.T, scenario, mode string) {
+func sp05GoldenVertical(t *testing.T, scenario, mode string, reviewFence ...bool) {
 	input, expected := loadSP05Golden(t, scenario)
 	ctx, db, pool, b := sp05Database(t, sp05Seed{Tenant: uuid.MustParse(input.Tenant), Source: uuid.MustParse(input.Sources["kubernetes"]), ClusterUID: input.Cluster, Namespace: input.Namespace, Backend: "sp05-golden-kubernetes"})
 	clock := input.Clock
@@ -139,6 +140,11 @@ func sp05GoldenVertical(t *testing.T, scenario, mode string) {
 		}
 	}
 	bindings := map[string]evidence.Binding{}
+	kubernetesBinding, bindingErr := (evidence.Repository{Pool: pool}).RegisteredBinding(ctx, evidence.Binding{Tenant: input.Tenant, SourceID: cluster.SourceID, SourceType: "kubernetes", Revision: 1, BackendLogicalID: cluster.BackendLogicalID})
+	if bindingErr != nil {
+		t.Fatal(bindingErr)
+	}
+	bindings["kubernetes"] = kubernetesBinding
 	for _, kind := range []string{"redfish", "victorialogs"} {
 		id := input.Sources[kind]
 		mapping := datascope.Mapping{RequiredLabels: map[string]string{"tenant": input.Tenant}, Scopes: map[string][]string{"cluster": {input.Cluster}, "namespace": {input.Namespace}}}
@@ -258,7 +264,13 @@ func sp05GoldenVertical(t *testing.T, scenario, mode string) {
 		}
 	}
 
-	reducer := app.SP05Reducer{Pool: pool, Archive: archives, Cluster: cluster, Handler: graph.InternalHandler{Graph: g}, Registry: registry, Trust: trust, Clock: func() time.Time { return clock }}
+	authorities := []graph.SourceAuthority{}
+	for _, kind := range []string{"kubernetes", "redfish"} {
+		if binding, ok := bindings[kind]; ok {
+			authorities = append(authorities, graph.SourceAuthority{SourceRegistrationID: binding.SourceID, Revision: binding.Revision, ScopeDigest: evidence.BindingScopeDigest(binding)})
+		}
+	}
+	reducer := app.SP05Reducer{Pool: pool, Archive: archives, Cluster: cluster, Handler: graph.InternalHandler{Graph: g, SourceAuthorities: authorities}, Registry: registry, Trust: trust, Clock: func() time.Time { return clock }}
 	var semanticBaseline string
 	for replay := 0; replay < 2; replay++ {
 		clock = input.Clock
@@ -314,6 +326,9 @@ func sp05GoldenVertical(t *testing.T, scenario, mode string) {
 		} else if semantic != semanticBaseline {
 			t.Fatalf("frozen replay changed semantic IDs/revisions/roots/impact: first=%s second=%s", semanticBaseline, semantic)
 		}
+	}
+	if len(reviewFence) > 0 && reviewFence[0] {
+		sp05GoldenReviewFences(t, ctx, db, pool, archives, registry, trust, g, cluster, b, scopeForGolden(input), expected.Primary)
 	}
 	t.Logf("%s/%s: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim", scenario, mode)
 }
@@ -536,6 +551,23 @@ func assertSP05Golden(t *testing.T, ctx context.Context, db *sql.DB, archives *e
 	}
 	checkedPrimary := 0
 	for _, revision := range revisions {
+		raw, err := json.Marshal(revision)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := contract.Validate("https://ops.local/schemas/rca-revision/v2", raw); err != nil {
+			t.Fatalf("actual frozen RCA output Contract: %v", err)
+		}
+		for _, e := range revision.InputManifest.Evidence {
+			data, ref, err := archives.Read(ctx, tenant, uuid.MustParse(e.EvidenceID))
+			if err != nil || evidence.Digest(data) != e.ContentDigest || ref.PlaintextDigest != e.ContentDigest {
+				t.Fatalf("RCA reference not actually readable/verifiable: %s %v", e.EvidenceID, err)
+			}
+			var retain bool
+			if err := db.QueryRowContext(ctx, `WITH RECURSIVE closure AS (SELECT $2::uuid AS evidence_id UNION SELECT d.referrer_id FROM platform.evidence_dependencies d JOIN closure c ON d.dependency_id=c.evidence_id WHERE d.tenant_id=$1) SELECT EXISTS(SELECT 1 FROM closure c JOIN platform.evidence_retention_references r ON r.tenant_id=$1 AND r.evidence_id=c.evidence_id WHERE r.retain_until>=clock_timestamp()+interval '364 days')`, tenant, e.EvidenceID).Scan(&retain); err != nil || !retain || ref.Object.RetainUntil.Before(time.Now().Add(364*24*time.Hour)) {
+				t.Fatalf("RCA 365-day dependency closure missing: %s %v", e.EvidenceID, err)
+			}
+		}
 		required := expected.Variants[mode]
 		result := revision.Result
 		isNodeUpstream := input.Scenario == "node-hardware-upstream"
@@ -601,16 +633,7 @@ func assertSP05Golden(t *testing.T, ctx context.Context, db *sql.DB, archives *e
 				}
 			}
 		}
-		for _, e := range revision.InputManifest.Evidence {
-			data, ref, err := archives.Read(ctx, tenant, uuid.MustParse(e.EvidenceID))
-			if err != nil || evidence.Digest(data) != e.ContentDigest || ref.PlaintextDigest != e.ContentDigest {
-				t.Fatalf("RCA reference not actually readable/verifiable: %s %v", e.EvidenceID, err)
-			}
-			var retain bool
-			if err := db.QueryRowContext(ctx, `WITH RECURSIVE closure AS (SELECT $2::uuid AS evidence_id UNION SELECT d.referrer_id FROM platform.evidence_dependencies d JOIN closure c ON d.dependency_id=c.evidence_id WHERE d.tenant_id=$1) SELECT EXISTS(SELECT 1 FROM closure c JOIN platform.evidence_retention_references r ON r.tenant_id=$1 AND r.evidence_id=c.evidence_id WHERE r.retain_until>=clock_timestamp()+interval '364 days')`, tenant, e.EvidenceID).Scan(&retain); err != nil || !retain || ref.Object.RetainUntil.Before(time.Now().Add(364*24*time.Hour)) {
-				t.Fatalf("RCA 365-day dependency closure missing: %s %v", e.EvidenceID, err)
-			}
-		}
+
 	}
 	if mode == "valid" && checkedPrimary == 0 {
 		t.Fatal("no frozen primary RCA was actually verified")

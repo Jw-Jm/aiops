@@ -183,11 +183,18 @@ func sp05RCAIncident(ctx context.Context, pool persistence.TxBeginner, archive *
 	if err != nil {
 		return err
 	}
-	input := rca.Input{ResourceCanonicalID: i.ResourceCanonicalID, From: now.Add(-5 * time.Minute), To: now, EvaluatedAt: now, Evidence: []evidence.Evidence{}, Graph: graph.Result{Freshness: "unavailable", Partial: true, DegradedSources: []string{"graph"}, Nodes: []resource.Entity{}, Edges: []resource.Relation{}}}
+	input := rca.Input{ResourceCanonicalID: i.ResourceCanonicalID, From: now.Add(-5 * time.Minute), To: now, EvaluatedAt: now, Evidence: []evidence.Evidence{}, Graph: graph.Result{SchemaVersion: "rca-graph-unavailable/v2", Freshness: "unavailable", Partial: true, DegradedSources: []string{"graph"}, Nodes: []resource.Entity{}, Edges: []resource.Relation{}}}
+	input.SchemaVersion = "rca-input/v2"
+	input.FindingRevisions, err = (rca.Repository{Pool: pool}).FreezeFindings(ctx, tenant, i.IncidentID)
+	if err != nil {
+		return err
+	}
+	input.GraphSources = []graph.SourceAuthority{}
 	q := graph.Query{CanonicalID: i.ResourceCanonicalID, Scope: graphScope}
 	result, queryErr := rca.QueryImpact(ctx, h.Graph, recipe, q)
 	if queryErr == nil {
 		input.Graph = result
+		input.GraphSources = rca.SelectGraphSources(h.SourceAuthorities, result)
 	}
 	refs := []string{}
 	entities := []string{i.ResourceCanonicalID}

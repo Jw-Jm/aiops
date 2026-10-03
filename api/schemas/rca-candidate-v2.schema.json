@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/rca-candidate/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "candidateKey": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "candidateType": {
+      "type": "string"
+    },
+    "resourceCanonicalId": {
+      "type": "string"
+    },
+    "source": {
+      "const": "deterministic"
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "score": {
+      "type": "number"
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "candidateKey",
+    "candidateType",
+    "resourceCanonicalId",
+    "source",
+    "evidenceRefs",
+    "score",
+    "provenance"
+  ]
+}

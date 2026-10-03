@@ -19,6 +19,7 @@ import (
 var ErrStale = errors.New("STALE_CONTEXT")
 
 type Revision struct {
+	SchemaVersion        string    `json:"schemaVersion"`
 	TenantID             string    `json:"tenantId"`
 	IncidentID           string    `json:"incidentId"`
 	Revision             int64     `json:"revision"`
@@ -95,6 +96,21 @@ func (r Repository) Commit(ctx context.Context, tenant uuid.UUID, id, actor, key
 			if err := r.verifyRecipe(ctx, tx, tenant, recipeVersionID, i.ClusterUID, i.Namespace, recipe); err != nil {
 				return err
 			}
+			actualFindings, err := freezeFindings(ctx, tx, tenant, id)
+			if err != nil {
+				return err
+			}
+			if input.SchemaVersion != "rca-input/v2" || !sameJSON(actualFindings, input.FindingRevisions) {
+				return ErrStale
+			}
+			if result.Status == "confirmed" {
+				if len(input.GraphSources) == 0 {
+					return ErrStale
+				}
+				if err := CheckGraphSources(ctx, tx, tenant, input.GraphSources, input.Graph); err != nil {
+					return err
+				}
+			}
 			for _, e := range input.Evidence {
 				var content, state string
 				var metadata []byte
@@ -143,7 +159,7 @@ func (r Repository) Commit(ctx context.Context, tenant uuid.UUID, id, actor, key
 				return err
 			}
 
-			out = Revision{TenantID: tenant.String(), IncidentID: id, Revision: next, BaseIncidentRevision: base, InputDigest: digest, Actor: actor, Source: "deterministic", Superseded: superseded, InputManifest: input, Result: result, CreatedAt: time.Now().UTC()}
+			out = Revision{SchemaVersion: "rca-revision/v2", TenantID: tenant.String(), IncidentID: id, Revision: next, BaseIncidentRevision: base, InputDigest: digest, Actor: actor, Source: "deterministic", Superseded: superseded, InputManifest: input, Result: result, CreatedAt: time.Now().UTC()}
 			raw, _ := json.Marshal(out)
 			manifest, _ := json.Marshal(input)
 			provenance, _ := json.Marshal(map[string]any{"recipe": recipe.Name, "version": recipe.Version, "digest": result.RecipeDigest, "graphRevision": input.Graph.GraphRevision})

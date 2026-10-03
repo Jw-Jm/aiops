@@ -36,11 +36,11 @@ func (h *SP05Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Vary", "Authorization")
 	request, ok := auth.RequestContextFromContext(r.Context())
 	if !ok {
-		writeTenantError(w, 401, "UNAUTHENTICATED", "verified identity required", false, "")
+		writeSP04Error(w, 401, "UNAUTHENTICATED", "verified identity required", false, "")
 		return
 	}
 	fail := func(err error) {
-		code, status := "SOURCE_CAPABILITY_UNAVAILABLE", 503
+		code, status := "SOURCE_DEGRADED", 503
 		switch {
 		case errors.Is(err, pgx.ErrNoRows):
 			code, status = "NOT_FOUND", 404
@@ -53,10 +53,10 @@ func (h *SP05Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, incident.ErrTransition), errors.Is(err, finding.ErrInvalid):
 			code, status = "INVALID_ARGUMENT", 400
 		}
-		writeTenantError(w, status, code, "SP05 request failed", status == 503, request.RequestID)
+		writeSP04Error(w, status, code, "SP05 request failed", status == 503, request.RequestID)
 	}
 	if !h.Enabled {
-		writeTenantError(w, 409, "CAPABILITY_DISABLED", "SP05 runtime is disabled", false, request.RequestID)
+		writeSP04Error(w, 409, "CAPABILITY_DISABLED", "SP05 runtime is disabled", false, request.RequestID)
 		return
 	}
 	if r.Method == "POST" && strings.HasPrefix(r.URL.Path, "/api/v1/incidents") {
@@ -66,7 +66,7 @@ func (h *SP05Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if r.URL.Path == "/api/v1/findings:ingest" && r.Method == "POST" {
-		writeTenantError(w, 409, "CAPABILITY_DISABLED", "historical ingestion contract is unverified; explicitly bound publishers require finding-envelope/v2 and /api/v2/findings:ingest", false, request.RequestID)
+		writeSP04Error(w, 409, "CAPABILITY_DISABLED", "historical ingestion contract is unverified; explicitly bound publishers require finding-envelope/v2 and /api/v2/findings:ingest", false, request.RequestID)
 		return
 	}
 	if r.URL.Path == "/api/v2/findings:ingest" && r.Method == "POST" {
@@ -125,7 +125,7 @@ func (h *SP05Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if next != "" {
 			writeJSON(w, 200, map[string]any{"data": data, "meta": map[string]any{"nextCursor": next}, "requestId": request.RequestID})
 		} else {
-			writeJSON(w, 200, map[string]any{"data": data, "meta": map[string]any{"nextCursor": nil}, "requestId": request.RequestID})
+			writeJSON(w, 200, map[string]any{"data": data, "meta": map[string]any{}, "requestId": request.RequestID})
 		}
 		return
 	}
