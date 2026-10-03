@@ -1,0 +1,14 @@
+VERIFIED sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f 10373
+VERIFIED sha256:950206c37262dd86c55659797f6ee418fee30535072f65a82ed470d985f5cda5 1748
+VERIFIED sha256:8630ab77c5adf06e1f914483db4dd70e3fa59118160daab9b0ee75e685344221 5679
+VERIFIED sha256:bd36565c0fdebaf0f3af5c3b4ce610ca085ced32e9e9da850d95912f5f18f47b 30189691
+VERIFIED sha256:c84bebac337e749a4bb38e590f1994648dedbc4a1d04db88b978cb18a5359a7b 1275313
+VERIFIED sha256:d122ce05d52358f34d63025713fdaf36bd7f684c4861ef9715450970c8599024 12052713
+VERIFIED sha256:8fab80907cc75b43464f59a38c5548ae9199a01202b80a0474fb5e81c33950b4 249
+requested platform(s) ([linux/arm64]) found, but some content is missing: NotFound: content digest sha256:90611d6aaddc693abf73381f6a2147cdf2ab05a7993c92014e850b7b8d5c5dda: not found
+Traceback (most recent call last):
+  File "/tmp/ops-sp05-host-prepare-python-oci.py", line 34, in <module>
+    subprocess.run(['docker','image','load','--platform','linux/arm64','--input',str(archive)],check=True)
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['docker', 'image', 'load', '--platform', 'linux/arm64', '--input', '/tmp/ops-sp05-pinned-python-oci.tar']' returned non-zero exit status 1.

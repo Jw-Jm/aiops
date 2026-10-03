@@ -1,0 +1,96 @@
+=== RUN   TestExplicitTransitionsRecoveryAndClosed
+--- PASS: TestExplicitTransitionsRecoveryAndClosed (0.00s)
+=== RUN   TestFormalInitialPolicyWindows
+--- PASS: TestFormalInitialPolicyWindows (0.00s)
+PASS
+ok  	ops-platform/internal/incident	0.677s
+=== RUN   TestSP05IncidentConcurrentCorrelationOverrideSplitMergeRecovery
+2026/10/03 12:56:04 OK   00001_roles_and_schemas.sql (16.32ms)
+2026/10/03 12:56:04 goose: successfully migrated database to version: 1
+2026/10/03 12:56:04 OK   00002_platform_meta.sql (63.45ms)
+2026/10/03 12:56:04 OK   00003_finding.sql (7.62ms)
+2026/10/03 12:56:04 OK   00004_incident.sql (5.16ms)
+2026/10/03 12:56:04 OK   00005_investigation.sql (4.75ms)
+2026/10/03 12:56:04 OK   00006_action_command.sql (5.24ms)
+2026/10/03 12:56:04 OK   00007_audit.sql (9.43ms)
+2026/10/03 12:56:04 OK   00008_rls.sql (8.37ms)
+2026/10/03 12:56:04 OK   00009_idempotency_ledger.sql (6.75ms)
+2026/10/03 12:56:04 OK   00010_tenant_provisioning.sql (5.39ms)
+2026/10/03 12:56:04 OK   00011_source_registration_history.sql (5.23ms)
+2026/10/03 12:56:04 OK   00012_config_registry_lifecycle.sql (7.55ms)
+2026/10/03 12:56:04 OK   00013_audit_signed_segments.sql (8.61ms)
+2026/10/03 12:56:04 OK   00014_audit_segment_predecessors.sql (7.19ms)
+2026/10/03 12:56:04 OK   00015_source_schema_scope.sql (2.74ms)
+2026/10/03 12:56:04 OK   00016_cluster_registration_metadata.sql (3.28ms)
+2026/10/03 12:56:04 OK   00017_source_data_scope.sql (3.12ms)
+2026/10/03 12:56:04 OK   00018_sp04_resources_evidence.sql (10.39ms)
+2026/10/03 12:56:04 OK   00019_sp04_archive_ciphertext_bytes.sql (2.62ms)
+2026/10/03 12:56:04 OK   00020_sp04_request_ledger.sql (3.53ms)
+2026/10/03 12:56:04 OK   00021_sp04_archive_protection.sql (2.67ms)
+2026/10/03 12:56:04 OK   00022_sp04_legal_hold_dependencies.sql (2.43ms)
+2026/10/03 12:56:04 OK   00023_sp04_archive_query_intent.sql (2.42ms)
+2026/10/03 12:56:04 OK   00024_sp05_finding_incident.sql (12.26ms)
+2026/10/03 12:56:04 OK   00025_sp05_incident_event_time.sql (3.64ms)
+2026/10/03 12:56:04 OK   00026_sp05_source_binding_lock.sql (4.52ms)
+2026/10/03 12:56:04 OK   00027_sp05_rca_and_poll.sql (6.53ms)
+2026/10/03 12:56:04 OK   00028_sp05_operator_lock.sql (3.4ms)
+2026/10/03 12:56:04 OK   00029_sp05_evidence_links.sql (4.91ms)
+2026/10/03 12:56:04 OK   00030_sp05_recipe_fence.sql (6.31ms)
+2026/10/03 12:56:04 OK   00031_sp05_rca_postcheck.sql (2.99ms)
+2026/10/03 12:56:04 OK   00032_sp05_transport_audit.sql (2.59ms)
+2026/10/03 12:56:04 OK   00033_sp05_poll_resolution_clock.sql (3.59ms)
+2026/10/03 12:56:04 goose: successfully migrated database to version: 33
+    sp05_incident_test.go:87: REVISION_CONFLICT
+--- FAIL: TestSP05IncidentConcurrentCorrelationOverrideSplitMergeRecovery (0.72s)
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression
+2026/10/03 12:56:05 OK   00001_roles_and_schemas.sql (10.42ms)
+2026/10/03 12:56:05 goose: successfully migrated database to version: 1
+2026/10/03 12:56:05 OK   00002_platform_meta.sql (18.88ms)
+2026/10/03 12:56:05 OK   00003_finding.sql (7.9ms)
+2026/10/03 12:56:05 OK   00004_incident.sql (5.97ms)
+2026/10/03 12:56:05 OK   00005_investigation.sql (6.6ms)
+2026/10/03 12:56:05 OK   00006_action_command.sql (6.4ms)
+2026/10/03 12:56:05 OK   00007_audit.sql (9.59ms)
+2026/10/03 12:56:05 OK   00008_rls.sql (8.89ms)
+2026/10/03 12:56:05 OK   00009_idempotency_ledger.sql (7.04ms)
+2026/10/03 12:56:05 OK   00010_tenant_provisioning.sql (5.17ms)
+2026/10/03 12:56:05 OK   00011_source_registration_history.sql (6.87ms)
+2026/10/03 12:56:05 OK   00012_config_registry_lifecycle.sql (8.55ms)
+2026/10/03 12:56:05 OK   00013_audit_signed_segments.sql (9.7ms)
+2026/10/03 12:56:05 OK   00014_audit_segment_predecessors.sql (4.57ms)
+2026/10/03 12:56:05 OK   00015_source_schema_scope.sql (2.94ms)
+2026/10/03 12:56:05 OK   00016_cluster_registration_metadata.sql (3.81ms)
+2026/10/03 12:56:05 OK   00017_source_data_scope.sql (3.64ms)
+2026/10/03 12:56:05 OK   00018_sp04_resources_evidence.sql (10.6ms)
+2026/10/03 12:56:05 OK   00019_sp04_archive_ciphertext_bytes.sql (2.85ms)
+2026/10/03 12:56:05 OK   00020_sp04_request_ledger.sql (4.08ms)
+2026/10/03 12:56:05 OK   00021_sp04_archive_protection.sql (3.24ms)
+2026/10/03 12:56:05 OK   00022_sp04_legal_hold_dependencies.sql (3.13ms)
+2026/10/03 12:56:05 OK   00023_sp04_archive_query_intent.sql (3.05ms)
+2026/10/03 12:56:05 OK   00024_sp05_finding_incident.sql (12.31ms)
+2026/10/03 12:56:05 OK   00025_sp05_incident_event_time.sql (3.04ms)
+2026/10/03 12:56:05 OK   00026_sp05_source_binding_lock.sql (3.01ms)
+2026/10/03 12:56:05 OK   00027_sp05_rca_and_poll.sql (5.25ms)
+2026/10/03 12:56:05 OK   00028_sp05_operator_lock.sql (2.91ms)
+2026/10/03 12:56:05 OK   00029_sp05_evidence_links.sql (4.24ms)
+2026/10/03 12:56:05 OK   00030_sp05_recipe_fence.sql (2.62ms)
+2026/10/03 12:56:05 OK   00031_sp05_rca_postcheck.sql (2.35ms)
+2026/10/03 12:56:05 OK   00032_sp05_transport_audit.sql (2.53ms)
+2026/10/03 12:56:05 OK   00033_sp05_poll_resolution_clock.sql (2.64ms)
+2026/10/03 12:56:05 goose: successfully migrated database to version: 33
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/active-expiry
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/recovered-expiry
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/split-moved-resolved
+    sp05_review_incident_test.go:133: REVISION_CONFLICT
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/split-left-resolved
+    sp05_review_incident_test.go:133: REVISION_CONFLICT
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/merge-all-resolved
+--- FAIL: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression (0.46s)
+    --- PASS: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/active-expiry (0.04s)
+    --- PASS: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/recovered-expiry (0.03s)
+    --- FAIL: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/split-moved-resolved (0.03s)
+    --- FAIL: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/split-left-resolved (0.02s)
+    --- PASS: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/merge-all-resolved (0.03s)
+FAIL
+FAIL	ops-platform/test/integration	2.299s
+FAIL

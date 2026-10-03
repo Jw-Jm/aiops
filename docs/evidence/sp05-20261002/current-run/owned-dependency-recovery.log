@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/ops-sp05-restore-owned-dependencies.py", line 35, in <module>
+    p=start('keycloak','quay.io/keycloak/keycloak','8080',['start-dev','--import-realm','--http-enabled=true','--hostname-strict=false'],[(root/'deploy/keycloak/realm-ops.json','/opt/keycloak/data/import/realm-ops.json:ro')],k)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ops-sp05-restore-owned-dependencies.py", line 27, in start
+    if p.returncode:raise RuntimeError('owned dependency start failed: '+kind)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: owned dependency start failed: keycloak

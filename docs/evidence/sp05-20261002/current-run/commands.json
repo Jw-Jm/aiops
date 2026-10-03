@@ -1,0 +1,83 @@
+{
+  "environment": "trusted private credentials.env then owned recovered overrides.env; no secrets included",
+  "commands": [
+    {
+      "log": "post-review-complete-integration.jsonl",
+      "command": "SP04_TEST_ORBSTACK=1 OPS_PERFORMANCE_EXEMPTION=sp05-user-20261002 go test -json ./test/integration -run '^(TestSP05LockedAnalyzerRealOrbStackSandboxAndNativeFaults|TestSP05APIListFiltersAndAllLinkedNamespaceAuthorization|TestSP05FindingAtomicConcurrentTransportAndRecovery|TestSP05ResolvedBeforeFiringAndTenantIsolation|TestSP05FrozenNonvirtualGoldenVerticalAndReplay|TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay|TestSP05IncidentConcurrentCorrelationOverrideSplitMergeRecovery|TestSP05LegacyOutboxIsPreservedAndExplicitlyQuarantined|TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart|TestSP05ResourceNamespaceCannotBeClaimedAsClusterScoped|TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain|TestSP05OfficialObservationsActualOrbStackAndControlledProbeFailure|TestSP05EqualSequenceConflictAndTransportAliasAreAudited|TestSP05PollBirthClockSurvivesPostgreSQLPrecisionAndRestart|TestSP05PollCrashAfterResolveAndLateReplayCannotCreateOccurrence|TestSP05FirstHealthyPollDurablyFencesLateAndRepeatedFiring|TestSP05SIGKILLClaimLeaseRecoverExactlyOnce|TestSP05RCARegistryImmutableEvidenceAppendOnlyAndReplayRevocation|TestSP05FindingRejectsMissingEvidenceWithoutPartialCommit|TestSP05SuppressionRecoveryAndMergeSplitReviewRegression|TestSP05ExactNumericTransportConflictAndFormalWindowBoundaries|TestSP05GoldenGraphOnlySourceWithdrawAndFindingRevisionFence|TestSP05GraphSourceAuthoritySerializesRevocation|TestSP05KubernetesBindingCannotForgeHardwareDomain)$' -count=1 -timeout=20m",
+      "testedRuntimeCommit": "64a1d23d6a9619cc06feeb4be5cd4f395b699283",
+      "result": "47 pass/0 fail/0 skip; parent invokes real SIGKILL child",
+      "exit": 0
+    },
+    {
+      "log": "br05-actual-http-mutation-contract.jsonl",
+      "command": "SP04_TEST_ORBSTACK=1 OPS_PERFORMANCE_EXEMPTION=sp05-user-20261002 go test -json ./test/integration -run '^TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart$' -count=1 -timeout=8m",
+      "testedRuntimeCommit": "64a1d23d6a9619cc06feeb4be5cd4f395b699283",
+      "testedTestCommit": "c1cbcaa4b02c7ca9df45d9fa6e1e1dfac0967049",
+      "exit": 0
+    },
+    {
+      "log": "shared-sp01-sp03-current-regression-complete.jsonl",
+      "command": "OPS_PERFORMANCE_EXEMPTION=sp05-user-20261002 go test -json ./test/integration -run '^(TestRealArchiveTenantIAMTLS|TestRealOpenBaoTransitAndSeaweedS3AuditArchive|TestAuditSegmentsAppendConcurrentlyRecoverAndVerifyTenantScoped|TestConfigRegistryPublishesActivatesRollsBackAndPreservesHistory|TestIdempotencyLedgerSchema|TestIdempotencyLedger|TestIdempotencyHTTPMiddleware|TestWithTenantTxIsolatesTenantsAndUsesAppendOnlyAudit|TestSourceScopeMigrationPreservesLegacyIdentityWithoutQueryGrants|TestSourceRegistrationsAreTenantBoundRevisionedAndAudited|TestTenantProvisioningAndRoleBindingRevisions)$' -count=1 -timeout=10m",
+      "result": "13 pass/0 fail/0 skip",
+      "exit": 0
+    },
+    {
+      "log": "shared-sp04-current-regression-complete.jsonl",
+      "command": "SP04_TEST_ORBSTACK=1 SP04_TEST_VM_URL=http://127.0.0.1:18428 SP04_TEST_VL_URL=http://127.0.0.1:19428 OPS_PERFORMANCE_EXEMPTION=sp05-user-20261002 go test -json ./test/integration -run '^(TestSP04ArchiveLiveTransitTLSIAMAndRecovery|TestSP04ArchiveCredentialRolesAtActualIAM|TestSP04ArchiveRecoveryIntegrityAndRetention|TestSP04IdentityConflictFindingAndTerminalTombstone|TestSP04LeaseRecoveryNativeAuthorityAndAudit|TestSP04NativeWorkerLeaseCASWireContract|TestSP04FullRuntimeOrbStackOIDCEvidenceAndFailover|TestSP04FixtureAdaptersThroughActualRuntime|TestSP04SharedAuditWorkerProjectedRecovery|TestSP04VictoriaLiveScopeProofAndRevocation)$' -count=1 -timeout=15m",
+      "result": "19 pass/0 fail/0 skip",
+      "exit": 0
+    },
+    {
+      "log": "shared-nonvirtual-current-e2e.jsonl",
+      "command": "SP04_KUBERNETES_URL=http://127.0.0.1:18091 OPS_PERFORMANCE_EXEMPTION=sp05-user-20261002 go test -json ./test/e2e -run '^(TestDeepFlowQuerySampleRequiresObservedEndpointsAndCounters|TestDeepFlowNetworkGateRequiresProgrammedReject|TestCoreS3CapabilityRejectsAnonymousAccessAndChecksObjectContents|TestCoreOIDCHealthUsesIndependentTLSAndServiceIdentity|TestSP04OrbStackNonVirtualListWatch|TestOpenBaoBootstrap)$' -count=1 -timeout=10m",
+      "result": "22 pass/0 fail/0 skip",
+      "exit": 0
+    },
+    {
+      "log": "post-review-offline-upstream-replay-recovered.log",
+      "command": "OPS_GRAPH_SOURCE_DIR=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-sp05-upstream-mncghf3y OPS_INSPECTION_SOURCE_DIR=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-sp05-upstream-mncghf3y OPS_INSPECTION_KEEP_WHEELS=/tmp/ops-sp02-keep/wheelhouse OPS_PERFORMANCE_EXEMPTION=sp05-user-20261002 make test-replay",
+      "result": "2 pass/0 fail/0 skip; network=none,pull=never; preparation network separate",
+      "exit": 0
+    },
+    {
+      "log": "final-reviewed-common-gates.log",
+      "command": "OPS_PERFORMANCE_EXEMPTION=sp05-user-20261002 make check-toolchain check-generated check-runtime-source check test-security",
+      "testedSourceCommit": "c1cbcaa4b02c7ca9df45d9fa6e1e1dfac0967049",
+      "exit": 0
+    },
+    {
+      "log": "final-reviewed-bundle-input-preparation.log",
+      "command": "uv run --with PyYAML==6.0.3 python3 test/fixtures/offline-core/prepare-bundle-inputs.py --out /tmp/ops-sp05-signed-inputs-c1cbcaa --reuse-reviewed-spec /tmp/ops-sp04-signed-inputs-52d490c/build-spec.json --bundle-id sp05-nonvirtual-c1cbcaa --sp05-worker-material /tmp/ops-sp05-worker-material-20261003",
+      "note": "Authenticates retained core bytes, rebuilds all first-party current source; not prior acceptance evidence",
+      "exit": 0
+    },
+    {
+      "log": "final-reviewed-signed-bundle-build.log",
+      "command": "go run ./cmd/opsctl bundle build --architecture linux/arm64 --spec /tmp/ops-sp05-signed-inputs-c1cbcaa/build-spec.json --output /tmp/ops-sp05-signed-bundle-c1cbcaa --signing-key /tmp/ops-sp04-chart-private-ru3xx8zi/bundle-signing.pem",
+      "exit": 0
+    },
+    {
+      "log": "final-reviewed-signed-bundle-verify.log",
+      "command": "go run ./cmd/opsctl bundle verify --manifest /tmp/ops-sp05-signed-bundle-c1cbcaa/bundle.lock.json --signature /tmp/ops-sp05-signed-bundle-c1cbcaa/bundle.lock.sig --payload /tmp/ops-sp05-signed-bundle-c1cbcaa/payload.tar.zst --key /tmp/ops-sp04-chart-private-ru3xx8zi/bundle-trust.pem",
+      "exit": 0
+    },
+    {
+      "log": "final-reviewed-native-signed-chart.jsonl",
+      "command": "SP04_NATIVE_CHART=1 SP05_NATIVE_CHART=1 SP04_COLD_IMPORT=1 SP04_TEST_ORBSTACK=1 SP04_TEST_VM_URL=http://127.0.0.1:18428 SP04_BUNDLE_INPUTS=/tmp/ops-sp05-signed-inputs-c1cbcaa SP04_BUNDLE_DIR=/tmp/ops-sp05-signed-bundle-c1cbcaa SP04_BUNDLE_TRUST=/tmp/ops-sp04-chart-private-ru3xx8zi/bundle-trust.pem SP04_RESOLVED_PROFILE=/tmp/ops-sp05-profile-resolved-c1cbcaa.yaml OPS_PERFORMANCE_EXEMPTION=sp05-user-20261002 go test -json ./test/integration -run '^TestSP04SignedChartNativeWorkerOfflineReinstall$' -count=1 -timeout=25m",
+      "testedSourceCommit": "c1cbcaa4b02c7ca9df45d9fa6e1e1dfac0967049",
+      "exit": 0
+    },
+    {
+      "log": "current-frozen-domain-quality.log",
+      "command": "go test -v ./internal/inspection/kubernetes -run '^TestFrozenOfficial(InspectionLabels|MetricAndControlPlaneLabels)$' -count=1",
+      "exit": 0
+    },
+    {
+      "log": "current-pyrca-disabled-evaluation.log",
+      "workingDirectory": "platform/poc/pyrca",
+      "command": "uv sync --locked; uv run --locked pytest -q; PYTHONPATH=upstream uv run --locked python adapter.py",
+      "note": "Sequential success-dependent commands; frozen nine-case synthetic PoC; runtime disabled/excluded, not admission",
+      "exit": 0
+    }
+  ]
+}

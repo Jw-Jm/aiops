@@ -1,28 +1,28 @@
 # SP-05 Task → specification → implementation → test → evidence
 
-State: development in progress; no acceptance or independent PASS yet.
+State: authorized implementation, current execution acceptance and final complete independent review PASS. See acceptance.md, final-gates.json and final-independent-review.md. Historical continuation entries below retain their original intermediate status.
 Baseline and user modifications: baseline.json. ADR-0019 records authorization.
 
 - 5.1 — 04§33.1–2,05§25,10§14.5 → internal/finding, Finding v2,
   migration00024, HTTP ingest, Worker relay → reducer and real PostgreSQL
-  duplicate/order/concurrency/rollback/recovery tests → pending.
+  duplicate/order/concurrency/rollback/recovery tests → PASS; see acceptance.md/current-run and final-gates.json.
 - 5.2 — 04§33.3,06§6,10§14.5, Keep selected closure → internal/incident,
   same-transaction correlation inbox/subject lock/timeline, state CAS,
-  recovery/reopen/merge/split → unit/integration/runtime → pending.
+  recovery/reopen/merge/split → unit/integration/runtime → PASS; see acceptance.md/current-run and final-gates.json.
 - 5.3 — 10Task5.3, inspection-reuse-lock/ADR0013 → official signal adapter,
-  fixed no-LLM K8sGPT and NPD → frozen labels by domain and real OrbStack → pending.
+  fixed no-LLM K8sGPT and NPD → frozen labels by domain and real OrbStack → PASS; see acceptance.md/current-run and final-gates.json.
 - 5.5 — 06§36/41,08 diagnostic semantics, locked ontology → versioned
   recipes and evidence projection/confirmation predicates → valid/conflict/
-  missing/degraded/schema/registry/consumer fixtures → pending.
+  missing/degraded/schema/registry/consumer fixtures → PASS; see acceptance.md/current-run and final-gates.json.
 - 5.6 — 06§12/14/15/41,08§51 → deterministic candidates, immutable RCA
   input/revisions and current CAS, existing bounded Graph impact, retention
-  references → causal counterexamples, permission/archive/expiry/Hold → pending.
+  references → causal counterexamples, permission/archive/expiry/Hold → PASS; see acceptance.md/current-run and final-gates.json.
 - 5.7 — 06§20–22,10Task5.7 → frozen manifest/clock/expected full-chain
   DIMM/PVC-CSI/Node inputs → red before implementation, twice replay plus
-  missing/conflict/degraded → pending. VM start/network deferred/unverified.
+  missing/conflict/degraded → PASS; see acceptance.md/current-run and final-gates.json. VM start/network deferred/unverified.
 - 5.8 — 10§3.10/Task5.8,06§10 → frozen holdout and optional PoC adapter,
   explicit admission decision → same holdout Top3/false-confirmation comparison;
-  no runtime admission without all conditions → pending; disabled by default.
+  no runtime admission without all conditions → evaluated; negative gain −33.333pp, disabled/excluded under ADR0020; current-pyrca-disabled-evaluation.log exit 0.
 - 5.4 — deferred under ADR0008; existing source/fixtures/failures retained.
 - Performance — user waived; no sustained throughput/P95/capacity proof.
 
@@ -145,3 +145,19 @@ runtime source/license and offline regression, final independent full review.
 - Current runtime source closure check exited 0 (`runtime-source-current-final-preparation.log`): 95 modules, 2943 selected module files, 1377 Go standard-library files, SHA256 19b0c348370e339f8cb0c94276c17a88e9aede393269934b561b4938ede207ed.
 - Upstream replay prerequisite preparation preserves both failures: absent tool image (`upstream-replay-restored-current.log`, exit 2) and initial preparer treating deferred entries as replayable (`locked-replay-image-preparation-current.log`, exit 1). Retry uses only declared nonvirtual offlineReplay images, exact publisher digests. Network is used for prerequisite preparation only; replay remains network=none/pull=never.
 - First-party source binding records runtime Go source and unchanged CLI source/binary separately. Final source-bound material gates, full live acceptance and independent full review remain pending.
+
+
+## Final current execution ledger — independent complete PASS
+
+Final material/test source c1cbcaa4b02c7ca9df45d9fa6e1e1dfac0967049; business
+implementation64a1d23 (runtime equality verified). All authorized task paths and
+required current executions are complete in acceptance.md/current-run/commands.json.
+All final exits 0: toolchain/generated/runtime-source/make check/security11,
+upstream replay2, SP05 explicit47 plus actual HTTP mutation1, sharedSP01–03=13,
+sharedSP04=19, nonvirtual E2E22, source-bound24material72file signed Bundle,
+actual native first-party cold Chart/offline reinstall1. Required live reports
+contain zero skips. Earlier failure reports are preserved and not counted as PASS.
+IR01–06/BR01–05 closed by both independent reviewers, who explicitly gave final
+complete PASS; see final-independent-review.md. Performance exempt, VM deferred/unverified,
+PyRCA disabled/excluded; native positive Metrics-server and physical hardware
+injection unverified as explicitly scoped in acceptance.md. Root docs unchanged.

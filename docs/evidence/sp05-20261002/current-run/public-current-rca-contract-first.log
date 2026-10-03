@@ -1,0 +1,169 @@
+=== RUN   TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart
+2026/10/03 13:15:06 OK   00001_roles_and_schemas.sql (8.14ms)
+2026/10/03 13:15:06 goose: successfully migrated database to version: 1
+2026/10/03 13:15:06 OK   00002_platform_meta.sql (14.88ms)
+2026/10/03 13:15:06 OK   00003_finding.sql (6.6ms)
+2026/10/03 13:15:06 OK   00004_incident.sql (5.21ms)
+2026/10/03 13:15:06 OK   00005_investigation.sql (5.42ms)
+2026/10/03 13:15:06 OK   00006_action_command.sql (4.79ms)
+2026/10/03 13:15:06 OK   00007_audit.sql (7.45ms)
+2026/10/03 13:15:06 OK   00008_rls.sql (7.64ms)
+2026/10/03 13:15:06 OK   00009_idempotency_ledger.sql (5.87ms)
+2026/10/03 13:15:06 OK   00010_tenant_provisioning.sql (3.31ms)
+2026/10/03 13:15:06 OK   00011_source_registration_history.sql (5.69ms)
+2026/10/03 13:15:06 OK   00012_config_registry_lifecycle.sql (7.8ms)
+2026/10/03 13:15:06 OK   00013_audit_signed_segments.sql (8.77ms)
+2026/10/03 13:15:06 OK   00014_audit_segment_predecessors.sql (4.5ms)
+2026/10/03 13:15:06 OK   00015_source_schema_scope.sql (3.29ms)
+2026/10/03 13:15:06 OK   00016_cluster_registration_metadata.sql (3.85ms)
+2026/10/03 13:15:06 OK   00017_source_data_scope.sql (3.08ms)
+2026/10/03 13:15:06 OK   00018_sp04_resources_evidence.sql (9.54ms)
+2026/10/03 13:15:06 OK   00019_sp04_archive_ciphertext_bytes.sql (2.42ms)
+2026/10/03 13:15:06 OK   00020_sp04_request_ledger.sql (3.31ms)
+2026/10/03 13:15:06 OK   00021_sp04_archive_protection.sql (2.44ms)
+2026/10/03 13:15:06 OK   00022_sp04_legal_hold_dependencies.sql (2.24ms)
+2026/10/03 13:15:06 OK   00023_sp04_archive_query_intent.sql (2.43ms)
+2026/10/03 13:15:06 OK   00024_sp05_finding_incident.sql (11.55ms)
+2026/10/03 13:15:06 OK   00025_sp05_incident_event_time.sql (2.46ms)
+2026/10/03 13:15:06 OK   00026_sp05_source_binding_lock.sql (2.77ms)
+2026/10/03 13:15:06 OK   00027_sp05_rca_and_poll.sql (5.48ms)
+2026/10/03 13:15:06 OK   00028_sp05_operator_lock.sql (3.13ms)
+2026/10/03 13:15:06 OK   00029_sp05_evidence_links.sql (4.58ms)
+2026/10/03 13:15:06 OK   00030_sp05_recipe_fence.sql (3.04ms)
+2026/10/03 13:15:06 OK   00031_sp05_rca_postcheck.sql (2.97ms)
+2026/10/03 13:15:06 OK   00032_sp05_transport_audit.sql (3ms)
+2026/10/03 13:15:06 OK   00033_sp05_poll_resolution_clock.sql (3.28ms)
+2026/10/03 13:15:06 goose: successfully migrated database to version: 33
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=1fe37fca862a34873f3283189c97e3b76d4198c8ed073c6551c4523658da0cf6 bucket=sp05-chain-161bd26c tenants=1
+{"time":"2026-10-03T13:15:11.692075+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-03T13:15:13.708157+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/replicasets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-03T13:15:22.053787+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-359f-7daf-8338-3cd4fe2947a3","method":"GET","status_code":200,"duration_ms":165}
+{"time":"2026-10-03T13:15:22.05911+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-3646-7a2d-83dd-4b2253fdddfd","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-03T13:15:22.062996+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-364b-74ed-a5f4-a983d5e78e89","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-03T13:15:22.066991+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-364f-7278-9af2-fcfdce5d3820","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-03T13:15:22.26331+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-3653-71ff-80ae-1075f8504e05","method":"GET","status_code":200,"duration_ms":196}
+{"time":"2026-10-03T13:15:22.287378+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-3718-7733-8739-b40628802d49","method":"GET","status_code":200,"duration_ms":22}
+{"time":"2026-10-03T13:15:22.297001+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-372f-7b75-8f50-e68bbdaae016","method":"GET","status_code":200,"duration_ms":9}
+{"time":"2026-10-03T13:15:22.507105+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:22.507016+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-03T13:15:22.517244+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-373b-76a7-a7fe-a536d3f67df8","method":"GET","status_code":200,"duration_ms":217}
+{"time":"2026-10-03T13:15:22.735721+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:22.742296+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-38de-783d-8964-120ea215bf09","method":"GET","status_code":200,"duration_ms":23}
+{"time":"2026-10-03T13:15:22.988661+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:22.999821+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-39c0-70fa-8c69-aa593ade0690","method":"GET","status_code":200,"duration_ms":55}
+{"time":"2026-10-03T13:15:23.222161+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:23.229911+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-3ac1-7933-84fc-9a3c6391f0b6","method":"GET","status_code":200,"duration_ms":28}
+{"time":"2026-10-03T13:15:23.467158+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:23.480402+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-3ba7-79a8-bdf6-347172ef9859","method":"GET","status_code":200,"duration_ms":48}
+{"time":"2026-10-03T13:15:23.705837+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:23.715062+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-3ca2-73fb-b479-b24f81a75885","method":"GET","status_code":200,"duration_ms":32}
+{"time":"2026-10-03T13:15:23.953871+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:23.967086+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-3d8b-798d-afea-5a7850e641f9","method":"GET","status_code":200,"duration_ms":51}
+{"time":"2026-10-03T13:15:24.197225+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:24.203588+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-3e88-7dde-93ba-cfedf9fe04df","method":"GET","status_code":200,"duration_ms":34}
+{"time":"2026-10-03T13:15:24.419921+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-03T13:15:24.420268+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:24.426+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-3f74-7f13-bc6e-3db4dcbf0fe4","method":"GET","status_code":200,"duration_ms":20}
+{"time":"2026-10-03T13:15:24.644516+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:24.651606+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-4052-74c6-8e48-65488f1418a0","method":"GET","status_code":200,"duration_ms":25}
+{"time":"2026-10-03T13:15:24.879009+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:24.88692+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-4135-74be-ac48-2a186a6a54a1","method":"GET","status_code":200,"duration_ms":33}
+{"time":"2026-10-03T13:15:25.106447+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:25.11331+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-4220-7af8-9b89-037f22ef7761","method":"GET","status_code":200,"duration_ms":24}
+{"time":"2026-10-03T13:15:25.330335+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:25.335801+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-4302-7e6b-b8ba-7b9d5117bcc6","method":"GET","status_code":200,"duration_ms":20}
+{"time":"2026-10-03T13:15:25.567661+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:25.575912+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-43e0-77a1-9ef1-e458c45b9f66","method":"GET","status_code":200,"duration_ms":39}
+{"time":"2026-10-03T13:15:25.802352+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:25.812105+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-44d1-728c-acb9-e779a32b4fda","method":"GET","status_code":200,"duration_ms":34}
+{"time":"2026-10-03T13:15:26.058916+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:26.06842+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-45be-707d-86a3-ac2df8dc6409","method":"GET","status_code":200,"duration_ms":54}
+{"time":"2026-10-03T13:15:26.319887+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:26.326717+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-46be-7534-9554-af58da6c27a8","method":"GET","status_code":200,"duration_ms":56}
+{"time":"2026-10-03T13:15:26.590691+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:26.59767+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-47c0-7c58-8318-ce47a7edff9e","method":"GET","status_code":200,"duration_ms":68}
+{"time":"2026-10-03T13:15:26.832201+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:26.840034+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-48cf-762a-867b-ac7736d945f4","method":"GET","status_code":200,"duration_ms":40}
+{"time":"2026-10-03T13:15:27.075945+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:27.085763+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-49c0-7b0c-a21b-5f4331d1cf51","method":"GET","status_code":200,"duration_ms":44}
+{"time":"2026-10-03T13:15:27.315021+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:27.322339+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-4ab7-78e1-a70d-db206158a7dd","method":"GET","status_code":200,"duration_ms":34}
+{"time":"2026-10-03T13:15:27.557464+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-03T13:15:27.564258+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-4ba3-7da8-bd8d-9155f21f2259","method":"GET","status_code":200,"duration_ms":40}
+{"time":"2026-10-03T13:15:27.779708+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-4c95-7069-9bde-a68c139beedf","method":"GET","status_code":200,"duration_ms":14}
+{"time":"2026-10-03T13:15:28.012103+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-4d71-7a6b-ac04-e9fdbb0a74a1","method":"GET","status_code":200,"duration_ms":26}
+{"time":"2026-10-03T13:15:28.2581+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-4e56-71a9-8743-9455eaec9cf7","method":"GET","status_code":200,"duration_ms":43}
+{"time":"2026-10-03T13:15:28.475661+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-4f4b-7962-b58a-d773c1e486fd","method":"GET","status_code":200,"duration_ms":16}
+{"time":"2026-10-03T13:15:28.718459+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5025-77d0-b90d-9588cc5e0643","method":"GET","status_code":200,"duration_ms":40}
+{"time":"2026-10-03T13:15:28.96242+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5118-74e9-bcfc-d66f4957cac1","method":"GET","status_code":200,"duration_ms":42}
+{"time":"2026-10-03T13:15:29.203983+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-520b-7da0-91cc-385750363b9b","method":"GET","status_code":200,"duration_ms":40}
+{"time":"2026-10-03T13:15:29.453304+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-52fd-7d2b-b7ee-c9bd30805c1b","method":"GET","status_code":200,"duration_ms":47}
+{"time":"2026-10-03T13:15:29.670852+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-53f7-7121-aff2-17e17f64c737","method":"GET","status_code":200,"duration_ms":15}
+{"time":"2026-10-03T13:15:29.887937+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-54d0-757e-95e1-ca9c3ca4103a","method":"GET","status_code":200,"duration_ms":15}
+{"time":"2026-10-03T13:15:30.128623+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-55a9-718e-b77a-58fcdc3877e1","method":"GET","status_code":200,"duration_ms":39}
+{"time":"2026-10-03T13:15:30.368997+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-569a-7a19-b619-fdcc596a65a4","method":"GET","status_code":200,"duration_ms":38}
+{"time":"2026-10-03T13:15:30.618803+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-578a-7524-ac3d-8c8e77c14edd","method":"GET","status_code":200,"duration_ms":48}
+{"time":"2026-10-03T13:15:30.842016+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5884-7674-9e68-8738c9bced19","method":"GET","status_code":200,"duration_ms":21}
+{"time":"2026-10-03T13:15:31.060073+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5963-79c7-98a6-b60df0a8146e","method":"GET","status_code":200,"duration_ms":16}
+{"time":"2026-10-03T13:15:31.276785+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5a3d-7918-b0cd-58eb50c0369e","method":"GET","status_code":200,"duration_ms":15}
+{"time":"2026-10-03T13:15:31.51386+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5b16-7860-8a3f-66bc6d49d004","method":"GET","status_code":200,"duration_ms":35}
+{"time":"2026-10-03T13:15:31.736381+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5c03-787b-bf4e-c64b79fb0d04","method":"GET","status_code":200,"duration_ms":20}
+{"time":"2026-10-03T13:15:31.961791+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5ce2-7416-a59d-5930e2caca7b","method":"GET","status_code":200,"duration_ms":23}
+{"time":"2026-10-03T13:15:32.205944+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5dc3-791f-b1d5-71c64f0f589c","method":"GET","status_code":200,"duration_ms":42}
+{"time":"2026-10-03T13:15:32.447334+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5eb7-7afc-ae81-3f3aaa4928b6","method":"GET","status_code":200,"duration_ms":39}
+{"time":"2026-10-03T13:15:32.697384+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-5fa9-7259-9e51-08cfc038d235","method":"GET","status_code":200,"duration_ms":48}
+{"time":"2026-10-03T13:15:32.914279+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-60a2-7dc3-b4cc-bf0650b63f1e","method":"GET","status_code":200,"duration_ms":15}
+{"time":"2026-10-03T13:15:33.13085+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-617b-7bb4-b37e-000867cfd888","method":"GET","status_code":200,"duration_ms":15}
+{"time":"2026-10-03T13:15:33.347827+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6253-7ead-990d-324482c138c7","method":"GET","status_code":200,"duration_ms":15}
+{"time":"2026-10-03T13:15:33.564734+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-632d-7649-b542-beda2a486eef","method":"GET","status_code":200,"duration_ms":15}
+{"time":"2026-10-03T13:15:33.789555+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6406-761a-b17b-5794d97a3130","method":"GET","status_code":200,"duration_ms":23}
+{"time":"2026-10-03T13:15:34.006232+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-64e7-716b-83fb-91752e81c1fb","method":"GET","status_code":200,"duration_ms":15}
+{"time":"2026-10-03T13:15:34.226015+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-65bf-7add-8633-006c7a9c7adf","method":"GET","status_code":200,"duration_ms":18}
+{"time":"2026-10-03T13:15:34.464977+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-669b-7cd9-b293-27a53f9e5b78","method":"GET","status_code":200,"duration_ms":37}
+{"time":"2026-10-03T13:15:34.681464+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6789-7ac9-bba6-629c0ca0c1c4","method":"GET","status_code":200,"duration_ms":15}
+{"time":"2026-10-03T13:15:34.906489+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6862-7d4a-86df-504bc752d9c9","method":"GET","status_code":200,"duration_ms":23}
+{"time":"2026-10-03T13:15:35.127233+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6943-7795-8ac7-8a41774103a8","method":"GET","status_code":200,"duration_ms":19}
+{"time":"2026-10-03T13:15:35.344018+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6a1f-7c31-9c4d-9edca158e6ab","method":"GET","status_code":200,"duration_ms":16}
+{"time":"2026-10-03T13:15:35.609064+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6af8-7b94-a9b4-9a9882372143","method":"GET","status_code":200,"duration_ms":64}
+{"time":"2026-10-03T13:15:35.824622+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6c02-7509-8ea3-771617e85179","method":"GET","status_code":200,"duration_ms":14}
+{"time":"2026-10-03T13:15:36.044545+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6cda-7055-94bc-4f97884a7053","method":"GET","status_code":200,"duration_ms":18}
+{"time":"2026-10-03T13:15:36.265511+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6db6-76f9-995b-6c051fa84d4d","method":"GET","status_code":200,"duration_ms":18}
+{"time":"2026-10-03T13:15:36.491371+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6e93-72ce-bca1-2a35c71243f0","method":"GET","status_code":200,"duration_ms":24}
+{"time":"2026-10-03T13:15:36.742307+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-6f75-7449-96a4-a28915359591","method":"GET","status_code":200,"duration_ms":48}
+{"time":"2026-10-03T13:15:36.964631+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-706f-7acd-acb1-0cc4889333ad","method":"GET","status_code":200,"duration_ms":20}
+{"time":"2026-10-03T13:15:37.183727+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-714e-70ea-8b9d-b010c894ec35","method":"GET","status_code":200,"duration_ms":17}
+{"time":"2026-10-03T13:15:37.40445+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-7229-70d6-b146-dd5a57be15f5","method":"GET","status_code":200,"duration_ms":19}
+{"time":"2026-10-03T13:15:37.662369+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-7305-76a7-aeba-716a7712804a","method":"GET","status_code":200,"duration_ms":56}
+{"time":"2026-10-03T13:15:37.886541+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-7407-787b-98ca-08e05292edd5","method":"GET","status_code":200,"duration_ms":22}
+{"time":"2026-10-03T13:15:38.130606+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-74e7-7b23-93f9-1e830c7b53b4","method":"GET","status_code":200,"duration_ms":42}
+{"time":"2026-10-03T13:15:38.349899+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-75dc-7357-87c6-d6a9cd58aa4c","method":"GET","status_code":200,"duration_ms":17}
+{"time":"2026-10-03T13:15:38.693826+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-76b7-77ac-880b-16d226f606a0","method":"GET","status_code":200,"duration_ms":142}
+{"time":"2026-10-03T13:15:39.044328+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-780f-7032-bb16-fe85d1471668","method":"GET","status_code":200,"duration_ms":149}
+{"time":"2026-10-03T13:15:39.404839+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-796e-78f1-9d13-f549b6ca7592","method":"GET","status_code":200,"duration_ms":158}
+{"time":"2026-10-03T13:15:39.795842+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-7ad6-7603-b92d-1a86ea680ec8","method":"GET","status_code":200,"duration_ms":189}
+{"time":"2026-10-03T13:15:40.143784+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-7c5d-743a-ab9e-550538a1bbb8","method":"GET","status_code":200,"duration_ms":146}
+{"time":"2026-10-03T13:15:40.61435+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-7db9-7b94-9bb7-cdacabcda65f","method":"GET","status_code":200,"duration_ms":268}
+{"time":"2026-10-03T13:15:40.991109+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-7f90-74a7-9dc0-3bfc163d23bf","method":"GET","status_code":200,"duration_ms":174}
+{"time":"2026-10-03T13:15:41.571328+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-8108-7c67-8c23-15f5ab51ee6b","method":"GET","status_code":200,"duration_ms":378}
+{"time":"2026-10-03T13:15:41.916321+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-834c-7069-947a-d3ff62172a2d","method":"GET","status_code":200,"duration_ms":144}
+{"time":"2026-10-03T13:15:42.2725+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-84a5-7d69-9675-5a405c4573c4","method":"GET","status_code":200,"duration_ms":154}
+{"time":"2026-10-03T13:15:42.672342+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-8609-79b4-a273-0ede29319cd2","method":"GET","status_code":200,"duration_ms":198}
+{"time":"2026-10-03T13:15:42.997279+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-8799-7cd9-a142-7a936730b936","method":"GET","status_code":200,"duration_ms":123}
+{"time":"2026-10-03T13:15:43.357153+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-88df-70cf-bb1b-45adc888812a","method":"GET","status_code":200,"duration_ms":158}
+{"time":"2026-10-03T13:15:43.684347+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-8a46-7aaa-bd72-848499a6a10a","method":"GET","status_code":200,"duration_ms":125}
+{"time":"2026-10-03T13:15:44.019835+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-8b8d-7ca6-b3a3-385a23694263","method":"GET","status_code":200,"duration_ms":133}
+{"time":"2026-10-03T13:15:44.403951+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-8cdd-7631-b489-51e3a4e6f228","method":"GET","status_code":200,"duration_ms":182}
+{"time":"2026-10-03T13:15:45.183709+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-8e5d-782d-a9ca-55107321bd4f","method":"GET","status_code":200,"duration_ms":578}
+{"time":"2026-10-03T13:15:45.78979+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-9169-7728-8690-94c7261bae76","method":"GET","status_code":200,"duration_ms":404}
+{"time":"2026-10-03T13:15:46.379419+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-93c7-7501-a4d8-3a5499a6c639","method":"GET","status_code":200,"duration_ms":388}
+{"time":"2026-10-03T13:15:47.193536+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-9614-7a83-993d-1f749ee09f71","method":"GET","status_code":200,"duration_ms":612}
+{"time":"2026-10-03T13:15:47.194891+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-9879-7ee4-8f81-af9bab6d8791","method":"POST","status_code":409,"duration_ms":0}
+{"time":"2026-10-03T13:15:47.209697+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-987b-7130-b8f2-d4ef490acfbb","method":"POST","status_code":200,"duration_ms":14}
+{"time":"2026-10-03T13:15:47.219532+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-9889-7e1d-b771-881387743054","method":"POST","status_code":200,"duration_ms":9}
+{"time":"2026-10-03T13:15:47.435101+08:00","level":"INFO","msg":"http request complete","request_id":"01a10030-9968-7449-8ca1-6a80c550fa7c","method":"POST","status_code":403,"duration_ms":2}
+    sp05_live_test.go:312: actual OrbStack native PVC/scheduling -> Worker inspector -> unified Finding ingress -> PostgreSQL outbox consumer -> Incident -> real OpenBao/SeaweedFS archive; OIDC API replay and Worker restart; no performance measurement; hardware and Node fault injection remain separate frozen fixtures
+{"time":"2026-10-03T13:15:47.435715+08:00","level":"WARN","msg":"SP05 official observation unavailable","errorClass":"canceled"}
+{"time":"2026-10-03T13:15:47.43578+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+--- PASS: TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart (42.29s)
+PASS
+ok  	ops-platform/test/integration	43.484s
