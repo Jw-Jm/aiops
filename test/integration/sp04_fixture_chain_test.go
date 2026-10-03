@@ -155,7 +155,23 @@ func sp04RuntimeFixtureSources(t *testing.T, ctx context.Context, db *sql.DB, te
 		for {
 			status, body := call("POST", "/api/v1/diagnostic-graphs:build", diagnostic, uuid.NewString())
 			var result struct{ Data graph.Result }
-			if status == 200 && json.Unmarshal(body, &result) == nil && len(result.Data.Nodes) == 7 && len(result.Data.Edges) == 6 && result.Data.Partial {
+			if status == 200 && json.Unmarshal(body, &result) == nil && len(result.Data.Nodes) == 7 && len(result.Data.Edges) == 7 && result.Data.Partial {
+				// SP05 adds the required native DIMM -> PhysicalServer causal
+				// relation to the six unchanged SP04 containment relations.
+				dimmID := resource.CanonicalID{Domain: "hardware", Tenant: tenant.String(), Scope: clusterUID, APIGroup: "redfish", Kind: "DIMM", StableID: "550e8400-e29b-41d4-a716-446655440000/DIMM1"}.String()
+				contains, component := 0, 0
+				for _, edge := range result.Data.Edges {
+					if edge.Kind == "contains" && edge.From == hardwareID && edge.Provenance.SourceRegistrationID == rfID.String() {
+						contains++
+					} else if edge.Kind == "component_of" && edge.From == dimmID && edge.To == hardwareID && edge.Provenance.SourceRegistrationID == rfID.String() {
+						component++
+					} else {
+						t.Fatalf("unexpected hardware relation: %+v", edge)
+					}
+				}
+				if contains != 6 || component != 1 {
+					t.Fatal("exact native containment/causal relations missing", contains, component)
+				}
 				break
 			}
 			if time.Now().After(deadline) {

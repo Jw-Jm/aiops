@@ -150,10 +150,11 @@ func TestOpenAPIConventions(t *testing.T) {
 			}
 			errorSchema := operation.Responses["default"].Content["application/json"].Schema
 			sp04 := path == "/api/v1/resources" || strings.HasPrefix(path, "/api/v1/resources/") || path == "/api/v1/diagnostic-graphs:build" || path == "/api/v1/evidence:query" || path == "/api/v1/evidence/{evidenceId}" || path == "/api/v1/admin/legal-holds"
-			if sp04 {
+			sp05 := path == "/api/v1/findings:ingest" || path == "/api/v2/findings:ingest" || path == "/api/v1/findings" || path == "/api/v1/findings/{findingId}" || path == "/api/v1/incidents" || (strings.HasPrefix(path, "/api/v1/incidents/") && !strings.HasSuffix(path, "/investigations")) || path == "/api/v1/incidents:merge"
+			if sp04 || sp05 {
 				variants, ok := errorSchema["oneOf"].([]any)
 				if !ok || len(variants) != 2 || variants[0].(map[string]any)["$ref"] != "#/components/schemas/ErrorEnvelope" || variants[1].(map[string]any)["$ref"] != "#/components/schemas/SP04ErrorEnvelopeV2" {
-					t.Errorf("%s must explicitly preserve v1 auth errors and negotiate SP04 error v2", route)
+					t.Errorf("%s must explicitly preserve v1 auth errors and declare versioned error v2", route)
 				}
 				shape := document.Components.Schemas["SP04ErrorEnvelopeV2"]
 				if !contains(shape.Required, "schemaVersion") {
