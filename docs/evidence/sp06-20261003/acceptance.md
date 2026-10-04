@@ -4,7 +4,7 @@
 
 本轮实际 Git 基线为 `1c748b5b1f0bf33fb54774c2068a735abe2be599`，分支为 `sp06/nonvirtual-investigation`。初始工作树无用户修改；保留其他工作树、共享 OrbStack 服务和既有数据。根目录 00～10 正式文档只读。阶段授权与裁决见 ADR-0026、ADR-0027；ADR-0008 与 ADR-0020 继续有效。
 
-授权范围开发、必要运行验收与最终完整独立审核已通过。提交、合入 main、非强制推送及远端一致性验证尚待完成，另记 delivery-verification.json。
+授权范围开发、必要运行验收与最终完整独立审核已通过。实现已提交为 `422d9717404cf8b75b9df948a7797777bcd4d0ea`，fast-forward 合入 main 并非强制推送；实际远端 main 查询与实现提交一致。见 [Git 交付证据](delivery-verification.json)。随后仅提交这些交付回执，最终远端 HEAD 在该证据提交推送后再次验证，并在交付报告列出；受审运行/完整源码不变。
 
 ## Task 与正式 Contract
 

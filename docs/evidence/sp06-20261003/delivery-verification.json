@@ -1,0 +1,74 @@
+{
+  "timeUTC": "2026-10-04T10:42:23.166688+00:00",
+  "baseline": "1c748b5b1f0bf33fb54774c2068a735abe2be599",
+  "codeCommit": "422d9717404cf8b75b9df948a7797777bcd4d0ea",
+  "branch": "main",
+  "remoteMainAtCodeVerification": "422d9717404cf8b75b9df948a7797777bcd4d0ea",
+  "nonForcePush": true,
+  "verified": true,
+  "commands": [
+    {
+      "action": "delivery-fetch",
+      "command": [
+        "git",
+        "fetch",
+        "origin"
+      ],
+      "exitCode": 0
+    },
+    {
+      "action": "delivery-switch-main",
+      "command": [
+        "git",
+        "switch",
+        "main"
+      ],
+      "exitCode": 0
+    },
+    {
+      "action": "delivery-merge",
+      "command": [
+        "git",
+        "merge",
+        "--ff-only",
+        "sp06/nonvirtual-investigation"
+      ],
+      "exitCode": 0
+    },
+    {
+      "action": "delivery-push",
+      "command": [
+        "git",
+        "push",
+        "origin",
+        "main"
+      ],
+      "exitCode": 0
+    },
+    {
+      "action": "delivery-ls-remote",
+      "command": [
+        "git",
+        "ls-remote",
+        "origin",
+        "refs/heads/main"
+      ],
+      "exitCode": 0
+    },
+    {
+      "action": "delivery-fetch-after-push",
+      "command": [
+        "git",
+        "fetch",
+        "origin"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "evidenceOnlyReceiptCommit": "This record is stored in a subsequent evidence-only commit. Its own hash cannot be embedded here; final remote HEAD is verified after that push and reported to the user.",
+  "reviewedSourceStillIdentical": true,
+  "independentFullReview": "PASS /root/sp06_independent_review",
+  "finalTestedRuntimeBinding": "tested-native-source-binding-r10.json",
+  "finalFullSourceSnapshot": "final-source-snapshot.json",
+  "codeCommitLog": "delivery-implementation-commit.log"
+}
