@@ -1,0 +1,15 @@
+--- FAIL: TestNativePermissionReferencesRejectDifferentScopeAndMissingEvidence (0.00s)
+    native_license_test.go:13: compiled exact native license registry incomplete: 368
+FAIL
+FAIL	ops-platform/internal/supplychain	0.659s
+--- FAIL: TestFirstPartyGoMaterialsCannotBypassSDKSourceAdmission (0.04s)
+    runtime_admission_test.go:19: load embedded component catalog: component "holmesgpt": license/source evidence "third_party/licenses/investigator/base/gcc-14-base:arm64/copyright" cannot be resolved: open third_party/licenses/investigator/base/gcc-14-base:arm64/copyright: file does not exist
+--- FAIL: TestRuntimeSourceBindsQualifiedSDKAndTargetArchitecture (0.04s)
+    runtime_admission_test.go:31: load embedded component catalog: component "holmesgpt": license/source evidence "third_party/licenses/investigator/base/gcc-14-base:arm64/copyright" cannot be resolved: open third_party/licenses/investigator/base/gcc-14-base:arm64/copyright: file does not exist
+--- FAIL: TestSP05WorkerCannotOmitAnalyzerCorrespondingSource (0.04s)
+    runtime_admission_test.go:98: load embedded component catalog: component "holmesgpt": license/source evidence "third_party/licenses/investigator/base/gcc-14-base:arm64/copyright" cannot be resolved: open third_party/licenses/investigator/base/gcc-14-base:arm64/copyright: file does not exist
+--- FAIL: TestSP05WorkerSourceAdmissionBindsExactCLIClosure (0.04s)
+    runtime_admission_test.go:110: load embedded component catalog: component "holmesgpt": license/source evidence "third_party/licenses/investigator/base/gcc-14-base:arm64/copyright" cannot be resolved: open third_party/licenses/investigator/base/gcc-14-base:arm64/copyright: file does not exist
+FAIL
+FAIL	ops-platform/internal/bundle	1.226s
+FAIL

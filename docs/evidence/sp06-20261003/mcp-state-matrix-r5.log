@@ -1,0 +1,42 @@
+=== RUN   TestSP06StandardMCPToolStateReplayAndDenialMatrix
+2026/10/04 08:24:34 OK   00001_roles_and_schemas.sql (173.37ms)
+2026/10/04 08:24:34 goose: successfully migrated database to version: 1
+2026/10/04 08:24:34 OK   00002_platform_meta.sql (39.88ms)
+2026/10/04 08:24:34 OK   00003_finding.sql (33.33ms)
+2026/10/04 08:24:34 OK   00004_incident.sql (18.85ms)
+2026/10/04 08:24:34 OK   00005_investigation.sql (15.28ms)
+2026/10/04 08:24:34 OK   00006_action_command.sql (15.13ms)
+2026/10/04 08:24:34 OK   00007_audit.sql (33.77ms)
+2026/10/04 08:24:34 OK   00008_rls.sql (18.05ms)
+2026/10/04 08:24:34 OK   00009_idempotency_ledger.sql (29.46ms)
+2026/10/04 08:24:34 OK   00010_tenant_provisioning.sql (4.23ms)
+2026/10/04 08:24:34 OK   00011_source_registration_history.sql (16.14ms)
+2026/10/04 08:24:34 OK   00012_config_registry_lifecycle.sql (24.84ms)
+2026/10/04 08:24:34 OK   00013_audit_signed_segments.sql (11.49ms)
+2026/10/04 08:24:34 OK   00014_audit_segment_predecessors.sql (23.98ms)
+2026/10/04 08:24:34 OK   00015_source_schema_scope.sql (3.03ms)
+2026/10/04 08:24:34 OK   00016_cluster_registration_metadata.sql (3.53ms)
+2026/10/04 08:24:34 OK   00017_source_data_scope.sql (8.95ms)
+2026/10/04 08:24:34 OK   00018_sp04_resources_evidence.sql (27.6ms)
+2026/10/04 08:24:34 OK   00019_sp04_archive_ciphertext_bytes.sql (2.78ms)
+2026/10/04 08:24:34 OK   00020_sp04_request_ledger.sql (8.54ms)
+2026/10/04 08:24:34 OK   00021_sp04_archive_protection.sql (16.52ms)
+2026/10/04 08:24:34 OK   00022_sp04_legal_hold_dependencies.sql (5.69ms)
+2026/10/04 08:24:34 OK   00023_sp04_archive_query_intent.sql (25.77ms)
+2026/10/04 08:24:34 OK   00024_sp05_finding_incident.sql (49.96ms)
+2026/10/04 08:24:34 OK   00025_sp05_incident_event_time.sql (20.99ms)
+2026/10/04 08:24:34 OK   00026_sp05_source_binding_lock.sql (3.53ms)
+2026/10/04 08:24:34 OK   00027_sp05_rca_and_poll.sql (29.08ms)
+2026/10/04 08:24:34 OK   00028_sp05_operator_lock.sql (3.28ms)
+2026/10/04 08:24:34 OK   00029_sp05_evidence_links.sql (31ms)
+2026/10/04 08:24:34 OK   00030_sp05_recipe_fence.sql (2.99ms)
+2026/10/04 08:24:34 OK   00031_sp05_rca_postcheck.sql (10.57ms)
+2026/10/04 08:24:34 OK   00032_sp05_transport_audit.sql (15.74ms)
+2026/10/04 08:24:34 OK   00033_sp05_poll_resolution_clock.sql (3.95ms)
+2026/10/04 08:24:34 OK   00034_sp06_investigation_ledger.sql (47.7ms)
+2026/10/04 08:24:34 goose: successfully migrated database to version: 34
+    sp06_mcp_test.go:178: query_kubernetes wrong state {"budget":{"consumed":{"evidenceItems":0,"graphNodes":400,"inputTokens":0,"modelCostMicros":0,"modelRequests":0,"outputTokens":0,"rawQueries":2,"resultBytes":6793,"toolCalls":12},"remaining":{"evidenceItems":4000,"graphNodes":7600,"inputTokens":32768,"modelCostMicros":0,"modelRequests":8,"outputTokens":8192,"rawQueries":8,"resultBytes":41936247,"toolCalls":28}},"data":{"budgetAvailable":true},"degradedSources":[],"errorCode":"INVALID_INVESTIGATION","evidenceRefs":[],"partial":true,"schemaVersion":"tool-response/v2","state":"failed","tool":"query_kubernetes"}
+--- FAIL: TestSP06StandardMCPToolStateReplayAndDenialMatrix (4.45s)
+FAIL
+FAIL	ops-platform/test/integration	5.735s
+FAIL

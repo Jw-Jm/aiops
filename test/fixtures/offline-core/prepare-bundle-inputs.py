@@ -128,8 +128,15 @@ def main():
     parser.add_argument("--out", type=Path)
     parser.add_argument("--reuse-reviewed-spec", type=Path)
     parser.add_argument("--sp05-worker-material", type=Path, help="Exact prepared unchanged Analyzer and source material directory")
+    parser.add_argument("--sp06-investigator-material", type=Path, help="Authenticated offline Holmes/Python/base source and image material")
+    parser.add_argument("--sp06-investigator-image", default="ops.local/sp06/investigator:20261003", help="Local investigator image; its exact manifest must match the reviewed Catalog")
+    parser.add_argument("--working-tree-binding", action="store_true", help="Bind an uncommitted development acceptance build to exact source hashes; never claim a commit-only build")
     parser.add_argument("--bundle-id", default="task27-core-arm64-20260929")
     args = parser.parse_args()
+    def source_snapshot():
+        paths=run(["git","ls-files","--cached","--others","--exclude-standard","-z"]).decode().split("\0")
+        return {p:sha(ROOT/p) for p in sorted(set(paths)) if p and (ROOT/p).is_file() and p.split('/')[0] in {'api','build','bundle','cmd','deploy','gen','internal','migrations','scripts','services','third_party'} and not any(x in p.split('/') for x in ('.venv','__pycache__','.pytest_cache'))} | {p:sha(ROOT/p) for p in ('go.mod','go.sum')}
+    initial_snapshot=source_snapshot()
     if args.out:
         OUT = args.out.resolve()
         if OUT.exists(): raise RuntimeError("new preparation output must not already exist")
@@ -282,9 +289,28 @@ def main():
                     text+="\n===== "+m.name+" =====\n"+original.extractfile(m).read().decode()
         cli_notices.write_text(text)
         material("k8sgpt-source","source",cli["version"],source,cli_sbom,cli_notices,"source")
+    if args.sp06_investigator_material:
+        directory=args.sp06_investigator_material.resolve(); c=catalog['holmesgpt']
+        payload,reference,image_digest=export('holmesgpt',args.sp06_investigator_image,c['digest'])
+        source=directory/'python-runtime-source.tar'
+        if sha(source)!=c['correspondingSourceBundleSHA256']:raise RuntimeError('investigator corresponding source differs from reviewed Catalog')
+        sbom=OUT/'holmesgpt.spdx.json';sbom.write_bytes(run([str(SYFT),'oci-archive:'+str(payload),'-o','spdx-json']))
+        notices=OUT/'holmesgpt-notices.txt'
+        text=Path(c['specialLicenseADR']).read_text()+'\n'
+        for n in c['fileLicenses']:
+            if sha(n['path'])!=n['digest']:raise RuntimeError('investigator notice drift')
+            text+='\n===== '+n['path']+' / '+n['license']+' =====\n'+Path(n['path']).read_text(errors='replace')
+        notices.write_text(text)
+        material('holmesgpt','container-image',c['version'],payload,sbom,notices,'oci')
+        source_sbom=directory/'sbom.cdx.json'
+        material('holmesgpt-source','source',c['version'],source,source_sbom,notices,'source')
     head = run(["git", "rev-parse", "HEAD"]).decode().strip()
-    if run(["git", "status", "--porcelain"]).strip(): raise RuntimeError("current first-party sources must be committed before preparation")
+    dirty=bool(run(["git", "status", "--porcelain"]).strip())
+    if dirty and not args.working_tree_binding: raise RuntimeError("current first-party sources must be committed before preparation, or use explicit development working-tree binding")
+    if source_snapshot()!=initial_snapshot:raise RuntimeError('runtime source changed during preparation; rebuild from a stable snapshot')
     binding={"sourceCommit":head,"runtimeSourceDigest":sha(runtime/"runtime-go-source.tar"),"buildSpecBundleID":args.bundle_id,"goVersion":run(["go","version"]).decode().strip(),"network":"Go proxy/sumdb off; Docker build network none; no pull","target":"linux/arm64 CGO_ENABLED=0"}
+    binding['uncommittedDevelopmentBuild']=dirty
+    binding['sourceFiles']=initial_snapshot
     if args.sp05_worker_material:
         binding["analyzerSourceDigest"]=sha(args.sp05_worker_material/"k8sgpt-runtime-source.tar")
         binding["analyzerBinaryDigest"]=sha(args.sp05_worker_material/"k8sgpt")

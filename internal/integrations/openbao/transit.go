@@ -98,7 +98,10 @@ func (c *Client) ConfigureTransit(ctx context.Context) error {
 	if err := c.ensureTransitKey(ctx); err != nil {
 		return err
 	}
-	return c.ensureAuditSigningKey(ctx)
+	if err := c.ensureAuditSigningKey(ctx); err != nil {
+		return err
+	}
+	return c.ConfigureInvocationSigning(ctx)
 }
 
 func (c *Client) ensureAuditSigningKey(ctx context.Context) error {

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/get_resource_health/v2",
+  "title": "get_resource_health",
+  "description": "Return deterministic resource health, findings, and data-integrity state.",
+  "type": "object",
+  "properties": {
+    "canonicalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^[a-z][a-z0-9.-]{0,62}\\+v1://[A-Za-z0-9][A-Za-z0-9._~-]{0,127}/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})*/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+$"
+    }
+  },
+  "required": [
+    "canonicalId"
+  ],
+  "additionalProperties": false,
+  "x-tool-contract": {
+    "name": "get_resource_health",
+    "version": "v2",
+    "purpose": "Return deterministic resource health, findings, and data-integrity state.",
+    "inputSchema": {
+      "$ref": "https://ops.local/schemas/get_resource_health/v2"
+    },
+    "outputSchema": {
+      "$ref": "https://ops.local/schemas/get_resource_health/v2#output"
+    },
+    "requiredPermissions": [
+      "allowed_tools",
+      "tenant_scope",
+      "cluster_scope",
+      "namespace_scope"
+    ],
+    "allowedDataClasses": [
+      "D0",
+      "D1"
+    ],
+    "defaultTimeout": 3,
+    "maxResultBytes": 65536,
+    "rateLimit": {
+      "jobBudget": "maxToolCalls"
+    },
+    "auditPolicy": "every_invocation_and_sanitized_result",
+    "failureSemantics": [
+      "invalid_arguments",
+      "permission_denied",
+      "data_class_denied",
+      "budget_exhausted",
+      "source_degraded",
+      "timeout",
+      "temporary_upstream_error",
+      "job_cancelled"
+    ]
+  },
+  "$defs": {
+    "output": {
+      "$anchor": "output",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://ops.local/schemas/tool-response/v2"
+        },
+        {
+          "properties": {
+            "tool": {
+              "const": "get_resource_health"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -66,6 +66,14 @@ func Validate(schemaID string, payload []byte) error {
 	if err := schema.Validate(value); err != nil {
 		return fmt.Errorf("validate payload against schema %q: %w", schemaID, err)
 	}
+	// The declared internal list query has no anchor entity. Its schema
+	// explicitly permits an empty canonicalId; every other query still needs
+	// the usual tenant-bound ID, and nonempty list IDs remain fully checked.
+	if baseID == "https://ops.local/schemas/internal-graph-query/v1" {
+		if query, ok := value.(map[string]any); ok && query["queryKind"] == "list" && query["canonicalId"] == "" {
+			delete(query, "canonicalId")
+		}
+	}
 	if err := validateTenantBindings(value); err != nil {
 		return fmt.Errorf("validate tenant-bound canonical IDs for schema %q: %w", schemaID, err)
 	}

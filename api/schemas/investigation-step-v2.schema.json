@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/investigation-step/v2",
+  "title": "investigation-step/v2",
+  "type": "object",
+  "properties": {
+    "stepId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "toolName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "argsDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "state": {
+      "enum": [
+        "running",
+        "succeeded",
+        "failed"
+      ]
+    },
+    "result": {},
+    "errorCode": {
+      "type": "string",
+      "maxLength": 128
+    }
+  },
+  "required": [
+    "stepId",
+    "toolName",
+    "argsDigest",
+    "state"
+  ],
+  "additionalProperties": false
+}

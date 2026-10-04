@@ -228,6 +228,7 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 	recoveryFile := flags.String("recovery-file", "", "0600 recovery file outside the repository and Bundle")
 	bundleDirectory := flags.String("bundle-dir", "", "Bundle directory to exclude from recovery file paths")
 	shareIndex := flags.Int("share-index", -1, "zero-based Shamir share index for unseal")
+	investigationSigning := flags.Bool("investigation-signing", false, "configure the nonexportable SP06 Context signing key during configure")
 	if err := flags.Parse(args[1:]); err != nil {
 		return err
 	}
@@ -326,6 +327,11 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 	case "configure":
 		if err := client.Configure(ctx); err != nil {
 			return err
+		}
+		if *investigationSigning {
+			if err := client.ConfigureInvocationSigning(ctx); err != nil {
+				return err
+			}
 		}
 		status, err := client.Status(ctx)
 		if err != nil {

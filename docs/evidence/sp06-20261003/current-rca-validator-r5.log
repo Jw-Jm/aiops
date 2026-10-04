@@ -1,0 +1,43 @@
+=== RUN   TestSP06ActualCurrentRCARecommendationValidator
+2026/10/03 23:20:59 OK   00001_roles_and_schemas.sql (8.91ms)
+2026/10/03 23:20:59 goose: successfully migrated database to version: 1
+2026/10/03 23:20:59 OK   00002_platform_meta.sql (17.62ms)
+2026/10/03 23:20:59 OK   00003_finding.sql (6.45ms)
+2026/10/03 23:20:59 OK   00004_incident.sql (4.32ms)
+2026/10/03 23:20:59 OK   00005_investigation.sql (4.6ms)
+2026/10/03 23:20:59 OK   00006_action_command.sql (4.9ms)
+2026/10/03 23:20:59 OK   00007_audit.sql (6.72ms)
+2026/10/03 23:20:59 OK   00008_rls.sql (6.32ms)
+2026/10/03 23:20:59 OK   00009_idempotency_ledger.sql (5.03ms)
+2026/10/03 23:20:59 OK   00010_tenant_provisioning.sql (3.57ms)
+2026/10/03 23:20:59 OK   00011_source_registration_history.sql (4.64ms)
+2026/10/03 23:20:59 OK   00012_config_registry_lifecycle.sql (9.36ms)
+2026/10/03 23:20:59 OK   00013_audit_signed_segments.sql (7.83ms)
+2026/10/03 23:20:59 OK   00014_audit_segment_predecessors.sql (4.26ms)
+2026/10/03 23:20:59 OK   00015_source_schema_scope.sql (2.92ms)
+2026/10/03 23:20:59 OK   00016_cluster_registration_metadata.sql (3.23ms)
+2026/10/03 23:20:59 OK   00017_source_data_scope.sql (2.5ms)
+2026/10/03 23:20:59 OK   00018_sp04_resources_evidence.sql (12.39ms)
+2026/10/03 23:20:59 OK   00019_sp04_archive_ciphertext_bytes.sql (2.43ms)
+2026/10/03 23:20:59 OK   00020_sp04_request_ledger.sql (3.65ms)
+2026/10/03 23:20:59 OK   00021_sp04_archive_protection.sql (2.66ms)
+2026/10/03 23:20:59 OK   00022_sp04_legal_hold_dependencies.sql (2.49ms)
+2026/10/03 23:20:59 OK   00023_sp04_archive_query_intent.sql (2.58ms)
+2026/10/03 23:20:59 OK   00024_sp05_finding_incident.sql (11.26ms)
+2026/10/03 23:20:59 OK   00025_sp05_incident_event_time.sql (2.4ms)
+2026/10/03 23:20:59 OK   00026_sp05_source_binding_lock.sql (2.71ms)
+2026/10/03 23:20:59 OK   00027_sp05_rca_and_poll.sql (5.46ms)
+2026/10/03 23:20:59 OK   00028_sp05_operator_lock.sql (2.69ms)
+2026/10/03 23:20:59 OK   00029_sp05_evidence_links.sql (4.11ms)
+2026/10/03 23:20:59 OK   00030_sp05_recipe_fence.sql (2.74ms)
+2026/10/03 23:20:59 OK   00031_sp05_rca_postcheck.sql (2.19ms)
+2026/10/03 23:20:59 OK   00032_sp05_transport_audit.sql (2.6ms)
+2026/10/03 23:20:59 OK   00033_sp05_poll_resolution_clock.sql (2.56ms)
+2026/10/03 23:20:59 OK   00034_sp06_investigation_ledger.sql (13.4ms)
+2026/10/03 23:20:59 goose: successfully migrated database to version: 34
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=05e344463b227822fda7d1310890ded3e4a5ee5789d6360d7801cb4f68df275a bucket=sp05-golden-96aa5f94 tenants=1
+    sp05_golden_vertical_test.go:337: actual ranked Evidence tool: partial=false refs=0 err=<nil>
+--- FAIL: TestSP06ActualCurrentRCARecommendationValidator (7.28s)
+FAIL
+FAIL	ops-platform/test/integration	8.280s
+FAIL

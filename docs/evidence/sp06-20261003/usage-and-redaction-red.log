@@ -1,0 +1,47 @@
+=== RUN   TestStructuredSessionTokensAreRedacted
+    catalog_test.go:51: structured token survived: access-value
+--- FAIL: TestStructuredSessionTokensAreRedacted (0.00s)
+FAIL
+FAIL	ops-platform/internal/investigation/tools	0.677s
+=== RUN   TestSP06UnknownModelUsageCannotUndercharge
+2026/10/03 20:35:56 OK   00001_roles_and_schemas.sql (24.19ms)
+2026/10/03 20:35:56 goose: successfully migrated database to version: 1
+2026/10/03 20:35:56 OK   00002_platform_meta.sql (14.19ms)
+2026/10/03 20:35:57 OK   00003_finding.sql (5.85ms)
+2026/10/03 20:35:57 OK   00004_incident.sql (5.72ms)
+2026/10/03 20:35:57 OK   00005_investigation.sql (25.05ms)
+2026/10/03 20:35:57 OK   00006_action_command.sql (5.38ms)
+2026/10/03 20:35:57 OK   00007_audit.sql (28.37ms)
+2026/10/03 20:35:57 OK   00008_rls.sql (6.24ms)
+2026/10/03 20:35:57 OK   00009_idempotency_ledger.sql (4.46ms)
+2026/10/03 20:35:57 OK   00010_tenant_provisioning.sql (2.56ms)
+2026/10/03 20:35:57 OK   00011_source_registration_history.sql (4.29ms)
+2026/10/03 20:35:57 OK   00012_config_registry_lifecycle.sql (5.75ms)
+2026/10/03 20:35:57 OK   00013_audit_signed_segments.sql (7.03ms)
+2026/10/03 20:35:57 OK   00014_audit_segment_predecessors.sql (3.62ms)
+2026/10/03 20:35:57 OK   00015_source_schema_scope.sql (1.9ms)
+2026/10/03 20:35:57 OK   00016_cluster_registration_metadata.sql (2.71ms)
+2026/10/03 20:35:57 OK   00017_source_data_scope.sql (2.08ms)
+2026/10/03 20:35:57 OK   00018_sp04_resources_evidence.sql (8.87ms)
+2026/10/03 20:35:57 OK   00019_sp04_archive_ciphertext_bytes.sql (1.94ms)
+2026/10/03 20:35:57 OK   00020_sp04_request_ledger.sql (3.92ms)
+2026/10/03 20:35:57 OK   00021_sp04_archive_protection.sql (7.47ms)
+2026/10/03 20:35:57 OK   00022_sp04_legal_hold_dependencies.sql (8.24ms)
+2026/10/03 20:35:57 OK   00023_sp04_archive_query_intent.sql (4.84ms)
+2026/10/03 20:35:57 OK   00024_sp05_finding_incident.sql (12.26ms)
+2026/10/03 20:35:57 OK   00025_sp05_incident_event_time.sql (2.99ms)
+2026/10/03 20:35:57 OK   00026_sp05_source_binding_lock.sql (8.45ms)
+2026/10/03 20:35:57 OK   00027_sp05_rca_and_poll.sql (14.43ms)
+2026/10/03 20:35:57 OK   00028_sp05_operator_lock.sql (2.42ms)
+2026/10/03 20:35:57 OK   00029_sp05_evidence_links.sql (3.71ms)
+2026/10/03 20:35:57 OK   00030_sp05_recipe_fence.sql (11.26ms)
+2026/10/03 20:35:57 OK   00031_sp05_rca_postcheck.sql (7.38ms)
+2026/10/03 20:35:57 OK   00032_sp05_transport_audit.sql (4.17ms)
+2026/10/03 20:35:57 OK   00033_sp05_poll_resolution_clock.sql (2.33ms)
+2026/10/03 20:35:57 OK   00034_sp06_investigation_ledger.sql (25.87ms)
+2026/10/03 20:35:57 goose: successfully migrated database to version: 34
+    sp06_recovery_test.go:219: unknown usage undercharged: {ToolCalls:0 RawQueries:0 ResultBytes:0 GraphNodes:0 EvidenceItems:0 ModelRequests:0 InputTokens:0 OutputTokens:0 ModelCostMicros:0} <nil>
+--- FAIL: TestSP06UnknownModelUsageCannotUndercharge (0.63s)
+FAIL
+FAIL	ops-platform/test/integration	1.635s
+FAIL

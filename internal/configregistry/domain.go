@@ -244,6 +244,9 @@ func schemaForContent(kind Kind, content json.RawMessage) (string, bool) {
 	if json.Unmarshal(content, &header) != nil {
 		return "", false
 	}
+	if kind == KindPolicy && header.SchemaVersion == "policy-registry/v2" {
+		return "https://ops.local/schemas/policy-registry/v2", true
+	}
 	if kind == KindRecipe && header.SchemaVersion == "recipe-registry/v2" {
 		return "https://ops.local/schemas/recipe-registry/v2", true
 	}

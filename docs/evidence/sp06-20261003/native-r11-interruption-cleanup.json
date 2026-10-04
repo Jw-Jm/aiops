@@ -1,0 +1,61 @@
+{
+  "nativeAttempt": "native-chart-offline-r11.log",
+  "status": "interrupted_before_required_runtime_acceptance",
+  "exitCode": null,
+  "namespace": {
+    "name": "sp04-chain-76ab5a25",
+    "uid": "afeae9d9-c9de-45f3-8afc-c5ed1b2d1edd",
+    "ownershipLabel": "sp04-chain-76ab5a25"
+  },
+  "clusterObjects": [
+    {
+      "kind": "ClusterRole",
+      "name": "sp04-chain-76ab5a25",
+      "uid": "968e0d0a-641a-4aeb-859b-23e97c5f859e",
+      "ownershipLabel": "sp04-chain-76ab5a25"
+    },
+    {
+      "kind": "ClusterRoleBinding",
+      "name": "sp04-chain-76ab5a25",
+      "uid": "b486b628-f2c3-4424-bae9-8177a9e0a713",
+      "ownershipLabel": "sp04-chain-76ab5a25"
+    }
+  ],
+  "containers": [
+    {
+      "id": "a268a79cc364372cbe770b34fd8262e0c5b9d5d94986c1b3e1c00936483dddd7",
+      "name": "/ops-archive-iam-8e3d02ad-f389-4dd2-b86c-8bfed662754f",
+      "ownershipLabel": {
+        "ops.sp03.archive-iam": "8e3d02ad-f389-4dd2-b86c-8bfed662754f"
+      },
+      "proof": "exact container ID from r11 actual fixture creation log"
+    }
+  ],
+  "cleanup": [
+    {
+      "kind": "ClusterRole",
+      "name": "sp04-chain-76ab5a25",
+      "exitCode": 0,
+      "uidPrecondition": "968e0d0a-641a-4aeb-859b-23e97c5f859e"
+    },
+    {
+      "kind": "ClusterRoleBinding",
+      "name": "sp04-chain-76ab5a25",
+      "exitCode": 0,
+      "uidPrecondition": "b486b628-f2c3-4424-bae9-8177a9e0a713"
+    },
+    {
+      "kind": "Namespace",
+      "name": "sp04-chain-76ab5a25",
+      "exitCode": 0,
+      "uidPrecondition": "afeae9d9-c9de-45f3-8afc-c5ed1b2d1edd"
+    },
+    {
+      "kind": "owned isolated S3 fixture",
+      "id": "a268a79cc364372cbe770b34fd8262e0c5b9d5d94986c1b3e1c00936483dddd7",
+      "exitCode": 0
+    }
+  ],
+  "sharedServices": "preserved",
+  "unknownDatabaseResidue": "preserved; no unverified database deletion"
+}

@@ -1,0 +1,57 @@
+=== RUN   TestSP06RealHolmesModelMCPJobAndSSE
+2026/10/03 20:57:25 OK   00001_roles_and_schemas.sql (34.21ms)
+2026/10/03 20:57:25 goose: successfully migrated database to version: 1
+2026/10/03 20:57:25 OK   00002_platform_meta.sql (40.6ms)
+2026/10/03 20:57:25 OK   00003_finding.sql (7.73ms)
+2026/10/03 20:57:25 OK   00004_incident.sql (15.01ms)
+2026/10/03 20:57:25 OK   00005_investigation.sql (25.27ms)
+2026/10/03 20:57:25 OK   00006_action_command.sql (6.33ms)
+2026/10/03 20:57:25 OK   00007_audit.sql (43.23ms)
+2026/10/03 20:57:25 OK   00008_rls.sql (10.67ms)
+2026/10/03 20:57:25 OK   00009_idempotency_ledger.sql (6.07ms)
+2026/10/03 20:57:25 OK   00010_tenant_provisioning.sql (3.5ms)
+2026/10/03 20:57:25 OK   00011_source_registration_history.sql (39.24ms)
+2026/10/03 20:57:25 OK   00012_config_registry_lifecycle.sql (24.27ms)
+2026/10/03 20:57:25 OK   00013_audit_signed_segments.sql (59.03ms)
+2026/10/03 20:57:25 OK   00014_audit_segment_predecessors.sql (31.19ms)
+2026/10/03 20:57:25 OK   00015_source_schema_scope.sql (3.14ms)
+2026/10/03 20:57:25 OK   00016_cluster_registration_metadata.sql (3.43ms)
+2026/10/03 20:57:25 OK   00017_source_data_scope.sql (2.82ms)
+2026/10/03 20:57:25 OK   00018_sp04_resources_evidence.sql (10.62ms)
+2026/10/03 20:57:25 OK   00019_sp04_archive_ciphertext_bytes.sql (2.42ms)
+2026/10/03 20:57:25 OK   00020_sp04_request_ledger.sql (3.6ms)
+2026/10/03 20:57:25 OK   00021_sp04_archive_protection.sql (2.56ms)
+2026/10/03 20:57:25 OK   00022_sp04_legal_hold_dependencies.sql (2.27ms)
+2026/10/03 20:57:25 OK   00023_sp04_archive_query_intent.sql (2.48ms)
+2026/10/03 20:57:25 OK   00024_sp05_finding_incident.sql (36.1ms)
+2026/10/03 20:57:25 OK   00025_sp05_incident_event_time.sql (12.17ms)
+2026/10/03 20:57:25 OK   00026_sp05_source_binding_lock.sql (9.55ms)
+2026/10/03 20:57:25 OK   00027_sp05_rca_and_poll.sql (6.41ms)
+2026/10/03 20:57:25 OK   00028_sp05_operator_lock.sql (2.91ms)
+2026/10/03 20:57:25 OK   00029_sp05_evidence_links.sql (4.23ms)
+2026/10/03 20:57:25 OK   00030_sp05_recipe_fence.sql (2.33ms)
+2026/10/03 20:57:25 OK   00031_sp05_rca_postcheck.sql (3.73ms)
+2026/10/03 20:57:25 OK   00032_sp05_transport_audit.sql (7.89ms)
+2026/10/03 20:57:25 OK   00033_sp05_poll_resolution_clock.sql (13.44ms)
+2026/10/03 20:57:25 OK   00034_sp06_investigation_ledger.sql (44.28ms)
+2026/10/03 20:57:25 goose: successfully migrated database to version: 34
+2026/10/03 20:57:31 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+    sp06_real_chain_test.go:379: actual provider HTTP fault=unavailable state=failed remoteRequests=1; conservative ledger and live Incident API preserved; fixture is not the real-model acceptance
+    sp06_real_chain_test.go:224: investigator diagnostic ERROR:root:LLM call failed on model=openai/llama3.1:8b-16k (streaming iteration 1): RuntimeError: MODEL_FAILURE
+        Traceback (most recent call last):
+          File "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/Users/mssc/Documents/Code/ops/platform/services/investigator/src/investigator/budget.py", line 39, in completion
+            raise RuntimeError("MODEL_FAILURE") from None
+        RuntimeError: MODEL_FAILURE
+        investigator-failure RuntimeError /Users/mssc/Documents/Code/ops/platform/services/investigator/src/investigator/worker.py 65
+        investigator-failure RuntimeError /Users/mssc/Documents/Code/ops/platform/services/investigator/src/investigator/holmes_adapter.py 79
+        investigator-failure RuntimeError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure RuntimeError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure RuntimeError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        investigator-failure RuntimeError /Users/mssc/Documents/Code/ops/platform/services/investigator/src/investigator/budget.py 39
+        
+--- PASS: TestSP06RealHolmesModelMCPJobAndSSE (6.94s)
+PASS
+ok  	ops-platform/test/integration	7.704s

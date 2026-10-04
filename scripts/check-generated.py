@@ -5,13 +5,14 @@ import subprocess
 import sys
 import shutil
 import tempfile
+import difflib
 
 
 def snapshot(root, directories):
     return {
         str(path.relative_to(root)): path.read_bytes()
         for directory in directories
-        for path in (root / directory).rglob("*")
+        for path in ([root / directory] if (root / directory).is_file() else (root / directory).rglob("*"))
         if path.is_file()
     }
 
@@ -54,6 +55,9 @@ def main():
     if changed:
         print("Generated artifacts are out of date; review regenerated changes:", file=sys.stderr)
         print("\n".join(changed), file=sys.stderr)
+        for path in changed:
+            if path.endswith("index.ts"):
+                print("".join(difflib.unified_diff(before.get(path,b"").decode().splitlines(True),after.get(path,b"").decode().splitlines(True),fromfile="working/"+path,tofile="generated/"+path)),file=sys.stderr)
         return 1
     return 0
 

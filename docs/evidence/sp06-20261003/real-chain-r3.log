@@ -1,0 +1,55 @@
+=== RUN   TestSP06RealHolmesModelMCPJobAndSSE
+2026/10/03 18:51:49 OK   00001_roles_and_schemas.sql (8.51ms)
+2026/10/03 18:51:49 goose: successfully migrated database to version: 1
+2026/10/03 18:51:49 OK   00002_platform_meta.sql (20.75ms)
+2026/10/03 18:51:49 OK   00003_finding.sql (8.69ms)
+2026/10/03 18:51:49 OK   00004_incident.sql (4.54ms)
+2026/10/03 18:51:49 OK   00005_investigation.sql (4.62ms)
+2026/10/03 18:51:49 OK   00006_action_command.sql (9.9ms)
+2026/10/03 18:51:49 OK   00007_audit.sql (14.02ms)
+2026/10/03 18:51:49 OK   00008_rls.sql (6.19ms)
+2026/10/03 18:51:49 OK   00009_idempotency_ledger.sql (4.43ms)
+2026/10/03 18:51:49 OK   00010_tenant_provisioning.sql (2.72ms)
+2026/10/03 18:51:49 OK   00011_source_registration_history.sql (4.48ms)
+2026/10/03 18:51:49 OK   00012_config_registry_lifecycle.sql (20.89ms)
+2026/10/03 18:51:49 OK   00013_audit_signed_segments.sql (21.79ms)
+2026/10/03 18:51:49 OK   00014_audit_segment_predecessors.sql (9.3ms)
+2026/10/03 18:51:49 OK   00015_source_schema_scope.sql (3.55ms)
+2026/10/03 18:51:49 OK   00016_cluster_registration_metadata.sql (14.84ms)
+2026/10/03 18:51:49 OK   00017_source_data_scope.sql (9.8ms)
+2026/10/03 18:51:49 OK   00018_sp04_resources_evidence.sql (24.02ms)
+2026/10/03 18:51:49 OK   00019_sp04_archive_ciphertext_bytes.sql (7.3ms)
+2026/10/03 18:51:49 OK   00020_sp04_request_ledger.sql (9.4ms)
+2026/10/03 18:51:49 OK   00021_sp04_archive_protection.sql (3.55ms)
+2026/10/03 18:51:49 OK   00022_sp04_legal_hold_dependencies.sql (2.36ms)
+2026/10/03 18:51:49 OK   00023_sp04_archive_query_intent.sql (2.9ms)
+2026/10/03 18:51:49 OK   00024_sp05_finding_incident.sql (28.19ms)
+2026/10/03 18:51:49 OK   00025_sp05_incident_event_time.sql (6.84ms)
+2026/10/03 18:51:49 OK   00026_sp05_source_binding_lock.sql (12.29ms)
+2026/10/03 18:51:49 OK   00027_sp05_rca_and_poll.sql (9.35ms)
+2026/10/03 18:51:49 OK   00028_sp05_operator_lock.sql (2.38ms)
+2026/10/03 18:51:49 OK   00029_sp05_evidence_links.sql (17.79ms)
+2026/10/03 18:51:49 OK   00030_sp05_recipe_fence.sql (7.14ms)
+2026/10/03 18:51:49 OK   00031_sp05_rca_postcheck.sql (3.9ms)
+2026/10/03 18:51:49 OK   00032_sp05_transport_audit.sql (2.65ms)
+2026/10/03 18:51:49 OK   00033_sp05_poll_resolution_clock.sql (4.8ms)
+2026/10/03 18:51:49 OK   00034_sp06_investigation_ledger.sql (25.92ms)
+2026/10/03 18:51:49 goose: successfully migrated database to version: 34
+2026/10/03 18:53:29 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+    sp06_real_chain_test.go:232: real chain state=failed errorCode=INVESTIGATOR_FAILURE
+    sp06_real_chain_test.go:180: investigator diagnostic WARNING:root:Couldn't find model openai/llama3.1:8b-16k in litellm's model list (tried: openai/llama3.1:8b-16k, llama3.1:8b-16k), using 64000 tokens for max_output_tokens. To override, set OVERRIDE_MAX_OUTPUT_TOKEN environment variable to the correct value for your model.
+        WARNING:root:Compaction: primary summarization attempt unusable (summarization request failed: MODEL_FAILURE); retrying with tool messages flattened to text and no tools attached
+        ERROR:root:Failed to reduce token count when compacting conversation history. Original tokens:942. Compacted tokens:1234
+        ERROR:root:Conversation history compaction failed to reduce tokens sufficiently. Current: 942 tokens + 64000 max output = 64942, but context window is 16384. Please start a new conversation.
+        investigator-failure CompactionInsufficientError /Users/mssc/Documents/Code/ops/platform/services/investigator/src/investigator/worker.py 64
+        investigator-failure CompactionInsufficientError /Users/mssc/Documents/Code/ops/platform/services/investigator/src/investigator/holmes_adapter.py 78
+        investigator-failure CompactionInsufficientError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure CompactionInsufficientError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure CompactionInsufficientError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1169
+        investigator-failure CompactionInsufficientError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure CompactionInsufficientError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/holmes/core/truncation/input_context_window_limiter.py 186
+        
+--- FAIL: TestSP06RealHolmesModelMCPJobAndSSE (100.33s)
+FAIL
+FAIL	ops-platform/test/integration	101.378s
+FAIL

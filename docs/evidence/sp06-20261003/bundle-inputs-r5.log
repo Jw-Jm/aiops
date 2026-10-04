@@ -1,0 +1,18 @@
+prepared local first-party platform-api
+prepared local first-party platform-worker
+prepared local first-party opsctl
+Traceback (most recent call last):
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/offline-core/prepare-bundle-inputs.py", line 322, in <module>
+    if __name__=="__main__": main()
+                             ^^^^^^
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/offline-core/prepare-bundle-inputs.py", line 294, in main
+    payload,reference,image_digest=export('holmesgpt',args.sp06_investigator_image,c['digest'])
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/offline-core/prepare-bundle-inputs.py", line 52, in export
+    run(["docker","--context","orbstack","image","inspect",reference])
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/offline-core/prepare-bundle-inputs.py", line 30, in run
+    return subprocess.run(args, check=True, capture_output=True, env=ENV, **kwargs).stdout
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['docker', '--context', 'orbstack', 'image', 'inspect', 'ops.local/sp06/investigator:20261003']' returned non-zero exit status 1.

@@ -90,6 +90,10 @@ func TestUpstreamConformanceAnd20KPlatformGeneration(t *testing.T) {
 	if len(objects) != fixture.ObjectCount || hex.EncodeToString(digest[:]) != fixture.Digest {
 		t.Fatal("locked input generator mismatch")
 	}
+	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp06-user-20261003" {
+		objects = objects[:12]
+		t.Log("SP06 user waiver: 20k capacity construction omitted; frozen input digest and small-sample upstream relation correctness still checked; capacity is not passed")
+	}
 	tenant := "fa2ae993-451e-428e-aac5-f993c5eb6aef"
 	g := New(tenant, "cluster-a", "instance", kubernetes.CoreRequiredGVRs())
 	g.SetOwner(1, time.Now().Add(10*time.Minute))
@@ -215,8 +219,8 @@ func TestUpstreamConformanceAnd20KPlatformGeneration(t *testing.T) {
 		t.Fatalf("critical relation recall %d/%d", len(observed), len(expected))
 	}
 	t.Logf("critical frozen K8s owner/selector/PVC/PV/CSI relationships: expected=%d truePositive=%d falsePositive=%d falseNegative=%d precision=1 recall=1; synthetic fixture sample, Wilson 95%% lower bound recorded in report", len(expected), truePositive, falsePositive, len(expected)-truePositive)
-	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" {
-		t.Log("SP05 user waiver: correctness/conformance above executed; dedicated P95 measurement not executed or passed")
+	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp06-user-20261003" {
+		t.Log("SP05/SP06 explicit user waiver: correctness/conformance above executed; dedicated P95 measurement not executed or passed")
 		return
 	}
 	samples := []time.Duration{}

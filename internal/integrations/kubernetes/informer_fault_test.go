@@ -39,7 +39,7 @@ func TestStreamingInitialSnapshotAndTerminalDelete(t *testing.T) {
 	defer cancel()
 	deleted, rebuilt := false, false
 	if err := client.Run(ctx, GVR{Version: "v1", Resource: "pods"}, func(s Snapshot) error {
-		if !s.State.WatchContinuous {
+		if s.ObservationOnly || !s.State.WatchContinuous {
 			return nil
 		}
 		for _, o := range s.Objects {

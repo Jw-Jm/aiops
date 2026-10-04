@@ -347,13 +347,9 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 				defer group.Done()
 				sink := collectorSink(runContext, cluster, g, resourcestore.Repository{Pool: pool, ExpectedRevision: cluster.SourceRevision, BackendLogicalID: cluster.BackendLogicalID}, archiveQueue)
 				if c.SP05 != nil && c.SP05.Enabled {
-					original := sink
-					sink = func(s kubernetes.Snapshot) error {
-						if err := original(s); err != nil {
-							return err
-						}
+					sink = withSP05SnapshotInspection(sink, func(s kubernetes.Snapshot) error {
 						return InspectSP05Snapshot(runContext, cluster, s, archive)
-					}
+					})
 				}
 				for runContext.Err() == nil {
 					err := client.Run(runContext, gvr, sink)

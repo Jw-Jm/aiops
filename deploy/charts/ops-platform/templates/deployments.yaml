@@ -2,7 +2,7 @@
 {{- if and .Values.workloadsEnabled (not .Values.networkPolicyOnly) }}
 {{- range $name := list "api" "worker" "web" }}
 {{- $component := index $.Values.components $name }}
-{{- if $component.enabled }}
+{{- if and $component.enabled (not (and $.Values.sp06.enabled (eq $name "investigator"))) }}
 {{- $image := required (printf "components.%s.image is required" $name) $component.image }}
 {{- if not (regexMatch "^.+@sha256:[0-9a-f]{64}$" $image) }}{{ fail "platform images must be digest pinned" }}{{- end }}
 apiVersion: apps/v1
@@ -37,6 +37,9 @@ spec:
           image: {{ $image | quote }}
           imagePullPolicy: {{ $component.imagePullPolicy | default $.Values.global.imagePullPolicy | quote }}
           ports:
+            {{ if and $.Values.sp06.enabled (eq $name "api") }}
+            - {name: mcp-mtls, containerPort: {{ $.Values.sp06.gatewayPort }}, protocol: TCP}
+            {{ end }}
             {{ if and $.Values.sp04.enabled (eq $name "worker") }}
             - name: graph-mtls
               containerPort: {{ $.Values.sp04.graphPort }}
@@ -51,6 +54,15 @@ spec:
               protocol: TCP
             {{ end }}
           env:
+            {{ if and $.Values.sp06.enabled (has $name (list "api" "worker")) }}
+            - {name: SP06_RUNTIME_FILE, value: {{ printf "/etc/sp06/runtime/%s.json" $name | quote }}}
+            - {name: OPENBAO_PROJECTED_TOKEN_FILE, value: /var/run/secrets/ops-platform/openbao/token}
+            {{ if eq $name "api" }}
+            - {name: OPENBAO_ADDR, value: {{ $.Values.runtime.openbaoAddress | default (printf "https://ops-openbao.%s.svc.cluster.local:8200" $.Release.Namespace) | quote }}}
+            - {name: OPENBAO_CA_FILE, value: /etc/ops/openbao-ca.pem}
+            - {name: OPENBAO_SERVICE_DOMAIN, value: {{ printf "%s.svc.cluster.local" $.Release.Namespace | quote }}}
+            {{ end }}
+            {{ end }}
             {{ if and $.Values.sp04.enabled (has $name (list "api" "worker")) }}
             - name: SP04_RUNTIME_FILE
               value: /etc/sp04/runtime/{{ $name }}.json
@@ -113,6 +125,9 @@ spec:
             capabilities:
               drop: ["ALL"]
           volumeMounts:
+            {{ if and $.Values.sp06.enabled (has $name (list "api" "worker")) }}
+            - {name: sp06-runtime, mountPath: /etc/sp06/runtime, readOnly: true}
+            {{ end }}
             {{ if and $.Values.sp04.enabled (has $name (list "api" "worker")) }}
             - name: sp04-runtime
               mountPath: /etc/sp04/runtime
@@ -143,6 +158,10 @@ spec:
               mountPath: /tmp
 {{ include "ops-platform.workloadIdentityMount" (dict "enabled" $.Values.workloadIdentity.enabled "name" $name) | indent 12 }}
       volumes:
+        {{ if and $.Values.sp06.enabled (has $name (list "api" "worker")) }}
+        - name: sp06-runtime
+          configMap: {name: ops-sp06-runtime}
+        {{ end }}
         {{ if and $.Values.sp04.enabled (has $name (list "api" "worker")) }}
         - name: sp04-runtime
           configMap:

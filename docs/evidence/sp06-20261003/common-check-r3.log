@@ -1,0 +1,60 @@
+python3 scripts/check-generated.py "go" gen web/src/api/generated internal/persistence/dbgen
+✓ Lockfile passes supply-chain policies (verified 6d ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+Done in 95ms using pnpm v12.7.0
+$ orval --config ./orval.config.ts
+🍻 orval v8.37.0 - A swagger client generator for typescript
+platform - 🎉 Smart Operations Platform API - Your OpenAPI spec has been converted into ready to use orval!
+python3 scripts/prepare-runtime-source.py --check
+{"modules": 98, "selectedModuleFiles": 2993, "standardLibraryFiles": 1386, "sourceBundleSHA256": "sha256:9628d31da79f4d4fcbffb303796aa805ee0508e732c66f203f2f330fb9bbe903"}
+{"Time":"2026-10-03T19:09:55.343396+08:00","Action":"start","Package":"ops-platform/test/security"}
+{"Time":"2026-10-03T19:09:55.859901+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent"}
+{"Time":"2026-10-03T19:09:55.860023+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent","Output":"=== RUN   TestOperatorAndPlatformAdminAreIndependent\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.860103+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent/operator_cannot_administer"}
+{"Time":"2026-10-03T19:09:55.860123+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent/operator_cannot_administer","Output":"=== RUN   TestOperatorAndPlatformAdminAreIndependent/operator_cannot_administer\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.860149+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent/operator_cannot_administer","Output":"--- PASS: TestOperatorAndPlatformAdminAreIndependent/operator_cannot_administer (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.860157+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent/operator_cannot_administer","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.860178+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent/administrator_cannot_operate"}
+{"Time":"2026-10-03T19:09:55.860185+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent/administrator_cannot_operate","Output":"=== RUN   TestOperatorAndPlatformAdminAreIndependent/administrator_cannot_operate\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.860208+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent/administrator_cannot_operate","Output":"--- PASS: TestOperatorAndPlatformAdminAreIndependent/administrator_cannot_operate (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.860215+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent/administrator_cannot_operate","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.860221+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent","Output":"--- PASS: TestOperatorAndPlatformAdminAreIndependent (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.860227+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestOperatorAndPlatformAdminAreIndependent","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.860237+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestOperatorMustHaveExplicitResourceScope"}
+{"Time":"2026-10-03T19:09:55.860244+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestOperatorMustHaveExplicitResourceScope","Output":"=== RUN   TestOperatorMustHaveExplicitResourceScope\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.86025+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestOperatorMustHaveExplicitResourceScope","Output":"--- PASS: TestOperatorMustHaveExplicitResourceScope (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.860257+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestOperatorMustHaveExplicitResourceScope","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.860267+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount"}
+{"Time":"2026-10-03T19:09:55.860272+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount","Output":"=== RUN   TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.862088+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_namespace"}
+{"Time":"2026-10-03T19:09:55.862149+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_namespace","Output":"=== RUN   TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_namespace\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.862163+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_namespace","Output":"--- PASS: TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_namespace (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.862169+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_namespace","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.862189+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_service_account"}
+{"Time":"2026-10-03T19:09:55.862193+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_service_account","Output":"=== RUN   TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_service_account\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.862359+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_service_account","Output":"--- PASS: TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_service_account (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.862367+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount/wrong_service_account","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.862826+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount","Output":"--- PASS: TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.862839+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsWrongSANNamespaceAndServiceAccount","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.862844+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsExpiredRevokedAndUntrustedCertificate"}
+{"Time":"2026-10-03T19:09:55.862848+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsExpiredRevokedAndUntrustedCertificate","Output":"=== RUN   TestWorkloadIdentityRejectsExpiredRevokedAndUntrustedCertificate\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.863641+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsExpiredRevokedAndUntrustedCertificate","Output":"--- PASS: TestWorkloadIdentityRejectsExpiredRevokedAndUntrustedCertificate (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.863646+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityRejectsExpiredRevokedAndUntrustedCertificate","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.863654+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestUserTokenCannotEstablishWorkloadIdentity"}
+{"Time":"2026-10-03T19:09:55.863658+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestUserTokenCannotEstablishWorkloadIdentity","Output":"=== RUN   TestUserTokenCannotEstablishWorkloadIdentity\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.863859+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestUserTokenCannotEstablishWorkloadIdentity","Output":"--- PASS: TestUserTokenCannotEstablishWorkloadIdentity (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.863867+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestUserTokenCannotEstablishWorkloadIdentity","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.863878+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken"}
+{"Time":"2026-10-03T19:09:55.863881+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken","Output":"=== RUN   TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.867271+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken","Output":"2026/10/03 19:09:55 http: TLS handshake error from 127.0.0.1:64080: workload identity is outside the exact allowlist\n"}
+{"Time":"2026-10-03T19:09:55.867324+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken","Output":"--- PASS: TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.867336+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestWorkloadMTLSRequiresExactIdentityAndNeverUsesBearerToken","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.867341+08:00","Action":"run","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityUsesFreshCRLSourceAndFailsClosedWhenStale"}
+{"Time":"2026-10-03T19:09:55.867344+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityUsesFreshCRLSourceAndFailsClosedWhenStale","Output":"=== RUN   TestWorkloadIdentityUsesFreshCRLSourceAndFailsClosedWhenStale\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.867923+08:00","Action":"output","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityUsesFreshCRLSourceAndFailsClosedWhenStale","Output":"--- PASS: TestWorkloadIdentityUsesFreshCRLSourceAndFailsClosedWhenStale (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.867956+08:00","Action":"pass","Package":"ops-platform/test/security","Test":"TestWorkloadIdentityUsesFreshCRLSourceAndFailsClosedWhenStale","Elapsed":0}
+{"Time":"2026-10-03T19:09:55.867966+08:00","Action":"output","Package":"ops-platform/test/security","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-10-03T19:09:55.868585+08:00","Action":"output","Package":"ops-platform/test/security","Output":"ok  \tops-platform/test/security\t0.525s\n"}
+{"Time":"2026-10-03T19:09:55.868597+08:00","Action":"pass","Package":"ops-platform/test/security","Elapsed":0.525}
+Acceptance report: 11 tests passed; zero skips.

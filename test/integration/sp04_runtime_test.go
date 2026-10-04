@@ -286,8 +286,8 @@ func runSP04FullRuntime(t *testing.T, fixtureAdapters bool) {
 		t.Fatalf("generated diagnostic request failed: %d %s", status, body)
 	}
 	firstEpoch := entity.Data.GraphRevision.OwnerEpoch
-	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" {
-		t.Log("SP05 user waiver: Graph P95 sampling not executed")
+	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp06-user-20261003" {
+		t.Log("SP05/SP06 explicit user waiver: Graph P95 sampling not executed")
 	} else {
 		latencies := []time.Duration{}
 		for i := 0; i < 30; i++ {
@@ -353,8 +353,8 @@ func runSP04FullRuntime(t *testing.T, fixtureAdapters bool) {
 		}
 	}
 	t.Log("actual source outage -> HTTP200 partial/unavailable -> semantic completeness counter; complete query and Graph counters verified")
-	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" {
-		t.Log("SP05 user waiver: convergence/Evidence/dense capacity latency sampling and P95 not executed; single owned source-change correctness check follows")
+	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp06-user-20261003" {
+		t.Log("SP05/SP06 explicit user waiver: convergence/Evidence/dense capacity latency sampling and P95 not executed; single owned source-change correctness check follows")
 		marker := "sp05-correctness"
 		sp04Kubectl(t, ctx, nil, "label", "pod", "evidence-pod", "-n", namespace, "sp04-convergence="+marker, "--overwrite")
 		for deadline := time.Now().Add(60 * time.Second); ; {

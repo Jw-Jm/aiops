@@ -126,6 +126,11 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 		return err
 	}
 	defer stopSP04()
+	stopSP06, err := StartSP06Worker(ctx, pool)
+	if err != nil {
+		return err
+	}
+	defer stopSP06()
 	if tokenPath == "" {
 		tokenPath = "/var/run/secrets/ops-platform/openbao/token"
 	}

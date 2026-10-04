@@ -34,7 +34,8 @@ var knownLicenses = map[string]struct{}{
 	"LGPL-2.1-or-later": {}, "LGPL-3.0-only": {}, "LGPL-3.0-or-later": {},
 	"Zlib": {}, "curl": {}, "NCSA": {}, "Artistic-1.0": {}, "Artistic-2.0": {},
 	"BSL-1.0": {}, "OLDAP-2.8": {}, "Sleepycat": {}, "X11": {}, "MS-PL": {},
-	"FSFAP": {},
+	"FSFAP":   {},
+	"PSF-2.0": {}, "CNRI-Python": {},
 }
 
 type Catalog struct {

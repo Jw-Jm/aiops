@@ -12,6 +12,7 @@ func TestSP04ColdImportRequiresPositiveSignedImageIdentity(t *testing.T) {
 		want     bool
 	}{
 		{"signed-immutable", sp04ColdImageIdentity{ID: "sha256:id", RepoDigests: []string{signed}}, true},
+		{"reimported-signed-immutable-tag", sp04ColdImageIdentity{ID: "sha256:id", RepoDigests: []string{signed}, RepoTags: []string{signed}}, true},
 		{"own-preparation", sp04ColdImageIdentity{ID: "sha256:id", RepoDigests: []string{ownDigest}, RepoTags: []string{ownTag}}, true},
 		{"replaced-mutable-tag-no-digest", sp04ColdImageIdentity{ID: "sha256:replacement", RepoTags: []string{ownTag}}, false},
 		{"shared-repository", sp04ColdImageIdentity{ID: "sha256:id", RepoDigests: []string{signed, "other@sha256:locked"}}, false},

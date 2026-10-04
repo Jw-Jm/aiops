@@ -1,0 +1,53 @@
+=== RUN   TestSP06ActualCurrentRCARecommendationValidator
+2026/10/04 07:28:48 OK   00001_roles_and_schemas.sql (35.02ms)
+2026/10/04 07:28:48 goose: successfully migrated database to version: 1
+2026/10/04 07:28:48 OK   00002_platform_meta.sql (15.46ms)
+2026/10/04 07:28:48 OK   00003_finding.sql (13.69ms)
+2026/10/04 07:28:48 OK   00004_incident.sql (9.86ms)
+2026/10/04 07:28:48 OK   00005_investigation.sql (18.94ms)
+2026/10/04 07:28:48 OK   00006_action_command.sql (6.46ms)
+2026/10/04 07:28:48 OK   00007_audit.sql (23.11ms)
+2026/10/04 07:28:48 OK   00008_rls.sql (9.55ms)
+2026/10/04 07:28:48 OK   00009_idempotency_ledger.sql (9.74ms)
+2026/10/04 07:28:48 OK   00010_tenant_provisioning.sql (5.84ms)
+2026/10/04 07:28:48 OK   00011_source_registration_history.sql (18.79ms)
+2026/10/04 07:28:48 OK   00012_config_registry_lifecycle.sql (39.92ms)
+2026/10/04 07:28:48 OK   00013_audit_signed_segments.sql (35.12ms)
+2026/10/04 07:28:48 OK   00014_audit_segment_predecessors.sql (28.63ms)
+2026/10/04 07:28:48 OK   00015_source_schema_scope.sql (15.59ms)
+2026/10/04 07:28:48 OK   00016_cluster_registration_metadata.sql (8.09ms)
+2026/10/04 07:28:48 OK   00017_source_data_scope.sql (3.59ms)
+2026/10/04 07:28:48 OK   00018_sp04_resources_evidence.sql (21.99ms)
+2026/10/04 07:28:48 OK   00019_sp04_archive_ciphertext_bytes.sql (4.54ms)
+2026/10/04 07:28:48 OK   00020_sp04_request_ledger.sql (10.29ms)
+2026/10/04 07:28:48 OK   00021_sp04_archive_protection.sql (8.57ms)
+2026/10/04 07:28:48 OK   00022_sp04_legal_hold_dependencies.sql (5.88ms)
+2026/10/04 07:28:48 OK   00023_sp04_archive_query_intent.sql (2.99ms)
+2026/10/04 07:28:48 OK   00024_sp05_finding_incident.sql (30.69ms)
+2026/10/04 07:28:48 OK   00025_sp05_incident_event_time.sql (3.11ms)
+2026/10/04 07:28:48 OK   00026_sp05_source_binding_lock.sql (15.72ms)
+2026/10/04 07:28:48 OK   00027_sp05_rca_and_poll.sql (10.09ms)
+2026/10/04 07:28:48 OK   00028_sp05_operator_lock.sql (2.89ms)
+2026/10/04 07:28:48 OK   00029_sp05_evidence_links.sql (5.9ms)
+2026/10/04 07:28:48 OK   00030_sp05_recipe_fence.sql (16.03ms)
+2026/10/04 07:28:48 OK   00031_sp05_rca_postcheck.sql (3.97ms)
+2026/10/04 07:28:48 OK   00032_sp05_transport_audit.sql (3.75ms)
+2026/10/04 07:28:48 OK   00033_sp05_poll_resolution_clock.sql (4.91ms)
+2026/10/04 07:28:48 OK   00034_sp06_investigation_ledger.sql (24.48ms)
+2026/10/04 07:28:48 goose: successfully migrated database to version: 34
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=19e46247b7317a29399de82dfc0557081899c954df609eb1d1e70ee1b6b2158e bucket=sp05-golden-448cc0c2 tenants=1
+    sp05_golden_vertical_test.go:338: actual signed OPA/SDK/domain binding tool=get_dependencies state=succeeded partial=false refs=0
+    sp05_golden_vertical_test.go:338: actual signed OPA/SDK/domain binding tool=get_evidence_conflicts state=succeeded partial=false refs=0
+    sp05_golden_vertical_test.go:338: actual signed OPA/SDK/domain binding tool=get_findings state=succeeded partial=false refs=1
+    sp05_golden_vertical_test.go:338: actual signed OPA/SDK/domain binding tool=get_impact_scope state=succeeded partial=false refs=0
+    sp05_golden_vertical_test.go:338: actual signed OPA/SDK/domain binding tool=get_incident_context state=succeeded partial=false refs=1
+    sp05_golden_vertical_test.go:338: actual signed OPA/SDK/domain binding tool=get_ranked_evidence state=succeeded partial=false refs=2
+    sp05_golden_vertical_test.go:338: actual signed OPA/SDK/domain binding tool=get_recent_changes state=succeeded partial=false refs=0
+    sp05_golden_vertical_test.go:338: actual signed OPA/SDK/domain binding tool=get_resource_context state=succeeded partial=false refs=0
+    sp05_golden_vertical_test.go:338: actual signed OPA/SDK/domain binding tool=get_resource_health state=succeeded partial=false refs=0
+    sp05_golden_vertical_test.go:338: actual signed OPA/SDK/domain binding tool=get_root_cause_candidates state=succeeded partial=false refs=2
+    sp05_golden_vertical_test.go:338: query_deepflow actual domain call: <nil> result=&{Meta:map[] Content:[0x694285bcef00] StructuredContent:map[budget:map[consumed:map[evidenceItems:0 graphNodes:0 inputTokens:0 modelCostMicros:0 modelRequests:0 outputTokens:0 rawQueries:1 resultBytes:548 toolCalls:1] remaining:map[evidenceItems:3994 graphNodes:7600 inputTokens:32768 modelCostMicros:0 modelRequests:8 outputTokens:8192 rawQueries:9 resultBytes:4.192138e+07 toolCalls:29]] data:map[] degradedSources:[query_deepflow] errorCode:SOURCE_DEGRADED evidenceRefs:[] partial:true schemaVersion:tool-response/v2 state:degraded tool:query_deepflow] IsError:true err:<nil>}
+--- FAIL: TestSP06ActualCurrentRCARecommendationValidator (11.35s)
+FAIL
+FAIL	ops-platform/test/integration	12.468s
+FAIL

@@ -1,0 +1,823 @@
+{
+  "title": "InvestigationResult",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "investigation-result/v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "unresolved",
+        "probable"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8192
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "candidateUpdates": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "candidateKey": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "required": [
+          "candidateKey",
+          "reason"
+        ]
+      }
+    },
+    "actionPlans": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "title": "action-plan",
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "const": "action-plan/v2"
+          },
+          "actionPlanId": {
+            "$ref": "#/$defs/identifier"
+          },
+          "tenantId": {
+            "$ref": "#/$defs/tenantId"
+          },
+          "incidentId": {
+            "$ref": "#/$defs/identifier"
+          },
+          "rcaRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "iteration": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "targetCanonicalId": {
+            "$ref": "#/$defs/canonicalId"
+          },
+          "suggestedCommand": {
+            "$ref": "#/$defs/commandText"
+          },
+          "shell": {
+            "const": "bash"
+          },
+          "recommendedExecutionProfileId": {
+            "$ref": "#/$defs/identifier"
+          },
+          "reason": {
+            "$ref": "#/$defs/text"
+          },
+          "expectedImpact": {
+            "$ref": "#/$defs/text"
+          },
+          "preconditions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/text"
+            },
+            "maxItems": 100
+          },
+          "riskSummary": {
+            "$ref": "#/$defs/text"
+          },
+          "operationRisk": {
+            "$ref": "#/$defs/operationRisk"
+          },
+          "dataRisk": {
+            "$ref": "#/$defs/dataClass"
+          },
+          "postCheckInstructions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/text"
+            },
+            "maxItems": 100
+          },
+          "rollbackSuggestion": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "generatedBy": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "$ref": "#/$defs/shortText"
+              },
+              "name": {
+                "$ref": "#/$defs/identifier"
+              },
+              "extensions": {
+                "$ref": "#/$defs/extensions"
+              }
+            },
+            "required": [
+              "type",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "state": {
+            "enum": [
+              "suggested",
+              "accepted",
+              "dismissed",
+              "superseded"
+            ]
+          },
+          "createdAt": {
+            "$ref": "#/$defs/timestamp"
+          },
+          "extensions": {
+            "$ref": "#/$defs/extensions"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "actionPlanId",
+          "tenantId",
+          "incidentId",
+          "rcaRevision",
+          "iteration",
+          "targetCanonicalId",
+          "suggestedCommand",
+          "shell",
+          "recommendedExecutionProfileId",
+          "reason",
+          "expectedImpact",
+          "preconditions",
+          "riskSummary",
+          "operationRisk",
+          "dataRisk",
+          "postCheckInstructions",
+          "rollbackSuggestion",
+          "generatedBy",
+          "state",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "partial": {
+      "type": "boolean"
+    },
+    "degradedSources": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "maxLength": 128
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "status",
+    "summary",
+    "evidenceRefs",
+    "candidateUpdates",
+    "actionPlans",
+    "partial",
+    "degradedSources"
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "versionRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "shortText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "commandText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 65536
+    },
+    "tenantId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 64
+    },
+    "sha256": {
+      "type": "string",
+      "minLength": 71,
+      "maxLength": 71,
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "canonicalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^[a-z][a-z0-9.-]{0,62}\\+v1://[A-Za-z0-9][A-Za-z0-9._~-]{0,127}/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})*/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+$"
+    },
+    "severity": {
+      "enum": [
+        "info",
+        "warning",
+        "critical"
+      ]
+    },
+    "health": {
+      "enum": [
+        "normal",
+        "abnormal",
+        "unknown",
+        "degraded"
+      ]
+    },
+    "entity": {
+      "type": "object",
+      "properties": {
+        "canonicalId": {
+          "$ref": "#/$defs/canonicalId"
+        },
+        "tenantId": {
+          "$ref": "#/$defs/tenantId"
+        },
+        "domain": {
+          "$ref": "#/$defs/shortText"
+        },
+        "scope": {
+          "$ref": "#/$defs/shortText"
+        },
+        "apiGroup": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 256
+        },
+        "kind": {
+          "$ref": "#/$defs/identifier"
+        },
+        "stableId": {
+          "$ref": "#/$defs/shortText"
+        },
+        "name": {
+          "$ref": "#/$defs/shortText"
+        },
+        "namespace": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/shortText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "labels": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/shortText"
+          },
+          "maxProperties": 256
+        },
+        "attributes": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/extensionValue"
+          },
+          "maxProperties": 256
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/shortText"
+          },
+          "maxItems": 1000
+        },
+        "firstObservedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "lastObservedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        }
+      },
+      "required": [
+        "canonicalId",
+        "tenantId",
+        "domain",
+        "scope",
+        "apiGroup",
+        "kind",
+        "stableId",
+        "name",
+        "namespace",
+        "labels",
+        "attributes",
+        "sourceRefs",
+        "firstObservedAt",
+        "lastObservedAt"
+      ],
+      "additionalProperties": false
+    },
+    "dataClass": {
+      "enum": [
+        "D0",
+        "D1",
+        "D2",
+        "D3"
+      ]
+    },
+    "operationRisk": {
+      "enum": [
+        "O0",
+        "O1",
+        "O2",
+        "O3"
+      ]
+    },
+    "canonicalIdList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/canonicalId"
+      },
+      "maxItems": 1000
+    },
+    "stringList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/shortText"
+      },
+      "maxItems": 1000
+    },
+    "sourceFreshness": {
+      "type": "object",
+      "properties": {
+        "ready": {
+          "type": "boolean"
+        },
+        "lastListAt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastWatchAt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "watchContinuous": {
+          "type": "boolean"
+        },
+        "lastError": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/shortText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "staleness": {
+          "enum": [
+            "fresh",
+            "stale",
+            "partial",
+            "rebuilding"
+          ]
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        }
+      },
+      "required": [
+        "ready",
+        "lastListAt",
+        "lastWatchAt",
+        "watchContinuous",
+        "lastError",
+        "staleness"
+      ],
+      "additionalProperties": false
+    },
+    "freshness": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/sourceFreshness"
+      },
+      "maxProperties": 1000
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/extensionValue"
+      },
+      "maxProperties": 64
+    },
+    "extensionValue": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 4096
+        },
+        {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        },
+        {
+          "type": "number",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/extensionValue"
+          },
+          "maxItems": 100
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/extensionValue"
+          },
+          "maxProperties": 64
+        }
+      ]
+    },
+    "jobBudget": {
+      "type": "object",
+      "properties": {
+        "maxDuration": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "maxToolCalls": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "maxRawQueries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxResultBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "maxGraphNodes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "maxEvidenceItems": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxModelRequests": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxInputTokens": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxOutputTokens": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "maxModelCost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "allowedDataClasses": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "D0",
+              "D1",
+              "D2",
+              "D3"
+            ]
+          },
+          "maxItems": 4
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "timeRange": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "to": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        }
+      },
+      "required": [
+        "from",
+        "to"
+      ],
+      "additionalProperties": false
+    },
+    "resultBudget": {
+      "type": "object",
+      "properties": {
+        "consumed": {
+          "$ref": "#/$defs/jobBudget"
+        },
+        "remaining": {
+          "$ref": "#/$defs/jobBudget"
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        }
+      },
+      "required": [
+        "consumed",
+        "remaining"
+      ],
+      "additionalProperties": false
+    },
+    "toolMetadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "version": {
+          "enum": [
+            "v1"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "$ref"
+          ],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "format": "uri-reference"
+            }
+          },
+          "required": [
+            "$ref"
+          ],
+          "additionalProperties": false
+        },
+        "requiredPermissions": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "allowed_tools",
+              "tenant_scope",
+              "cluster_scope",
+              "namespace_scope",
+              "allowed_data_classes"
+            ]
+          },
+          "maxItems": 5
+        },
+        "allowedDataClasses": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "D0",
+              "D1",
+              "D2",
+              "D3"
+            ]
+          },
+          "maxItems": 4
+        },
+        "defaultTimeout": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            {
+              "type": "object",
+              "properties": {
+                "jobBudget": {
+                  "const": "maxDuration"
+                }
+              },
+              "required": [
+                "jobBudget"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "maxResultBytes": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            {
+              "type": "object",
+              "properties": {
+                "jobBudget": {
+                  "const": "maxResultBytes"
+                }
+              },
+              "required": [
+                "jobBudget"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "rateLimit": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            {
+              "type": "object",
+              "properties": {
+                "jobBudget": {
+                  "const": "maxToolCalls"
+                }
+              },
+              "required": [
+                "jobBudget"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "jobBudget": {
+                  "const": "maxRawQueries"
+                }
+              },
+              "required": [
+                "jobBudget"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "auditPolicy": {
+          "enum": [
+            "every_invocation_and_sanitized_result"
+          ]
+        },
+        "failureSemantics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "maxItems": 16
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "purpose",
+        "inputSchema",
+        "outputSchema",
+        "requiredPermissions",
+        "allowedDataClasses",
+        "defaultTimeout",
+        "maxResultBytes",
+        "rateLimit",
+        "auditPolicy",
+        "failureSemantics"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

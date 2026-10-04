@@ -1,0 +1,157 @@
+=== RUN   TestSP04SignedChartNativeWorkerOfflineReinstall
+    sp04_native_chart_test.go:91: installed signed Chart digest=sha256:3c36f8c7f058c5766a133bb5e6cdae25a385c366d8108baa2abca423fa8ae620
+2026/10/04 09:04:27 OK   00001_roles_and_schemas.sql (62.37ms)
+2026/10/04 09:04:27 goose: successfully migrated database to version: 1
+2026/10/04 09:04:27 OK   00002_platform_meta.sql (42.2ms)
+2026/10/04 09:04:27 OK   00003_finding.sql (14.31ms)
+2026/10/04 09:04:27 OK   00004_incident.sql (15.96ms)
+2026/10/04 09:04:27 OK   00005_investigation.sql (12.37ms)
+2026/10/04 09:04:27 OK   00006_action_command.sql (17.76ms)
+2026/10/04 09:04:28 OK   00007_audit.sql (25.25ms)
+2026/10/04 09:04:28 OK   00008_rls.sql (23.52ms)
+2026/10/04 09:04:28 OK   00009_idempotency_ledger.sql (10.8ms)
+2026/10/04 09:04:28 OK   00010_tenant_provisioning.sql (4.82ms)
+2026/10/04 09:04:28 OK   00011_source_registration_history.sql (15.95ms)
+2026/10/04 09:04:28 OK   00012_config_registry_lifecycle.sql (16.21ms)
+2026/10/04 09:04:28 OK   00013_audit_signed_segments.sql (12.5ms)
+2026/10/04 09:04:28 OK   00014_audit_segment_predecessors.sql (14.04ms)
+2026/10/04 09:04:28 OK   00015_source_schema_scope.sql (4.24ms)
+2026/10/04 09:04:28 OK   00016_cluster_registration_metadata.sql (4.75ms)
+2026/10/04 09:04:28 OK   00017_source_data_scope.sql (3.44ms)
+2026/10/04 09:04:28 OK   00018_sp04_resources_evidence.sql (16.75ms)
+2026/10/04 09:04:28 OK   00019_sp04_archive_ciphertext_bytes.sql (5.1ms)
+2026/10/04 09:04:28 OK   00020_sp04_request_ledger.sql (11.4ms)
+2026/10/04 09:04:28 OK   00021_sp04_archive_protection.sql (3.43ms)
+2026/10/04 09:04:28 OK   00022_sp04_legal_hold_dependencies.sql (8.19ms)
+2026/10/04 09:04:28 OK   00023_sp04_archive_query_intent.sql (5.18ms)
+2026/10/04 09:04:28 OK   00024_sp05_finding_incident.sql (25.3ms)
+2026/10/04 09:04:28 OK   00025_sp05_incident_event_time.sql (6.36ms)
+2026/10/04 09:04:28 OK   00026_sp05_source_binding_lock.sql (8.07ms)
+2026/10/04 09:04:28 OK   00027_sp05_rca_and_poll.sql (13.36ms)
+2026/10/04 09:04:28 OK   00028_sp05_operator_lock.sql (3.68ms)
+2026/10/04 09:04:28 OK   00029_sp05_evidence_links.sql (10.28ms)
+2026/10/04 09:04:28 OK   00030_sp05_recipe_fence.sql (6.88ms)
+2026/10/04 09:04:28 OK   00031_sp05_rca_postcheck.sql (5.76ms)
+2026/10/04 09:04:28 OK   00032_sp05_transport_audit.sql (7.75ms)
+2026/10/04 09:04:28 OK   00033_sp05_poll_resolution_clock.sql (5.74ms)
+2026/10/04 09:04:28 OK   00034_sp06_investigation_ledger.sql (44.41ms)
+2026/10/04 09:04:28 goose: successfully migrated database to version: 34
+    sp04_native_chart_test.go:130: owned native Bao exact image=ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6 namespace=sp04-chain-c9368c70; local real Kubernetes TokenReview configuration
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=d7fde3183802a1fcc05e5961588f9643b5817f7e4e1ff348e58c0c769d97a09b bucket=sp04-native-59188fc3 tenants=1
+    sp04_native_chart_test.go:142: owned TLS Keycloak exact image=quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c
+    sp04_native_chart_test.go:339: native exact verified api image=ops.local/task27/platform-api@sha256:3030da3adb265967ac792469452389bbb4c468f4e4154e381f9c9397e5ea8090
+    sp04_native_chart_test.go:339: native exact verified worker image=ops.local/task27/platform-worker@sha256:1751bd11b2309988e41e4871271df13a14531ef072a4ab9f15252089948ca228
+    sp04_native_chart_test.go:451: actual selected Bundle import driver=orbstack_shared_store materials=[holmesgpt platform-api platform-worker]
+    sp04_native_chart_test.go:508: actual investigator CNI: API/model positive; owned database/public positive controls independently established; investigator database/public denied
+    sp04_native_chart_test.go:510: actual CNI positive public-before/negative public-after; exact owned host dependency allowed; selected images Never
+    sp04_native_chart_test.go:581: native evidence accepted bytes=2753
+    sp04_native_chart_test.go:627: shipped SP06 Chart/API/Worker/investigator -> actual llama3.1:8b-16k -> standard MCP -> native Incident/Evidence -> fenced Ledger/Go validator -> durable SSE: namespace=sp04-chain-c9368c70 job=01a10473-49b0-7846-9c53-e71ffdfc863f state=succeeded tools=1 models=2 events=9
+    sp04_native_chart_test.go:628: mainline during ten native investigations /api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2Ff9545c77-4613-4c0c-bd08-43931543a173%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F6996ae70-bbc5-4356-8c04-2fada7e6e231: 409 {"code":"CONFLICT","message":"resource or evidence query unavailable","requestId":"01a10474-6de8-7336-b8f0-74629e21e606","retryable":false,"schemaVersion":"error-envelope/v2"}
+    sp04_native_chart_test.go:464: owned native ops-api diagnostic logs: [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:11.198557478Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4510-7cbe-ac93-ea9f831d923d","method":"GET","status_code":200,"duration_ms":45}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:11.250325186Z","level":"INFO","msg":"http request complete","request_id":"01a10474-454c-71a3-8cde-358658485854","method":"GET","status_code":200,"duration_ms":38}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:11.30035209Z","level":"INFO","msg":"http request complete","request_id":"01a10474-457b-7b75-9f8a-763c46ce3c8a","method":"GET","status_code":200,"duration_ms":40}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:11.347586016Z","level":"INFO","msg":"http request complete","request_id":"01a10474-45ad-7aa5-8077-920506cd6fb8","method":"GET","status_code":200,"duration_ms":37}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:11.506394791Z","level":"INFO","msg":"http request complete","request_id":"01a10474-45d6-74ca-a26c-91f9b30ce211","method":"GET","status_code":200,"duration_ms":156}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:11.581462418Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4678-77a4-b15f-f37c24f5fff1","method":"GET","status_code":200,"duration_ms":68}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:11.626924706Z","level":"INFO","msg":"http request complete","request_id":"01a10474-46c1-7242-a7a8-9c616ac1c528","method":"GET","status_code":200,"duration_ms":41}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:11.762636897Z","level":"INFO","msg":"http request complete","request_id":"01a10474-46f2-7835-b747-da3aaebca5a2","method":"GET","status_code":200,"duration_ms":128}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:12.369223042Z","level":"INFO","msg":"http request complete","request_id":"01a10474-477e-7dc2-978b-ea86a8cbd9bb","method":"GET","status_code":200,"duration_ms":594}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:12.632888243Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4ad2-71d0-b288-1a3b0d202355","method":"GET","status_code":200,"duration_ms":6}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:12.676698769Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4adc-718a-8a72-a1dcb282785a","method":"GET","status_code":200,"duration_ms":40}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:12.761071755Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4b26-76d3-a977-95b992eab6c0","method":"GET","status_code":200,"duration_ms":50}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:12.79182452Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4b5a-7f21-9038-43f27ba42070","method":"GET","status_code":200,"duration_ms":28}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:12.842985682Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4b7b-7867-8fbe-e6a2182c87a4","method":"GET","status_code":200,"duration_ms":47}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:12.901747733Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4bbe-7612-a981-cda1fbb807a1","method":"GET","status_code":200,"duration_ms":39}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:12.966336867Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4bef-73ba-b612-85937e58abc2","method":"GET","status_code":200,"duration_ms":55}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:13.015768975Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4c30-737b-95a7-2cc09a94635c","method":"GET","status_code":200,"duration_ms":39}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:13.066997388Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4c62-7170-bba6-4305f0d674d9","method":"GET","status_code":200,"duration_ms":40}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:13.113943145Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4c91-77b2-a50b-9e381d7c85c8","method":"GET","status_code":200,"duration_ms":40}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:13.288854537Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4cc6-7ac9-85bd-79279a314933","method":"GET","status_code":200,"duration_ms":162}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:13.332876064Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4d73-7394-b972-6ef9f25091e2","method":"GET","status_code":200,"duration_ms":33}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:13.376471755Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4d9b-7377-bb1c-23e25ccbe4ee","method":"GET","status_code":200,"duration_ms":37}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:13.496811335Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4dc3-7bfd-9568-0e10f7443cfe","method":"GET","status_code":200,"duration_ms":116}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:13.840139406Z","level":"INFO","msg":"http request complete","request_id":"01a10474-4e3d-7b8d-ba85-a08286d20175","method":"GET","status_code":200,"duration_ms":338}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.192747919Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5095-741a-9bb9-064d249340d7","method":"GET","status_code":200,"duration_ms":91}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.2638351Z","level":"INFO","msg":"http request complete","request_id":"01a10474-50f4-7314-8834-b77950615d7b","method":"GET","status_code":200,"duration_ms":67}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.343781846Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5149-7876-b145-9c09288ebbd6","method":"GET","status_code":200,"duration_ms":62}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.403183985Z","level":"INFO","msg":"http request complete","request_id":"01a10474-518a-702f-8ab7-1edce870e5c0","method":"GET","status_code":200,"duration_ms":57}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.467308408Z","level":"INFO","msg":"http request complete","request_id":"01a10474-51c7-7649-b7a0-efae4b823da6","method":"GET","status_code":200,"duration_ms":59}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.571377245Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5210-749e-bca1-5f359bac461a","method":"GET","status_code":200,"duration_ms":91}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.645652033Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5272-779c-9074-dd36a4775669","method":"GET","status_code":200,"duration_ms":67}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.668793951Z","level":"INFO","msg":"http request complete","request_id":"01a10474-52b8-7d5b-bd52-c7c5606ba2ac","method":"GET","status_code":200,"duration_ms":19}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.727236499Z","level":"INFO","msg":"http request complete","request_id":"01a10474-52df-7464-8f5f-46fabd31a9d8","method":"GET","status_code":200,"duration_ms":39}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.760532574Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5309-7826-8611-4f1896962edf","method":"GET","status_code":200,"duration_ms":30}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:14.90979953Z","level":"INFO","msg":"http request complete","request_id":"01a10474-532c-7a94-93bb-8798755ee2a6","method":"GET","status_code":200,"duration_ms":145}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:15.087321774Z","level":"INFO","msg":"http request complete","request_id":"01a10474-53c2-72fd-a92e-98c6265cfb78","method":"GET","status_code":200,"duration_ms":173}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:15.148820261Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5486-7eb9-a26b-3c228b7d4f27","method":"GET","status_code":200,"duration_ms":37}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:15.211482757Z","level":"INFO","msg":"http request complete","request_id":"01a10474-54b9-7a5c-923a-ae8dac0f210d","method":"GET","status_code":200,"duration_ms":49}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:15.553269775Z","level":"INFO","msg":"http request complete","request_id":"01a10474-54ee-7297-9256-37d87f938b09","method":"GET","status_code":200,"duration_ms":339}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:15.885759267Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5747-746b-99dd-2c91e5cb23ae","method":"GET","status_code":200,"duration_ms":70}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:15.952088331Z","level":"INFO","msg":"http request complete","request_id":"01a10474-579c-70eb-a00e-8889125536cb","method":"GET","status_code":200,"duration_ms":51}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:16.002270986Z","level":"INFO","msg":"http request complete","request_id":"01a10474-57d6-72db-a28e-b63c41b0359d","method":"GET","status_code":200,"duration_ms":44}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:16.14621832Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5821-7ad3-aff4-5b3bab280eed","method":"GET","status_code":200,"duration_ms":112}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:16.215970742Z","level":"INFO","msg":"http request complete","request_id":"01a10474-58a6-7987-90f6-cb2b723145ea","method":"GET","status_code":200,"duration_ms":49}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:16.248621312Z","level":"INFO","msg":"http request complete","request_id":"01a10474-58db-769f-bbd3-078e969a5819","method":"GET","status_code":200,"duration_ms":29}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:16.376795449Z","level":"INFO","msg":"http request complete","request_id":"01a10474-590c-752a-b235-85ee225cf383","method":"GET","status_code":200,"duration_ms":108}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:16.443192722Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5987-772d-85b6-eb2162150ba8","method":"GET","status_code":200,"duration_ms":51}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:16.560439238Z","level":"INFO","msg":"http request complete","request_id":"01a10474-59d0-74b1-ae37-a1b8ff1e0367","method":"GET","status_code":200,"duration_ms":96}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:16.623254109Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5a43-72cf-93d5-4e922c981f86","method":"GET","status_code":200,"duration_ms":43}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:17.189721255Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5a75-7e32-a6b6-b05e7ff36382","method":"GET","status_code":200,"duration_ms":559}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:17.246484416Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5cad-727c-a053-b7e897b0bb61","method":"GET","status_code":200,"duration_ms":49}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:17.298207082Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5ce1-73ad-872f-a24e5e340789","method":"GET","status_code":200,"duration_ms":48}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:17.349306203Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5d14-78b2-9c43-b06716925c51","method":"GET","status_code":200,"duration_ms":48}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:17.871464777Z","level":"INFO","msg":"http request complete","request_id":"01a10474-5d4c-759e-8878-8be03595dccc","method":"GET","status_code":200,"duration_ms":515}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:18.319445856Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6061-7396-8403-a74916f609e9","method":"GET","status_code":200,"duration_ms":174}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:18.378785452Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6113-7b6b-8e63-4eb5fc3ea9fd","method":"GET","status_code":200,"duration_ms":54}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:18.415105715Z","level":"INFO","msg":"http request complete","request_id":"01a10474-614d-79be-8422-d5bb448425f3","method":"GET","status_code":200,"duration_ms":33}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:18.526542189Z","level":"INFO","msg":"http request complete","request_id":"01a10474-617a-7afb-98d8-341bb4763069","method":"GET","status_code":200,"duration_ms":99}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:18.598334251Z","level":"INFO","msg":"http request complete","request_id":"01a10474-61ec-774e-b792-7a2ea37cfc5e","method":"GET","status_code":200,"duration_ms":57}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:18.668363175Z","level":"INFO","msg":"http request complete","request_id":"01a10474-622d-78d6-9d00-ed4f61cd0609","method":"GET","status_code":200,"duration_ms":62}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:18.762887193Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6274-7421-8d81-68024beb29a6","method":"GET","status_code":200,"duration_ms":86}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:18.848434146Z","level":"INFO","msg":"http request complete","request_id":"01a10474-62d4-74ac-90ea-59f5b9d97d79","method":"GET","status_code":200,"duration_ms":76}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:18.871753648Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6322-7e7c-91e9-f16ad2c7b082","method":"GET","status_code":200,"duration_ms":21}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:18.925502663Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6342-7ace-a1ce-fcdfb26d191d","method":"GET","status_code":200,"duration_ms":42}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:19.299361996Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6379-7744-9858-8336581c3c68","method":"GET","status_code":200,"duration_ms":361}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:19.471103699Z","level":"INFO","msg":"http request complete","request_id":"01a10474-64f0-7053-be1d-9616282acadb","method":"GET","status_code":200,"duration_ms":159}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:19.533910237Z","level":"INFO","msg":"http request complete","request_id":"01a10474-65b1-7594-9a18-27f2a1b3ed1d","method":"GET","status_code":200,"duration_ms":28}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:19.781538364Z","level":"INFO","msg":"http request complete","request_id":"01a10474-65d5-7458-bb1b-5611d976c382","method":"GET","status_code":200,"duration_ms":240}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:20.456681214Z","level":"INFO","msg":"http request complete","request_id":"01a10474-66ca-722c-8578-b0bc3861de41","method":"GET","status_code":200,"duration_ms":670}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:20.805986994Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6a73-7e56-8a1e-6479e7f562f3","method":"GET","status_code":200,"duration_ms":81}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:20.880745494Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6ad3-70af-bc77-9c1ec5882ff5","method":"GET","status_code":200,"duration_ms":61}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:20.940855513Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6b16-7204-a286-c63f8204fad4","method":"GET","status_code":200,"duration_ms":54}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:21.012056362Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6b58-7e68-a30d-400a81711508","method":"GET","status_code":200,"duration_ms":59}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:21.149955361Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6bb5-7125-9896-da4f010a4d17","method":"GET","status_code":200,"duration_ms":104}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:21.242850659Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6c38-7866-bb42-3992b85f4136","method":"GET","status_code":200,"duration_ms":65}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:21.330642253Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6c82-72f4-be4c-f95d3629bdda","method":"GET","status_code":200,"duration_ms":80}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:21.397018567Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6cd6-72c2-aa56-d398cd91edab","method":"GET","status_code":200,"duration_ms":62}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:21.440903302Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6d1e-72a2-8ad9-5e34565dc1c0","method":"GET","status_code":200,"duration_ms":34}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:21.590481761Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6d4e-7a18-9332-decb5c28744b","method":"GET","status_code":200,"duration_ms":135}
+        [pod/ops-api-5dd595d4f6-c6ngp/api] {"time":"2026-10-04T01:08:22.889311878Z","level":"INFO","msg":"http request complete","request_id":"01a10474-6de8-7336-b8f0-74629e21e606","method":"GET","status_code":409,"duration_ms":1280}
+    sp04_native_chart_test.go:464: owned native ops-worker diagnostic logs: [pod/ops-worker-8676d57d48-2pktk/worker] {"time":"2026-10-04T01:06:25.64151076Z","level":"INFO","msg":"platform-worker started"}
+        [pod/ops-worker-8676d57d48-2pktk/worker] {"time":"2026-10-04T01:06:25.788848707Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-8676d57d48-2pktk/worker] {"time":"2026-10-04T01:06:26.054826722Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+        [pod/ops-worker-8676d57d48-2pktk/worker] {"time":"2026-10-04T01:06:27.919382714Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+        [pod/ops-worker-8676d57d48-2pktk/worker] {"time":"2026-10-04T01:06:29.81782119Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"list_missing"}}
+        [pod/ops-worker-8676d57d48-2pktk/worker] {"time":"2026-10-04T01:06:31.828562874Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"watch_initializing"}}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:06:25.640109754Z","level":"INFO","msg":"platform-worker started"}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:06:25.793381435Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:06:26.055911935Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:06:27.966960717Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:06:29.819129655Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"list_missing"}}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:06:31.80445035Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"watch_initializing"}}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:06:33.903327967Z","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_cas"}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:06:55.897599811Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:07:25.900488613Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:07:29.843526094Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:07:29.998992012Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"watch_disconnected","/v1/persistentvolumeclaims":"watch_disconnected","/v1/persistentvolumes":"watch_disconnected","storage.k8s.io/v1/storageclasses":"watch_disconnected"}}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:07:55.904202221Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:07:59.935666802Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_disconnected"}}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:08:01.909385225Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"batch/v1/jobs":"watch_disconnected","discovery.k8s.io/v1/endpointslices":"watch_disconnected","storage.k8s.io/v1/csidrivers":"watch_disconnected","storage.k8s.io/v1/volumeattachments":"watch_disconnected"}}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:08:02.047354766Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-8676d57d48-4zw6q/worker] {"time":"2026-10-04T01:08:06.060982134Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+    sp04_native_chart_test.go:464: owned native ops-investigator diagnostic logs: 
+    sp04_native_chart_test.go:471: owned native Lease epoch=1 holder_present=true uid=6be6c3da-e12b-45aa-9d46-ee53ea3c0b8f
+--- FAIL: TestSP04SignedChartNativeWorkerOfflineReinstall (262.25s)
+FAIL
+FAIL	ops-platform/test/integration	263.569s
+FAIL

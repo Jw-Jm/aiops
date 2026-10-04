@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/tool-response/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "tool-response/v2"
+    },
+    "tool": {
+      "type": "string",
+      "enum": [
+        "get_dependencies",
+        "get_resource_health",
+        "query_deepflow",
+        "get_root_cause_candidates",
+        "get_recent_changes",
+        "get_impact_scope",
+        "query_kubernetes",
+        "query_hardware",
+        "query_kubevirt",
+        "query_logs",
+        "get_resource_context",
+        "get_evidence_conflicts",
+        "query_metrics",
+        "get_ranked_evidence",
+        "get_findings",
+        "get_incident_context"
+      ]
+    },
+    "state": {
+      "enum": [
+        "succeeded",
+        "partial",
+        "degraded",
+        "failed"
+      ]
+    },
+    "data": {},
+    "evidenceRefs": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "partial": {
+      "type": "boolean"
+    },
+    "degradedSources": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "maxLength": 128
+      }
+    },
+    "errorCode": {
+      "type": "string",
+      "maxLength": 256
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "consumed": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "toolCalls": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "rawQueries": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "resultBytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "graphNodes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "evidenceItems": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "modelRequests": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "inputTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "modelCostMicros": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "toolCalls",
+            "rawQueries",
+            "resultBytes",
+            "graphNodes",
+            "evidenceItems",
+            "modelRequests",
+            "inputTokens",
+            "outputTokens",
+            "modelCostMicros"
+          ]
+        },
+        "remaining": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "toolCalls": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "rawQueries": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "resultBytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "graphNodes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "evidenceItems": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "modelRequests": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "inputTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "modelCostMicros": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "toolCalls",
+            "rawQueries",
+            "resultBytes",
+            "graphNodes",
+            "evidenceItems",
+            "modelRequests",
+            "inputTokens",
+            "outputTokens",
+            "modelCostMicros"
+          ]
+        }
+      },
+      "required": [
+        "consumed",
+        "remaining"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "tool",
+    "state",
+    "data",
+    "evidenceRefs",
+    "partial",
+    "degradedSources",
+    "budget"
+  ]
+}

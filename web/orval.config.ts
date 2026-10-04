@@ -7,6 +7,7 @@ export default defineConfig({
     },
     output: {
       mode: 'single',
+      clean: true,
       target: 'src/api/generated/platform.ts',
       schemas: 'src/api/generated/models',
       client: 'fetch',

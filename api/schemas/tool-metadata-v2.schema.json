@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/tool-metadata/v2",
+  "title": "tool-metadata/v2",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "version": {
+      "const": "v2"
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "$ref"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "uri-reference"
+        }
+      },
+      "required": [
+        "$ref"
+      ],
+      "additionalProperties": false
+    },
+    "requiredPermissions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "allowed_tools",
+          "tenant_scope",
+          "cluster_scope",
+          "namespace_scope",
+          "allowed_data_classes"
+        ]
+      },
+      "maxItems": 5
+    },
+    "allowedDataClasses": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "D0",
+          "D1"
+        ]
+      },
+      "maxItems": 4
+    },
+    "defaultTimeout": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        {
+          "type": "object",
+          "properties": {
+            "jobBudget": {
+              "const": "maxDuration"
+            }
+          },
+          "required": [
+            "jobBudget"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "maxResultBytes": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        {
+          "type": "object",
+          "properties": {
+            "jobBudget": {
+              "const": "maxResultBytes"
+            }
+          },
+          "required": [
+            "jobBudget"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "rateLimit": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        {
+          "type": "object",
+          "properties": {
+            "jobBudget": {
+              "const": "maxToolCalls"
+            }
+          },
+          "required": [
+            "jobBudget"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "jobBudget": {
+              "const": "maxRawQueries"
+            }
+          },
+          "required": [
+            "jobBudget"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "auditPolicy": {
+      "enum": [
+        "every_invocation_and_sanitized_result"
+      ]
+    },
+    "failureSemantics": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "maxItems": 16
+    },
+    "extensions": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/extensions"
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "purpose",
+    "inputSchema",
+    "outputSchema",
+    "requiredPermissions",
+    "allowedDataClasses",
+    "defaultTimeout",
+    "maxResultBytes",
+    "rateLimit",
+    "auditPolicy",
+    "failureSemantics"
+  ],
+  "additionalProperties": false
+}

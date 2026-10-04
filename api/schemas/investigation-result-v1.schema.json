@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/investigation-result/v1",
+  "title": "InvestigationResult",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "investigation-result/v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "unresolved",
+        "probable"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8192
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "candidateUpdates": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "candidateKey": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "required": [
+          "candidateKey",
+          "reason"
+        ]
+      }
+    },
+    "actionPlans": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "$ref": "https://ops.local/schemas/action-plan/v2"
+      }
+    },
+    "partial": {
+      "type": "boolean"
+    },
+    "degradedSources": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "maxLength": 128
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "status",
+    "summary",
+    "evidenceRefs",
+    "candidateUpdates",
+    "actionPlans",
+    "partial",
+    "degradedSources"
+  ]
+}

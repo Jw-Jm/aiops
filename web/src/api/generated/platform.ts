@@ -5,8 +5,11 @@
  * OpenAPI spec version: 1.3.0
  */
 import type {
+  CancelInvestigationBody,
+  CapabilitiesSuccessV1,
   ClusterRegistrationRequest,
   CommandExecutionRequest,
+  CreateInvestigationV2,
   CreateStepUpSessionBody,
   CurrentRCASuccessV2,
   DiagnosticGraphBuildRequest,
@@ -20,13 +23,13 @@ import type {
   FindingPageV2,
   FindingSuccessV2,
   GetAuditRecordsParams,
+  GetCapabilitiesParams,
   GetClustersParams,
   GetExecutionProfilesParams,
   GetFindingsParams,
   GetIncidentEvidenceParams,
   GetIncidentTimelineParams,
   GetIncidentsParams,
-  GetInvestigationStepsParams,
   GetLegalHoldsParams,
   GetPolicyBundlesParams,
   GetRCARevisionsParams,
@@ -48,6 +51,9 @@ import type {
   IncidentTimelinePageV2,
   IncidentTransitionRequest,
   IncidentTransitionV2,
+  InvestigationCancelSuccessV2,
+  InvestigationStepsSuccessV2,
+  InvestigationSuccessV2,
   JSONRequest,
   LegalHoldPageV1,
   LegalHoldRequestV1,
@@ -1975,12 +1981,12 @@ export const getAuditRecord = async (auditId: string, options?: RequestInit): Pr
 
 
 export type getCapabilitiesResponse200 = {
-  data: SuccessEnvelope
+  data: CapabilitiesSuccessV1
   status: 200
 }
 
 export type getCapabilitiesResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -1993,20 +1999,27 @@ export type getCapabilitiesResponseError = (getCapabilitiesResponseDefault) & {
 
 export type getCapabilitiesResponse = (getCapabilitiesResponseSuccess | getCapabilitiesResponseError)
 
-export const getGetCapabilitiesUrl = () => {
+export const getGetCapabilitiesUrl = (params?: GetCapabilitiesParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/v1/capabilities`
+  return stringifiedParams.length > 0 ? `/api/v1/capabilities?${stringifiedParams}` : `/api/v1/capabilities`
 }
 
 /**
  * @summary getCapabilities
  */
-export const getCapabilities = async ( options?: RequestInit): Promise<getCapabilitiesResponse> => {
+export const getCapabilities = async (params?: GetCapabilitiesParams, options?: RequestInit): Promise<getCapabilitiesResponse> => {
 
-  const res = await fetch(getGetCapabilitiesUrl(),
+  const res = await fetch(getGetCapabilitiesUrl(params),
   {
     ...options,
     method: 'GET'
@@ -2998,12 +3011,12 @@ export const getIncidentEvidence = async (incidentId: string,
 
 
 export type createInvestigationResponse202 = {
-  data: SuccessEnvelope
+  data: InvestigationSuccessV2
   status: 202
 }
 
 export type createInvestigationResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 202>
 }
 
@@ -3028,7 +3041,7 @@ export const getCreateInvestigationUrl = (incidentId: string,) => {
  * @summary createInvestigation
  */
 export const createInvestigation = async (incidentId: string,
-    jSONRequest: JSONRequest, options?: RequestInit): Promise<createInvestigationResponse> => {
+    createInvestigationV2: CreateInvestigationV2, options?: RequestInit): Promise<createInvestigationResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -3049,7 +3062,7 @@ const res = await fetch(getCreateInvestigationUrl(incidentId),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(jSONRequest)
+    body: JSON.stringify(createInvestigationV2)
   }
 )
 
@@ -3477,12 +3490,12 @@ const res = await fetch(getMergeIncidentsUrl(),
 
 
 export type getInvestigationResponse200 = {
-  data: SuccessEnvelope
+  data: InvestigationSuccessV2
   status: 200
 }
 
 export type getInvestigationResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3532,7 +3545,7 @@ export type streamInvestigationEventsResponse200 = {
 }
 
 export type streamInvestigationEventsResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3577,12 +3590,12 @@ export const streamInvestigationEvents = async (jobId: string, options?: Request
 
 
 export type getInvestigationStepsResponse200 = {
-  data: PageEnvelope
+  data: InvestigationStepsSuccessV2
   status: 200
 }
 
 export type getInvestigationStepsResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3595,29 +3608,20 @@ export type getInvestigationStepsResponseError = (getInvestigationStepsResponseD
 
 export type getInvestigationStepsResponse = (getInvestigationStepsResponseSuccess | getInvestigationStepsResponseError)
 
-export const getGetInvestigationStepsUrl = (jobId: string,
-    params?: GetInvestigationStepsParams,) => {
-  const normalizedParams = new URLSearchParams();
+export const getGetInvestigationStepsUrl = (jobId: string,) => {
 
-  Object.entries(params || {}).forEach(([key, value]) => {
 
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
 
-  const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/v1/investigations/${jobId}/steps?${stringifiedParams}` : `/api/v1/investigations/${jobId}/steps`
+  return `/api/v1/investigations/${jobId}/steps`
 }
 
 /**
  * @summary getInvestigationSteps
  */
-export const getInvestigationSteps = async (jobId: string,
-    params?: GetInvestigationStepsParams, options?: RequestInit): Promise<getInvestigationStepsResponse> => {
+export const getInvestigationSteps = async (jobId: string, options?: RequestInit): Promise<getInvestigationStepsResponse> => {
 
-  const res = await fetch(getGetInvestigationStepsUrl(jobId,params),
+  const res = await fetch(getGetInvestigationStepsUrl(jobId),
   {
     ...options,
     method: 'GET'
@@ -3636,12 +3640,12 @@ export const getInvestigationSteps = async (jobId: string,
 
 
 export type cancelInvestigationResponse200 = {
-  data: SuccessEnvelope
+  data: InvestigationCancelSuccessV2
   status: 200
 }
 
 export type cancelInvestigationResponseDefault = {
-  data: ErrorEnvelope
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
   status: Exclude<HTTPStatusCodes, 200>
 }
 
@@ -3665,14 +3669,29 @@ export const getCancelInvestigationUrl = (jobId: string,) => {
 /**
  * @summary cancelInvestigation
  */
-export const cancelInvestigation = async (jobId: string, options?: RequestInit): Promise<cancelInvestigationResponse> => {
+export const cancelInvestigation = async (jobId: string,
+    cancelInvestigationBody: CancelInvestigationBody, options?: RequestInit): Promise<cancelInvestigationResponse> => {
 
-  const res = await fetch(getCancelInvestigationUrl(jobId),
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCancelInvestigationUrl(jobId),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(cancelInvestigationBody)
   }
 )
 

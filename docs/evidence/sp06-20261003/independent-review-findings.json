@@ -1,0 +1,77 @@
+{
+  "reviewer": "/root/sp06_independent_review",
+  "independent": true,
+  "readOnly": true,
+  "reviewedSource": "tested-native-source-binding-r8.json",
+  "reviewedCompleteSnapshot": "original r8 final-source-snapshot, 5271 files",
+  "firstConclusion": "FAIL",
+  "report": "independent-review-r1.md",
+  "redEvidence": "independent-review-boundaries-red-r1.log",
+  "redExit": 1,
+  "findings": [
+    {
+      "id": "IR-01",
+      "severity": "P1",
+      "kind": "real_defect",
+      "title": "Context data-class narrowing across MCP, settlement, tool/model cache",
+      "filesAtReviewedR8": "internal/investigation/mcp/server.go:129; internal/investigation/repository.go:480; internal/investigation/recovery.go:33",
+      "triggerAndImpact": "D0 registered Context on D0+D1 Job returned archived D1 data",
+      "requirement": "Task6.2/6.3/6.5 and InvocationContext data classes",
+      "reproduction": "Signed D0 Context + real archived D1 Evidence; official SDK MCP/internal Steps/cached model; D0 positive",
+      "status": "closed_by_final_full_independent_review_PASS"
+    },
+    {
+      "id": "IR-02",
+      "severity": "P1",
+      "kind": "real_defect",
+      "title": "SSE expiry/current withdrawal inside a fetched event batch",
+      "filesAtReviewedR8": "internal/httpapi/investigation_handlers.go:261",
+      "triggerAndImpact": "Mid-batch token expiry/Role/Source withdrawal leaked subsequent events",
+      "requirement": "07 §32 and Task6.6",
+      "reproduction": "After first flush expire token/delete Role/disable Source; no further event",
+      "status": "closed_by_final_full_independent_review_PASS"
+    },
+    {
+      "id": "IR-03",
+      "severity": "P2",
+      "kind": "real_defect",
+      "title": "Recovery output budget was bypassed",
+      "filesAtReviewedR8": "internal/investigation/recovery.go:33; internal/investigation/allocation.go:96; internal/investigation/repository.go:237",
+      "triggerAndImpact": "Repeated recovered content exceeded ResultBytes without ledger accounting",
+      "requirement": "09 §51.3",
+      "reproduction": "Downward byte ceiling; tool/model cached reads; twenty concurrent reads; atomic partial/fence and no extra call charge",
+      "status": "closed_by_final_full_independent_review_PASS"
+    },
+    {
+      "id": "IR-04",
+      "severity": "P2",
+      "kind": "real_defect",
+      "title": "Investigation HTTP error and idempotency semantics",
+      "filesAtReviewedR8": "internal/httpapi/investigation_handlers.go:57,158; internal/investigation/repository.go:101",
+      "triggerAndImpact": "Budget 409; create conflict REPLAY_REJECTED; same cancel key cancelled two Jobs",
+      "requirement": "07 §31/§33",
+      "reproduction": "429 budget; 409 IDEMPOTENCY_CONFLICT; same-key replay and cross-Job request conflict; revoked replay denied",
+      "status": "closed_by_final_full_independent_review_PASS"
+    },
+    {
+      "id": "IR-05",
+      "severity": "P2",
+      "kind": "necessary_material_evidence_gap",
+      "title": "Reuse lock recorded superseded exact image/source",
+      "filesAtReviewedR8": "docs/poc/holmes-investigator-reuse-lock.yaml:8; docs/runbooks/sp06-investigation-runtime.md:107",
+      "triggerAndImpact": "Current lock differed from qualified Catalog/admission/Bundle",
+      "requirement": "Task6.4 exact reuse and distribution locking",
+      "reproduction": "Current lock must equal Catalog/admission source/image; original evidence retained",
+      "status": "closed_by_final_full_independent_review_PASS"
+    }
+  ],
+  "scopeExclusions": {
+    "performance": "user waived; not passed",
+    "virtualization": "disabled/unverified/deferred",
+    "PyRCA": "disabled/excluded"
+  },
+  "greenEvidence": "independent-review-boundaries-green-r6.log",
+  "greenExit": 0,
+  "finalConclusion": "PASS",
+  "finalReport": "final-independent-review.md"
+}

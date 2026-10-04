@@ -1,0 +1,116 @@
+{{- if and .Values.sp06.enabled (not .Values.networkPolicyOnly) }}
+{{- if not (and .Values.sp04.enabled .Values.sp05.enabled) }}{{ fail "SP06 requires SP04 and SP05" }}{{- end }}
+{{- if not .Values.sp06.tenants }}{{ fail "SP06 requires explicit tenant dispatch scopes" }}{{- end }}
+{{- if not .Values.sp06.modelCIDRs }}{{ fail "SP06 requires exact model endpoint host CIDRs" }}{{- end }}
+{{- range .Values.sp06.modelCIDRs }}{{- if not (or (hasSuffix "/32" .) (hasSuffix "/128" .)) }}{{ fail "SP06 model egress must use exact host CIDRs" }}{{- end }}{{- end }}
+{{- $common := dict "namespace" .Release.Namespace "listenAddress" (printf ":%d" (int .Values.sp06.gatewayPort)) "investigatorEndpoint" (printf "https://ops-investigator.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.components.investigator.port)) "certificateFile" "/etc/sp04/identity/tls.crt" "privateKeyFile" "/etc/sp04/identity/tls.key" "caFile" "/etc/sp04/identity/ca.pem" "crlFile" "/etc/sp04/identity/crl.pem" "policyName" .Values.sp06.policyName "tenants" .Values.sp06.tenants "budget" .Values.sp06.budget }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-sp06-runtime
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
+data:
+  api.json: {{ $common | toJson | quote }}
+  worker.json: {{ $common | toJson | quote }}
+  investigator.json: {{ dict "listenAddress" (printf "0.0.0.0:%d" (int .Values.components.investigator.port)) "jobAPI" (printf "https://ops-api.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.sp06.gatewayPort)) "mcpEndpoint" (printf "https://ops-api.%s.svc.cluster.local:%d/mcp" .Release.Namespace (int .Values.sp06.gatewayPort)) "apiServerName" (printf "ops-api.%s.svc.cluster.local" .Release.Namespace) "workerIdentity" (printf "spiffe://ops.local/ns/%s/sa/ops-worker" .Release.Namespace) "caFile" "/etc/identity/ca.pem" "crlFile" "/etc/identity/crl.pem" "certificateFile" "/etc/identity/tls.crt" "privateKeyFile" "/etc/identity/tls.key" "modelAPIKeyFile" "/run/secrets/model-api-key" "model" .Values.sp06.model | toJson | quote }}
+---
+{{- $image := required "SP06 admitted investigator digest is required" .Values.components.investigator.image }}
+{{- if not (regexMatch "^.+@sha256:[0-9a-f]{64}$" $image) }}{{ fail "SP06 investigator image must be digest pinned" }}{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ops-investigator
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
+    ops.platform.io/component: investigator
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {ops.platform.io/component: investigator}
+  template:
+    metadata:
+      labels:
+        ops.platform.io/release: {{ .Release.Name | quote }}
+        ops.platform.io/component: investigator
+    spec:
+      serviceAccountName: ops-investigator
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: investigator
+          image: {{ $image | quote }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports: [{name: http, containerPort: {{ .Values.components.investigator.port }}}]
+          env:
+            - {name: SP06_INVESTIGATOR_FILE, value: /etc/runtime/investigator.json}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: ["ALL"]}
+          resources:
+            requests: {cpu: 100m, memory: 512Mi}
+            limits: {cpu: "2", memory: 2Gi}
+          startupProbe:
+            tcpSocket: {port: http}
+            failureThreshold: 60
+            periodSeconds: 5
+          readinessProbe: {tcpSocket: {port: http}}
+          volumeMounts:
+            - {name: runtime, mountPath: /etc/runtime, readOnly: true}
+            - {name: identity, mountPath: /etc/identity, readOnly: true}
+            - {name: model-key, mountPath: /run/secrets, readOnly: true}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: runtime
+          configMap: {name: ops-sp06-runtime}
+        - name: identity
+          secret: {secretName: {{ .Values.sp06.identitySecret }}, defaultMode: 0440}
+        - name: model-key
+          secret:
+            secretName: {{ .Values.sp06.modelKeySecret }}
+            defaultMode: 0440
+            items: [{key: apiKey, path: model-api-key}]
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ops-sp06-investigator
+spec:
+  podSelector:
+    matchLabels:
+      ops.platform.io/release: {{ .Release.Name | quote }}
+      ops.platform.io/component: investigator
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              ops.platform.io/release: {{ .Release.Name | quote }}
+              ops.platform.io/component: worker
+      ports: [{protocol: TCP, port: {{ .Values.components.investigator.port }}}]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              ops.platform.io/release: {{ .Release.Name | quote }}
+              ops.platform.io/component: api
+      ports: [{protocol: TCP, port: {{ .Values.sp06.gatewayPort }}}]
+    - to:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: kube-system}
+          podSelector:
+            matchLabels: {k8s-app: kube-dns}
+      ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]
+    {{- range .Values.sp06.modelCIDRs }}
+    - to: [{ipBlock: {cidr: {{ . | quote }}}}]
+      ports: [{protocol: TCP, port: {{ $.Values.sp06.modelPort }}}]
+    {{- end }}
+{{- end }}

@@ -35,7 +35,7 @@ generate:
 	$(GO) generate ./...
 
 check-generated:
-	python3 scripts/check-generated.py "$(GO)" gen web/src/api/generated internal/persistence/dbgen
+	python3 scripts/check-generated.py "$(GO)" gen web/src/api/generated internal/persistence/dbgen services/investigator/src/investigator/output.schema.json
 
 fmt:
 	gofmt -w $(GO_SOURCES)

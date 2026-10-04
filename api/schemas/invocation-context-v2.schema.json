@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/invocation-context/v2",
+  "title": "invocation-context/v2",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "invocation-context/v2"
+    },
+    "context_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "iss": {
+      "const": "platform-api"
+    },
+    "aud": {
+      "enum": [
+        "platform-mcp-gateway",
+        "platform-job-api"
+      ]
+    },
+    "job_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "incident_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "scope": {
+      "$ref": "https://ops.local/schemas/investigation-scope/v1"
+    },
+    "allowed_tools": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "allowed_data_classes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "D0",
+          "D1"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true
+    },
+    "policy_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "authorizationRevision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "toolCatalogDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "jobLeaseGeneration": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "iat": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799
+    },
+    "exp": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799
+    },
+    "session_nonce": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "cnf": {
+      "type": "object",
+      "properties": {
+        "workload_identity": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "workload_identity"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "context_id",
+    "iss",
+    "aud",
+    "job_id",
+    "incident_id",
+    "tenant_id",
+    "subject",
+    "scope",
+    "allowed_tools",
+    "allowed_data_classes",
+    "policy_version",
+    "authorizationRevision",
+    "toolCatalogDigest",
+    "jobLeaseGeneration",
+    "iat",
+    "exp",
+    "session_nonce",
+    "cnf"
+  ],
+  "additionalProperties": false
+}

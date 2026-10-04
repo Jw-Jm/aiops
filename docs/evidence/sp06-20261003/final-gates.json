@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_nonvirtual_authorized_scope_performance_waived",
+  "baseline": "1c748b5b1f0bf33fb54774c2068a735abe2be599",
+  "branch": "sp06/nonvirtual-investigation",
+  "testedSource": "tested-native-source-binding-r10.json",
+  "uncommittedDevelopmentBuild": true,
+  "testedRuntimeFiles": 4529,
+  "bundleId": "sp06-nonvirtual-20261004-r10",
+  "payloadDigest": "sha256:863b2381784b189c2bfbd94db26b6414ed96efeb416bd7e465d0f69ef0c7ee96",
+  "gates": [
+    {
+      "gate": "toolchain",
+      "command": "make check-toolchain",
+      "exitCode": 0,
+      "evidence": "final-check-toolchain-r3.log",
+      "evidenceSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "passed"
+    },
+    {
+      "gate": "generated",
+      "command": "make check-generated",
+      "exitCode": 0,
+      "evidence": "final-check-generated-r3.log",
+      "evidenceSHA256": "ba4a1821c61c83750de61746e6054776e94a0b24e101eca1ece0cf5324d5e07e",
+      "status": "passed"
+    },
+    {
+      "gate": "runtime-source",
+      "command": "make check-runtime-source",
+      "exitCode": 0,
+      "evidence": "final-check-runtime-source-r3.log",
+      "evidenceSHA256": "87c7a23b942c44343ad5d90bc255c4ce2971e1ca6ac9f588353c1eb50c30781e",
+      "status": "passed"
+    },
+    {
+      "gate": "common",
+      "command": "make check",
+      "exitCode": 0,
+      "evidence": "final-make-check-r6.log",
+      "evidenceSHA256": "09f3b1423dde0a6a644054ffc7597d8119d77f72140ddc8a8e2c61e4b184afe5",
+      "status": "passed"
+    },
+    {
+      "gate": "security",
+      "command": "make test-security",
+      "exitCode": 0,
+      "evidence": "final-test-security-r4.log",
+      "evidenceSHA256": "df5cb8c47b013e6359225eb09430ae3b9e9787d45d12dedd2031b4911104308a",
+      "status": "passed",
+      "passedTests": 11
+    },
+    {
+      "gate": "upstream-replay",
+      "command": "make test-replay; exact frozen source/wheel directories; network none/pull never",
+      "exitCode": 0,
+      "evidence": "upstream-replay-r7.log",
+      "evidenceSHA256": "acd46441fa0d5e76ae50f922aa70f80186aae47bf537b61cd2bad852bb606cd6",
+      "status": "passed",
+      "passedTests": 2,
+      "reuseReason": "Same SP06 run evidence; repaired Go paths do not change these frozen upstream/informer/Python material paths; current exact runtime/source binding confirms unchanged content."
+    },
+    {
+      "gate": "sp06-integration",
+      "command": "SP06_REAL_CHAIN=1 go test ./test/integration -run '^TestSP06' -count=1 -json -timeout=10m",
+      "exitCode": 0,
+      "evidence": "final-sp06-integration-r5.jsonl",
+      "evidenceSHA256": "cac60f4e95e5b4c8ccefa127b5b41c13434f89251805a22de6a42e8b4de8e142",
+      "status": "passed",
+      "passedTests": 18,
+      "reportExitCode": 0,
+      "skips": 0,
+      "passedTestRecordsIncludingSubtests": 26
+    },
+    {
+      "gate": "native-offline",
+      "command": "SP04_NATIVE_CHART=1 SP05_NATIVE_CHART=1 SP06_NATIVE_CHART=1 go test ./test/integration -run '^TestSP04SignedChartNativeWorkerOfflineReinstall$' -count=1 -timeout=20m -v; signed r10 Bundle and actual detected/resolved Profile",
+      "exitCode": 0,
+      "evidence": "native-chart-offline-r13.log",
+      "evidenceSHA256": "e917d8343822716a696cfff1030558795fa0fbf269f62f3d5a7a45a4a97ecdf0",
+      "status": "passed",
+      "passedTests": 1
+    },
+    {
+      "gate": "process-recovery",
+      "command": "SP06_REAL_CHAIN=1 SP06_PROCESS_RECOVERY=1 go test ./test/integration -run '^TestSP06RealHolmesModelMCPJobAndSSE$' -count=1 -timeout=5m -v",
+      "exitCode": 0,
+      "evidence": "process-recovery-r5.log",
+      "evidenceSHA256": "4510795821290bc0788f7bce121a8b60584df0b67be9632521f91f29b5ca0082",
+      "status": "passed",
+      "passedTests": 1
+    },
+    {
+      "gate": "affected-sp04-runtime",
+      "command": "SP04_TEST_ORBSTACK=1 go test ./test/integration -run '^TestSP04(FullRuntimeOrbStackOIDCEvidenceAndFailover|FixtureAdaptersThroughActualRuntime)$' -count=1 -json -timeout=5m",
+      "exitCode": 0,
+      "evidence": "affected-SP04-runtime-r6.jsonl",
+      "evidenceSHA256": "488dc571156c76fa339f50ef0538cfaa98c5e716bc234c3daf6f1b176c1b8e3d",
+      "status": "passed",
+      "passedTests": 2,
+      "reportExitCode": 0,
+      "skips": 0
+    },
+    {
+      "gate": "affected-listwatch-e2e",
+      "command": "owned finite kubectl proxy; SP04_KUBERNETES_URL=<owned loopback proxy> go test ./test/e2e -run '^TestSP04OrbStackNonVirtualListWatch$' -count=1 -json -timeout=3m",
+      "exitCode": 0,
+      "evidence": "affected-listwatch-e2e-r4.jsonl",
+      "evidenceSHA256": "17b74a8a2e14b754c029310a1825a657ba7492dd5116b4550fce0b526e5167c8",
+      "status": "passed",
+      "passedTests": 1,
+      "reportExitCode": 0,
+      "skips": 0,
+      "reuseReason": "Same SP06 run evidence; repaired Go paths do not change these frozen upstream/informer/Python material paths; current exact runtime/source binding confirms unchanged content."
+    },
+    {
+      "gate": "investigator-python",
+      "command": "services/investigator/.venv/bin/python -m pytest services/investigator/tests -q",
+      "exitCode": 0,
+      "evidence": "ledger-evidence-schema-green-r1.log",
+      "evidenceSHA256": "1d38460cf2fc9c570c4149fff46502b7b2407b26f3a64211d5421ac96f533139",
+      "status": "passed",
+      "passedTests": 6,
+      "reuseReason": "Same SP06 run evidence; repaired Go paths do not change these frozen upstream/informer/Python material paths; current exact runtime/source binding confirms unchanged content."
+    },
+    {
+      "gate": "python-material",
+      "command": "prepare-investigator-material.py --out artifacts/sp06-investigator",
+      "exitCode": 0,
+      "evidence": "python-material-r12.log",
+      "evidenceSHA256": "28d4dd6051762a854bafa178eb96c73edc7f9d9ac29590a192169ce715fd92e1",
+      "status": "passed",
+      "reuseReason": "Same SP06 run evidence; repaired Go paths do not change these frozen upstream/informer/Python material paths; current exact runtime/source binding confirms unchanged content."
+    },
+    {
+      "gate": "investigator-offline",
+      "command": "docker build --network=none --pull=false --provenance=false --platform=linux/arm64 -f build/images/investigator/Dockerfile",
+      "exitCode": 0,
+      "evidence": "investigator-offline-build-r5.log",
+      "evidenceSHA256": "8caa769626ea90983c0d1b65d592f612c0a4a5a5d4d6ff535320cf5d80737255",
+      "status": "passed",
+      "reuseReason": "Same SP06 run evidence; repaired Go paths do not change these frozen upstream/informer/Python material paths; current exact runtime/source binding confirms unchanged content."
+    },
+    {
+      "gate": "license-admission",
+      "command": "admit-investigator-material.py; exact 419164... image and retained signed Debian Sources indexes",
+      "exitCode": 0,
+      "evidence": "investigator-admission-r8.log",
+      "evidenceSHA256": "0b507ac0c0ccbf164881334b53aefcf76513c9f2bc5e6c47e24a0c0aa2c03457",
+      "status": "passed",
+      "reuseReason": "Same SP06 run evidence; repaired Go paths do not change these frozen upstream/informer/Python material paths; current exact runtime/source binding confirms unchanged content."
+    },
+    {
+      "gate": "bundle-inputs",
+      "command": "prepare-bundle-inputs.py --working-tree-binding; exact core/K8sGPT/investigator sources and image",
+      "exitCode": 0,
+      "evidence": "bundle-inputs-r10.log",
+      "evidenceSHA256": "28e5c178f6ba3d26dc4bdd1fb29a1ea21a6a2b271a888cece8727f2d1880ddcb",
+      "status": "passed"
+    },
+    {
+      "gate": "signed-bundle",
+      "command": "make bundle-dev-arm64; external private acceptance key",
+      "exitCode": 0,
+      "evidence": "bundle-build-r10.log",
+      "evidenceSHA256": "905df7e5b661a5e086b70525baf1bd5daf4fcd9fdf9aa1cca0f3f6e8d5d75d12",
+      "status": "passed"
+    },
+    {
+      "gate": "bundle-verify",
+      "command": "make verify-bundle; exact isolated public acceptance trust",
+      "exitCode": 0,
+      "evidence": "bundle-verify-r10.log",
+      "evidenceSHA256": "f2951135fa2bd1487ad2f13277103d3f75e7996c54c071a69df1505fd430899f",
+      "status": "passed"
+    },
+    {
+      "gate": "diff-check",
+      "command": "git diff --check",
+      "exitCode": 0,
+      "evidence": "final-diff-check-r2.log",
+      "evidenceSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "passed"
+    },
+    {
+      "gate": "provider-429",
+      "command": "SP06_MODEL_FAULT=429 SP06_REAL_CHAIN=1 go test ./test/integration -run '^TestSP06RealHolmesModelMCPJobAndSSE$' -count=1 -json -timeout=5m",
+      "exitCode": 0,
+      "evidence": "final-provider-429-r3.jsonl",
+      "evidenceSHA256": "261267474bbab86a516b066ea1f748dfc4c922a4203266d1b3973d1fc7785a55",
+      "status": "passed",
+      "passedTests": 1,
+      "reportExitCode": 0,
+      "skips": 0
+    },
+    {
+      "gate": "provider-timeout",
+      "command": "SP06_MODEL_FAULT=timeout SP06_REAL_CHAIN=1 go test ./test/integration -run '^TestSP06RealHolmesModelMCPJobAndSSE$' -count=1 -json -timeout=5m",
+      "exitCode": 0,
+      "evidence": "final-provider-timeout-r3.jsonl",
+      "evidenceSHA256": "a2a6a6c2d5d704d1111e721b9ad640690a5677a27f49c56545290e174121e09c",
+      "status": "passed",
+      "passedTests": 1,
+      "reportExitCode": 0,
+      "skips": 0
+    },
+    {
+      "gate": "provider-unavailable",
+      "command": "SP06_MODEL_FAULT=unavailable SP06_REAL_CHAIN=1 go test ./test/integration -run '^TestSP06RealHolmesModelMCPJobAndSSE$' -count=1 -json -timeout=5m",
+      "exitCode": 0,
+      "evidence": "final-provider-unavailable-r3.jsonl",
+      "evidenceSHA256": "26cf75ff42e9473acb72f947a41aca8cfa84f190802c8d2ae4c1f399322cf599",
+      "status": "passed",
+      "passedTests": 1,
+      "reportExitCode": 0,
+      "skips": 0
+    },
+    {
+      "gate": "provider-illegal-json",
+      "command": "SP06_MODEL_FAULT=illegal-json SP06_REAL_CHAIN=1 go test ./test/integration -run '^TestSP06RealHolmesModelMCPJobAndSSE$' -count=1 -json -timeout=5m",
+      "exitCode": 0,
+      "evidence": "final-provider-illegal-json-r3.jsonl",
+      "evidenceSHA256": "5fbd88be156608c69f9ac80b567343cfa1f7de463b45a8f561ba618a754d5c4f",
+      "status": "passed",
+      "passedTests": 1,
+      "reportExitCode": 0,
+      "skips": 0
+    },
+    {
+      "gate": "provider-write-tool",
+      "command": "SP06_MODEL_FAULT=write-tool SP06_REAL_CHAIN=1 go test ./test/integration -run '^TestSP06RealHolmesModelMCPJobAndSSE$' -count=1 -json -timeout=5m",
+      "exitCode": 0,
+      "evidence": "final-provider-write-tool-r3.jsonl",
+      "evidenceSHA256": "1593b799dc84d02b960600c33f9f2cd4e2b9096d55c9583923dd7cbf4cfb9ed2",
+      "status": "passed",
+      "passedTests": 1,
+      "reportExitCode": 0,
+      "skips": 0
+    },
+    {
+      "gate": "independent-review-regressions",
+      "command": "targeted Go contract/HTTP tests and actual PG/Transit/archive/MCP/SSE review-boundary integration tests",
+      "evidence": "independent-review-boundaries-green-r6.log",
+      "exitCode": 0,
+      "status": "passed",
+      "evidenceSHA256": "229d4f5e6a83cf3b594d8e7daa60279bbc366db2b3a06c3da875f9bab88f5fc9"
+    }
+  ],
+  "nativeConcurrency": {
+    "peakRunning": 10,
+    "terminal": {
+      "failed": 9,
+      "succeeded": 1
+    },
+    "mainlinePaths": [
+      "Graph",
+      "Finding",
+      "Incident",
+      "archived Evidence",
+      "deterministic RCA"
+    ],
+    "correctnessPassed": true,
+    "performancePassed": false,
+    "accuracyPassed": false,
+    "note": "Current signed r10 Bundle; actual native r13 ten resident/model jobs, peak 10; all reservations settled, current Ledger/Audit, five mainline HTTP paths available.",
+    "evidence": "native-chart-offline-r13.log"
+  },
+  "exceptions": {
+    "performance": "user-waived; not PASS; OPS_PERFORMANCE_EXEMPTION=sp06-user-20261003",
+    "virtualization": "ADR0008 deferred disabled/unverified; not PASS",
+    "PyRCA": "ADR0020 disabled/excluded"
+  },
+  "fixtureLimits": [
+    "provider faults inject the actual upstream HTTP boundary and are not the actual model proof",
+    "MCP state matrix uses explicit protocol/source-state fixtures; actual semantic/API/Graph/archive/RCA chain is independently exercised",
+    "native positive Metrics-server and external raw DeepFlow/hardware environments remain unverified; tools expose honest capability degradation",
+    "slow-client transport uses real stdlib HTTP over net.Pipe for deterministic backpressure; no capacity measurement"
+  ],
+  "independentReview": {
+    "reviewer": "/root/sp06_independent_review",
+    "independent": true,
+    "readOnly": true,
+    "scope": "full Task6.1–6.6 and 14.6, all authorized delivery, not last diff only",
+    "status": "PASS",
+    "openFindings": [],
+    "closedFindings": [
+      "IR-01",
+      "IR-02",
+      "IR-03",
+      "IR-04",
+      "IR-05"
+    ],
+    "report": "final-independent-review.md",
+    "reportSHA256": "02a350ba7a4be8db5c3d4a385a6084c5c8704a154395b47a58bf184f72f8fe04",
+    "fullSourceSnapshotSHA256": "f4d34034e5d8e575ae9b7f338aab980934a74d31ea83b9231a8a86748e7a9e97"
+  },
+  "deliveryCommit": null,
+  "remoteMainVerified": false,
+  "fullSourceSnapshot": "final-source-snapshot.json",
+  "fullSourceFiles": 5276,
+  "deliveryStatus": "acceptance complete; git delivery pending"
+}

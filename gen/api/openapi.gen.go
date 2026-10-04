@@ -399,6 +399,39 @@ func (e InvestigationEventEventType) Valid() bool {
 	}
 }
 
+// Defines values for InvestigationResultV1SchemaVersion.
+const (
+	InvestigationResultv1 InvestigationResultV1SchemaVersion = "investigation-result/v1"
+)
+
+// Valid indicates whether the value is a known member of the InvestigationResultV1SchemaVersion enum.
+func (e InvestigationResultV1SchemaVersion) Valid() bool {
+	switch e {
+	case InvestigationResultv1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for InvestigationResultV1Status.
+const (
+	InvestigationResultV1StatusProbable   InvestigationResultV1Status = "probable"
+	InvestigationResultV1StatusUnresolved InvestigationResultV1Status = "unresolved"
+)
+
+// Valid indicates whether the value is a known member of the InvestigationResultV1Status enum.
+func (e InvestigationResultV1Status) Valid() bool {
+	switch e {
+	case InvestigationResultV1StatusProbable:
+		return true
+	case InvestigationResultV1StatusUnresolved:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for LegalHoldMetaV1Freshness.
 const (
 	LegalHoldMetaV1FreshnessFresh       LegalHoldMetaV1Freshness = "fresh"
@@ -507,6 +540,201 @@ func (e LegalHoldResultV1SchemaVersion) Valid() bool {
 	}
 }
 
+// Defines values for PlatformCapabilitiesV1CdiStatus.
+const (
+	PlatformCapabilitiesV1CdiStatusDegraded   PlatformCapabilitiesV1CdiStatus = "degraded"
+	PlatformCapabilitiesV1CdiStatusDisabled   PlatformCapabilitiesV1CdiStatus = "disabled"
+	PlatformCapabilitiesV1CdiStatusUnverified PlatformCapabilitiesV1CdiStatus = "unverified"
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1CdiStatus enum.
+func (e PlatformCapabilitiesV1CdiStatus) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesV1CdiStatusDegraded:
+		return true
+	case PlatformCapabilitiesV1CdiStatusDisabled:
+		return true
+	case PlatformCapabilitiesV1CdiStatusUnverified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PlatformCapabilitiesV1CdiVerification.
+const (
+	PlatformCapabilitiesV1CdiVerificationUnverified PlatformCapabilitiesV1CdiVerification = "unverified"
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1CdiVerification enum.
+func (e PlatformCapabilitiesV1CdiVerification) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesV1CdiVerificationUnverified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PlatformCapabilitiesV1CommandExecutionStatus.
+const (
+	PlatformCapabilitiesV1CommandExecutionStatusDegraded   PlatformCapabilitiesV1CommandExecutionStatus = "degraded"
+	PlatformCapabilitiesV1CommandExecutionStatusDisabled   PlatformCapabilitiesV1CommandExecutionStatus = "disabled"
+	PlatformCapabilitiesV1CommandExecutionStatusUnverified PlatformCapabilitiesV1CommandExecutionStatus = "unverified"
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1CommandExecutionStatus enum.
+func (e PlatformCapabilitiesV1CommandExecutionStatus) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesV1CommandExecutionStatusDegraded:
+		return true
+	case PlatformCapabilitiesV1CommandExecutionStatusDisabled:
+		return true
+	case PlatformCapabilitiesV1CommandExecutionStatusUnverified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PlatformCapabilitiesV1CommandExecutionVerification.
+const (
+	PlatformCapabilitiesV1CommandExecutionVerificationUnverified PlatformCapabilitiesV1CommandExecutionVerification = "unverified"
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1CommandExecutionVerification enum.
+func (e PlatformCapabilitiesV1CommandExecutionVerification) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesV1CommandExecutionVerificationUnverified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PlatformCapabilitiesV1InvestigationReadOnly.
+const (
+	PlatformCapabilitiesV1InvestigationReadOnlyTrue PlatformCapabilitiesV1InvestigationReadOnly = true
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1InvestigationReadOnly enum.
+func (e PlatformCapabilitiesV1InvestigationReadOnly) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesV1InvestigationReadOnlyTrue:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PlatformCapabilitiesV1InvestigationStatus.
+const (
+	PlatformCapabilitiesV1InvestigationStatusDegraded   PlatformCapabilitiesV1InvestigationStatus = "degraded"
+	PlatformCapabilitiesV1InvestigationStatusDisabled   PlatformCapabilitiesV1InvestigationStatus = "disabled"
+	PlatformCapabilitiesV1InvestigationStatusUnverified PlatformCapabilitiesV1InvestigationStatus = "unverified"
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1InvestigationStatus enum.
+func (e PlatformCapabilitiesV1InvestigationStatus) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesV1InvestigationStatusDegraded:
+		return true
+	case PlatformCapabilitiesV1InvestigationStatusDisabled:
+		return true
+	case PlatformCapabilitiesV1InvestigationStatusUnverified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PlatformCapabilitiesV1KubevirtStatus.
+const (
+	PlatformCapabilitiesV1KubevirtStatusDegraded   PlatformCapabilitiesV1KubevirtStatus = "degraded"
+	PlatformCapabilitiesV1KubevirtStatusDisabled   PlatformCapabilitiesV1KubevirtStatus = "disabled"
+	PlatformCapabilitiesV1KubevirtStatusUnverified PlatformCapabilitiesV1KubevirtStatus = "unverified"
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1KubevirtStatus enum.
+func (e PlatformCapabilitiesV1KubevirtStatus) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesV1KubevirtStatusDegraded:
+		return true
+	case PlatformCapabilitiesV1KubevirtStatusDisabled:
+		return true
+	case PlatformCapabilitiesV1KubevirtStatusUnverified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PlatformCapabilitiesV1KubevirtVerification.
+const (
+	PlatformCapabilitiesV1KubevirtVerificationUnverified PlatformCapabilitiesV1KubevirtVerification = "unverified"
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1KubevirtVerification enum.
+func (e PlatformCapabilitiesV1KubevirtVerification) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesV1KubevirtVerificationUnverified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PlatformCapabilitiesV1PyrcaStatus.
+const (
+	PlatformCapabilitiesV1PyrcaStatusDegraded   PlatformCapabilitiesV1PyrcaStatus = "degraded"
+	PlatformCapabilitiesV1PyrcaStatusDisabled   PlatformCapabilitiesV1PyrcaStatus = "disabled"
+	PlatformCapabilitiesV1PyrcaStatusUnverified PlatformCapabilitiesV1PyrcaStatus = "unverified"
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1PyrcaStatus enum.
+func (e PlatformCapabilitiesV1PyrcaStatus) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesV1PyrcaStatusDegraded:
+		return true
+	case PlatformCapabilitiesV1PyrcaStatusDisabled:
+		return true
+	case PlatformCapabilitiesV1PyrcaStatusUnverified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PlatformCapabilitiesV1PyrcaVerification.
+const (
+	PlatformCapabilitiesV1PyrcaVerificationUnverified PlatformCapabilitiesV1PyrcaVerification = "unverified"
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1PyrcaVerification enum.
+func (e PlatformCapabilitiesV1PyrcaVerification) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesV1PyrcaVerificationUnverified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PlatformCapabilitiesV1SchemaVersion.
+const (
+	PlatformCapabilitiesv1 PlatformCapabilitiesV1SchemaVersion = "platform-capabilities/v1"
+)
+
+// Valid indicates whether the value is a known member of the PlatformCapabilitiesV1SchemaVersion enum.
+func (e PlatformCapabilitiesV1SchemaVersion) Valid() bool {
+	switch e {
+	case PlatformCapabilitiesv1:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for RCACandidateV2Source.
 const (
 	RCACandidateV2SourceDeterministic RCACandidateV2Source = "deterministic"
@@ -539,19 +767,19 @@ func (e RCAEvaluationV2SchemaVersion) Valid() bool {
 
 // Defines values for RCAEvaluationV2Status.
 const (
-	Confirmed  RCAEvaluationV2Status = "confirmed"
-	Probable   RCAEvaluationV2Status = "probable"
-	Unresolved RCAEvaluationV2Status = "unresolved"
+	RCAEvaluationV2StatusConfirmed  RCAEvaluationV2Status = "confirmed"
+	RCAEvaluationV2StatusProbable   RCAEvaluationV2Status = "probable"
+	RCAEvaluationV2StatusUnresolved RCAEvaluationV2Status = "unresolved"
 )
 
 // Valid indicates whether the value is a known member of the RCAEvaluationV2Status enum.
 func (e RCAEvaluationV2Status) Valid() bool {
 	switch e {
-	case Confirmed:
+	case RCAEvaluationV2StatusConfirmed:
 		return true
-	case Probable:
+	case RCAEvaluationV2StatusProbable:
 		return true
-	case Unresolved:
+	case RCAEvaluationV2StatusUnresolved:
 		return true
 	default:
 		return false
@@ -854,13 +1082,13 @@ func (e SourceRegistrationQueryCapabilityState) Valid() bool {
 
 // Defines values for SourceRegistrationQueryCapabilityVerification.
 const (
-	Unverified SourceRegistrationQueryCapabilityVerification = "unverified"
+	SourceRegistrationQueryCapabilityVerificationUnverified SourceRegistrationQueryCapabilityVerification = "unverified"
 )
 
 // Valid indicates whether the value is a known member of the SourceRegistrationQueryCapabilityVerification enum.
 func (e SourceRegistrationQueryCapabilityVerification) Valid() bool {
 	switch e {
-	case Unverified:
+	case SourceRegistrationQueryCapabilityVerificationUnverified:
 		return true
 	default:
 		return false
@@ -998,13 +1226,13 @@ func (e UnavailableGraphV2Freshness) Valid() bool {
 
 // Defines values for UnavailableGraphV2Partial.
 const (
-	True UnavailableGraphV2Partial = true
+	UnavailableGraphV2PartialTrue UnavailableGraphV2Partial = true
 )
 
 // Valid indicates whether the value is a known member of the UnavailableGraphV2Partial enum.
 func (e UnavailableGraphV2Partial) Valid() bool {
 	switch e {
-	case True:
+	case UnavailableGraphV2PartialTrue:
 		return true
 	default:
 		return false
@@ -1065,8 +1293,44 @@ func (e GetResourceNeighborsParamsDirection) Valid() bool {
 	}
 }
 
+// ActionPlanV2 defines model for ActionPlanV2.
+type ActionPlanV2 struct {
+	ActionPlanId   SP06CommonIdentifier  `json:"actionPlanId"`
+	CreatedAt      SP06CommonTimestamp   `json:"createdAt"`
+	DataRisk       SP06CommonDataClass   `json:"dataRisk"`
+	ExpectedImpact SP06CommonText        `json:"expectedImpact"`
+	Extensions     *SP06CommonExtensions `json:"extensions,omitempty"`
+	GeneratedBy    struct {
+		Extensions *SP06CommonExtensions `json:"extensions,omitempty"`
+		Name       SP06CommonIdentifier  `json:"name"`
+		Type       SP06CommonShortText   `json:"type"`
+	} `json:"generatedBy"`
+	IncidentId                    SP06CommonIdentifier    `json:"incidentId"`
+	Iteration                     int                     `json:"iteration"`
+	OperationRisk                 SP06CommonOperationRisk `json:"operationRisk"`
+	PostCheckInstructions         []SP06CommonText        `json:"postCheckInstructions"`
+	Preconditions                 []SP06CommonText        `json:"preconditions"`
+	RcaRevision                   int                     `json:"rcaRevision"`
+	Reason                        SP06CommonText          `json:"reason"`
+	RecommendedExecutionProfileId SP06CommonIdentifier    `json:"recommendedExecutionProfileId"`
+	RiskSummary                   SP06CommonText          `json:"riskSummary"`
+	RollbackSuggestion            *SP06CommonText         `json:"rollbackSuggestion"`
+	SchemaVersion                 interface{}             `json:"schemaVersion"`
+	Shell                         interface{}             `json:"shell"`
+	State                         interface{}             `json:"state"`
+	SuggestedCommand              SP06CommonCommandText   `json:"suggestedCommand"`
+	TargetCanonicalId             SP06CommonCanonicalId   `json:"targetCanonicalId"`
+	TenantId                      SP06CommonTenantId      `json:"tenantId"`
+}
+
 // CanonicalID RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
 type CanonicalID = string
+
+// CapabilitiesSuccessV1 defines model for CapabilitiesSuccessV1.
+type CapabilitiesSuccessV1 struct {
+	Data      PlatformCapabilitiesV1 `json:"data"`
+	RequestId string                 `json:"requestId"`
+}
 
 // ClusterRegistrationRequest defines model for ClusterRegistrationRequest.
 type ClusterRegistrationRequest struct {
@@ -1100,6 +1364,12 @@ type CommandExecutionRequest struct {
 
 	// Target RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
 	Target CanonicalID `json:"target"`
+}
+
+// CreateInvestigationV2 defines model for CreateInvestigationV2.
+type CreateInvestigationV2 struct {
+	TriggerKind     interface{} `json:"triggerKind,omitempty"`
+	TriggerRevision *int        `json:"triggerRevision,omitempty"`
 }
 
 // CurrentRCASuccessV2 defines model for CurrentRCASuccessV2.
@@ -1593,6 +1863,29 @@ type IncidentV2SchemaVersion string
 // IncidentV2State defines model for IncidentV2.State.
 type IncidentV2State string
 
+// InvestigationBudgetV1 defines model for InvestigationBudgetV1.
+type InvestigationBudgetV1 struct {
+	AllowedDataClasses []interface{} `json:"allowedDataClasses"`
+	DurationSeconds    int           `json:"durationSeconds"`
+	EvidenceItems      int           `json:"evidenceItems"`
+	GraphNodes         int           `json:"graphNodes"`
+	InputTokens        int           `json:"inputTokens"`
+	ModelCostMicros    int           `json:"modelCostMicros"`
+	ModelRequests      int           `json:"modelRequests"`
+	OutputTokens       int           `json:"outputTokens"`
+	RawQueries         int           `json:"rawQueries"`
+	ResultBytes        int           `json:"resultBytes"`
+	ToolCalls          int           `json:"toolCalls"`
+}
+
+// InvestigationCancelSuccessV2 defines model for InvestigationCancelSuccessV2.
+type InvestigationCancelSuccessV2 struct {
+	Data struct {
+		State interface{} `json:"state"`
+	} `json:"data"`
+	RequestId string `json:"requestId"`
+}
+
 // InvestigationEvent defines model for InvestigationEvent.
 type InvestigationEvent struct {
 	EventId    string                      `json:"eventId"`
@@ -1604,6 +1897,96 @@ type InvestigationEvent struct {
 
 // InvestigationEventEventType defines model for InvestigationEvent.EventType.
 type InvestigationEventEventType string
+
+// InvestigationJobV2 defines model for InvestigationJobV2.
+type InvestigationJobV2 struct {
+	Budget               InvestigationBudgetV1  `json:"budget"`
+	BudgetConsumed       InvestigationUsageV1   `json:"budgetConsumed"`
+	BudgetReserved       InvestigationUsageV1   `json:"budgetReserved"`
+	EffectiveScopeDigest string                 `json:"effectiveScopeDigest"`
+	ErrorCode            *string                `json:"errorCode,omitempty"`
+	EventSeq             int                    `json:"eventSeq"`
+	ExpiresAt            time.Time              `json:"expiresAt"`
+	IncidentId           openapi_types.UUID     `json:"incidentId"`
+	JobId                openapi_types.UUID     `json:"jobId"`
+	NextCallSeq          int                    `json:"nextCallSeq"`
+	PolicyVersion        string                 `json:"policyVersion"`
+	Result               *InvestigationResultV1 `json:"result,omitempty"`
+	SchemaVersion        interface{}            `json:"schemaVersion"`
+	Scope                InvestigationScopeV1   `json:"scope"`
+	State                interface{}            `json:"state"`
+	Subject              string                 `json:"subject"`
+	TenantId             openapi_types.UUID     `json:"tenantId"`
+	ToolCatalogDigest    string                 `json:"toolCatalogDigest"`
+	TriggerKind          interface{}            `json:"triggerKind"`
+	TriggerRevision      int                    `json:"triggerRevision"`
+}
+
+// InvestigationResultV1 defines model for InvestigationResultV1.
+type InvestigationResultV1 struct {
+	ActionPlans      []ActionPlanV2 `json:"actionPlans"`
+	CandidateUpdates []struct {
+		CandidateKey string `json:"candidateKey"`
+		Reason       string `json:"reason"`
+	} `json:"candidateUpdates"`
+	DegradedSources []string                           `json:"degradedSources"`
+	EvidenceRefs    []openapi_types.UUID               `json:"evidenceRefs"`
+	Partial         bool                               `json:"partial"`
+	SchemaVersion   InvestigationResultV1SchemaVersion `json:"schemaVersion"`
+	Status          InvestigationResultV1Status        `json:"status"`
+	Summary         string                             `json:"summary"`
+}
+
+// InvestigationResultV1SchemaVersion defines model for InvestigationResultV1.SchemaVersion.
+type InvestigationResultV1SchemaVersion string
+
+// InvestigationResultV1Status defines model for InvestigationResultV1.Status.
+type InvestigationResultV1Status string
+
+// InvestigationScopeV1 defines model for InvestigationScopeV1.
+type InvestigationScopeV1 struct {
+	AuthorizationRevision string             `json:"authorizationRevision"`
+	ClusterScoped         bool               `json:"clusterScoped"`
+	ClusterUid            string             `json:"clusterUid"`
+	Namespaces            []string           `json:"namespaces"`
+	Resources             []string           `json:"resources"`
+	TenantId              openapi_types.UUID `json:"tenantId"`
+}
+
+// InvestigationStepV2 defines model for InvestigationStepV2.
+type InvestigationStepV2 struct {
+	ArgsDigest string             `json:"argsDigest"`
+	ErrorCode  *string            `json:"errorCode,omitempty"`
+	Result     interface{}        `json:"result,omitempty"`
+	State      interface{}        `json:"state"`
+	StepId     openapi_types.UUID `json:"stepId"`
+	ToolName   string             `json:"toolName"`
+}
+
+// InvestigationStepsSuccessV2 defines model for InvestigationStepsSuccessV2.
+type InvestigationStepsSuccessV2 struct {
+	Data      []InvestigationStepV2 `json:"data"`
+	RequestId string                `json:"requestId"`
+}
+
+// InvestigationSuccessV2 defines model for InvestigationSuccessV2.
+type InvestigationSuccessV2 struct {
+	Data      InvestigationJobV2 `json:"data"`
+	RequestId string             `json:"requestId"`
+}
+
+// InvestigationUsageV1 defines model for InvestigationUsageV1.
+type InvestigationUsageV1 struct {
+	EvidenceItems   int `json:"evidenceItems"`
+	GraphNodes      int `json:"graphNodes"`
+	InputTokens     int `json:"inputTokens"`
+	ModelCostMicros int `json:"modelCostMicros"`
+	ModelRequests   int `json:"modelRequests"`
+	OutputTokens    int `json:"outputTokens"`
+	RawQueries      int `json:"rawQueries"`
+	ResultBytes     int `json:"resultBytes"`
+	ToolCalls       int `json:"toolCalls"`
+}
 
 // JSONRequest JSON object body. Operation-specific fields are defined by the owning public contract.
 type JSONRequest map[string]interface{}
@@ -1694,6 +2077,73 @@ type PageEnvelope_Meta struct {
 	NextCursor           *string                `json:"nextCursor,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
+
+// PlatformCapabilitiesV1 defines model for PlatformCapabilitiesV1.
+type PlatformCapabilitiesV1 struct {
+	ApiReady bool `json:"apiReady"`
+	Cdi      struct {
+		Reason       string                                 `json:"reason"`
+		Status       PlatformCapabilitiesV1CdiStatus        `json:"status"`
+		Verification *PlatformCapabilitiesV1CdiVerification `json:"verification,omitempty"`
+	} `json:"cdi"`
+	CommandExecution struct {
+		Reason       string                                              `json:"reason"`
+		Status       PlatformCapabilitiesV1CommandExecutionStatus        `json:"status"`
+		Verification *PlatformCapabilitiesV1CommandExecutionVerification `json:"verification,omitempty"`
+	} `json:"commandExecution"`
+	GraphReady    *bool `json:"graphReady"`
+	Investigation struct {
+		Enabled  bool                                        `json:"enabled"`
+		ReadOnly PlatformCapabilitiesV1InvestigationReadOnly `json:"readOnly"`
+		Reason   string                                      `json:"reason"`
+		Status   PlatformCapabilitiesV1InvestigationStatus   `json:"status"`
+	} `json:"investigation"`
+	Kubevirt struct {
+		Reason       string                                      `json:"reason"`
+		Status       PlatformCapabilitiesV1KubevirtStatus        `json:"status"`
+		Verification *PlatformCapabilitiesV1KubevirtVerification `json:"verification,omitempty"`
+	} `json:"kubevirt"`
+	Pyrca struct {
+		Reason       string                                   `json:"reason"`
+		Status       PlatformCapabilitiesV1PyrcaStatus        `json:"status"`
+		Verification *PlatformCapabilitiesV1PyrcaVerification `json:"verification,omitempty"`
+	} `json:"pyrca"`
+	SchemaVersion  PlatformCapabilitiesV1SchemaVersion `json:"schemaVersion"`
+	SourceDegraded *bool                               `json:"sourceDegraded"`
+}
+
+// PlatformCapabilitiesV1CdiStatus defines model for PlatformCapabilitiesV1.Cdi.Status.
+type PlatformCapabilitiesV1CdiStatus string
+
+// PlatformCapabilitiesV1CdiVerification defines model for PlatformCapabilitiesV1.Cdi.Verification.
+type PlatformCapabilitiesV1CdiVerification string
+
+// PlatformCapabilitiesV1CommandExecutionStatus defines model for PlatformCapabilitiesV1.CommandExecution.Status.
+type PlatformCapabilitiesV1CommandExecutionStatus string
+
+// PlatformCapabilitiesV1CommandExecutionVerification defines model for PlatformCapabilitiesV1.CommandExecution.Verification.
+type PlatformCapabilitiesV1CommandExecutionVerification string
+
+// PlatformCapabilitiesV1InvestigationReadOnly defines model for PlatformCapabilitiesV1.Investigation.ReadOnly.
+type PlatformCapabilitiesV1InvestigationReadOnly bool
+
+// PlatformCapabilitiesV1InvestigationStatus defines model for PlatformCapabilitiesV1.Investigation.Status.
+type PlatformCapabilitiesV1InvestigationStatus string
+
+// PlatformCapabilitiesV1KubevirtStatus defines model for PlatformCapabilitiesV1.Kubevirt.Status.
+type PlatformCapabilitiesV1KubevirtStatus string
+
+// PlatformCapabilitiesV1KubevirtVerification defines model for PlatformCapabilitiesV1.Kubevirt.Verification.
+type PlatformCapabilitiesV1KubevirtVerification string
+
+// PlatformCapabilitiesV1PyrcaStatus defines model for PlatformCapabilitiesV1.Pyrca.Status.
+type PlatformCapabilitiesV1PyrcaStatus string
+
+// PlatformCapabilitiesV1PyrcaVerification defines model for PlatformCapabilitiesV1.Pyrca.Verification.
+type PlatformCapabilitiesV1PyrcaVerification string
+
+// PlatformCapabilitiesV1SchemaVersion defines model for PlatformCapabilitiesV1.SchemaVersion.
+type PlatformCapabilitiesV1SchemaVersion string
 
 // PolicyBundlePublishRequest defines model for PolicyBundlePublishRequest.
 type PolicyBundlePublishRequest struct {
@@ -1999,6 +2449,59 @@ type SP04ErrorEnvelopeV2Code string
 
 // SP04ErrorEnvelopeV2SchemaVersion defines model for SP04ErrorEnvelopeV2.SchemaVersion.
 type SP04ErrorEnvelopeV2SchemaVersion string
+
+// SP06CommonCanonicalId defines model for SP06CommonCanonicalId.
+type SP06CommonCanonicalId = string
+
+// SP06CommonCommandText defines model for SP06CommonCommandText.
+type SP06CommonCommandText = string
+
+// SP06CommonDataClass defines model for SP06CommonDataClass.
+type SP06CommonDataClass = interface{}
+
+// SP06CommonExtensionValue defines model for SP06CommonExtensionValue.
+type SP06CommonExtensionValue struct {
+	union json.RawMessage
+}
+
+// SP06CommonExtensionValue0 defines model for SP06CommonExtensionValue.0.
+type SP06CommonExtensionValue0 = string
+
+// SP06CommonExtensionValue1 defines model for SP06CommonExtensionValue.1.
+type SP06CommonExtensionValue1 = int
+
+// SP06CommonExtensionValue2 defines model for SP06CommonExtensionValue.2.
+type SP06CommonExtensionValue2 = float32
+
+// SP06CommonExtensionValue3 defines model for SP06CommonExtensionValue.3.
+type SP06CommonExtensionValue3 = bool
+
+// SP06CommonExtensionValue5 defines model for SP06CommonExtensionValue.5.
+type SP06CommonExtensionValue5 = []*SP06CommonExtensionValue
+
+// SP06CommonExtensionValue6 defines model for SP06CommonExtensionValue.6.
+type SP06CommonExtensionValue6 map[string]*SP06CommonExtensionValue
+
+// SP06CommonExtensions defines model for SP06CommonExtensions.
+type SP06CommonExtensions map[string]*SP06CommonExtensionValue
+
+// SP06CommonIdentifier defines model for SP06CommonIdentifier.
+type SP06CommonIdentifier = string
+
+// SP06CommonOperationRisk defines model for SP06CommonOperationRisk.
+type SP06CommonOperationRisk = interface{}
+
+// SP06CommonShortText defines model for SP06CommonShortText.
+type SP06CommonShortText = string
+
+// SP06CommonTenantId defines model for SP06CommonTenantId.
+type SP06CommonTenantId = string
+
+// SP06CommonText defines model for SP06CommonText.
+type SP06CommonText = string
+
+// SP06CommonTimestamp defines model for SP06CommonTimestamp.
+type SP06CommonTimestamp = time.Time
 
 // SourceCredentialRotationRequest defines model for SourceCredentialRotationRequest.
 type SourceCredentialRotationRequest struct {
@@ -2417,6 +2920,17 @@ type CreateStepUpSessionParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
+// GetCapabilitiesParams defines parameters for GetCapabilities.
+type GetCapabilitiesParams struct {
+	// ClusterUid Observe this currently authorized cluster through the bounded resource API. Omission reports null for unobserved Graph/source readiness.
+	ClusterUid *string `form:"clusterUid,omitempty" json:"clusterUid,omitempty"`
+}
+
+// GetCapabilitiesdefaultJSONResponseBody defines parameters for GetCapabilities.
+type GetCapabilitiesdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // CreateCommandExecutionParams defines parameters for CreateCommandExecution.
 type CreateCommandExecutionParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
@@ -2552,6 +3066,11 @@ type CreateInvestigationParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
+// CreateInvestigationdefaultJSONResponseBody defines parameters for CreateInvestigation.
+type CreateInvestigationdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // GetIncidentRCAdefaultJSONResponseBody defines parameters for GetIncidentRCA.
 type GetIncidentRCAdefaultJSONResponseBody struct {
 	union json.RawMessage
@@ -2628,17 +3147,39 @@ type MergeIncidentsdefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
-// GetInvestigationStepsParams defines parameters for GetInvestigationSteps.
-type GetInvestigationStepsParams struct {
-	// Cursor Opaque cursor for keyset pagination.
-	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
-	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
+// GetInvestigationdefaultJSONResponseBody defines parameters for GetInvestigation.
+type GetInvestigationdefaultJSONResponseBody struct {
+	union json.RawMessage
 }
+
+// StreamInvestigationEventsParams defines parameters for StreamInvestigationEvents.
+type StreamInvestigationEventsParams struct {
+	// LastEventID Signed durable event cursor bound to tenant, Job, stream and current scope; expired cursors return 410.
+	LastEventID *string `json:"Last-Event-ID,omitempty"`
+}
+
+// StreamInvestigationEventsdefaultJSONResponseBody defines parameters for StreamInvestigationEvents.
+type StreamInvestigationEventsdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// GetInvestigationStepsdefaultJSONResponseBody defines parameters for GetInvestigationSteps.
+type GetInvestigationStepsdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// CancelInvestigationJSONBody defines parameters for CancelInvestigation.
+type CancelInvestigationJSONBody = map[string]interface{}
 
 // CancelInvestigationParams defines parameters for CancelInvestigation.
 type CancelInvestigationParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// CancelInvestigationdefaultJSONResponseBody defines parameters for CancelInvestigation.
+type CancelInvestigationdefaultJSONResponseBody struct {
+	union json.RawMessage
 }
 
 // GetResourcesParams defines parameters for GetResources.
@@ -2795,7 +3336,7 @@ type QueryEvidenceJSONRequestBody = EvidenceQueryRequest
 type IngestFindingJSONRequestBody = FindingEnvelope
 
 // CreateInvestigationJSONRequestBody defines body for CreateInvestigation for application/json ContentType.
-type CreateInvestigationJSONRequestBody = JSONRequest
+type CreateInvestigationJSONRequestBody = CreateInvestigationV2
 
 // SplitIncidentJSONRequestBody defines body for SplitIncident for application/json ContentType.
 type SplitIncidentJSONRequestBody = IncidentSplitV2
@@ -2805,6 +3346,9 @@ type TransitionIncidentJSONRequestBody TransitionIncidentJSONBody
 
 // MergeIncidentsJSONRequestBody defines body for MergeIncidents for application/json ContentType.
 type MergeIncidentsJSONRequestBody = IncidentMergeV2
+
+// CancelInvestigationJSONRequestBody defines body for CancelInvestigation for application/json ContentType.
+type CancelInvestigationJSONRequestBody = CancelInvestigationJSONBody
 
 // IngestFindingV2JSONRequestBody defines body for IngestFindingV2 for application/json ContentType.
 type IngestFindingV2JSONRequestBody = FindingEnvelopeV2
@@ -3163,6 +3707,172 @@ func (t ResourceAttributeValueV2) MarshalJSON() ([]byte, error) {
 }
 
 func (t *ResourceAttributeValueV2) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsSP06CommonExtensionValue0 returns the union data inside the SP06CommonExtensionValue as a SP06CommonExtensionValue0
+func (t SP06CommonExtensionValue) AsSP06CommonExtensionValue0() (SP06CommonExtensionValue0, error) {
+	var body SP06CommonExtensionValue0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP06CommonExtensionValue0 overwrites any union data inside the SP06CommonExtensionValue as the provided SP06CommonExtensionValue0
+func (t *SP06CommonExtensionValue) FromSP06CommonExtensionValue0(v SP06CommonExtensionValue0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP06CommonExtensionValue0 performs a merge with any union data inside the SP06CommonExtensionValue, using the provided SP06CommonExtensionValue0
+func (t *SP06CommonExtensionValue) MergeSP06CommonExtensionValue0(v SP06CommonExtensionValue0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP06CommonExtensionValue1 returns the union data inside the SP06CommonExtensionValue as a SP06CommonExtensionValue1
+func (t SP06CommonExtensionValue) AsSP06CommonExtensionValue1() (SP06CommonExtensionValue1, error) {
+	var body SP06CommonExtensionValue1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP06CommonExtensionValue1 overwrites any union data inside the SP06CommonExtensionValue as the provided SP06CommonExtensionValue1
+func (t *SP06CommonExtensionValue) FromSP06CommonExtensionValue1(v SP06CommonExtensionValue1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP06CommonExtensionValue1 performs a merge with any union data inside the SP06CommonExtensionValue, using the provided SP06CommonExtensionValue1
+func (t *SP06CommonExtensionValue) MergeSP06CommonExtensionValue1(v SP06CommonExtensionValue1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP06CommonExtensionValue2 returns the union data inside the SP06CommonExtensionValue as a SP06CommonExtensionValue2
+func (t SP06CommonExtensionValue) AsSP06CommonExtensionValue2() (SP06CommonExtensionValue2, error) {
+	var body SP06CommonExtensionValue2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP06CommonExtensionValue2 overwrites any union data inside the SP06CommonExtensionValue as the provided SP06CommonExtensionValue2
+func (t *SP06CommonExtensionValue) FromSP06CommonExtensionValue2(v SP06CommonExtensionValue2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP06CommonExtensionValue2 performs a merge with any union data inside the SP06CommonExtensionValue, using the provided SP06CommonExtensionValue2
+func (t *SP06CommonExtensionValue) MergeSP06CommonExtensionValue2(v SP06CommonExtensionValue2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP06CommonExtensionValue3 returns the union data inside the SP06CommonExtensionValue as a SP06CommonExtensionValue3
+func (t SP06CommonExtensionValue) AsSP06CommonExtensionValue3() (SP06CommonExtensionValue3, error) {
+	var body SP06CommonExtensionValue3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP06CommonExtensionValue3 overwrites any union data inside the SP06CommonExtensionValue as the provided SP06CommonExtensionValue3
+func (t *SP06CommonExtensionValue) FromSP06CommonExtensionValue3(v SP06CommonExtensionValue3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP06CommonExtensionValue3 performs a merge with any union data inside the SP06CommonExtensionValue, using the provided SP06CommonExtensionValue3
+func (t *SP06CommonExtensionValue) MergeSP06CommonExtensionValue3(v SP06CommonExtensionValue3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP06CommonExtensionValue5 returns the union data inside the SP06CommonExtensionValue as a SP06CommonExtensionValue5
+func (t SP06CommonExtensionValue) AsSP06CommonExtensionValue5() (SP06CommonExtensionValue5, error) {
+	var body SP06CommonExtensionValue5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP06CommonExtensionValue5 overwrites any union data inside the SP06CommonExtensionValue as the provided SP06CommonExtensionValue5
+func (t *SP06CommonExtensionValue) FromSP06CommonExtensionValue5(v SP06CommonExtensionValue5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP06CommonExtensionValue5 performs a merge with any union data inside the SP06CommonExtensionValue, using the provided SP06CommonExtensionValue5
+func (t *SP06CommonExtensionValue) MergeSP06CommonExtensionValue5(v SP06CommonExtensionValue5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP06CommonExtensionValue6 returns the union data inside the SP06CommonExtensionValue as a SP06CommonExtensionValue6
+func (t SP06CommonExtensionValue) AsSP06CommonExtensionValue6() (SP06CommonExtensionValue6, error) {
+	var body SP06CommonExtensionValue6
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP06CommonExtensionValue6 overwrites any union data inside the SP06CommonExtensionValue as the provided SP06CommonExtensionValue6
+func (t *SP06CommonExtensionValue) FromSP06CommonExtensionValue6(v SP06CommonExtensionValue6) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP06CommonExtensionValue6 performs a merge with any union data inside the SP06CommonExtensionValue, using the provided SP06CommonExtensionValue6
+func (t *SP06CommonExtensionValue) MergeSP06CommonExtensionValue6(v SP06CommonExtensionValue6) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SP06CommonExtensionValue) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *SP06CommonExtensionValue) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -3529,6 +4239,68 @@ func (t CreateLegalHolddefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
 }
 
 func (t *CreateLegalHolddefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetCapabilitiesdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetCapabilitiesdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetCapabilitiesdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetCapabilitiesdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetCapabilitiesdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetCapabilitiesdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetCapabilitiesdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetCapabilitiesdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetCapabilitiesdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetCapabilitiesdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetCapabilitiesdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetCapabilitiesdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetCapabilitiesdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetCapabilitiesdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -4091,6 +4863,68 @@ func (t *GetIncidentEvidencedefaultJSONResponseBody) UnmarshalJSON(b []byte) err
 	return err
 }
 
+// AsErrorEnvelope returns the union data inside the CreateInvestigationdefaultJSONResponseBody as a ErrorEnvelope
+func (t CreateInvestigationdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the CreateInvestigationdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *CreateInvestigationdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the CreateInvestigationdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *CreateInvestigationdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the CreateInvestigationdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t CreateInvestigationdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the CreateInvestigationdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *CreateInvestigationdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the CreateInvestigationdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *CreateInvestigationdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateInvestigationdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateInvestigationdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsErrorEnvelope returns the union data inside the GetIncidentRCAdefaultJSONResponseBody as a ErrorEnvelope
 func (t GetIncidentRCAdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
 	var body ErrorEnvelope
@@ -4587,6 +5421,254 @@ func (t *MergeIncidentsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsErrorEnvelope returns the union data inside the GetInvestigationdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetInvestigationdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetInvestigationdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetInvestigationdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetInvestigationdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetInvestigationdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetInvestigationdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetInvestigationdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetInvestigationdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetInvestigationdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetInvestigationdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetInvestigationdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetInvestigationdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetInvestigationdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the StreamInvestigationEventsdefaultJSONResponseBody as a ErrorEnvelope
+func (t StreamInvestigationEventsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the StreamInvestigationEventsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *StreamInvestigationEventsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the StreamInvestigationEventsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *StreamInvestigationEventsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the StreamInvestigationEventsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t StreamInvestigationEventsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the StreamInvestigationEventsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *StreamInvestigationEventsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the StreamInvestigationEventsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *StreamInvestigationEventsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t StreamInvestigationEventsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *StreamInvestigationEventsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the GetInvestigationStepsdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetInvestigationStepsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetInvestigationStepsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetInvestigationStepsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetInvestigationStepsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetInvestigationStepsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetInvestigationStepsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetInvestigationStepsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetInvestigationStepsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetInvestigationStepsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetInvestigationStepsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetInvestigationStepsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetInvestigationStepsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetInvestigationStepsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the CancelInvestigationdefaultJSONResponseBody as a ErrorEnvelope
+func (t CancelInvestigationdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the CancelInvestigationdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *CancelInvestigationdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the CancelInvestigationdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *CancelInvestigationdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the CancelInvestigationdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t CancelInvestigationdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the CancelInvestigationdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *CancelInvestigationdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the CancelInvestigationdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *CancelInvestigationdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CancelInvestigationdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CancelInvestigationdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsErrorEnvelope returns the union data inside the GetResourcesdefaultJSONResponseBody as a ErrorEnvelope
 func (t GetResourcesdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
 	var body ErrorEnvelope
@@ -4994,7 +6076,7 @@ type ServerInterface interface {
 	CreateStepUpSession(w http.ResponseWriter, r *http.Request, params CreateStepUpSessionParams)
 	// GetCapabilities getCapabilities
 	// (GET /api/v1/capabilities)
-	GetCapabilities(w http.ResponseWriter, r *http.Request)
+	GetCapabilities(w http.ResponseWriter, r *http.Request, params GetCapabilitiesParams)
 	// CreateCommandExecution createCommandExecution
 	// (POST /api/v1/command-executions)
 	CreateCommandExecution(w http.ResponseWriter, r *http.Request, params CreateCommandExecutionParams)
@@ -5074,10 +6156,10 @@ type ServerInterface interface {
 	GetInvestigation(w http.ResponseWriter, r *http.Request, jobId string)
 	// StreamInvestigationEvents streamInvestigationEvents
 	// (GET /api/v1/investigations/{jobId}/events)
-	StreamInvestigationEvents(w http.ResponseWriter, r *http.Request, jobId string)
+	StreamInvestigationEvents(w http.ResponseWriter, r *http.Request, jobId string, params StreamInvestigationEventsParams)
 	// GetInvestigationSteps getInvestigationSteps
 	// (GET /api/v1/investigations/{jobId}/steps)
-	GetInvestigationSteps(w http.ResponseWriter, r *http.Request, jobId string, params GetInvestigationStepsParams)
+	GetInvestigationSteps(w http.ResponseWriter, r *http.Request, jobId string)
 	// CancelInvestigation cancelInvestigation
 	// (POST /api/v1/investigations/{jobId}:cancel)
 	CancelInvestigation(w http.ResponseWriter, r *http.Request, jobId string, params CancelInvestigationParams)
@@ -5293,7 +6375,7 @@ func (_ Unimplemented) CreateStepUpSession(w http.ResponseWriter, r *http.Reques
 
 // GetCapabilities getCapabilities
 // (GET /api/v1/capabilities)
-func (_ Unimplemented) GetCapabilities(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetCapabilities(w http.ResponseWriter, r *http.Request, params GetCapabilitiesParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -5451,13 +6533,13 @@ func (_ Unimplemented) GetInvestigation(w http.ResponseWriter, r *http.Request, 
 
 // StreamInvestigationEvents streamInvestigationEvents
 // (GET /api/v1/investigations/{jobId}/events)
-func (_ Unimplemented) StreamInvestigationEvents(w http.ResponseWriter, r *http.Request, jobId string) {
+func (_ Unimplemented) StreamInvestigationEvents(w http.ResponseWriter, r *http.Request, jobId string, params StreamInvestigationEventsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // GetInvestigationSteps getInvestigationSteps
 // (GET /api/v1/investigations/{jobId}/steps)
-func (_ Unimplemented) GetInvestigationSteps(w http.ResponseWriter, r *http.Request, jobId string, params GetInvestigationStepsParams) {
+func (_ Unimplemented) GetInvestigationSteps(w http.ResponseWriter, r *http.Request, jobId string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -7045,8 +8127,27 @@ func (siw *ServerInterfaceWrapper) CreateStepUpSession(w http.ResponseWriter, r 
 // GetCapabilities operation middleware
 func (siw *ServerInterfaceWrapper) GetCapabilities(w http.ResponseWriter, r *http.Request) {
 
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetCapabilitiesParams
+
+	// ------------- Optional query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetCapabilities(w, r)
+		siw.Handler.GetCapabilities(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -8336,8 +9437,32 @@ func (siw *ServerInterfaceWrapper) StreamInvestigationEvents(w http.ResponseWrit
 		return
 	}
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params StreamInvestigationEventsParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Last-Event-ID" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Last-Event-ID")]; found {
+		var LastEventID string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Last-Event-ID", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Last-Event-ID", valueList[0], &LastEventID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Last-Event-ID", Err: err})
+			return
+		}
+
+		params.LastEventID = &LastEventID
+
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.StreamInvestigationEvents(w, r, jobId)
+		siw.Handler.StreamInvestigationEvents(w, r, jobId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -8362,37 +9487,8 @@ func (siw *ServerInterfaceWrapper) GetInvestigationSteps(w http.ResponseWriter, 
 		return
 	}
 
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetInvestigationStepsParams
-
-	// ------------- Optional query parameter "cursor" -------------
-
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
-	if err != nil {
-		var requiredError *runtime.RequiredParameterError
-		if errors.As(err, &requiredError) {
-			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
-		} else {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
-		}
-		return
-	}
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
-	if err != nil {
-		var requiredError *runtime.RequiredParameterError
-		if errors.As(err, &requiredError) {
-			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
-		} else {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		}
-		return
-	}
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetInvestigationSteps(w, r, jobId, params)
+		siw.Handler.GetInvestigationSteps(w, r, jobId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -10381,13 +11477,14 @@ func (response CreateStepUpSessiondefaultJSONResponse) VisitCreateStepUpSessionR
 }
 
 type GetCapabilitiesRequestObject struct {
+	Params GetCapabilitiesParams
 }
 
 type GetCapabilitiesResponseObject interface {
 	VisitGetCapabilitiesResponse(w http.ResponseWriter) error
 }
 
-type GetCapabilities200JSONResponse SuccessEnvelope
+type GetCapabilities200JSONResponse CapabilitiesSuccessV1
 
 func (response GetCapabilities200JSONResponse) VisitGetCapabilitiesResponse(w http.ResponseWriter) error {
 
@@ -10402,14 +11499,14 @@ func (response GetCapabilities200JSONResponse) VisitGetCapabilitiesResponse(w ht
 }
 
 type GetCapabilitiesdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetCapabilitiesdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetCapabilitiesdefaultJSONResponse) VisitGetCapabilitiesResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -11089,7 +12186,7 @@ type CreateInvestigationResponseObject interface {
 	VisitCreateInvestigationResponse(w http.ResponseWriter) error
 }
 
-type CreateInvestigation202JSONResponse SuccessEnvelope
+type CreateInvestigation202JSONResponse InvestigationSuccessV2
 
 func (response CreateInvestigation202JSONResponse) VisitCreateInvestigationResponse(w http.ResponseWriter) error {
 
@@ -11104,14 +12201,14 @@ func (response CreateInvestigation202JSONResponse) VisitCreateInvestigationRespo
 }
 
 type CreateInvestigationdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       CreateInvestigationdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response CreateInvestigationdefaultJSONResponse) VisitCreateInvestigationResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -11409,7 +12506,7 @@ type GetInvestigationResponseObject interface {
 	VisitGetInvestigationResponse(w http.ResponseWriter) error
 }
 
-type GetInvestigation200JSONResponse SuccessEnvelope
+type GetInvestigation200JSONResponse InvestigationSuccessV2
 
 func (response GetInvestigation200JSONResponse) VisitGetInvestigationResponse(w http.ResponseWriter) error {
 
@@ -11424,14 +12521,14 @@ func (response GetInvestigation200JSONResponse) VisitGetInvestigationResponse(w 
 }
 
 type GetInvestigationdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetInvestigationdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetInvestigationdefaultJSONResponse) VisitGetInvestigationResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -11441,7 +12538,8 @@ func (response GetInvestigationdefaultJSONResponse) VisitGetInvestigationRespons
 }
 
 type StreamInvestigationEventsRequestObject struct {
-	JobId string `json:"jobId"`
+	JobId  string `json:"jobId"`
+	Params StreamInvestigationEventsParams
 }
 
 type StreamInvestigationEventsResponseObject interface {
@@ -11492,14 +12590,14 @@ func (response StreamInvestigationEvents200TexteventStreamResponse) VisitStreamI
 }
 
 type StreamInvestigationEventsdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       StreamInvestigationEventsdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response StreamInvestigationEventsdefaultJSONResponse) VisitStreamInvestigationEventsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -11509,15 +12607,14 @@ func (response StreamInvestigationEventsdefaultJSONResponse) VisitStreamInvestig
 }
 
 type GetInvestigationStepsRequestObject struct {
-	JobId  string `json:"jobId"`
-	Params GetInvestigationStepsParams
+	JobId string `json:"jobId"`
 }
 
 type GetInvestigationStepsResponseObject interface {
 	VisitGetInvestigationStepsResponse(w http.ResponseWriter) error
 }
 
-type GetInvestigationSteps200JSONResponse PageEnvelope
+type GetInvestigationSteps200JSONResponse InvestigationStepsSuccessV2
 
 func (response GetInvestigationSteps200JSONResponse) VisitGetInvestigationStepsResponse(w http.ResponseWriter) error {
 
@@ -11532,14 +12629,14 @@ func (response GetInvestigationSteps200JSONResponse) VisitGetInvestigationStepsR
 }
 
 type GetInvestigationStepsdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       GetInvestigationStepsdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response GetInvestigationStepsdefaultJSONResponse) VisitGetInvestigationStepsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -11551,13 +12648,14 @@ func (response GetInvestigationStepsdefaultJSONResponse) VisitGetInvestigationSt
 type CancelInvestigationRequestObject struct {
 	JobId  string `json:"jobId"`
 	Params CancelInvestigationParams
+	Body   *CancelInvestigationJSONRequestBody
 }
 
 type CancelInvestigationResponseObject interface {
 	VisitCancelInvestigationResponse(w http.ResponseWriter) error
 }
 
-type CancelInvestigation200JSONResponse SuccessEnvelope
+type CancelInvestigation200JSONResponse InvestigationCancelSuccessV2
 
 func (response CancelInvestigation200JSONResponse) VisitCancelInvestigationResponse(w http.ResponseWriter) error {
 
@@ -11572,14 +12670,14 @@ func (response CancelInvestigation200JSONResponse) VisitCancelInvestigationRespo
 }
 
 type CancelInvestigationdefaultJSONResponse struct {
-	Body       ErrorEnvelope
+	Body       CancelInvestigationdefaultJSONResponseBody
 	StatusCode int
 }
 
 func (response CancelInvestigationdefaultJSONResponse) VisitCancelInvestigationResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -13013,8 +14111,10 @@ func (sh *strictHandler) CreateStepUpSession(w http.ResponseWriter, r *http.Requ
 }
 
 // GetCapabilities operation middleware
-func (sh *strictHandler) GetCapabilities(w http.ResponseWriter, r *http.Request) {
+func (sh *strictHandler) GetCapabilities(w http.ResponseWriter, r *http.Request, params GetCapabilitiesParams) {
 	var request GetCapabilitiesRequestObject
+
+	request.Params = params
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetCapabilities(ctx, request.(GetCapabilitiesRequestObject))
@@ -13765,10 +14865,11 @@ func (sh *strictHandler) GetInvestigation(w http.ResponseWriter, r *http.Request
 }
 
 // StreamInvestigationEvents operation middleware
-func (sh *strictHandler) StreamInvestigationEvents(w http.ResponseWriter, r *http.Request, jobId string) {
+func (sh *strictHandler) StreamInvestigationEvents(w http.ResponseWriter, r *http.Request, jobId string, params StreamInvestigationEventsParams) {
 	var request StreamInvestigationEventsRequestObject
 
 	request.JobId = jobId
+	request.Params = params
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.StreamInvestigationEvents(ctx, request.(StreamInvestigationEventsRequestObject))
@@ -13791,11 +14892,10 @@ func (sh *strictHandler) StreamInvestigationEvents(w http.ResponseWriter, r *htt
 }
 
 // GetInvestigationSteps operation middleware
-func (sh *strictHandler) GetInvestigationSteps(w http.ResponseWriter, r *http.Request, jobId string, params GetInvestigationStepsParams) {
+func (sh *strictHandler) GetInvestigationSteps(w http.ResponseWriter, r *http.Request, jobId string) {
 	var request GetInvestigationStepsRequestObject
 
 	request.JobId = jobId
-	request.Params = params
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetInvestigationSteps(ctx, request.(GetInvestigationStepsRequestObject))
@@ -13823,6 +14923,13 @@ func (sh *strictHandler) CancelInvestigation(w http.ResponseWriter, r *http.Requ
 
 	request.JobId = jobId
 	request.Params = params
+
+	var body CancelInvestigationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.CancelInvestigation(ctx, request.(CancelInvestigationRequestObject))

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/get_evidence_conflicts/v2",
+  "title": "get_evidence_conflicts",
+  "description": "Return unresolved evidence conflicts for the authorized incident.",
+  "type": "object",
+  "properties": {
+    "incidentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "required": [
+    "incidentId"
+  ],
+  "additionalProperties": false,
+  "x-tool-contract": {
+    "name": "get_evidence_conflicts",
+    "version": "v2",
+    "purpose": "Return unresolved evidence conflicts for the authorized incident.",
+    "inputSchema": {
+      "$ref": "https://ops.local/schemas/get_evidence_conflicts/v2"
+    },
+    "outputSchema": {
+      "$ref": "https://ops.local/schemas/get_evidence_conflicts/v2#output"
+    },
+    "requiredPermissions": [
+      "allowed_tools",
+      "tenant_scope",
+      "allowed_data_classes"
+    ],
+    "allowedDataClasses": [
+      "D0",
+      "D1"
+    ],
+    "defaultTimeout": 3,
+    "maxResultBytes": 65536,
+    "rateLimit": {
+      "jobBudget": "maxToolCalls"
+    },
+    "auditPolicy": "every_invocation_and_sanitized_result",
+    "failureSemantics": [
+      "invalid_arguments",
+      "permission_denied",
+      "data_class_denied",
+      "budget_exhausted",
+      "source_degraded",
+      "timeout",
+      "temporary_upstream_error",
+      "job_cancelled"
+    ]
+  },
+  "$defs": {
+    "output": {
+      "$anchor": "output",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://ops.local/schemas/tool-response/v2"
+        },
+        {
+          "properties": {
+            "tool": {
+              "const": "get_evidence_conflicts"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

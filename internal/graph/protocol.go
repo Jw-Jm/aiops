@@ -33,74 +33,92 @@ func ScopeDigest(v any) string {
 type Authorization struct{ Pool persistence.TxBeginner }
 
 func (a Authorization) Effective(ctx context.Context, tenant, subject, cluster string) (Scope, error) {
+	tid, err := uuid.Parse(tenant)
+	if err != nil {
+		return Scope{}, ErrScope
+	}
+	var out Scope
+	err = persistence.WithTenantTx(ctx, a.Pool, tid, func(tx pgx.Tx) error {
+		out, err = EffectiveTx(ctx, tx, tenant, subject, cluster, false)
+		return err
+	})
+	return out, err
+}
+
+// EffectiveTx reloads authority using the caller's transaction. Fenced reads
+// hold row share locks until the consuming business mutation commits.
+func EffectiveTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster string, fenced bool) (Scope, error) {
 	out := Scope{Tenant: tenant, Cluster: cluster, Namespaces: []string{}, Resources: []string{}}
 	tid, err := uuid.Parse(tenant)
 	if err != nil || subject == "" {
 		return out, ErrScope
 	}
-	err = persistence.WithTenantTx(ctx, a.Pool, tid, func(tx pgx.Tx) error {
-		var clusterID uuid.UUID
-		var clusterRevision, tenantRevision int64
-		if err := tx.QueryRow(ctx, `SELECT c.cluster_id,c.revision,t.revision FROM platform.cluster_registrations c JOIN platform.tenants t USING(tenant_id) WHERE c.tenant_id=$1 AND c.cluster_uid=$2 AND c.status='active' AND t.status='active'`, tid, cluster).Scan(&clusterID, &clusterRevision, &tenantRevision); err != nil {
-			return ErrScope
+	if fenced {
+		var locked bool
+		if err := tx.QueryRow(ctx, `SELECT platform.sp06_lock_authority($1,$2,$3)`, tid, subject, cluster).Scan(&locked); err != nil || !locked {
+			return out, ErrScope
 		}
-		rows, err := tx.Query(ctx, `SELECT binding_id,revision,cluster_scopes,namespace_scopes FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND status='active' AND role_name='operator' ORDER BY binding_id`, tid, subject)
-		if err != nil {
-			return err
+	}
+	var clusterID uuid.UUID
+	var clusterRevision, tenantRevision int64
+	if err := tx.QueryRow(ctx, `SELECT c.cluster_id,c.revision,t.revision FROM platform.cluster_registrations c JOIN platform.tenants t USING(tenant_id) WHERE c.tenant_id=$1 AND c.cluster_uid=$2 AND c.status='active' AND t.status='active'`, tid, cluster).Scan(&clusterID, &clusterRevision, &tenantRevision); err != nil {
+		return out, ErrScope
+	}
+	rows, err := tx.Query(ctx, `SELECT binding_id,revision,cluster_scopes,namespace_scopes FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND status='active' AND role_name='operator' ORDER BY binding_id`, tid, subject)
+	if err != nil {
+		return out, err
+	}
+	defer rows.Close()
+	versions := []any{clusterRevision, tenantRevision}
+	for rows.Next() {
+		var id uuid.UUID
+		var revision int64
+		var clustersRaw, namespacesRaw []byte
+		if err := rows.Scan(&id, &revision, &clustersRaw, &namespacesRaw); err != nil {
+			return out, err
 		}
-		defer rows.Close()
-		versions := []any{clusterRevision, tenantRevision}
-		for rows.Next() {
-			var id uuid.UUID
-			var revision int64
-			var clustersRaw, namespacesRaw []byte
-			if err := rows.Scan(&id, &revision, &clustersRaw, &namespacesRaw); err != nil {
-				return err
+		var clusters []uuid.UUID
+		var namespaces []auth.NamespaceScope
+		if json.Unmarshal(clustersRaw, &clusters) != nil || json.Unmarshal(namespacesRaw, &namespaces) != nil {
+			return out, ErrScope
+		}
+		versions = append(versions, id.String(), revision, clusters, namespaces)
+		if slices.Contains(clusters, clusterID) {
+			out.ClusterScoped = true
+		}
+		for _, ns := range namespaces {
+			if ns.ClusterID == clusterID && !slices.Contains(out.Namespaces, ns.Namespace) {
+				out.Namespaces = append(out.Namespaces, ns.Namespace)
 			}
-			var clusters []uuid.UUID
-			var namespaces []auth.NamespaceScope
-			if json.Unmarshal(clustersRaw, &clusters) != nil || json.Unmarshal(namespacesRaw, &namespaces) != nil {
-				return ErrScope
-			}
-			versions = append(versions, id.String(), revision, clusters, namespaces)
-			if slices.Contains(clusters, clusterID) {
-				out.ClusterScoped = true
-			}
-			for _, ns := range namespaces {
-				if ns.ClusterID == clusterID && !slices.Contains(out.Namespaces, ns.Namespace) {
-					out.Namespaces = append(out.Namespaces, ns.Namespace)
-				}
-			}
 		}
-		if err := rows.Err(); err != nil {
-			return err
+	}
+	if err := rows.Err(); err != nil {
+		return out, err
+	}
+	if !out.ClusterScoped && len(out.Namespaces) == 0 {
+		return out, ErrScope
+	}
+	sort.Strings(out.Namespaces)
+	rows.Close()
+	sourceRows, err := tx.Query(ctx, `SELECT source_id,revision,status,source_type,backend_logical_id,data_scope_mapping FROM platform.source_registrations WHERE tenant_id=$1 AND (cluster_id=$2 OR data_scope_mapping->'scopes'->'cluster' ? $3) ORDER BY source_id`, tid, clusterID, cluster)
+	if err != nil {
+		return out, err
+	}
+	defer sourceRows.Close()
+	for sourceRows.Next() {
+		var id, status, sourceType, backend string
+		var revision int64
+		var mapping []byte
+		if err := sourceRows.Scan(&id, &revision, &status, &sourceType, &backend, &mapping); err != nil {
+			return out, err
 		}
-		if !out.ClusterScoped && len(out.Namespaces) == 0 {
-			return ErrScope
-		}
-		sort.Strings(out.Namespaces)
-		rows.Close()
-		sourceRows, err := tx.Query(ctx, `SELECT source_id,revision,status,source_type,backend_logical_id,data_scope_mapping FROM platform.source_registrations WHERE tenant_id=$1 AND (cluster_id=$2 OR data_scope_mapping->'scopes'->'cluster' ? $3) ORDER BY source_id`, tid, clusterID, cluster)
-		if err != nil {
-			return err
-		}
-		defer sourceRows.Close()
-		for sourceRows.Next() {
-			var id, status, sourceType, backend string
-			var revision int64
-			var mapping []byte
-			if err := sourceRows.Scan(&id, &revision, &status, &sourceType, &backend, &mapping); err != nil {
-				return err
-			}
-			versions = append(versions, id, revision, status, sourceType, backend, json.RawMessage(mapping))
-		}
-		if err := sourceRows.Err(); err != nil {
-			return err
-		}
-		out.AuthorizationRevision = ScopeDigest(versions)
-		return nil
-	})
-	return out, err
+		versions = append(versions, id, revision, status, sourceType, backend, json.RawMessage(mapping))
+	}
+	if err := sourceRows.Err(); err != nil {
+		return out, err
+	}
+	out.AuthorizationRevision = ScopeDigest(versions)
+	return out, nil
 }
 
 type Claims struct {
@@ -253,24 +271,34 @@ func (h InternalHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		unavailable("lease_after_query")
 		return
 	}
-	if err := h.Graph.RevalidateResponse(&result); err != nil {
+	if h.ValidateSources != nil && h.ValidateSources(ctx) != nil {
+		fail(503, "SOURCE_SCOPE_UNVERIFIED")
+		return
+	}
+	// Current nonpaged reads may refresh a changed snapshot after the remote
+	// fences. Query and encoding share the local revision lock, without holding
+	// it across native Lease, source authorization or socket operations.
+	var encoded []byte
+	err = h.Graph.QueryReadResponse(ctx, q, func(current Result) error {
+		result = current
+		var encodeErr error
+		encoded, encodeErr = json.Marshal(current)
+		if encodeErr != nil {
+			return encodeErr
+		}
+		return platformcontract.Validate("https://ops.local/schemas/resource-graph/v2", encoded)
+	})
+	if err != nil {
 		if errors.Is(err, ErrStale) {
 			fail(409, "STALE_CONTEXT")
+		} else if errors.Is(err, ErrScope) {
+			fail(403, "FORBIDDEN")
 		} else {
 			unavailable("response_fence")
 		}
 		return
 	}
-	if h.ValidateSources != nil && h.ValidateSources(ctx) != nil {
-		fail(503, "SOURCE_SCOPE_UNVERIFIED")
-		return
-	}
 	w.Header().Set("Content-Type", "application/json")
-	encoded, err := json.Marshal(result)
-	if err != nil || platformcontract.Validate("https://ops.local/schemas/resource-graph/v2", encoded) != nil {
-		unavailable("response_contract")
-		return
-	}
 	h.Metrics.ObserveQuery("graph", result.Partial || len(result.DegradedSources) > 0, result.Freshness)
 	_, _ = w.Write(encoded)
 }

@@ -808,9 +808,13 @@ path "pki/issue/platform-client" { capabilities = ["update"] }`,
 path "transit/decrypt/evidence-archive" { capabilities = ["update"] }
 path "transit/sign/audit-signing" { capabilities = ["update"] }
 path "transit/verify/audit-signing" { capabilities = ["update"] }`,
-	"ops-command-runner":          `path "ssh/sign/ops-command-runner" { capabilities = ["update"] }`,
-	"ops-api-workload":            `path "pki/sign/platform-workload-ops-api" { capabilities = ["update"] }`,
-	"ops-worker-workload":         `path "pki/sign/platform-workload-ops-worker" { capabilities = ["update"] }`,
+	"ops-command-runner": `path "ssh/sign/ops-command-runner" { capabilities = ["update"] }`,
+	"ops-api-workload": `path "pki/sign/platform-workload-ops-api" { capabilities = ["update"] }
+path "transit/keys/investigation-signing" { capabilities = ["read"] }
+path "transit/sign/investigation-signing" { capabilities = ["update"] }`,
+	"ops-worker-workload": `path "pki/sign/platform-workload-ops-worker" { capabilities = ["update"] }
+path "transit/keys/investigation-signing" { capabilities = ["read"] }
+path "transit/sign/investigation-signing" { capabilities = ["update"] }`,
 	"ops-investigator-workload":   `path "pki/sign/platform-workload-ops-investigator" { capabilities = ["update"] }`,
 	"ops-command-runner-workload": `path "pki/sign/platform-workload-ops-command-runner" { capabilities = ["update"] }`,
 }

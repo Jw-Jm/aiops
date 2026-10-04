@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/investigation-scope/v1",
+  "title": "investigation-scope/v1",
+  "type": "object",
+  "properties": {
+    "tenantId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "clusterUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "namespaces": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "maxItems": 1000,
+      "uniqueItems": true
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "maxItems": 1000,
+      "uniqueItems": true
+    },
+    "clusterScoped": {
+      "type": "boolean"
+    },
+    "authorizationRevision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "required": [
+    "tenantId",
+    "clusterUid",
+    "namespaces",
+    "resources",
+    "clusterScoped",
+    "authorizationRevision"
+  ],
+  "additionalProperties": false
+}

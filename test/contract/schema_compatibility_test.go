@@ -121,8 +121,30 @@ func TestMCPToolSchemas(t *testing.T) {
 	if err != nil {
 		t.Fatalf("read MCP tool schemas: %v", err)
 	}
-	if len(entries) != len(tools) {
-		t.Fatalf("expected %d approved MCP tool schemas, found %d", len(tools), len(entries))
+	if len(entries) != 2*len(tools) {
+		t.Fatalf("expected %d approved MCP tool schemas, found %d", 2*len(tools), len(entries))
+	}
+
+	for _, tool := range tools {
+		path := filepath.Join(directory, tool+"-v2.schema.json")
+		b, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var schema map[string]any
+		if json.Unmarshal(b, &schema) != nil || schema["$id"] != "https://ops.local/schemas/"+tool+"/v2" {
+			t.Fatalf("invalid v2 tool %s", tool)
+		}
+		metadata, ok := schema["x-tool-contract"].(map[string]any)
+		if !ok || metadata["version"] != "v2" || metadata["name"] != tool {
+			t.Fatalf("missing v2 metadata %s", tool)
+		}
+		if err := platformcontract.Validate("https://ops.local/schemas/tool-metadata/v2", encode(t, metadata)); err != nil {
+			t.Fatalf("v2 metadata contract %s: %v", tool, err)
+		}
+		if _, ok := schema["$defs"].(map[string]any)["output"]; !ok {
+			t.Fatalf("missing v2 output %s", tool)
+		}
 	}
 
 	for _, tool := range tools {

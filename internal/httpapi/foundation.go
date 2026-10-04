@@ -79,6 +79,10 @@ func NewFoundationHandlerWithSP04(pool persistence.TxBeginner, authenticator *au
 	sp04.SP05.GraphAPI = sp04
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
+		case r.URL.Path == "/api/v1/capabilities" && r.Method == http.MethodGet:
+			sp04.ServeCapabilities(w, r)
+		case sp04.Investigation != nil && (strings.HasPrefix(r.URL.Path, "/api/v1/investigations/") || strings.HasSuffix(r.URL.Path, "/investigations")):
+			sp04.Investigation.ServeHTTP(w, r)
 		case r.URL.Path == "/api/v2/findings:ingest", strings.HasPrefix(r.URL.Path, "/api/v1/findings"), strings.HasPrefix(r.URL.Path, "/api/v1/incidents"):
 			sp04.SP05.ServeHTTP(w, r)
 		case strings.HasPrefix(r.URL.Path, "/api/v1/resources"), strings.HasPrefix(r.URL.Path, "/api/v1/evidence"), r.URL.Path == "/api/v1/diagnostic-graphs:build", r.URL.Path == "/api/v1/admin/legal-holds":

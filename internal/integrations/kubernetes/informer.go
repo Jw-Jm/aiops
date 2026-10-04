@@ -212,27 +212,31 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 	tombstones := map[string]bool{}
 	rv := ""
 	needList := true
+	listPending := false
 	var projectionReceivedAt time.Time
-	emit := func() error {
-		all := make([]unstructured.Unstructured, 0, len(objects))
-		for _, o := range objects {
-			all = append(all, *o.DeepCopy())
+	emit := func(observationOnly bool) error {
+		var all []unstructured.Unstructured
+		if !observationOnly {
+			all = make([]unstructured.Unstructured, 0, len(objects))
+			for _, o := range objects {
+				all = append(all, *o.DeepCopy())
+			}
 		}
 		if !projectionReceivedAt.IsZero() {
 			state.ProjectionQueueLag = time.Since(projectionReceivedAt)
 		}
-		if err := publish(Snapshot{GVR: gvr, Objects: all, State: state}); err != nil {
+		if err := publish(Snapshot{GVR: gvr, Objects: all, State: state, ObservationOnly: observationOnly}); err != nil {
 			return err
 		}
-		if !projectionReceivedAt.IsZero() {
+		if !projectionReceivedAt.IsZero() && !observationOnly {
 			state.ProjectionQueueLag = time.Since(projectionReceivedAt)
 			// Health publication records the full receive→persist→atomic graph
 			// publication latency without persisting/deleting an empty resource set.
 			if err := publish(Snapshot{GVR: gvr, State: state, ObservationOnly: true}); err != nil {
 				return err
 			}
-			projectionReceivedAt = time.Time{}
 		}
+		projectionReceivedAt = time.Time{}
 		return nil
 	}
 	for ctx.Err() == nil {
@@ -240,7 +244,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 			state.WatchContinuous = false
 			state.WatchConnected = false
 			state.LastError = "rebuilding"
-			if err := emit(); err != nil {
+			if err := emit(true); err != nil {
 				return err
 			}
 			replacement := map[string]unstructured.Unstructured{}
@@ -324,7 +328,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 			}
 			if listErr != nil {
 				state.LastError = "list_unavailable"
-				if err := emit(); err != nil {
+				if err := emit(true); err != nil {
 					return err
 				}
 				if !pause(ctx, time.Second) {
@@ -340,6 +344,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 			state.LastConnectivityProbeAt = time.Now()
 			state.LastError = ""
 			needList = false
+			listPending = true
 		}
 		watchContext, cancel := context.WithTimeout(ctx, 35*time.Second)
 		query := url.Values{"watch": {"true"}, "resourceVersion": {rv}, "allowWatchBookmarks": {"true"}, "timeoutSeconds": {"30"}, "sendInitialEvents": {"true"}, "resourceVersionMatch": {"NotOlderThan"}}
@@ -355,9 +360,10 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 			state.WatchConnected = false
 			state.WatchContinuous = false
 			state.LastError = "watch_unavailable"
-			if err := emit(); err != nil {
+			if err := emit(!listPending); err != nil {
 				return err
 			}
+			listPending = false
 			if !pause(ctx, time.Second) {
 				break
 			}
@@ -367,11 +373,12 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 		state.WatchContinuous = false
 		state.LastError = "watch_initializing"
 		state.LastConnectivityProbeAt = time.Now()
-		if err := emit(); err != nil {
+		if err := emit(!listPending); err != nil {
 			res.Body.Close()
 			cancel()
 			return err
 		}
+		listPending = false
 		initialObjects := map[string]unstructured.Unstructured{}
 		initializing := true
 		decoded := make(chan decodedWatch, 1)
@@ -415,7 +422,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 					break watchLoop
 				}
 				state.LastConnectivityProbeAt = time.Now()
-				if err := emit(); err != nil {
+				if err := emit(true); err != nil {
 					probes.Stop()
 					res.Body.Close()
 					cancel()
@@ -448,7 +455,16 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 				break
 			}
 			if event.Type == "BOOKMARK" {
+				changed := false
 				if initializing && obj.GetAnnotations()["k8s.io/initial-events-end"] == "true" {
+					changed = len(objects) != len(initialObjects)
+					for uid, current := range initialObjects {
+						previous, exists := objects[uid]
+						if !exists || previous.GetResourceVersion() != current.GetResourceVersion() {
+							changed = true
+							break
+						}
+					}
 					objects = initialObjects
 					initializing = false
 					state.WatchContinuous = true
@@ -457,7 +473,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 				if obj.GetResourceVersion() != "" {
 					rv = obj.GetResourceVersion()
 					state.LastWatchProgressAt = now
-					if err := emit(); err != nil {
+					if err := emit(!changed); err != nil {
 						probes.Stop()
 						res.Body.Close()
 						cancel()
@@ -526,7 +542,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 			rv = obj.GetResourceVersion()
 			state.LastWatchEventAt = now
 			state.LastWatchProgressAt = now
-			if err := emit(); err != nil {
+			if err := emit(false); err != nil {
 				res.Body.Close()
 				cancel()
 				return err
@@ -537,7 +553,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 		cancel()
 		state.WatchConnected = false
 		state.WatchContinuous = false
-		if err := emit(); err != nil {
+		if err := emit(true); err != nil {
 			return err
 		}
 	}

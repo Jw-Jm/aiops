@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "/Users/mssc/Documents/Code/ops/platform/scripts/prepare-investigator-material.py", line 89, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mssc/Documents/Code/ops/platform/scripts/prepare-investigator-material.py", line 74, in main
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:sources=list(executor.map(download,selected))
+                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/Documents/Code/ops/platform/scripts/prepare-investigator-material.py", line 63, in download
+    if any(x.endswith(('.so','.dylib','.dll','.pyd')) for x in archive.namelist()):raise ValueError('compiled package has no original source: '+pkg['name'])
+                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: compiled package has no original source: pyroaring

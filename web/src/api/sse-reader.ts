@@ -153,3 +153,26 @@ async function* readSSELines(body: ReadableStream<Uint8Array>): AsyncGenerator<s
     }
   }
 }
+
+// Reconnect with the last verified cursor and yield each persisted business
+// event once. The caller supplies Bearer headers using the shared fetch client.
+export async function* streamInvestigationEventsWithResume(
+  url: string,
+  options: RequestInit,
+  resume: { cursor?: string; eventSeq: bigint } = { eventSeq: 0n },
+): AsyncGenerator<JSONServerSentEvent<InvestigationEvent>> {
+  const headers = new Headers(options.headers);
+  if (!headers.get('Authorization')?.startsWith('Bearer ')) {
+    throw new Error('Investigation SSE requires Bearer authentication');
+  }
+  if (resume.cursor) headers.set('Last-Event-ID', resume.cursor);
+  for await (const message of streamJSONEvents(url, decodeInvestigationEvent, { ...options, headers })) {
+    const seq = BigInt(message.data.eventId);
+    if (seq <= resume.eventSeq) continue;
+    if (seq !== resume.eventSeq + 1n) throw new Error('Investigation SSE event sequence gap');
+    if (!message.id) throw new Error('Investigation SSE cursor is missing');
+    resume.eventSeq = seq;
+    resume.cursor = message.id;
+    yield message;
+  }
+}

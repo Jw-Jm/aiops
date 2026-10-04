@@ -24,6 +24,7 @@ type NamespaceScope struct {
 // TenantID and scopes are populated only after signed OIDC claims are checked against active
 // platform role bindings; request headers and bodies cannot grant them.
 type RequestContext struct {
+	TokenExpiresAt  time.Time
 	RequestID       string
 	Subject         string
 	TenantID        uuid.UUID

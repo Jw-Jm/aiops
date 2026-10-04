@@ -25,6 +25,29 @@ func TestFirstPartyGoMaterialsCannotBypassSDKSourceAdmission(t *testing.T) {
 	}
 }
 
+func TestSP06InvestigatorCannotOmitCorrespondingSource(t *testing.T) {
+	catalog, err := loadEmbeddedCatalog()
+	if err != nil {
+		t.Fatal(err)
+	}
+	component, ok := catalog.Component("holmesgpt")
+	if !ok || component.State != "qualified" {
+		t.Fatal("locked investigator reuse material not admitted")
+	}
+	image := Material{Name: "holmesgpt", Kind: "container-image", Version: component.Version, Architecture: "linux/arm64", Digest: component.Digest}
+	if validateCatalogAdmissionWithCatalog([]Material{image}, catalog) == nil {
+		t.Fatal("GPL investigator admitted without corresponding sources")
+	}
+	source := Material{Name: "holmesgpt-source", Kind: "source", Version: component.Version, Architecture: "linux/arm64", Digest: component.CorrespondingSourceBundleSHA256}
+	if err := validateCatalogAdmissionWithCatalog([]Material{image, source}, catalog); err != nil {
+		t.Fatal(err)
+	}
+	source.Digest = "sha256:" + strings.Repeat("0", 64)
+	if validateCatalogAdmissionWithCatalog([]Material{image, source}, catalog) == nil {
+		t.Fatal("different corresponding sources admitted")
+	}
+}
+
 func TestRuntimeSourceBindsQualifiedSDKAndTargetArchitecture(t *testing.T) {
 	catalog, err := loadEmbeddedCatalog()
 	if err != nil {

@@ -1,0 +1,43 @@
+=== RUN   TestSP06ActualCurrentRCARecommendationValidator
+2026/10/03 23:27:08 OK   00001_roles_and_schemas.sql (17.93ms)
+2026/10/03 23:27:08 goose: successfully migrated database to version: 1
+2026/10/03 23:27:08 OK   00002_platform_meta.sql (31.6ms)
+2026/10/03 23:27:08 OK   00003_finding.sql (15.3ms)
+2026/10/03 23:27:08 OK   00004_incident.sql (5.82ms)
+2026/10/03 23:27:08 OK   00005_investigation.sql (9.4ms)
+2026/10/03 23:27:08 OK   00006_action_command.sql (10.63ms)
+2026/10/03 23:27:08 OK   00007_audit.sql (9.53ms)
+2026/10/03 23:27:08 OK   00008_rls.sql (9.44ms)
+2026/10/03 23:27:08 OK   00009_idempotency_ledger.sql (10.03ms)
+2026/10/03 23:27:08 OK   00010_tenant_provisioning.sql (11.07ms)
+2026/10/03 23:27:08 OK   00011_source_registration_history.sql (15.83ms)
+2026/10/03 23:27:08 OK   00012_config_registry_lifecycle.sql (26.89ms)
+2026/10/03 23:27:08 OK   00013_audit_signed_segments.sql (9.85ms)
+2026/10/03 23:27:08 OK   00014_audit_segment_predecessors.sql (4.72ms)
+2026/10/03 23:27:08 OK   00015_source_schema_scope.sql (2.51ms)
+2026/10/03 23:27:08 OK   00016_cluster_registration_metadata.sql (3.91ms)
+2026/10/03 23:27:08 OK   00017_source_data_scope.sql (2.98ms)
+2026/10/03 23:27:08 OK   00018_sp04_resources_evidence.sql (10.62ms)
+2026/10/03 23:27:08 OK   00019_sp04_archive_ciphertext_bytes.sql (2.75ms)
+2026/10/03 23:27:08 OK   00020_sp04_request_ledger.sql (3.33ms)
+2026/10/03 23:27:08 OK   00021_sp04_archive_protection.sql (2.39ms)
+2026/10/03 23:27:08 OK   00022_sp04_legal_hold_dependencies.sql (2.44ms)
+2026/10/03 23:27:08 OK   00023_sp04_archive_query_intent.sql (2.24ms)
+2026/10/03 23:27:08 OK   00024_sp05_finding_incident.sql (11.88ms)
+2026/10/03 23:27:08 OK   00025_sp05_incident_event_time.sql (2.35ms)
+2026/10/03 23:27:08 OK   00026_sp05_source_binding_lock.sql (2.69ms)
+2026/10/03 23:27:08 OK   00027_sp05_rca_and_poll.sql (5.36ms)
+2026/10/03 23:27:08 OK   00028_sp05_operator_lock.sql (2.43ms)
+2026/10/03 23:27:08 OK   00029_sp05_evidence_links.sql (3.94ms)
+2026/10/03 23:27:08 OK   00030_sp05_recipe_fence.sql (2.38ms)
+2026/10/03 23:27:08 OK   00031_sp05_rca_postcheck.sql (2.21ms)
+2026/10/03 23:27:08 OK   00032_sp05_transport_audit.sql (2.34ms)
+2026/10/03 23:27:08 OK   00033_sp05_poll_resolution_clock.sql (2.72ms)
+2026/10/03 23:27:08 OK   00034_sp06_investigation_ledger.sql (13.72ms)
+2026/10/03 23:27:08 goose: successfully migrated database to version: 34
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=4f09e919e5880b9077044352ed754dc63368f1c9d10ef1c7de69b760e9f00c05 bucket=sp05-golden-b4d8445b tenants=1
+    sp05_golden_vertical_test.go:337: foreign tenant rejection class: INVALID_INVESTIGATION contract=validate tenant-bound canonical IDs for schema "https://ops.local/schemas/investigation-result/v1": $ /actionPlans[0].targetCanonicalId belongs to another tenant proposal={"schemaVersion":"investigation-result/v1","status":"probable","summary":"Bounded evidence supports the existing deterministic candidate; this is an advisory result.","evidenceRefs":["9f9bf3c3-42f9-567d-a29e-4b3856439a71","f2e1e46c-35f0-5b5a-a070-7ca4630a982e"],"candidateUpdates":[{"candidateKey":"sha256:e2e2e5b040b5fa8f2031702d0eaf05ec477a966b09fba2ee9ac5974018ad5208","reason":"Independent observations support the admitted Recipe."}],"actionPlans":[{"actionPlanId":"ap-001","createdAt":"2026-09-26T10:04:00Z","dataRisk":"D0","expectedImpact":"Read-only inspection","generatedBy":{"name":"holmesgpt","type":"agent"},"incidentId":"01a10260-5ed7-7395-8617-8b86208ab2a9","iteration":1,"operationRisk":"O0","postCheckInstructions":[],"preconditions":[],"rcaRevision":1,"reason":"Inspect node conditions","recommendedExecutionProfileId":"profile-k8s-read","riskSummary":"Read-only command","rollbackSuggestion":null,"schemaVersion":"action-plan/v2","shell":"bash","state":"suggested","suggestedCommand":"kubectl describe node node-1","targetCanonicalId":"hardware+v1://11111111-1111-4111-8111-111111111111/golden-cluster/redfish/DIMM/550e8400-e29b-41d4-a716-446655440000%2FDIMM1","tenantId":"5c74312f-24ed-4f5d-b976-f8772359a1d8"}],"partial":false,"degradedSources":[]}
+--- FAIL: TestSP06ActualCurrentRCARecommendationValidator (6.59s)
+FAIL
+FAIL	ops-platform/test/integration	7.643s
+FAIL

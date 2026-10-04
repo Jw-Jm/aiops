@@ -1,0 +1,266 @@
+=== RUN   TestSP04SignedChartNativeWorkerOfflineReinstall
+    sp04_native_chart_test.go:91: installed signed Chart digest=sha256:ad6e74e42f2b0b4aea5d0bb66bbab4c61574ef05ab759f6be513c8efc9d94e91
+2026/10/04 09:31:31 OK   00001_roles_and_schemas.sql (35.63ms)
+2026/10/04 09:31:31 goose: successfully migrated database to version: 1
+2026/10/04 09:31:31 OK   00002_platform_meta.sql (119.83ms)
+2026/10/04 09:31:31 OK   00003_finding.sql (23.32ms)
+2026/10/04 09:31:31 OK   00004_incident.sql (26.36ms)
+2026/10/04 09:31:31 OK   00005_investigation.sql (57.15ms)
+2026/10/04 09:31:31 OK   00006_action_command.sql (10.1ms)
+2026/10/04 09:31:31 OK   00007_audit.sql (43.98ms)
+2026/10/04 09:31:31 OK   00008_rls.sql (12.59ms)
+2026/10/04 09:31:31 OK   00009_idempotency_ledger.sql (11.51ms)
+2026/10/04 09:31:31 OK   00010_tenant_provisioning.sql (57.01ms)
+2026/10/04 09:31:32 OK   00011_source_registration_history.sql (58.41ms)
+2026/10/04 09:31:32 OK   00012_config_registry_lifecycle.sql (41.93ms)
+2026/10/04 09:31:32 OK   00013_audit_signed_segments.sql (99.1ms)
+2026/10/04 09:31:32 OK   00014_audit_segment_predecessors.sql (22.77ms)
+2026/10/04 09:31:32 OK   00015_source_schema_scope.sql (10.89ms)
+2026/10/04 09:31:32 OK   00016_cluster_registration_metadata.sql (6.26ms)
+2026/10/04 09:31:32 OK   00017_source_data_scope.sql (7ms)
+2026/10/04 09:31:32 OK   00018_sp04_resources_evidence.sql (29.8ms)
+2026/10/04 09:31:32 OK   00019_sp04_archive_ciphertext_bytes.sql (4.02ms)
+2026/10/04 09:31:32 OK   00020_sp04_request_ledger.sql (9.62ms)
+2026/10/04 09:31:32 OK   00021_sp04_archive_protection.sql (26.17ms)
+2026/10/04 09:31:32 OK   00022_sp04_legal_hold_dependencies.sql (9.19ms)
+2026/10/04 09:31:32 OK   00023_sp04_archive_query_intent.sql (6.74ms)
+2026/10/04 09:31:32 OK   00024_sp05_finding_incident.sql (42.29ms)
+2026/10/04 09:31:32 OK   00025_sp05_incident_event_time.sql (13.48ms)
+2026/10/04 09:31:32 OK   00026_sp05_source_binding_lock.sql (9.81ms)
+2026/10/04 09:31:32 OK   00027_sp05_rca_and_poll.sql (17.66ms)
+2026/10/04 09:31:32 OK   00028_sp05_operator_lock.sql (8.86ms)
+2026/10/04 09:31:32 OK   00029_sp05_evidence_links.sql (29.56ms)
+2026/10/04 09:31:32 OK   00030_sp05_recipe_fence.sql (11.62ms)
+2026/10/04 09:31:32 OK   00031_sp05_rca_postcheck.sql (13.1ms)
+2026/10/04 09:31:32 OK   00032_sp05_transport_audit.sql (7.66ms)
+2026/10/04 09:31:32 OK   00033_sp05_poll_resolution_clock.sql (7.94ms)
+2026/10/04 09:31:32 OK   00034_sp06_investigation_ledger.sql (32.59ms)
+2026/10/04 09:31:32 goose: successfully migrated database to version: 34
+    sp04_native_chart_test.go:130: owned native Bao exact image=ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6 namespace=sp04-chain-a3f69381; local real Kubernetes TokenReview configuration
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=7f49848781e12fe8db4b19d8d37ade60ab715e9935c7d0d061241916ec8e9444 bucket=sp04-native-0a40a9f8 tenants=1
+    sp04_native_chart_test.go:142: owned TLS Keycloak exact image=quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c
+    sp04_native_chart_test.go:339: native exact verified api image=ops.local/task27/platform-api@sha256:1a73fe47e2648dee80a341b682f27b519ed915ddf73e5b5bc89ff37b7cd6b14c
+    sp04_native_chart_test.go:339: native exact verified worker image=ops.local/task27/platform-worker@sha256:092d78940324c74949a864ed91b2aea5582e6bb0119c55b4e248dfb9f48b7667
+    sp04_native_chart_test.go:451: actual selected Bundle import driver=orbstack_shared_store materials=[holmesgpt platform-api platform-worker]
+    sp04_native_chart_test.go:508: actual investigator CNI: API/model positive; owned database/public positive controls independently established; investigator database/public denied
+    sp04_native_chart_test.go:510: actual CNI positive public-before/negative public-after; exact owned host dependency allowed; selected images Never
+    sp04_native_chart_test.go:581: native evidence accepted bytes=2752
+    sp04_native_chart_test.go:627: shipped SP06 Chart/API/Worker/investigator -> actual llama3.1:8b-16k -> standard MCP -> native Incident/Evidence -> fenced Ledger/Go validator -> durable SSE: namespace=sp04-chain-a3f69381 job=01a1048c-1da3-7225-903b-4441f03d32c8 state=succeeded tools=1 models=2 events=9
+    sp04_native_chart_test.go:628: ten actual native resident/model investigations peak=10 terminal=map[failed:10]; current Graph/Finding/Incident/archived Evidence/deterministic RCA HTTP paths stayed available; no performance or accuracy acceptance
+    sp04_native_chart_test.go:629: withdrawal Job create: 401 {"code":"UNAUTHENTICATED","message":"the bearer token is invalid","requestId":"01a1048f-3c83-7156-8e9d-744bdd1e2a2d","retryable":false}
+    sp04_native_chart_test.go:464: owned native ops-api diagnostic logs: [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:01.753799212Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-ad06-7b98-9d2b-18aee3513c0e","method":"GET","status_code":200,"duration_ms":50}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:01.787444988Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-ad3f-7530-a3a1-1e6e10fc4976","method":"GET","status_code":200,"duration_ms":28}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:01.851483381Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-ad5f-72b9-b8ab-d6a6b716b3bc","method":"GET","status_code":200,"duration_ms":60}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.069146875Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-ad9e-74b3-84c6-a6840eec4330","method":"GET","status_code":200,"duration_ms":214}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.402275228Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-af78-7d0a-be83-9772c1d38c3a","method":"GET","status_code":200,"duration_ms":73}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.438118986Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-afca-72f8-96f5-bb6903497533","method":"GET","status_code":200,"duration_ms":27}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.464045347Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-afea-7927-b748-3bb43465db1e","method":"GET","status_code":200,"duration_ms":21}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.533645133Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b00b-794a-a8c4-c000fb3f61e0","method":"GET","status_code":200,"duration_ms":57}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.620155433Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b069-729f-a5cf-1125e35657f9","method":"GET","status_code":200,"duration_ms":50}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.675581234Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b0a5-78e9-b9ea-fe755ab3f104","method":"GET","status_code":200,"duration_ms":45}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.690254682Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b0d8-7272-944a-e143d7912d42","method":"GET","status_code":200,"duration_ms":10}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.774196246Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b0e4-7eed-8540-4a6449e10fc1","method":"GET","status_code":200,"duration_ms":81}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.826974061Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b148-75a3-8b11-06c328dcccbd","method":"GET","status_code":200,"duration_ms":34}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:02.849416217Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b16d-723a-bcb6-83bdacd3ff79","method":"GET","status_code":200,"duration_ms":20}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:03.020579089Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b187-721e-8805-c797d7f830a7","method":"GET","status_code":200,"duration_ms":165}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:03.092009602Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b22e-7ce4-bf1d-4a6bb2409b04","method":"GET","status_code":200,"duration_ms":69}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:03.123571732Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b27b-76ba-8605-54c8f5044237","method":"GET","status_code":200,"duration_ms":24}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:03.245431159Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b29d-7d52-a60a-01ba07aa447d","method":"GET","status_code":200,"duration_ms":111}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:03.598994773Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b311-7b03-af70-da8f08f24400","method":"GET","status_code":200,"duration_ms":349}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:03.892374743Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b56e-7609-90cb-09d3d5a56340","method":"GET","status_code":200,"duration_ms":37}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:03.954712076Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b59a-7b41-8969-809aad0fa62f","method":"GET","status_code":200,"duration_ms":55}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.027700856Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b5dd-73ad-9bcd-189deae26ef1","method":"GET","status_code":200,"duration_ms":62}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.054148306Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b61d-7d2b-97f4-e49c39cf2a1b","method":"GET","status_code":200,"duration_ms":24}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.097850523Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b639-762c-8259-72305d143d59","method":"GET","status_code":200,"duration_ms":40}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.121591319Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b663-7e14-95f2-9a06d19c0571","method":"GET","status_code":200,"duration_ms":21}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.139065089Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b67b-7502-af47-349584235595","method":"GET","status_code":200,"duration_ms":15}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.200268326Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b696-73a0-9984-2b4a2f8f562c","method":"GET","status_code":200,"duration_ms":49}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.266133281Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b6d3-738c-b5ba-79748481b204","method":"GET","status_code":200,"duration_ms":54}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.341623129Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b70c-74af-9fe8-1d84dacce5c2","method":"GET","status_code":200,"duration_ms":73}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.561899734Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b75b-744c-83fc-eb9522e4516f","method":"GET","status_code":200,"duration_ms":214}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.586302454Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b835-774f-b397-3ae1bd49b677","method":"GET","status_code":200,"duration_ms":20}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.644110738Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b857-73f0-b479-4de5723de1da","method":"GET","status_code":200,"duration_ms":44}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:04.860761388Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b89d-7468-986b-aa803f0dc287","method":"GET","status_code":200,"duration_ms":191}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:05.643402881Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-b95e-7c8f-8cfd-14ce6077657f","method":"GET","status_code":200,"duration_ms":780}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:05.94557032Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-bd71-7445-b817-f686e1b2894d","method":"GET","status_code":200,"duration_ms":40}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.002609929Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-bdac-753a-adb6-4b93a1fb02b8","method":"GET","status_code":200,"duration_ms":38}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.02541809Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-bdd5-70d3-ac93-ffa394ec129f","method":"GET","status_code":200,"duration_ms":20}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.044585878Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-bdef-73c6-9985-79857064dbf0","method":"GET","status_code":200,"duration_ms":13}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.08601678Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-bdfe-720c-8510-c96541a1e2b0","method":"GET","status_code":200,"duration_ms":39}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.140674239Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-be2f-794a-a647-b65a574b4512","method":"GET","status_code":200,"duration_ms":45}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.178864564Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-be61-7da1-a40a-57ad778cb1e4","method":"GET","status_code":200,"duration_ms":32}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.210545819Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-be87-77cb-a17e-6d39002d8353","method":"GET","status_code":200,"duration_ms":26}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.259268632Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-bea4-7b2b-932b-997dce38ee31","method":"GET","status_code":200,"duration_ms":46}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.326819646Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-bede-7486-a839-93d67a41b746","method":"GET","status_code":200,"duration_ms":56}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.495662993Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-bf1a-7681-805a-06a56f4766dd","method":"GET","status_code":200,"duration_ms":165}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.539767797Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-bfc2-758c-b518-9495d1ebc237","method":"GET","status_code":200,"duration_ms":41}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.568648065Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-bfef-7307-b76e-fe213cf0bf06","method":"GET","status_code":200,"duration_ms":25}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:06.672249922Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c00d-7330-92a5-160fdccae26d","method":"GET","status_code":200,"duration_ms":98}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.024312978Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c073-720c-a87a-c26bda4d8298","method":"GET","status_code":200,"duration_ms":349}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.309170107Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c2d4-7642-81c3-c7ed9f95f560","method":"GET","status_code":200,"duration_ms":24}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.336134228Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c2f0-74c8-bdca-9ee423c58859","method":"GET","status_code":200,"duration_ms":23}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.406677149Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c316-75da-b87f-3f3abf7520bf","method":"GET","status_code":200,"duration_ms":56}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.433389935Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c351-728c-9e2c-2b738bb4b962","method":"GET","status_code":200,"duration_ms":24}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.480295936Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c36d-7e00-8204-ea42429aea65","method":"GET","status_code":200,"duration_ms":42}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.549696512Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c3a4-7258-830b-aa3f843623b0","method":"GET","status_code":200,"duration_ms":57}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.627387551Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c3eb-7c4f-bb6e-5cd2a2bca9ee","method":"GET","status_code":200,"duration_ms":63}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.705292092Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c43d-7314-ab24-479ae9eb6121","method":"GET","status_code":200,"duration_ms":60}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.775840388Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c490-79ce-84cf-2fe336455840","method":"GET","status_code":200,"duration_ms":47}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:07.817569334Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c4ca-76ab-bb6e-8988e68f7bee","method":"GET","status_code":200,"duration_ms":31}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:08.108318318Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c4ed-7110-8674-593de3710a02","method":"GET","status_code":200,"duration_ms":287}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:08.142700435Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c615-742a-9d09-1c8f8d8f3272","method":"GET","status_code":200,"duration_ms":25}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:08.170976196Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c635-7452-a04b-2daecb989dc9","method":"GET","status_code":200,"duration_ms":21}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:08.308757336Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c651-7315-aee3-95f72e9d2972","method":"GET","status_code":200,"duration_ms":131}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:08.680624186Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c6d8-78a9-9ab7-d44152b049f7","method":"GET","status_code":200,"duration_ms":367}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:08.971271294Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c94b-73f1-a5c8-160d08a81ed9","method":"GET","status_code":200,"duration_ms":31}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.014119877Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c975-74b6-a283-2f4cd15c4ed8","method":"GET","status_code":200,"duration_ms":32}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.051798071Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c9a2-7034-946a-5b3b8205ae66","method":"GET","status_code":200,"duration_ms":25}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.064439248Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c9bf-76f2-b804-9cafb9e60b1f","method":"GET","status_code":200,"duration_ms":8}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.086354774Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c9ce-74ab-a9f8-64408908addb","method":"GET","status_code":200,"duration_ms":15}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.108313217Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c9e0-70e4-bf11-f954b82015b7","method":"GET","status_code":200,"duration_ms":20}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.131400631Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-c9fc-714d-b909-f9e33931c792","method":"GET","status_code":200,"duration_ms":15}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.153222239Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-ca0f-7112-acbc-2be1eaaac946","method":"GET","status_code":200,"duration_ms":18}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.179924025Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-ca29-71a4-abd6-33153b97e567","method":"GET","status_code":200,"duration_ms":18}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.202862103Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-ca3f-741d-9ce3-9fc5d9e92c5c","method":"GET","status_code":200,"duration_ms":19}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.58632912Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-ca55-759d-a0b9-629e01d27694","method":"GET","status_code":200,"duration_ms":380}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.601760993Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-cbd6-792e-809a-2ccd3b394539","method":"GET","status_code":200,"duration_ms":11}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.632987869Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-cbe6-7a95-a5fe-f3b152f58ecb","method":"GET","status_code":200,"duration_ms":26}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:09.70716037Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-cc0c-7396-8177-4f9d1c9bed1f","method":"GET","status_code":200,"duration_ms":62}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:10.181987572Z","level":"INFO","msg":"http request complete","request_id":"01a1048e-cc4d-7197-9e83-ac900083bbd1","method":"GET","status_code":200,"duration_ms":472}
+        [pod/ops-api-6bc974bcbc-gmvzl/api] {"time":"2026-10-04T01:37:38.436619364Z","level":"INFO","msg":"http request complete","request_id":"01a1048f-3c83-7156-8e9d-744bdd1e2a2d","method":"POST","status_code":401,"duration_ms":0}
+    sp04_native_chart_test.go:464: owned native ops-worker diagnostic logs: [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:33:33.052005556Z","level":"INFO","msg":"platform-worker started"}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:33:33.185779852Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:33:33.510227265Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:33:35.322532983Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"watch_initializing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"watch_initializing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:33:37.20995025Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"list_missing","/v1/persistentvolumes":"watch_initializing","apps/v1/replicasets":"watch_initializing"}}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:35:09.73331122Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:35:46.278101463Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:36:19.431126631Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:36:23.190119439Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:36:28.264897006Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:36:28.819908812Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] 2026/10/04 01:36:33 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] 2026/10/04 01:36:34 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] 2026/10/04 01:36:35 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] 2026/10/04 01:36:36 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:37:07.67592032Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] 2026/10/04 01:37:08 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:37:33.592330321Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-w9pb9/worker] {"time":"2026-10-04T01:37:38.23232668Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:33:33.054298315Z","level":"INFO","msg":"platform-worker started"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:33:33.187312595Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:33:33.50353071Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:33:35.320240224Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"watch_initializing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:33:37.216564215Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/persistentvolumes":"watch_initializing","apps/v1/replicasets":"watch_initializing"}}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:33:39.317288126Z","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_cas"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:34:03.290720859Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:34:33.293257482Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:34:37.324300764Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/persistentvolumeclaims":"watch_disconnected","/v1/persistentvolumes":"watch_disconnected","apps/v1/daemonsets":"watch_disconnected","apps/v1/replicasets":"watch_disconnected","storage.k8s.io/v1/csinodes":"watch_disconnected"}}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:34:39.73612742Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:35:03.298173197Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:35:09.394468503Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"storage.k8s.io/v1/storageclasses":"watch_disconnected","storage.k8s.io/v1/volumeattachments":"watch_disconnected"}}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:35:13.435536079Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:35:33.300856704Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:35:46.2597725Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:36:03.310103435Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:36:09.385301058Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/persistentvolumes":"watch_disconnected"}}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:36:26.230714708Z","level":"WARN","msg":"Kubernetes collection unavailable","gvr":"/api/v1/events","errorClass":"*pgconn.PgError"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:36:28.802493047Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:36:29.208628908Z","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"watch_initializing"}}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] 2026/10/04 01:36:32 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:36:33.327627868Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] 2026/10/04 01:36:33 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] 2026/10/04 01:36:34 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] 2026/10/04 01:36:35 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] 2026/10/04 01:36:36 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:36:58.178182441Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:37:01.127800602Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:37:03.332401756Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:37:05.725243047Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:37:07.628486812Z","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"*errors.joinError"}
+        [pod/ops-worker-58b9bb7fd8-wfxrd/worker] {"time":"2026-10-04T01:37:33.336218708Z","level":"WARN","msg":"SP05 fixed Analyzer unavailable","errorClass":"*errors.errorString"}
+    sp04_native_chart_test.go:464: owned native ops-investigator diagnostic logs: [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] [1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] [1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] ERROR:root:LLM call failed on model=openai/llama3.1:8b-16k (streaming iteration 1): RuntimeError: MODEL_FAILURE
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] Traceback (most recent call last):
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]   File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]     full_response = self.llm.completion(
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]                     ^^^^^^^^^^^^^^^^^^^^
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]   File "/app/src/investigator/budget.py", line 39, in completion
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]     raise RuntimeError("MODEL_FAILURE") from None
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] RuntimeError: MODEL_FAILURE
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/worker.py 65
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/holmes_adapter.py 79
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/budget.py 39
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] ERROR:root:LLM call failed on model=openai/llama3.1:8b-16k (streaming iteration 1): RuntimeError: MODEL_FAILURE
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] Traceback (most recent call last):
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]   File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]     full_response = self.llm.completion(
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]                     ^^^^^^^^^^^^^^^^^^^^
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]   File "/app/src/investigator/budget.py", line 39, in completion
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]     raise RuntimeError("MODEL_FAILURE") from None
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] RuntimeError: MODEL_FAILURE
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/worker.py 65
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/holmes_adapter.py 79
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/budget.py 39
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] [1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] [1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] [1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] [1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] 
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] ERROR:root:LLM call failed on model=openai/llama3.1:8b-16k (streaming iteration 1): RuntimeError: MODEL_FAILURE
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] Traceback (most recent call last):
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]   File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]     full_response = self.llm.completion(
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]                     ^^^^^^^^^^^^^^^^^^^^
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]   File "/app/src/investigator/budget.py", line 39, in completion
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]     raise RuntimeError("MODEL_FAILURE") from None
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] RuntimeError: MODEL_FAILURE
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] ERROR:root:LLM call failed on model=openai/llama3.1:8b-16k (streaming iteration 1): RuntimeError: MODEL_FAILURE
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] Traceback (most recent call last):
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]   File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]     full_response = self.llm.completion(
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]                     ^^^^^^^^^^^^^^^^^^^^
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]   File "/app/src/investigator/budget.py", line 39, in completion
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator]     raise RuntimeError("MODEL_FAILURE") from None
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] RuntimeError: MODEL_FAILURE
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/worker.py 65
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/holmes_adapter.py 79
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/budget.py 39
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/worker.py 65
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/holmes_adapter.py 79
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/budget.py 39
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/worker.py 66
+        [pod/ops-investigator-6df8468b5c-hmj5m/investigator] investigator-failure RuntimeError /app/src/investigator/job_api.py 20
+    sp04_native_chart_test.go:471: owned native Lease epoch=1 holder_present=true uid=d98451e9-bf34-4328-a334-23f2b4b638a4
+--- FAIL: TestSP04SignedChartNativeWorkerOfflineReinstall (394.59s)
+FAIL
+FAIL	ops-platform/test/integration	395.936s
+FAIL

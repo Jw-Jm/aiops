@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/investigation-budget/v1",
+  "title": "investigation-budget/v1",
+  "type": "object",
+  "properties": {
+    "toolCalls": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rawQueries": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "resultBytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "graphNodes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidenceItems": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "modelRequests": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "inputTokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "outputTokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "modelCostMicros": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "durationSeconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 600
+    },
+    "allowedDataClasses": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "D0",
+          "D1"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "toolCalls",
+    "rawQueries",
+    "resultBytes",
+    "graphNodes",
+    "evidenceItems",
+    "modelRequests",
+    "inputTokens",
+    "outputTokens",
+    "modelCostMicros",
+    "durationSeconds",
+    "allowedDataClasses"
+  ],
+  "additionalProperties": false
+}

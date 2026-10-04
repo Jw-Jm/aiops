@@ -634,8 +634,7 @@ components:
           type: string
           format: date-time
     CanonicalID:
-      description: RFC 3986 percent-encoded in query parameters; JSON body values
-        carry the decoded canonical identifier.
+      description: RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
       format: canonical-id
       type: string
     CommandExecutionEvent:
@@ -845,8 +844,7 @@ components:
           type: integer
           format: int64
           minimum: 1
-          description: Required to explicitly complete or update metadata of an existing
-            stable cluster identity.
+          description: Required to explicitly complete or update metadata of an existing stable cluster identity.
         apiEndpointRef:
           type: string
           minLength: 1
@@ -903,8 +901,7 @@ components:
       - expectedRevision
       type: object
     SourceDataScopeMapping:
-      description: Declared exact scopes; empty scopes grant no permission. Backend
-        verification is read-only and unavailable until adapter admission.
+      description: Declared exact scopes; empty scopes grant no permission. Backend verification is read-only and unavailable until adapter admission.
       type: object
       additionalProperties: false
       properties:
@@ -1029,15 +1026,13 @@ components:
             - finding-envelope/v2
           maxItems: 2
         backendLogicalId:
-          description: Stable backend identity; an empty legacy value grants no query
-            capability.
+          description: Stable backend identity; an empty legacy value grants no query capability.
           type: string
           maxLength: 512
         dataScopeMapping:
           $ref: '#/components/schemas/SourceDataScopeMapping'
         queryCapability:
-          description: A declaration cannot enable queries. Adapter admission requires
-            a separately versioned verification contract.
+          description: A declaration cannot enable queries. Adapter admission requires a separately versioned verification contract.
           type: object
           readOnly: true
           additionalProperties: false
@@ -1387,8 +1382,7 @@ components:
       type: object
     JSONRequest:
       additionalProperties: true
-      description: JSON object body. Operation-specific fields are defined by the
-        owning public contract.
+      description: JSON object body. Operation-specific fields are defined by the owning public contract.
       type: object
     PageEnvelope:
       additionalProperties: false
@@ -1679,8 +1673,7 @@ components:
         additionalProperties:
           $ref: '#/components/schemas/ResourceAttributeValueV2'
         maxProperties: 64
-      description: Bounded JSON-safe resource quantities, including hardware byte
-        capacities. Public v1 common extension limits remain unchanged.
+      description: Bounded JSON-safe resource quantities, including hardware byte capacities. Public v1 common extension limits remain unchanged.
     FindingEnvelopeV2:
       type: object
       additionalProperties: false
@@ -1817,8 +1810,7 @@ components:
           enum:
           - single-query/v1
           - dimm-hosted-pods/v1
-          description: Fixed shared-budget plan; each kernel query has depth at most
-            2.
+          description: Fixed shared-budget plan; each kernel query has depth at most 2.
         requiredEvidence:
           type: array
           items:
@@ -3087,6 +3079,693 @@ components:
       required:
       - data
       - requestId
+    InvestigationUsageV1:
+      type: object
+      properties:
+        toolCalls:
+          type: integer
+          minimum: 0
+        rawQueries:
+          type: integer
+          minimum: 0
+        resultBytes:
+          type: integer
+          minimum: 0
+        graphNodes:
+          type: integer
+          minimum: 0
+        evidenceItems:
+          type: integer
+          minimum: 0
+        modelRequests:
+          type: integer
+          minimum: 0
+        inputTokens:
+          type: integer
+          minimum: 0
+        outputTokens:
+          type: integer
+          minimum: 0
+        modelCostMicros:
+          type: integer
+          minimum: 0
+      required:
+      - toolCalls
+      - rawQueries
+      - resultBytes
+      - graphNodes
+      - evidenceItems
+      - modelRequests
+      - inputTokens
+      - outputTokens
+      - modelCostMicros
+      additionalProperties: false
+    InvestigationBudgetV1:
+      type: object
+      properties:
+        toolCalls:
+          type: integer
+          minimum: 0
+        rawQueries:
+          type: integer
+          minimum: 0
+        resultBytes:
+          type: integer
+          minimum: 0
+        graphNodes:
+          type: integer
+          minimum: 0
+        evidenceItems:
+          type: integer
+          minimum: 0
+        modelRequests:
+          type: integer
+          minimum: 0
+        inputTokens:
+          type: integer
+          minimum: 0
+        outputTokens:
+          type: integer
+          minimum: 0
+        modelCostMicros:
+          type: integer
+          minimum: 0
+        durationSeconds:
+          type: integer
+          minimum: 1
+          maximum: 600
+        allowedDataClasses:
+          type: array
+          items:
+            enum:
+            - D0
+            - D1
+          minItems: 1
+          maxItems: 2
+          uniqueItems: true
+      required:
+      - toolCalls
+      - rawQueries
+      - resultBytes
+      - graphNodes
+      - evidenceItems
+      - modelRequests
+      - inputTokens
+      - outputTokens
+      - modelCostMicros
+      - durationSeconds
+      - allowedDataClasses
+      additionalProperties: false
+    InvestigationScopeV1:
+      type: object
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+        clusterUid:
+          type: string
+          minLength: 1
+          maxLength: 128
+        namespaces:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+          maxItems: 1000
+          uniqueItems: true
+        resources:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+          maxItems: 1000
+          uniqueItems: true
+        clusterScoped:
+          type: boolean
+        authorizationRevision:
+          type: string
+          minLength: 1
+          maxLength: 256
+      required:
+      - tenantId
+      - clusterUid
+      - namespaces
+      - resources
+      - clusterScoped
+      - authorizationRevision
+      additionalProperties: false
+    InvestigationJobV2:
+      type: object
+      properties:
+        schemaVersion:
+          enum:
+          - investigation-job/v2
+        tenantId:
+          type: string
+          format: uuid
+        jobId:
+          type: string
+          format: uuid
+        incidentId:
+          type: string
+          format: uuid
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 256
+        triggerRevision:
+          type: integer
+          minimum: 1
+        triggerKind:
+          enum:
+          - manual
+          - policy
+          - new_evidence
+        policyVersion:
+          type: string
+          minLength: 1
+          maxLength: 128
+        scope:
+          $ref: '#/components/schemas/InvestigationScopeV1'
+        effectiveScopeDigest:
+          type: string
+          pattern: ^sha256:[a-f0-9]{64}$
+        toolCatalogDigest:
+          type: string
+          pattern: ^sha256:[a-f0-9]{64}$
+        state:
+          enum:
+          - queued
+          - running
+          - succeeded
+          - partial
+          - failed
+          - cancelled
+          - expired
+        budget:
+          $ref: '#/components/schemas/InvestigationBudgetV1'
+        budgetReserved:
+          $ref: '#/components/schemas/InvestigationUsageV1'
+        budgetConsumed:
+          $ref: '#/components/schemas/InvestigationUsageV1'
+        expiresAt:
+          type: string
+          format: date-time
+        eventSeq:
+          type: integer
+          minimum: 0
+        nextCallSeq:
+          type: integer
+          minimum: 0
+        result:
+          $ref: '#/components/schemas/InvestigationResultV1'
+        errorCode:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - schemaVersion
+      - tenantId
+      - jobId
+      - incidentId
+      - subject
+      - triggerRevision
+      - triggerKind
+      - policyVersion
+      - scope
+      - effectiveScopeDigest
+      - toolCatalogDigest
+      - state
+      - budget
+      - budgetReserved
+      - budgetConsumed
+      - expiresAt
+      - eventSeq
+      - nextCallSeq
+      additionalProperties: false
+    InvestigationStepV2:
+      type: object
+      properties:
+        stepId:
+          type: string
+          format: uuid
+        toolName:
+          type: string
+          minLength: 1
+          maxLength: 128
+        argsDigest:
+          type: string
+          pattern: ^sha256:[a-f0-9]{64}$
+        state:
+          enum:
+          - running
+          - succeeded
+          - failed
+        result: {}
+        errorCode:
+          type: string
+          maxLength: 128
+      required:
+      - stepId
+      - toolName
+      - argsDigest
+      - state
+      additionalProperties: false
+    InvestigationResultV1:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          type: string
+          enum:
+          - investigation-result/v1
+        status:
+          type: string
+          enum:
+          - unresolved
+          - probable
+        summary:
+          type: string
+          minLength: 1
+          maxLength: 8192
+        evidenceRefs:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+            format: uuid
+        candidateUpdates:
+          type: array
+          maxItems: 50
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              candidateKey:
+                type: string
+                pattern: ^sha256:[0-9a-f]{64}$
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 4096
+            required:
+            - candidateKey
+            - reason
+        actionPlans:
+          type: array
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/ActionPlanV2'
+        partial:
+          type: boolean
+        degradedSources:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+            maxLength: 128
+      required:
+      - schemaVersion
+      - status
+      - summary
+      - evidenceRefs
+      - candidateUpdates
+      - actionPlans
+      - partial
+      - degradedSources
+    InvestigationSuccessV2:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/InvestigationJobV2'
+        requestId:
+          type: string
+      required:
+      - data
+      - requestId
+      additionalProperties: false
+    InvestigationStepsSuccessV2:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvestigationStepV2'
+          maxItems: 128
+        requestId:
+          type: string
+      required:
+      - data
+      - requestId
+      additionalProperties: false
+    InvestigationCancelSuccessV2:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            state:
+              enum:
+              - queued
+              - running
+              - succeeded
+              - partial
+              - failed
+              - cancelled
+              - expired
+          required:
+          - state
+          additionalProperties: false
+        requestId:
+          type: string
+      required:
+      - data
+      - requestId
+      additionalProperties: false
+    CreateInvestigationV2:
+      type: object
+      properties:
+        triggerRevision:
+          type: integer
+          minimum: 1
+        triggerKind:
+          enum:
+          - manual
+      required: []
+      additionalProperties: false
+    ActionPlanV2:
+      type: object
+      properties:
+        schemaVersion:
+          enum:
+          - action-plan/v2
+        actionPlanId:
+          $ref: '#/components/schemas/SP06CommonIdentifier'
+        tenantId:
+          $ref: '#/components/schemas/SP06CommonTenantId'
+        incidentId:
+          $ref: '#/components/schemas/SP06CommonIdentifier'
+        rcaRevision:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        iteration:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        targetCanonicalId:
+          $ref: '#/components/schemas/SP06CommonCanonicalId'
+        suggestedCommand:
+          $ref: '#/components/schemas/SP06CommonCommandText'
+        shell:
+          enum:
+          - bash
+        recommendedExecutionProfileId:
+          $ref: '#/components/schemas/SP06CommonIdentifier'
+        reason:
+          $ref: '#/components/schemas/SP06CommonText'
+        expectedImpact:
+          $ref: '#/components/schemas/SP06CommonText'
+        preconditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SP06CommonText'
+          maxItems: 100
+        riskSummary:
+          $ref: '#/components/schemas/SP06CommonText'
+        operationRisk:
+          $ref: '#/components/schemas/SP06CommonOperationRisk'
+        dataRisk:
+          $ref: '#/components/schemas/SP06CommonDataClass'
+        postCheckInstructions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SP06CommonText'
+          maxItems: 100
+        rollbackSuggestion:
+          anyOf:
+          - $ref: '#/components/schemas/SP06CommonText'
+          - type: 'null'
+        generatedBy:
+          type: object
+          properties:
+            type:
+              $ref: '#/components/schemas/SP06CommonShortText'
+            name:
+              $ref: '#/components/schemas/SP06CommonIdentifier'
+            extensions:
+              $ref: '#/components/schemas/SP06CommonExtensions'
+          required:
+          - type
+          - name
+          additionalProperties: false
+        state:
+          enum:
+          - suggested
+          - accepted
+          - dismissed
+          - superseded
+        createdAt:
+          $ref: '#/components/schemas/SP06CommonTimestamp'
+        extensions:
+          $ref: '#/components/schemas/SP06CommonExtensions'
+      required:
+      - schemaVersion
+      - actionPlanId
+      - tenantId
+      - incidentId
+      - rcaRevision
+      - iteration
+      - targetCanonicalId
+      - suggestedCommand
+      - shell
+      - recommendedExecutionProfileId
+      - reason
+      - expectedImpact
+      - preconditions
+      - riskSummary
+      - operationRisk
+      - dataRisk
+      - postCheckInstructions
+      - rollbackSuggestion
+      - generatedBy
+      - state
+      - createdAt
+      additionalProperties: false
+    SP06CommonText:
+      type: string
+      minLength: 1
+      maxLength: 4096
+    SP06CommonExtensions:
+      type: object
+      propertyNames:
+        type: string
+        minLength: 1
+        maxLength: 64
+      additionalProperties:
+        $ref: '#/components/schemas/SP06CommonExtensionValue'
+      maxProperties: 64
+    SP06CommonTimestamp:
+      type: string
+      format: date-time
+      maxLength: 64
+    SP06CommonDataClass:
+      enum:
+      - D0
+      - D1
+      - D2
+      - D3
+    SP06CommonCommandText:
+      type: string
+      minLength: 1
+      maxLength: 65536
+    SP06CommonShortText:
+      type: string
+      minLength: 1
+      maxLength: 256
+    SP06CommonOperationRisk:
+      enum:
+      - O0
+      - O1
+      - O2
+      - O3
+    SP06CommonCanonicalId:
+      type: string
+      minLength: 1
+      maxLength: 1024
+      pattern: ^[a-z][a-z0-9.-]{0,62}\+v1://[A-Za-z0-9][A-Za-z0-9._~-]{0,127}/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})*/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+$
+    SP06CommonTenantId:
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: ^[A-Za-z0-9][A-Za-z0-9._-]*$
+    SP06CommonIdentifier:
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]*$
+    SP06CommonExtensionValue:
+      anyOf:
+      - type: string
+        maxLength: 4096
+      - type: integer
+        minimum: -2147483648
+        maximum: 2147483647
+      - type: number
+        minimum: -2147483648
+        maximum: 2147483647
+      - type: boolean
+      - type: 'null'
+      - type: array
+        items:
+          $ref: '#/components/schemas/SP06CommonExtensionValue'
+        maxItems: 100
+      - type: object
+        propertyNames:
+          type: string
+          maxLength: 64
+        additionalProperties:
+          $ref: '#/components/schemas/SP06CommonExtensionValue'
+        maxProperties: 64
+    PlatformCapabilitiesV1:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          type: string
+          const: platform-capabilities/v1
+        apiReady:
+          type: boolean
+        graphReady:
+          type:
+          - boolean
+          - 'null'
+        sourceDegraded:
+          type:
+          - boolean
+          - 'null'
+        investigation:
+          type: object
+          additionalProperties: false
+          properties:
+            enabled:
+              type: boolean
+            status:
+              type: string
+              enum:
+              - disabled
+              - unverified
+              - degraded
+            reason:
+              type: string
+              maxLength: 256
+            readOnly:
+              type: boolean
+              const: true
+          required:
+          - enabled
+          - status
+          - reason
+          - readOnly
+        kubevirt:
+          type: object
+          additionalProperties: false
+          properties:
+            status:
+              type: string
+              enum:
+              - disabled
+              - unverified
+              - degraded
+            reason:
+              type: string
+              maxLength: 256
+            verification:
+              type: string
+              const: unverified
+          required:
+          - status
+          - reason
+        cdi:
+          type: object
+          additionalProperties: false
+          properties:
+            status:
+              type: string
+              enum:
+              - disabled
+              - unverified
+              - degraded
+            reason:
+              type: string
+              maxLength: 256
+            verification:
+              type: string
+              const: unverified
+          required:
+          - status
+          - reason
+        pyrca:
+          type: object
+          additionalProperties: false
+          properties:
+            status:
+              type: string
+              enum:
+              - disabled
+              - unverified
+              - degraded
+            reason:
+              type: string
+              maxLength: 256
+            verification:
+              type: string
+              const: unverified
+          required:
+          - status
+          - reason
+        commandExecution:
+          type: object
+          additionalProperties: false
+          properties:
+            status:
+              type: string
+              enum:
+              - disabled
+              - unverified
+              - degraded
+            reason:
+              type: string
+              maxLength: 256
+            verification:
+              type: string
+              const: unverified
+          required:
+          - status
+          - reason
+      required:
+      - schemaVersion
+      - apiReady
+      - graphReady
+      - sourceDegraded
+      - investigation
+      - kubevirt
+      - cdi
+      - pyrca
+      - commandExecution
+    CapabilitiesSuccessV1:
+      type: object
+      additionalProperties: false
+      required:
+      - requestId
+      - data
+      properties:
+        requestId:
+          type: string
+        data:
+          $ref: '#/components/schemas/PlatformCapabilitiesV1'
   securitySchemes:
     BearerAuth:
       bearerFormat: JWT
@@ -4237,19 +4916,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/CapabilitiesSuccessV1'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
       summary: getCapabilities
       tags:
       - Overview
+      parameters:
+      - in: query
+        name: clusterUid
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 512
+        description: Observe this currently authorized cluster through the bounded resource API. Omission reports null for unobserved Graph/source readiness.
   /api/v1/command-executions:
     post:
       operationId: createCommandExecution
@@ -4604,8 +5294,7 @@ paths:
         schema:
           type: string
       - allowReserved: false
-        description: Percent-encode the complete Canonical ID value per RFC 3986;
-          the server decodes and validates it.
+        description: Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
         in: query
         name: resourceCanonicalId
         schema:
@@ -4692,8 +5381,7 @@ paths:
     post:
       operationId: ingestFinding
       deprecated: true
-      description: Historical Contract retained. Runtime returns CAPABILITY_DISABLED;
-        explicitly bound SP05 publishers use the additive v2 endpoint.
+      description: Historical Contract retained. Runtime returns CAPABILITY_DISABLED; explicitly bound SP05 publishers use the additive v2 endpoint.
       parameters:
       - description: Stable key for replay-safe write handling.
         in: header
@@ -4786,8 +5474,7 @@ paths:
         schema:
           type: string
       - allowReserved: false
-        description: Percent-encode the complete Canonical ID value per RFC 3986;
-          the server decodes and validates it.
+        description: Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
         in: query
         name: resourceCanonicalId
         schema:
@@ -4927,20 +5614,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JSONRequest'
+              $ref: '#/components/schemas/CreateInvestigationV2'
         required: true
       responses:
         '202':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/InvestigationSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -5251,13 +5940,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/InvestigationSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -5274,6 +5965,12 @@ paths:
         schema:
           format: identifier
           type: string
+      - in: header
+        name: Last-Event-ID
+        description: Signed durable event cursor bound to tenant, Job, stream and current scope; expired cursors return 410.
+        schema:
+          type: string
+          maxLength: 2048
       responses:
         '200':
           content:
@@ -5285,7 +5982,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -5303,28 +6002,20 @@ paths:
         schema:
           format: identifier
           type: string
-      - description: Opaque cursor for keyset pagination.
-        in: query
-        name: cursor
-        schema:
-          type: string
-      - in: query
-        name: limit
-        schema:
-          minimum: 1
-          type: integer
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PageEnvelope'
+                $ref: '#/components/schemas/InvestigationStepsSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -5353,13 +6044,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                $ref: '#/components/schemas/InvestigationCancelSuccessV2'
           description: Successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
           description: Unified API error.
       security:
       - BearerAuth: []
@@ -5367,6 +6060,15 @@ paths:
       tags:
       - Investigations
       x-idempotency: required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+              required: []
+              additionalProperties: false
   /api/v1/overview:
     get:
       operationId: getOverview
@@ -5462,8 +6164,7 @@ paths:
       operationId: getResourceByCanonicalID
       parameters:
       - allowReserved: false
-        description: Percent-encode the complete Canonical ID value per RFC 3986;
-          the server decodes and validates it.
+        description: Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
         in: query
         name: canonicalId
         required: true
@@ -5494,8 +6195,7 @@ paths:
       operationId: getResourceImpactScope
       parameters:
       - allowReserved: false
-        description: Percent-encode the complete Canonical ID value per RFC 3986;
-          the server decodes and validates it.
+        description: Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
         in: query
         name: canonicalId
         required: true
@@ -5526,8 +6226,7 @@ paths:
       operationId: getResourceNeighbors
       parameters:
       - allowReserved: false
-        description: Percent-encode the complete Canonical ID value per RFC 3986;
-          the server decodes and validates it.
+        description: Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
         in: query
         name: canonicalId
         required: true

@@ -72,3 +72,36 @@ test('typed SSE envelope decoder rejects incomplete event data', async () => {
   delete incomplete.executionId;
   assert.throws(() => decodeCommandExecutionEvent(incomplete), /executionId/);
 });
+
+test('investigation fetch SSE resumes with Bearer and durable cursor, suppresses duplicate event sequences', async () => {
+  const { streamInvestigationEventsWithResume } = await import(readerURL.href);
+  const originalFetch = globalThis.fetch;
+  const resume = { cursor: 'signed-first-cursor', eventSeq: 1n };
+  let headers;
+  globalThis.fetch = async (url, options) => {
+    assert.equal(url, '/api/v1/investigations/owned-job/events');
+    assert.ok(!url.includes('token='));
+    headers = new Headers(options.headers);
+    return new Response([1,2,2,3].map(seq => `id: signed-${seq}\ndata: ${JSON.stringify({ eventId: String(seq), eventType: 'step.completed', jobId: 'owned-job', occurredAt: '2026-10-03T00:00:00Z', payload: {} })}\n\n`).join(''), { headers: { 'content-type': 'text/event-stream' } });
+  };
+  try {
+    const events = [];
+    for await (const message of streamInvestigationEventsWithResume('/api/v1/investigations/owned-job/events', { headers: { Authorization: 'Bearer owned-token' } }, resume)) events.push(message.data.eventId);
+    assert.deepEqual(events, ['2','3']);
+    assert.equal(headers.get('Authorization'),'Bearer owned-token');
+    assert.equal(headers.get('Last-Event-ID'),'signed-first-cursor');
+    assert.deepEqual(resume,{cursor:'signed-3',eventSeq:3n});
+  } finally { globalThis.fetch=originalFetch; }
+});
+
+test('investigation SSE fails closed on missing Bearer, sequence gaps and 410', async () => {
+ const { streamInvestigationEventsWithResume } = await import(readerURL.href);
+ await assert.rejects(async()=>{for await (const event of streamInvestigationEventsWithResume('/events',{})) {}},/Bearer/);
+ const originalFetch=globalThis.fetch;
+ try {
+  globalThis.fetch=async()=>new Response(`id: signed-2\ndata: ${JSON.stringify({eventId:'2',eventType:'job.state',jobId:'j',occurredAt:'now',payload:{}})}\n\n`,{headers:{'content-type':'text/event-stream'}});
+  await assert.rejects(async()=>{for await(const event of streamInvestigationEventsWithResume('/events',{headers:{Authorization:'Bearer token'}})){}},/sequence gap/);
+  globalThis.fetch=async()=>new Response('{}',{status:410});
+  await assert.rejects(async()=>{for await(const event of streamInvestigationEventsWithResume('/events',{headers:{Authorization:'Bearer token'}})){}},/410/);
+ }finally{globalThis.fetch=originalFetch;}
+});

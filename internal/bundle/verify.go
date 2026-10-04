@@ -231,6 +231,9 @@ func validateCatalogAdmissionWithCatalog(materials []Material, catalog *supplych
 	if selected["deepflow"] && selected["deepflow-app"] {
 		return errors.New("DeepFlow bundle must not contain deepflow-app")
 	}
+	if selected["holmesgpt"] && !selected["holmesgpt-source"] {
+		return errors.New("SP06 investigator requires its complete corresponding-source/license closure, including GPL wrapper and runtime dependencies")
+	}
 	for _, material := range materials {
 		if _, known := catalog.Component(material.Name); known {
 			selectedNames = append(selectedNames, material.Name)

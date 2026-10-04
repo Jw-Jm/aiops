@@ -41,7 +41,7 @@ spec:
           {{- end }}
       - key: ops.platform.io/component
         operator: In
-        values: [api, worker, web, investigator, command-runner, postgresql, keycloak, seaweedfs, openbao, victoria-metrics, victoria-logs, vmalert]
+        values: [api, worker, web, command-runner, postgresql, keycloak, seaweedfs, openbao, victoria-metrics, victoria-logs, vmalert]
   policyTypes:
     - Ingress
     - Egress
@@ -71,6 +71,9 @@ spec:
           port: 8880
         - protocol: TCP
           port: 9090
+        {{ if $.Values.sp06.enabled }}
+        - {protocol: TCP, port: {{ $.Values.sp06.gatewayPort }}}
+        {{ end }}
   egress:
     - to:
         - namespaceSelector:

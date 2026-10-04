@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/query_deepflow/v2",
+  "title": "query_deepflow",
+  "description": "Run an approved semantic network query through the DeepFlow Server or Querier API.",
+  "type": "object",
+  "properties": {
+    "operation": {
+      "enum": [
+        "get network health",
+        "get dependencies",
+        "find retransmission",
+        "find packet loss",
+        "find connection failure",
+        "get network path"
+      ]
+    },
+    "resourceCanonicalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^[a-z][a-z0-9.-]{0,62}\\+v1://[A-Za-z0-9][A-Za-z0-9._~-]{0,127}/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})*/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+/([A-Za-z0-9._~!$&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+$"
+    },
+    "timeRange": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 64
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "from",
+        "to"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "operation",
+    "resourceCanonicalId",
+    "timeRange"
+  ],
+  "additionalProperties": false,
+  "x-tool-contract": {
+    "name": "query_deepflow",
+    "version": "v2",
+    "purpose": "Run an approved semantic network query through the DeepFlow Server or Querier API.",
+    "inputSchema": {
+      "$ref": "https://ops.local/schemas/query_deepflow/v2"
+    },
+    "outputSchema": {
+      "$ref": "https://ops.local/schemas/query_deepflow/v2#output"
+    },
+    "requiredPermissions": [
+      "allowed_tools",
+      "tenant_scope",
+      "cluster_scope",
+      "allowed_data_classes"
+    ],
+    "allowedDataClasses": [
+      "D0",
+      "D1"
+    ],
+    "defaultTimeout": 3,
+    "maxResultBytes": 65536,
+    "rateLimit": {
+      "jobBudget": "maxRawQueries"
+    },
+    "auditPolicy": "every_invocation_and_sanitized_result",
+    "failureSemantics": [
+      "invalid_arguments",
+      "permission_denied",
+      "data_class_denied",
+      "budget_exhausted",
+      "source_degraded",
+      "timeout",
+      "temporary_upstream_error",
+      "job_cancelled"
+    ]
+  },
+  "$defs": {
+    "output": {
+      "$anchor": "output",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://ops.local/schemas/tool-response/v2"
+        },
+        {
+          "properties": {
+            "tool": {
+              "const": "query_deepflow"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

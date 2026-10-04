@@ -52,6 +52,19 @@ sources:
   - {"name":"smartctl-exporter","status":"candidate","source":"https://github.com/prometheus-community/smartctl_exporter","version":"v0.14.0","commit":"ef5c03de02cb793e6a1540bef943fe6a167de635","gitArchiveSHA256":"d087fdc38912a6cc94a9e0a30f0bcde9a40e153c92075bda8614cdba7c05f40f","license":"Apache-2.0","licenseEvidence":"third_party/licenses/smartctl_exporter/LICENSE","licenseEvidenceSHA256":"cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30","use":"Uses upstream --smartctl.fake-data fixture path; no block device, host scan, or smartctl executable is invoked. Runtime and Bundle admission remain disabled.","lock":"docs/poc/inspection-reuse-lock.yaml#smartctl-exporter","dependencyClosure":{"path":"test/fixtures/upstream-inspection/dependency-closures.json","sha256":"499621550a8564c2fbd8304fbd253e6bd965d1f5ce8ce93bf80b05413c96594b","record":"smartctl-exporter","inventoryComplete":true,"licenseReviewComplete":true,"unknownLicenses":0},"selectedFiles":[{"path":"test/fixtures/upstream-inspection/smartctl-exporter/smartctl_test.go.fixture","sha256":"8084f21c79b3362fdcf33f2563f130779f919c26582edd3b57849dab78424f8e","license":"Apache-2.0"},{"path":"test/fixtures/upstream-inspection/smartctl-exporter/device_filter_test.go.fixture","sha256":"db797fe46c62ee9e7f16f097a8a9357bdd3446ed4818c2fb50fbd5aeebade4eb","license":"Apache-2.0"}],"platformMapping":{"path":"test/fixtures/upstream-inspection/platform-mappings/smartctl-exporter.json","sha256":"34b4f9c72ad82d65eb5df1cb92cfb95649aa18df06d1c976a460221d3c0ba0a9"},"fixtures":["test/fixtures/upstream-inspection/smartctl-exporter/smartctl_test.go.fixture","test/fixtures/upstream-inspection/smartctl-exporter/device_filter_test.go.fixture","test/fixtures/upstream-inspection/smartctl-exporter/smartctl-fixture-poc_test.go.fixture","test/fixtures/upstream-inspection/smartctl-exporter/sat-Hitachi_Ultrastar_A7K2000-Hitachi_HUA722010CLA330-sdr.json","test/fixtures/upstream-inspection/platform-mappings/smartctl-exporter.json"],"patch":"none"}
 
 # Additive SP-04 selected-code admission; historical component decisions above remain historical.
+  - name: holmesgpt-sp06-investigator
+    status: qualified-reuse-and-distribution
+    source: https://github.com/HolmesGPT/holmesgpt
+    version: 0.42.0
+    commit: bfd33247f154484bc2f734a0da709da133c6a434
+    license: Apache-2.0 upstream; GPL-3.0-or-later isolated wrapper combination
+    admission: third_party/admission/sp06-holmesgpt-source.json
+    licenseReview: third_party/admission/sp06-investigator-license-review.json
+    lock: docs/poc/holmes-investigator-reuse-lock.yaml
+    runtimeLoopCopied: false
+    pyrca: disabled-excluded
+    modelAccuracy: unverified
+    stageAcceptance: pending final independent review
 sp04SelectedRuntimeAdmission:
   path: third_party/admission/sp04-selected-runtime.json
   scope: selected runtime code and original notices only

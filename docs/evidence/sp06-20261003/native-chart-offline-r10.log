@@ -1,0 +1,56 @@
+=== RUN   TestSP04SignedChartNativeWorkerOfflineReinstall
+    sp04_native_chart_test.go:92: installed signed Chart digest=sha256:4830b3e28592dc39f6787a7aeab44ffdf9aaeb50bec045e19922c68ae552b5dc
+2026/10/04 12:31:24 OK   00001_roles_and_schemas.sql (10.91ms)
+2026/10/04 12:31:24 goose: successfully migrated database to version: 1
+2026/10/04 12:31:24 OK   00002_platform_meta.sql (18.95ms)
+2026/10/04 12:31:24 OK   00003_finding.sql (7.05ms)
+2026/10/04 12:31:24 OK   00004_incident.sql (3.89ms)
+2026/10/04 12:31:24 OK   00005_investigation.sql (4.81ms)
+2026/10/04 12:31:24 OK   00006_action_command.sql (4.63ms)
+2026/10/04 12:31:24 OK   00007_audit.sql (7.25ms)
+2026/10/04 12:31:24 OK   00008_rls.sql (7.68ms)
+2026/10/04 12:31:24 OK   00009_idempotency_ledger.sql (4.98ms)
+2026/10/04 12:31:24 OK   00010_tenant_provisioning.sql (2.84ms)
+2026/10/04 12:31:24 OK   00011_source_registration_history.sql (4.12ms)
+2026/10/04 12:31:24 OK   00012_config_registry_lifecycle.sql (6.3ms)
+2026/10/04 12:31:24 OK   00013_audit_signed_segments.sql (7.4ms)
+2026/10/04 12:31:24 OK   00014_audit_segment_predecessors.sql (3.29ms)
+2026/10/04 12:31:24 OK   00015_source_schema_scope.sql (1.9ms)
+2026/10/04 12:31:24 OK   00016_cluster_registration_metadata.sql (3.29ms)
+2026/10/04 12:31:24 OK   00017_source_data_scope.sql (2.35ms)
+2026/10/04 12:31:24 OK   00018_sp04_resources_evidence.sql (10.17ms)
+2026/10/04 12:31:24 OK   00019_sp04_archive_ciphertext_bytes.sql (2.13ms)
+2026/10/04 12:31:24 OK   00020_sp04_request_ledger.sql (3.34ms)
+2026/10/04 12:31:24 OK   00021_sp04_archive_protection.sql (2.27ms)
+2026/10/04 12:31:24 OK   00022_sp04_legal_hold_dependencies.sql (1.93ms)
+2026/10/04 12:31:24 OK   00023_sp04_archive_query_intent.sql (1.85ms)
+2026/10/04 12:31:24 OK   00024_sp05_finding_incident.sql (11.31ms)
+2026/10/04 12:31:24 OK   00025_sp05_incident_event_time.sql (2.07ms)
+2026/10/04 12:31:24 OK   00026_sp05_source_binding_lock.sql (2.06ms)
+2026/10/04 12:31:24 OK   00027_sp05_rca_and_poll.sql (5.28ms)
+2026/10/04 12:31:24 OK   00028_sp05_operator_lock.sql (2.37ms)
+2026/10/04 12:31:24 OK   00029_sp05_evidence_links.sql (3.69ms)
+2026/10/04 12:31:24 OK   00030_sp05_recipe_fence.sql (2.01ms)
+2026/10/04 12:31:24 OK   00031_sp05_rca_postcheck.sql (1.81ms)
+2026/10/04 12:31:24 OK   00032_sp05_transport_audit.sql (1.96ms)
+2026/10/04 12:31:24 OK   00033_sp05_poll_resolution_clock.sql (1.68ms)
+2026/10/04 12:31:24 OK   00034_sp06_investigation_ledger.sql (11.8ms)
+2026/10/04 12:31:24 goose: successfully migrated database to version: 34
+    sp04_native_chart_test.go:131: owned native Bao exact image=ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6 namespace=sp04-chain-a8fee040; local real Kubernetes TokenReview configuration
+    archive_iam_test.go:41: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=d954fcf8194febd8da599a6b1206a8c820161dc97d409e87875eae902a26cd9c bucket=sp04-native-57feb1ca tenants=1
+    sp04_native_chart_test.go:143: owned TLS Keycloak exact image=quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c
+    sp04_native_chart_test.go:341: native exact verified api image=ops.local/task27/platform-api@sha256:6d877d24a329072d7f8e3c410bd6e875a433f91d3c284dbabffe0ad938fba6d9
+    sp04_native_chart_test.go:341: native exact verified worker image=ops.local/task27/platform-worker@sha256:543b3ac948f5d091f8797bc79d55cfa658054498e5b25841d81ca968321ac57f
+    sp04_native_chart_test.go:453: actual selected Bundle import driver=orbstack_shared_store materials=[holmesgpt platform-api platform-worker]
+    sp04_native_chart_test.go:510: actual investigator CNI: API/model positive; owned database/public positive controls independently established; investigator database/public denied
+    sp04_native_chart_test.go:512: actual CNI positive public-before/negative public-after; exact owned host dependency allowed; selected images Never
+    sp04_native_chart_test.go:586: native evidence accepted bytes=2753
+    sp04_native_chart_test.go:632: shipped SP06 Chart/API/Worker/investigator -> actual llama3.1:8b-16k -> standard MCP -> native Incident/Evidence -> fenced Ledger/Go validator -> durable SSE: namespace=sp04-chain-a8fee040 job=01a1052f-b583-75f1-95c1-7590f9cf4188 state=succeeded tools=1 models=2 events=9
+    sp04_native_chart_test.go:633: ten actual native resident/model investigations peak=10 terminal=map[failed:9 succeeded:1]; current Graph/Finding/Incident/archived Evidence/deterministic RCA HTTP paths stayed available; no performance or accuracy acceptance
+    sp04_native_chart_test.go:634: owned CNI model-route withdrawal: actual resident model call failed honestly; Graph/Finding/Incident/archived Evidence/RCA stayed available; job=01a10532-25b4-707e-a06a-c5ed17fbe42a
+    sp04_native_chart_test.go:636: current signed image/Chart -> actual platform-worker main and JWT bootstrap -> fixed unchanged CLI in finite read-only Pod -> Finding/Incident/archive -> signed Recipe -> honest unresolved RCA -> OIDC API; native positive Metrics-server remains unverified
+    sp04_native_chart_test.go:693: shipped SP06 Chart/API/Worker/investigator -> actual llama3.1:8b-16k -> standard MCP -> native Incident/Evidence -> fenced Ledger/Go validator -> durable SSE: namespace=sp04-chain-a8fee040 job=01a10533-1de9-7a45-acc0-7dea2eb3cb65 state=succeeded tools=1 models=2 events=9
+    sp04_native_chart_test.go:700: signed Chart API/2 Worker native commands; real Pod-bound OpenBao login; API→Lease→Worker→VM→Transit→role-separated S3→PG; owned release reinstall passed archived_before=446 archived_after=522; sample scale one source resource, not production-scale acceptance
+--- PASS: TestSP04SignedChartNativeWorkerOfflineReinstall (368.59s)
+PASS
+ok  	ops-platform/test/integration	370.030s

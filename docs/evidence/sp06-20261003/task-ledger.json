@@ -1,0 +1,280 @@
+{
+  "status": "all_authorized_tasks_runtime_acceptance_and_full_independent_review_PASS",
+  "tasks": [
+    {
+      "task": "6.1",
+      "delivery": "Job/Lease/Step/Dispatcher",
+      "specification": "04§15–16;05§7,25.3;09§5–7,41,51",
+      "implementation": [
+        "internal/investigation/domain.go",
+        "internal/investigation/repository.go",
+        "internal/investigation/lifecycle.go",
+        "internal/investigation/recovery.go",
+        "internal/investigation/dispatcher.go",
+        "migrations/00034_sp06_investigation_ledger.sql"
+      ],
+      "requiredTests": "duplicate/claims/fencing/takeover/cancel/expire/SIGKILL/transaction failure",
+      "status": "PASS_authorized_nonvirtual_scope",
+      "evidence": [
+        "job-runtime-r5.log",
+        "process-recovery-r3.log",
+        "integration-correctness-r7.log"
+      ],
+      "formalTask": "10 Task6.1 and §14.6",
+      "evidenceUse": "Earlier red/green logs retained; accepted final gates are selected explicitly in final-gates.json. Historical SP01-SP05 reports are not this run proof.",
+      "testEntries": [
+        "TestSP06JobLeaseReplayAndAtomicBudget",
+        "TestSP06RecoveryNonceTransactionAndValidator",
+        "TestSP06CancelExpireAndCurrentRevocation",
+        "TestSP06RealHolmesModelMCPJobAndSSE + SP06_PROCESS_RECOVERY=1"
+      ],
+      "finalAcceptanceEvidence": [
+        "final-gates.json",
+        "final-sp06-integration-r5.jsonl",
+        "independent-review-boundaries-green-r6.log",
+        "native-chart-offline-r13.log",
+        "process-recovery-r5.log",
+        "final-independent-review.md"
+      ]
+    },
+    {
+      "task": "6.2",
+      "delivery": "InvocationContext",
+      "specification": "07§17.1,33;05§25.3;09§8–9,51",
+      "implementation": [
+        "internal/investigation/context_signer.go",
+        "internal/integrations/openbao/invocation.go",
+        "internal/integrations/openbao/transit.go"
+      ],
+      "requiredTests": "Transit/rotation/expiry/iat/audience/workload/replay/revocation",
+      "status": "PASS_authorized_nonvirtual_scope",
+      "evidence": [
+        "context-live-r3.log",
+        "integration-correctness-r7.log"
+      ],
+      "formalTask": "10 Task6.2 and §14.6",
+      "evidenceUse": "Earlier red/green logs retained; accepted final gates are selected explicitly in final-gates.json. Historical SP01-SP05 reports are not this run proof.",
+      "testEntries": [
+        "TestSP06RealTransitScopedSigningRotationAndTakeoverContext",
+        "internal/investigation/context_signer_test.go"
+      ],
+      "finalAcceptanceEvidence": [
+        "final-gates.json",
+        "final-sp06-integration-r5.jsonl",
+        "independent-review-boundaries-green-r6.log",
+        "native-chart-offline-r13.log",
+        "process-recovery-r5.log",
+        "final-independent-review.md"
+      ]
+    },
+    {
+      "task": "6.3",
+      "delivery": "Platform MCP",
+      "specification": "07§17–18;09§12–30,51;MCP2025-06-18",
+      "implementation": [
+        "internal/investigation/mcp/server.go",
+        "internal/investigation/tools/catalog.go",
+        "internal/httpapi/investigation_tools.go"
+      ],
+      "requiredTests": "real SDK handshake/all-tool states/schema/scope/OPA/budget/timeout",
+      "status": "PASS_authorized_nonvirtual_scope",
+      "evidence": [
+        "capabilities-live-r4.log",
+        "scope-before-begin-red-r1.log",
+        "scope-before-begin-green-r1.log"
+      ],
+      "formalTask": "10 Task6.3 and §14.6",
+      "evidenceUse": "Earlier red/green logs retained; accepted final gates are selected explicitly in final-gates.json. Historical SP01-SP05 reports are not this run proof.",
+      "testEntries": [
+        "TestSP06StandardMCPToolStateReplayAndDenialMatrix",
+        "TestSP06ActualCurrentRCARecommendationValidator / sp06ActualSemanticMCP"
+      ],
+      "finalAcceptanceEvidence": [
+        "final-gates.json",
+        "final-sp06-integration-r5.jsonl",
+        "independent-review-boundaries-green-r6.log",
+        "native-chart-offline-r13.log",
+        "process-recovery-r5.log",
+        "final-independent-review.md"
+      ]
+    },
+    {
+      "task": "6.4",
+      "delivery": "HolmesGPT adapter",
+      "specification": "00§16.5;10Task6.4;09§39",
+      "implementation": [
+        "services/investigator/src/investigator/holmes_adapter.py",
+        "services/investigator/src/investigator/worker.py",
+        "internal/app/sp06_runtime.go",
+        "docs/poc/holmes-investigator-reuse-lock.yaml"
+      ],
+      "requiredTests": "real llama3.1:8b-16k/tool loop/429/timeout/invalid JSON/unavailable",
+      "status": "PASS_authorized_nonvirtual_scope",
+      "evidence": [
+        "real-chain-r16.log",
+        "upstream-installed-source.json",
+        "investigator-offline-build-r4.log",
+        "provider-429-r3.log",
+        "provider-timeout-r3.log",
+        "provider-unavailable-r3.log",
+        "provider-illegal-json-r3.log",
+        "provider-write-tool-r3.log",
+        "real-chain-r18.log",
+        "investigator-offline-build-r5.log",
+        "investigator-admission-r8.log",
+        "python-material-r12.log"
+      ],
+      "formalTask": "10 Task6.4 and §14.6",
+      "evidenceUse": "Earlier red/green logs retained; accepted final gates are selected explicitly in final-gates.json. Historical SP01-SP05 reports are not this run proof.",
+      "testEntries": [
+        "TestSP06RealHolmesModelMCPJobAndSSE",
+        "TestSP04SignedChartNativeWorkerOfflineReinstall + SP06_NATIVE_CHART=1",
+        "SP06_MODEL_FAULT=429/timeout/unavailable/illegal-json/write-tool"
+      ],
+      "finalAcceptanceEvidence": [
+        "final-gates.json",
+        "final-sp06-integration-r5.jsonl",
+        "independent-review-boundaries-green-r6.log",
+        "native-chart-offline-r13.log",
+        "process-recovery-r5.log",
+        "final-independent-review.md"
+      ]
+    },
+    {
+      "task": "6.5",
+      "delivery": "Prompt/Budget/Validator",
+      "specification": "09§32–38,51;06RCA gates;ActionPlan/v2",
+      "implementation": [
+        "services/investigator/src/investigator/prompt_binding.py",
+        "services/investigator/src/investigator/redaction.py",
+        "services/investigator/src/investigator/budget.py",
+        "internal/investigation/allocation.go",
+        "internal/investigation/result.go"
+      ],
+      "requiredTests": "injection/redaction/forged refs/unauthorized targets/atomic token budget",
+      "status": "PASS_authorized_nonvirtual_scope",
+      "evidence": [
+        "annotation-red.log",
+        "annotation-green.log",
+        "usage-and-redaction-red.log",
+        "usage-and-redaction-green.log",
+        "integration-correctness-r7.log",
+        "investigator-python-boundary-r4.log",
+        "ledger-evidence-schema-red-r1.log",
+        "ledger-evidence-schema-green-r1.log",
+        "ledger-evidence-schema-fix.json"
+      ],
+      "formalTask": "10 Task6.5 and §14.6",
+      "evidenceUse": "Earlier red/green logs retained; accepted final gates are selected explicitly in final-gates.json. Historical SP01-SP05 reports are not this run proof.",
+      "testEntries": [
+        "TestSP06UnknownModelUsageCannotUndercharge",
+        "TestSP06RecoveryNonceTransactionAndValidator",
+        "TestSP06ActualCurrentRCARecommendationValidator",
+        "services/investigator/tests/test_security.py"
+      ],
+      "finalAcceptanceEvidence": [
+        "final-gates.json",
+        "final-sp06-integration-r5.jsonl",
+        "independent-review-boundaries-green-r6.log",
+        "native-chart-offline-r13.log",
+        "process-recovery-r5.log",
+        "final-independent-review.md"
+      ]
+    },
+    {
+      "task": "6.6",
+      "delivery": "API/SSE/Recovery",
+      "specification": "07§14,32–33;10§14.6,14.8",
+      "implementation": [
+        "internal/httpapi/investigation_handlers.go",
+        "internal/httpapi/investigation_capabilities.go",
+        "internal/app/sp06_runtime.go",
+        "deploy/charts/ops-platform/templates/sp06.yaml",
+        "web/src/api/sse-reader.ts"
+      ],
+      "requiredTests": "real full chain/10 concurrent investigations/mainline/restart/resume/slow client/revocation",
+      "status": "PASS_authorized_nonvirtual_scope",
+      "evidence": [
+        "concurrent-real-r3.log",
+        "process-recovery-r3.log",
+        "sse-active-slow-r5.log",
+        "graph-health-republication-red-r1.log",
+        "graph-health-republication-green-r2.log",
+        "final-make-check-r4.log",
+        "upstream-replay-r7.log",
+        "bundle-build-r8.log",
+        "bundle-verify-r8.log"
+      ],
+      "formalTask": "10 Task6.6 and §14.6",
+      "evidenceUse": "Earlier red/green logs retained; accepted final gates are selected explicitly in final-gates.json. Historical SP01-SP05 reports are not this run proof.",
+      "testEntries": [
+        "TestSP06DurableSSETerminalBatchesCursorAndWithdrawal",
+        "TestSP06ActiveSSEClosesOnCurrentRoleOrSourceWithdrawal",
+        "TestSP06SlowSSEClientWriteDeadlineAndDurableRecovery",
+        "TestSP04SignedChartNativeWorkerOfflineReinstall + SP06_NATIVE_CHART=1",
+        "web/test/sse.test.mjs"
+      ],
+      "finalAcceptanceEvidence": [
+        "final-gates.json",
+        "final-sp06-integration-r5.jsonl",
+        "independent-review-boundaries-green-r6.log",
+        "native-chart-offline-r13.log",
+        "process-recovery-r5.log",
+        "final-independent-review.md"
+      ]
+    }
+  ],
+  "requiredCommonGates": [
+    "check-toolchain",
+    "check-generated",
+    "check-runtime-source",
+    "make check",
+    "test-security",
+    "test-replay",
+    "integration",
+    "e2e",
+    "affected offline bundle regression",
+    "final full independent read-only review"
+  ],
+  "exceptions": {
+    "virtualization": "ADR0008 deferred disabled/unverified; not PASS",
+    "pyrca": "ADR0020 disabled; excluded from runtime dependencies",
+    "performance": "user waived dedicated benchmarks/load/capacity/P95; not PASS"
+  },
+  "preconditions": {
+    "model": "Actual local Ollama llama3.1:8b-16k OpenAI-compatible endpoint verified; resident native bridge uses host.docker.internal:11434/v1 with exact CNI allowlist. Protocol/budget only, not RCA accuracy qualification.",
+    "holmesgpt": "Exact 0.42.0 source/official provider and core reuse locked; GPL isolated wrapper distribution and corresponding-source closure admitted under ADR0027. Stage acceptance remains pending.",
+    "database": "Owned isolated PostgreSQL service; each integration creates a fresh owned database with production runtime roles/FORCE RLS. Shared databases preserved.",
+    "OpenBao": "Owned actual TLS OpenBao Transit and native Kubernetes TokenReview/projected workload identity fixtures. Root fixture credentials remain outside repository.",
+    "archive": "Owned actual TLS/IAM Seaweed S3 fixtures and current 365-day/Legal Hold/reference-retention tests."
+  },
+  "finalIndependentReview": {
+    "reviewer": "/root/sp06_independent_review",
+    "status": "PASS",
+    "report": "final-independent-review.md"
+  },
+  "performanceIncident": {
+    "evidence": "graph-health-republication-green-r1.log",
+    "status": "accidental invocation canceled before result; not accepted as PASS",
+    "finalEnvironment": "OPS_PERFORMANCE_EXEMPTION=sp06-user-20261003"
+  },
+  "latestCommonGates": {
+    "makeCheck": {
+      "evidence": "final-make-check-r6.log",
+      "exit": 0
+    },
+    "upstreamReplay": {
+      "evidence": "upstream-replay-r7.log",
+      "exit": 0,
+      "tests": 2,
+      "skips": 0,
+      "inspectionSourceReplays": 8
+    },
+    "bundle": {
+      "evidence": "bundle-build-r10.log",
+      "exit": 0,
+      "authenticatedFiles": 78
+    },
+    "remaining": "Git delivery and remote main verification only"
+  }
+}

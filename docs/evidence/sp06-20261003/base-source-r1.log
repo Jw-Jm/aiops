@@ -1,0 +1,8 @@
+E: Conflicting values set for option Signed-By regarding source http://deb.debian.org/debian/ trixie: /usr/share/keyrings/debian-archive-keyring.pgp != /usr/share/keyrings/debian-archive-keyring.gpg
+E: The list of sources could not be read.
+Traceback (most recent call last):
+  File "/material/base/prepare.py", line 7, in <module>
+    subprocess.run(['apt-get','update'],check=True)
+  File "/usr/local/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['apt-get', 'update']' returned non-zero exit status 100.

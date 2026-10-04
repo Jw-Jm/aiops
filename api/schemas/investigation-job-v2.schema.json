@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/investigation-job/v2",
+  "title": "investigation-job/v2",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "investigation-job/v2"
+    },
+    "tenantId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "jobId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "incidentId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "triggerRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "triggerKind": {
+      "enum": [
+        "manual",
+        "incident_policy",
+        "new_evidence"
+      ]
+    },
+    "policyVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "scope": {
+      "$ref": "https://ops.local/schemas/investigation-scope/v1"
+    },
+    "effectiveScopeDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "toolCatalogDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "state": {
+      "enum": [
+        "queued",
+        "running",
+        "succeeded",
+        "partial",
+        "failed",
+        "cancelled",
+        "expired"
+      ]
+    },
+    "budget": {
+      "$ref": "https://ops.local/schemas/investigation-budget/v1"
+    },
+    "budgetReserved": {
+      "$ref": "https://ops.local/schemas/investigation-usage/v1"
+    },
+    "budgetConsumed": {
+      "$ref": "https://ops.local/schemas/investigation-usage/v1"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "eventSeq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nextCallSeq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "result": {
+      "$ref": "https://ops.local/schemas/investigation-result/v1"
+    },
+    "errorCode": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "tenantId",
+    "jobId",
+    "incidentId",
+    "subject",
+    "triggerRevision",
+    "triggerKind",
+    "policyVersion",
+    "scope",
+    "effectiveScopeDigest",
+    "toolCatalogDigest",
+    "state",
+    "budget",
+    "budgetReserved",
+    "budgetConsumed",
+    "expiresAt",
+    "eventSeq",
+    "nextCallSeq"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,62 @@
+{
+  "state": "qualified",
+  "runtimeAdmission": "exact reuse/distribution admission; full SP06 final gates and independent review separate",
+  "source": "https://github.com/HolmesGPT/holmesgpt",
+  "version": "0.42.0",
+  "commit": "bfd33247f154484bc2f734a0da709da133c6a434",
+  "license": "Apache-2.0",
+  "patches": [],
+  "extensionPoints": [
+    "DefaultLLM.completion",
+    "Tool._invoke/get_openai_format",
+    "ToolExecutor",
+    "ToolCallingLLM.call"
+  ],
+  "coreCopied": false,
+  "protocol": "2025-06-18",
+  "pythonSDK": "mcp==1.28.1",
+  "goSDK": {
+    "module": "github.com/modelcontextprotocol/go-sdk",
+    "version": "v1.1.0",
+    "commit": "72afbc91bd0d3b6b9fd2d2b6a21556a28c668b5b"
+  },
+  "pyrca": "disabled/excluded",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "4e8d756a1bc4796e15973df082cf72b91f5e61fec4ec68d6799104670c108d08"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "4a1e43a64a60437761633be496048dacc1dcb14a595c89476126fde273018e60"
+    },
+    {
+      "path": "poetry.lock",
+      "sha256": "890762eb1ee1abc15d96d6ade9a6fa01f10ce760a3e900f6f0d8041c3de571a7"
+    },
+    {
+      "path": "holmes/core/llm.py",
+      "sha256": "1c15716420286c3fab74bba6bb91c3d4d7b77fc8ffa5c4d269a82dd62588c6eb"
+    },
+    {
+      "path": "holmes/core/tool_calling_llm.py",
+      "sha256": "67afbc18f12c09e2d98dd8b73cdcbbee642b74d53907fab5485bf785039683e2"
+    },
+    {
+      "path": "holmes/core/tools.py",
+      "sha256": "8728d00deec253b5344d2b80074b615a35921e67e1874030c7b0eeb48464fc22"
+    },
+    {
+      "path": "holmes/core/tools_utils/tool_executor.py",
+      "sha256": "45fab953cb73a37be9b95ab0e11a0256c22652b876359c73dd3576129779f70a"
+    },
+    {
+      "path": "holmes/plugins/toolsets/mcp/toolset_mcp.py",
+      "sha256": "0809f60b7356b2e8da7f264c247b2d413c3ebd93418096137e423b8e7b8ad9f1"
+    }
+  ],
+  "imageDigest": "sha256:41916431835e1319e25dad000c54454f5565f9347bdf9d175f313d3837591af6",
+  "correspondingSourceBundleSHA256": "sha256:2c302b34780f884db3dfdddae5d8d8e355695a7d00b621a21c1a773c7d7d8114",
+  "dependencyClosureLock": "artifacts/sp06-investigator/runtime.lock.json",
+  "licenseReview": "third_party/admission/sp06-investigator-license-review.json"
+}

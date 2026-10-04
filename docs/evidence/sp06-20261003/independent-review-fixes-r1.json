@@ -1,0 +1,115 @@
+{
+  "reviewer": "/root/sp06_independent_review",
+  "firstReview": "FAIL",
+  "finalFullReview": "PASS",
+  "red": {
+    "evidence": "independent-review-boundaries-red-r1.log",
+    "exitCode": 1
+  },
+  "green": {
+    "evidence": "independent-review-boundaries-green-r6.log",
+    "exitCode": 0
+  },
+  "scope": "all five confirmed authorized-scope findings; no optional-scope expansion",
+  "fixes": [
+    {
+      "id": "IR-01",
+      "status": "closed_by_final_full_independent_review_PASS",
+      "sourceHashes": {
+        "internal/investigation/read_limits.go": "sha256:e4fd614f4e6f6411843de79f69a36f58d6f3b93c48cae7c7be25975a012a3c15",
+        "internal/investigation/repository.go": "sha256:056b12a312a65199dc498037c7b51ce3f02eabe172055d2db144fcf61e301d49",
+        "internal/investigation/recovery.go": "sha256:24fa3032a0cc37cbe9b80d4799b14fab765def283e96c422744ea4b4dea1cd21",
+        "internal/investigation/allocation.go": "sha256:f9faa53dba99ed1feb1db8082f1cce86d545b39e6092641535fdd035b96f6157",
+        "internal/investigation/mcp/server.go": "sha256:5b566e1427e4ae6edcc403eb5ff94d1d7de9d149a4d6af0e44548df4ac01e036",
+        "internal/httpapi/investigation_handlers.go": "sha256:61d6e5655288ef6dd9b14ee502692118ea9d631f6b07000460820bccf4a4e9ac",
+        "internal/httpapi/investigation_tools.go": "sha256:d667a7df568171228949405ae8954926d36ab57cc54aa6041a7cd07ea059b868",
+        "migrations/00035_sp06_admission_data_classes.sql": "sha256:dd18b02dd9ddfada0de129cc753c63c66f9ec078043c753394f33bbab89d9e24"
+      },
+      "regression": "test/integration/sp06_review_boundaries_test.go; internal/httpapi/investigation_error_test.go; test/contract/sp06_reuse_lock_test.go",
+      "acceptedRegressions": [
+        "independent-review-boundaries-green-r6.log",
+        "final-make-check-r6.log",
+        "final-test-security-r4.log",
+        "final-sp06-integration-r5.jsonl",
+        "process-recovery-r5.log",
+        "affected-SP04-runtime-r6.jsonl"
+      ]
+    },
+    {
+      "id": "IR-02",
+      "status": "closed_by_final_full_independent_review_PASS",
+      "sourceHashes": {
+        "internal/httpapi/investigation_handlers.go": "sha256:61d6e5655288ef6dd9b14ee502692118ea9d631f6b07000460820bccf4a4e9ac"
+      },
+      "regression": "test/integration/sp06_review_boundaries_test.go; internal/httpapi/investigation_error_test.go; test/contract/sp06_reuse_lock_test.go",
+      "acceptedRegressions": [
+        "independent-review-boundaries-green-r6.log",
+        "final-make-check-r6.log",
+        "final-test-security-r4.log",
+        "final-sp06-integration-r5.jsonl",
+        "process-recovery-r5.log",
+        "affected-SP04-runtime-r6.jsonl"
+      ]
+    },
+    {
+      "id": "IR-03",
+      "status": "closed_by_final_full_independent_review_PASS",
+      "sourceHashes": {
+        "internal/investigation/read_limits.go": "sha256:e4fd614f4e6f6411843de79f69a36f58d6f3b93c48cae7c7be25975a012a3c15",
+        "internal/investigation/recovery.go": "sha256:24fa3032a0cc37cbe9b80d4799b14fab765def283e96c422744ea4b4dea1cd21",
+        "internal/investigation/allocation.go": "sha256:f9faa53dba99ed1feb1db8082f1cce86d545b39e6092641535fdd035b96f6157",
+        "internal/investigation/repository.go": "sha256:056b12a312a65199dc498037c7b51ce3f02eabe172055d2db144fcf61e301d49",
+        "internal/investigation/mcp/server.go": "sha256:5b566e1427e4ae6edcc403eb5ff94d1d7de9d149a4d6af0e44548df4ac01e036"
+      },
+      "regression": "test/integration/sp06_review_boundaries_test.go; internal/httpapi/investigation_error_test.go; test/contract/sp06_reuse_lock_test.go",
+      "acceptedRegressions": [
+        "independent-review-boundaries-green-r6.log",
+        "final-make-check-r6.log",
+        "final-test-security-r4.log",
+        "final-sp06-integration-r5.jsonl",
+        "process-recovery-r5.log",
+        "affected-SP04-runtime-r6.jsonl"
+      ]
+    },
+    {
+      "id": "IR-04",
+      "status": "closed_by_final_full_independent_review_PASS",
+      "sourceHashes": {
+        "internal/httpapi/investigation_handlers.go": "sha256:61d6e5655288ef6dd9b14ee502692118ea9d631f6b07000460820bccf4a4e9ac",
+        "internal/investigation/repository.go": "sha256:056b12a312a65199dc498037c7b51ce3f02eabe172055d2db144fcf61e301d49",
+        "internal/investigation/lifecycle.go": "sha256:9dbb35278b202afd3e63b71fa47c29087422fe4522ea5f513c20a7c088eadbc8",
+        "internal/investigation/domain.go": "sha256:ad943cbb98fc3e1748b22422abf3f2ba491519e5a46447d7ba574deaf90270fd"
+      },
+      "regression": "test/integration/sp06_review_boundaries_test.go; internal/httpapi/investigation_error_test.go; test/contract/sp06_reuse_lock_test.go",
+      "acceptedRegressions": [
+        "independent-review-boundaries-green-r6.log",
+        "final-make-check-r6.log",
+        "final-test-security-r4.log",
+        "final-sp06-integration-r5.jsonl",
+        "process-recovery-r5.log",
+        "affected-SP04-runtime-r6.jsonl"
+      ]
+    },
+    {
+      "id": "IR-05",
+      "status": "closed_by_final_full_independent_review_PASS",
+      "sourceHashes": {
+        "docs/poc/holmes-investigator-reuse-lock.yaml": "sha256:61c089a96545737d164cee3385e066022bcaa3a33ae7e3d6269dd40a960f198e",
+        "scripts/admit-investigator-material.py": "sha256:b9dbb472ec869ea713579c5d4f45e82e1e12a559e98e7d338a250fe6d7307b06",
+        "test/contract/sp06_reuse_lock_test.go": "sha256:b2786119d9e6015a8dad6211aa591c50a5aeb3d16594e714149da2f4c27a5aef",
+        "docs/runbooks/sp06-investigation-runtime.md": "sha256:e1d7a9506da32c7034f6b644bf958f8582592b1091c8a841675ffb81bbe109ad"
+      },
+      "regression": "test/integration/sp06_review_boundaries_test.go; internal/httpapi/investigation_error_test.go; test/contract/sp06_reuse_lock_test.go",
+      "acceptedRegressions": [
+        "independent-review-boundaries-green-r6.log",
+        "final-make-check-r6.log",
+        "final-test-security-r4.log",
+        "final-sp06-integration-r5.jsonl",
+        "process-recovery-r5.log",
+        "affected-SP04-runtime-r6.jsonl"
+      ]
+    }
+  ],
+  "finalConclusion": "PASS",
+  "finalReport": "final-independent-review.md"
+}

@@ -1,0 +1,70 @@
+capability=k8sgpt-analyzer source_commit=f071b32aa85d77b197cd2d0f9868294f7b55c5eb runtime_enabled=false
+locked_state=qualified disabled_reason=
+command: ["git", "-C", "/Users/mssc/.cache/ops-sp06-20261004/replay-sources/k8sgpt", "archive", "--format=tar", "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/k8sgpt-analyzer.tar", "f071b32aa85d77b197cd2d0f9868294f7b55c5eb"]
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/k8sgpt-analyzer/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/k8sgpt-analyzer", "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414", "sh", "-c", "go version && go list -mod=readonly -deps -json . > /output/cli-deps.json"]
+go version go1.27.1 linux/arm64
+exit_code=0
+actual CLI import closure and licenses checked: 233 exact modules
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/k8sgpt-analyzer/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/k8sgpt-analyzer", "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414", "go", "test", "-mod=readonly", "-p", "1", "-count=1", "-v", "-timeout=5m", "./pkg/analyzer", "-run", "^TestPod"]
+=== RUN   TestPodDisruptionBudgetAnalyzer
+--- PASS: TestPodDisruptionBudgetAnalyzer (0.00s)
+=== RUN   TestPodDisruptionBudgetAnalyzerLabelSelectorFiltering
+--- PASS: TestPodDisruptionBudgetAnalyzerLabelSelectorFiltering (0.00s)
+=== RUN   TestPodAnalyzer
+=== RUN   TestPodAnalyzer/Pending_pods,_namespace_filtering_and_readiness_probe_failure
+=== RUN   TestPodAnalyzer/readiness_probe_failure_without_any_event
+=== RUN   TestPodAnalyzer/Init_container_status_state_waiting
+=== RUN   TestPodAnalyzer/Container_status_state_waiting_but_no_event_reported
+=== RUN   TestPodAnalyzer/Container_status_state_waiting
+--- PASS: TestPodAnalyzer (0.00s)
+    --- PASS: TestPodAnalyzer/Pending_pods,_namespace_filtering_and_readiness_probe_failure (0.00s)
+    --- PASS: TestPodAnalyzer/readiness_probe_failure_without_any_event (0.00s)
+    --- PASS: TestPodAnalyzer/Init_container_status_state_waiting (0.00s)
+    --- PASS: TestPodAnalyzer/Container_status_state_waiting_but_no_event_reported (0.00s)
+    --- PASS: TestPodAnalyzer/Container_status_state_waiting (0.00s)
+PASS
+ok  	github.com/k8sgpt-ai/k8sgpt/pkg/analyzer	0.026s
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/k8sgpt-analyzer/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/k8sgpt-analyzer", "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414", "go", "build", "-mod=readonly", "-p", "1", "-o", "/output/k8sgpt", "./"]
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/k8sgpt-analyzer/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/k8sgpt-analyzer", "python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f", "python", "/fixtures/verify-k8sgpt-cli.py", "--binary", "/work/k8sgpt-analyzer/replay-output/k8sgpt"]
+{
+  "status": "fixture-pass",
+  "runs": 2,
+  "llmRequested": false,
+  "liveCluster": false,
+  "networkIsolationVerified": true,
+  "interfaces": [
+    "lo"
+  ],
+  "requests": [
+    "/version",
+    "/api/v1/namespaces/fixture/pods",
+    "/version",
+    "/api/v1/namespaces/fixture/pods"
+  ],
+  "result": {
+    "provider": "",
+    "errors": null,
+    "status": "ProblemDetected",
+    "problems": 1,
+    "results": [
+      {
+        "kind": "Pod",
+        "name": "fixture/unschedulable",
+        "error": [
+          {
+            "Text": "fixture: insufficient memory",
+            "KubernetesDoc": "",
+            "Sensitive": []
+          }
+        ],
+        "details": "",
+        "parentObject": ""
+      }
+    ]
+  }
+}
+exit_code=0
+replay_exit_code=0

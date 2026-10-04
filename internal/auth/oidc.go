@@ -141,7 +141,8 @@ func requestContextFromToken(token *oidc.IDToken, tenantID uuid.UUID, tenantIDs 
 		return RequestContext{}, err
 	}
 	result := RequestContext{
-		RequestID: nonemptyRequestID(requestID), Subject: token.Subject, TenantID: tenantID,
+		TokenExpiresAt: token.Expiry,
+		RequestID:      nonemptyRequestID(requestID), Subject: token.Subject, TenantID: tenantID,
 		TenantIDs: tenantIDs, TraceContext: traceParent, KeycloakSID: claims.SID,
 		ACR: claims.ACR, AuthTime: time.Unix(claims.AuthTime, 0).UTC(),
 	}

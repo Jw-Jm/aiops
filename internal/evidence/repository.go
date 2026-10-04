@@ -34,34 +34,41 @@ func (r Repository) Authorize(ctx context.Context, b Binding) error {
 func (r Repository) Get(ctx context.Context, tenant, id uuid.UUID, scope graph.Scope) (Evidence, error) {
 	var e Evidence
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
-		var raw []byte
-		var ns, state string
-		var archiveRaw []byte
-		err := tx.QueryRow(ctx, `SELECT m.metadata,m.namespace,m.replay_state,i.object_ref FROM platform.evidence_metadata m LEFT JOIN platform.evidence_archive_intents i USING(tenant_id,evidence_id) WHERE m.tenant_id=$1 AND m.evidence_id=$2 AND NOT m.deleting`, tenant, id).Scan(&raw, &ns, &state, &archiveRaw)
-		if err != nil {
-			return err
-		}
-		if json.Unmarshal(raw, &e) != nil {
-			return errors.New("invalid evidence metadata")
-		}
-		digest, err := evidenceSourceDigest(ctx, tx, e)
-		if err != nil || e.SourceScopeDigest == "" || e.SourceScopeDigest != digest {
-			return ErrScopeUnverified
-		}
-		e.ReplayState = state
-		if state == "archived_verified" {
-			var ref ArchiveRef
-			if json.Unmarshal(archiveRaw, &ref) != nil {
-				return errors.New("invalid archive metadata")
-			}
-			e.ArchiveRef = &ref
-		}
-		if !scope.Allows(e.ResourceCanonicalID, ns) {
-			return graph.ErrScope
-		}
-		return nil
+		var err error
+		e, err = GetTx(ctx, tx, tenant, id, scope)
+		return err
 	})
 	return e, err
+}
+
+// GetTx revalidates evidence and its current source binding inside the caller's authority-fenced transaction.
+func GetTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, scope graph.Scope) (e Evidence, err error) {
+	var raw []byte
+	var ns, state string
+	var archiveRaw []byte
+	err = tx.QueryRow(ctx, `SELECT m.metadata,m.namespace,m.replay_state,i.object_ref FROM platform.evidence_metadata m LEFT JOIN platform.evidence_archive_intents i USING(tenant_id,evidence_id) WHERE m.tenant_id=$1 AND m.evidence_id=$2 AND NOT m.deleting`, tenant, id).Scan(&raw, &ns, &state, &archiveRaw)
+	if err != nil {
+		return e, err
+	}
+	if json.Unmarshal(raw, &e) != nil {
+		return e, errors.New("invalid evidence metadata")
+	}
+	digest, err := evidenceSourceDigest(ctx, tx, e)
+	if err != nil || e.SourceScopeDigest == "" || e.SourceScopeDigest != digest {
+		return e, ErrScopeUnverified
+	}
+	e.ReplayState = state
+	if state == "archived_verified" {
+		var ref ArchiveRef
+		if json.Unmarshal(archiveRaw, &ref) != nil {
+			return e, errors.New("invalid archive metadata")
+		}
+		e.ArchiveRef = &ref
+	}
+	if !scope.Allows(e.ResourceCanonicalID, ns) {
+		return e, graph.ErrScope
+	}
+	return e, nil
 }
 
 // CheckBinding is also used before source isolation verification. Declarative

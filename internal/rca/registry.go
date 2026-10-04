@@ -10,7 +10,12 @@ import (
 )
 
 func (r Repository) verifyRecipe(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, vid *uuid.UUID, cluster, namespace string, recipe Recipe) error {
-	if vid == nil || *vid == uuid.Nil {
+	return VerifyRecipeForRead(ctx, tx, tenant, vid, cluster, namespace, recipe, r.Trust)
+}
+
+// VerifyRecipeForRead preserves the deterministic registry gate for proposals.
+func VerifyRecipeForRead(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, vid *uuid.UUID, cluster, namespace string, recipe Recipe, trust configregistry.SignatureVerifier) error {
+	if vid == nil || *vid == uuid.Nil || trust == nil {
 		return ErrRecipe
 	}
 	var clusterID uuid.UUID
@@ -45,7 +50,7 @@ func (r Repository) verifyRecipe(ctx context.Context, tx pgx.Tx, tenant uuid.UUI
 		return ErrRecipe
 	}
 	message, expected, err := configregistry.SigningPayload(tenant, configregistry.KindRecipe, recipe.Name, json.RawMessage(raw))
-	if err != nil || expected != digest || r.Trust.Verify(ctx, key, message, signature) != nil {
+	if err != nil || expected != digest || trust.Verify(ctx, key, message, signature) != nil {
 		return ErrRecipe
 	}
 	var current uuid.UUID

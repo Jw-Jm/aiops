@@ -9,8 +9,27 @@ import (
 )
 
 func TestNativePermissionReferencesRejectDifferentScopeAndMissingEvidence(t *testing.T) {
-	if len(nativeLicenses) != 281 {
-		t.Fatalf("compiled exact native license registry incomplete: %d", len(nativeLicenses))
+	var historical, investigator, debian, cargo, embedded, rustLibrary int
+	for _, scope := range nativeLicenses {
+		if strings.HasPrefix(scope.ID, "LicenseRef-Task27-Native-") {
+			historical++
+		}
+		if scope.Component == "holmesgpt" && strings.HasPrefix(scope.ID, "LicenseRef-SP06-Native-") {
+			investigator++
+			switch {
+			case strings.HasPrefix(scope.DependencyName, "debian/"):
+				debian++
+			case strings.HasPrefix(scope.DependencyName, "cargo/"):
+				cargo++
+			case strings.HasPrefix(scope.DependencyName, "embedded/"):
+				embedded++
+			case scope.DependencyName == "rust/standard-library":
+				rustLibrary++
+			}
+		}
+	}
+	if historical != 281 || debian != 87 || cargo != 767 || embedded != 8 || rustLibrary != 1 || investigator != debian+cargo+embedded+rustLibrary || len(nativeLicenses) != historical+investigator {
+		t.Fatalf("compiled exact native license registry incomplete: historical=%d investigator=%d total=%d", historical, investigator, len(nativeLicenses))
 	}
 	var scope nativeLicenseScope
 	for _, s := range nativeLicenses {

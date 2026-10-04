@@ -36,7 +36,9 @@ import (
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/integrations/k8sgpt"
+	"ops-platform/internal/integrations/keycloak"
 	"ops-platform/internal/integrations/openbao"
+	"ops-platform/internal/investigation"
 	"ops-platform/internal/profile"
 	"ops-platform/internal/resource"
 )
@@ -46,6 +48,9 @@ import (
 // isolated endpoints; neither their identities nor this selected regression
 // impersonate a clean installation of the shared core release.
 func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
+	if os.Getenv("SP06_NATIVE_CHART") == "1" && os.Getenv("SP05_NATIVE_CHART") != "1" {
+		t.Fatal("SP06 native gate requires SP05_NATIVE_CHART=1 to exercise its real Incident/RCA prerequisite")
+	}
 	if os.Getenv("SP04_NATIVE_CHART") != "1" {
 		t.Skip("signed Bundle and owned native gate opt-in required")
 	}
@@ -153,7 +158,8 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	http.DefaultTransport = transport
 	t.Cleanup(func() { http.DefaultTransport = original; transport.CloseIdleConnections() })
 	t.Setenv("SP03_KEYCLOAK_TEST_ISSUER", issuer)
-	token := sp04KeycloakToken(t, ctx, tenant)
+	var renewToken func() keycloak.TokenSet
+	token := sp04KeycloakToken(t, ctx, tenant, &renewToken)
 	if _, e = db.ExecContext(ctx, `INSERT INTO platform.tenants(tenant_id,slug,display_name) VALUES($1,$2,'Native SP04')`, tenant, tenant.String()); e != nil {
 		t.Fatal(e)
 	}
@@ -221,6 +227,10 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	}
 	identity("ops-api")
 	identity("ops-worker")
+	if os.Getenv("SP06_NATIVE_CHART") == "1" {
+		identity("ops-investigator")
+		create(map[string]any{"apiVersion": "v1", "kind": "Secret", "metadata": map[string]any{"name": "ops-sp06-model-key", "namespace": ns}, "stringData": map[string]string{"apiKey": "ollama-local-no-remote-charge"}})
+	}
 	crlPatchFile := filepath.Join(t.TempDir(), "crl-patch.json")
 	refreshCtx, stopRefresh := context.WithCancel(ctx)
 	refreshDone := make(chan struct{})
@@ -250,7 +260,11 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 					}
 					continue
 				}
-				for _, name := range []string{"api", "worker"} {
+				identities := []string{"api", "worker"}
+				if os.Getenv("SP06_NATIVE_CHART") == "1" {
+					identities = append(identities, "investigator")
+				}
+				for _, name := range identities {
 					command := exec.CommandContext(refreshCtx, "kubectl", "--context", "orbstack", "-n", ns, "patch", "secret", "ops-sp04-"+name+"-identity", "--type=merge", "--patch-file", crlPatchFile)
 					if e = command.Run(); e != nil {
 						select {
@@ -317,6 +331,9 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	}
 	images := map[string]string{}
 	for _, image := range planned {
+		if image.Name == "holmesgpt" && os.Getenv("SP06_NATIVE_CHART") == "1" {
+			images["investigator"] = image.Reference
+		}
 		if image.Name == "platform-api" || image.Name == "platform-worker" {
 			name := strings.TrimPrefix(image.Name, "platform-")
 
@@ -324,7 +341,11 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 			t.Logf("native exact verified %s image=%s", name, image.Reference)
 		}
 	}
-	if len(images) != 2 {
+	expectedImages := 2
+	if os.Getenv("SP06_NATIVE_CHART") == "1" {
+		expectedImages = 3
+	}
+	if len(images) != expectedImages {
 		t.Fatal("actual selected platform image plan incomplete")
 	}
 	for _, f := range spec.Files {
@@ -364,7 +385,13 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 			t.Fatal(e)
 		}
 		t.Cleanup(registryPool.Close)
-		_, registryTrust := sp05GoldenRegistry(t, ctx, db, registryPool, tenant)
+		var registryKey ed25519.PrivateKey
+		_, registryTrust := sp05GoldenRegistry(t, ctx, db, registryPool, tenant, &registryKey)
+		if os.Getenv("SP06_NATIVE_CHART") == "1" {
+			sp06Policy(t, ctx, db, registryPool, tenant, registryKey)
+			values["components"].(map[string]any)["investigator"] = map[string]any{"enabled": false, "image": images["investigator"]}
+			values["sp06"] = map[string]any{"enabled": true, "tenants": []string{tenant.String()}, "identitySecret": "ops-sp04-investigator-identity", "modelCIDRs": []string{"0.250.250.254/32"}, "model": map[string]any{"base_url": "http://host.docker.internal:11434/v1", "api_key_ref": "secret://model/api-key", "model": "llama3.1:8b-16k", "timeout": 45, "token_budget": 1024}, "budget": jsonValue(investigation.DefaultBudget())}
+		}
 		keys := map[string]string{}
 		for name, key := range registryTrust.Keys {
 			keys[name] = base64.StdEncoding.EncodeToString(key)
@@ -384,7 +411,7 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 		}
 		ports = append(ports, map[string]any{"protocol": "TCP", "port": port})
 	}
-	create(map[string]any{"apiVersion": "networking.k8s.io/v1", "kind": "NetworkPolicy", "metadata": map[string]any{"name": "owned-host-fixtures", "namespace": ns}, "spec": map[string]any{"podSelector": map[string]any{"matchLabels": map[string]string{"ops.platform.io/release": ns}, "matchExpressions": []any{map[string]any{"key": "ops.platform.test.public-control", "operator": "DoesNotExist"}}}, "policyTypes": []string{"Egress"}, "egress": []any{map[string]any{"to": []any{map[string]any{"ipBlock": map[string]string{"cidr": "0.250.250.254/32"}}}, "ports": ports}}}})
+	create(map[string]any{"apiVersion": "networking.k8s.io/v1", "kind": "NetworkPolicy", "metadata": map[string]any{"name": "owned-host-fixtures", "namespace": ns}, "spec": map[string]any{"podSelector": map[string]any{"matchLabels": map[string]string{"ops.platform.io/release": ns}, "matchExpressions": []any{map[string]any{"key": "ops.platform.test.public-control", "operator": "DoesNotExist"}, map[string]any{"key": "ops.platform.io/component", "operator": "NotIn", "values": []string{"investigator"}}}}, "policyTypes": []string{"Egress"}, "egress": []any{map[string]any{"to": []any{map[string]any{"ipBlock": map[string]string{"cidr": "0.250.250.254/32"}}}, "ports": ports}}}})
 	// Probe carries the same release/component selection as API. It must prove a
 	// positive public path before the Chart imposes its actual deny policy.
 	create(map[string]any{"apiVersion": "v1", "kind": "Pod", "metadata": map[string]any{"name": "egress-probe", "namespace": ns, "labels": map[string]string{"ops.platform.io/release": ns, "ops.platform.io/component": "web", "ops.platform.test.public-control": "probe"}}, "spec": map[string]any{"automountServiceAccountToken": false, "containers": []any{map[string]any{"name": "probe", "image": archiveProbeImage, "imagePullPolicy": "Never", "command": []string{"sleep", "1800"}}}}})
@@ -429,7 +456,11 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 		if !t.Failed() {
 			return
 		}
-		for _, deployment := range []string{"ops-api", "ops-worker"} {
+		deployments := []string{"ops-api", "ops-worker"}
+		if os.Getenv("SP06_NATIVE_CHART") == "1" {
+			deployments = append(deployments, "ops-investigator")
+		}
+		for _, deployment := range deployments {
 			raw, e := exec.Command("kubectl", "--context", "orbstack", "-n", ns, "logs", "deployment/"+deployment, "--all-pods=true", "--prefix", "--tail=80").Output()
 			if e == nil {
 				t.Logf("owned native %s diagnostic logs: %s", deployment, raw)
@@ -454,8 +485,29 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 		time.Sleep(time.Second)
 	}
 	run("kubectl", "--context", "orbstack", "-n", ns, "label", "pod", "evidence-pod", "ops.platform.io/release="+ns, "ops.platform.io/component=worker")
-	if !connectPod("evidence-pod", "host.docker.internal", 15484) || connectPod("evidence-pod", "1.1.1.1", 443) {
+	ownedPGURL, err := url.Parse(apiDSN)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var ownedPGPort int
+	if _, err = fmt.Sscanf(ownedPGURL.Port(), "%d", &ownedPGPort); err != nil {
+		t.Fatal(err)
+	}
+	if !connectPod("evidence-pod", "host.docker.internal", ownedPGPort) || connectPod("evidence-pod", "1.1.1.1", 443) {
 		t.Fatal("explicit registered PG source blocked by native policy")
+	}
+	if os.Getenv("SP06_NATIVE_CHART") == "1" {
+		var pods struct {
+			Items []struct{ Metadata struct{ Name string } }
+		}
+		if json.Unmarshal(run("kubectl", "--context", "orbstack", "-n", ns, "get", "pods", "-l", "ops.platform.io/release="+ns+",ops.platform.io/component=investigator", "-o", "json"), &pods) != nil || len(pods.Items) != 1 {
+			t.Fatal("owned resident investigator identity missing")
+		}
+		pod := pods.Items[0].Metadata.Name
+		if !connectPod(pod, "ops-api."+ns+".svc.cluster.local", 8083) || !connectPod(pod, "host.docker.internal", 11434) || connectPod(pod, "host.docker.internal", ownedPGPort) || connectPod(pod, "1.1.1.1", 443) {
+			t.Fatal("investigator actual CNI must allow only API/model/DNS and deny database/public endpoints")
+		}
+		t.Log("actual investigator CNI: API/model positive; owned database/public positive controls independently established; investigator database/public denied")
 	}
 	t.Log("actual CNI positive public-before/negative public-after; exact owned host dependency allowed; selected images Never")
 	// Port-forward only the owned API Service. No shared Service or route changes.
@@ -470,6 +522,9 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	}
 	t.Cleanup(func() { _ = forward.Process.Kill(); _ = forward.Wait() })
 	call := func(method, path string, data []byte) (int, []byte) {
+		if time.Now().Add(5 * time.Second).After(token.ExpiresAt) {
+			token = renewToken()
+		}
 		r, _ := http.NewRequestWithContext(ctx, method, fmt.Sprintf("http://127.0.0.1:%d%s", port, path), bytes.NewReader(data))
 		r.Header.Set("Authorization", "Bearer "+token.AccessToken)
 		r.Header.Set("Content-Type", "application/json")
@@ -481,7 +536,9 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 		defer response.Body.Close()
 		b, _ := io.ReadAll(io.LimitReader(response.Body, 1<<20))
 		if os.Getenv("SP05_NATIVE_CHART") == "1" {
-			assertSP05PublicResponseContract(t, path, response.StatusCode, b)
+			if !strings.Contains(path, "investigations") {
+				assertSP05PublicResponseContract(t, path, response.StatusCode, b)
+			}
 		}
 		return response.StatusCode, b
 	}
@@ -571,6 +628,11 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 			}
 			time.Sleep(250 * time.Millisecond)
 		}
+		if os.Getenv("SP06_NATIVE_CHART") == "1" {
+			sp06NativeInvestigation(t, ctx, db, ns, incidentID, call)
+			sp06NativeConcurrentInvestigations(t, ctx, db, ns, tenant.String(), collector.ClusterUID, resourcePath, evidenceID, incidentID, create, call)
+			sp06NativeModelWithdrawal(t, ctx, db, ns, tenant.String(), collector.ClusterUID, resourcePath, evidenceID, incidentID, run, create, call)
+		}
 		t.Log("current signed image/Chart -> actual platform-worker main and JWT bootstrap -> fixed unchanged CLI in finite read-only Pod -> Finding/Incident/archive -> signed Recipe -> honest unresolved RCA -> OIDC API; native positive Metrics-server remains unverified")
 	}
 
@@ -604,6 +666,31 @@ func TestSP04SignedChartNativeWorkerOfflineReinstall(t *testing.T) {
 	var after int
 	if e = db.QueryRowContext(ctx, `SELECT count(*) FROM platform.evidence_metadata WHERE tenant_id=$1 AND replay_state='archived_verified'`, tenant).Scan(&after); e != nil || after < verified {
 		t.Fatal("owned release reinstall lost verified archive metadata")
+	}
+	if os.Getenv("SP06_NATIVE_CHART") == "1" {
+		// A fresh native Incident is required after reinstall. Reposting an old
+		// Incident/revision would correctly reuse its completed idempotent Job,
+		// proving persistence but not the restarted resident's model/MCP path.
+		podRaw := create(map[string]any{"apiVersion": "v1", "kind": "Pod", "metadata": map[string]any{"name": "sp06-after-reinstall", "namespace": ns}, "spec": map[string]any{"automountServiceAccountToken": false, "restartPolicy": "Never", "containers": []any{map[string]any{"name": "never-pulled", "image": "fixture.invalid/sp06-after-reinstall:missing", "imagePullPolicy": "Never"}}}})
+		var pod struct{ Metadata struct{ UID string } }
+		if json.Unmarshal(podRaw, &pod) != nil || pod.Metadata.UID == "" {
+			t.Fatal("post-reinstall native Pod identity missing")
+		}
+		newResource := "k8s+v1://" + tenant.String() + "/" + collector.ClusterUID + "/core/Pod/" + pod.Metadata.UID
+		var iid string
+		for deadline := time.Now().Add(90 * time.Second); ; {
+			if e = db.QueryRowContext(ctx, `SELECT COALESCE(min(l.incident_id::text),'') FROM finding.records f JOIN incident.finding_links l USING(tenant_id,finding_id) JOIN finding.evidence_refs r USING(tenant_id,finding_id) JOIN platform.evidence_metadata m ON m.tenant_id=r.tenant_id AND m.evidence_id=r.evidence_id AND m.replay_state='archived_verified' WHERE f.tenant_id=$1 AND f.resource_canonical_id=$2 AND f.lifecycle_state='firing'`, tenant, newResource).Scan(&iid); e != nil {
+				t.Fatal(e)
+			}
+			if iid != "" {
+				break
+			}
+			if time.Now().After(deadline) {
+				t.Fatal("reinstalled Worker did not create fresh Incident/archived Evidence")
+			}
+			time.Sleep(250 * time.Millisecond)
+		}
+		sp06NativeInvestigation(t, ctx, db, ns, iid, call)
 	}
 	select {
 	case <-refreshErrors:
@@ -718,6 +805,11 @@ func sp04NativeBao(t *testing.T, ctx context.Context, ns string, collector app.S
 	if e = bao.Configure(ctx); e != nil {
 		t.Fatal(e)
 	}
+	if os.Getenv("SP06_NATIVE_CHART") == "1" {
+		if e = bao.ConfigureInvocationSigning(ctx); e != nil {
+			t.Fatal(e)
+		}
+	}
 	t.Logf("owned native Bao exact image=%s namespace=%s; local real Kubernetes TokenReview configuration", image, ns)
 	return bao, ca, "https://host.docker.internal:" + port
 }
@@ -809,11 +901,15 @@ func sp04ColdSelectedImages(t *testing.T, ctx context.Context, images []bundle.I
 		t.Fatal("native Pod inventory unavailable before cold import")
 	}
 	for _, image := range images {
-		if (image.Name != "platform-api" && image.Name != "platform-worker") || !strings.HasPrefix(image.Reference, "ops.local/task27/") {
+		if (image.Name != "platform-api" && image.Name != "platform-worker" && !(image.Name == "holmesgpt" && os.Getenv("SP06_NATIVE_CHART") == "1")) || !strings.HasPrefix(image.Reference, "ops.local/task27/") {
 			t.Fatal("refuse cold-cache operation on shared dependency")
 		}
 		ownedTag := "ops.local/" + bundleID + "/" + image.Name + ":1.0.0"
 		ownedDigest := "ops.local/" + bundleID + "/" + image.Name + "@" + strings.Split(image.Reference, "@")[1]
+		if image.Name == "holmesgpt" {
+			ownedTag = "ops.local/sp06/investigator:20261003"
+			ownedDigest = "ops.local/sp06/investigator@" + strings.Split(image.Reference, "@")[1]
+		}
 		for _, reference := range []string{image.Reference, ownedTag} {
 			raw, err := exec.CommandContext(ctx, "docker", "--context", "orbstack", "image", "inspect", reference).CombinedOutput()
 			if err != nil {
@@ -898,7 +994,10 @@ func sp04ColdIdentityMatches(d sp04ColdImageIdentity, signed, ownDigest, ownTag 
 		}
 	}
 	for _, tag := range d.RepoTags {
-		if tag != ownTag {
+		// OrbStack represents a previously imported immutable OCI reference in
+		// RepoTags as well as RepoDigests. It is the same signed identity, not
+		// an unrelated mutable preparation tag.
+		if tag != ownTag && tag != signed {
 			return false
 		}
 	}

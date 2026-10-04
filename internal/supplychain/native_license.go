@@ -16,6 +16,12 @@ import (
 //go:embed licenses/native-core-reviewed.json
 var nativeLicenseRegistry []byte
 
+// SP06 records are also a finite, independently compiled reviewed inventory.
+// An input Catalog cannot create or broaden these identities.
+//
+//go:embed licenses/sp06-investigator-reviewed.json
+var investigatorLicenseRegistry []byte
+
 type nativeLicenseScope struct {
 	ID                              string `json:"id"`
 	Component                       string `json:"component"`
@@ -39,17 +45,19 @@ func loadNativeLicenseScopes() map[string]nativeLicenseScope {
 		SchemaVersion int                  `json:"schemaVersion"`
 		Licenses      []nativeLicenseScope `json:"licenses"`
 	}
-	if err := json.Unmarshal(nativeLicenseRegistry, &document); err != nil || document.SchemaVersion != 1 {
-		return nil // A malformed compiled registry rejects every native reference.
-	}
-	result := make(map[string]nativeLicenseScope, len(document.Licenses))
-	for _, record := range document.Licenses {
-		if record.ID == "" || result[record.ID].ID != "" || !digestPattern.MatchString(record.ImageDigest) ||
-			!digestPattern.MatchString(record.SourceArchiveSHA256) || !digestPattern.MatchString(record.NoticeDigest) ||
-			!digestPattern.MatchString(record.ADRDigest) || !digestPattern.MatchString(record.CorrespondingSourceBundleSHA256) {
-			return nil
+	result := make(map[string]nativeLicenseScope)
+	for _, inventory := range [][]byte{nativeLicenseRegistry, investigatorLicenseRegistry} {
+		if err := json.Unmarshal(inventory, &document); err != nil || document.SchemaVersion != 1 {
+			return nil // A malformed compiled registry rejects every native reference.
 		}
-		result[record.ID] = record
+		for _, record := range document.Licenses {
+			if record.ID == "" || result[record.ID].ID != "" || !digestPattern.MatchString(record.ImageDigest) ||
+				!digestPattern.MatchString(record.SourceArchiveSHA256) || !digestPattern.MatchString(record.NoticeDigest) ||
+				!digestPattern.MatchString(record.ADRDigest) || !digestPattern.MatchString(record.CorrespondingSourceBundleSHA256) {
+				return nil
+			}
+			result[record.ID] = record
+		}
 	}
 	return result
 }

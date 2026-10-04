@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/sp06/prepare-services.py", line 18, in <module>
+    baoport=docker('ops-sp04-openbao-20261002','ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6',8200,['server','-config=/cfg/bao.hcl'],[str(d)+':/cfg:ro'])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/sp06/prepare-services.py", line 10, in docker
+    cmd+=[image]+args; ident=run(cmd)
+                             ^^^^^^^^
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/sp06/prepare-services.py", line 4, in run
+    def run(args): return sp.check_output(args,stderr=sp.PIPE,text=True).strip()
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['docker', 'run', '-d', '--name', 'ops-sp04-openbao-20261002', '--label', 'ops.platform.test=sp06-20261003', '-p', '127.0.0.1::8200', '-v', '/tmp/ops-sp06-services-20261003-4w5etmsx:/cfg:ro', 'ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6', 'server', '-config=/cfg/bao.hcl']' returned non-zero exit status 125.

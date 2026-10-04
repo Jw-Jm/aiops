@@ -14,6 +14,7 @@ import (
 	"ops-platform/internal/finding"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/incident"
+	"ops-platform/internal/investigation"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/rca"
 	"slices"
@@ -256,4 +257,30 @@ func (h *SP05Handlers) currentRCAView(ctx context.Context, actor auth.RequestCon
 	view["currentGraphRevision"] = current.GraphRevision
 	view["currentDegradedSources"] = reasons
 	return view, nil
+}
+
+// CurrentInvestigationRCA reuses the existing deterministic current-runtime read gate.
+func (h *SP05Handlers) CurrentInvestigationRCA(ctx context.Context, j investigation.Job) (int64, error) {
+	actor := auth.RequestContext{TenantID: j.TenantID, Subject: j.Subject, Roles: []auth.Role{auth.Operator}}
+	var i incident.Incident
+	if err := persistence.WithTenantTx(ctx, h.Pool, j.TenantID, func(tx pgx.Tx) error {
+		var err error
+		i, err = incident.Load(ctx, tx, j.TenantID, j.IncidentID.String(), false)
+		return err
+	}); err != nil {
+		return 0, err
+	}
+	rev, err := (rca.Repository{Pool: h.Pool}).Read(ctx, j.TenantID, j.IncidentID.String(), i.CurrentRCARevision)
+	if err != nil {
+		return 0, err
+	}
+	value, err := h.currentRCAView(ctx, actor, j.Scope, i, rev)
+	if err != nil {
+		return 0, err
+	}
+	view, ok := value.(map[string]any)
+	if !ok || view["currentEligible"] != true {
+		return 0, investigation.ErrDenied
+	}
+	return rev.Revision, nil
 }

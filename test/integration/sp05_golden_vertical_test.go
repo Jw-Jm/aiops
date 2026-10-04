@@ -100,10 +100,14 @@ func TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay(t *testing.T) {
 
 func sp05GoldenVertical(t *testing.T, scenario, mode string, reviewFence ...bool) {
 	input, expected := loadSP05Golden(t, scenario)
+	if len(reviewFence) > 1 && reviewFence[1] {
+		input = sp06CurrentGoldenInput(t, input)
+	}
 	ctx, db, pool, b := sp05Database(t, sp05Seed{Tenant: uuid.MustParse(input.Tenant), Source: uuid.MustParse(input.Sources["kubernetes"]), ClusterUID: input.Cluster, Namespace: input.Namespace, Backend: "sp05-golden-kubernetes"})
 	clock := input.Clock
 	archives := sp05GoldenArchive(t, ctx, pool, b.TenantID)
-	registry, trust := sp05GoldenRegistry(t, ctx, db, pool, b.TenantID)
+	var registryKey ed25519.PrivateKey
+	registry, trust := sp05GoldenRegistry(t, ctx, db, pool, b.TenantID, &registryKey)
 	cluster := app.SP04Cluster{Tenant: input.Tenant, ClusterUID: input.Cluster, SourceID: b.SourceID.String(), SourceRevision: 1, BackendLogicalID: "sp05-golden-kubernetes"}
 	required := []kube.GVR{}
 	for _, s := range input.Snapshots {
@@ -330,6 +334,9 @@ func sp05GoldenVertical(t *testing.T, scenario, mode string, reviewFence ...bool
 	if len(reviewFence) > 0 && reviewFence[0] {
 		sp05GoldenReviewFences(t, ctx, db, pool, archives, registry, trust, g, cluster, b, scopeForGolden(input), expected.Primary)
 	}
+	if len(reviewFence) > 1 && reviewFence[1] {
+		sp06GoldenInvestigationValidator(t, ctx, db, pool, archives, trust, g, b, expected.Primary, registryKey)
+	}
 	t.Logf("%s/%s: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim", scenario, mode)
 }
 
@@ -417,7 +424,7 @@ func sp05GoldenArchive(t *testing.T, ctx context.Context, pool *pgxpool.Pool, te
 	return &evidence.ArchiveService{Pool: pool, Store: store, Protector: protector, BackendLogicalID: "sp05-golden-archive"}
 }
 
-func sp05GoldenRegistry(t *testing.T, ctx context.Context, db *sql.DB, pool *pgxpool.Pool, tenant uuid.UUID) (*configregistry.Service, configregistry.Ed25519TrustStore) {
+func sp05GoldenRegistry(t *testing.T, ctx context.Context, db *sql.DB, pool *pgxpool.Pool, tenant uuid.UUID, capture ...*ed25519.PrivateKey) (*configregistry.Service, configregistry.Ed25519TrustStore) {
 	t.Helper()
 	apiPool, err := pgxpool.NewWithConfig(ctx, runtimePoolConfig(t, ctx, db, pool.Config().ConnConfig.ConnString(), "api_runtime_role"))
 	if err != nil {
@@ -428,6 +435,9 @@ func sp05GoldenRegistry(t *testing.T, ctx context.Context, db *sql.DB, pool *pgx
 		t.Fatal(err)
 	}
 	pub, priv, _ := ed25519.GenerateKey(rand.Reader)
+	if len(capture) == 1 {
+		*capture[0] = priv
+	}
 	trust := configregistry.Ed25519TrustStore{Keys: map[string]ed25519.PublicKey{"integration-key": pub}}
 	compiler, err := policy.NewBundleCompiler(trust)
 	if err != nil {

@@ -1,0 +1,29 @@
+k8sgpt-analyzer f071b32aa85d77b197cd2d0f9868294f7b55c5eb
+node-problem-detector-rules e2b57e2f42052e4cf62cd2be1eb882f6a71a7804
+metal3-bmo-model 767846c3f3a8b2426cbc5d5fc3b0f4a8565fa440
+gofish-redfish af1cf20386d538767ed9b6dd3a770736ab90e2d0
+ipmi-exporter 291d0107bdab44df5a7ff50ce552ee3ccc23b52a
+smartctl-exporter ef5c03de02cb793e6a1540bef943fe6a167de635
+ariadne fa2232ce45c4c869e47ddae1c57e8886830cfb6c
+keep-community-model 118b2dc0c7a45f8a22b6317b983cdba6f5b54b5e
+coroot-community-check 76fa0cff31c530d1a2b0e8adc662433eea2bfeef
+Traceback (most recent call last):
+  File "<stdin>", line 15, in <module>
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<stdin>", line 11, in restore
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', '-C', '/Users/mssc/.cache/ops-sp06-20261004/replay-sources/kubernetes-ontology', 'fetch', '--depth=1', 'https://github.com/Colvin-Y/kubernetes-ontology', '346236312685a2e2e824c46b9ecdb3e8e8a10c76']' returned non-zero exit status 128.

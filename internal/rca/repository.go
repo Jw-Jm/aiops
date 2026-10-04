@@ -221,3 +221,7 @@ func (r Repository) Read(ctx context.Context, tenant uuid.UUID, id string, revis
 	})
 	return out, err
 }
+
+func FreezeFindingsTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, id string) ([]FindingInput, error) {
+	return freezeFindings(ctx, tx, tenant, id)
+}

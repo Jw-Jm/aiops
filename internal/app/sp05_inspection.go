@@ -14,6 +14,35 @@ import (
 	"ops-platform/internal/resourcestore"
 )
 
+func withSP05SnapshotInspection(publish, inspect func(kubernetes.Snapshot) error) func(kubernetes.Snapshot) error {
+	var pending *kubernetes.Snapshot
+	return func(s kubernetes.Snapshot) error {
+		if err := publish(s); err != nil {
+			return err
+		}
+		if !s.ObservationOnly {
+			pending = nil
+			if !s.State.LastListCompletedAt.IsZero() && s.State.LastError != "" {
+				// Initial List facts have been published, but are not eligible for
+				// inspection until the authoritative initial Watch completes.
+				copy := s
+				pending = &copy
+				return nil
+			}
+			return inspect(s)
+		}
+		if pending != nil && s.State.WatchConnected && s.State.WatchContinuous && s.State.LastError == "" {
+			ready := *pending
+			ready.State = s.State
+			if err := inspect(ready); err != nil {
+				return err
+			}
+			pending = nil
+		}
+		return nil
+	}
+}
+
 func InspectSP05Snapshot(ctx context.Context, cluster SP04Cluster, s kubernetes.Snapshot, archive *evidence.ArchiveService) error {
 	if s.ObservationOnly || s.State.LastListCompletedAt.IsZero() || s.State.LastError != "" {
 		return nil

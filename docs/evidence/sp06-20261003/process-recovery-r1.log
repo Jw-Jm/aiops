@@ -1,0 +1,43 @@
+=== RUN   TestSP06RealHolmesModelMCPJobAndSSE
+2026/10/03 21:01:10 OK   00001_roles_and_schemas.sql (24.13ms)
+2026/10/03 21:01:10 goose: successfully migrated database to version: 1
+2026/10/03 21:01:10 OK   00002_platform_meta.sql (16.49ms)
+2026/10/03 21:01:10 OK   00003_finding.sql (6.88ms)
+2026/10/03 21:01:10 OK   00004_incident.sql (26.85ms)
+2026/10/03 21:01:10 OK   00005_investigation.sql (12.44ms)
+2026/10/03 21:01:10 OK   00006_action_command.sql (17.91ms)
+2026/10/03 21:01:10 OK   00007_audit.sql (34.2ms)
+2026/10/03 21:01:10 OK   00008_rls.sql (32.4ms)
+2026/10/03 21:01:10 OK   00009_idempotency_ledger.sql (27.81ms)
+2026/10/03 21:01:10 OK   00010_tenant_provisioning.sql (4.08ms)
+2026/10/03 21:01:10 OK   00011_source_registration_history.sql (27.34ms)
+2026/10/03 21:01:10 OK   00012_config_registry_lifecycle.sql (7.78ms)
+2026/10/03 21:01:10 OK   00013_audit_signed_segments.sql (31.01ms)
+2026/10/03 21:01:10 OK   00014_audit_segment_predecessors.sql (17.3ms)
+2026/10/03 21:01:10 OK   00015_source_schema_scope.sql (10.15ms)
+2026/10/03 21:01:10 OK   00016_cluster_registration_metadata.sql (4.24ms)
+2026/10/03 21:01:10 OK   00017_source_data_scope.sql (2.86ms)
+2026/10/03 21:01:10 OK   00018_sp04_resources_evidence.sql (24.88ms)
+2026/10/03 21:01:10 OK   00019_sp04_archive_ciphertext_bytes.sql (5.39ms)
+2026/10/03 21:01:10 OK   00020_sp04_request_ledger.sql (3.88ms)
+2026/10/03 21:01:10 OK   00021_sp04_archive_protection.sql (2.66ms)
+2026/10/03 21:01:10 OK   00022_sp04_legal_hold_dependencies.sql (2.05ms)
+2026/10/03 21:01:10 OK   00023_sp04_archive_query_intent.sql (1.97ms)
+2026/10/03 21:01:10 OK   00024_sp05_finding_incident.sql (11.65ms)
+2026/10/03 21:01:10 OK   00025_sp05_incident_event_time.sql (2.03ms)
+2026/10/03 21:01:10 OK   00026_sp05_source_binding_lock.sql (2.41ms)
+2026/10/03 21:01:10 OK   00027_sp05_rca_and_poll.sql (12.37ms)
+2026/10/03 21:01:10 OK   00028_sp05_operator_lock.sql (13.69ms)
+2026/10/03 21:01:10 OK   00029_sp05_evidence_links.sql (5ms)
+2026/10/03 21:01:10 OK   00030_sp05_recipe_fence.sql (2.36ms)
+2026/10/03 21:01:10 OK   00031_sp05_rca_postcheck.sql (22.62ms)
+2026/10/03 21:01:10 OK   00032_sp05_transport_audit.sql (3.03ms)
+2026/10/03 21:01:10 OK   00033_sp05_poll_resolution_clock.sql (3.12ms)
+2026/10/03 21:01:10 OK   00034_sp06_investigation_ledger.sql (36.64ms)
+2026/10/03 21:01:10 goose: successfully migrated database to version: 34
+    sp06_real_chain_test.go:334: SIGKILL case did not reach committed tool
+    sp06_real_chain_test.go:224: investigator diagnostic 
+--- FAIL: TestSP06RealHolmesModelMCPJobAndSSE (28.90s)
+FAIL
+FAIL	ops-platform/test/integration	32.536s
+FAIL

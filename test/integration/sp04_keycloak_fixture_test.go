@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func sp04KeycloakToken(t *testing.T, ctx context.Context, tenantID uuid.UUID) keycloak.TokenSet {
+func sp04KeycloakToken(t *testing.T, ctx context.Context, tenantID uuid.UUID, renew ...*func() keycloak.TokenSet) keycloak.TokenSet {
 	issuer := os.Getenv("SP03_KEYCLOAK_TEST_ISSUER")
 	adminPassword := os.Getenv("SP03_KEYCLOAK_TEST_ADMIN_PASSWORD")
 	adminToken, serverURL := isolatedKeycloakAdminToken(t, ctx, issuer, adminPassword)
@@ -25,7 +25,11 @@ func sp04KeycloakToken(t *testing.T, ctx context.Context, tenantID uuid.UUID) ke
 		callbackQuery <- r.URL.Query()
 		w.WriteHeader(http.StatusNoContent)
 	}))
-	defer callbackServer.Close()
+	if len(renew) > 0 {
+		t.Cleanup(callbackServer.Close)
+	} else {
+		defer callbackServer.Close()
+	}
 	clientID, clientSecret := configureIsolatedKeycloakClient(t, ctx, serverURL, adminToken, callbackServer.URL+"/callback")
 	// tenantID is supplied by the owned SP04 database.
 	username, password := createIsolatedKeycloakUser(t, ctx, serverURL, adminToken, tenantID)
@@ -121,6 +125,15 @@ func sp04KeycloakToken(t *testing.T, ctx context.Context, tenantID uuid.UUID) ke
 	initial := login(false)
 	if initial.Subject == "" || initial.TenantID != tenantID.String() || initial.SID == "" || initial.ACR == "" {
 		t.Fatalf("live Keycloak login omitted verified identity claims: subject=%q tenant=%q sid_set=%v acr=%q", initial.Subject, initial.TenantID, initial.SID != "", initial.ACR)
+	}
+	if len(renew) > 0 {
+		*renew[0] = func() keycloak.TokenSet {
+			next := login(false)
+			if next.Subject != initial.Subject || next.TenantID != initial.TenantID {
+				t.Fatal("renewed fixture identity changed")
+			}
+			return next
+		}
 	}
 
 	return initial

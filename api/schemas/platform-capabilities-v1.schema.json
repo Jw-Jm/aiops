@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/platform-capabilities/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "platform-capabilities/v1"
+    },
+    "apiReady": {
+      "type": "boolean"
+    },
+    "graphReady": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "sourceDegraded": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "investigation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "disabled",
+            "unverified",
+            "degraded"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "readOnly": {
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "required": [
+        "enabled",
+        "status",
+        "reason",
+        "readOnly"
+      ]
+    },
+    "kubevirt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "disabled",
+            "unverified",
+            "degraded"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "verification": {
+          "type": "string",
+          "const": "unverified"
+        }
+      },
+      "required": [
+        "status",
+        "reason"
+      ]
+    },
+    "cdi": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "disabled",
+            "unverified",
+            "degraded"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "verification": {
+          "type": "string",
+          "const": "unverified"
+        }
+      },
+      "required": [
+        "status",
+        "reason"
+      ]
+    },
+    "pyrca": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "disabled",
+            "unverified",
+            "degraded"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "verification": {
+          "type": "string",
+          "const": "unverified"
+        }
+      },
+      "required": [
+        "status",
+        "reason"
+      ]
+    },
+    "commandExecution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "disabled",
+            "unverified",
+            "degraded"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "verification": {
+          "type": "string",
+          "const": "unverified"
+        }
+      },
+      "required": [
+        "status",
+        "reason"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "apiReady",
+    "graphReady",
+    "sourceDegraded",
+    "investigation",
+    "kubevirt",
+    "cdi",
+    "pyrca",
+    "commandExecution"
+  ]
+}

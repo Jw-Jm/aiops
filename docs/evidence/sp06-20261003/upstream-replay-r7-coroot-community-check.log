@@ -1,0 +1,13 @@
+capability=coroot-community-check source_commit=76fa0cff31c530d1a2b0e8adc662433eea2bfeef runtime_enabled=false
+locked_state=qualified disabled_reason=
+command: ["git", "-C", "/Users/mssc/.cache/ops-sp06-20261004/replay-sources/coroot", "archive", "--format=tar", "--output=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/coroot-community-check.tar", "76fa0cff31c530d1a2b0e8adc662433eea2bfeef"]
+exit_code=0
+command: ["docker", "--context", "orbstack", "run", "--rm", "--network", "none", "--pull=never", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--tmpfs", "/tmp:rw,exec,mode=1777", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v,dst=/work,readonly", "--mount", "type=bind,src=/Users/mssc/Documents/Code/ops/platform/test/fixtures/upstream-inspection,dst=/fixtures,readonly", "--mount", "type=bind,src=/Users/mssc/go/pkg/mod,dst=/gomodcache,readonly", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/cache,dst=/buildcache", "--mount", "type=bind,src=/var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-inspection-replay-wmidxw9v/coroot-community-check/replay-output,dst=/output", "-e", "GOPROXY=off", "-e", "GOSUMDB=off", "-e", "GOMODCACHE=/gomodcache", "-e", "GOCACHE=/buildcache", "-e", "CGO_ENABLED=0", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "OPS_TASK29_FIXTURES=/fixtures", "-w", "/work/coroot-community-check", "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414", "go", "test", "-mod=readonly", "-p", "1", "-count=1", "-v", "-timeout=5m", "./model", "-run", "^(TestCheckConfigs_getRaw|TestTask29CorootCheckAuditBoundary)$"]
+=== RUN   TestCheckConfigs_getRaw
+--- PASS: TestCheckConfigs_getRaw (0.00s)
+=== RUN   TestTask29CorootCheckAuditBoundary
+--- PASS: TestTask29CorootCheckAuditBoundary (0.00s)
+PASS
+ok  	github.com/coroot/coroot/model	0.002s
+exit_code=0
+replay_exit_code=0

@@ -1,6 +1,6 @@
 {{- if not .Values.networkPolicyOnly }}
 {{- range $name, $component := .Values.components }}
-{{- if $component.enabled }}
+{{- if or $component.enabled (and $.Values.sp06.enabled (eq $name "investigator")) }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -13,6 +13,9 @@ spec:
   selector:
     ops.platform.io/component: {{ $name }}
   ports:
+    {{ if and $.Values.sp06.enabled (eq $name "api") }}
+    - {name: mcp-mtls, port: {{ $.Values.sp06.gatewayPort }}, targetPort: mcp-mtls}
+    {{ end }}
     {{ if and $.Values.sp04.enabled (eq $name "worker") }}
     - name: graph-mtls
       port: {{ $.Values.sp04.graphPort }}

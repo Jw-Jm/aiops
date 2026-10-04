@@ -331,6 +331,35 @@ func (g *Graph) Query(ctx context.Context, q Query) (Result, error) {
 	g.expireExternal(g.now())
 	g.mu.RLock()
 	defer g.mu.RUnlock()
+	return g.queryLocked(ctx, q)
+}
+
+// QueryReadResponse builds and encodes one current immutable snapshot after
+// the caller's external authorization/Lease checks. The callback must be local,
+// bounded serialization only: no database, remote I/O or response writing.
+// Paged queries still require their exact cursor revision; changing facts can
+// never be combined across snapshots or pass an old owner epoch.
+func (g *Graph) QueryReadResponse(ctx context.Context, q Query, encode func(Result) error) error {
+	if encode == nil {
+		return ErrNotReady
+	}
+	g.expireExternal(g.now())
+	g.mu.RLock()
+	defer g.mu.RUnlock()
+	result, err := g.queryLocked(ctx, q)
+	if err != nil {
+		return err
+	}
+	if err = ctx.Err(); err != nil {
+		return err
+	}
+	if err = encode(result); err != nil {
+		return err
+	}
+	return ctx.Err()
+}
+
+func (g *Graph) queryLocked(ctx context.Context, q Query) (Result, error) {
 	now := g.now()
 	if q.QueryKind != "" && !slices.Contains([]string{"entity", "neighbors", "impact", "dependencies", "diagnostic", "list"}, q.QueryKind) {
 		return Result{}, errors.New("INVALID_ARGUMENT")

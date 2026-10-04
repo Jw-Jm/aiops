@@ -103,7 +103,7 @@ func (compiler *BundleCompiler) Prepare(ctx context.Context, version configregis
 }
 
 func (compiler *BundleCompiler) compile(ctx context.Context, bundle policyBundle) (*preparedBundle, error) {
-	if bundle.SchemaVersion != "policy-registry/v1" || bundle.Name == "" || len(bundle.Modules) == 0 {
+	if (bundle.SchemaVersion != "policy-registry/v1" && bundle.SchemaVersion != "policy-registry/v2") || bundle.Name == "" || len(bundle.Modules) == 0 {
 		return nil, ErrPolicyBundleInvalid
 	}
 	modules := make([]func(*rego.Rego), 0, len(bundle.Modules))
