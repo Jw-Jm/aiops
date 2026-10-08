@@ -1,0 +1,36 @@
+{
+  "observedAt": "2026-10-07T02:00:07.580486+00:00",
+  "nativePodUID": "94c3b83e-0841-4648-934a-5c16472b1515",
+  "phase": "Succeeded",
+  "containerStates": [
+    {
+      "terminated": {
+        "containerID": "docker://82fca863a70ec60a24786a2bac2359816132d76415c880d9f3b69144bcee128d",
+        "exitCode": 0,
+        "finishedAt": "2026-10-07T01:53:47Z",
+        "reason": "Completed",
+        "startedAt": "2026-10-07T01:52:52Z"
+      }
+    }
+  ],
+  "nativeNodeModified": false,
+  "protectedOrSharedObjectsModified": false,
+  "nativeWorkloadAutomaticallyStopped": true,
+  "actualSampleExceededFormalThreshold": false,
+  "formalThresholdUnchanged": true,
+  "highUtilizationAcceptanceExitCode": 1,
+  "performance": "USER_WAIVED_NOT_PASS",
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "-n",
+    "ops-pre-sp07-targets-r6-20261006",
+    "get",
+    "pod",
+    "pre-sp07-current-r6-finite-cpu-symptom-r1",
+    "-o",
+    "json"
+  ],
+  "commandExitCode": 0
+}

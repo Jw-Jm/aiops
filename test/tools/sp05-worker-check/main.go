@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -17,6 +18,7 @@ import (
 	"ops-platform/internal/observability"
 	"ops-platform/internal/persistence"
 	"os"
+	"syscall"
 	"time"
 )
 
@@ -73,7 +75,12 @@ func run() error {
 	os.Setenv("PLATFORM_REGISTRY_TRUST_FILE", "/fixture/registry-trust.json")
 	stop, err := app.StartSP04Worker(ctx, pool, archives, runtime)
 	if err != nil {
-		return fmt.Errorf("actual Worker startup rejected")
+		// Classify listener conflicts without exposing addresses, credentials or
+		// an upstream error payload in the public native verification log.
+		if errors.Is(err, syscall.EADDRINUSE) {
+			return fmt.Errorf("actual Worker startup rejected: listener_address_in_use")
+		}
+		return fmt.Errorf("actual Worker startup rejected: errorClass=%T", err)
 	}
 	defer stop()
 	tenant, err := uuid.Parse(config.Tenant)

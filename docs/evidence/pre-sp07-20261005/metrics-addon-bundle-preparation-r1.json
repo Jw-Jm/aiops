@@ -1,0 +1,83 @@
+{
+  "observedAt": "2026-10-05T05:30:36.919874+00:00",
+  "scope": "SUPPLEMENTAL Metrics addon and current installer tool/source preparation; not full cold core/deepflow installation",
+  "sourceFileMapSHA256": "5c5478fd0a9a1a30252e3e76492a088b36bd44815106048085c267ffdc31aa22",
+  "sourceArchiveSHA256": "sha256:21ff2b673c7efcebdd54f93f93d1df4a540a7f4effbca51d9d5b4353193f6ed6",
+  "hostOpsctlSHA256": "sha256:59b22f09770f7c81d9fae90aa77bf028e6f0a373856e6e107553ee67d3c09ce4",
+  "linuxOpsctlSHA256": "sha256:034668674e548bb5b0c093b62f6b8f2316f083a4a3d7f77068231da75ba6a077",
+  "metricsPublisherManifest": "sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2",
+  "dockerSaveOCIClosureDigest": "sha256:8836fac8543181b644011f859e00a5c8429e043691517b4756e1e95904cbfd2a",
+  "materialCount": 6,
+  "currentSourceMapMatchesR21": true,
+  "signed": "pending",
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "image",
+        "save",
+        "--platform",
+        "linux/arm64",
+        "--output",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r1/metrics-server-docker-save.tar",
+        "registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "package",
+        "/Users/mssc/Documents/Code/ops/platform/deploy/charts/ops-metrics-server",
+        "--destination",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r1"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-mod=readonly",
+        "-o",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r1/opsctl-host",
+        "./cmd/opsctl"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-mod=readonly",
+        "-o",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r1/opsctl-linux-arm64",
+        "./cmd/opsctl"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--cached",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

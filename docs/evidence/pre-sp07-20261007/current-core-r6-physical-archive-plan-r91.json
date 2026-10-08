@@ -1,0 +1,79 @@
+{
+  "observedAt": "2026-10-07T05:12:35.330439+00:00",
+  "recordedBeforeMutation": true,
+  "namespaceUID": "74e60b64-c489-4713-99c5-fcf92e666111",
+  "pvcUID": "350dec64-7707-4898-b7e7-bac736f83075",
+  "pvUID": "8a026975-95b0-4673-a0b0-2a806f13d5cd",
+  "sourceBackend": {
+    "path": "/var/lib/rancher/k3s/storage/pvc-350dec64-7707-4898-b7e7-bac736f83075_ops-pre-sp07-core-r6-20261006_data-ops-seaweedfs-0"
+  },
+  "sourceReadOnly": true,
+  "sourceActiveConsumersBefore": 0,
+  "temporaryHolder": {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "pre-sp07-readonly-archive-backup-r91",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "labels": {
+        "ops.platform.io/owner": "pre-sp07-20261007-archive-restore-r91",
+        "ops.platform.io/purpose": "finite-readonly-archive-backup"
+      }
+    },
+    "spec": {
+      "restartPolicy": "Never",
+      "activeDeadlineSeconds": 360,
+      "automountServiceAccountToken": false,
+      "containers": [
+        {
+          "name": "holder",
+          "image": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+          "imagePullPolicy": "Never",
+          "command": [
+            "/bin/sh",
+            "-ec",
+            "du -sk /data; sleep 300"
+          ],
+          "securityContext": {
+            "readOnlyRootFilesystem": true,
+            "allowPrivilegeEscalation": false,
+            "capabilities": {
+              "drop": [
+                "ALL"
+              ]
+            }
+          },
+          "resources": {
+            "requests": {
+              "cpu": "10m",
+              "memory": "32Mi"
+            },
+            "limits": {
+              "cpu": "250m",
+              "memory": "64Mi"
+            }
+          },
+          "volumeMounts": [
+            {
+              "name": "archive",
+              "mountPath": "/data",
+              "readOnly": true
+            }
+          ]
+        }
+      ],
+      "volumes": [
+        {
+          "name": "archive",
+          "persistentVolumeClaim": {
+            "claimName": "data-ops-seaweedfs-0",
+            "readOnly": true
+          }
+        }
+      ]
+    }
+  },
+  "backupLocation": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-physical-archive-restore-r91",
+  "onlyFreshIsolatedRestoreVolumeWritten": true,
+  "protectedSourceDeletedOrUnlocked": false
+}

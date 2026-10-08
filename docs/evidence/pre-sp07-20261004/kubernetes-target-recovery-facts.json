@@ -1,0 +1,55 @@
+{
+  "operation": "Owned scheduling target recreation only; no data volume, no protected original resource",
+  "oldUID": "00ac98df-421c-4218-a7d2-18a787f121a0",
+  "oldPhase": "Pending",
+  "expectedNewState": "Ready after removal of deliberately unsatisfiable nodeSelector; new UID must differ",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-20261004",
+        "delete",
+        "pod",
+        "readiness-scheduling",
+        "--wait=true"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-20261004",
+        "create",
+        "-f",
+        "<UID-reviewed-target>"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-20261004",
+        "wait",
+        "--for=condition=Ready",
+        "pod/readiness-scheduling",
+        "--timeout=90s"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "newUID": "22f7a5f4-125c-4b7e-9107-2edd0f7862d6",
+  "newPhase": "Running",
+  "uidChanged": true,
+  "observedAt": "2026-10-04T12:11:56.591194+00:00",
+  "scopeOrGraphAutomaticallyBound": false,
+  "formalR5Chain": "pending"
+}

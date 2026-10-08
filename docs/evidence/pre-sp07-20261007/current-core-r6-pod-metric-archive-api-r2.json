@@ -1,0 +1,52 @@
+{
+  "observedAt": "2026-10-07T01:48:13.591546+00:00",
+  "namespace": "ops-pre-sp07-core-r6-20261006",
+  "currentSourceFormalMetricArchiveAPI": false,
+  "formalMCPMetricAcceptance": false,
+  "liveHighUtilizationSymptom": false,
+  "fullR3Acceptance": false,
+  "performance": "USER_WAIVED_NOT_PASS",
+  "failureType": "JSONDecodeError",
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--network=container:eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "--user",
+        "65532:65532",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261006-r6",
+        "--label",
+        "ops.platform.purpose=read-only-metric-archive-verification",
+        "--env-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/database-bootstrap.env",
+        "--entrypoint",
+        "psql",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-h",
+        "127.0.0.1",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SELECT metadata::text FROM platform.evidence_metadata WHERE tenant_id='ddca03c9-eba6-456d-b1e2-d28bb8c79525' AND source_id='01a11163-a977-7d94-9f20-9e44a5e3f779' AND canonical_id='k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/292565cd-5356-4f88-9911-df352a885757' AND replay_state='archived_verified' AND metadata->>'queryTemplateVersion'='sp05-official-pod-metrics/v1' ORDER BY (metadata->>'observedTo')::timestamptz DESC LIMIT 1; COMMIT;"
+      ],
+      "exitCode": 0,
+      "readOnlyTransaction": true
+    }
+  ],
+  "exitCode": 1,
+  "ownedPortForwardStopped": true
+}

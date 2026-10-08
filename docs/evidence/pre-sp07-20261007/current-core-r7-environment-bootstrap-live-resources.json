@@ -1,0 +1,183 @@
+{
+  "observedAt": "2026-10-07T02:54:52.689332+00:00",
+  "namespace": "ops-pre-sp07-core-r7-20261007",
+  "secrets": [
+    {
+      "name": "ops-keycloak-auth",
+      "uid": "6bad3c90-c90c-4fe6-91a4-4cd141479432",
+      "keys": [
+        "password",
+        "username"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "856d7258-ae45-4ad2-9f70-7d1adde372b0",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-keycloak-database",
+      "uid": "36970df3-f5bb-426e-92f5-ca2c46fbcfa0",
+      "keys": [
+        "password",
+        "username"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "856d7258-ae45-4ad2-9f70-7d1adde372b0",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-keycloak-tls",
+      "uid": "23abb5e3-5f80-48ca-ad48-52eeec37fc98",
+      "keys": [
+        "tls.crt",
+        "tls.key"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "856d7258-ae45-4ad2-9f70-7d1adde372b0",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-openbao-bootstrap-tls",
+      "uid": "4d719c85-4d1e-42a3-a749-63a2fcfaaadc",
+      "keys": [
+        "tls.crt",
+        "tls.key"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "856d7258-ae45-4ad2-9f70-7d1adde372b0",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-postgresql-auth",
+      "uid": "47617bbe-51ba-4f2b-bc28-0b6f4166f879",
+      "keys": [
+        "password",
+        "username"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "856d7258-ae45-4ad2-9f70-7d1adde372b0",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-seaweedfs-auth",
+      "uid": "699e44b4-5c85-4ce7-997f-3e5c9a022f4e",
+      "keys": [
+        "accessKey",
+        "secretKey"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "856d7258-ae45-4ad2-9f70-7d1adde372b0",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-seaweedfs-iam",
+      "uid": "151f0384-e8bc-4fb5-a2dd-885a262d69e3",
+      "keys": [
+        "s3.json"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "856d7258-ae45-4ad2-9f70-7d1adde372b0",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-seaweedfs-tls",
+      "uid": "431c3eac-9b2a-416a-a4eb-8d91b516a2d5",
+      "keys": [
+        "tls.crt",
+        "tls.key"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "856d7258-ae45-4ad2-9f70-7d1adde372b0",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    }
+  ],
+  "allCommands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r7-20261007",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r9/opsctl-host",
+        "bootstrap",
+        "environment",
+        "--config",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r7/environment.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r7/dependency-secrets-missing.json"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r7-20261007",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r9/opsctl-host",
+        "bootstrap",
+        "environment",
+        "--config",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r7/environment.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r7/dependency-secrets.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r9/opsctl-host",
+        "bootstrap",
+        "environment",
+        "--config",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r7/environment.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r7/dependency-secrets.json"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "secrets",
+        "-n",
+        "ops-pre-sp07-core-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "missingInputRejectedBeforeNamespace": true,
+  "repeatedBootstrapRejected": true,
+  "privateMaterialLocation": "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r7",
+  "fullFreshCoreAcceptance": false,
+  "signedBundleInstall": false,
+  "originalResourcesDeleted": false
+}

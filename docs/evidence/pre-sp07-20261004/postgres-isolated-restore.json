@@ -1,0 +1,360 @@
+{
+  "observedAt": "2026-10-04T11:58:43.708579+00:00",
+  "sourceContainerID": "37bee7043e6d69141fc5faa8e93e5b5f8a9cda009f5fa98895683ab2faf60cc6",
+  "sourceImageID": "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+  "sourceDatabase": "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+  "restoredContainerID": "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+  "restoredVolume": "ops-pre-sp07-history-restore-data-v2-20261004",
+  "backupCipherSHA256": "9d099be19527ed78c774714b81766a0575338237cdc4e5af16dc8ed7fed060e3",
+  "backupPlainSHA256": "58797a13497731874a91afff9bf46032fea2374e40b42cdc36f8011a933e60a4",
+  "tables": [
+    {
+      "table": "platform.evidence_metadata",
+      "rows": 27,
+      "sourceSHA256": "caccb8fb2ffb06a580a8946c062b7b350a413ce6c5a61719e10d1a794d70ca47",
+      "restoredSHA256": "caccb8fb2ffb06a580a8946c062b7b350a413ce6c5a61719e10d1a794d70ca47",
+      "identical": true
+    },
+    {
+      "table": "platform.evidence_archive_intents",
+      "rows": 27,
+      "sourceSHA256": "063de0532062899a433250f14999745e776ff1524076e8c5695d1b76c5a82710",
+      "restoredSHA256": "063de0532062899a433250f14999745e776ff1524076e8c5695d1b76c5a82710",
+      "identical": true
+    },
+    {
+      "table": "platform.evidence_dependencies",
+      "rows": 0,
+      "sourceSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restoredSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "identical": true
+    },
+    {
+      "table": "platform.evidence_retention_references",
+      "rows": 27,
+      "sourceSHA256": "f8b4f03dd52cccc3229548b1c577cc1f5a72ddd9b3cf74375efadfd9fcfb235c",
+      "restoredSHA256": "f8b4f03dd52cccc3229548b1c577cc1f5a72ddd9b3cf74375efadfd9fcfb235c",
+      "identical": true
+    },
+    {
+      "table": "audit.records",
+      "rows": 39,
+      "sourceSHA256": "e995b49b7cd541d97d41054ee6f85164d50260da50bb41dd9b106a21f18260ef",
+      "restoredSHA256": "e995b49b7cd541d97d41054ee6f85164d50260da50bb41dd9b106a21f18260ef",
+      "identical": true
+    },
+    {
+      "table": "audit.tenant_heads",
+      "rows": 0,
+      "sourceSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restoredSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "identical": true
+    },
+    {
+      "table": "audit.signed_segments",
+      "rows": 0,
+      "sourceSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restoredSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "identical": true
+    }
+  ],
+  "databaseRestore": "PASS",
+  "completeEvidenceAuditRecovery": "BLOCKED",
+  "blockingReason": "Original Evidence Transit v1 is absent after inmem OpenBao restart. User confirms no matching storage/Transit recovery material. No historical decryption or signed Audit range PASS claimed. Original storage retained.",
+  "originalDeleted": false,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "volume",
+        "create",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261004",
+        "--label",
+        "ops.platform.purpose=history-restore",
+        "ops-pre-sp07-history-restore-data-v2-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "-d",
+        "--pull=never",
+        "--name",
+        "ops-pre-sp07-history-restore-v2-20261004",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261004",
+        "--label",
+        "ops.platform.purpose=history-restore",
+        "--env-file",
+        "<private-restore-operation>",
+        "-v",
+        "ops-pre-sp07-history-restore-data-v2-20261004:/var/lib/postgresql/data",
+        "-v",
+        "<private-restore-operation>",
+        "-p",
+        "127.0.0.1::5432",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres",
+        "--set",
+        "ON_ERROR_STOP=1",
+        "-f",
+        "/restore/postgres-globals-initial-owner.sql"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+        "createdb",
+        "-U",
+        "postgres",
+        "-O",
+        "postgres",
+        "restored_history"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+        "pg_restore",
+        "-U",
+        "postgres",
+        "-d",
+        "restored_history",
+        "--exit-on-error",
+        "/restore/postgres-recovered.dump"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "37bee7043e6d",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM platform.evidence_metadata t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "restored_history",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM platform.evidence_metadata t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "37bee7043e6d",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM platform.evidence_archive_intents t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "restored_history",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM platform.evidence_archive_intents t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "37bee7043e6d",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM platform.evidence_dependencies t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "restored_history",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM platform.evidence_dependencies t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "37bee7043e6d",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM platform.evidence_retention_references t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "restored_history",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM platform.evidence_retention_references t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "37bee7043e6d",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM audit.records t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "restored_history",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM audit.records t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "37bee7043e6d",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM audit.tenant_heads t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "restored_history",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM audit.tenant_heads t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "37bee7043e6d",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM audit.signed_segments t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "restored_history",
+        "-Atc",
+        "SELECT row_to_json(t)::text FROM audit.signed_segments t ORDER BY row_to_json(t)::text"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

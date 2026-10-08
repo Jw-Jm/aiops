@@ -1,9 +1,35 @@
 from holmes.core.llm import DefaultLLM
-from litellm import ModelResponse
+from litellm import (
+    APIConnectionError, AuthenticationError, BadRequestError,
+    ContextWindowExceededError, ModelResponse, RateLimitError, Timeout,
+)
 import json
 import hashlib
 from .redaction import sanitize
 from .prompt_binding import output_schema_for_steps
+
+
+class ModelCallError(RuntimeError):
+    """Static diagnostic categories; provider text and credentials are excluded."""
+    def __init__(self, kind, provider_failure_kind=None):
+        super().__init__(kind)
+        self.kind = kind
+        self.provider_failure_kind = provider_failure_kind
+
+
+def _failure_kind(error):
+    for exception, kind in (
+        (Timeout, "MODEL_TIMEOUT"),
+        (AuthenticationError, "MODEL_AUTHENTICATION_FAILED"),
+        (ContextWindowExceededError, "MODEL_CONTEXT_LIMIT"),
+        (RateLimitError, "MODEL_RATE_LIMITED"),
+        (APIConnectionError, "MODEL_UNAVAILABLE"),
+        (BadRequestError, "MODEL_REQUEST_REJECTED"),
+    ):
+        if isinstance(error, exception):
+            return kind
+    return "MODEL_FAILURE"
+
 
 class BudgetedLLM(DefaultLLM):
     """Upstream LLM extension: admission surrounds, never replaces, completion."""
@@ -33,13 +59,23 @@ class BudgetedLLM(DefaultLLM):
 
         try:
             result=super().completion(messages,*args,**kwargs)
-            usage=getattr(result,"usage",None)
-            consumed=reserve.copy()
-            if usage is not None:
-                consumed["inputTokens"]=usage.prompt_tokens
-                consumed["outputTokens"]=usage.completion_tokens
+        except Exception as error:
+            kind = _failure_kind(error)
+            try:
+                # The existing Go Contract conservatively charges unknown use.
+                self.job_api.settle(allocation["stepId"],None,None,"MODEL_FAILURE")
+            except Exception:
+                raise ModelCallError("MODEL_FAILURE_SETTLEMENT_REJECTED", kind) from None
+            raise ModelCallError(kind) from None
+        usage=getattr(result,"usage",None)
+        consumed=reserve.copy()
+        if usage is not None:
+            consumed["inputTokens"]=usage.prompt_tokens
+            consumed["outputTokens"]=usage.completion_tokens
+        try:
             self.job_api.settle(allocation["stepId"],{"provider":"openai-compatible","usageKnown":usage is not None,"response":sanitize(result.model_dump(mode="json"))},consumed)
-            return result
         except Exception:
-            self.job_api.settle(allocation["stepId"],None,None,"MODEL_FAILURE")
-            raise RuntimeError("MODEL_FAILURE") from None
+            # A successful provider response cannot be reclassified as a
+            # provider failure or settled twice after a Ledger rejection.
+            raise ModelCallError("MODEL_RESULT_SETTLEMENT_REJECTED") from None
+        return result

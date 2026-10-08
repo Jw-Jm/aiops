@@ -1,0 +1,72 @@
+{
+  "observedAt": "2026-10-08T02:46:12.714854+00:00",
+  "records": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r12/opsctl-host",
+        "openbao",
+        "unseal",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r8/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r8/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r8/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r12/signed-bundle-r12",
+        "--share-index",
+        "0"
+      ],
+      "exitCode": 0,
+      "rawSHA256": "f66ba665084e2ec0133da818acd0ab85ae0afe08ec833bb165bd68ea34260e1b"
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r12/opsctl-host",
+        "openbao",
+        "unseal",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r8/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r8/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r8/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r12/signed-bundle-r12",
+        "--share-index",
+        "1"
+      ],
+      "exitCode": 0,
+      "rawSHA256": "0cec5acac39cbfb65c5a150877c2e07757c5ff3a2fd7d26d85e26ee7644abcf2"
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r12/opsctl-host",
+        "openbao",
+        "status",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r8/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r8/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r8/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r12/signed-bundle-r12"
+      ],
+      "exitCode": 0,
+      "rawSHA256": "0cec5acac39cbfb65c5a150877c2e07757c5ff3a2fd7d26d85e26ee7644abcf2",
+      "status": {
+        "state": "ready",
+        "initialized": true,
+        "sealed": false,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 0,
+        "version": "2.7.0"
+      }
+    }
+  ],
+  "cause": "OpenBao sealed after native process restart; configuration/key loss not inferred",
+  "noReinitOrKeyRotation": true,
+  "fullRecoveryAcceptance": false
+}

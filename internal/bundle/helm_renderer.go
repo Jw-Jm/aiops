@@ -75,7 +75,7 @@ func RenderOwnedChart(input io.Reader, release, component, image, version string
 			switch v := value.(type) {
 			case map[string]any:
 				if ref, ok := v["image"].(string); ok {
-					if ref != expected || v["imagePullPolicy"] != "IfNotPresent" {
+					if ref != expected || v["imagePullPolicy"] != "Never" {
 						return fmt.Errorf("upstream Chart image %q differs from the planned tagged digest or pull policy", ref)
 					}
 					v["image"] = image

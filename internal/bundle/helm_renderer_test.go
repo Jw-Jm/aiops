@@ -48,7 +48,7 @@ func TestLockedVictoriaChartsRenderForOfflineInstaller(t *testing.T) {
 				t.Fatal(err)
 			}
 			run := func(context.Context, string, ...string) ([]byte, error) { return nil, nil }
-			if err := validateRenderedChart(t.Context(), rendered, map[string]bool{image: true}, p, entry.name, run); err != nil {
+			if err := validateRenderedChart(t.Context(), "ops-system", rendered, map[string]bool{image: true}, p, entry.name, run); err != nil {
 				t.Fatal(err)
 			}
 			decoder := yaml.NewDecoder(bytes.NewReader(rendered))
@@ -86,5 +86,17 @@ func TestOwnedRendererRejectsUnplannedImagesAndExistingOwner(t *testing.T) {
 	}
 	if _, err := victoriaChartValues("vmalert", profile.ResolvedComponent{Image: "bad", Version: "latest"}, importProfile()); err == nil {
 		t.Fatal("invalid Chart pin accepted")
+	}
+}
+
+func TestOwnedRendererRefusesCacheFallbackToRegistry(t *testing.T) {
+	image := "example.invalid/vmalert@sha256:" + strings.Repeat("a", 64)
+	tagged, err := taggedDigest(image, "v1.116.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	input := "kind: Deployment\nmetadata: {name: fixture}\nspec: {template: {metadata: {}, spec: {containers: [{image: " + tagged + ", imagePullPolicy: IfNotPresent}]}}}\n"
+	if out, err := RenderOwnedChart(strings.NewReader(input), "vmalert", "vmalert", image, "v1.116.0"); err == nil || len(out) != 0 {
+		t.Fatalf("cache fallback accepted: output=%q error=%v", out, err)
 	}
 }

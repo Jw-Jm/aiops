@@ -2,6 +2,7 @@ import subprocess as sp, tempfile, pathlib, os, json, ssl, urllib.request, secre
 parser=argparse.ArgumentParser()
 parser.add_argument('--container-suffix',default='20261003')
 parser.add_argument('--private-root',type=pathlib.Path,default=pathlib.Path('/tmp'))
+parser.add_argument('--persistent-openbao',action='store_true',help='retain new regression Transit keys in a dedicated owned Raft volume')
 args=parser.parse_args()
 if not re.fullmatch(r'[a-z0-9-]{1,40}',args.container_suffix):raise ValueError('invalid owned fixture suffix')
 fixture_suffix=args.container_suffix
@@ -12,7 +13,7 @@ def run(args): return sp.check_output(args,stderr=sp.PIPE,text=True).strip()
 def write(name,value,mode=0o600): p=d/name;p.write_text(value);os.chmod(p,mode);return str(p)
 def docker(name,image,port,args,mounts=[],envfile=None):
  name=name.removesuffix('20261003')+fixture_suffix
- cmd=['docker','run','-d','--name',name,'--label','ops.platform.test=sp06-20261003','-p','127.0.0.1::'+str(port)]
+ cmd=['docker','run','-d','--pull=never','--name',name,'--label','ops.platform.test=sp06-20261003','--label','ops.platform.owner='+fixture_suffix,'--label','ops.platform.purpose=regression-only','-p','127.0.0.1::'+str(port)]
  for m in mounts: cmd+=['-v',m]
  if envfile:cmd+=['--env-file',envfile]
  cmd+=[image]+args; ident=run(cmd)
@@ -22,16 +23,33 @@ def docker(name,image,port,args,mounts=[],envfile=None):
 key=d/'tls.key';cert=d/'tls.crt'
 run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-keyout',str(key),'-out',str(cert),'-days','2','-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost,IP:127.0.0.1'])
 os.chmod(key,0o600)
-conf=write('bao.hcl','ui=false\nstorage "inmem" {}\nlistener "tcp" { address="0.0.0.0:8200" tls_cert_file="/cfg/tls.crt" tls_key_file="/cfg/tls.key" }\n')
-baoport=docker('ops-sp06-openbao-20261003','ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6',8200,['server','-config=/cfg/bao.hcl'],[str(d)+':/cfg:ro'])
+bao_image='ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6'
+bao_mounts=[str(d)+':/cfg:ro']
+storage='storage "inmem" {}'
+if args.persistent_openbao:
+ volume='ops-sp06-regression-bao-'+fixture_suffix
+ run(['docker','volume','create','--label','ops.platform.owner='+fixture_suffix,'--label','ops.platform.purpose=regression-transit',volume])
+ run(['docker','run','--rm','--pull=never','--network=none','--user=0','--entrypoint=/bin/sh','--mount','type=volume,source='+volume+',target=/bao-data',bao_image,'-ec','chown 100:1000 /bao-data && chmod 0700 /bao-data'])
+ bao_mounts.append(volume+':/bao-data');storage='api_addr="https://localhost:8200"\ncluster_addr="https://localhost:8201"\nstorage "raft" { path="/bao-data" node_id="'+fixture_suffix+'" }'
+ print(json.dumps({'ownedOpenBaoVolume':volume,'backend':'raft','formalFreshAcceptance':False}),flush=True)
+conf=write('bao.hcl','ui=false\n'+storage+'\nlistener "tcp" { address="0.0.0.0:8200" tls_cert_file="/cfg/tls.crt" tls_key_file="/cfg/tls.key" }\n')
+baoport=docker('ops-sp06-openbao-20261003',bao_image,8200,['server','-config=/cfg/bao.hcl'],bao_mounts)
 bao='https://127.0.0.1:'+baoport;ctx=ssl.create_default_context(cafile=str(cert))
-def req(path,data):
- r=urllib.request.Request(bao+'/v1/'+path,json.dumps(data).encode(),method='PUT',headers={'Content-Type':'application/json'})
- return json.loads(urllib.request.urlopen(r,context=ctx,timeout=5).read())
-for attempt in range(60):
- try: init=req('sys/init',{'secret_shares':1,'secret_threshold':1});break
- except Exception:time.sleep(.5)
-else:raise RuntimeError('OpenBao readiness failed')
+def req(path,data=None,timeout=30):
+ r=urllib.request.Request(bao+'/v1/'+path,json.dumps(data).encode() if data is not None else None,method='PUT' if data is not None else 'GET',headers={'Content-Type':'application/json'})
+ return json.loads(urllib.request.urlopen(r,context=ctx,timeout=timeout).read())
+deadline=time.monotonic()+30
+while True:
+ try:
+  state=req('sys/init',timeout=2)
+  if state.get('initialized'):raise RuntimeError('existing initialized regression Bao lacks captured recovery material; stop')
+  break
+ except (OSError,urllib.error.URLError):
+  if time.monotonic()>=deadline:raise RuntimeError('OpenBao read-only readiness failed')
+  time.sleep(.5)
+# Initialization can take a Raft election. Never use a mutating init request as
+# a readiness probe or retry an uncertain one-time response containing keys.
+init=req('sys/init',{'secret_shares':1,'secret_threshold':1})
 write('recovery.json',json.dumps(init));req('sys/unseal',{'key':init['keys'][0]})
 access=secrets.token_hex(12);secret=secrets.token_urlsafe(32)
 s3cfg=write('s3.json',json.dumps({'identities':[{'name':'sp03-review','credentials':[{'accessKey':access,'secretKey':secret}],'actions':['Admin','Read','Write','List','Tagging']}]}))

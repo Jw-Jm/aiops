@@ -1,0 +1,75 @@
+#0 building with "orbstack" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.38kB done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+#2 DONE 3.3s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.1s
+
+#4 [internal] load build context
+#4 DONE 0.0s
+
+#5 [ 1/13] FROM docker.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+#5 resolve docker.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f 0.0s done
+#5 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 1.08GB 4.5s done
+#4 DONE 6.2s
+
+#6 [ 4/13] COPY offline-requirements.txt /material/offline-requirements.txt
+#6 CACHED
+
+#7 [ 2/13] WORKDIR /app
+#7 CACHED
+
+#8 [ 3/13] COPY wheels /material/wheels
+#8 CACHED
+
+#9 [ 5/13] RUN python -m pip install --no-index --no-deps --require-hashes --find-links=/material/wheels -r /material/offline-requirements.txt && python -m pip check
+#9 CACHED
+
+#10 [ 6/13] COPY wrapper/src /app/src
+#10 DONE 0.2s
+
+#11 [ 7/13] COPY notices /usr/share/ops/legal/python
+#11 DONE 0.3s
+
+#12 [ 8/13] COPY base/notices /usr/share/ops/legal/base
+#12 DONE 0.3s
+
+#13 [ 9/13] COPY base/source.lock.json base/python-source.lock.json /usr/share/ops/legal/base/
+#13 DONE 0.2s
+
+#14 [10/13] COPY wrapper/LICENSE wrapper/NOTICE /usr/share/ops/legal/wrapper/
+#14 DONE 0.2s
+
+#15 [11/13] COPY runtime.lock.json sbom.cdx.json /usr/share/ops/legal/
+#15 DONE 0.2s
+
+#16 [12/13] COPY python-runtime-source.tar /usr/share/ops/legal/python-runtime-source.tar
+#16 DONE 4.3s
+
+#17 [13/13] RUN python -c 'from holmes.core.tool_calling_llm import ToolCallingLLM; from holmes.core.llm import DefaultLLM; from mcp.client.streamable_http import streamable_http_client; import investigator.worker' && rm -rf /material
+#17 DONE 4.4s
+
+#18 exporting to image
+#18 exporting layers
+#18 exporting layers 22.0s done
+#18 exporting manifest sha256:69830c1cd09e93271a090318f46ac4c4c8f9c17d4e3a35f498fbd4178c7786b3
+#18 exporting manifest sha256:69830c1cd09e93271a090318f46ac4c4c8f9c17d4e3a35f498fbd4178c7786b3 0.0s done
+#18 exporting config sha256:7b285d4dbe353e43f5b66019f7f47064d2555e3ece6623c053b8f048406e1c85 0.1s done
+#18 exporting attestation manifest sha256:83f7244c6cc20099715f8d41f56fccd99cf3929565da13df9a6677c2c1a5116c
+#18 exporting attestation manifest sha256:83f7244c6cc20099715f8d41f56fccd99cf3929565da13df9a6677c2c1a5116c 0.1s done
+#18 exporting manifest list sha256:18dcd3d6522f3df5d8984061bdd8286cf41d0d77c79cfa191c0061050320a090 0.0s done
+#18 naming to ops.local/pre-sp07/investigator:20261005-r1 0.0s done
+#18 unpacking to ops.local/pre-sp07/investigator:20261005-r1
+#18 unpacking to ops.local/pre-sp07/investigator:20261005-r1 5.3s done
+#18 DONE 27.5s
+
+View build details: docker-desktop://dashboard/build/orbstack/orbstack/g3hfyg44o83g98i7jeq27y41z

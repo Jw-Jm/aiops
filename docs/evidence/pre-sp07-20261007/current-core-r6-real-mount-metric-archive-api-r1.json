@@ -1,0 +1,120 @@
+{
+  "observedAt": "2026-10-07T02:01:32.939679+00:00",
+  "namespace": "ops-pre-sp07-core-r6-20261006",
+  "currentSourceFormalMetricArchiveAPI": true,
+  "formalMCPMetricAcceptance": false,
+  "liveHighUtilizationSymptom": false,
+  "fullR3Acceptance": false,
+  "performance": "USER_WAIVED_NOT_PASS",
+  "evidenceId": "90ec6b28-4046-5e4b-85a9-ce3b94582200",
+  "contentDigest": "sha256:7d457a3181fda48e2876f740d3e74d4cc9f28a3a58bc5ccc74baf86beed51156",
+  "archiveRef": {
+    "backendLogicalId": "pre-sp07-current-archive-ops-pre-sp07-core-r6-20261006",
+    "object": {
+      "tenantId": "ddca03c9-eba6-456d-b1e2-d28bb8c79525",
+      "objectId": "90ec6b28-4046-5e4b-85a9-ce3b94582200",
+      "category": "evidence",
+      "key": "tenants/12a0a2eaf4b262e4a00abe31434d55516e3720ca9f4069889383fc0ace5183a2/evidence/90ec6b28-4046-5e4b-85a9-ce3b94582200",
+      "digest": "sha256:e2fd6dc0b99177f5f659eb8bf2397a2a4123bd0592b8561806bbfdcda7852eac",
+      "size": 1400,
+      "contentType": "application/vnd.ops.transit-envelope+json",
+      "versionId": "6723e3239845ad780600976b59601d4d",
+      "etag": "\"672bea80f43e79ae376aa49271f2e1e0\"",
+      "retainUntil": "2027-10-08T02:01:25Z"
+    },
+    "encryptionKeyVersion": "1",
+    "plaintextDigest": "sha256:7d457a3181fda48e2876f740d3e74d4cc9f28a3a58bc5ccc74baf86beed51156",
+    "ciphertextDigest": "sha256:e2fd6dc0b99177f5f659eb8bf2397a2a4123bd0592b8561806bbfdcda7852eac"
+  },
+  "sourceId": "01a11163-a977-7d94-9f20-9e44a5e3f779",
+  "sourceRevision": 1,
+  "sourceScopeDigest": "sha256:e226b8683c4a79186a9cee2a6fe7b63ec823ec5ab699a0ef11c8fe55164cfb96",
+  "resourceCanonicalId": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/dbea7a37-c298-45d2-b542-410cd1f140ad",
+  "nativePodUID": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+  "nativeNodeUID": "cc6ee959-3391-432f-b413-a5e7f2e64756",
+  "fact": {
+    "causalConfirmation": false,
+    "containers": [
+      {
+        "identity": {
+          "containerID": "docker://04e0dcee315a4c47a914a4ca7461e35b040ba325efe245fcbbe42cc8e343f02b",
+          "restartCount": 0,
+          "startedAt": "2026-10-07T01:57:26Z"
+        },
+        "name": "owned-finite-target",
+        "usage": {
+          "cpu": "0",
+          "memory": "100Ki"
+        }
+      }
+    ],
+    "metricAPI": "metrics.k8s.io/v1beta1",
+    "name": "pre-sp07-r6-real-mount-metric-r1",
+    "namespace": "ops-pre-sp07-targets-r6-20261006",
+    "nativeKind": "PodMetrics",
+    "nativeUID": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+    "nodeAllocatable": {
+      "cpu": "8",
+      "memory": "18462244Ki"
+    },
+    "nodeCapacity": {
+      "cpu": "8",
+      "memory": "18462244Ki"
+    },
+    "nodeName": "orbstack",
+    "nodeResourceVersion": "462244",
+    "nodeUID": "cc6ee959-3391-432f-b413-a5e7f2e64756",
+    "observedFrom": "2026-10-07T02:00:57.988Z",
+    "podResourceVersion": "462037",
+    "timestamp": "2026-10-07T02:01:13Z",
+    "window": "15.012s"
+  },
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--network=container:eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "--user",
+        "65532:65532",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261006-r6",
+        "--label",
+        "ops.platform.purpose=read-only-metric-archive-verification",
+        "--env-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/database-bootstrap.env",
+        "--entrypoint",
+        "psql",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-h",
+        "127.0.0.1",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SELECT metadata::text FROM platform.evidence_metadata WHERE tenant_id='ddca03c9-eba6-456d-b1e2-d28bb8c79525' AND source_id='01a11163-a977-7d94-9f20-9e44a5e3f779' AND canonical_id='k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/dbea7a37-c298-45d2-b542-410cd1f140ad' AND replay_state='archived_verified' AND metadata->>'queryTemplateVersion'='sp05-official-pod-metrics/v1' ORDER BY (metadata->>'observedTo')::timestamptz DESC LIMIT 1; COMMIT;"
+      ],
+      "exitCode": 0,
+      "readOnlyTransaction": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/90ec6b28-4046-5e4b-85a9-ce3b94582200",
+      "status": 200,
+      "responseSHA256": "sha256:4590dea18bafa5bbc114f79a4bb1c5194c1de1a6c7d830e89842222da8206e2d"
+    }
+  ],
+  "exitCode": 0,
+  "ownedPortForwardStopped": true
+}

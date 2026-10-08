@@ -1,0 +1,212 @@
+{
+  "observedAt": "2026-10-07T02:52:39.915330+00:00",
+  "SP07ExecutionImplemented": false,
+  "originalUIDRecovered": false,
+  "fullR6Acceptance": false,
+  "sourceScopeChanged": false,
+  "protectedDataDeleted": false,
+  "oldNativePVCUID": "f882cae4-1681-4697-92e6-5326690d6d20",
+  "actualFindingId": "01a1143c-ed76-7389-94a9-f82d0b6ca088",
+  "oldArchivedEvidenceId": "b0058029-e3e9-527f-b0db-16a363b12cc3",
+  "oldEvidenceDigest": "sha256:b336f6a3b5f8e5a4633f11d64b6c4e58315a5b89a2f323f23009d102f94b80cc",
+  "oldEvidenceArchiveVersion": "6723e0ef870db37e22fb7a06b1cf41b0",
+  "oldRetainUntil": "2027-10-08T02:41:48Z",
+  "newNativePVCUID": "6e084407-055f-41e2-8171-f81f2f9e3534",
+  "storageClassUID": "23b126cb-6924-476a-be45-3bf087e57c75",
+  "deletionUIDAndResourceVersionPreconditions": true,
+  "noDataBackendOrConsumerBeforeDeletion": true,
+  "failureType": "AssertionError",
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "pre-sp07-r6-identity-pvc-r1",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r6-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/findings/01a1143c-ed76-7389-94a9-f82d0b6ca088",
+      "status": 200,
+      "responseSHA256": "sha256:04bb990e4c8081331b705239aee60b7b5ca8d2f33e96d0d1a70a090da56159b7"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/b0058029-e3e9-527f-b0db-16a363b12cc3",
+      "status": 200,
+      "responseSHA256": "sha256:90bc79de0e4e6d7ee5ff5cfc135362fbed427f185a23b1e043e7159c494954ba"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "delete",
+        "--raw",
+        "/api/v1/namespaces/ops-pre-sp07-targets-r6-20261006/persistentvolumeclaims/pre-sp07-r6-identity-pvc-r1",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/owned-unbound-pvc-delete-r2.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "pre-sp07-r6-identity-pvc-r1",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "pre-sp07-r6-identity-pvc-r1",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "storageclass",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "wait",
+        "--for=condition=Ready",
+        "pod/pre-sp07-r6-pvc-readonly-consumer-r2",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "--timeout=50s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "pre-sp07-r6-identity-pvc-r1",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-6e084407-055f-41e2-8171-f81f2f9e3534",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

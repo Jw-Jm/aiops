@@ -1,0 +1,53 @@
+{
+  "observedAt": "2026-10-05T15:54:26.218287+00:00",
+  "bundleId": "pre-sp07-core-20261005-r7",
+  "commands": [
+    {
+      "command": [
+        "helm",
+        "upgrade",
+        "ops-platform",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/ops-platform-0.1.0.tgz",
+        "--kube-context",
+        "orbstack",
+        "--namespace",
+        "ops-pre-sp07-core-r4-20261005",
+        "--values",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/business-repair-api-bound-values-r7.json",
+        "--wait",
+        "--timeout",
+        "5m"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/opsctl-host",
+        "bootstrap",
+        "graph-leases",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/installation-profile-immutable-r2.yaml",
+        "--business-values",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/business-values-registered-r2.json"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/opsctl-host",
+        "bootstrap",
+        "graph-leases",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/installation-profile-immutable-r2.yaml",
+        "--business-values",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/business-values-registered-r2.json"
+      ],
+      "exitCode": 1,
+      "expectedExitCode": 1
+    }
+  ],
+  "freshInstallPass": false,
+  "fullChainPass": false
+}

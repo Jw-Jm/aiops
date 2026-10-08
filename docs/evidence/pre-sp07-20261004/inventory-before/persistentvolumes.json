@@ -1,0 +1,240 @@
+{
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pvc-75f11b01-15be-41b1-bda0-c450a455a4a0",
+        "uid": "8f8ce7e1-9eb0-4240-9936-a612924ce282",
+        "resourceVersion": "2757",
+        "creationTimestamp": "2026-09-25T05:17:44Z",
+        "finalizers": [
+          "kubernetes.io/pv-protection"
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "capacity": {
+          "storage": "10Gi"
+        },
+        "claimRef": {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "name": "vmsingle-vm",
+          "namespace": "monitoring",
+          "resourceVersion": "2735",
+          "uid": "75f11b01-15be-41b1-bda0-c450a455a4a0"
+        },
+        "local": {
+          "path": "/var/lib/rancher/k3s/storage/pvc-75f11b01-15be-41b1-bda0-c450a455a4a0_monitoring_vmsingle-vm"
+        },
+        "nodeAffinity": {
+          "required": {
+            "nodeSelectorTerms": [
+              {
+                "matchExpressions": [
+                  {
+                    "key": "kubernetes.io/hostname",
+                    "operator": "In",
+                    "values": [
+                      "orbstack"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "persistentVolumeReclaimPolicy": "Delete",
+        "storageClassName": "local-path",
+        "volumeMode": "Filesystem"
+      },
+      "status": {
+        "lastPhaseTransitionTime": "2026-09-25T05:17:44Z",
+        "phase": "Bound"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pvc-c6d6fd30-b259-4edd-ab4d-457a86c9680f",
+        "uid": "98ac4599-35e6-463c-b30e-73868c4713cc",
+        "resourceVersion": "58234",
+        "creationTimestamp": "2026-09-27T11:36:10Z",
+        "finalizers": [
+          "kubernetes.io/pv-protection"
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "capacity": {
+          "storage": "2Gi"
+        },
+        "claimRef": {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "name": "data-ops-openbao-0",
+          "namespace": "ops-system",
+          "resourceVersion": "58217",
+          "uid": "c6d6fd30-b259-4edd-ab4d-457a86c9680f"
+        },
+        "local": {
+          "path": "/var/lib/rancher/k3s/storage/pvc-c6d6fd30-b259-4edd-ab4d-457a86c9680f_ops-system_data-ops-openbao-0"
+        },
+        "nodeAffinity": {
+          "required": {
+            "nodeSelectorTerms": [
+              {
+                "matchExpressions": [
+                  {
+                    "key": "kubernetes.io/hostname",
+                    "operator": "In",
+                    "values": [
+                      "orbstack"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "persistentVolumeReclaimPolicy": "Delete",
+        "storageClassName": "local-path",
+        "volumeMode": "Filesystem"
+      },
+      "status": {
+        "lastPhaseTransitionTime": "2026-09-27T11:36:10Z",
+        "phase": "Bound"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pvc-cacf92e6-8352-47e0-913c-4f9ff641eb34",
+        "uid": "b41fc663-4097-47d3-a22a-6e3aec7a07b4",
+        "resourceVersion": "124426",
+        "creationTimestamp": "2026-09-29T01:32:57Z",
+        "finalizers": [
+          "kubernetes.io/pv-protection"
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "capacity": {
+          "storage": "2Gi"
+        },
+        "claimRef": {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "name": "data-ops-seaweedfs-0",
+          "namespace": "ops-system",
+          "resourceVersion": "124377",
+          "uid": "cacf92e6-8352-47e0-913c-4f9ff641eb34"
+        },
+        "local": {
+          "path": "/var/lib/rancher/k3s/storage/pvc-cacf92e6-8352-47e0-913c-4f9ff641eb34_ops-system_data-ops-seaweedfs-0"
+        },
+        "nodeAffinity": {
+          "required": {
+            "nodeSelectorTerms": [
+              {
+                "matchExpressions": [
+                  {
+                    "key": "kubernetes.io/hostname",
+                    "operator": "In",
+                    "values": [
+                      "orbstack"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "persistentVolumeReclaimPolicy": "Delete",
+        "storageClassName": "local-path",
+        "volumeMode": "Filesystem"
+      },
+      "status": {
+        "lastPhaseTransitionTime": "2026-09-29T01:32:57Z",
+        "phase": "Bound"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pvc-fa694502-a948-4fa7-b072-46eb2f4ce8bb",
+        "uid": "6b54c5a8-135f-4df9-a8bd-859968b660c0",
+        "resourceVersion": "124430",
+        "creationTimestamp": "2026-09-29T01:32:57Z",
+        "finalizers": [
+          "kubernetes.io/pv-protection"
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "capacity": {
+          "storage": "2Gi"
+        },
+        "claimRef": {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "name": "data-ops-postgresql-0",
+          "namespace": "ops-system",
+          "resourceVersion": "124388",
+          "uid": "fa694502-a948-4fa7-b072-46eb2f4ce8bb"
+        },
+        "local": {
+          "path": "/var/lib/rancher/k3s/storage/pvc-fa694502-a948-4fa7-b072-46eb2f4ce8bb_ops-system_data-ops-postgresql-0"
+        },
+        "nodeAffinity": {
+          "required": {
+            "nodeSelectorTerms": [
+              {
+                "matchExpressions": [
+                  {
+                    "key": "kubernetes.io/hostname",
+                    "operator": "In",
+                    "values": [
+                      "orbstack"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "persistentVolumeReclaimPolicy": "Delete",
+        "storageClassName": "local-path",
+        "volumeMode": "Filesystem"
+      },
+      "status": {
+        "lastPhaseTransitionTime": "2026-09-29T01:32:57Z",
+        "phase": "Bound"
+      }
+    }
+  ]
+}

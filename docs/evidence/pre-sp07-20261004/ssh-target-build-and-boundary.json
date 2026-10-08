@@ -1,0 +1,18 @@
+{
+  "DockerfileSHA256": "fce205267834afd01d5026001e1450e4ddbed7fcd3473982bcfd76ecd976abbc",
+  "imageID": "sha256:00eee79001379945b8cc241774c621b0552b3953e1cad6609927a68c24d380ee",
+  "manifestDigest": [
+    "ops-pre-sp07-ssh-target@sha256:00eee79001379945b8cc241774c621b0552b3953e1cad6609927a68c24d380ee"
+  ],
+  "baseDigest": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+  "buildPhase": "Connected target preparation; future Runner/Ansible admission pending",
+  "sshdConfig": "Port 2222\nListenAddress 0.0.0.0\nHostKey /readiness/host_ed25519\nTrustedUserCAKeys /readiness/user_ca.pub\nAuthorizedPrincipalsFile /readiness/principals-%u\nAuthorizedKeysFile none\nPasswordAuthentication no\nKbdInteractiveAuthentication no\nPubkeyAuthentication yes\nPermitRootLogin prohibit-password\nAllowUsers opsordinary opssudo root\nUsePAM yes\nAllowAgentForwarding no\nAllowTcpForwarding no\nX11Forwarding no\nPermitTunnel no\nPermitUserEnvironment no\nLogLevel VERBOSE\nSubsystem sftp internal-sftp\n",
+  "secretsInImage": false,
+  "privateKeyMount": "external private read-only directory",
+  "knownHostTrust": "Compare scanned key bytes with public host key generated before target start; fail on difference",
+  "initialPreparationFailures": [
+    "Port mapping not published on internal network; use discovered private target IP",
+    "ssh-keyscan comments appeared on stdout; parser now selects exactly one non-comment key line, equality requirement retained"
+  ],
+  "networkInternal": true
+}

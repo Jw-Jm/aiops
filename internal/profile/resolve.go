@@ -78,7 +78,7 @@ func Resolve(ctx context.Context, input InputProfile, discovery Discovery) (Reso
 		if component.Mode == "detect" {
 			return ResolvedProfile{}, profileConflict(name, "detect mode must be replaced by an explicit external, bundled, or disabled choice")
 		}
-		candidates := discovery.Components[name]
+		candidates := selectedComponentCandidates(component, discovery.Components[name])
 		if component.Mode == "disabled" {
 			resolved.Components[name] = ResolvedComponent{Mode: "disabled", Compatibility: component.Compatibility}
 			continue
@@ -122,6 +122,7 @@ func Resolve(ctx context.Context, input InputProfile, discovery Discovery) (Reso
 			}
 			resolved.Components[name] = ResolvedComponent{
 				Mode: "bundled", Version: lock.Version, Digest: lock.Digest, Image: lock.Image,
+				Namespace: component.Namespace, Name: component.Name,
 				Endpoint: component.Endpoint, Evidence: append([]string(nil), component.Evidence...), AdmissionState: lock.State,
 			}
 			if lock.State != "qualified" {
@@ -162,4 +163,17 @@ func selectExternalCandidate(name string, input ComponentInput, candidates []Com
 		return ComponentCandidate{}, profileConflict(name, "existing instance is missing an exact version, image digest, or endpoint")
 	}
 	return candidate, nil
+}
+
+// An explicit namespace/name targets one installation. Unselected shared
+// services are observed but never adopted, overwritten, or used as a fallback.
+func selectedComponentCandidates(input ComponentInput, candidates []ComponentCandidate) []ComponentCandidate {
+	out := make([]ComponentCandidate, 0, len(candidates))
+	for _, candidate := range candidates {
+		if input.Namespace != "" && input.Namespace != candidate.Namespace || input.Name != "" && input.Name != candidate.Name {
+			continue
+		}
+		out = append(out, candidate)
+	}
+	return out
 }

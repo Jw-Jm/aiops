@@ -103,3 +103,33 @@ spec:
         - protocol: TCP
           port: {{ .port | toJson }}
     {{- end }}
+{{- if and .Values.sp04.enabled .Values.workloadIdentity.enabled (eq .Values.workloadIdentity.mode "openbao-kubernetes") }}
+---
+# Native Kubernetes authentication calls TokenReview during dependency bootstrap
+# and continuously after activation. This never grants API egress to investigator.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ops-openbao-kubernetes-egress
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
+spec:
+  podSelector:
+    matchLabels:
+      ops.platform.io/component: openbao
+    matchExpressions:
+      - key: ops.platform.io/release
+        operator: In
+        values: {{ required "OpenBao TokenReview requires managed dependency releases" .Values.networkPolicy.managedDependencyReleases | toJson }}
+  policyTypes: [Egress]
+  egress:
+    {{- range (required "OpenBao TokenReview requires exact Kubernetes control-plane CIDRs" .Values.sp04.kubernetesAPI.cidrs) }}
+    {{- if not (or (hasSuffix "/32" .) (hasSuffix "/128" .)) }}{{ fail "OpenBao TokenReview egress must use exact host CIDRs" }}{{- end }}
+    - to:
+        - ipBlock:
+            cidr: {{ . | quote }}
+      ports:
+        - protocol: TCP
+          port: {{ $.Values.sp04.kubernetesAPI.port }}
+    {{- end }}
+{{- end }}

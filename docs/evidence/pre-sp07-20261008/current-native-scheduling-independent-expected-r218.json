@@ -1,0 +1,66 @@
+{
+  "observedAt": "2026-10-08T02:59:38.670352+00:00",
+  "beforeMutation": true,
+  "namespaceUID": "f46dabc1-1ae5-4201-8730-d5e9be19f01e",
+  "expected": "Pending, PodScheduled False Unschedulable; formal Source/Inspection/Finding/Incident; one serial real-model investigation, no execution",
+  "manifest": {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "pre-sp07-r9-scheduling-r218",
+      "namespace": "ops-pre-sp07-targets-r9-20261008",
+      "labels": {
+        "ops.platform.io/owner": "pre-sp07-20261008-r9",
+        "ops.platform.io/purpose": "finite-real-scheduling-investigation-r218",
+        "tenant": "12443ef7-3326-4e87-9b0a-a3444bfd16bc"
+      }
+    },
+    "spec": {
+      "nodeSelector": {
+        "ops.platform.io/pre-sp07-absent-node": "r218"
+      },
+      "restartPolicy": "Never",
+      "activeDeadlineSeconds": 900,
+      "automountServiceAccountToken": false,
+      "securityContext": {
+        "runAsNonRoot": true,
+        "runAsUser": 65532,
+        "runAsGroup": 65532,
+        "seccompProfile": {
+          "type": "RuntimeDefault"
+        }
+      },
+      "containers": [
+        {
+          "name": "finite-own-target",
+          "image": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+          "imagePullPolicy": "Never",
+          "command": [
+            "/bin/sleep",
+            "600"
+          ],
+          "resources": {
+            "requests": {
+              "cpu": "10m",
+              "memory": "16Mi"
+            },
+            "limits": {
+              "cpu": "50m",
+              "memory": "32Mi"
+            }
+          },
+          "securityContext": {
+            "allowPrivilegeEscalation": false,
+            "readOnlyRootFilesystem": true,
+            "capabilities": {
+              "drop": [
+                "ALL"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "fullColdOrAccuracyAcceptance": false
+}

@@ -1,0 +1,31 @@
+{
+  "observedAt": "2026-10-07T08:05:06.504504+00:00",
+  "sourceState": "source-state-before-gates-r110.json",
+  "requiredMakeCheckExitCode": 2,
+  "actualFailedTests": [
+    "--- FAIL: TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart (118.91s)",
+    "--- FAIL: TestSP06RealHolmesModelMCPJobAndSSE (53.23s)"
+  ],
+  "sp05FrozenViewFailure": {
+    "incidentId": "01a11552-5ba5-7ea9-8b15-e9252ec790e9",
+    "revision": 4,
+    "createdAt": "2026-10-07T07:45:50.163541Z",
+    "manifestGraphRevision": {
+      "ownerEpoch": 2,
+      "graphGeneration": 1
+    },
+    "currentDegradedSources": [
+      "current-runtime-unverified",
+      "current-graph-revision-changed"
+    ],
+    "currentEligible": false
+  },
+  "actualSeparateSP05Reproduction": "sp05-current-actual-repro-r121.json",
+  "separateSP05ExitCode": 0,
+  "fullMakeCheckNotClaimedPassed": true,
+  "sp05ConfirmedImplementationDefect": false,
+  "sp05IntermittentFullRunEvidenceGapRemainsOpen": true,
+  "modelFailureClassification": "real locked Holmes first call MODEL_TIMEOUT; formal 45s unchanged; no successful MCP substitution",
+  "assertionsBudgetsAndEligibilityFenceNotRelaxed": true,
+  "fullReadinessAcceptance": false
+}

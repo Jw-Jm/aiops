@@ -1,0 +1,37 @@
+[
+  {
+    "name": "components.upstream.yaml",
+    "source": "https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.8.0/components.yaml",
+    "size": 4330,
+    "sha256": "ff64d1a13b9ac3b0635f0dd985815fb44c23eed4706c04e5db1daadf6bc0a83b",
+    "downloaded": true
+  },
+  {
+    "name": "source.tar.gz",
+    "source": "https://codeload.github.com/kubernetes-sigs/metrics-server/tar.gz/refs/tags/v0.8.0",
+    "size": 146707,
+    "sha256": "4dc2060e33613c35ae0f7c48aba1b813d986d82049f641966fd9eb5eefc49864",
+    "downloaded": true
+  },
+  {
+    "command": [
+      "docker",
+      "buildx",
+      "imagetools",
+      "inspect",
+      "registry.k8s.io/metrics-server/metrics-server:v0.8.0",
+      "--raw"
+    ],
+    "exitCode": 0,
+    "sha256": "89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2"
+  },
+  {
+    "command": [
+      "/tmp/ops-task27-tools/syft",
+      "docker:registry.k8s.io/metrics-server/metrics-server:v0.8.0",
+      "-o",
+      "syft-json=/Users/mssc/.local/state/ops/pre-sp07-20261004/materials/metrics-server/image.syft.json"
+    ],
+    "exitCode": 0
+  }
+]

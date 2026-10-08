@@ -1,0 +1,52 @@
+{
+  "observedAt": "2026-10-08T05:43:18.537978+00:00",
+  "recordedBeforeSignal": true,
+  "jobId": "01a11a08-e628-7328-a3b9-93f2a85c924d",
+  "actualLedgerCut": {
+    "jobId": "01a11a08-e628-7328-a3b9-93f2a85c924d",
+    "observedAt": "2026-10-08T05:43:18.042235+00:00",
+    "fencingEpoch": 1,
+    "modelReservation": {
+      "toolCalls": 0,
+      "graphNodes": 0,
+      "rawQueries": 0,
+      "inputTokens": 16384,
+      "resultBytes": 65536,
+      "outputTokens": 1024,
+      "evidenceItems": 0,
+      "modelRequests": 1,
+      "modelCostMicros": 0
+    },
+    "pendingModelStepId": "01a11a09-949b-707d-81ce-bf58d0416007",
+    "committedToolStepId": "01a11a09-92b3-783b-9f93-361cc8bedaf0",
+    "committedToolResultDigest": "sha256:d3912b2e32cd0312776c641eefca57416b4a31579d00f75cb189834b143ef271"
+  },
+  "exactOwnedTargets": [
+    {
+      "podName": "ops-worker-6d5c996944-mzv5g",
+      "podUID": "47934cc2-6f00-4326-b9da-28fc8851952f",
+      "containerName": "worker",
+      "containerId": "dc0d84ce0110ce4ff3f9e52801a28578f4d8c2271f1f02bb23cbf84fa3d5d659",
+      "restartCount": 1,
+      "imageDigest": "sha256:abc472fb806003dead9174cd5a3a3de4d3c66832529d0c0da8f7e34515f60da9"
+    },
+    {
+      "podName": "ops-worker-6d5c996944-wj2v4",
+      "podUID": "4e72c135-6cbe-4f16-b43e-d4dbec68943f",
+      "containerName": "worker",
+      "containerId": "ff15bbe56d9a38cf81004307d6e94ae7cb3b562de542cc6a164f727b63a36aa2",
+      "restartCount": 1,
+      "imageDigest": "sha256:abc472fb806003dead9174cd5a3a3de4d3c66832529d0c0da8f7e34515f60da9"
+    },
+    {
+      "podName": "ops-investigator-77744994b8-dgvdz",
+      "podUID": "334dd51e-ae9c-4532-997a-1c1e7713a602",
+      "containerName": "investigator",
+      "containerId": "0cea2b90b4f3096cb7714e4e0a895eaf6ed65c4d242cc1bf72c2205ef1dfeb56",
+      "restartCount": 0,
+      "imageDigest": "sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593"
+    }
+  ],
+  "operation": "SIGKILL stateless owned Worker and investigator only; native kubelet restart",
+  "storageAndProtectionModified": false
+}

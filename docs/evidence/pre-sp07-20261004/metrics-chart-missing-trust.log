@@ -1,0 +1,12 @@
+Error: values don't meet the specifications of the schema(s) in the following chart(s):
+ops-metrics-server:
+- at '/kubeletCAConfigMap': validation failed
+  - at '/kubeletCAConfigMap': minLength: got 0, want 1
+  - at '/kubeletCAConfigMap': '' does not match pattern '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+- at '/nodeCIDRs': minItems: got 0, want 1
+- at '/servingCA': minLength: got 0, want 64
+- at '/servingTLSSecret': validation failed
+  - at '/servingTLSSecret': minLength: got 0, want 1
+  - at '/servingTLSSecret': '' does not match pattern '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+- at '/apiServerCIDRs': minItems: got 0, want 1
+

@@ -1,0 +1,603 @@
+{
+  "observedAt": "2026-10-07T02:38:45.396882+00:00",
+  "sourceNamespace": "ops-pre-sp07-core-r6-20261006",
+  "fullR4RecoveryAcceptance": false,
+  "protectedOriginal27Restored": false,
+  "sourceDataDeletedOrReinitialized": false,
+  "fullObjectTransitAuditJointRestore": false,
+  "newFormalDatabaseActualIsolatedRestore": true,
+  "sourcePodUID": "9a678dae-cb95-4754-a625-719deed05f60",
+  "sourceContainerId": "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+  "targetContainerId": "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+  "targetVolume": "ops-pre-sp07-20261007-core-r6-database-restore-r5-data",
+  "consistentOpsSnapshotUsed": true,
+  "keycloakPerDatabaseSnapshot": true,
+  "jointMultiBackendRecoveryPoint": false,
+  "encryptedBackupSHA256": "sha256:1ec6e022b525a0410de4626e517d1882faa252f8c50470576b4d2482155ff6fc",
+  "backupReadbackByteEqual": true,
+  "opsDumpSHA256": "sha256:a5913caecc31efed08174163bd2270104f055696c28d50420e13bf334f51f5bc",
+  "keycloakDumpSHA256": "sha256:370fb034594929823d5c17af433bacf8237649d53e99ec426600acb4e82b4744",
+  "restoredTableSummaries": {
+    "audit.records": {
+      "rows": 1158,
+      "sha256": "2014b5471451de03fbaf8f967b7765d9e6b1d09c38a4878b3754f5748efd59f0"
+    },
+    "audit.signed_segments": {
+      "rows": 15,
+      "sha256": "43803faaa94b8f8a54888f297695f4a7d8453c120a851d43b03fb644ed0e73b5"
+    },
+    "audit.tenant_heads": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "platform.evidence_metadata": {
+      "rows": 318,
+      "sha256": "29fbd14be4e33e78eb3a52b7324e525fbace607a10feb1b4f83064f0419705d8"
+    },
+    "platform.evidence_archive_intents": {
+      "rows": 318,
+      "sha256": "37f3864e5aa2423c8afcb0143e9f5ca2195144c712f30e8108c242a272f76343"
+    },
+    "platform.evidence_dependencies": {
+      "rows": 22,
+      "sha256": "3b6df42574857e4983ed7750bfe07821b5672cfb728f4e8f17f2a796efb58721"
+    },
+    "platform.evidence_retention_references": {
+      "rows": 2841,
+      "sha256": "f7cddb571d3a03ecc193f9ccc3ac5bc42eebec0e54b3d9c54966ee3692d06717"
+    },
+    "investigation.jobs": {
+      "rows": 12,
+      "sha256": "edc22c27bf7c87b932041c28a7d089794b690370f9a6327fdc8cf62e60c665fb"
+    },
+    "investigation.steps": {
+      "rows": 14,
+      "sha256": "0961a9b5c877627d4565131a2717eba2138741d00b8ac25099089937228f13af"
+    },
+    "investigation.events": {
+      "rows": 77,
+      "sha256": "05b3ad3f6f89c2789f080d21a82ab2ffbba4ff310be54d19d662981e8950ea5e"
+    },
+    "platform.source_registrations": {
+      "rows": 3,
+      "sha256": "4d94539bcd119a1afa945202860776d940827f30ddb575e574e7556feb9ce5e7"
+    },
+    "platform.resource_entities": {
+      "rows": 78,
+      "sha256": "f3c28fc65d49588a7676b0937a0e5ba4dbbdbc1f26dc9004f0b8fd4c2a3fc538"
+    }
+  },
+  "allComparedRowsByteEqual": true,
+  "roleDefinitionsRestored": true,
+  "initialTargetBootstrapRole": "ops_bootstrap",
+  "singleKnownBootstrapCreationReconciled": true,
+  "sourceBootstrapGrantorPreserved": true,
+  "transitEvidenceNarrowRestore": "current-core-r6-raft-evidence-isolated-restore-r5.json",
+  "signedAuditCryptographicRangeVerification": false,
+  "isolatedTargetStoppedAndRetained": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "-i",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1"
+      ],
+      "purpose": "consistent read-only snapshot exporter",
+      "pid": 23866
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "pg_dump",
+        "-U",
+        "ops_bootstrap",
+        "-Fc",
+        "--snapshot=00000037-00000002-1",
+        "ops"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "pg_dumpall",
+        "-U",
+        "ops_bootstrap",
+        "--globals-only"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "pg_dump",
+        "-U",
+        "ops_bootstrap",
+        "-Fc",
+        "--serializable-deferrable",
+        "keycloak"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "openssl",
+        "enc",
+        "-aes-256-cbc",
+        "-pbkdf2",
+        "-iter",
+        "200000",
+        "-salt",
+        "-in",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-database-restore-r5/database-backup.tar",
+        "-out",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-database-restore-r5/database-backup.tar.enc",
+        "-pass",
+        "file:/Users/mssc/.local/state/ops/pre-sp07-20261004/backup-encryption.pass"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "openssl",
+        "enc",
+        "-d",
+        "-aes-256-cbc",
+        "-pbkdf2",
+        "-iter",
+        "200000",
+        "-in",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-database-restore-r5/database-backup.tar.enc",
+        "-out",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-database-restore-r5/database-backup-readback.tar",
+        "-pass",
+        "file:/Users/mssc/.local/state/ops/pre-sp07-20261004/backup-encryption.pass"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "volume",
+        "create",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-core-r6-database-restore-r5",
+        "--label",
+        "ops.platform.purpose=isolated-current-database-restore",
+        "ops-pre-sp07-20261007-core-r6-database-restore-r5-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "-d",
+        "--pull=never",
+        "--network=none",
+        "--name",
+        "ops-pre-sp07-20261007-core-r6-database-restore-r5",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-core-r6-database-restore-r5",
+        "--label",
+        "ops.platform.purpose=isolated-current-database-restore",
+        "--env-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-database-restore-r5/restore-postgresql.env",
+        "--mount",
+        "type=volume,src=ops-pre-sp07-20261007-core-r6-database-restore-r5-data,dst=/var/lib/postgresql/data",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "-i",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "restore_admin",
+        "--single-transaction",
+        "-v",
+        "ON_ERROR_STOP=1"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "createdb",
+        "-U",
+        "ops_bootstrap",
+        "--owner=ops_bootstrap",
+        "ops"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "-i",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "pg_restore",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "--exit-on-error"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "createdb",
+        "-U",
+        "ops_bootstrap",
+        "--owner=ops_bootstrap",
+        "keycloak"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "-i",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "pg_restore",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "keycloak",
+        "--exit-on-error"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM audit.records t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM audit.signed_segments t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM audit.tenant_heads t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM platform.evidence_metadata t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM platform.evidence_archive_intents t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM platform.evidence_dependencies t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM platform.evidence_retention_references t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM investigation.jobs t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM investigation.steps t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM investigation.events t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM platform.source_registrations t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SET TIME ZONE 'UTC'; SELECT json_build_object('rows',count(*),'sha256',encode(sha256(convert_to(coalesce(string_agg(row_to_json(t)::text,E'\n' ORDER BY row_to_json(t)::text),''),'UTF8')),'hex')) FROM platform.resource_entities t; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "stop",
+        "7aa4bc65445ef63b58c73b57700668bd8a2a093cf726e4d7b476b133f52c7559"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

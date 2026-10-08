@@ -1,0 +1,382 @@
+{
+  "items": [
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {
+        "name": "system:controller:bootstrap-signer",
+        "namespace": "kube-public",
+        "uid": "48c353b0-f472-4c97-9a11-e71541f73511",
+        "resourceVersion": "197",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "rules": [
+        {
+          "apiGroups": [
+            ""
+          ],
+          "resources": [
+            "configmaps"
+          ],
+          "verbs": [
+            "get",
+            "list",
+            "watch"
+          ]
+        },
+        {
+          "apiGroups": [
+            ""
+          ],
+          "resourceNames": [
+            "cluster-info"
+          ],
+          "resources": [
+            "configmaps"
+          ],
+          "verbs": [
+            "update"
+          ]
+        },
+        {
+          "apiGroups": [
+            "",
+            "events.k8s.io"
+          ],
+          "resources": [
+            "events"
+          ],
+          "verbs": [
+            "create",
+            "patch",
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {
+        "name": "extension-apiserver-authentication-reader",
+        "namespace": "kube-system",
+        "uid": "ca29f910-f941-474b-9a0e-54e0575010ca",
+        "resourceVersion": "191",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "rules": [
+        {
+          "apiGroups": [
+            ""
+          ],
+          "resourceNames": [
+            "extension-apiserver-authentication"
+          ],
+          "resources": [
+            "configmaps"
+          ],
+          "verbs": [
+            "get",
+            "list",
+            "watch"
+          ]
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {
+        "name": "system::leader-locking-kube-controller-manager",
+        "namespace": "kube-system",
+        "uid": "593640fe-e5f5-408c-aacc-c7fcf6d98e7a",
+        "resourceVersion": "195",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "rules": [
+        {
+          "apiGroups": [
+            "coordination.k8s.io"
+          ],
+          "resources": [
+            "leases"
+          ],
+          "verbs": [
+            "create",
+            "get",
+            "list",
+            "update",
+            "watch"
+          ]
+        },
+        {
+          "apiGroups": [
+            "coordination.k8s.io"
+          ],
+          "resources": [
+            "leasecandidates"
+          ],
+          "verbs": [
+            "create",
+            "get",
+            "list",
+            "update",
+            "watch"
+          ]
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {
+        "name": "system::leader-locking-kube-scheduler",
+        "namespace": "kube-system",
+        "uid": "89522fc5-1d93-4306-9fee-fc7028290b4e",
+        "resourceVersion": "196",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "rules": [
+        {
+          "apiGroups": [
+            "coordination.k8s.io"
+          ],
+          "resources": [
+            "leases"
+          ],
+          "verbs": [
+            "create",
+            "get",
+            "list",
+            "update",
+            "watch"
+          ]
+        },
+        {
+          "apiGroups": [
+            "coordination.k8s.io"
+          ],
+          "resources": [
+            "leasecandidates"
+          ],
+          "verbs": [
+            "create",
+            "get",
+            "list",
+            "update",
+            "watch"
+          ]
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {
+        "name": "system:controller:bootstrap-signer",
+        "namespace": "kube-system",
+        "uid": "26530523-e039-4d60-84f2-202d193519fc",
+        "resourceVersion": "192",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "rules": [
+        {
+          "apiGroups": [
+            ""
+          ],
+          "resources": [
+            "secrets"
+          ],
+          "verbs": [
+            "get",
+            "list",
+            "watch"
+          ]
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {
+        "name": "system:controller:cloud-provider",
+        "namespace": "kube-system",
+        "uid": "fef3cb84-e361-4766-a166-584974fffc7c",
+        "resourceVersion": "193",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "rules": [
+        {
+          "apiGroups": [
+            ""
+          ],
+          "resources": [
+            "configmaps"
+          ],
+          "verbs": [
+            "create",
+            "get",
+            "list",
+            "watch"
+          ]
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {
+        "name": "system:controller:token-cleaner",
+        "namespace": "kube-system",
+        "uid": "e7e518f9-2495-4507-be3b-f9b6d45e4728",
+        "resourceVersion": "194",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "rules": [
+        {
+          "apiGroups": [
+            ""
+          ],
+          "resources": [
+            "secrets"
+          ],
+          "verbs": [
+            "delete",
+            "get",
+            "list",
+            "watch"
+          ]
+        },
+        {
+          "apiGroups": [
+            "",
+            "events.k8s.io"
+          ],
+          "resources": [
+            "events"
+          ],
+          "verbs": [
+            "create",
+            "patch",
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {
+        "name": "vm-victoria-metrics-operator",
+        "namespace": "monitoring",
+        "uid": "0e21dbf5-ea16-41f6-8947-ebb27e583601",
+        "resourceVersion": "2445",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "victoria-metrics-operator",
+          "app.kubernetes.io/version": "v0.56.0",
+          "helm.sh/chart": "victoria-metrics-operator-0.45.0"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "rules": [
+        {
+          "apiGroups": [
+            "coordination.k8s.io"
+          ],
+          "resources": [
+            "leases"
+          ],
+          "verbs": [
+            "create",
+            "get",
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {
+        "name": "lease",
+        "namespace": "sp04-chain-0587768a",
+        "uid": "f3ed6594-3041-4222-8f24-7ecb1aa84966",
+        "resourceVersion": "239228",
+        "creationTimestamp": "2026-10-02T01:18:24Z",
+        "labels": {
+          "ops.platform.test": "sp04-chain-0587768a"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "rules": [
+        {
+          "apiGroups": [
+            "coordination.k8s.io"
+          ],
+          "resourceNames": [
+            "sp04-graph"
+          ],
+          "resources": [
+            "leases"
+          ],
+          "verbs": [
+            "get",
+            "update"
+          ]
+        }
+      ]
+    }
+  ]
+}

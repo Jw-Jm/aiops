@@ -1,0 +1,745 @@
+{
+  "observedAt": "2026-10-07T02:21:24.156162+00:00",
+  "fullR4RecoveryAcceptance": false,
+  "original27HistoricalRecovery": false,
+  "sourceNamespace": "ops-pre-sp07-core-r6-20261006",
+  "sourceObjectsDeleted": false,
+  "sourceProtectionChanged": false,
+  "newRuntimeEvidenceRestoration": false,
+  "evidenceId": "90ec6b28-4046-5e4b-85a9-ce3b94582200",
+  "versionId": "6723e3239845ad780600976b59601d4d",
+  "encryptionKeyVersion": "1",
+  "snapshotSHA256": "sha256:dbab1ea26b41883f5b9e150c3a233e7b55ecb5bf00be644b222b7c05f2b9b907",
+  "snapshotBytes": 96798,
+  "plaintextDigest": "sha256:7d457a3181fda48e2876f740d3e74d4cc9f28a3a58bc5ccc74baf86beed51156",
+  "ciphertextDigest": "sha256:e2fd6dc0b99177f5f659eb8bf2397a2a4123bd0592b8561806bbfdcda7852eac",
+  "failureFrames": [
+    {
+      "file": "restore-current-core-r6-raft-evidence-r4.py",
+      "line": 52
+    }
+  ],
+  "failureType": "AssertionError",
+  "isolatedTargetStoppedAndRetained": true,
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-openbao",
+        "49196:8200"
+      ],
+      "pid": 21680
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-seaweedfs-s3",
+        "49206:8333"
+      ],
+      "pid": 21682
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "network",
+        "create",
+        "--internal",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-core-r6-raft-restore-r4",
+        "ops-pre-sp07-20261007-core-r6-raft-restore-r4"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "volume",
+        "create",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-core-r6-raft-restore-r4",
+        "--label",
+        "ops.platform.purpose=isolated-current-raft-restore",
+        "ops-pre-sp07-20261007-core-r6-raft-restore-r4-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--network=none",
+        "--pull=never",
+        "--user=0",
+        "--entrypoint=/bin/sh",
+        "--mount",
+        "type=volume,src=ops-pre-sp07-20261007-core-r6-raft-restore-r4-data,dst=/bao-data",
+        "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+        "-ec",
+        "chown 100:1000 /bao-data && chmod 0700 /bao-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "-d",
+        "--pull=never",
+        "--network=ops-pre-sp07-20261007-core-r6-raft-restore-r4",
+        "--name",
+        "ops-pre-sp07-20261007-core-r6-raft-restore-r4",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-core-r6-raft-restore-r4",
+        "--label",
+        "ops.platform.purpose=isolated-current-raft-restore",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "-p",
+        "127.0.0.1::8200",
+        "--mount",
+        "type=bind,src=/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-raft-restore-r4/server,dst=/cfg,readonly",
+        "--mount",
+        "type=volume,src=ops-pre-sp07-20261007-core-r6-raft-restore-r4-data,dst=/bao-data",
+        "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+        "server",
+        "-config=/cfg/bao.hcl"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "port",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1",
+        "8200/tcp"
+      ],
+      "exitCode": 1,
+      "startupObservation": true
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "stop",
+        "e018d039f8c2ab89b6e8fb8c5e8c0684fa70761eeec016b6579aeaea7d6dcee1"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "ownedForwardsStopped": true
+}

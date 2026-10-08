@@ -31,7 +31,7 @@ func Detect(input InputProfile, discovery Discovery) (InputProfile, error) {
 		if component.Mode == "disabled" {
 			continue
 		}
-		candidates := discovery.Components[name]
+		candidates := selectedComponentCandidates(component, discovery.Components[name])
 		if len(candidates) > 1 {
 			return InputProfile{}, profileConflict(name, "multiple candidate instances were discovered")
 		}

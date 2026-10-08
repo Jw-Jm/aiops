@@ -1,0 +1,312 @@
+=== RUN   TestBuildReproducibleAndVerifiable
+--- PASS: TestBuildReproducibleAndVerifiable (1.07s)
+=== RUN   TestBuildPayloadLargerThanOneMiBRoundTripsWithinDecoderLimit
+--- PASS: TestBuildPayloadLargerThanOneMiBRoundTripsWithinDecoderLimit (0.38s)
+=== RUN   TestBuildRejectsInvalidInputsWithoutPublishing
+=== RUN   TestBuildRejectsInvalidInputsWithoutPublishing/candidate
+=== RUN   TestBuildRejectsInvalidInputsWithoutPublishing/changed-input
+=== RUN   TestBuildRejectsInvalidInputsWithoutPublishing/missing-layer
+=== RUN   TestBuildRejectsInvalidInputsWithoutPublishing/private-key-input
+=== RUN   TestBuildRejectsInvalidInputsWithoutPublishing/public-key-permissions
+=== RUN   TestBuildRejectsInvalidInputsWithoutPublishing/undeclared-image
+=== RUN   TestBuildRejectsInvalidInputsWithoutPublishing/unsafe-path
+=== RUN   TestBuildRejectsInvalidInputsWithoutPublishing/floating-version
+--- PASS: TestBuildRejectsInvalidInputsWithoutPublishing (1.40s)
+    --- PASS: TestBuildRejectsInvalidInputsWithoutPublishing/candidate (0.23s)
+    --- PASS: TestBuildRejectsInvalidInputsWithoutPublishing/changed-input (0.22s)
+    --- PASS: TestBuildRejectsInvalidInputsWithoutPublishing/missing-layer (0.46s)
+    --- PASS: TestBuildRejectsInvalidInputsWithoutPublishing/private-key-input (0.21s)
+    --- PASS: TestBuildRejectsInvalidInputsWithoutPublishing/public-key-permissions (0.28s)
+    --- PASS: TestBuildRejectsInvalidInputsWithoutPublishing/undeclared-image (0.00s)
+    --- PASS: TestBuildRejectsInvalidInputsWithoutPublishing/unsafe-path (0.00s)
+    --- PASS: TestBuildRejectsInvalidInputsWithoutPublishing/floating-version (0.00s)
+=== RUN   TestBuildDoesNotOverwriteExistingDirectory
+--- PASS: TestBuildDoesNotOverwriteExistingDirectory (0.22s)
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/credential_plaintext
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/missing_tenant
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/disabled_SP05
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/broad_model
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/budget_expansion
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/cross_tenant_cluster
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/missing_policy
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/generic_overrides
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/public_model
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/wrong_model_host
+=== RUN   TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/missing_source
+--- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration (0.04s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/credential_plaintext (0.02s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/missing_tenant (0.00s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/disabled_SP05 (0.01s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/broad_model (0.00s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/budget_expansion (0.00s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/cross_tenant_cluster (0.00s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/missing_policy (0.00s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/generic_overrides (0.00s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/public_model (0.00s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/wrong_model_host (0.00s)
+    --- PASS: TestBusinessValuesRejectUnsafeAndIncompleteConfiguration/missing_source (0.00s)
+=== RUN   TestBusinessValuesNeverOverrideAuthenticatedImages
+--- PASS: TestBusinessValuesNeverOverrideAuthenticatedImages (0.00s)
+=== RUN   TestBusinessSecretPreflightUsesOnlyPresenceQueries
+--- PASS: TestBusinessSecretPreflightUsesOnlyPresenceQueries (0.00s)
+=== RUN   TestLockedVictoriaChartsRenderForOfflineInstaller
+=== RUN   TestLockedVictoriaChartsRenderForOfflineInstaller/victoria-metrics
+=== RUN   TestLockedVictoriaChartsRenderForOfflineInstaller/victoria-logs
+=== RUN   TestLockedVictoriaChartsRenderForOfflineInstaller/vmalert
+--- PASS: TestLockedVictoriaChartsRenderForOfflineInstaller (0.26s)
+    --- PASS: TestLockedVictoriaChartsRenderForOfflineInstaller/victoria-metrics (0.09s)
+    --- PASS: TestLockedVictoriaChartsRenderForOfflineInstaller/victoria-logs (0.08s)
+    --- PASS: TestLockedVictoriaChartsRenderForOfflineInstaller/vmalert (0.09s)
+=== RUN   TestOwnedRendererRejectsUnplannedImagesAndExistingOwner
+--- PASS: TestOwnedRendererRejectsUnplannedImagesAndExistingOwner (0.00s)
+=== RUN   TestImportRejectsTamperedBundleBeforeRuntimeProbe
+--- PASS: TestImportRejectsTamperedBundleBeforeRuntimeProbe (0.01s)
+=== RUN   TestImportRejectsCandidateProfileBeforeRuntimeProbe
+--- PASS: TestImportRejectsCandidateProfileBeforeRuntimeProbe (0.21s)
+=== RUN   TestImportRejectsInvalidOCIClosureBeforeRuntimeProbe
+--- PASS: TestImportRejectsInvalidOCIClosureBeforeRuntimeProbe (0.26s)
+=== RUN   TestPlanFallbackKeepsObservedExternalVersionIndependent
+--- PASS: TestPlanFallbackKeepsObservedExternalVersionIndependent (0.00s)
+=== RUN   TestImportValidatesEveryLayerBeforeAnyRuntimeCall
+--- PASS: TestImportValidatesEveryLayerBeforeAnyRuntimeCall (18.35s)
+=== RUN   TestPlanImportReturnsEveryImageWithoutRuntimeSideEffects
+--- PASS: TestPlanImportReturnsEveryImageWithoutRuntimeSideEffects (0.79s)
+=== RUN   TestImportVerifiedOCIArchivesWithoutPull
+--- PASS: TestImportVerifiedOCIArchivesWithoutPull (0.64s)
+=== RUN   TestPolicyBootstrapRejectsWorkloadsAndEmptyTemplates
+--- PASS: TestPolicyBootstrapRejectsWorkloadsAndEmptyTemplates (0.00s)
+=== RUN   TestInstallIncompleteBundleNeverRunsHelmOrRuntime
+--- PASS: TestInstallIncompleteBundleNeverRunsHelmOrRuntime (0.64s)
+=== RUN   TestRenderRejectsOnlineImagesAndHooksBeforeKubernetes
+--- PASS: TestRenderRejectsOnlineImagesAndHooksBeforeKubernetes (0.00s)
+=== RUN   TestInstallRefusesExistingResources
+--- PASS: TestInstallRefusesExistingResources (0.00s)
+=== RUN   TestRenderAcceptsOnlyOperatorSuppliedSecretReferences
+--- PASS: TestRenderAcceptsOnlyOperatorSuppliedSecretReferences (0.00s)
+=== RUN   TestRenderRefusesUnexpectedNamespaceBeforeResourceAccess
+--- PASS: TestRenderRefusesUnexpectedNamespaceBeforeResourceAccess (0.00s)
+=== RUN   TestRenderRejectsUnlabeledResourcesBeforeClusterAccess
+--- PASS: TestRenderRejectsUnlabeledResourcesBeforeClusterAccess (0.00s)
+=== RUN   TestCleanupReleaseVerifiesOwnershipAndNeverDeletesPVCs
+--- PASS: TestCleanupReleaseVerifiesOwnershipAndNeverDeletesPVCs (0.00s)
+=== RUN   TestCleanupReleaseRejectsChangedOwnershipBeforeUninstall
+--- PASS: TestCleanupReleaseRejectsChangedOwnershipBeforeUninstall (0.00s)
+=== RUN   TestCleanupReleaseRejectsPersistentVolumeClaimsBeforeUninstall
+--- PASS: TestCleanupReleaseRejectsPersistentVolumeClaimsBeforeUninstall (0.00s)
+=== RUN   TestRequireAbsentReleaseRejectsExistingHelmRelease
+--- PASS: TestRequireAbsentReleaseRejectsExistingHelmRelease (0.00s)
+=== RUN   TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes
+=== RUN   TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/VMServiceScrape/ops-platform
+=== RUN   TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/VMServiceScrape/protected-monitoring
+=== RUN   TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/ServiceMonitor/ops-platform
+=== RUN   TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/ServiceMonitor/protected-monitoring
+--- PASS: TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes (0.00s)
+    --- PASS: TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/VMServiceScrape/ops-platform (0.00s)
+    --- PASS: TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/VMServiceScrape/protected-monitoring (0.00s)
+    --- PASS: TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/ServiceMonitor/ops-platform (0.00s)
+    --- PASS: TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes/ServiceMonitor/protected-monitoring (0.00s)
+=== RUN   TestBootstrapEgressRequiresBothControlsAndCleansOnlyCreatedPod
+=== RUN   TestBootstrapEgressRequiresBothControlsAndCleansOnlyCreatedPod/INTERNAL_DNS_REACHABLE_PUBLIC_EGRESS_DENIED
+=== RUN   TestBootstrapEgressRequiresBothControlsAndCleansOnlyCreatedPod/NETWORK_POLICY_NOT_ENFORCED
+=== RUN   TestBootstrapEgressRequiresBothControlsAndCleansOnlyCreatedPod/#00
+--- PASS: TestBootstrapEgressRequiresBothControlsAndCleansOnlyCreatedPod (0.00s)
+    --- PASS: TestBootstrapEgressRequiresBothControlsAndCleansOnlyCreatedPod/INTERNAL_DNS_REACHABLE_PUBLIC_EGRESS_DENIED (0.00s)
+    --- PASS: TestBootstrapEgressRequiresBothControlsAndCleansOnlyCreatedPod/NETWORK_POLICY_NOT_ENFORCED (0.00s)
+    --- PASS: TestBootstrapEgressRequiresBothControlsAndCleansOnlyCreatedPod/#00 (0.00s)
+=== RUN   TestBootstrapEgressRefusesChangedProbeOwnership
+--- PASS: TestBootstrapEgressRefusesChangedProbeOwnership (0.00s)
+=== RUN   TestExternalServicePolicyUsesObservedSelectorAndTargetPort
+--- PASS: TestExternalServicePolicyUsesObservedSelectorAndTargetPort (0.00s)
+=== RUN   TestExternalServicePolicyRejectsPublicAndSelectorlessServices
+--- PASS: TestExternalServicePolicyRejectsPublicAndSelectorlessServices (0.00s)
+=== RUN   TestExternalServicePolicyRejectsRecreatedInternalService
+--- PASS: TestExternalServicePolicyRejectsRecreatedInternalService (0.00s)
+=== RUN   TestOCIOriginalIndexRequiresUnambiguousCompleteNativeClosure
+=== RUN   TestOCIOriginalIndexRequiresUnambiguousCompleteNativeClosure/valid
+=== RUN   TestOCIOriginalIndexRequiresUnambiguousCompleteNativeClosure/missing-native-layer
+=== RUN   TestOCIOriginalIndexRequiresUnambiguousCompleteNativeClosure/missing-native-manifest
+=== RUN   TestOCIOriginalIndexRequiresUnambiguousCompleteNativeClosure/ambiguous-native-platform
+--- PASS: TestOCIOriginalIndexRequiresUnambiguousCompleteNativeClosure (0.00s)
+    --- PASS: TestOCIOriginalIndexRequiresUnambiguousCompleteNativeClosure/valid (0.00s)
+    --- PASS: TestOCIOriginalIndexRequiresUnambiguousCompleteNativeClosure/missing-native-layer (0.00s)
+    --- PASS: TestOCIOriginalIndexRequiresUnambiguousCompleteNativeClosure/missing-native-manifest (0.00s)
+    --- PASS: TestOCIOriginalIndexRequiresUnambiguousCompleteNativeClosure/ambiguous-native-platform (0.00s)
+=== RUN   TestOCIValidatesLayerClosureAndArchitecture
+=== RUN   TestOCIValidatesLayerClosureAndArchitecture/valid
+=== RUN   TestOCIValidatesLayerClosureAndArchitecture/missing-layer
+=== RUN   TestOCIValidatesLayerClosureAndArchitecture/altered-layer
+=== RUN   TestOCIValidatesLayerClosureAndArchitecture/wrong-architecture
+--- PASS: TestOCIValidatesLayerClosureAndArchitecture (0.00s)
+    --- PASS: TestOCIValidatesLayerClosureAndArchitecture/valid (0.00s)
+    --- PASS: TestOCIValidatesLayerClosureAndArchitecture/missing-layer (0.00s)
+    --- PASS: TestOCIValidatesLayerClosureAndArchitecture/altered-layer (0.00s)
+    --- PASS: TestOCIValidatesLayerClosureAndArchitecture/wrong-architecture (0.00s)
+=== RUN   TestFirstPartyGoMaterialsCannotBypassSDKSourceAdmission
+--- PASS: TestFirstPartyGoMaterialsCannotBypassSDKSourceAdmission (0.10s)
+=== RUN   TestSP06InvestigatorCannotOmitCorrespondingSource
+--- PASS: TestSP06InvestigatorCannotOmitCorrespondingSource (0.09s)
+=== RUN   TestRuntimeSourceBindsQualifiedSDKAndTargetArchitecture
+--- PASS: TestRuntimeSourceBindsQualifiedSDKAndTargetArchitecture (0.24s)
+=== RUN   TestSP05WorkerCannotOmitAnalyzerCorrespondingSource
+--- PASS: TestSP05WorkerCannotOmitAnalyzerCorrespondingSource (0.12s)
+=== RUN   TestSP05WorkerSourceAdmissionBindsExactCLIClosure
+--- PASS: TestSP05WorkerSourceAdmissionBindsExactCLIClosure (0.10s)
+=== RUN   TestInstallerRejectsMissingRuntimeBootstrapBeforeImport
+--- PASS: TestInstallerRejectsMissingRuntimeBootstrapBeforeImport (0.00s)
+=== RUN   TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust
+--- PASS: TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust (0.00s)
+=== RUN   TestPlatformScrapeValuesFreezeResolvedCapabilities
+=== RUN   TestPlatformScrapeValuesFreezeResolvedCapabilities/none
+=== RUN   TestPlatformScrapeValuesFreezeResolvedCapabilities/victoria-priority
+=== RUN   TestPlatformScrapeValuesFreezeResolvedCapabilities/prometheus
+=== RUN   TestPlatformScrapeValuesFreezeResolvedCapabilities/not-served
+=== RUN   TestPlatformScrapeValuesFreezeResolvedCapabilities/wrong-version
+=== RUN   TestPlatformScrapeValuesFreezeResolvedCapabilities/wrong-kind
+=== RUN   TestPlatformScrapeValuesFreezeResolvedCapabilities/disappeared
+--- PASS: TestPlatformScrapeValuesFreezeResolvedCapabilities (0.00s)
+    --- PASS: TestPlatformScrapeValuesFreezeResolvedCapabilities/none (0.00s)
+    --- PASS: TestPlatformScrapeValuesFreezeResolvedCapabilities/victoria-priority (0.00s)
+    --- PASS: TestPlatformScrapeValuesFreezeResolvedCapabilities/prometheus (0.00s)
+    --- PASS: TestPlatformScrapeValuesFreezeResolvedCapabilities/not-served (0.00s)
+    --- PASS: TestPlatformScrapeValuesFreezeResolvedCapabilities/wrong-version (0.00s)
+    --- PASS: TestPlatformScrapeValuesFreezeResolvedCapabilities/wrong-kind (0.00s)
+    --- PASS: TestPlatformScrapeValuesFreezeResolvedCapabilities/disappeared (0.00s)
+=== RUN   TestInstallerChecksSelectedSecretVolumeKeys
+--- PASS: TestInstallerChecksSelectedSecretVolumeKeys (0.00s)
+=== RUN   TestVerifyAcceptsSignedBundleWithExplicitTrustRoot
+--- PASS: TestVerifyAcceptsSignedBundleWithExplicitTrustRoot (0.11s)
+=== RUN   TestVerifyAcceptsExactPrereleaseVersionContainingX
+--- PASS: TestVerifyAcceptsExactPrereleaseVersionContainingX (0.10s)
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/17.11
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/4.47
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/v17.11
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/4.47-rc.1
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/4.47+build.1
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/1.2.3
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-17
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-17.11.x
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-17.*
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-17.11.
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-17.11.0.1
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-01.2
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-1.02
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-^17.11
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject->=17.11
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-latest
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-v1.2..3
+=== RUN   TestBundleAcceptsExactUpstreamReleaseVersions/reject-pending
+--- PASS: TestBundleAcceptsExactUpstreamReleaseVersions (0.80s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/17.11 (0.10s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/4.47 (0.12s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/v17.11 (0.11s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/4.47-rc.1 (0.11s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/4.47+build.1 (0.10s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/1.2.3 (0.12s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa (0.13s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-17 (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-17.11.x (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-17.* (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-17.11. (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-17.11.0.1 (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-01.2 (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-1.02 (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-^17.11 (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject->=17.11 (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-latest (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-v1.2..3 (0.00s)
+    --- PASS: TestBundleAcceptsExactUpstreamReleaseVersions/reject-pending (0.00s)
+=== RUN   TestVerifyRejectsTamperedPayloadByte
+--- PASS: TestVerifyRejectsTamperedPayloadByte (0.12s)
+=== RUN   TestVerifyRejectsReplacementTrustKey
+--- PASS: TestVerifyRejectsReplacementTrustKey (0.00s)
+=== RUN   TestReadTrustRootLoadsExplicitPEMPublicKey
+--- PASS: TestReadTrustRootLoadsExplicitPEMPublicKey (0.00s)
+=== RUN   TestParseManifestRejectsNonCanonicalJSON
+--- PASS: TestParseManifestRejectsNonCanonicalJSON (0.00s)
+=== RUN   TestParseManifestAcceptsCanonicalJSON
+--- PASS: TestParseManifestAcceptsCanonicalJSON (0.00s)
+=== RUN   TestBundleLockSchemaRejectsFloatingVersion
+=== RUN   TestBundleLockSchemaRejectsFloatingVersion/latest
+=== RUN   TestBundleLockSchemaRejectsFloatingVersion/1.x
+=== RUN   TestBundleLockSchemaRejectsFloatingVersion/develop
+--- PASS: TestBundleLockSchemaRejectsFloatingVersion (0.00s)
+    --- PASS: TestBundleLockSchemaRejectsFloatingVersion/latest (0.00s)
+    --- PASS: TestBundleLockSchemaRejectsFloatingVersion/1.x (0.00s)
+    --- PASS: TestBundleLockSchemaRejectsFloatingVersion/develop (0.00s)
+=== RUN   TestBundleLockSchemaRejectsMissingDigestAndUnsupportedArchitecture
+=== RUN   TestBundleLockSchemaRejectsMissingDigestAndUnsupportedArchitecture/missing_material_digest
+=== RUN   TestBundleLockSchemaRejectsMissingDigestAndUnsupportedArchitecture/missing_payload_reference
+=== RUN   TestBundleLockSchemaRejectsMissingDigestAndUnsupportedArchitecture/unsupported_architecture
+--- PASS: TestBundleLockSchemaRejectsMissingDigestAndUnsupportedArchitecture (0.00s)
+    --- PASS: TestBundleLockSchemaRejectsMissingDigestAndUnsupportedArchitecture/missing_material_digest (0.00s)
+    --- PASS: TestBundleLockSchemaRejectsMissingDigestAndUnsupportedArchitecture/missing_payload_reference (0.00s)
+    --- PASS: TestBundleLockSchemaRejectsMissingDigestAndUnsupportedArchitecture/unsupported_architecture (0.00s)
+=== RUN   TestBundleLockSchemaRequiresMaterialPayloadReference
+--- PASS: TestBundleLockSchemaRequiresMaterialPayloadReference (0.00s)
+=== RUN   TestValidateCatalogAdmissionAcceptsQualifiedComponentWithVerifiedEvidence
+--- PASS: TestValidateCatalogAdmissionAcceptsQualifiedComponentWithVerifiedEvidence (0.00s)
+=== RUN   TestValidateCatalogAdmissionRejectsQualifiedComponentWithoutEvidence
+--- PASS: TestValidateCatalogAdmissionRejectsQualifiedComponentWithoutEvidence (0.00s)
+=== RUN   TestCanonicalizeJSONRejectsDuplicateNamesAndTrailingValues
+=== RUN   TestCanonicalizeJSONRejectsDuplicateNamesAndTrailingValues/{"schemaVersion":1,"schemaVersion":1}
+=== RUN   TestCanonicalizeJSONRejectsDuplicateNamesAndTrailingValues/{}_{}
+--- PASS: TestCanonicalizeJSONRejectsDuplicateNamesAndTrailingValues (0.00s)
+    --- PASS: TestCanonicalizeJSONRejectsDuplicateNamesAndTrailingValues/{"schemaVersion":1,"schemaVersion":1} (0.00s)
+    --- PASS: TestCanonicalizeJSONRejectsDuplicateNamesAndTrailingValues/{}_{} (0.00s)
+=== RUN   TestVerifyRejectsManifestContractViolations
+=== RUN   TestVerifyRejectsManifestContractViolations/architecture_mismatch
+=== RUN   TestVerifyRejectsManifestContractViolations/floating_version
+=== RUN   TestVerifyRejectsManifestContractViolations/floating_wildcard_version
+=== RUN   TestVerifyRejectsManifestContractViolations/duplicate_material_name
+=== RUN   TestVerifyRejectsManifestContractViolations/install_order_cycle
+=== RUN   TestVerifyRejectsManifestContractViolations/missing_SBOM_reference
+=== RUN   TestVerifyRejectsManifestContractViolations/missing_license_reference
+--- PASS: TestVerifyRejectsManifestContractViolations (0.00s)
+    --- PASS: TestVerifyRejectsManifestContractViolations/architecture_mismatch (0.00s)
+    --- PASS: TestVerifyRejectsManifestContractViolations/floating_version (0.00s)
+    --- PASS: TestVerifyRejectsManifestContractViolations/floating_wildcard_version (0.00s)
+    --- PASS: TestVerifyRejectsManifestContractViolations/duplicate_material_name (0.00s)
+    --- PASS: TestVerifyRejectsManifestContractViolations/install_order_cycle (0.00s)
+    --- PASS: TestVerifyRejectsManifestContractViolations/missing_SBOM_reference (0.00s)
+    --- PASS: TestVerifyRejectsManifestContractViolations/missing_license_reference (0.00s)
+=== RUN   TestSafeExtractRejectsEscapingAndSpecialEntries
+=== RUN   TestSafeExtractRejectsEscapingAndSpecialEntries/absolute_path
+=== RUN   TestSafeExtractRejectsEscapingAndSpecialEntries/parent_traversal
+=== RUN   TestSafeExtractRejectsEscapingAndSpecialEntries/symlink
+=== RUN   TestSafeExtractRejectsEscapingAndSpecialEntries/hardlink
+--- PASS: TestSafeExtractRejectsEscapingAndSpecialEntries (0.01s)
+    --- PASS: TestSafeExtractRejectsEscapingAndSpecialEntries/absolute_path (0.00s)
+    --- PASS: TestSafeExtractRejectsEscapingAndSpecialEntries/parent_traversal (0.00s)
+    --- PASS: TestSafeExtractRejectsEscapingAndSpecialEntries/symlink (0.00s)
+    --- PASS: TestSafeExtractRejectsEscapingAndSpecialEntries/hardlink (0.00s)
+=== RUN   TestSafeExtractEnforcesFileAndByteLimits
+=== RUN   TestSafeExtractEnforcesFileAndByteLimits/file_count
+=== RUN   TestSafeExtractEnforcesFileAndByteLimits/total_bytes
+--- PASS: TestSafeExtractEnforcesFileAndByteLimits (0.01s)
+    --- PASS: TestSafeExtractEnforcesFileAndByteLimits/file_count (0.00s)
+    --- PASS: TestSafeExtractEnforcesFileAndByteLimits/total_bytes (0.00s)
+=== RUN   TestSafeExtractDoesNotCountDirectoriesAsFiles
+--- PASS: TestSafeExtractDoesNotCountDirectoriesAsFiles (0.00s)
+=== RUN   TestVerifyRejectsPayloadFileInventoryMismatch
+--- PASS: TestVerifyRejectsPayloadFileInventoryMismatch (0.12s)
+=== RUN   TestVerifyRejectsMaterialDigestNotBoundToItsPayloadFile
+--- PASS: TestVerifyRejectsMaterialDigestNotBoundToItsPayloadFile (0.00s)
+=== RUN   TestVerifyRejectsCandidateCatalogMaterial
+--- PASS: TestVerifyRejectsCandidateCatalogMaterial (0.11s)
+=== RUN   TestVerifyRejectsUncataloguedThirdPartyMaterial
+--- PASS: TestVerifyRejectsUncataloguedThirdPartyMaterial (0.10s)
+=== RUN   ExampleCanonicalizeJSON
+--- PASS: ExampleCanonicalizeJSON (0.00s)
+PASS
+ok  	ops-platform/internal/bundle	27.408s
+=== RUN   TestBundleBuildCLIAndIndependentVerify
+--- PASS: TestBundleBuildCLIAndIndependentVerify (22.02s)
+=== RUN   TestCurrentInstallRequiresExplicitBusinessValues
+--- PASS: TestCurrentInstallRequiresExplicitBusinessValues (0.00s)
+=== RUN   TestProfileResolveRejectsRepositoryTemplate
+--- PASS: TestProfileResolveRejectsRepositoryTemplate (0.00s)
+PASS
+ok  	ops-platform/cmd/opsctl	22.889s

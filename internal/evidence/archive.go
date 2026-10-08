@@ -146,7 +146,7 @@ func (s *ArchiveService) prepare(ctx context.Context, e Evidence, namespace stri
 		var storedMetadata []byte
 		var deleting bool
 		var previousNamespace string
-		if err := tx.QueryRow(ctx, `SELECT content_digest,metadata,deleting,namespace FROM platform.evidence_metadata WHERE tenant_id=$1 AND evidence_id=$2 FOR UPDATE`, tenant, id).Scan(&digest, &storedMetadata, &deleting, &previousNamespace); err != nil {
+		if err := tx.QueryRow(ctx, `SELECT content_digest,metadata,deleting,namespace FROM platform.evidence_metadata WHERE tenant_id=$1 AND evidence_id=$2 FOR NO KEY UPDATE`, tenant, id).Scan(&digest, &storedMetadata, &deleting, &previousNamespace); err != nil {
 			return err
 		}
 		var previous Evidence
@@ -196,7 +196,7 @@ func (s *ArchiveService) prepare(ctx context.Context, e Evidence, namespace stri
 				return ErrArgument
 			}
 			var deleting bool
-			if err := tx.QueryRow(ctx, `SELECT deleting FROM platform.evidence_metadata WHERE tenant_id=$1 AND evidence_id=$2 FOR UPDATE`, tenant, dependencyID).Scan(&deleting); err != nil {
+			if err := tx.QueryRow(ctx, `SELECT deleting FROM platform.evidence_metadata WHERE tenant_id=$1 AND evidence_id=$2 FOR NO KEY UPDATE`, tenant, dependencyID).Scan(&deleting); err != nil {
 				return err
 			}
 			if deleting {
@@ -290,7 +290,7 @@ func (s *ArchiveService) Recover(ctx context.Context, tenant, id uuid.UUID) erro
 		}
 		var digest, current string
 		var deleting bool
-		if err := tx.QueryRow(ctx, `SELECT content_digest,replay_state,deleting FROM platform.evidence_metadata WHERE tenant_id=$1 AND evidence_id=$2 FOR UPDATE`, tenant, id).Scan(&digest, &current, &deleting); err != nil {
+		if err := tx.QueryRow(ctx, `SELECT content_digest,replay_state,deleting FROM platform.evidence_metadata WHERE tenant_id=$1 AND evidence_id=$2 FOR NO KEY UPDATE`, tenant, id).Scan(&digest, &current, &deleting); err != nil {
 			return err
 		}
 		if deleting || digest != plaintextDigest {

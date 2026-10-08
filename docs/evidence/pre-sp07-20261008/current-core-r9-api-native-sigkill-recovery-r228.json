@@ -1,0 +1,96 @@
+{
+  "observedAt": "2026-10-08T03:08:07.055674+00:00",
+  "jobId": "01a11974-8d2d-7024-bc30-eb5d9f16bf4c",
+  "actualSuccessfulModelMCPChainPass": false,
+  "fullRecoveryAcceptance": false,
+  "APIOrWorkerRestartedByThisGate": false,
+  "completeJobTakeoverAndSuccessfulStepNoRerunPass": false,
+  "currentSuccessfulModelMCPChainPass": false,
+  "wireContract": "internal/httpapi/investigation_handlers.go: typed job.state payload and signed opaque cursor; eventId sequence in Envelope",
+  "currentSuccessfulChainReceipt": "current-core-r9-investigation-chain-live-receipt-r221.json",
+  "terminalSuccessfulJobProofOnly": true,
+  "activeJobTakeoverNotClaimed": true,
+  "newModelCallsByGate": 0,
+  "retainedSchedulingEvidence": [
+    {
+      "evidenceId": "406783e1-27a4-5a21-aa60-1adac508f309",
+      "contentDigest": "sha256:adedddb6710f484a3838f613268c61c704bcb2ae33cd5ca4c25aa2528b553d77",
+      "archiveVersionId": "67239160e865885f77f45e0690462a6a",
+      "retainUntil": "2027-10-09T02:59:42Z",
+      "sourceId": "01a1196d-82ff-7071-a499-02e0cfa5baaf",
+      "sourceRevision": 1
+    }
+  ],
+  "apiPodUID": "0b1a3f24-ad3d-469f-a13e-760d47e58c26",
+  "failureType": "AssertionError",
+  "exitCode": 1,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:5ca75e5bca03c15380ebca66a10555a93afb380fa192b0e1178f73e6929b0305"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/events",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:7ff21bb8de38eaac285556287b0ca1e6ee98a8ab5c470540635c2479e25d0747"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/events",
+      "status": 200,
+      "cursorSHA256": "sha256:b3791f0ef94a3e36de5e82c679eb47b7f599f94b75c4efd9dd421cd79477e162",
+      "responseSHA256": "sha256:2be269cb938ea7ea9ec461067d9e1f21be39b5923ba127d0862dbf762089c5a4"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/events",
+      "status": 403,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:33463ac8784df29272aa96ab027ef2ddd47d71548e5d23cb24f4ea1bec1ef02f"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/406783e1-27a4-5a21-aa60-1adac508f309",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:1215e1188b6107dd768374fc1e6ab0f7928e8e5630ad86dfe3221f0c427fde2f"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "replicaset",
+        "ops-api-87c77749c",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "ownedPortForwardStopped": true,
+  "signalActuallyExecuted": false,
+  "operatorFailureBeforeSignal": "Native Docker imageID uses Bundle-scoped repository alias with identical signed manifest digest. Prior full reference equality rejected before signal. Revision requires exact signed digest plus native Docker Image ID, exact Pod/ReplicaSet/Deployment ownership."
+}

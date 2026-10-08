@@ -1,0 +1,191 @@
+{
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "vmsingle-vm",
+        "namespace": "monitoring",
+        "uid": "75f11b01-15be-41b1-bda0-c450a455a4a0",
+        "resourceVersion": "2759",
+        "creationTimestamp": "2026-09-25T05:17:36Z",
+        "labels": {
+          "app.kubernetes.io/component": "monitoring",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/name": "vmsingle",
+          "managed-by": "vm-operator"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "operator.victoriametrics.com/v1beta1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "VMSingle",
+            "name": "vm",
+            "uid": "f45b7e39-0286-4dba-9a57-4c1d6ee03962"
+          }
+        ],
+        "finalizers": [
+          "apps.victoriametrics.com/finalizer",
+          "kubernetes.io/pvc-protection"
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "10Gi"
+          }
+        },
+        "storageClassName": "local-path",
+        "volumeMode": "Filesystem",
+        "volumeName": "pvc-75f11b01-15be-41b1-bda0-c450a455a4a0"
+      },
+      "status": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "capacity": {
+          "storage": "10Gi"
+        },
+        "phase": "Bound"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "data-ops-openbao-0",
+        "namespace": "ops-system",
+        "uid": "c6d6fd30-b259-4edd-ab4d-457a86c9680f",
+        "resourceVersion": "58236",
+        "creationTimestamp": "2026-09-27T11:36:05Z",
+        "labels": {
+          "app.kubernetes.io/name": "ops-openbao",
+          "ops.platform.io/component": "openbao"
+        },
+        "finalizers": [
+          "kubernetes.io/pvc-protection"
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "2Gi"
+          }
+        },
+        "storageClassName": "local-path",
+        "volumeMode": "Filesystem",
+        "volumeName": "pvc-c6d6fd30-b259-4edd-ab4d-457a86c9680f"
+      },
+      "status": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "capacity": {
+          "storage": "2Gi"
+        },
+        "phase": "Bound"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "data-ops-postgresql-0",
+        "namespace": "ops-system",
+        "uid": "fa694502-a948-4fa7-b072-46eb2f4ce8bb",
+        "resourceVersion": "124432",
+        "creationTimestamp": "2026-09-29T01:32:53Z",
+        "labels": {
+          "app.kubernetes.io/name": "ops-postgresql",
+          "ops.platform.io/component": "postgresql",
+          "ops.platform.io/release": "ops-dependencies"
+        },
+        "finalizers": [
+          "kubernetes.io/pvc-protection"
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "2Gi"
+          }
+        },
+        "storageClassName": "local-path",
+        "volumeMode": "Filesystem",
+        "volumeName": "pvc-fa694502-a948-4fa7-b072-46eb2f4ce8bb"
+      },
+      "status": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "capacity": {
+          "storage": "2Gi"
+        },
+        "phase": "Bound"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "data-ops-seaweedfs-0",
+        "namespace": "ops-system",
+        "uid": "cacf92e6-8352-47e0-913c-4f9ff641eb34",
+        "resourceVersion": "124429",
+        "creationTimestamp": "2026-09-29T01:32:53Z",
+        "labels": {
+          "app.kubernetes.io/name": "ops-seaweedfs",
+          "ops.platform.io/component": "seaweedfs",
+          "ops.platform.io/release": "ops-dependencies"
+        },
+        "finalizers": [
+          "kubernetes.io/pvc-protection"
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "2Gi"
+          }
+        },
+        "storageClassName": "local-path",
+        "volumeMode": "Filesystem",
+        "volumeName": "pvc-cacf92e6-8352-47e0-913c-4f9ff641eb34"
+      },
+      "status": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "capacity": {
+          "storage": "2Gi"
+        },
+        "phase": "Bound"
+      }
+    }
+  ]
+}

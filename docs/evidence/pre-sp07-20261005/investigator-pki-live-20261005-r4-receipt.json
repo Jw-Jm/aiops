@@ -1,0 +1,184 @@
+{
+  "observedAt": "2026-10-04T16:33:53.176661+00:00",
+  "namespace": "ops-pre-sp07-pki-20261004",
+  "imageUsedForDependencies": "ops.local/sp06/investigator@sha256:41916431835e1319e25dad000c54454f5565f9347bdf9d175f313d3837591af6",
+  "currentWorkloadCode": "current source files projected from a public-only ConfigMap",
+  "refreshOwner": "production investigator WorkloadIdentity; no test refresh thread",
+  "modelInvoked": false,
+  "fullFreshCoreAcceptance": false,
+  "signedColdImport": false,
+  "originalResourcesDeleted": false,
+  "podUID": "bc83aa56-03e4-4774-aee6-1676105ec60c",
+  "lastTLSFailure": {
+    "type": "ConnectionRefusedError",
+    "message": "[Errno 61] Connection refused"
+  },
+  "initialTLSAndWorkerAuthorization": "PASS",
+  "wrongWorkloadDenied": "PASS",
+  "initialSerial": "20482751473609869017018451126421236347096861507",
+  "renewedSerial": "264640617206896268455427839271459038220852438371",
+  "productionLeafRenewal": "PASS",
+  "productionCRLRevocation": "PASS",
+  "independentFreshWorkerPositiveControl": "PASS",
+  "gate": "PASS",
+  "ownedEphemeralPodDeletedUID": "bc83aa56-03e4-4774-aee6-1676105ec60c",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-pki-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-openbao",
+        "54130:8200"
+      ],
+      "pid": 42545,
+      "createdByGate": true
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "/Users/mssc/Documents/Code/ops/platform/docs/evidence/pre-sp07-20261005/investigator-pki-live-20261005-r4-resources.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "get",
+        "pod",
+        "investigator-pki-live-20261005-r4",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "wait",
+        "--for=condition=Ready",
+        "pod/investigator-pki-live-20261005-r4",
+        "--timeout=180s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "pod/investigator-pki-live-20261005-r4",
+        "54147:8090"
+      ],
+      "pid": 42550,
+      "createdByGate": true
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "get",
+        "pod",
+        "investigator-pki-live-20261005-r4",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "delete",
+        "pod",
+        "investigator-pki-live-20261005-r4",
+        "--wait=true"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "operatorOperations": [
+    {
+      "method": "GET",
+      "fixedPath": "/v1/pki/ca/pem",
+      "httpStatus": 200
+    },
+    {
+      "method": "GET",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-investigator",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-investigator",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/sign/platform-workload-ops-worker",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/sign/platform-workload-ops-api",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/revoke",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/sign/platform-workload-ops-worker",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-investigator",
+      "httpStatus": 200
+    }
+  ],
+  "completedAt": "2026-10-04T16:37:33.210472+00:00"
+}

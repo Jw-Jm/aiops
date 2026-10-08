@@ -13,7 +13,7 @@ import (
 
 // External services remain outside our policy selector. Only their observed
 // Service selector and target port are permitted from this release's Pods.
-func externalServiceEgress(ctx context.Context, p profile.ResolvedProfile, run CommandRunner) ([]map[string]any, error) {
+func externalServiceEgress(ctx context.Context, installationNamespace string, p profile.ResolvedProfile, run CommandRunner) ([]map[string]any, error) {
 	rules := []map[string]any{}
 	for _, name := range []string{"postgresql", "keycloak", "seaweedfs", "openbao", "victoriaMetrics", "victoriaLogs", "vmalert"} {
 		component := p.Components[name]
@@ -72,7 +72,7 @@ func externalServiceEgress(ctx context.Context, p profile.ResolvedProfile, run C
 		if service.Metadata.UID != component.ObjectUID || service.Metadata.Namespace != namespace || service.Metadata.Name != serviceName {
 			return nil, fmt.Errorf("external Service object identity changed for %s", name)
 		}
-		if namespace == "ops-system" {
+		if namespace == installationNamespace {
 			continue
 		} // Identity is checked even when the internal policy already permits traffic.
 		if len(service.Spec.Selector) == 0 {

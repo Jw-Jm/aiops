@@ -1,0 +1,81 @@
+{
+  "observedAt": "2026-10-07T01:46:49.387660+00:00",
+  "protectedEvidenceDeleted": false,
+  "oldScopeOrCanonicalIdentityAdoptedForNewPod": false,
+  "performanceBenchmark": false,
+  "metricMCPAcceptance": false,
+  "namespace": "ops-pre-sp07-targets-r6-20261006",
+  "podName": "pre-sp07-current-r6-metrics-r2",
+  "oldNativePodUID": "b9001d9f-60c1-4f6c-bdb8-cd29d72d77c5",
+  "newNativePodUID": "292565cd-5356-4f88-9911-df352a885757",
+  "newCreationTimestamp": "2026-10-07T01:46:49Z",
+  "expectedLiveSymptom": "Running Pod with failed bounded TCP readiness check; actual PodMetrics should remain available as context, no high-utilization symptom claim",
+  "oldVerifiedEvidenceIdRetained": "38ccf8b8-4b7a-5843-9320-5b4e53b48f17",
+  "oldContentDigestRetained": "sha256:66f80ad7e10b57259aa4a8e94293bd51e2f85286ac1343d03d7d5ede63dc15be",
+  "oldArchiveVersionRetained": "67240bc31ab60eb9c5ed3144fbe9dae9",
+  "UIDAndResourceVersionPreconditionDeletion": true,
+  "sourceNamespaceScopeUnchanged": true,
+  "newStatelessTargetCreated": true,
+  "finiteActiveDeadlineSeconds": 1800,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "get",
+        "pod",
+        "pre-sp07-current-r6-metrics-r2",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "delete",
+        "--raw",
+        "/api/v1/namespaces/ops-pre-sp07-targets-r6-20261006/pods/pre-sp07-current-r6-metrics-r2",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/owned-metric-pod-delete-options-r2.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "get",
+        "pod",
+        "pre-sp07-current-r6-metrics-r2",
+        "-o",
+        "json"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "exitCode": 0
+}

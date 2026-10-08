@@ -1,0 +1,295 @@
+{
+  "items": [
+    {
+      "apiVersion": "apps/v1",
+      "kind": "StatefulSet",
+      "metadata": {
+        "name": "ops-openbao",
+        "namespace": "ops-system",
+        "uid": "1a23d239-7ed2-4714-bcaf-6ce673071183",
+        "resourceVersion": "352487",
+        "creationTimestamp": "2026-09-27T11:36:05Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-openbao",
+          "ops.platform.io/component": "openbao",
+          "ops.platform.io/mode": "bundled"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-core",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "openbao",
+          "image": "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+          "volumeMounts": [
+            {
+              "mountPath": "/openbao/data",
+              "name": "data"
+            },
+            {
+              "mountPath": "/etc/openbao",
+              "name": "config",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/openbao/tls",
+              "name": "bootstrap-tls",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/tmp",
+              "name": "tmp"
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "configMap": {
+            "defaultMode": 420,
+            "name": "ops-openbao-config"
+          },
+          "name": "config"
+        },
+        {
+          "name": "bootstrap-tls",
+          "secret": {
+            "defaultMode": 288,
+            "secretName": "ops-openbao-bootstrap-tls"
+          }
+        },
+        {
+          "emptyDir": {},
+          "name": "tmp"
+        }
+      ],
+      "serviceAccountName": "ops-openbao-tokenreview",
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "collisionCount": 0,
+        "currentReplicas": 1,
+        "currentRevision": "ops-openbao-8cbc9d9d",
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "updateRevision": "ops-openbao-8cbc9d9d",
+        "updatedReplicas": 1
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "StatefulSet",
+      "metadata": {
+        "name": "ops-postgresql",
+        "namespace": "ops-system",
+        "uid": "656ffe6c-69d7-488d-a377-0afc4737ba91",
+        "resourceVersion": "352417",
+        "creationTimestamp": "2026-10-01T11:04:16Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-postgresql",
+          "ops.platform.io/component": "postgresql",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-dependencies"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-dependencies",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "postgresql",
+          "image": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+          "volumeMounts": [
+            {
+              "mountPath": "/var/lib/postgresql/data",
+              "name": "data"
+            },
+            {
+              "mountPath": "/tmp",
+              "name": "tmp"
+            },
+            {
+              "mountPath": "/var/run/postgresql",
+              "name": "postgres-run"
+            }
+          ],
+          "envReferences": [
+            {
+              "name": "POSTGRES_USER",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "key": "username",
+                  "name": "ops-postgresql-auth"
+                }
+              }
+            },
+            {
+              "name": "POSTGRES_PASSWORD",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "key": "password",
+                  "name": "ops-postgresql-auth"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "volumes": [
+        {
+          "emptyDir": {},
+          "name": "tmp"
+        },
+        {
+          "emptyDir": {},
+          "name": "postgres-run"
+        }
+      ],
+      "serviceAccountName": null,
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "collisionCount": 0,
+        "currentReplicas": 1,
+        "currentRevision": "ops-postgresql-55644f6898",
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "updateRevision": "ops-postgresql-55644f6898",
+        "updatedReplicas": 1
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "StatefulSet",
+      "metadata": {
+        "name": "ops-seaweedfs",
+        "namespace": "ops-system",
+        "uid": "20e0b898-175a-4bcf-8841-9d6d0bd34ac6",
+        "resourceVersion": "352440",
+        "creationTimestamp": "2026-10-01T11:04:16Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-seaweedfs",
+          "ops.platform.io/component": "seaweedfs",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-dependencies"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-dependencies",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "seaweedfs",
+          "image": "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+          "volumeMounts": [
+            {
+              "mountPath": "/etc/archive-iam",
+              "name": "archive-iam",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/etc/archive-tls",
+              "name": "archive-tls",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/data",
+              "name": "data"
+            },
+            {
+              "mountPath": "/etc/seaweedfs",
+              "name": "master-config",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/tmp",
+              "name": "tmp"
+            }
+          ],
+          "envReferences": [
+            {
+              "name": "AWS_ACCESS_KEY_ID",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "key": "accessKey",
+                  "name": "ops-seaweedfs-auth"
+                }
+              }
+            },
+            {
+              "name": "AWS_SECRET_ACCESS_KEY",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "key": "secretKey",
+                  "name": "ops-seaweedfs-auth"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "volumes": [
+        {
+          "name": "archive-iam",
+          "secret": {
+            "defaultMode": 420,
+            "items": [
+              {
+                "key": "s3.json",
+                "path": "s3.json"
+              }
+            ],
+            "secretName": "ops-seaweedfs-iam"
+          }
+        },
+        {
+          "name": "archive-tls",
+          "secret": {
+            "defaultMode": 420,
+            "secretName": "ops-seaweedfs-tls"
+          }
+        },
+        {
+          "configMap": {
+            "defaultMode": 420,
+            "name": "ops-seaweedfs-master-config"
+          },
+          "name": "master-config"
+        },
+        {
+          "emptyDir": {},
+          "name": "tmp"
+        }
+      ],
+      "serviceAccountName": null,
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "collisionCount": 0,
+        "currentReplicas": 1,
+        "currentRevision": "ops-seaweedfs-648685d6bd",
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "updateRevision": "ops-seaweedfs-648685d6bd",
+        "updatedReplicas": 1
+      }
+    }
+  ]
+}

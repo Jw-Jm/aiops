@@ -1,0 +1,290 @@
+{
+  "observedAt": "2026-10-08T05:48:28.144094+00:00",
+  "fullR3Acceptance": false,
+  "tenConcurrentModelGateInvoked": false,
+  "sourceRegistrationOrCredentialRotated": false,
+  "metricsServerSharedDeploymentChanged": false,
+  "TLSWeakened": false,
+  "SP07Started": false,
+  "sourceMetricsDenied403": true,
+  "independentCorePositiveDuringDenied": true,
+  "mainlineIncidentDuringDenied": 200,
+  "currentMetricsSourceAuthorizationRevokeRestorePassed": true,
+  "roleUID": "3faadaae-ac68-4fd8-89b3-2a38060dff79",
+  "bindingUID": "03934f60-7bd1-4140-8541-ab870ddb062b",
+  "workerPodUID": "47934cc2-6f00-4326-b9da-28fc8851952f",
+  "targetPodUID": "8997e07b-8fab-498b-8baf-8a846f537887",
+  "nodeUID": "cc6ee959-3391-432f-b413-a5e7f2e64756",
+  "beforeTimestamp": "2026-10-08T05:48:22Z",
+  "beforeWindow": "15.995s",
+  "afterTimestamp": "2026-10-08T05:48:51Z",
+  "afterWindow": "13.991s",
+  "sameActualWorkerProjectedCredential": true,
+  "exactOriginalRoleUIDAndRulesRestored": true,
+  "exitCode": 0,
+  "sourceRBACRestored": true,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "node",
+        "orbstack",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "pods",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "431b3c49c095e7be2f92230adfa4f4fdff9ac9b7c0dc65cd00284787ff2289b6"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "cp",
+        "-L",
+        "431b3c49c095e7be2f92230adfa4f4fdff9ac9b7c0dc65cd00284787ff2289b6:/var/run/secrets/ops-platform/kubernetes/token",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/metrics-authorization-r256/actual-worker-source.token"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "configmap",
+        "kube-root-ca.crt",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "config",
+        "view",
+        "--minify",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "sourcePath": "/apis/metrics.k8s.io/v1beta1/namespaces/ops-pre-sp07-targets-r9-20261008/pods/pre-sp07-r9-metrics-r255",
+      "status": 200,
+      "responseSHA256": "a2912612994b2180edd84846adebafda65732ced629c025e17c09c41631f0bd9",
+      "reason": null
+    },
+    {
+      "sourcePath": "/api/v1/namespaces/ops-pre-sp07-targets-r9-20261008/pods/pre-sp07-r9-metrics-r255",
+      "status": 200,
+      "responseSHA256": "ab63775052298cde6bfc60bc2b10e665c2dffd1122435b01236c68a8db337380",
+      "reason": null
+    },
+    {
+      "sourcePath": "/apis/metrics.k8s.io/v1beta1/nodes/orbstack",
+      "status": 200,
+      "responseSHA256": "acb4e8af1fc20f8f983eba749fbfd5fe2cde8a5392952e869a03dcd4c7357ff3",
+      "reason": null
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "clusterrole",
+        "ops-pre-sp07-core-r9-20261008-ops-platform-sp04-collector",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "clusterrolebindings",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/run-current-core-oidc-operator-login-r9-20261008.py",
+        "metrics-rbac-r256"
+      ],
+      "exitCode": 0
+    },
+    {
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "4fd53bac1cbbbb355abda2ab40e45d0139aaef9b8e80d46b72914e597b06f312"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "clusterrole",
+        "ops-pre-sp07-core-r9-20261008-ops-platform-sp04-collector",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "clusterrole",
+        "ops-pre-sp07-core-r9-20261008-ops-platform-sp04-collector",
+        "--type=json",
+        "--patch-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/metrics-authorization-r256/patch-15.private.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "sourcePath": "/apis/metrics.k8s.io/v1beta1/namespaces/ops-pre-sp07-targets-r9-20261008/pods/pre-sp07-r9-metrics-r255",
+      "status": 403,
+      "responseSHA256": "998612096f0536481b913be0b770216fa2eb29e04aa6c76cd93de1876970d628",
+      "reason": "Forbidden"
+    },
+    {
+      "sourcePath": "/apis/metrics.k8s.io/v1beta1/nodes/orbstack",
+      "status": 403,
+      "responseSHA256": "ac154df670a1edced956c40f784c3419623fab5cc08065da9f7cd561bddd7783",
+      "reason": "Forbidden"
+    },
+    {
+      "sourcePath": "/api/v1/namespaces/ops-pre-sp07-targets-r9-20261008/pods/pre-sp07-r9-metrics-r255",
+      "status": 200,
+      "responseSHA256": "ab63775052298cde6bfc60bc2b10e665c2dffd1122435b01236c68a8db337380",
+      "reason": null
+    },
+    {
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "92f1dc74901a3ef4923486a653d69a871ec8fddba0ed39520d6f5aff9ea86ba6"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "clusterrole",
+        "ops-pre-sp07-core-r9-20261008-ops-platform-sp04-collector",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "clusterrole",
+        "ops-pre-sp07-core-r9-20261008-ops-platform-sp04-collector",
+        "--type=json",
+        "--patch-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/metrics-authorization-r256/patch-21.private.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "sourcePath": "/apis/metrics.k8s.io/v1beta1/namespaces/ops-pre-sp07-targets-r9-20261008/pods/pre-sp07-r9-metrics-r255",
+      "status": 200,
+      "responseSHA256": "51a288cff35827b58d2d5963ee9437c8b53e3af45a4da1f01454c6fa9d759b28",
+      "reason": null
+    },
+    {
+      "sourcePath": "/apis/metrics.k8s.io/v1beta1/nodes/orbstack",
+      "status": 200,
+      "responseSHA256": "f4b9bfcf67e0cadc1e7002aa7502fd221da2f169969e871d6556df35b0433fe9",
+      "reason": null
+    },
+    {
+      "sourcePath": "/api/v1/namespaces/ops-pre-sp07-targets-r9-20261008/pods/pre-sp07-r9-metrics-r255",
+      "status": 200,
+      "responseSHA256": "ab63775052298cde6bfc60bc2b10e665c2dffd1122435b01236c68a8db337380",
+      "reason": null
+    },
+    {
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "04795061273d67116be2f21697051730d1321eaa0a979840bddd32ca89ef1216"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "clusterrole",
+        "ops-pre-sp07-core-r9-20261008-ops-platform-sp04-collector",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "ownedForwardStopped": true
+}

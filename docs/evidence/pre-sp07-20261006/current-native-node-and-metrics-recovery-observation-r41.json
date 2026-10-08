@@ -1,0 +1,1277 @@
+{
+  "observedAt": "2026-10-06T01:55:42.031225+00:00",
+  "records": [
+    {
+      "kind": "node",
+      "exitCode": 0,
+      "uid": "cc6ee959-3391-432f-b413-a5e7f2e64756",
+      "conditions": [
+        {
+          "lastHeartbeatTime": "2026-10-06T01:53:34Z",
+          "lastTransitionTime": "2026-09-24T14:09:20Z",
+          "message": "kubelet has sufficient memory available",
+          "reason": "KubeletHasSufficientMemory",
+          "status": "False",
+          "type": "MemoryPressure"
+        },
+        {
+          "lastHeartbeatTime": "2026-10-06T01:53:34Z",
+          "lastTransitionTime": "2026-10-06T01:48:28Z",
+          "message": "kubelet has disk pressure",
+          "reason": "KubeletHasDiskPressure",
+          "status": "True",
+          "type": "DiskPressure"
+        },
+        {
+          "lastHeartbeatTime": "2026-10-06T01:53:34Z",
+          "lastTransitionTime": "2026-09-24T14:09:20Z",
+          "message": "kubelet has sufficient PID available",
+          "reason": "KubeletHasSufficientPID",
+          "status": "False",
+          "type": "PIDPressure"
+        },
+        {
+          "lastHeartbeatTime": "2026-10-06T01:53:34Z",
+          "lastTransitionTime": "2026-09-27T00:53:00Z",
+          "message": "kubelet is posting ready status",
+          "reason": "KubeletReady",
+          "status": "True",
+          "type": "Ready"
+        }
+      ],
+      "capacity": {
+        "cpu": "8",
+        "devices.kubevirt.io/kvm": "0",
+        "devices.kubevirt.io/sev": "0",
+        "devices.kubevirt.io/tun": "0",
+        "devices.kubevirt.io/vhost-net": "0",
+        "ephemeral-storage": "61888Mi",
+        "memory": "18462244Ki",
+        "pods": "110"
+      },
+      "allocatable": {
+        "cpu": "8",
+        "devices.kubevirt.io/kvm": "0",
+        "devices.kubevirt.io/sev": "0",
+        "devices.kubevirt.io/tun": "0",
+        "devices.kubevirt.io/vhost-net": "0",
+        "ephemeral-storage": "61649557866",
+        "memory": "18462244Ki",
+        "pods": "110"
+      }
+    },
+    {
+      "kind": "metrics-pod",
+      "exitCode": 0,
+      "pods": [
+        {
+          "uid": "2c8ed15e-de27-4006-8814-3b0179d12e39",
+          "name": "ops-metrics-server-metrics-75588c5f6b-rltpm",
+          "phase": "Succeeded",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:34Z",
+              "message": "The node was low on resource: ephemeral-storage. Threshold quantity: 2456184459, available: 5729612Ki. Container metrics-server was using 220Ki, request is 0, has larger consumption of ephemeral-storage. ",
+              "observedGeneration": 1,
+              "reason": "TerminationByKubelet",
+              "status": "True",
+              "type": "DisruptionTarget"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:34Z",
+              "observedGeneration": 1,
+              "status": "False",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-05T05:55:06Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:34Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:34Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "False",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-05T05:55:06Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": "orbstack",
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "100m",
+                "memory": "200Mi"
+              },
+              "containerID": "docker://492875c2693e95ec1dcf278b8ae4a80bf8d14c58523d2d88153b72a6b8b3b5c4",
+              "image": "registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2",
+              "imageID": "docker-pullable://registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2",
+              "lastState": {
+                "terminated": {
+                  "containerID": "docker://f27fc50887510d70c42da09646605b15ab5c2e9daf81144209a548dbe662ee74",
+                  "exitCode": 0,
+                  "finishedAt": "2026-10-05T16:07:52Z",
+                  "reason": "Completed",
+                  "startedAt": "2026-10-05T15:05:34Z"
+                }
+              },
+              "name": "metrics-server",
+              "ready": false,
+              "resources": {
+                "limits": {
+                  "cpu": "500m",
+                  "memory": "512Mi"
+                },
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "200Mi"
+                }
+              },
+              "restartCount": 2,
+              "started": false,
+              "state": {
+                "terminated": {
+                  "containerID": "docker://492875c2693e95ec1dcf278b8ae4a80bf8d14c58523d2d88153b72a6b8b3b5c4",
+                  "exitCode": 0,
+                  "finishedAt": "2026-10-06T01:51:34Z",
+                  "reason": "Completed",
+                  "startedAt": "2026-10-06T00:11:53Z"
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/etc/metrics-serving",
+                  "name": "serving",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/kubelet-ca",
+                  "name": "kubelet-ca",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                  "name": "kube-api-access-x4gpb",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uid": "4bf52a3c-3cbe-4f0f-a0cd-721608c41b6c",
+          "name": "ops-metrics-server-metrics-75588c5f6b-zbv84",
+          "phase": "Pending",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:34Z",
+              "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+              "observedGeneration": 1,
+              "reason": "Unschedulable",
+              "status": "False",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": null,
+          "containerStatuses": null
+        }
+      ]
+    },
+    {
+      "kind": "current-core-pods",
+      "exitCode": 0,
+      "pods": [
+        {
+          "uid": "5b25bd71-cade-4d3e-8f54-bd22cc6f3419",
+          "name": "ops-api-77cb6f6d78-jhxrv",
+          "phase": "Running",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:24Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:21Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:25Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:25Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:21Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": "orbstack",
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              },
+              "containerID": "docker://56e6c0b22a9ec1c2ec36d5bc13bcd6535d7cfa2819945667c8b737bdd41983c8",
+              "image": "ops.local/pre-sp07-core-20261005-r7/platform-api:1.0.0",
+              "imageID": "docker-pullable://ops.local/pre-sp07-core-20261005-r7/platform-api@sha256:09fee7450c0d0a31e30f04f6e8eb52c42eef3fb3a62e5f7fcb20b8a0e9677927",
+              "lastState": {
+                "terminated": {
+                  "containerID": "docker://22b4625952e96c22fe96892c42b6c4c3a9a8833e65fcd1ddc37f3818e7463638",
+                  "exitCode": 1,
+                  "finishedAt": "2026-10-06T00:27:23Z",
+                  "reason": "Error",
+                  "startedAt": "2026-10-06T00:27:23Z"
+                }
+              },
+              "name": "api",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "512Mi"
+                },
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                }
+              },
+              "restartCount": 1,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-06T00:27:24Z"
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/etc/sp06/runtime",
+                  "name": "sp06-runtime",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/sp04/runtime",
+                  "name": "sp04-runtime",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/sp04/identity",
+                  "name": "sp04-identity",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/ops",
+                  "name": "profile",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/tmp",
+                  "name": "tmp"
+                },
+                {
+                  "mountPath": "/var/run/secrets/ops-platform/openbao",
+                  "name": "openbao-identity",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uid": "bc27922f-5a36-4916-b1a5-2b3dd9cecb16",
+          "name": "ops-investigator-7f6564b7b7-hx9ln",
+          "phase": "Pending",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:50:42Z",
+              "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+              "observedGeneration": 1,
+              "reason": "Unschedulable",
+              "status": "False",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": null,
+          "containerStatuses": null
+        },
+        {
+          "uid": "117d8507-5d54-471f-845c-11404414784a",
+          "name": "ops-investigator-7f6564b7b7-wr288",
+          "phase": "Failed",
+          "reason": "Evicted",
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:50:42Z",
+              "message": "The node was low on resource: ephemeral-storage. Threshold quantity: 2456184459, available: 2995460Ki. Container investigator was using 232Ki, request is 0, has larger consumption of ephemeral-storage. ",
+              "observedGeneration": 1,
+              "reason": "TerminationByKubelet",
+              "status": "True",
+              "type": "DisruptionTarget"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:50:42Z",
+              "observedGeneration": 1,
+              "status": "False",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:22Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:50:42Z",
+              "observedGeneration": 1,
+              "reason": "PodFailed",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:50:42Z",
+              "observedGeneration": 1,
+              "reason": "PodFailed",
+              "status": "False",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:22Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": "orbstack",
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "100m",
+                "memory": "512Mi"
+              },
+              "containerID": "docker://b2a9523579d5ca2eba0bab0b8b3e56a86e8c1fd28ad2fb05ad9e1c7c3afd20e6",
+              "image": "ops.local/task27/holmesgpt@sha256:69830c1cd09e93271a090318f46ac4c4c8f9c17d4e3a35f498fbd4178c7786b3",
+              "imageID": "docker-pullable://ops.local/task27/holmesgpt@sha256:69830c1cd09e93271a090318f46ac4c4c8f9c17d4e3a35f498fbd4178c7786b3",
+              "lastState": {},
+              "name": "investigator",
+              "ready": false,
+              "resources": {
+                "limits": {
+                  "cpu": "2",
+                  "memory": "2Gi"
+                },
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "512Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": false,
+              "state": {
+                "terminated": {
+                  "containerID": "docker://b2a9523579d5ca2eba0bab0b8b3e56a86e8c1fd28ad2fb05ad9e1c7c3afd20e6",
+                  "exitCode": 137,
+                  "finishedAt": "2026-10-06T01:50:41Z",
+                  "reason": "Error",
+                  "startedAt": "2026-10-06T00:27:23Z"
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/etc/runtime",
+                  "name": "runtime",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/identity",
+                  "name": "identity",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/run/model-credentials",
+                  "name": "model-key",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/tmp",
+                  "name": "tmp"
+                },
+                {
+                  "mountPath": "/etc/openbao",
+                  "name": "openbao-trust",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/var/run/secrets/ops-platform/openbao",
+                  "name": "openbao-identity",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uid": "3ee7e027-ff6e-40ae-8065-a28124cc496e",
+          "name": "ops-keycloak-5449d57f96-7stfk",
+          "phase": "Pending",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:49:02Z",
+              "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+              "observedGeneration": 1,
+              "reason": "Unschedulable",
+              "status": "False",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": null,
+          "containerStatuses": null
+        },
+        {
+          "uid": "e52ffe15-cf67-457f-9be5-beb5ee7fadc1",
+          "name": "ops-keycloak-5449d57f96-tkn7v",
+          "phase": "Failed",
+          "reason": "Evicted",
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:49:02Z",
+              "message": "The node was low on resource: ephemeral-storage. Threshold quantity: 2469606232, available: 2360784Ki. Container keycloak was using 4Ki, request is 0, has larger consumption of ephemeral-storage. ",
+              "observedGeneration": 1,
+              "reason": "TerminationByKubelet",
+              "status": "True",
+              "type": "DisruptionTarget"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:49:02Z",
+              "observedGeneration": 1,
+              "status": "False",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:18:51Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:49:02Z",
+              "observedGeneration": 1,
+              "reason": "PodFailed",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:49:02Z",
+              "observedGeneration": 1,
+              "reason": "PodFailed",
+              "status": "False",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:18:41Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": "orbstack",
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "containerID": "docker://f7565b1547fa87a7ddd07bd68d77138769aff61e6fb006606f55717145119924",
+              "image": "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+              "imageID": "docker-pullable://quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+              "lastState": {
+                "terminated": {
+                  "containerID": "docker://b9213724200af76418d133952d81a6fa4d73f230f85df24a3c7c1105707e8632",
+                  "exitCode": 1,
+                  "finishedAt": "2026-10-06T00:19:06Z",
+                  "reason": "Error",
+                  "startedAt": "2026-10-06T00:18:59Z"
+                }
+              },
+              "name": "keycloak",
+              "ready": false,
+              "resources": {
+                "limits": {
+                  "cpu": "2",
+                  "memory": "2Gi"
+                },
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "512Mi"
+                }
+              },
+              "restartCount": 2,
+              "started": false,
+              "state": {
+                "terminated": {
+                  "containerID": "docker://f7565b1547fa87a7ddd07bd68d77138769aff61e6fb006606f55717145119924",
+                  "exitCode": 143,
+                  "finishedAt": "2026-10-06T01:49:01Z",
+                  "reason": "Error",
+                  "startedAt": "2026-10-06T00:19:18Z"
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/etc/keycloak/tls",
+                  "name": "tls",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/opt/keycloak",
+                  "name": "distribution",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/opt/keycloak/data",
+                  "name": "data"
+                },
+                {
+                  "mountPath": "/tmp",
+                  "name": "tmp"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uid": "69a169e4-368c-40bd-906b-177f7a04e86a",
+          "name": "ops-openbao-0",
+          "phase": "Running",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:19:00Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:18:58Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:19:11Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:19:11Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:18:58Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": "orbstack",
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "100m",
+                "memory": "256Mi"
+              },
+              "containerID": "docker://967bcd7ba433b5c8613a59691a76bd8e41ccf4e040146d3cf3ba7645ec31d1c0",
+              "image": "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+              "imageID": "docker-pullable://ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+              "lastState": {},
+              "name": "openbao",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "1Gi"
+                },
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "256Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-06T00:18:59Z"
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/openbao/data",
+                  "name": "data"
+                },
+                {
+                  "mountPath": "/etc/openbao",
+                  "name": "config",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/openbao/tls",
+                  "name": "bootstrap-tls",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/tmp",
+                  "name": "tmp"
+                },
+                {
+                  "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                  "name": "kube-api-access-vnx4m",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uid": "ac61e24a-7011-4615-8f05-cc56f55a01d1",
+          "name": "ops-postgresql-0",
+          "phase": "Running",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:18:57Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:18:55Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:19:04Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:19:04Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:18:55Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": "orbstack",
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "100m",
+                "memory": "256Mi"
+              },
+              "containerID": "docker://5e6bd5df1557a64e2abb4a034f6df47c0fab31273a330ebbbc519ba1e75c3925",
+              "image": "postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+              "imageID": "docker-pullable://postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+              "lastState": {},
+              "name": "postgresql",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "1Gi"
+                },
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "256Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-06T00:18:57Z"
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/docker-entrypoint-initdb.d",
+                  "name": "database-init",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/keycloak-database",
+                  "name": "keycloak-database",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/var/lib/postgresql/data",
+                  "name": "data"
+                },
+                {
+                  "mountPath": "/tmp",
+                  "name": "tmp"
+                },
+                {
+                  "mountPath": "/var/run/postgresql",
+                  "name": "postgres-run"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uid": "183c7bd5-6a27-48ce-b276-cec438375e08",
+          "name": "ops-seaweedfs-0",
+          "phase": "Pending",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:29Z",
+              "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+              "observedGeneration": 1,
+              "reason": "Unschedulable",
+              "status": "False",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": null,
+          "containerStatuses": null
+        },
+        {
+          "uid": "f4457232-9f12-42f2-9120-11ca4b396ab3",
+          "name": "ops-victoria-logs-0",
+          "phase": "Pending",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:52:17Z",
+              "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+              "observedGeneration": 1,
+              "reason": "Unschedulable",
+              "status": "False",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": null,
+          "containerStatuses": null
+        },
+        {
+          "uid": "e4c445a9-1148-4119-bcf5-ef15f3af5ce6",
+          "name": "ops-victoria-metrics-0",
+          "phase": "Pending",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:52:06Z",
+              "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+              "observedGeneration": 1,
+              "reason": "Unschedulable",
+              "status": "False",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": null,
+          "containerStatuses": null
+        },
+        {
+          "uid": "2c696a27-372a-4acb-9f54-71aee015c9ca",
+          "name": "ops-vmalert-77c4bc8c9b-smjxr",
+          "phase": "Succeeded",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:16Z",
+              "message": "The node was low on resource: ephemeral-storage. Threshold quantity: 2456184459, available: 5697348Ki. Container vmalert was using 228Ki, request is 0, has larger consumption of ephemeral-storage. ",
+              "observedGeneration": 1,
+              "reason": "TerminationByKubelet",
+              "status": "True",
+              "type": "DisruptionTarget"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:16Z",
+              "observedGeneration": 1,
+              "status": "False",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:20:22Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:16Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:16Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "False",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:20:22Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": "orbstack",
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              },
+              "containerID": "docker://a4a2b050cfa2b982f4d459c4486c92a118487cac504495a2ed7f5771e826f42e",
+              "image": "victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311",
+              "imageID": "docker-pullable://victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311",
+              "lastState": {},
+              "name": "vmalert",
+              "ready": false,
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "512Mi"
+                },
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": false,
+              "state": {
+                "terminated": {
+                  "containerID": "docker://a4a2b050cfa2b982f4d459c4486c92a118487cac504495a2ed7f5771e826f42e",
+                  "exitCode": 0,
+                  "finishedAt": "2026-10-06T01:51:16Z",
+                  "reason": "Completed",
+                  "startedAt": "2026-10-06T00:20:23Z"
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/config",
+                  "name": "alerts-config"
+                },
+                {
+                  "mountPath": "/etc/victoria-security",
+                  "name": "victoria-security",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uid": "51ba1250-f465-4bf9-913c-37a0a602ae29",
+          "name": "ops-vmalert-77c4bc8c9b-wfnjm",
+          "phase": "Pending",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T01:51:16Z",
+              "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+              "observedGeneration": 1,
+              "reason": "Unschedulable",
+              "status": "False",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": null,
+          "containerStatuses": null
+        },
+        {
+          "uid": "bd23d583-4967-4af7-9e60-c76257cc09d4",
+          "name": "ops-worker-7c54d9f7b4-dh2w5",
+          "phase": "Running",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:23Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:22Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:25Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:25Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:22Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": "orbstack",
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              },
+              "containerID": "docker://5623837691d9fae4b2a39b2fa58b00ef5dc331d94b751bbaf05086bfab2ae25a",
+              "image": "ops.local/pre-sp07-core-20261005-r7/platform-worker:1.0.0",
+              "imageID": "docker-pullable://ops.local/pre-sp07-core-20261005-r7/platform-worker@sha256:980b3c1eba10cead06922e90b586a4be45fd60c37de9d9a93907d2e86c2b3d49",
+              "lastState": {
+                "terminated": {
+                  "containerID": "docker://eac0e6e217bacb1a3bf1d0b2a59f8db25b88348dd024cb8f9b00a399c9177144",
+                  "exitCode": 1,
+                  "finishedAt": "2026-10-06T00:27:23Z",
+                  "reason": "Error",
+                  "startedAt": "2026-10-06T00:27:23Z"
+                }
+              },
+              "name": "worker",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "512Mi"
+                },
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                }
+              },
+              "restartCount": 1,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-06T00:27:24Z"
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/etc/sp06/runtime",
+                  "name": "sp06-runtime",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/sp04/runtime",
+                  "name": "sp04-runtime",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/sp04/identity",
+                  "name": "sp04-identity",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/sp04/sources",
+                  "name": "sp04-sources",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/var/run/secrets/ops-platform/kubernetes",
+                  "name": "sp04-kubernetes",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/archive-credentials",
+                  "name": "archive-credentials",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/ops",
+                  "name": "profile",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/tmp",
+                  "name": "tmp"
+                },
+                {
+                  "mountPath": "/var/run/secrets/ops-platform/openbao",
+                  "name": "openbao-identity",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uid": "ebffad4b-a9aa-4ebc-9df2-c8864ca52b5c",
+          "name": "ops-worker-7c54d9f7b4-ktcpm",
+          "phase": "Running",
+          "reason": null,
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:24Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:22Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:25Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:25Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-06T00:27:21Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "node": "orbstack",
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              },
+              "containerID": "docker://10cb5c53e685ca9c4b9ab78682c1d68661904dc3f6a1c51cbc0adc0a798ebdde",
+              "image": "ops.local/pre-sp07-core-20261005-r7/platform-worker:1.0.0",
+              "imageID": "docker-pullable://ops.local/pre-sp07-core-20261005-r7/platform-worker@sha256:980b3c1eba10cead06922e90b586a4be45fd60c37de9d9a93907d2e86c2b3d49",
+              "lastState": {
+                "terminated": {
+                  "containerID": "docker://ca1a406360184e4d63671b7f2c804f692139107e8e20b7976fea3548460753a0",
+                  "exitCode": 1,
+                  "finishedAt": "2026-10-06T00:27:23Z",
+                  "reason": "Error",
+                  "startedAt": "2026-10-06T00:27:23Z"
+                }
+              },
+              "name": "worker",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "512Mi"
+                },
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                }
+              },
+              "restartCount": 1,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-06T00:27:24Z"
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/etc/sp06/runtime",
+                  "name": "sp06-runtime",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/sp04/runtime",
+                  "name": "sp04-runtime",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/sp04/identity",
+                  "name": "sp04-identity",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/sp04/sources",
+                  "name": "sp04-sources",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/var/run/secrets/ops-platform/kubernetes",
+                  "name": "sp04-kubernetes",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/archive-credentials",
+                  "name": "archive-credentials",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/etc/ops",
+                  "name": "profile",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                },
+                {
+                  "mountPath": "/tmp",
+                  "name": "tmp"
+                },
+                {
+                  "mountPath": "/var/run/secrets/ops-platform/openbao",
+                  "name": "openbao-identity",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "noNodeMutationOrTLSRelaxation": true,
+  "allOriginalProtectedStoresRetained": true,
+  "mainlineFullRecoveryAcceptance": false
+}

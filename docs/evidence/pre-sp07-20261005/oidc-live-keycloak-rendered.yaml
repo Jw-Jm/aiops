@@ -1,0 +1,167 @@
+---
+# Source: ops-dependencies/templates/keycloak.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-keycloak
+  labels:
+    ops.platform.io/release: "ops-oidc-dependencies"
+    app.kubernetes.io/name: ops-keycloak
+    ops.platform.io/component: keycloak
+    ops.platform.io/mode: bundled
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ops-keycloak
+  ports:
+    - name: https
+      port: 8443
+      targetPort: https
+---
+# Source: ops-dependencies/templates/keycloak.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ops-keycloak
+  labels:
+    ops.platform.io/release: "ops-oidc-dependencies"
+    app.kubernetes.io/name: ops-keycloak
+    ops.platform.io/component: keycloak
+    ops.platform.io/mode: bundled
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ops-keycloak
+  template:
+    metadata:
+      labels:
+        ops.platform.io/release: "ops-oidc-dependencies"
+        app.kubernetes.io/name: ops-keycloak
+        ops.platform.io/component: keycloak
+        ops.platform.io/mode: bundled
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 0
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: prepare-keycloak
+          image: "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"
+          imagePullPolicy: Never
+          command: ["/bin/bash", "-ec"]
+          args:
+            - >-
+              shopt -s dotglob && cp -R /opt/keycloak/* /work/ &&
+              /work/bin/kc.sh build --db=postgres --health-enabled=true
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: distribution
+              mountPath: /work
+            - name: tmp
+              mountPath: /tmp
+      containers:
+        - name: keycloak
+          image: "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"
+          imagePullPolicy: Never
+          args: ["start", "--optimized", "--hostname-strict=false"]
+          ports:
+            - name: https
+              containerPort: 8443
+            - name: management
+              containerPort: 9000
+          env:
+            - name: KC_HOSTNAME
+              value: "https://ops-keycloak.ops-pre-sp07-oidc-20261005.svc.cluster.local:8443"
+            - name: KC_HTTP_ENABLED
+              value: "false"
+            
+            - name: KC_HTTPS_CERTIFICATE_FILE
+              value: /etc/keycloak/tls/tls.crt
+            - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+              value: /etc/keycloak/tls/tls.key
+            - name: KC_HTTP_MANAGEMENT_SCHEME
+              value: http
+            
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL
+              value: "jdbc:postgresql://ops-postgresql:5432/keycloak"
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "ops-keycloak-database"
+                  key: "username"
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "ops-keycloak-database"
+                  key: "password"
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "ops-keycloak-auth"
+                  key: "username"
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "ops-keycloak-auth"
+                  key: "password"
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: management
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            
+            - name: tls
+              mountPath: /etc/keycloak/tls
+              readOnly: true
+            
+            - name: distribution
+              mountPath: /opt/keycloak
+              readOnly: true
+            - name: data
+              mountPath: /opt/keycloak/data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        
+        - name: tls
+          secret:
+            secretName: "ops-keycloak-tls"
+        
+        - name: distribution
+          emptyDir: {}
+        - name: data
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}

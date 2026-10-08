@@ -19,9 +19,31 @@ import (
 
 type CommandRunner func(context.Context, string, ...string) ([]byte, error)
 
-// Install only executes local verified Charts. It never updates repositories,
+// Install executes the historical foundation-only deployment. Current delivery
+// must call InstallCurrent with explicit validated business inputs.
+// It only executes local verified Charts. It never updates repositories,
 // downloads dependencies, pulls images, or automatically deletes resources.
 func Install(ctx context.Context, manifest Manifest, trust TrustRoot, p profile.ResolvedProfile, runtime RuntimeImporter, run CommandRunner) (ImportReport, error) {
+	return install(ctx, manifest, trust, p, runtime, run, nil)
+}
+
+// InstallCurrent requires dependencies to be initialized before business activation.
+func InstallCurrent(ctx context.Context, manifest Manifest, trust TrustRoot, p profile.ResolvedProfile, runtime RuntimeImporter, run CommandRunner, business BusinessValues, stage string) (ImportReport, error) {
+	if business.values == nil || run == nil || (stage != "dependencies" && stage != "bootstrap-api" && stage != "business") {
+		return ImportReport{}, errors.New("explicit current configuration and initialization stage required")
+	}
+	if textValue(object(business.values, "sp06"), "modelNetworkMode") == "orbstack-host" && p.Kubernetes.Distribution != "orbstack" {
+		return ImportReport{}, errors.New("native model bridge requires an OrbStack target")
+	}
+	business.installStage = stage
+	return install(ctx, manifest, trust, p, runtime, run, &business)
+}
+
+func install(ctx context.Context, manifest Manifest, trust TrustRoot, p profile.ResolvedProfile, runtime RuntimeImporter, run CommandRunner, business *BusinessValues) (ImportReport, error) {
+	installationNamespace := "ops-system"
+	if business != nil {
+		installationNamespace = business.Namespace()
+	}
 	v, err := prepare(ctx, manifest, trust)
 	if err != nil {
 		return ImportReport{}, fmt.Errorf("checkpoint=verify-bundle: %w", err)
@@ -34,7 +56,32 @@ func Install(ctx context.Context, manifest Manifest, trust TrustRoot, p profile.
 	if run == nil {
 		return ImportReport{}, errors.New("command runner is required")
 	}
-	plans, err := planCharts(ctx, v, p, images, run)
+	if business != nil {
+		if _, err := currentNamespaceIdentity(ctx, p, *business, run); err != nil {
+			return ImportReport{}, err
+		}
+		if err := preflightVictoriaTrust(ctx, p, *business, run); err != nil {
+			return ImportReport{}, fmt.Errorf("checkpoint=victoria-trust: %w", err)
+		}
+		if business.installStage != "dependencies" {
+			var err error
+			if business.installStage == "bootstrap-api" {
+				err = verifyCurrentStageReceipt(ctx, v.manifest, p, *business, run)
+			} else {
+				err = verifyCurrentAPIBootstrapReceipt(ctx, v.manifest, p, business, run)
+			}
+			if err != nil {
+				return ImportReport{}, err
+			}
+			if err := preflightBusinessSecrets(ctx, p, *business, run); err != nil {
+				return ImportReport{}, fmt.Errorf("checkpoint=business-secrets: %w", err)
+			}
+			if err := preflightCurrentGraphLeases(ctx, p, *business, run); err != nil {
+				return ImportReport{}, fmt.Errorf("checkpoint=graph-lease-bootstrap: %w", err)
+			}
+		}
+	}
+	plans, err := planCharts(ctx, installationNamespace, v, p, images, run, business)
 	if err != nil {
 		return ImportReport{}, fmt.Errorf("checkpoint=plan-charts: %w", err)
 	}
@@ -46,18 +93,28 @@ func Install(ctx context.Context, manifest Manifest, trust TrustRoot, p profile.
 	// final platform upgrade uses the same authenticated Chart and values;
 	// only the policy-only switch changes. No foreign resource is adopted.
 	platform := plans[len(plans)-1]
-	if _, err := run(ctx, "helm", "upgrade", "--install", platform.release, platform.chart,
-		"--kube-context", p.Kubernetes.Context, "--namespace", "ops-system",
-		"--values", platform.values, "--set", "networkPolicyOnly=true",
-		"--wait", "--timeout", "5m"); err != nil {
-		return report, fmt.Errorf("checkpoint=install-network-policy release=%s: %w", platform.release, err)
+	if business == nil || business.installStage == "dependencies" {
+		if _, err := run(ctx, "helm", "upgrade", "--install", platform.release, platform.chart,
+			"--kube-context", p.Kubernetes.Context, "--namespace", installationNamespace,
+			"--values", platform.values, "--set", "networkPolicyOnly=true",
+			"--wait", "--timeout", "5m"); err != nil {
+			return report, fmt.Errorf("checkpoint=install-network-policy release=%s: %w", platform.release, err)
+		}
 	}
-	if err := verifyBootstrapEgress(ctx, p, images, run); err != nil {
+	if err := verifyBootstrapEgress(ctx, installationNamespace, p, images, run); err != nil {
 		return report, fmt.Errorf("checkpoint=network-policy-enforcement: %w", err)
 	}
+	if business != nil && business.installStage == "business" {
+		if err := verifyCurrentModel(ctx, p, *business, images, run); err != nil {
+			return report, fmt.Errorf("checkpoint=model-admission: %w", err)
+		}
+	}
 	for _, plan := range plans {
+		if business != nil && business.installStage == "dependencies" && plan.release == "ops-platform" {
+			continue
+		}
 		args := []string{"upgrade", "--install", plan.release, plan.chart,
-			"--kube-context", p.Kubernetes.Context, "--namespace", "ops-system",
+			"--kube-context", p.Kubernetes.Context, "--namespace", installationNamespace,
 			"--values", plan.values, "--wait", "--timeout", "5m"}
 		if plan.release == "ops-platform" {
 			args = append(args, "--set", "networkPolicyOnly=false")
@@ -76,15 +133,29 @@ func Install(ctx context.Context, manifest Manifest, trust TrustRoot, p profile.
 			return report, fmt.Errorf("checkpoint=install-chart release=%s: %w", plan.release, err)
 		}
 	}
+	if business != nil && business.installStage == "dependencies" {
+		if err := createCurrentStageReceipt(ctx, v.manifest, p, *business, run); err != nil {
+			return report, err
+		}
+		return report, nil
+	}
 	// Helm waits for readiness, and the core bootstrap still requires OpenBao to
 	// be initialized/unsealed. Do not treat the TLS readiness override as health.
-	if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system",
+	if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace,
 		"rollout", "status", "deployment/ops-api", "--timeout=90s"); err != nil {
 		return report, fmt.Errorf("checkpoint=health: %w", err)
 	}
-	if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system",
+	if business != nil && business.installStage == "bootstrap-api" {
+		return report, createCurrentAPIBootstrapReceipt(ctx, v.manifest, p, *business, run)
+	}
+	if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace,
 		"rollout", "status", "deployment/ops-worker", "--timeout=90s"); err != nil {
 		return report, fmt.Errorf("checkpoint=health: %w", err)
+	}
+	if business != nil {
+		if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace, "rollout", "status", "deployment/ops-investigator", "--timeout=90s"); err != nil {
+			return report, fmt.Errorf("checkpoint=investigator-health: %w", err)
+		}
 	}
 	return report, nil
 }
@@ -99,6 +170,7 @@ var releaseNamePattern = regexp.MustCompile(`^[a-z0-9](?:[-a-z0-9]*[a-z0-9])?$`)
 var offlineResourceKinds = map[string]bool{
 	"Service": true, "ServiceAccount": true, "ConfigMap": true, "Secret": true,
 	"Deployment": true, "StatefulSet": true, "NetworkPolicy": true, "ClusterRoleBinding": true,
+	"Role": true, "RoleBinding": true, "ClusterRole": true,
 	"VMServiceScrape": true, "ServiceMonitor": true,
 }
 
@@ -177,7 +249,7 @@ func validateReleaseOwnership(ctx context.Context, manifest []byte, release stri
 			return fmt.Errorf("release resource %s/%s targets unexpected namespace %s", kind, name, namespace)
 		}
 		args := []string{"--context", p.Kubernetes.Context, "get", kind, name, "--ignore-not-found", "-o", "json"}
-		if kind != "ClusterRoleBinding" {
+		if kind != "ClusterRoleBinding" && kind != "ClusterRole" {
 			args = append(args, "-n", "ops-system")
 		}
 		current, err := run(ctx, "kubectl", args...)
@@ -203,7 +275,7 @@ func validateReleaseOwnership(ctx context.Context, manifest []byte, release stri
 	return nil
 }
 
-func planCharts(ctx context.Context, v *verifiedPayload, p profile.ResolvedProfile, images []ImageArtifact, run CommandRunner) ([]chartPlan, error) {
+func planCharts(ctx context.Context, installationNamespace string, v *verifiedPayload, p profile.ResolvedProfile, images []ImageArtifact, run CommandRunner, business *BusinessValues) ([]chartPlan, error) {
 	byName := map[string]Material{}
 	imageMaterials := map[string]bool{}
 	for _, m := range v.manifest.Materials {
@@ -252,19 +324,24 @@ func planCharts(ctx context.Context, v *verifiedPayload, p profile.ResolvedProfi
 	}
 	// A namespace is provided by the operator; do not adopt or recreate an
 	// existing namespace and its PVCs during a smoke test.
-	if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "get", "namespace", "ops-system"); err != nil {
+	if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "get", "namespace", installationNamespace); err != nil {
 		return nil, err
 	}
 	plans := []chartPlan{}
 	for _, name := range names {
+		if business != nil && business.installStage != "dependencies" && name != "ops-platform-chart" {
+			continue
+		}
 		material := byName[name]
 		chart := filepath.Join(v.path, filepath.FromSlash(material.PayloadRef))
 		values := map[string]any{}
 		var rendererComponent string
 		var rendererImage, rendererVersion string
 		release := strings.TrimSuffix(name, "-chart")
-		if err := requireAbsentRelease(ctx, p, release, run); err != nil {
-			return nil, err
+		if business == nil || business.installStage == "dependencies" {
+			if err := requireAbsentRelease(ctx, installationNamespace, p, release, run); err != nil {
+				return nil, err
+			}
 		}
 		switch name {
 		case "victoria-metrics-chart", "victoria-logs-chart":
@@ -290,7 +367,7 @@ func planCharts(ctx context.Context, v *verifiedPayload, p profile.ResolvedProfi
 				components[componentName] = map[string]any{"mode": component.Mode, "endpoint": component.Endpoint, "image": component.Image}
 			}
 			values["components"] = components
-			values["global"] = map[string]any{"imagePullPolicy": "IfNotPresent"}
+			values["global"] = map[string]any{"imagePullPolicy": "Never"}
 		case "ops-platform-chart":
 			values["workloadsEnabled"] = true
 			managed := []string{"ops-dependencies"}
@@ -299,12 +376,12 @@ func planCharts(ctx context.Context, v *verifiedPayload, p profile.ResolvedProfi
 					managed = append(managed, entry.release)
 				}
 			}
-			externalServices, err := externalServiceEgress(ctx, p, run)
+			externalServices, err := externalServiceEgress(ctx, installationNamespace, p, run)
 			if err != nil {
 				return nil, err
 			}
 			values["networkPolicy"] = map[string]any{"managedDependencyReleases": managed, "externalServices": externalServices}
-			runtimeValues, err := platformRuntimeValues(ctx, p, run)
+			runtimeValues, err := platformRuntimeValues(ctx, installationNamespace, p, run)
 			if err != nil {
 				return nil, err
 			}
@@ -320,6 +397,17 @@ func planCharts(ctx context.Context, v *verifiedPayload, p profile.ResolvedProfi
 				"web":            map[string]any{"enabled": false},
 				"investigator":   map[string]any{"enabled": false},
 				"command-runner": map[string]any{"enabled": false},
+			}
+			if business != nil {
+				if err := applyBusinessValues(values, *business, imageNames); err != nil {
+					return nil, err
+				}
+				if business.installStage == "dependencies" {
+					values["networkPolicyOnly"] = true
+				}
+				if business.installStage == "bootstrap-api" {
+					values["bootstrapAPIOnly"] = true
+				}
 			}
 		case "vmalert-chart":
 			component := p.Components["vmalert"]
@@ -338,7 +426,7 @@ func planCharts(ctx context.Context, v *verifiedPayload, p profile.ResolvedProfi
 		if err := os.WriteFile(file, encoded, 0600); err != nil {
 			return nil, err
 		}
-		rendered, err := run(ctx, "helm", "template", release, chart, "--namespace", "ops-system", "--values", file, "--include-crds")
+		rendered, err := run(ctx, "helm", "template", release, chart, "--namespace", installationNamespace, "--values", file, "--include-crds")
 		if err != nil {
 			return nil, err
 		}
@@ -350,18 +438,22 @@ func planCharts(ctx context.Context, v *verifiedPayload, p profile.ResolvedProfi
 			}
 			rendererArgs = []string{"helm-render-owned", "--release", release, "--component", rendererComponent, "--image", rendererImage, "--version", rendererVersion}
 		}
-		if err := validateRenderedChart(ctx, rendered, allowed, p, release, run); err != nil {
+		var recorded map[string]string
+		if business != nil {
+			recorded = business.bootstrapResources
+		}
+		if err := validateRenderedChartStage(ctx, installationNamespace, rendered, allowed, p, release, run, business != nil && business.installStage != "dependencies", recorded); err != nil {
 			return nil, err
 		}
 		if name == "ops-platform-chart" {
-			bootstrap, err := run(ctx, "helm", "template", release, chart, "--namespace", "ops-system", "--values", file, "--set", "networkPolicyOnly=true")
+			bootstrap, err := run(ctx, "helm", "template", release, chart, "--namespace", installationNamespace, "--values", file, "--set", "networkPolicyOnly=true")
 			if err != nil {
 				return nil, err
 			}
 			if err := validatePolicyBootstrap(bootstrap); err != nil {
 				return nil, err
 			}
-			if err := validateRenderedChart(ctx, bootstrap, allowed, p, release, run); err != nil {
+			if err := validateRenderedChartStage(ctx, installationNamespace, bootstrap, allowed, p, release, run, business != nil && business.installStage != "dependencies", recorded); err != nil {
 				return nil, err
 			}
 		}
@@ -404,7 +496,7 @@ func victoriaChartValues(name string, component profile.ResolvedComponent, p pro
 	separator := strings.LastIndex(tagged[:strings.Index(tagged, "@")], ":")
 	server := map[string]any{
 		"fullnameOverride": "ops-" + name, "replicaCount": 1,
-		"image":              map[string]any{"repository": tagged[:separator], "tag": tagged[separator+1:], "pullPolicy": "IfNotPresent"},
+		"image":              map[string]any{"repository": tagged[:separator], "tag": tagged[separator+1:], "pullPolicy": "Never"},
 		"resources":          map[string]any{"requests": map[string]any{"cpu": "100m", "memory": "128Mi"}, "limits": map[string]any{"cpu": "1", "memory": "512Mi"}},
 		"securityContext":    map[string]any{"enabled": true, "runAsNonRoot": true, "runAsUser": 65534, "readOnlyRootFilesystem": true, "allowPrivilegeEscalation": false, "capabilities": map[string]any{"drop": []string{"ALL"}}},
 		"podSecurityContext": map[string]any{"enabled": true, "runAsNonRoot": true, "runAsUser": 65534, "fsGroup": 65534},
@@ -415,6 +507,17 @@ func victoriaChartValues(name string, component profile.ResolvedComponent, p pro
 		server["config"] = map[string]any{"alerts": map[string]any{"groups": []any{}}}
 		server["datasource"] = map[string]any{"url": endpoint}
 		server["remote"] = map[string]any{"read": map[string]any{"url": endpoint}, "write": map[string]any{"url": endpoint + "/api/v1/write"}}
+		if strings.HasPrefix(endpoint, "https://") {
+			attachVictoriaTrust(server, "ops-victoria-metrics-security", true)
+			args := map[string]any{"envflag.enable": true, "envflag.prefix": "OPS_"}
+			env := []any{}
+			for _, prefix := range []string{"datasource", "remoteRead", "remoteWrite"} {
+				args[prefix+".basicAuth.passwordFile"] = "/etc/victoria-security/password"
+				args[prefix+".tlsCAFile"] = "/etc/victoria-security/ca.pem"
+				env = append(env, victoriaUsernameEnvironment("OPS_"+prefix+"_basicAuth_username", "ops-victoria-metrics-security"))
+			}
+			server["extraArgs"], server["env"] = args, env
+		}
 	} else {
 		server["mode"] = "statefulSet"
 		server["persistentVolume"] = map[string]any{"enabled": true, "size": "2Gi"}
@@ -423,11 +526,40 @@ func victoriaChartValues(name string, component profile.ResolvedComponent, p pro
 		if name == "victoria-metrics" {
 			server["retentionPeriod"] = 1
 		}
+		if strings.HasPrefix(component.Endpoint, "https://") {
+			secret := "ops-" + name + "-security"
+			attachVictoriaTrust(server, secret, false)
+			server["extraArgs"] = map[string]any{"tls": true, "tlsCertFile": "/etc/victoria-security/tls.crt", "tlsKeyFile": "/etc/victoria-security/tls.key", "httpAuth.password": "file:///etc/victoria-security/password", "envflag.enable": true, "envflag.prefix": "OPS_"}
+			server["env"] = []any{victoriaUsernameEnvironment("OPS_httpAuth_username", secret)}
+			if name == "victoria-logs" {
+				// This chart builds native HTTP flags from server.http after extraArgs.
+				// Bind that official extension too, so its default plaintext listener
+				// cannot overwrite the TLS flags above.
+				server["http"] = []any{map[string]any{"name": "http", "primary": true, "value": ":9428", "tls": true, "tlsCertFile": "/etc/victoria-security/tls.crt", "tlsKeyFile": "/etc/victoria-security/tls.key"}}
+				server["probe"] = map[string]any{"readiness": map[string]any{"httpGet": map[string]any{"scheme": "HTTPS", "path": "/health", "port": "http"}}}
+			}
+		}
 	}
 	return values, nil
 }
 
-func validateRenderedChart(ctx context.Context, rendered []byte, allowed map[string]bool, p profile.ResolvedProfile, release string, run CommandRunner) error {
+func attachVictoriaTrust(server map[string]any, secret string, clientOnly bool) {
+	projection := map[string]any{"secretName": secret, "defaultMode": 288}
+	if clientOnly {
+		projection["items"] = []any{map[string]string{"key": "ca.pem", "path": "ca.pem"}, map[string]string{"key": "password", "path": "password"}}
+	}
+	server["extraVolumes"] = []any{map[string]any{"name": "victoria-security", "secret": projection}}
+	server["extraVolumeMounts"] = []any{map[string]any{"name": "victoria-security", "mountPath": "/etc/victoria-security", "readOnly": true}}
+}
+
+func victoriaUsernameEnvironment(name, secret string) map[string]any {
+	return map[string]any{"name": name, "valueFrom": map[string]any{"secretKeyRef": map[string]string{"name": secret, "key": "username"}}}
+}
+
+func validateRenderedChart(ctx context.Context, installationNamespace string, rendered []byte, allowed map[string]bool, p profile.ResolvedProfile, release string, run CommandRunner) error {
+	return validateRenderedChartStage(ctx, installationNamespace, rendered, allowed, p, release, run, false)
+}
+func validateRenderedChartStage(ctx context.Context, installationNamespace string, rendered []byte, allowed map[string]bool, p profile.ResolvedProfile, release string, run CommandRunner, ownPolicyBootstrap bool, recorded ...map[string]string) error {
 	decoder := yaml.NewDecoder(bytes.NewReader(rendered))
 	for {
 		var object map[string]any
@@ -452,7 +584,7 @@ func validateRenderedChart(ctx context.Context, rendered []byte, allowed map[str
 		if release == "" || labels["ops.platform.io/release"] != release {
 			return fmt.Errorf("chart resource %s/%s lacks the expected release label", kind, name)
 		}
-		if namespace, _ := metadata["namespace"].(string); namespace != "" && namespace != "ops-system" {
+		if namespace, _ := metadata["namespace"].(string); namespace != "" && namespace != installationNamespace {
 			return fmt.Errorf("offline core resource %s/%s targets unexpected namespace %s", kind, name, namespace)
 		}
 		if annotations["helm.sh/hook"] != nil {
@@ -464,28 +596,45 @@ func validateRenderedChart(ctx context.Context, rendered []byte, allowed map[str
 		if !offlineResourceKinds[kind] {
 			return fmt.Errorf("unsupported offline core resource kind %s", kind)
 		}
-		if err := checkSecretReferences(ctx, object, p, run); err != nil {
+		if err := checkSecretReferences(ctx, installationNamespace, object, p, run); err != nil {
 			return err
 		}
 		args := []string{"--context", p.Kubernetes.Context, "get", kind, name, "--ignore-not-found", "-o", "json"}
-		if kind != "ClusterRoleBinding" {
-			args = append(args, "-n", "ops-system")
+		if kind != "ClusterRoleBinding" && kind != "ClusterRole" {
+			args = append(args, "-n", installationNamespace)
 		}
 		existing, err := run(ctx, "kubectl", args...)
 		if err != nil {
 			return err
 		}
 		if len(bytes.TrimSpace(existing)) != 0 {
+			if len(recorded) == 1 && recorded[0][kind+"/"+name] != "" {
+				var live map[string]any
+				if json.Unmarshal(existing, &live) != nil {
+					return errors.New("API bootstrap resource response invalid")
+				}
+				liveMetadata, _ := live["metadata"].(map[string]any)
+				if exactHelmOwner(live, installationNamespace, release) && textValue(liveMetadata, "uid") == recorded[0][kind+"/"+name] {
+					continue
+				}
+				return errors.New("API bootstrap resource UID/ownership differs; activation refuses adoption")
+			}
+			if ownPolicyBootstrap && kind == "NetworkPolicy" {
+				var live map[string]any
+				if json.Unmarshal(existing, &live) == nil && exactHelmOwner(live, installationNamespace, release) {
+					continue
+				}
+			}
 			return fmt.Errorf("PROFILE_COMPONENT_CONFLICT: resource %s/%s already exists; fresh install refuses adoption or overwrite", kind, name)
 		}
 	}
 }
 
-func requireAbsentRelease(ctx context.Context, p profile.ResolvedProfile, release string, run CommandRunner) error {
+func requireAbsentRelease(ctx context.Context, installationNamespace string, p profile.ResolvedProfile, release string, run CommandRunner) error {
 	if !releaseNamePattern.MatchString(release) {
 		return fmt.Errorf("invalid Helm release name %q", release)
 	}
-	out, err := run(ctx, "helm", "list", "--kube-context", p.Kubernetes.Context, "--namespace", "ops-system", "--all", "--filter", "^"+release+"$", "--output", "json")
+	out, err := run(ctx, "helm", "list", "--kube-context", p.Kubernetes.Context, "--namespace", installationNamespace, "--all", "--filter", "^"+release+"$", "--output", "json")
 	if err != nil {
 		return fmt.Errorf("inspect Helm release %s: %w", release, err)
 	}
@@ -503,7 +652,7 @@ func requireAbsentRelease(ctx context.Context, p profile.ResolvedProfile, releas
 	return nil
 }
 
-func checkSecretReferences(ctx context.Context, value any, p profile.ResolvedProfile, run CommandRunner) error {
+func checkSecretReferences(ctx context.Context, installationNamespace string, value any, p profile.ResolvedProfile, run CommandRunner) error {
 	switch object := value.(type) {
 	case map[string]any:
 		if object["kind"] == "Secret" {
@@ -518,7 +667,7 @@ func checkSecretReferences(ctx context.Context, value any, p profile.ResolvedPro
 			for _, annotation := range []string{"ops.platform.io/username-key", "ops.platform.io/password-key"} {
 				key, _ := annotations[annotation].(string)
 				ref := map[string]any{"secretKeyRef": map[string]any{"name": name, "key": key}}
-				if err := checkSecretReferences(ctx, ref, p, run); err != nil {
+				if err := checkSecretReferences(ctx, installationNamespace, ref, p, run); err != nil {
 					return err
 				}
 			}
@@ -530,7 +679,7 @@ func checkSecretReferences(ctx context.Context, value any, p profile.ResolvedPro
 				return errors.New("invalid secret reference")
 			}
 			template := fmt.Sprintf("go-template={{if index .data %q}}present{{end}}", key)
-			out, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system", "get", "secret", name, "-o", template)
+			out, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace, "get", "secret", name, "-o", template)
 			if err != nil {
 				return err
 			}
@@ -543,7 +692,7 @@ func checkSecretReferences(ctx context.Context, value any, p profile.ResolvedPro
 			if name == "" {
 				return errors.New("invalid secret volume reference")
 			}
-			if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system", "get", "secret", name, "-o", "name"); err != nil {
+			if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace, "get", "secret", name, "-o", "name"); err != nil {
 				return err
 			}
 			if items, ok := ref["items"].([]any); ok {
@@ -553,20 +702,20 @@ func checkSecretReferences(ctx context.Context, value any, p profile.ResolvedPro
 						return errors.New("invalid Secret volume item")
 					}
 					key, _ := entry["key"].(string)
-					if err := checkSecretReferences(ctx, map[string]any{"secretKeyRef": map[string]any{"name": name, "key": key}}, p, run); err != nil {
+					if err := checkSecretReferences(ctx, installationNamespace, map[string]any{"secretKeyRef": map[string]any{"name": name, "key": key}}, p, run); err != nil {
 						return err
 					}
 				}
 			}
 		}
 		for _, child := range object {
-			if err := checkSecretReferences(ctx, child, p, run); err != nil {
+			if err := checkSecretReferences(ctx, installationNamespace, child, p, run); err != nil {
 				return err
 			}
 		}
 	case []any:
 		for _, child := range object {
-			if err := checkSecretReferences(ctx, child, p, run); err != nil {
+			if err := checkSecretReferences(ctx, installationNamespace, child, p, run); err != nil {
 				return err
 			}
 		}
@@ -578,7 +727,7 @@ func checkRenderedImages(value any, allowed map[string]bool) error {
 	switch object := value.(type) {
 	case map[string]any:
 		if image, ok := object["image"].(string); ok {
-			if !allowed[image] || object["imagePullPolicy"] != "IfNotPresent" {
+			if !allowed[image] || object["imagePullPolicy"] != "Never" {
 				return fmt.Errorf("rendered image %s is not in the verified Bundle or uses online pull policy", image)
 			}
 		}

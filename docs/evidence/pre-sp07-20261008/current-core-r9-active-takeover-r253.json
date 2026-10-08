@@ -1,0 +1,836 @@
+{
+  "observedAt": "2026-10-08T05:42:08.215535+00:00",
+  "scope": "one serial installed R12 Job; real committed tool and reserved model admission; native owned Worker/investigator SIGKILL",
+  "tenConcurrentModelGateInvoked": false,
+  "sourceSeedOrBudgetChanges": false,
+  "SP07Started": false,
+  "fullR4RecoveryAcceptance": false,
+  "oldSignedContextRejectionNotClaimed": true,
+  "targetPodUID": "9d07c1d9-b96a-45cf-978d-907aaf42ba23",
+  "targetNamespaceUID": "f46dabc1-1ae5-4201-8730-d5e9be19f01e",
+  "incidentId": "01a11a08-8a2d-7b05-b801-05d4160698e4",
+  "jobId": "01a11a08-e628-7328-a3b9-93f2a85c924d",
+  "preKillSSESequence": 1,
+  "preKillCursorSHA256": "f5984aebb75567e03b3e58ed742f3219ad882cf99c7158306cf4c86184bc197c",
+  "actualCut": {
+    "jobId": "01a11a08-e628-7328-a3b9-93f2a85c924d",
+    "observedAt": "2026-10-08T05:43:18.042235+00:00",
+    "fencingEpoch": 1,
+    "modelReservation": {
+      "toolCalls": 0,
+      "graphNodes": 0,
+      "rawQueries": 0,
+      "inputTokens": 16384,
+      "resultBytes": 65536,
+      "outputTokens": 1024,
+      "evidenceItems": 0,
+      "modelRequests": 1,
+      "modelCostMicros": 0
+    },
+    "pendingModelStepId": "01a11a09-949b-707d-81ce-bf58d0416007",
+    "committedToolStepId": "01a11a09-92b3-783b-9f93-361cc8bedaf0",
+    "committedToolResultDigest": "sha256:d3912b2e32cd0312776c641eefca57416b4a31579d00f75cb189834b143ef271"
+  },
+  "nativeKilledContainers": [
+    {
+      "podName": "ops-worker-6d5c996944-mzv5g",
+      "podUID": "47934cc2-6f00-4326-b9da-28fc8851952f",
+      "containerName": "worker",
+      "containerId": "dc0d84ce0110ce4ff3f9e52801a28578f4d8c2271f1f02bb23cbf84fa3d5d659",
+      "restartCount": 1,
+      "imageDigest": "sha256:abc472fb806003dead9174cd5a3a3de4d3c66832529d0c0da8f7e34515f60da9"
+    },
+    {
+      "podName": "ops-worker-6d5c996944-wj2v4",
+      "podUID": "4e72c135-6cbe-4f16-b43e-d4dbec68943f",
+      "containerName": "worker",
+      "containerId": "ff15bbe56d9a38cf81004307d6e94ae7cb3b562de542cc6a164f727b63a36aa2",
+      "restartCount": 1,
+      "imageDigest": "sha256:abc472fb806003dead9174cd5a3a3de4d3c66832529d0c0da8f7e34515f60da9"
+    },
+    {
+      "podName": "ops-investigator-77744994b8-dgvdz",
+      "podUID": "334dd51e-ae9c-4532-997a-1c1e7713a602",
+      "containerName": "investigator",
+      "containerId": "0cea2b90b4f3096cb7714e4e0a895eaf6ed65c4d242cc1bf72c2205ef1dfeb56",
+      "restartCount": 0,
+      "imageDigest": "sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593"
+    }
+  ],
+  "nativeActiveJobTakeoverPassed": true,
+  "nativeRestartedContainers": [
+    {
+      "podUID": "47934cc2-6f00-4326-b9da-28fc8851952f",
+      "restartCount": 2,
+      "newContainerID": "docker://431b3c49c095e7be2f92230adfa4f4fdff9ac9b7c0dc65cd00284787ff2289b6"
+    },
+    {
+      "podUID": "4e72c135-6cbe-4f16-b43e-d4dbec68943f",
+      "restartCount": 2,
+      "newContainerID": "docker://1ee66f5b3a92a6760e4dda3e88aca01600b53a85586528de42ef3f26266f2500"
+    },
+    {
+      "podUID": "334dd51e-ae9c-4532-997a-1c1e7713a602",
+      "restartCount": 1,
+      "newContainerID": "docker://5f83750da1235ebeadf0f73c2efaf0d6529a7cc18c07eb8656407f18a041d759"
+    }
+  ],
+  "committedSuccessfulToolUnchangedAndNotRepeated": true,
+  "unknownAdmissionsConservativelyCharged": 1,
+  "unknownOutcomeSteps": 1,
+  "fencingEpochAfter": 3,
+  "terminalState": "partial",
+  "errorCode": "BUDGET_EXHAUSTED",
+  "budgetConsumed": {
+    "toolCalls": 1,
+    "rawQueries": 0,
+    "resultBytes": 146322,
+    "graphNodes": 0,
+    "evidenceItems": 1,
+    "modelRequests": 2,
+    "inputTokens": 18898,
+    "outputTokens": 1067,
+    "modelCostMicros": 0
+  },
+  "budgetReserved": {
+    "toolCalls": 0,
+    "rawQueries": 0,
+    "resultBytes": 0,
+    "graphNodes": 0,
+    "evidenceItems": 0,
+    "modelRequests": 0,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "modelCostMicros": 0
+  },
+  "durableEventCount": 13,
+  "preKillOpaqueCursorResumedExactSuffix": true,
+  "mainlineIncidentReads": 22,
+  "crossTenantStatus": 403,
+  "ledger": {
+    "epoch": 3,
+    "steps": [
+      {
+        "state": "succeeded",
+        "stepId": "01a11a08-ed89-7a06-a06d-df02df22a3e3",
+        "toolName": "model",
+        "errorCode": "",
+        "resultDigest": "sha256:ad3be843ebfe97b2c8e75d76829f9f6a39c0f3c8765cd420a67170e1ac275772",
+        "leaseGeneration": 1
+      },
+      {
+        "state": "succeeded",
+        "stepId": "01a11a09-92b3-783b-9f93-361cc8bedaf0",
+        "toolName": "get_incident_context",
+        "errorCode": "",
+        "resultDigest": "sha256:d3912b2e32cd0312776c641eefca57416b4a31579d00f75cb189834b143ef271",
+        "leaseGeneration": 1
+      },
+      {
+        "state": "failed",
+        "stepId": "01a11a09-949b-707d-81ce-bf58d0416007",
+        "toolName": "model",
+        "errorCode": "UNKNOWN_OUTCOME",
+        "resultDigest": null,
+        "leaseGeneration": 1
+      }
+    ],
+    "admissions": [
+      {
+        "state": "unknown",
+        "consumed": {
+          "toolCalls": 0,
+          "graphNodes": 0,
+          "rawQueries": 0,
+          "inputTokens": 16384,
+          "resultBytes": 65536,
+          "outputTokens": 1024,
+          "evidenceItems": 0,
+          "modelRequests": 1,
+          "modelCostMicros": 0
+        },
+        "reservation": {
+          "toolCalls": 0,
+          "graphNodes": 0,
+          "rawQueries": 0,
+          "inputTokens": 16384,
+          "resultBytes": 65536,
+          "outputTokens": 1024,
+          "evidenceItems": 0,
+          "modelRequests": 1,
+          "modelCostMicros": 0
+        }
+      },
+      {
+        "state": "settled",
+        "consumed": {
+          "toolCalls": 1,
+          "graphNodes": 0,
+          "rawQueries": 0,
+          "inputTokens": 0,
+          "resultBytes": 2821,
+          "outputTokens": 0,
+          "evidenceItems": 1,
+          "modelRequests": 0,
+          "modelCostMicros": 0
+        },
+        "reservation": {
+          "toolCalls": 1,
+          "graphNodes": 0,
+          "rawQueries": 0,
+          "inputTokens": 0,
+          "resultBytes": 65536,
+          "outputTokens": 0,
+          "evidenceItems": 100,
+          "modelRequests": 0,
+          "modelCostMicros": 0
+        }
+      },
+      {
+        "state": "settled",
+        "consumed": {
+          "toolCalls": 0,
+          "graphNodes": 0,
+          "rawQueries": 0,
+          "inputTokens": 2514,
+          "resultBytes": 65536,
+          "outputTokens": 43,
+          "evidenceItems": 0,
+          "modelRequests": 1,
+          "modelCostMicros": 0
+        },
+        "reservation": {
+          "toolCalls": 0,
+          "graphNodes": 0,
+          "rawQueries": 0,
+          "inputTokens": 16384,
+          "resultBytes": 65536,
+          "outputTokens": 1024,
+          "evidenceItems": 0,
+          "modelRequests": 1,
+          "modelCostMicros": 0
+        }
+      }
+    ]
+  },
+  "exitCode": 0,
+  "signalActuallyExecuted": true,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "nodes",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/run-current-core-oidc-operator-login-r9-20261008.py",
+        "active-recovery-r253"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-api",
+        "54565:8080"
+      ],
+      "pid": 61734
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-postgresql",
+        "54587:5432"
+      ],
+      "pid": 61735
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents?clusterUid=607d16b7-8684-491b-bca8-be31264b371e&resourceCanonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F9d07c1d9-b96a-45cf-978d-907aaf42ba23&limit=5",
+      "status": 200,
+      "responseSHA256": "92f8696bf76328ebeef9edf83f46e866b26c74dfc1be80f0c81c791e320a0314"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "get",
+        "pod",
+        "pre-sp07-r9-takeover-r253",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "pods",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "replicaset",
+        "ops-worker-6d5c996944",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "dc0d84ce0110ce4ff3f9e52801a28578f4d8c2271f1f02bb23cbf84fa3d5d659"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "replicaset",
+        "ops-worker-6d5c996944",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "ff15bbe56d9a38cf81004307d6e94ae7cb3b562de542cc6a164f727b63a36aa2"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "replicaset",
+        "ops-investigator-77744994b8",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "0cea2b90b4f3096cb7714e4e0a895eaf6ed65c4d242cc1bf72c2205ef1dfeb56"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4/investigations",
+      "status": 202,
+      "responseSHA256": "541d15ad1216a295fc077743adca92d813db8557f5cd4faf2c38ec134999ce90"
+    },
+    {
+      "operation": "SSE",
+      "status": 200,
+      "resume": false,
+      "firstSequence": 1,
+      "count": 1,
+      "responseSHA256": "7c335039f6faffda82dae5fa58dc2f88505eab55ff6524e71c937aa47495776e"
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/native-recovery-cut-observer-r249",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/native-active-takeover-r253/observer-input.private.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "3d29194b39428bc50f03b3542e922a973c3948a43ddd9d0c0bd9e2a84d1ec5cc"
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "dc0d84ce0110ce4ff3f9e52801a28578f4d8c2271f1f02bb23cbf84fa3d5d659"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "ff15bbe56d9a38cf81004307d6e94ae7cb3b562de542cc6a164f727b63a36aa2"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "0cea2b90b4f3096cb7714e4e0a895eaf6ed65c4d242cc1bf72c2205ef1dfeb56"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "kill",
+        "--signal=KILL",
+        "dc0d84ce0110ce4ff3f9e52801a28578f4d8c2271f1f02bb23cbf84fa3d5d659",
+        "ff15bbe56d9a38cf81004307d6e94ae7cb3b562de542cc6a164f727b63a36aa2",
+        "0cea2b90b4f3096cb7714e4e0a895eaf6ed65c4d242cc1bf72c2205ef1dfeb56"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "7970c592b954b1101addee29b02bc8e01ae8cbe916f6d93a967dad69ea22f7c9"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "0559b25a9ad24ba5c9b9ad5366bb8932e4580a21e0c28d5819ed97e692ab59d1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "0c79da9b2efa1cbb215868b35a048a5a7907a29d9075172a8e0cf94a05d1ecec"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "33a20f29d21a0f1ca69cee19c0512a008445acf58695e461127a0928bec323d7"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "e4e23899de348933101da7955d57c46d8f18fa6f7d9f119e1990cfcaf1749651"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "83bf13d9b2126f80fcb3790d46391712da51faf47d7ed73357252461d793ac1a"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "6254224e10cb7500800b1b8dff1a44c350f6694533f503b439a21fae997bc662"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "0de62375c48e92f8d388019c5751bea8c1833ffe1dd9e61c907bb9a89942ff0a"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "ff5dc94f5b67175c5ad994a463397233d3a66d5d61855a09a548a5259fa6be51"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "da1789bf95242f4870266ceead4add7a466c35aaa9ba28f1e67f5d9f69ddab45"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "a130cf14ff1eaae680b5e1880f6605c0444040cb2bf2e9190d830852b85e6529"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "bec63aed91e78daf3fdc8b2f9852c2a2670a9ec0927967326f0950385fd2b101"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "7e9e78af709558dc6724d2e3edb4baa115356ec90e02f9012fc5623fd009aeb2"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "3ecc6d58b4d7e7f1a99287e4ead9521ed1126d87f144fa0a01f033940cc4089a"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "2b4fd34fb0291c6e3df7b90b42ad1e591878888aee52253989a32c0b84df1420"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "2a86dc9a5005f729468ec93a561b3b4c0230f5df256b543d45ba7fec2edac13d"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "c18a20d131fdc434840767532d8c3c47a146310ac68feb2dae3c72132662655a"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "2d457886f0e00af4f81471da608a6ebb95afef043ef7f71b3969955251fb0958"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "85e1a8cad1c038c2e5b49c28d31b8fdd9e52f18c61d8556ff8517fe08b717118"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "62283d79282da2db770ad1647ad02f216d4b5d8f9614706369c686dc0491cd35"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "cc74413022266c30e112105f602ad843c1e3bbcf0bcd59e0add630c60f041156"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "3e106cb72c9958143df2ab5f6f3aa11367e6e209788c443eaf0f1ad9018436f6"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "1a696857b05a46bf67fabf762b61ae148645ca3b5203b0b5ea26069c08237e28"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "cf47140e1fd48d77c0d9aedd40bf57995258ee393c071912a07a862fa488d85a"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "56ebae40895ee2c1267b8c342401dfa7ec84d7718407f05d619e47e2298b3133"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "c8a1d973db86dda01f093303a6d79e1d097e038f65ecb9d941f9903af24a69c8"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "149d19e1d06d0a266fa1c24b18146e9aa157ebe31aea4cc10cebb09c30c7e8c7"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "efb52364d6e1d1a68d64475f8a652195c22f7c899498fd8d9f9d896a2e7e3d76"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "8824619382ccfb86526adfff8acdd20d8309b508d44b1c032afc88f0a69cdc78"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "7bb1e69596a54622a966e4f2f45fcc410732a9b239459b71ed05f14ffea21aec"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "55459f0d58d95c7be7f744b2f3a2273eaaa8fcf41517531c7875032693f41495"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "2d3bbd9c330556cbcc2e2dcac5170c4461e7a381144d0755080501953bd70c53"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "e35f07c11b1e3837799dda36fe35e802426861292360cfcec8ec6acb1451c810"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "74b263604c73ba8cca1fc7e93ef81adf44f953e257c3816a94af13c35bae6b9b"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "bb49f9bdfd35fdcc7a163b6c5a12d6ebf5354b1634bb449c8489c62ea90113d4"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "3a05129a1fecd5db0fa79f787641b367cbcecbfdece4915eee6ba7ea01212cd0"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "2b3cf3c528846fe4a8ec2bea7aeaabebc3b0c9958805ffcc3eaec84553bd0fd5"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "53f8c02cda2855b4d0f1438e003133b190b24b2ffe400cfe2bbd3d736cfefef2"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "5996798bd165651770ba2e647e71d7ccbf59220d81f5858de6f714533da93cd0"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "f232210137902def7e056effce14df848d2f0aaac07a27122d7742032246ed4f"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "8ccf252b4f3d833b59763aa23ad4d7806057ceb9a32962dc7b1085b7cae836e6"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "dec2589f3fb3041b499ad68171d2df5b3a21e0ce0c1633b4f163159c07e64922"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 200,
+      "responseSHA256": "f290e17685ed11d0bde0e8a37ba4d73bdf9f4821f7c755e3e806e2c0a8d042fa"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11a08-8a2d-7b05-b801-05d4160698e4",
+      "status": 200,
+      "responseSHA256": "b02b8f712dda61baf8b1a0cf772d0427440991e6877d747bf6d7c5437fd347a4"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "a8359db70ecdfbb6305e983792c06cfeb40367ea0ff169ff23f43b757fa60481"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "a8359db70ecdfbb6305e983792c06cfeb40367ea0ff169ff23f43b757fa60481",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SELECT jsonb_build_object('epoch',q.fencing_epoch,'steps',(SELECT jsonb_agg(jsonb_build_object('stepId',s.step_id,'toolName',s.tool_name,'state',s.state,'errorCode',s.error_code,'resultDigest',s.result_digest,'leaseGeneration',s.lease_generation) ORDER BY s.started_at) FROM investigation.steps s WHERE s.tenant_id=q.tenant_id AND s.job_id=q.job_id),'admissions',(SELECT jsonb_agg(jsonb_build_object('state',a.state,'reservation',a.reservation,'consumed',a.consumed)) FROM investigation.admissions a WHERE a.tenant_id=q.tenant_id AND a.job_id=q.job_id)) FROM investigation.worker_queue q WHERE q.tenant_id='12443ef7-3326-4e87-9b0a-a3444bfd16bc' AND q.job_id='01a11a08-e628-7328-a3b9-93f2a85c924d'; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "operation": "SSE",
+      "status": 200,
+      "resume": false,
+      "firstSequence": 1,
+      "count": 13,
+      "responseSHA256": "3bc065035d8514ffa83fd52632bf80ff7c4c1d322cc1b4d30dab9755e1fbea0c"
+    },
+    {
+      "operation": "SSE",
+      "status": 200,
+      "resume": true,
+      "firstSequence": 2,
+      "count": 12,
+      "responseSHA256": "97b82de12bed2e605a59198039f8f3ce5d390dd30dd880521bbc340da3717b04"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11a08-e628-7328-a3b9-93f2a85c924d",
+      "status": 403,
+      "responseSHA256": "a113ad6c175e2b8e50f7e2565693d81ae0fe354370d585af6863d7b1c44e44d9"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "pods",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "ownedPortForwardsStopped": true
+}

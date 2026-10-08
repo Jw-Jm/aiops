@@ -16,6 +16,9 @@ func main() {
 	directory := flag.String("dir", "migrations", "directory containing forward-only SQL migrations")
 	target := flag.Int64("to", 0, "migrate through this version; zero migrates to the latest version")
 	flag.Parse()
+	if flag.NArg() != 0 {
+		fatal(errors.New("unexpected migration arguments"))
+	}
 
 	dsn := os.Getenv("SP03_MIGRATION_DATABASE_URL")
 	if dsn == "" {
@@ -27,6 +30,9 @@ func main() {
 }
 
 func migrate(ctx context.Context, dsn, directory string, target int64) error {
+	if target < 0 {
+		return errors.New("migration target must be non-negative; zero selects latest forward version")
+	}
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return fmt.Errorf("open migration database: %w", err)

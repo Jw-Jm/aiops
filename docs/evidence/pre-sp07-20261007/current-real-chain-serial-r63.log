@@ -1,0 +1,61 @@
+=== RUN   TestSP06RealHolmesModelMCPJobAndSSE
+2026/10/07 11:01:21 OK   00001_roles_and_schemas.sql (43.65ms)
+2026/10/07 11:01:21 goose: successfully migrated database to version: 1
+2026/10/07 11:01:21 OK   00002_platform_meta.sql (43.5ms)
+2026/10/07 11:01:21 OK   00003_finding.sql (16.63ms)
+2026/10/07 11:01:21 OK   00004_incident.sql (14.81ms)
+2026/10/07 11:01:22 OK   00005_investigation.sql (15.84ms)
+2026/10/07 11:01:22 OK   00006_action_command.sql (9.26ms)
+2026/10/07 11:01:22 OK   00007_audit.sql (21.43ms)
+2026/10/07 11:01:22 OK   00008_rls.sql (23.56ms)
+2026/10/07 11:01:22 OK   00009_idempotency_ledger.sql (12.3ms)
+2026/10/07 11:01:22 OK   00010_tenant_provisioning.sql (13.69ms)
+2026/10/07 11:01:22 OK   00011_source_registration_history.sql (18.27ms)
+2026/10/07 11:01:22 OK   00012_config_registry_lifecycle.sql (13.7ms)
+2026/10/07 11:01:22 OK   00013_audit_signed_segments.sql (36.67ms)
+2026/10/07 11:01:22 OK   00014_audit_segment_predecessors.sql (19.29ms)
+2026/10/07 11:01:22 OK   00015_source_schema_scope.sql (6.92ms)
+2026/10/07 11:01:22 OK   00016_cluster_registration_metadata.sql (6.98ms)
+2026/10/07 11:01:22 OK   00017_source_data_scope.sql (7.65ms)
+2026/10/07 11:01:22 OK   00018_sp04_resources_evidence.sql (24.98ms)
+2026/10/07 11:01:22 OK   00019_sp04_archive_ciphertext_bytes.sql (4.92ms)
+2026/10/07 11:01:22 OK   00020_sp04_request_ledger.sql (12.12ms)
+2026/10/07 11:01:22 OK   00021_sp04_archive_protection.sql (7.23ms)
+2026/10/07 11:01:22 OK   00022_sp04_legal_hold_dependencies.sql (5.55ms)
+2026/10/07 11:01:22 OK   00023_sp04_archive_query_intent.sql (5.03ms)
+2026/10/07 11:01:22 OK   00024_sp05_finding_incident.sql (31.69ms)
+2026/10/07 11:01:22 OK   00025_sp05_incident_event_time.sql (5.3ms)
+2026/10/07 11:01:22 OK   00026_sp05_source_binding_lock.sql (7.99ms)
+2026/10/07 11:01:22 OK   00027_sp05_rca_and_poll.sql (9.54ms)
+2026/10/07 11:01:22 OK   00028_sp05_operator_lock.sql (4.26ms)
+2026/10/07 11:01:22 OK   00029_sp05_evidence_links.sql (15.68ms)
+2026/10/07 11:01:22 OK   00030_sp05_recipe_fence.sql (9.73ms)
+2026/10/07 11:01:22 OK   00031_sp05_rca_postcheck.sql (7.9ms)
+2026/10/07 11:01:22 OK   00032_sp05_transport_audit.sql (8.68ms)
+2026/10/07 11:01:22 OK   00033_sp05_poll_resolution_clock.sql (12.51ms)
+2026/10/07 11:01:22 OK   00034_sp06_investigation_ledger.sql (35.63ms)
+2026/10/07 11:01:22 OK   00035_sp06_admission_data_classes.sql (6.64ms)
+2026/10/07 11:01:22 goose: successfully migrated database to version: 35
+2026/10/07 11:02:15 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+    sp06_real_chain_test.go:497: real chain state=failed errorCode=INVESTIGATOR_FAILURE
+    sp06_real_chain_test.go:226: investigator diagnostic ERROR:root:LLM call failed on model=openai/llama3.1:8b-16k (streaming iteration 1): ModelCallError: MODEL_TIMEOUT
+        Traceback (most recent call last):
+          File "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/Users/mssc/Documents/Code/ops/platform/services/investigator/src/investigator/budget.py", line 69, in completion
+            raise ModelCallError(kind) from None
+        investigator.budget.ModelCallError: MODEL_TIMEOUT
+        investigator-model-failure MODEL_TIMEOUT 
+        investigator-failure ModelCallError /Users/mssc/Documents/Code/ops/platform/services/investigator/src/investigator/worker.py 76
+        investigator-failure ModelCallError /Users/mssc/Documents/Code/ops/platform/services/investigator/src/investigator/holmes_adapter.py 79
+        investigator-failure ModelCallError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure ModelCallError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure ModelCallError /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        investigator-failure ModelCallError /Users/mssc/Documents/Code/ops/platform/services/investigator/src/investigator/budget.py 69
+        
+    migrations_test.go:436: retained owned integration database=sp03_mig_84b1e1ff2c68435eaaa0aaa79e8c6e18 test=TestSP06RealHolmesModelMCPJobAndSSE reason=audit.records; no automatic protected cleanup
+--- FAIL: TestSP06RealHolmesModelMCPJobAndSSE (54.72s)
+FAIL
+FAIL	ops-platform/test/integration	56.432s
+FAIL

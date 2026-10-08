@@ -1,0 +1,42 @@
+{
+  "observedAt": "2026-10-07T05:07:42.785317+00:00",
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "image",
+        "inspect",
+        "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--network=none",
+        "--read-only",
+        "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414",
+        "go",
+        "version"
+      ],
+      "exitCode": 0,
+      "stdout": "go version go1.27.1 linux/arm64\n"
+    }
+  ],
+  "configurationDigest": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414",
+  "repoDigests": [
+    "golang@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+  ],
+  "architecture": "arm64",
+  "OS": "linux",
+  "lockDigestChanged": false,
+  "nativeCompilerVerified": true,
+  "offlineCompilerExecution": true
+}

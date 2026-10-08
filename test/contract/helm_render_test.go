@@ -346,6 +346,7 @@ func TestHelmRenderKeycloakUsesSelectedPostgresEndpointAndSecret(t *testing.T) {
 		"--set", "components.postgresql.mode=external",
 		"--set-string", "components.postgresql.endpoint=postgresql://database.example:5432",
 		"--set-string", "components.postgresql.auth.existingSecret=external-database-auth",
+		"--set-string", "components.keycloak.database.existingSecret=external-keycloak-auth",
 		"--set", "components.keycloak.mode=bundled",
 	)
 	var output bytes.Buffer
@@ -360,11 +361,11 @@ func TestHelmRenderKeycloakUsesSelectedPostgresEndpointAndSecret(t *testing.T) {
 		}
 		for _, container := range resource.Spec.Template.Spec.Containers {
 			for _, env := range container.Env {
-				if env.Name == "KC_DB_URL" && env.Value != "jdbc:postgresql://database.example:5432/ops" {
+				if env.Name == "KC_DB_URL" && env.Value != "jdbc:postgresql://database.example:5432/keycloak" {
 					t.Errorf("KC_DB_URL = %q, want selected external endpoint", env.Value)
 				}
-				if (env.Name == "KC_DB_USERNAME" || env.Name == "KC_DB_PASSWORD") && env.ValueFrom.SecretKeyRef.Name != "external-database-auth" {
-					t.Errorf("%s Secret reference = %q, want external-database-auth", env.Name, env.ValueFrom.SecretKeyRef.Name)
+				if (env.Name == "KC_DB_USERNAME" || env.Name == "KC_DB_PASSWORD") && env.ValueFrom.SecretKeyRef.Name != "external-keycloak-auth" {
+					t.Errorf("%s Secret reference = %q, want dedicated external-keycloak-auth", env.Name, env.ValueFrom.SecretKeyRef.Name)
 				}
 			}
 		}
@@ -456,7 +457,7 @@ func TestHelmRenderOpenBaoTokenReviewIdentity(t *testing.T) {
 				serviceAccount = resource.AutomountServiceAccountToken != nil && *resource.AutomountServiceAccountToken
 			}
 		case "ClusterRoleBinding":
-			if resource.Metadata.Name == "ops-openbao-tokenreview-bao-contract" {
+			if resource.Metadata.Name == "ops-contract-bao-contract-openbao-tokenreview" {
 				binding = resource.RoleRef.Kind == "ClusterRole" && resource.RoleRef.Name == "system:auth-delegator" && len(resource.Subjects) == 1 && resource.Subjects[0].Kind == "ServiceAccount" && resource.Subjects[0].Name == "ops-openbao-tokenreview" && resource.Subjects[0].Namespace == "ops-contract"
 			}
 		case "StatefulSet":
@@ -696,7 +697,7 @@ func assertKindSnapshot(t *testing.T, resources []renderedResource, profile stri
 	want := map[string]int{}
 	switch profile {
 	case "all-bundled":
-		want = map[string]int{"Service": 4, "StatefulSet": 3, "Deployment": 1, "ConfigMap": 2, "ServiceAccount": 1, "ClusterRoleBinding": 1}
+		want = map[string]int{"Service": 4, "StatefulSet": 3, "Deployment": 1, "ConfigMap": 3, "ServiceAccount": 1, "ClusterRoleBinding": 1}
 	case "all-external":
 		want = map[string]int{"ConfigMap": 4, "Secret": 4}
 	case "external-postgresql-bundled-keycloak":

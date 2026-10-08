@@ -1,0 +1,848 @@
+{
+  "observedAt": "2026-10-04T12:11:12.255911+00:00",
+  "independentExpectation": {
+    "readiness-storage": "Ready, PVC Bound, storage association by claim UID",
+    "readiness-scheduling": "Pending/Unschedulable because an explicit nonexistent selector matches no Node",
+    "factSourceUnavailable": "must be unavailable/partial, cannot be recovered; runtime source gate pending"
+  },
+  "resources": {
+    "namespace": {
+      "apiVersion": "v1",
+      "kind": "Namespace",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"annotations\":{},\"labels\":{\"ops.platform.io/owner\":\"pre-sp07-20261004\",\"ops.platform.io/purpose\":\"target-preparation\"},\"name\":\"ops-pre-sp07-targets-20261004\"}}\n"
+        },
+        "creationTimestamp": "2026-10-04T12:08:47Z",
+        "labels": {
+          "kubernetes.io/metadata.name": "ops-pre-sp07-targets-20261004",
+          "ops.platform.io/owner": "pre-sp07-20261004",
+          "ops.platform.io/purpose": "target-preparation"
+        },
+        "name": "ops-pre-sp07-targets-20261004",
+        "resourceVersion": "360450",
+        "uid": "a1b96696-8756-4a43-a8bc-fe630a5a833b"
+      },
+      "spec": {
+        "finalizers": [
+          "kubernetes"
+        ]
+      },
+      "status": {
+        "phase": "Active"
+      }
+    },
+    "pods": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "annotations": {
+              "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"readiness-scheduling\",\"ops.platform.io/owner\":\"pre-sp07-20261004\"},\"name\":\"readiness-scheduling\",\"namespace\":\"ops-pre-sp07-targets-20261004\"},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"command\":[\"python3\",\"-c\",\"import time; time.sleep(604800)\"],\"image\":\"python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f\",\"imagePullPolicy\":\"Never\",\"name\":\"target\",\"resources\":{\"limits\":{\"cpu\":\"100m\",\"memory\":\"64Mi\"},\"requests\":{\"cpu\":\"10m\",\"memory\":\"16Mi\"}}}],\"nodeSelector\":{\"ops.platform.io/nonexistent-readiness-node\":\"true\"}}}\n"
+            },
+            "creationTimestamp": "2026-10-04T12:08:48Z",
+            "generation": 1,
+            "labels": {
+              "app": "readiness-scheduling",
+              "ops.platform.io/owner": "pre-sp07-20261004"
+            },
+            "name": "readiness-scheduling",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360464",
+            "uid": "00ac98df-421c-4218-a7d2-18a787f121a0"
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "containers": [
+              {
+                "command": [
+                  "python3",
+                  "-c",
+                  "import time; time.sleep(604800)"
+                ],
+                "image": "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+                "imagePullPolicy": "Never",
+                "name": "target",
+                "resources": {
+                  "limits": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "10m",
+                    "memory": "16Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeSelector": {
+              "ops.platform.io/nonexistent-readiness-node": "true"
+            },
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ]
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-04T12:08:48Z",
+                "message": "0/1 nodes are available: 1 node(s) didn't match Pod's node affinity/selector. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+                "observedGeneration": 1,
+                "reason": "Unschedulable",
+                "status": "False",
+                "type": "PodScheduled"
+              }
+            ],
+            "phase": "Pending",
+            "qosClass": "Burstable"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "annotations": {
+              "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"readiness-storage\",\"ops.platform.io/owner\":\"pre-sp07-20261004\"},\"name\":\"readiness-storage\",\"namespace\":\"ops-pre-sp07-targets-20261004\"},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"command\":[\"python3\",\"-m\",\"http.server\",\"8080\",\"--directory\",\"/data\"],\"image\":\"python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f\",\"imagePullPolicy\":\"Never\",\"name\":\"target\",\"ports\":[{\"containerPort\":8080}],\"readinessProbe\":{\"periodSeconds\":2,\"tcpSocket\":{\"port\":8080}},\"resources\":{\"limits\":{\"cpu\":\"100m\",\"memory\":\"64Mi\"},\"requests\":{\"cpu\":\"10m\",\"memory\":\"32Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"readOnlyRootFilesystem\":true},\"volumeMounts\":[{\"mountPath\":\"/data\",\"name\":\"data\"},{\"mountPath\":\"/tmp\",\"name\":\"tmp\"}]}],\"securityContext\":{\"fsGroup\":10001,\"runAsNonRoot\":true,\"runAsUser\":10001},\"volumes\":[{\"name\":\"data\",\"persistentVolumeClaim\":{\"claimName\":\"readiness-data\"}},{\"emptyDir\":{},\"name\":\"tmp\"}]}}\n"
+            },
+            "creationTimestamp": "2026-10-04T12:08:48Z",
+            "generation": 1,
+            "labels": {
+              "app": "readiness-storage",
+              "ops.platform.io/owner": "pre-sp07-20261004"
+            },
+            "name": "readiness-storage",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360536",
+            "uid": "80418e03-c817-468e-a69d-44f5a1e757db"
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "containers": [
+              {
+                "command": [
+                  "python3",
+                  "-m",
+                  "http.server",
+                  "8080",
+                  "--directory",
+                  "/data"
+                ],
+                "image": "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+                "imagePullPolicy": "Never",
+                "name": "target",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "periodSeconds": 2,
+                  "successThreshold": 1,
+                  "tcpSocket": {
+                    "port": 8080
+                  },
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "10m",
+                    "memory": "32Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/data",
+                    "name": "data"
+                  },
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "orbstack",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {
+              "fsGroup": 10001,
+              "runAsNonRoot": true,
+              "runAsUser": 10001
+            },
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "name": "data",
+                "persistentVolumeClaim": {
+                  "claimName": "readiness-data"
+                }
+              },
+              {
+                "emptyDir": {},
+                "name": "tmp"
+              }
+            ]
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-04T12:09:34Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-04T12:09:32Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-04T12:09:36Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-04T12:09:36Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-04T12:09:32Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "10m",
+                  "memory": "32Mi"
+                },
+                "containerID": "docker://24b1f70a1e9e21fd0a654f3a53a6f7cabc2101d261b4b20e5998754f44313ef8",
+                "image": "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+                "imageID": "docker-pullable://python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+                "lastState": {},
+                "name": "target",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "10m",
+                    "memory": "32Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-10-04T12:09:33Z"
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/data",
+                    "name": "data"
+                  },
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "192.168.139.2",
+            "hostIPs": [
+              {
+                "ip": "192.168.139.2"
+              },
+              {
+                "ip": "fd07:b51a:cc66::2"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "192.168.194.62",
+            "podIPs": [
+              {
+                "ip": "192.168.194.62"
+              }
+            ],
+            "qosClass": "Burstable",
+            "startTime": "2026-10-04T12:09:32Z"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {
+        "resourceVersion": ""
+      }
+    },
+    "persistentvolumeclaims": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "metadata": {
+            "annotations": {
+              "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolumeClaim\",\"metadata\":{\"annotations\":{},\"labels\":{\"ops.platform.io/owner\":\"pre-sp07-20261004\"},\"name\":\"readiness-data\",\"namespace\":\"ops-pre-sp07-targets-20261004\"},\"spec\":{\"accessModes\":[\"ReadWriteOnce\"],\"resources\":{\"requests\":{\"storage\":\"100Mi\"}},\"storageClassName\":\"local-path\"}}\n",
+              "pv.kubernetes.io/bind-completed": "yes",
+              "pv.kubernetes.io/bound-by-controller": "yes",
+              "volume.beta.kubernetes.io/storage-provisioner": "rancher.io/local-path",
+              "volume.kubernetes.io/selected-node": "orbstack",
+              "volume.kubernetes.io/storage-provisioner": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-10-04T12:08:48Z",
+            "finalizers": [
+              "kubernetes.io/pvc-protection"
+            ],
+            "labels": {
+              "ops.platform.io/owner": "pre-sp07-20261004"
+            },
+            "name": "readiness-data",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360521",
+            "uid": "19e4c386-6c08-42d8-a556-727e4e6e9ff5"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "resources": {
+              "requests": {
+                "storage": "100Mi"
+              }
+            },
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem",
+            "volumeName": "pvc-19e4c386-6c08-42d8-a556-727e4e6e9ff5"
+          },
+          "status": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "100Mi"
+            },
+            "phase": "Bound"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {
+        "resourceVersion": ""
+      }
+    },
+    "persistentvolumes": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "orbstack",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-10-04T12:09:31Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-19e4c386-6c08-42d8-a556-727e4e6e9ff5",
+            "resourceVersion": "360518",
+            "uid": "d29eae14-507c-4d5a-b05b-b0a6bd8ecd6b"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "100Mi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "readiness-data",
+              "namespace": "ops-pre-sp07-targets-20261004",
+              "resourceVersion": "360459",
+              "uid": "19e4c386-6c08-42d8-a556-727e4e6e9ff5"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-19e4c386-6c08-42d8-a556-727e4e6e9ff5_ops-pre-sp07-targets-20261004_readiness-data"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "orbstack"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-10-04T12:09:31Z",
+            "phase": "Bound"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {
+        "resourceVersion": ""
+      }
+    },
+    "events": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-10-04T12:08:48Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "name": "readiness-data",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360453",
+            "uid": "19e4c386-6c08-42d8-a556-727e4e6e9ff5"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-10-04T12:08:48Z",
+          "message": "waiting for first consumer to be created before binding",
+          "metadata": {
+            "creationTimestamp": "2026-10-04T12:08:48Z",
+            "name": "readiness-data.18db5243e3e3f375",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360454",
+            "uid": "c622fe0e-e990-455d-a6f9-df31a4db8005"
+          },
+          "reason": "WaitForFirstConsumer",
+          "reportingComponent": "persistentvolume-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "persistentvolume-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-10-04T12:08:48Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "name": "readiness-data",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360459",
+            "uid": "19e4c386-6c08-42d8-a556-727e4e6e9ff5"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-10-04T12:08:48Z",
+          "message": "Waiting for a volume to be created either by the external provisioner 'rancher.io/local-path' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.",
+          "metadata": {
+            "creationTimestamp": "2026-10-04T12:08:48Z",
+            "name": "readiness-data.18db5243e57ee757",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360461",
+            "uid": "dd0d2917-6789-4b5f-b826-a8e3c73bdee7"
+          },
+          "reason": "ExternalProvisioning",
+          "reportingComponent": "persistentvolume-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "persistentvolume-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-10-04T12:08:48Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "name": "readiness-data",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360459",
+            "uid": "19e4c386-6c08-42d8-a556-727e4e6e9ff5"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-10-04T12:08:48Z",
+          "message": "External provisioner is provisioning volume for claim \"ops-pre-sp07-targets-20261004/readiness-data\"",
+          "metadata": {
+            "creationTimestamp": "2026-10-04T12:08:48Z",
+            "name": "readiness-data.18db5243e5b4182f",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360463",
+            "uid": "f498e50c-975f-4661-8ed1-4d008b8ee320"
+          },
+          "reason": "Provisioning",
+          "reportingComponent": "rancher.io/local-path_local-path-provisioner-5d9d9885bc-ttqmn_2239fbc4-ef22-4d86-8b9d-8fed3d35ceed",
+          "reportingInstance": "",
+          "source": {
+            "component": "rancher.io/local-path_local-path-provisioner-5d9d9885bc-ttqmn_2239fbc4-ef22-4d86-8b9d-8fed3d35ceed"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-10-04T12:09:31Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "name": "readiness-data",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360459",
+            "uid": "19e4c386-6c08-42d8-a556-727e4e6e9ff5"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-10-04T12:09:31Z",
+          "message": "Successfully provisioned volume pvc-19e4c386-6c08-42d8-a556-727e4e6e9ff5",
+          "metadata": {
+            "creationTimestamp": "2026-10-04T12:09:31Z",
+            "name": "readiness-data.18db524dfdcea9f0",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360519",
+            "uid": "9a22cb3b-95a1-4284-94db-6c19e80acf52"
+          },
+          "reason": "ProvisioningSucceeded",
+          "reportingComponent": "rancher.io/local-path_local-path-provisioner-5d9d9885bc-ttqmn_2239fbc4-ef22-4d86-8b9d-8fed3d35ceed",
+          "reportingInstance": "",
+          "source": {
+            "component": "rancher.io/local-path_local-path-provisioner-5d9d9885bc-ttqmn_2239fbc4-ef22-4d86-8b9d-8fed3d35ceed"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Scheduling",
+          "apiVersion": "v1",
+          "eventTime": "2026-10-04T12:08:48.382954Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "readiness-scheduling",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360462",
+            "uid": "00ac98df-421c-4218-a7d2-18a787f121a0"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "0/1 nodes are available: 1 node(s) didn't match Pod's node affinity/selector. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+          "metadata": {
+            "creationTimestamp": "2026-10-04T12:08:48Z",
+            "name": "readiness-scheduling.18db5243e5e1920d",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360465",
+            "uid": "75d1fdbe-6a81-4184-b76b-8abbee1fd14f"
+          },
+          "reason": "FailedScheduling",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-orbstack",
+          "source": {},
+          "type": "Warning"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-10-04T12:09:32.385860Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "readiness-storage",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360455",
+            "uid": "80418e03-c817-468e-a69d-44f5a1e757db"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned ops-pre-sp07-targets-20261004/readiness-storage to orbstack",
+          "metadata": {
+            "creationTimestamp": "2026-10-04T12:09:32Z",
+            "name": "readiness-storage.18db524e24a8ac14",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360523",
+            "uid": "a3c03dd9-f500-40ab-8e8c-db3ec1c7efe1"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-orbstack",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-10-04T12:09:33Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{target}",
+            "kind": "Pod",
+            "name": "readiness-storage",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360522",
+            "uid": "80418e03-c817-468e-a69d-44f5a1e757db"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-10-04T12:09:33Z",
+          "message": "Container image \"python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-10-04T12:09:33Z",
+            "name": "readiness-storage.18db524e632fbd69",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360528",
+            "uid": "8c5a0801-187b-46d4-b769-8aeef89cf21d"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "orbstack",
+          "source": {
+            "component": "kubelet",
+            "host": "orbstack"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-10-04T12:09:33Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{target}",
+            "kind": "Pod",
+            "name": "readiness-storage",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360522",
+            "uid": "80418e03-c817-468e-a69d-44f5a1e757db"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-10-04T12:09:33Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-10-04T12:09:33Z",
+            "name": "readiness-storage.18db524e7225ff64",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360529",
+            "uid": "100b6265-2fb2-4d2a-b96a-240b2e7dba34"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "orbstack",
+          "source": {
+            "component": "kubelet",
+            "host": "orbstack"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-10-04T12:09:33Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{target}",
+            "kind": "Pod",
+            "name": "readiness-storage",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360522",
+            "uid": "80418e03-c817-468e-a69d-44f5a1e757db"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-10-04T12:09:33Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-10-04T12:09:33Z",
+            "name": "readiness-storage.18db524e786d8dc8",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360530",
+            "uid": "4b284603-d76d-4e3b-8acc-8e94acdb6614"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "orbstack",
+          "source": {
+            "component": "kubelet",
+            "host": "orbstack"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-10-04T12:09:34Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{target}",
+            "kind": "Pod",
+            "name": "readiness-storage",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360522",
+            "uid": "80418e03-c817-468e-a69d-44f5a1e757db"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-10-04T12:09:35Z",
+          "message": "Readiness probe failed: dial tcp 192.168.194.62:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-10-04T12:09:34Z",
+            "name": "readiness-storage.18db524e9f9a48ac",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360534",
+            "uid": "4d171642-d2ce-4be6-b0f9-8a3b6eab1f55"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "orbstack",
+          "source": {
+            "component": "kubelet",
+            "host": "orbstack"
+          },
+          "type": "Warning"
+        }
+      ],
+      "kind": "List",
+      "metadata": {
+        "resourceVersion": ""
+      }
+    },
+    "networkpolicies": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "networking.k8s.io/v1",
+          "kind": "NetworkPolicy",
+          "metadata": {
+            "annotations": {
+              "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"NetworkPolicy\",\"metadata\":{\"annotations\":{},\"labels\":{\"ops.platform.io/owner\":\"pre-sp07-20261004\"},\"name\":\"target-isolation\",\"namespace\":\"ops-pre-sp07-targets-20261004\"},\"spec\":{\"egress\":[],\"ingress\":[{\"from\":[{\"podSelector\":{}}]}],\"podSelector\":{},\"policyTypes\":[\"Ingress\",\"Egress\"]}}\n"
+            },
+            "creationTimestamp": "2026-10-04T12:08:48Z",
+            "generation": 1,
+            "labels": {
+              "ops.platform.io/owner": "pre-sp07-20261004"
+            },
+            "name": "target-isolation",
+            "namespace": "ops-pre-sp07-targets-20261004",
+            "resourceVersion": "360466",
+            "uid": "ad62dbee-220d-441e-94cf-ec91387dc66a"
+          },
+          "spec": {
+            "ingress": [
+              {
+                "from": [
+                  {
+                    "podSelector": {}
+                  }
+                ]
+              }
+            ],
+            "podSelector": {},
+            "policyTypes": [
+              "Ingress",
+              "Egress"
+            ]
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {
+        "resourceVersion": ""
+      }
+    }
+  },
+  "formalR5Chain": "not yet verified"
+}

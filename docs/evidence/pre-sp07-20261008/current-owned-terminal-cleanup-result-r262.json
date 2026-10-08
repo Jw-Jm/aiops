@@ -1,0 +1,201 @@
+{
+  "observedAt": "2026-10-08T05:56:56.841910+00:00",
+  "fullOriginalOrbStackCleanupComplete": false,
+  "protectedDataDeleted": false,
+  "selectedImageOrVolumeDeleted": false,
+  "deletedCount": 2,
+  "deletedPods": [
+    {
+      "name": "pre-sp07-current-r9-ready",
+      "uid": "e3ff5534-7981-49ac-beab-81f63e38e63a",
+      "rv": "520320",
+      "phase": "Failed",
+      "noVolumesOrFinalizersOrControllers": true
+    },
+    {
+      "name": "pre-sp07-r9-scheduling-r218",
+      "uid": "0f138d83-f793-499d-84de-d25e0caadf04",
+      "rv": "520321",
+      "phase": "Failed",
+      "noVolumesOrFinalizersOrControllers": true
+    }
+  ],
+  "allNamespacePVC_PV_SecretUIDsUnchanged": true,
+  "protectedUIDSetSHA256": "d01431f21c01fe6ef0289b52c569221c5472ae6377950fcbbfa0212dbd6791e5",
+  "onlyOwnStatelessTerminalPodsDeleted": true,
+  "sourceBackupOrKeysNotDeleted": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "a8359db70ecdfbb6305e983792c06cfeb40367ea0ff169ff23f43b757fa60481"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "a8359db70ecdfbb6305e983792c06cfeb40367ea0ff169ff23f43b757fa60481",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT count(*) FROM investigation.jobs WHERE state IN ('queued','running'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "get",
+        "pod",
+        "pre-sp07-current-r9-ready",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "get",
+        "pod",
+        "pre-sp07-r9-scheduling-r218",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "delete",
+        "--raw",
+        "/api/v1/namespaces/ops-pre-sp07-targets-r9-20261008/pods/pre-sp07-current-r9-ready",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/terminal-cleanup-r262/pre-sp07-current-r9-ready-delete.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "get",
+        "pod",
+        "pre-sp07-current-r9-ready",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "delete",
+        "--raw",
+        "/api/v1/namespaces/ops-pre-sp07-targets-r9-20261008/pods/pre-sp07-r9-scheduling-r218",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/terminal-cleanup-r262/pre-sp07-r9-scheduling-r218-delete.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "get",
+        "pod",
+        "pre-sp07-r9-scheduling-r218",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

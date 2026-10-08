@@ -1,0 +1,199 @@
+{
+  "observedAt": "2026-10-07T03:40:05.883600+00:00",
+  "jobId": "01a1145b-78db-7741-b14c-3d244ecade18",
+  "actualSuccessfulModelMCPChainPass": false,
+  "fullRecoveryAcceptance": false,
+  "APIOrWorkerRestartedByThisGate": true,
+  "completeJobTakeoverAndSuccessfulStepNoRerunPass": false,
+  "currentSuccessfulModelMCPChainPass": false,
+  "retainedEarlierDriverContractMismatch": "current-core-r7-failed-investigation-sse-r1.json",
+  "wireContract": "internal/httpapi/investigation_handlers.go: typed job.state payload and signed opaque cursor; eventId sequence in Envelope",
+  "retainedSchedulingEvidence": [
+    {
+      "evidenceId": "bb41211a-6f71-56f6-820a-fa1727f0e3ae",
+      "contentDigest": "sha256:cc9cdb36225784d6aa2ca9baaa7d5cfae5df09c963847ebcda3f8b47295134ca",
+      "archiveVersionId": "6723df3a12fee2a94a9867f8e18141ad",
+      "retainUntil": "2027-10-08T03:13:07Z",
+      "sourceId": "01a11452-1ed6-7a7f-bf15-1fb7e725d06a",
+      "sourceRevision": 1
+    },
+    {
+      "evidenceId": "bf030ca7-35dd-5779-b115-f6524a211da8",
+      "contentDigest": "sha256:1b6e9899a2f7cddbab7fdbb668639bdcad516b451446175d3234db2ac6910def",
+      "archiveVersionId": "6723df3a115a087bd65988fdfad1ea59",
+      "retainUntil": "2027-10-08T03:13:07Z",
+      "sourceId": "01a11452-1ed6-7a7f-bf15-1fb7e725d06a",
+      "sourceRevision": 1
+    }
+  ],
+  "apiPodUID": "f2bd78f5-6265-4be4-8f83-c26a4fc7d171",
+  "apiOldContainerId": "849869d5a9ff86fe7b0d05a89bf19d71a3c2eee6aafd7775faa54550df58ed7c",
+  "apiNewContainerId": "docker://c82125986e714a95db253fce802f0219ca4c9e6e7c5bbd0215e3561e81e1b267",
+  "nativeSamePodUID": true,
+  "apiRestartCountBefore": 1,
+  "apiRestartCountAfter": 2,
+  "nativeSIGKILLExitCode": 0,
+  "nativeAPIRecovered": true,
+  "failedStateHonest": true,
+  "unknownUsageConservativelyCharged": true,
+  "budgetReservedZero": true,
+  "sseEventSequence": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "sseResumeExactSuffix": true,
+  "crossTenantStatus": 403,
+  "actualForeignTenantSSE403": true,
+  "actualDurableEventsByteDigestUnchangedAfterNativeAPISIGKILL": true,
+  "actualPreRestartCursorSuffixAfterRestart": true,
+  "archivedEvidenceDigestAndVersionPreserved": true,
+  "terminalFailedBudgetAndEventCountUnchangedAfterRestart": true,
+  "exitCode": 0,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:2e00f10b46e73c2a7324fc1e39e0fc03660f1aeb783b80baf20a58e656e236aa"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18/events",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:5e3343cb04e3f0e0c7f1b1eddfbdcbbe8336eab43efd58beef4403d9b077671d"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18/events",
+      "status": 200,
+      "cursorSHA256": "sha256:fe8edab1f242e77ff6bb09a45b14c1727d92a03b0a8520488e364354c403524c",
+      "responseSHA256": "sha256:5c4f025cc60a8288934a563bf335b65d2a662ea4243f3e799816bf65fa034dc7"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18/events",
+      "status": 403,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:ab5a4708d59cf57b5bdf993ce6548bd9e2300eec8a2576173b1e9f2fba47bf5b"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/bb41211a-6f71-56f6-820a-fa1727f0e3ae",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:00990e28c243a7a4ef3b7638034452f3aaef4a34eca86cdadcdd9f17dfb535a0"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/bf030ca7-35dd-5779-b115-f6524a211da8",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:1559b9e336dde02f0f61d717181801a10f04e3266db2d95964d7770816e1e33b"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "kill",
+        "--signal=KILL",
+        "849869d5a9ff86fe7b0d05a89bf19d71a3c2eee6aafd7775faa54550df58ed7c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-api-dc97bbbd9-9lqk5",
+        "-n",
+        "ops-pre-sp07-core-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-api-dc97bbbd9-9lqk5",
+        "-n",
+        "ops-pre-sp07-core-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-api-dc97bbbd9-9lqk5",
+        "-n",
+        "ops-pre-sp07-core-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:f7d3d44dff6bbdd7b195f744cc4f359842cc592138a7478d9a8104364ae9f693"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18/events",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:4a02295afd7fe2685786205ad506ac07b73dbc0c84f578b45daf704652aeba1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18/events",
+      "status": 200,
+      "cursorSHA256": "sha256:fe8edab1f242e77ff6bb09a45b14c1727d92a03b0a8520488e364354c403524c",
+      "responseSHA256": "sha256:e2272265528bad492bf6b80fd0bf8d8ea6a284672f8411ca9554069f64822cef"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/bb41211a-6f71-56f6-820a-fa1727f0e3ae",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:6782bbb2076b94e69eb2c23e2119aad4f6754c17e0f9fc021bf30830f48f6588"
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

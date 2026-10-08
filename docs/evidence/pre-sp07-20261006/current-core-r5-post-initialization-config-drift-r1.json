@@ -1,0 +1,41 @@
+{
+  "observedAt": "2026-10-06T00:22:32.569028+00:00",
+  "drift": [
+    {
+      "kind": "ConfigMap",
+      "name": "ops-postgresql-init",
+      "uidMatches": true,
+      "expected": "sha256:58bf6d8f8a05b6b3095ab6b998e3f9e5df8f1b4d64009ad801355797b962770a",
+      "actual": "sha256:89b093157addd6326a110bcd8ea46670719449d9157dda34376d077ac9153c0a",
+      "templateAnnotations": {}
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-keycloak",
+      "uidMatches": true,
+      "expected": "sha256:3e1579edcd99ce2da62bc4068fa9e9b8c9d428952906fa26c330beff42e501c5",
+      "actual": "sha256:ea537cee51860ec30f8e751b98926c654ce782ac74aa9e7ad96b3455303a21af",
+      "templateAnnotations": {}
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-openbao",
+      "uidMatches": true,
+      "expected": "sha256:ffd98d5f0f778911b94cbf11bb175b82042eeda4a5fed20acd9234d11b89d865",
+      "actual": "sha256:b04a6f6a9f9d9dd414a39e484034d63f4b7ff4f78b07e053799f4a249759c377",
+      "templateAnnotations": {}
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-seaweedfs",
+      "uidMatches": true,
+      "expected": "sha256:07ef6a357bca9c2ce802e2fc66531c35925001705d3b1c0fc08232fd247c6a7e",
+      "actual": "sha256:5b92f6ab8fbc071329eba804a2d37092751cab5e0f21acfee20b1a52f66bb89c",
+      "templateAnnotations": {
+        "kubectl.kubernetes.io/restartedAt": "2026-10-06T08:21:17+08:00"
+      }
+    }
+  ],
+  "checkpointEdited": false,
+  "privateSecretDataPrinted": false
+}

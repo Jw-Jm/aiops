@@ -1,0 +1,317 @@
+{
+  "observedAt": "2026-10-08T06:19:09.982024+00:00",
+  "fullOriginalOrbStackCleanupComplete": false,
+  "exitCode": 0,
+  "explicitObsoletePodsDeleted": 37,
+  "supersededPodsGracefullyRemoved": 22,
+  "totalPodsRemovedThisCleanup": 59,
+  "otherKubernetesResourcesDeleted": {
+    "ReplicaSet": 6,
+    "ClusterRoleBinding": 2,
+    "ClusterRole": 1,
+    "ConfigMap": 1
+  },
+  "supersededControllersScaledToZero": 20,
+  "allSelectedUIDsVerifiedAbsent": true,
+  "namespacePVC_PV_SecretUIDsAndStorageBindingsUnchanged": true,
+  "protectedArchiveDockerFixturesRetained": 349,
+  "nativeLifecycleAnonymousVolumesReclaimed": [
+    {
+      "volumeName": "4016e5c22d5b79f413abb70b208ca3f4c08254de0ffad985eb36ac5d26ce9cfa",
+      "containerId": "bb45ac3fd40ee15d665da3fd8675d9f17a4f254605f2bcfcc78b987f7d757a09",
+      "podUID": "030a2f8c-a732-424c-abef-e52206c57399",
+      "destination": "/var/lib/postgresql/data",
+      "imageDeclaredAnonymousVolume": true,
+      "actualContainerCommandIsFiniteSleepNotPostgres": true,
+      "reclaimedByNativePodContainerLifecycle": true,
+      "notBusinessPVCOrProtectedArchiveVolume": true
+    },
+    {
+      "volumeName": "6e42dde6b7923d8b511a98867668ea2f25776bb12b77e411cbfd72bcff6bed13",
+      "containerId": "dbaab80e28b6759a70b26c95d30d2672c6359813ac35581763488caff7ab5e58",
+      "podUID": "565df045-8fb0-471c-a15b-67b912f02fea",
+      "destination": "/var/lib/postgresql/data",
+      "imageDeclaredAnonymousVolume": true,
+      "actualContainerCommandIsFiniteSleepNotPostgres": true,
+      "reclaimedByNativePodContainerLifecycle": true,
+      "notBusinessPVCOrProtectedArchiveVolume": true
+    },
+    {
+      "volumeName": "78f8bcede89164088837253f1fe85011bc3a050adb9f91817496ccfbc6d54299",
+      "containerId": "17bfe7537e0c35efa2eeadfebbf4863eda9694ca730f6077f865a5d947c7e6fd",
+      "podUID": "42982816-5786-4d0f-aeaf-f51acb318e71",
+      "destination": "/var/lib/postgresql/data",
+      "imageDeclaredAnonymousVolume": true,
+      "actualContainerCommandIsFiniteSleepNotPostgres": true,
+      "reclaimedByNativePodContainerLifecycle": true,
+      "notBusinessPVCOrProtectedArchiveVolume": true
+    },
+    {
+      "volumeName": "bc2ec1f4ef0f649a0a8bb8f8fe5dd7a8ca2e86580b8e501b762106f1d9c2ba35",
+      "containerId": "1ec75fdb13486e3aabc23856e1e4fb0a598cf94d917a930399ad59d52f118100",
+      "podUID": "c6a490bb-6638-47d6-a371-75d7ca26ec8f",
+      "destination": "/var/lib/postgresql/data",
+      "imageDeclaredAnonymousVolume": true,
+      "actualContainerCommandIsFiniteSleepNotPostgres": true,
+      "reclaimedByNativePodContainerLifecycle": true,
+      "notBusinessPVCOrProtectedArchiveVolume": true
+    },
+    {
+      "volumeName": "be84684bc84fb538fe3f0c91ee7342bf6ab5957f94e8d8a76b922b78722b00e6",
+      "containerId": "4a1db9770aa398e2de48ff1ff4e03dbd3a4f19934691d9d9489785d83df4c7ac",
+      "podUID": "57f7f4c0-1d62-4452-955f-5f1bac26e4a0",
+      "destination": "/var/lib/postgresql/data",
+      "imageDeclaredAnonymousVolume": true,
+      "actualContainerCommandIsFiniteSleepNotPostgres": true,
+      "reclaimedByNativePodContainerLifecycle": true,
+      "notBusinessPVCOrProtectedArchiveVolume": true
+    }
+  ],
+  "manualDockerVolumeOrImageDeletion": false,
+  "currentR12Ready": [
+    {
+      "kind": "Deployment",
+      "name": "ops-api",
+      "uid": "0ffe2644-809e-4519-b833-9ca265e2d226",
+      "readyReplicas": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-investigator",
+      "uid": "4db11183-63d6-40c2-b30e-1a48fe8f5c2a",
+      "readyReplicas": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-keycloak",
+      "uid": "4cdc9b1a-4832-4023-aa43-04f4af16adf2",
+      "readyReplicas": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-vmalert",
+      "uid": "8f1065b7-060e-49b6-94c9-8ea57416c9d7",
+      "readyReplicas": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-worker",
+      "uid": "277f0c7b-40df-4de0-9d19-b3886694fd23",
+      "readyReplicas": 2
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-openbao",
+      "uid": "9048c726-dfda-41f8-b5f9-849c158918aa",
+      "readyReplicas": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-postgresql",
+      "uid": "b5b4329d-454c-49b7-8652-ca3c3e01f2f1",
+      "readyReplicas": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-seaweedfs",
+      "uid": "6b1b6f3e-feac-4577-b97f-e35658568699",
+      "readyReplicas": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-victoria-logs",
+      "uid": "0de550f5-1e48-473e-9cb7-8899cf551117",
+      "readyReplicas": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-victoria-metrics",
+      "uid": "30c1fc9e-576b-401e-8274-1be8550baf20",
+      "readyReplicas": 1
+    }
+  ],
+  "currentBusinessRegression": "current-core-r9-investigation-chain-live-receipt-r266.json",
+  "currentBusinessRegressionExitCode": 0,
+  "remainingPodPhases": {
+    "Succeeded": 14,
+    "Running": 39,
+    "Failed": 1,
+    "Pending": 2
+  },
+  "retainedNonRunningPods": [
+    {
+      "namespace": "default",
+      "name": "node-debugger-orbstack-7j8kb",
+      "uid": "c693666e-9b8b-4a15-a400-767b3fbf4705",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "default",
+      "name": "node-debugger-orbstack-9v7cb",
+      "uid": "087157c7-d63d-40d8-8881-74f0c016a844",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "default",
+      "name": "node-debugger-orbstack-c7zfm",
+      "uid": "f3e338ee-3d26-49e7-a903-266190d6ef36",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "default",
+      "name": "node-debugger-orbstack-dgtsc",
+      "uid": "646517f5-fde0-4ea4-b29d-71fd9fb72dac",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "default",
+      "name": "node-debugger-orbstack-hjgcr",
+      "uid": "ed812870-a751-426c-bb20-a46206a25bc2",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "holmes",
+      "name": "holmes-holmes-69ff4b49cf-54mxf",
+      "uid": "397650d2-bf53-4cfe-b2de-cce3e056d0a8",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "holmes",
+      "name": "holmes-holmes-69ff4b49cf-9ml4m",
+      "uid": "fb29704c-b021-403b-b3ce-dfa527598e4c",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "monitoring",
+      "name": "victoria-logs-85d7d5c6d6-j2q4w",
+      "uid": "1cc0c044-552e-4423-b5f3-c23aa776a517",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "monitoring",
+      "name": "victoria-logs-85d7d5c6d6-kh4x9",
+      "uid": "0758c194-d2d2-4785-9eff-e94baa3b02c8",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "monitoring",
+      "name": "vm-kube-state-metrics-6bdf7ddb76-mj9r2",
+      "uid": "611612df-0c42-4f88-a034-f619a280a260",
+      "phase": "Failed",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "monitoring",
+      "name": "vm-victoria-metrics-operator-6bb5dfbf4c-98p2t",
+      "uid": "c17a8497-c9d6-4cdb-a0dd-060c3f67035b",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "monitoring",
+      "name": "vmagent-vm-85dff8857d-7qjrw",
+      "uid": "522ce219-d87a-4fd5-b0d2-a85f2036b47e",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "monitoring",
+      "name": "vmagent-vm-85dff8857d-d5cgk",
+      "uid": "78b0a448-308b-44ec-9fb7-9251c6d9b7e7",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "monitoring",
+      "name": "vmsingle-vm-5bb9646995-zbvt8",
+      "uid": "507ded5d-8c3a-4dcb-9935-008d54c5ac87",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "monitoring",
+      "name": "vmsingle-vm-5bb9646995-znljh",
+      "uid": "c1663ed0-2425-40df-9fd5-b70f31e8df91",
+      "phase": "Succeeded",
+      "disposition": "RETAIN",
+      "reason": "shared or unconfirmed ownership; excluded from authorization"
+    },
+    {
+      "namespace": "ops-system",
+      "name": "ops-api-65b6847cdd-nbhpg",
+      "uid": "45af5779-1440-413d-9106-633a8cb68f5f",
+      "phase": "Pending",
+      "disposition": "RETAIN",
+      "reason": "historical retained release; no deletion based only on Pending state"
+    },
+    {
+      "namespace": "ops-system",
+      "name": "ops-worker-567695474-f4vdv",
+      "uid": "195b56ba-1a0f-4924-8608-86c870d8cb2a",
+      "phase": "Pending",
+      "disposition": "RETAIN",
+      "reason": "historical retained release; no deletion based only on Pending state"
+    }
+  ],
+  "rawPrivateEvidenceDirectory": "/Users/mssc/.local/state/ops/pre-sp07-20261004/cleanup-final-r270",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pods,deployments,statefulsets,replicasets,configmaps,secrets,pvc,pv,clusterroles,clusterrolebindings",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "ps",
+        "-aq",
+        "--no-trunc"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "volume",
+        "ls",
+        "-q"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

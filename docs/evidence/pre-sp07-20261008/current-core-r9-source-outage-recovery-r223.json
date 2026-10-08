@@ -1,0 +1,173 @@
+{
+  "observedAt": "2026-10-08T03:05:00.749262+00:00",
+  "scope": "exact owned R12 Worker Kubernetes egress only; no model or addon fault claimed",
+  "modelCalls": 0,
+  "SP07Started": false,
+  "fullR5Acceptance": false,
+  "actualDegradedResponse": {
+    "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F9796e290-ef68-4559-9344-879cee69287e",
+    "status": 503,
+    "sha256": "73a2f5d215e93a45ca06569e95d911e9d962ecec09d456d9aa2114f73339efad",
+    "code": "GRAPH_NOT_READY",
+    "freshness": null,
+    "partial": null,
+    "graphRevision": null
+  },
+  "mainlineReadsDuringFault": 2,
+  "independentNativeAPIPositiveSamePodUID": true,
+  "nativeFaultStillUnschedulableNotRecovered": true,
+  "failureType": "AssertionError",
+  "restorationFailureType": "AssertionError",
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "networkpolicy",
+        "ops-sp04-worker-kubernetes-egress",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "replace",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-scheduling-r218",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "networkpolicy",
+        "ops-sp04-worker-kubernetes-egress",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "networkpolicy",
+        "ops-sp04-worker-kubernetes-egress",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F9796e290-ef68-4559-9344-879cee69287e",
+      "status": 200,
+      "sha256": "c6b7134e8b7613e452bf5b364d051ab55f16632aba7211bbdeb35c9607e24834",
+      "code": null,
+      "freshness": "fresh",
+      "partial": false,
+      "graphRevision": {
+        "ownerEpoch": 1,
+        "graphGeneration": 13
+      }
+    },
+    {
+      "path": "/api/v1/incidents/01a11973-c283-73ae-97d8-d66a39b7ba80",
+      "status": 200,
+      "sha256": "c7b50b19dcab891a8587a2a6f331ca54c9574ce3d41220c972773dfab7b9394f",
+      "code": null,
+      "freshness": null,
+      "partial": null,
+      "graphRevision": null
+    },
+    {
+      "path": "/api/v1/incidents/01a11973-c283-73ae-97d8-d66a39b7ba80",
+      "status": 200,
+      "sha256": "3c12751d5d99552d52d0402143ea5393f5e7089e01050ab83ff07f08699a3054",
+      "code": null,
+      "freshness": null,
+      "partial": null,
+      "graphRevision": null
+    },
+    {
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F9796e290-ef68-4559-9344-879cee69287e",
+      "status": 200,
+      "sha256": "e16fb82ebba90e3937654413add4e31ac387bf18871bde20d528fd1cc8743759",
+      "code": null,
+      "freshness": "fresh",
+      "partial": false,
+      "graphRevision": {
+        "ownerEpoch": 1,
+        "graphGeneration": 13
+      }
+    },
+    {
+      "path": "/api/v1/incidents/01a11973-c283-73ae-97d8-d66a39b7ba80",
+      "status": 200,
+      "sha256": "9ee4dd07325e42aaef4edf89410b023eb3937349926e8aa037114224b47d43b4",
+      "code": null,
+      "freshness": null,
+      "partial": null,
+      "graphRevision": null
+    },
+    {
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F9796e290-ef68-4559-9344-879cee69287e",
+      "status": 503,
+      "sha256": "73a2f5d215e93a45ca06569e95d911e9d962ecec09d456d9aa2114f73339efad",
+      "code": "GRAPH_NOT_READY",
+      "freshness": null,
+      "partial": null,
+      "graphRevision": null
+    }
+  ],
+  "ownedForwardStopped": true
+}

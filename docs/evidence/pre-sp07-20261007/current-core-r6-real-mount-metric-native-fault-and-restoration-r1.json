@@ -1,0 +1,145 @@
+{
+  "observedAt": "2026-10-07T02:02:56.937173+00:00",
+  "nativePodUID": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+  "namespace": "ops-pre-sp07-targets-r6-20261006",
+  "syntheticEventCreated": false,
+  "formalMCPPipelinePass": false,
+  "fullR3Acceptance": false,
+  "genuineNativeKubeletFailedMountObserved": true,
+  "genuineEvents": [
+    {
+      "uid": "b27d5a9b-a8a1-4eba-838e-f7c8150ebac9",
+      "reason": "FailedMount",
+      "type": "Warning",
+      "involvedObjectUID": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+      "reportingController": null,
+      "sourceComponent": "kubelet",
+      "firstTimestamp": "2026-10-07T02:02:36Z",
+      "lastTimestamp": "2026-10-07T02:02:51Z",
+      "count": 6
+    }
+  ],
+  "currentPodPhase": "Running",
+  "currentContainerStates": [
+    {
+      "running": {
+        "startedAt": "2026-10-07T01:57:26Z"
+      }
+    }
+  ],
+  "existingPodIdentityUnchanged": true,
+  "publicMarkerContentRestored": true,
+  "newConfigMapUID": "4c9c9c8a-faed-40f6-843e-d1c73ead4aef",
+  "oldConfigMapUIDPreservedAsHistory": "d8e408ac-eecf-4b7d-8ac9-9a30c039c0f2",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "get",
+        "events",
+        "--field-selector",
+        "involvedObject.uid=dbea7a37-c298-45d2-b542-410cd1f140ad",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "get",
+        "pod",
+        "pre-sp07-r6-real-mount-metric-r1",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "samples": [
+    {
+      "observedAt": "2026-10-07T02:02:57.015543+00:00",
+      "events": [
+        {
+          "uid": "308e0727-78b6-46d2-8df4-f6b1609aa49a",
+          "reason": "Scheduled",
+          "type": "Normal",
+          "involvedObjectUID": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+          "reportingController": null,
+          "sourceComponent": null,
+          "firstTimestamp": null,
+          "lastTimestamp": null,
+          "count": null
+        },
+        {
+          "uid": "d9f32287-80d1-4722-940f-3c3a214f3ab5",
+          "reason": "Pulled",
+          "type": "Normal",
+          "involvedObjectUID": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+          "reportingController": null,
+          "sourceComponent": "kubelet",
+          "firstTimestamp": "2026-10-07T01:57:25Z",
+          "lastTimestamp": "2026-10-07T01:57:25Z",
+          "count": 1
+        },
+        {
+          "uid": "dd5fcdff-a580-4243-a4cf-7ee9638c7eb8",
+          "reason": "Created",
+          "type": "Normal",
+          "involvedObjectUID": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+          "reportingController": null,
+          "sourceComponent": "kubelet",
+          "firstTimestamp": "2026-10-07T01:57:25Z",
+          "lastTimestamp": "2026-10-07T01:57:25Z",
+          "count": 1
+        },
+        {
+          "uid": "c911e37e-6b9e-4699-a865-51c068da67ab",
+          "reason": "Started",
+          "type": "Normal",
+          "involvedObjectUID": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+          "reportingController": null,
+          "sourceComponent": "kubelet",
+          "firstTimestamp": "2026-10-07T01:57:26Z",
+          "lastTimestamp": "2026-10-07T01:57:26Z",
+          "count": 1
+        },
+        {
+          "uid": "b27d5a9b-a8a1-4eba-838e-f7c8150ebac9",
+          "reason": "FailedMount",
+          "type": "Warning",
+          "involvedObjectUID": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+          "reportingController": null,
+          "sourceComponent": "kubelet",
+          "firstTimestamp": "2026-10-07T02:02:36Z",
+          "lastTimestamp": "2026-10-07T02:02:51Z",
+          "count": 6
+        }
+      ]
+    }
+  ],
+  "exitCode": 0
+}

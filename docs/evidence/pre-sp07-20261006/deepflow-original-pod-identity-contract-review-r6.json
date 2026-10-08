@@ -1,0 +1,129 @@
+{
+  "observedAt": "2026-10-06T02:25:44.079272+00:00",
+  "lockedSourceCommit": "e567b167453ffa99f08f26def20379b4f831e073",
+  "lockedSourceArchiveSHA256": "sha256:8176aa0034aa96fb0e2a996774d1f128625323e9ffa74b3c8dcfb8f46dfc1655",
+  "records": [
+    {
+      "lockedSourcePath": "deepflow-e567b167453ffa99f08f26def20379b4f831e073/server/controller/cloud/kubernetes_gather/pod.go",
+      "sha256": "sha256:0c33e41ee1f93e5eb1b2cf4c8421870f0f235bc78fd2f948c90339396d97d8f2",
+      "originalLines": [
+        {
+          "line": 31,
+          "source": "func (k *KubernetesGather) getPods() (pods []model.Pod, err error) {"
+        },
+        {
+          "line": 98,
+          "source": "\t\tpgLcuuid := common.IDGenerateUUID(k.orgID, podGroupUID)"
+        },
+        {
+          "line": 109,
+          "source": "\t\tif generateName, ok := metaData.CheckGet(\"generateName\"); ok {"
+        },
+        {
+          "line": 110,
+          "source": "\t\t\tserialNumber := strings.TrimLeft(name, generateName.MustString())"
+        },
+        {
+          "line": 111,
+          "source": "\t\t\tpodLcuuid = common.GetUUIDByOrgID(k.orgID, pgLcuuid+serialNumber)"
+        },
+        {
+          "line": 113,
+          "source": "\t\t\tpodLcuuid = common.IDGenerateUUID(k.orgID, uID)"
+        },
+        {
+          "line": 178,
+          "source": "\t\t\tLcuuid:              podLcuuid,"
+        },
+        {
+          "line": 181,
+          "source": "\t\t\tVPCLcuuid:           k.VPCUUID,"
+        },
+        {
+          "line": 185,
+          "source": "\t\t\tContainerIDs:        strings.Join(containerIDs, \", \"),"
+        },
+        {
+          "line": 186,
+          "source": "\t\t\tPodReplicaSetLcuuid: podRSLcuuid,"
+        },
+        {
+          "line": 187,
+          "source": "\t\t\tPodNodeLcuuid:       k.nodeIPToLcuuid[hostIP],"
+        },
+        {
+          "line": 188,
+          "source": "\t\t\tPodGroupLcuuid:      podGroupLcuuid,"
+        },
+        {
+          "line": 189,
+          "source": "\t\t\tPodServiceLcuuid:    podServiceLcuuid,"
+        },
+        {
+          "line": 190,
+          "source": "\t\t\tPodNamespaceLcuuid:  namespaceLcuuid,"
+        },
+        {
+          "line": 191,
+          "source": "\t\t\tCreatedAt:           created,"
+        },
+        {
+          "line": 192,
+          "source": "\t\t\tAZLcuuid:            k.azLcuuid,"
+        },
+        {
+          "line": 193,
+          "source": "\t\t\tRegionLcuuid:        k.RegionUUID,"
+        },
+        {
+          "line": 194,
+          "source": "\t\t\tPodClusterLcuuid:    k.podClusterLcuuid,"
+        }
+      ]
+    },
+    {
+      "lockedSourcePath": "deepflow-e567b167453ffa99f08f26def20379b4f831e073/server/controller/cloud/kubernetes_gather/pod_namespace.go",
+      "sha256": "sha256:c45e42939e6d65b1db60047de3fc210befde199eb4a7364c4443c8abfadbe08f",
+      "originalLines": [
+        {
+          "line": 26,
+          "source": "func (k *KubernetesGather) getPodNamespaces() ([]model.PodNamespace, error) {"
+        },
+        {
+          "line": 50,
+          "source": "\t\tuLcuuid := common.IDGenerateUUID(k.orgID, uID)"
+        },
+        {
+          "line": 57,
+          "source": "\t\t\tLcuuid:           uLcuuid,"
+        },
+        {
+          "line": 59,
+          "source": "\t\t\tPodClusterLcuuid: k.podClusterLcuuid,"
+        },
+        {
+          "line": 60,
+          "source": "\t\t\tRegionLcuuid:     k.RegionUUID,"
+        },
+        {
+          "line": 61,
+          "source": "\t\t\tAZLcuuid:         k.azLcuuid,"
+        }
+      ]
+    }
+  ],
+  "originalContractFacts": {
+    "podLcuuidMayBeGeneratedFromReplicaSetAndNameSuffixInsteadOfNativePodUID": true,
+    "nativeContainerIDsAndCreatedAtCollected": true,
+    "namespaceIdentityDerivedFromNativeNamespaceUID": true
+  },
+  "necessaryLiveMapperValidation": [
+    "exact SourceRegistration tenant/organization/cluster/namespace and revision fence",
+    "current native Pod UID and Namespace UID; exact current container IDs and creation interval must match backend resource record",
+    "same-name or generated-LCUUID reuse must not authorize an older UID; flow observation window must be bounded by the proven current lifetime",
+    "preserve historical identities and archived facts; source or credential withdrawal must invalidate live mappings and Context"
+  ],
+  "currentRuntimeState": "fixture_only; live mapper not enabled",
+  "actualLiveMappingProof": "PENDING",
+  "fullR2Acceptance": false
+}

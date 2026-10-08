@@ -1,0 +1,49 @@
+{
+  "observedAt": "2026-10-08T02:56:10.937771+00:00",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "signedBundleId": "pre-sp07-core-20261008-r12",
+  "payloadDigest": "sha256:d62d7321ff70f94f0a92175d21066e3eb9ba928a8e45a6dfda95736d9eea11e7",
+  "fullColdCoreAcceptance": false,
+  "fullBusinessChainPass": false,
+  "SP07Started": false,
+  "namespaceUID": "8ef6f18e-0621-45d0-877e-4e575cb34603",
+  "installedBusinessImagesMatchIndependentlyVerifiedSignedOCIManifests": true,
+  "formalFreshDependencyAndBootstrapStagesAllExitZero": true,
+  "R12SourceFixesNowDeployed": true,
+  "resources": [
+    {
+      "deployment": "ops-api",
+      "uid": "0ffe2644-809e-4519-b833-9ca265e2d226",
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "ops.local/task27/platform-api@sha256:12cb35bf0c0bfd15170095378dce73de768858ecaab0f0ba07a7000b6038d315"
+      ],
+      "signedOCIArchiveDigest": "sha256:20c9890787d9da83e893243aad664b6b2f0dbfd5b6b0cfe93894d19ca1b951f5",
+      "OCIManifestDigest": "sha256:12cb35bf0c0bfd15170095378dce73de768858ecaab0f0ba07a7000b6038d315"
+    },
+    {
+      "deployment": "ops-worker",
+      "uid": "277f0c7b-40df-4de0-9d19-b3886694fd23",
+      "desired": 2,
+      "ready": 2,
+      "images": [
+        "ops.local/task27/platform-worker@sha256:abc472fb806003dead9174cd5a3a3de4d3c66832529d0c0da8f7e34515f60da9"
+      ],
+      "signedOCIArchiveDigest": "sha256:c5253188be30bd330e812c464c9dbb97687359c65f21ed50ea86975a7f66485e",
+      "OCIManifestDigest": "sha256:abc472fb806003dead9174cd5a3a3de4d3c66832529d0c0da8f7e34515f60da9"
+    },
+    {
+      "deployment": "ops-investigator",
+      "uid": "4db11183-63d6-40c2-b30e-1a48fe8f5c2a",
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "ops.local/task27/holmesgpt@sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593"
+      ],
+      "signedOCIArchiveDigest": "sha256:801678eeeafddf86b899e05646fe2b14e2495b4e638ce3830539f1589e2d7be7",
+      "OCIManifestDigest": "sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593"
+    }
+  ],
+  "exitCode": 0
+}

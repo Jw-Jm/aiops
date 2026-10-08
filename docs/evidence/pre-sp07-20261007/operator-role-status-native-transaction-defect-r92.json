@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-10-07T05:16:34.417039+00:00",
+  "findingId": "PRE-R1-ROLE-002",
+  "severity": "P1",
+  "status": "CONFIRMED_NOT_FIXED",
+  "sourceFile": "internal/httpapi/tenant_handlers.go",
+  "line": 38,
+  "trigger": "Fresh actual Keycloak LoA2 PATCH operator status endpoint, including strict-invalid body",
+  "actualStatus": 500,
+  "actualCode": "INTERNAL",
+  "actualMessage": "tenant transaction is unavailable",
+  "cause": "requireTenantAdminStepUp consumes TransactionFromContext before newTenantIdempotency has installed a transaction",
+  "impact": "All formal operator withdrawal/restoration requests fail before handler; handler-only tests and service tests did not exercise middleware composition",
+  "violatedRequirement": "R1/R5 formal operator role withdrawal/recovery and current step-up; native acceptance required",
+  "reproduction": "current-core-r8-operator-status-native-r1.json",
+  "roleChangedByFailedRequest": false,
+  "requiredRegression": "real PostgreSQL complete Router valid/invalid request, idempotent successful replay, revoked current Step-up cannot replay cached success",
+  "plannedRepair": "Idempotency AuthorizeTx checks current step-up within tenant transaction before Begin/DecisionReplay",
+  "nativeFixAcceptance": false
+}

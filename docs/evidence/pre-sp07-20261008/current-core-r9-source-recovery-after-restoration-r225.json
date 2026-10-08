@@ -1,0 +1,69 @@
+{
+  "observedAt": "2026-10-08T03:06:30.638598+00:00",
+  "scope": "exact owned R12 Worker Kubernetes egress only; no model or addon fault claimed",
+  "modelCalls": 0,
+  "SP07Started": false,
+  "fullR5Acceptance": false,
+  "actualEarlierFaultReceipt": "current-core-r9-source-outage-recovery-r223.json",
+  "exactPolicyRestoration": "source-outage-exact-policy-restoration-r224.json",
+  "priorOperatorFailureRetained": true,
+  "policyUID": "c0c2ef19-2c08-4b72-8034-20c6074846c4",
+  "exactOriginalPolicyUIDAndSpecRestored": true,
+  "after": {
+    "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F9796e290-ef68-4559-9344-879cee69287e",
+    "status": 200,
+    "sha256": "7c4672b8e1cad64cb11a84927865d1a6deccf622863cb84ebdc0580b4632ba54",
+    "code": null,
+    "freshness": "fresh",
+    "partial": false,
+    "graphRevision": {
+      "ownerEpoch": 1,
+      "graphGeneration": 13
+    }
+  },
+  "sourceUnavailableAndRecoveryNativePass": true,
+  "mainlinePreserved": true,
+  "modelOrBudgetOrTLSChanged": false,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "networkpolicy",
+        "ops-sp04-worker-kubernetes-egress",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/incidents/01a11973-c283-73ae-97d8-d66a39b7ba80",
+      "status": 200,
+      "sha256": "2093a6ad6b21ff23b5a410ac8626f248f436a00dfd1f2dae42ba3e539358de13",
+      "code": null,
+      "freshness": null,
+      "partial": null,
+      "graphRevision": null
+    },
+    {
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F9796e290-ef68-4559-9344-879cee69287e",
+      "status": 200,
+      "sha256": "7c4672b8e1cad64cb11a84927865d1a6deccf622863cb84ebdc0580b4632ba54",
+      "code": null,
+      "freshness": "fresh",
+      "partial": false,
+      "graphRevision": {
+        "ownerEpoch": 1,
+        "graphGeneration": 13
+      }
+    }
+  ],
+  "ownedForwardStopped": true
+}

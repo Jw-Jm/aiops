@@ -1,0 +1,178 @@
+---
+# Source: ops-dependencies/templates/openbao.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-openbao-tokenreview
+  labels:
+    ops.platform.io/release: "pre-sp07-pki"
+    app.kubernetes.io/name: ops-openbao
+    ops.platform.io/component: openbao
+    ops.platform.io/mode: bundled
+automountServiceAccountToken: true
+---
+# Source: ops-dependencies/templates/openbao.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-openbao-config
+  labels:
+    ops.platform.io/release: "pre-sp07-pki"
+    app.kubernetes.io/name: ops-openbao
+    ops.platform.io/component: openbao
+    ops.platform.io/mode: bundled
+data:
+  config.hcl: |
+    disable_mlock = true
+    ui = false
+    api_addr = "https://ops-openbao.ops-pre-sp07-pki-20261004.svc:8200"
+    cluster_addr = "https://ops-openbao.ops-pre-sp07-pki-20261004.svc:8201"
+    storage "raft" {
+      path = "/openbao/data"
+    }
+    listener "tcp" {
+      address = "0.0.0.0:8200"
+      cluster_address = "0.0.0.0:8201"
+      tls_disable = false
+      tls_cert_file = "/openbao/tls/tls.crt"
+      tls_key_file = "/openbao/tls/tls.key"
+    }
+---
+# Source: ops-dependencies/templates/openbao.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ops-openbao-tokenreview-pre-sp07-pki
+  labels:
+    ops.platform.io/release: "pre-sp07-pki"
+    app.kubernetes.io/name: ops-openbao
+    ops.platform.io/component: openbao
+    ops.platform.io/mode: bundled
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: ops-openbao-tokenreview
+    namespace: ops-pre-sp07-pki-20261004
+---
+# Source: ops-dependencies/templates/openbao.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-openbao
+  labels:
+    ops.platform.io/release: "pre-sp07-pki"
+    app.kubernetes.io/name: ops-openbao
+    ops.platform.io/component: openbao
+    ops.platform.io/mode: bundled
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ops-openbao
+  ports:
+    - name: api
+      port: 8200
+      targetPort: api
+    - name: cluster
+      port: 8201
+      targetPort: cluster
+---
+# Source: ops-dependencies/templates/openbao.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ops-openbao
+  labels:
+    ops.platform.io/release: "pre-sp07-pki"
+    app.kubernetes.io/name: ops-openbao
+    ops.platform.io/component: openbao
+    ops.platform.io/mode: bundled
+spec:
+  serviceName: ops-openbao
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ops-openbao
+  template:
+    metadata:
+      labels:
+        ops.platform.io/release: "pre-sp07-pki"
+        app.kubernetes.io/name: ops-openbao
+        ops.platform.io/component: openbao
+        ops.platform.io/mode: bundled
+    spec:
+      serviceAccountName: ops-openbao-tokenreview
+      automountServiceAccountToken: true
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 100
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: openbao
+          image: "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6"
+          imagePullPolicy: Never
+          args: ["server", "-config=/etc/openbao/config.hcl"]
+          ports:
+            - name: api
+              containerPort: 8200
+            - name: cluster
+              containerPort: 8201
+          env:
+            - name: BAO_API_ADDR
+              value: https://ops-openbao.ops-pre-sp07-pki-20261004.svc:8200
+          readinessProbe:
+            httpGet:
+              path: /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
+              port: api
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: data
+              mountPath: /openbao/data
+            - name: config
+              mountPath: /etc/openbao
+              readOnly: true
+            - name: bootstrap-tls
+              mountPath: /openbao/tls
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: config
+          configMap:
+            name: ops-openbao-config
+        - name: bootstrap-tls
+          secret:
+            secretName: "ops-openbao-bootstrap-tls"
+            defaultMode: 0440
+        - name: tmp
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          ops.platform.io/release: "pre-sp07-pki"
+          ops.platform.io/component: openbao
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: "2Gi"

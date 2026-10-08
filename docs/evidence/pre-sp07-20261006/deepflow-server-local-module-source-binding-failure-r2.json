@@ -1,0 +1,22 @@
+{
+  "observedAt": "2026-10-06T01:04:50.894684+00:00",
+  "command": [
+    "python3",
+    "verify-deepflow-server-local-modules-r2.py"
+  ],
+  "exitCode": 1,
+  "failure": "native module declaration differs",
+  "mismatches": [
+    {
+      "binaryModule": "github.com/deepflowio/deepflow/server/querier/app/prometheus/router/packet_adapter",
+      "sourceGoMod": "deepflow-e567b167453ffa99f08f26def20379b4f831e073/server/querier/app/prometheus/router/packet_adapter/go.mod",
+      "sourceModuleDeclaration": "gitlab.yunshan.net/yunshan/deepflow-core/server/querier/app/prometheus/router/packet_adapter"
+    },
+    {
+      "binaryModule": "github.com/deepflowio/deepflow/server/querier/app/prometheus/service/packet_wrapper",
+      "sourceGoMod": "deepflow-e567b167453ffa99f08f26def20379b4f831e073/server/querier/app/prometheus/service/packet_wrapper/go.mod",
+      "sourceModuleDeclaration": "gitlab.yunshan.net/yunshan/deepflow-core/server/querier/app/prometheus/service/packet_wrapper"
+    }
+  ],
+  "distributionAdmission": "PENDING"
+}

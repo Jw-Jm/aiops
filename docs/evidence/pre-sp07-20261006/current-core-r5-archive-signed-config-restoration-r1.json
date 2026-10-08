@@ -1,0 +1,29 @@
+{
+  "observedAt": "2026-10-06T00:24:00.418054+00:00",
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "-n",
+    "ops-pre-sp07-core-r5-20261006",
+    "patch",
+    "statefulset",
+    "ops-seaweedfs",
+    "--type=json",
+    "--patch-file",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/archive-signed-config-restoration-r1.json",
+    "-o",
+    "json"
+  ],
+  "exitCode": 0,
+  "resourceUid": "e1b30d23-729c-480e-86c2-1cb619c7f904",
+  "removedAnnotation": {
+    "kubectl.kubernetes.io/restartedAt": "2026-10-06T08:21:17+08:00"
+  },
+  "restoredConfigurationDigest": "sha256:07ef6a357bca9c2ce802e2fc66531c35925001705d3b1c0fc08232fd247c6a7e",
+  "uidAndResourceVersionPreconditions": true,
+  "checkpointEdited": false,
+  "storageDeleted": false,
+  "iamCredentialsRestoredToBootstrapAdmin": false,
+  "purpose": "restore signed declarative StatefulSet configuration after intentional IAM rollout; private tenant IAM remains active"
+}

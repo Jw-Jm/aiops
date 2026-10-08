@@ -108,6 +108,31 @@ func (c *Client) CreateBucket(ctx context.Context) error {
 	}
 	return nil
 }
+
+// CreateFreshBucket is the installation initializer, separate from historical
+// fixture/recovery helpers. It never adopts an existing bucket or removes data
+// after a partial initialization. Object-level protection remains authoritative.
+func (c *Client) CreateFreshBucket(ctx context.Context) error {
+	if _, err := c.client.HeadBucket(ctx, &sdk.HeadBucketInput{Bucket: aws.String(c.bucket)}); !isNotFound(err) {
+		return errors.New("Archive bootstrap refuses existing or inaccessible bucket")
+	}
+	if _, err := c.client.CreateBucket(ctx, &sdk.CreateBucketInput{Bucket: aws.String(c.bucket), ObjectLockEnabledForBucket: aws.Bool(true)}); err != nil {
+		return errors.New("Archive fresh bucket creation failed; no existing bucket adopted")
+	}
+	if _, err := c.client.PutBucketVersioning(ctx, &sdk.PutBucketVersioningInput{Bucket: aws.String(c.bucket), VersioningConfiguration: &types.VersioningConfiguration{Status: types.BucketVersioningStatusEnabled}}); err != nil {
+		return errors.New("BOOTSTRAP_PARTIAL_BUCKET_RETAINED: Archive versioning initialization failed")
+	}
+	configuration := &types.ObjectLockConfiguration{ObjectLockEnabled: types.ObjectLockEnabledEnabled, Rule: &types.ObjectLockRule{DefaultRetention: &types.DefaultRetention{Mode: types.ObjectLockRetentionModeCompliance, Days: aws.Int32(365)}}}
+	if _, err := c.client.PutObjectLockConfiguration(ctx, &sdk.PutObjectLockConfigurationInput{Bucket: aws.String(c.bucket), ObjectLockConfiguration: configuration}); err != nil {
+		return errors.New("BOOTSTRAP_PARTIAL_BUCKET_RETAINED: Archive compliance default initialization failed")
+	}
+	lock, lockErr := c.client.GetObjectLockConfiguration(ctx, &sdk.GetObjectLockConfigurationInput{Bucket: aws.String(c.bucket)})
+	versioning, versionErr := c.client.GetBucketVersioning(ctx, &sdk.GetBucketVersioningInput{Bucket: aws.String(c.bucket)})
+	if lockErr != nil || versionErr != nil || versioning.Status != types.BucketVersioningStatusEnabled || lock.ObjectLockConfiguration == nil || lock.ObjectLockConfiguration.ObjectLockEnabled != types.ObjectLockEnabledEnabled || lock.ObjectLockConfiguration.Rule == nil || lock.ObjectLockConfiguration.Rule.DefaultRetention == nil || lock.ObjectLockConfiguration.Rule.DefaultRetention.Mode != types.ObjectLockRetentionModeCompliance || aws.ToInt32(lock.ObjectLockConfiguration.Rule.DefaultRetention.Days) != 365 || lock.ObjectLockConfiguration.Rule.DefaultRetention.Years != nil {
+		return errors.New("BOOTSTRAP_PARTIAL_BUCKET_RETAINED: Archive versioning/compliance readback differs")
+	}
+	return nil
+}
 func (c *Client) Put(ctx context.Context, key string, body []byte, metadata map[string]string) (archive.Version, error) {
 	retainUntil, parseErr := time.Parse(time.RFC3339Nano, metadata["retain-until"])
 	if parseErr != nil || !retainUntil.After(time.Now()) {

@@ -1,0 +1,75 @@
+{
+  "observedAt": "2026-10-06T12:30:13.957571+00:00",
+  "receipt": {
+    "authentication": "native Basic over independent TLS",
+    "createdSecrets": [
+      {
+        "name": "ops-victoria-metrics-security",
+        "uid": "39a2fd50-f253-4ce0-ba84-0a18db11f57f"
+      },
+      {
+        "name": "ops-victoria-logs-security",
+        "uid": "7920a1ec-49a6-4415-96dc-4968ef5e2b63"
+      },
+      {
+        "name": "ops-sp04-source-credentials",
+        "uid": "b7e93bc4-ebeb-4638-86cf-54650e98e499"
+      }
+    ],
+    "installationId": "001d52a2-eb62-4f6f-b934-022bbda0df2c",
+    "namespace": "ops-pre-sp07-core-r6-20261006",
+    "namespaceUid": "74e60b64-c489-4713-99c5-fcf92e666111",
+    "sourceScopeActivation": "pending formal Registry and bounded positive/negative proof"
+  },
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+        "bootstrap",
+        "victoria-trust",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/profile-resolved-r1.yaml",
+        "--business-values",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/business-values-r1.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/victoria-invalid-scope-r4.json"
+      ],
+      "exitCode": 1,
+      "expected": 1
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+        "bootstrap",
+        "victoria-trust",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/profile-resolved-r1.yaml",
+        "--business-values",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/business-values-r1.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/victoria-private-r4.json"
+      ],
+      "exitCode": 0,
+      "expected": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+        "bootstrap",
+        "victoria-trust",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/profile-resolved-r1.yaml",
+        "--business-values",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/business-values-r1.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/victoria-private-r4.json"
+      ],
+      "exitCode": 1,
+      "expected": 1
+    }
+  ],
+  "wrongSANRejectedBeforeMutation": true,
+  "existingSecretRejected": true,
+  "sourceScopeAcceptance": false,
+  "fullCoreAcceptance": false
+}

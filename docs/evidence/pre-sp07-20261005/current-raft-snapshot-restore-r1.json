@@ -1,0 +1,91 @@
+{
+  "observedAt": "2026-10-05T02:43:32.813138+00:00",
+  "scope": "actual isolated Raft snapshot restore of current r15 persistent regression Bao and v1 Transit decryption; excludes original 27 historical Evidence and full DB/object/Audit closure",
+  "snapshotSHA256": "sha256:6a618c3d82d7a8d19e23f775245d4a7d27b76403f1df6df98c04cf72978c9ef2",
+  "snapshotBytes": 55321,
+  "sourceContainerID": "e1e55bc76b6735165aae7f22b7bf29320b737e1dd178061fe55a2d3b01193ab5",
+  "destinationContainerID": "fb619fa88f576fc221a6740ddf5f6046429c2774b70a09ad86911c8f13a97170",
+  "destinationVolume": "ops-pre-sp07-20261005-raft-restore-r1-data",
+  "destinationOwner": "pre-sp07-20261005-raft-restore-r1",
+  "restoredOriginalIdentity": true,
+  "transitV1DecryptionByteEqual": true,
+  "snapshotLatestVersion": 7,
+  "restoredLatestVersion": 7,
+  "privateMaterialDirectory": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-raft-restore-r1",
+  "targetStoppedAndRetained": true,
+  "originalModifiedByRestore": false,
+  "fullR4RecoveryAcceptance": false,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "volume",
+        "create",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261005-raft-restore-r1",
+        "--label",
+        "ops.platform.purpose=isolated-raft-restore",
+        "ops-pre-sp07-20261005-raft-restore-r1-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--network=none",
+        "--user=0",
+        "--entrypoint=/bin/sh",
+        "--mount",
+        "type=volume,source=ops-pre-sp07-20261005-raft-restore-r1-data,target=/bao-data",
+        "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+        "-ec",
+        "chown 100:1000 /bao-data && chmod 0700 /bao-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "-d",
+        "--pull=never",
+        "--name",
+        "ops-pre-sp07-20261005-raft-restore-r1",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261005-raft-restore-r1",
+        "--label",
+        "ops.platform.purpose=isolated-raft-restore",
+        "-p",
+        "127.0.0.1::8200",
+        "-v",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-raft-restore-r1:/cfg:ro",
+        "-v",
+        "ops-pre-sp07-20261005-raft-restore-r1-data:/bao-data",
+        "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+        "server",
+        "-config=/cfg/bao.hcl"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "port",
+        "fb619fa88f576fc221a6740ddf5f6046429c2774b70a09ad86911c8f13a97170",
+        "8200/tcp"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "stop",
+        "fb619fa88f576fc221a6740ddf5f6046429c2774b70a09ad86911c8f13a97170"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

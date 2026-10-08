@@ -1,0 +1,295 @@
+[
+  {
+    "command": [
+      "docker",
+      "volume",
+      "create",
+      "--label",
+      "ops.platform.owner=pre-sp07-20261004",
+      "--label",
+      "ops.platform.purpose=history-restore",
+      "ops-pre-sp07-history-restore-data-v2-20261004"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "run",
+      "-d",
+      "--pull=never",
+      "--name",
+      "ops-pre-sp07-history-restore-v2-20261004",
+      "--label",
+      "ops.platform.owner=pre-sp07-20261004",
+      "--label",
+      "ops.platform.purpose=history-restore",
+      "--env-file",
+      "<private-restore-operation>",
+      "-v",
+      "ops-pre-sp07-history-restore-data-v2-20261004:/var/lib/postgresql/data",
+      "-v",
+      "<private-restore-operation>",
+      "-p",
+      "127.0.0.1::5432",
+      "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres",
+      "--set",
+      "ON_ERROR_STOP=1",
+      "-f",
+      "/restore/postgres-globals-initial-owner.sql"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+      "createdb",
+      "-U",
+      "postgres",
+      "-O",
+      "postgres",
+      "restored_history"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+      "pg_restore",
+      "-U",
+      "postgres",
+      "-d",
+      "restored_history",
+      "--exit-on-error",
+      "/restore/postgres-recovered.dump"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "37bee7043e6d",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM platform.evidence_metadata t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "restored_history",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM platform.evidence_metadata t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "37bee7043e6d",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM platform.evidence_archive_intents t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "restored_history",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM platform.evidence_archive_intents t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "37bee7043e6d",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM platform.evidence_dependencies t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "restored_history",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM platform.evidence_dependencies t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "37bee7043e6d",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM platform.evidence_retention_references t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "restored_history",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM platform.evidence_retention_references t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "37bee7043e6d",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM audit.records t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "restored_history",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM audit.records t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "37bee7043e6d",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM audit.tenant_heads t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "restored_history",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM audit.tenant_heads t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "37bee7043e6d",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "sp03_mig_1b3f5a35e2e344d29e02d8d182655d18",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM audit.signed_segments t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "restored_history",
+      "-Atc",
+      "SELECT row_to_json(t)::text FROM audit.signed_segments t ORDER BY row_to_json(t)::text"
+    ],
+    "exitCode": 0
+  }
+]

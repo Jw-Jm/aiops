@@ -1,0 +1,76 @@
+[
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "get",
+      "namespace",
+      "ops-pre-sp07-core-r6-20261006",
+      "--ignore-not-found",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+      "bootstrap",
+      "environment",
+      "--config",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/environment.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/dependency-secrets-missing.json"
+    ],
+    "exitCode": 1
+  },
+  {
+    "command": [
+      "kubectl",
+      "get",
+      "namespace",
+      "ops-pre-sp07-core-r6-20261006",
+      "--ignore-not-found",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+      "bootstrap",
+      "environment",
+      "--config",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/environment.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/dependency-secrets.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+      "bootstrap",
+      "environment",
+      "--config",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/environment.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/dependency-secrets.json"
+    ],
+    "exitCode": 1
+  },
+  {
+    "command": [
+      "kubectl",
+      "get",
+      "secrets",
+      "-n",
+      "ops-pre-sp07-core-r6-20261006",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  }
+]

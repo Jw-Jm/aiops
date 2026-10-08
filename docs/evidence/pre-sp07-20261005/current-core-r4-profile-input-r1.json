@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "kind": "detected",
+  "profileId": "pre-sp07-current-core-r4-20261005",
+  "environment": "development",
+  "architecture": "arm64",
+  "context": "orbstack",
+  "selectedProfile": "core",
+  "kubernetes": {
+    "distribution": "orbstack",
+    "version": "v1.35.6+orb1",
+    "context": "orbstack"
+  },
+  "runtime": {
+    "publicEgress": "deny",
+    "cpuBudget": 8,
+    "memoryMiB": 18432,
+    "imageImporter": "unverified"
+  },
+  "components": {
+    "postgresql": {
+      "mode": "bundled",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "endpoint": "postgresql://ops-postgresql.ops-pre-sp07-core-r4-20261005.svc.cluster.local:5432"
+    },
+    "keycloak": {
+      "mode": "bundled",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "endpoint": "https://ops-keycloak.ops-pre-sp07-core-r4-20261005.svc.cluster.local:8443"
+    },
+    "seaweedfs": {
+      "mode": "bundled",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "endpoint": "https://ops-seaweedfs-s3.ops-pre-sp07-core-r4-20261005.svc.cluster.local:8333"
+    },
+    "openbao": {
+      "mode": "bundled",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "endpoint": "https://ops-openbao.ops-pre-sp07-core-r4-20261005.svc.cluster.local:8200"
+    },
+    "victoriaMetrics": {
+      "mode": "bundled",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "endpoint": "https://ops-victoria-metrics.ops-pre-sp07-core-r4-20261005.svc.cluster.local:8428"
+    },
+    "victoriaLogs": {
+      "mode": "bundled",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "endpoint": "https://ops-victoria-logs.ops-pre-sp07-core-r4-20261005.svc.cluster.local:9428"
+    },
+    "vmalert": {
+      "mode": "bundled",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "endpoint": "http://ops-vmalert.ops-pre-sp07-core-r4-20261005.svc.cluster.local:8880"
+    },
+    "deepflow": {
+      "mode": "disabled",
+      "compatibility": "unverified"
+    },
+    "kubevirt": {
+      "mode": "disabled",
+      "compatibility": "unverified"
+    },
+    "cdi": {
+      "mode": "disabled",
+      "compatibility": "unverified"
+    }
+  },
+  "model": {
+    "api": "openai-compatible",
+    "endpoint": "http://host.docker.internal:11434/v1",
+    "providerForDevelopment": "ollama-0.34.2",
+    "model": "llama3.1:8b-16k",
+    "bundleWeights": false
+  },
+  "profiles": {
+    "core": [
+      "postgresql",
+      "keycloak",
+      "seaweedfs",
+      "openbao",
+      "victoriaMetrics",
+      "victoriaLogs",
+      "vmalert",
+      "platform"
+    ],
+    "deepflow": [
+      "core",
+      "deepflow"
+    ],
+    "virtualization": [
+      "core",
+      "kubevirt",
+      "cdi"
+    ],
+    "full": [
+      "core",
+      "deepflow",
+      "kubevirt",
+      "cdi"
+    ]
+  },
+  "discovery": {
+    "observedAt": "2026-10-05T13:22:38.781440+00:00",
+    "context": "orbstack",
+    "clusterUid": "607d16b7-8684-491b-bca8-be31264b371e",
+    "serverVersion": "v1.35.6+orb1"
+  }
+}

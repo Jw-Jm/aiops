@@ -1,10 +1,60 @@
 package contract
 
 import (
+	"bytes"
+	"io"
 	"os/exec"
 	"strings"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
+
+func TestArchiveReadinessWaitsForS3Listener(t *testing.T) {
+	output, err := exec.CommandContext(t.Context(), "helm", "template", "review", "../../deploy/charts/ops-dependencies").CombinedOutput()
+	if err != nil {
+		t.Fatalf("render: %v", err)
+	}
+	decoder := yaml.NewDecoder(bytes.NewReader(output))
+	for {
+		var resource struct {
+			Kind     string `yaml:"kind"`
+			Metadata struct {
+				Name string `yaml:"name"`
+			} `yaml:"metadata"`
+			Spec struct {
+				Template struct {
+					Spec struct {
+						Containers []struct {
+							ReadinessProbe struct {
+								TCPSocket struct {
+									Port string `yaml:"port"`
+								} `yaml:"tcpSocket"`
+								HTTPGet map[string]any `yaml:"httpGet"`
+							} `yaml:"readinessProbe"`
+						} `yaml:"containers"`
+					} `yaml:"spec"`
+				} `yaml:"template"`
+			} `yaml:"spec"`
+		}
+		if err := decoder.Decode(&resource); err == io.EOF {
+			t.Fatal("bundled Archive workload missing")
+		} else if err != nil {
+			t.Fatal(err)
+		}
+		if resource.Kind != "StatefulSet" || resource.Metadata.Name != "ops-seaweedfs" {
+			continue
+		}
+		if len(resource.Spec.Template.Spec.Containers) != 1 {
+			t.Fatal("unexpected Archive process layout")
+		}
+		probe := resource.Spec.Template.Spec.Containers[0].ReadinessProbe
+		if probe.TCPSocket.Port != "s3" || len(probe.HTTPGet) != 0 {
+			t.Fatal("Archive may become Ready before its S3 listener starts")
+		}
+		return
+	}
+}
 
 func TestBundledArchiveTLSHasNoPlaintextListener(t *testing.T) {
 	output, err := exec.CommandContext(t.Context(), "helm", "template", "review", "../../deploy/charts/ops-dependencies").CombinedOutput()

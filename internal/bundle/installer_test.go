@@ -38,7 +38,7 @@ func TestRenderRejectsOnlineImagesAndHooksBeforeKubernetes(t *testing.T) {
 	} {
 		calls := 0
 		run := func(context.Context, string, ...string) ([]byte, error) { calls++; return nil, nil }
-		if err := validateRenderedChart(context.Background(), []byte(resource), map[string]bool{}, importProfile(), "ops-dependencies", run); err == nil {
+		if err := validateRenderedChart(context.Background(), "ops-system", []byte(resource), map[string]bool{}, importProfile(), "ops-dependencies", run); err == nil {
 			t.Fatal("unsafe rendered resource accepted")
 		}
 		if calls != 0 {
@@ -47,10 +47,28 @@ func TestRenderRejectsOnlineImagesAndHooksBeforeKubernetes(t *testing.T) {
 	}
 }
 
+func TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss(t *testing.T) {
+	image := "example.invalid/api@sha256:" + strings.Repeat("a", 64)
+	allowed := map[string]bool{image: true}
+	for _, policy := range []string{"", "Always", "IfNotPresent", "Never"} {
+		t.Run(policy, func(t *testing.T) {
+			resource := map[string]any{"spec": map[string]any{"containers": []any{map[string]any{"image": image, "imagePullPolicy": policy}}}}
+			err := checkRenderedImages(resource, allowed)
+			if policy == "Never" {
+				if err != nil {
+					t.Fatalf("verified local image rejected: %v", err)
+				}
+			} else if err == nil {
+				t.Fatalf("cache loss may contact a registry with policy %q", policy)
+			}
+		})
+	}
+}
+
 func TestInstallRefusesExistingResources(t *testing.T) {
 	resource := []byte("kind: Service\nmetadata: {name: ops-api, labels: {ops.platform.io/release: ops-dependencies}}\n")
 	run := func(context.Context, string, ...string) ([]byte, error) { return []byte("{\"kind\":\"Service\"}"), nil }
-	if err := validateRenderedChart(context.Background(), resource, map[string]bool{}, importProfile(), "ops-dependencies", run); err == nil || !strings.Contains(err.Error(), "CONFLICT") {
+	if err := validateRenderedChart(context.Background(), "ops-system", resource, map[string]bool{}, importProfile(), "ops-dependencies", run); err == nil || !strings.Contains(err.Error(), "CONFLICT") {
 		t.Fatalf("adoption error=%v", err)
 	}
 }
@@ -75,13 +93,13 @@ type: ops.platform.io/external-credential-reference
 		}
 		return nil, nil
 	}
-	if err := validateRenderedChart(context.Background(), resource, nil, importProfile(), "ops-dependencies", run); err != nil {
+	if err := validateRenderedChart(context.Background(), "ops-system", resource, nil, importProfile(), "ops-dependencies", run); err != nil {
 		t.Fatal(err)
 	}
 	if calls != 3 {
 		t.Fatalf("expected two key checks and an ownership check; got %d", calls)
 	}
-	if err := validateRenderedChart(context.Background(), append(resource, []byte("data: {token: c2VjcmV0}\n")...), nil, importProfile(), "ops-dependencies", run); err == nil {
+	if err := validateRenderedChart(context.Background(), "ops-system", append(resource, []byte("data: {token: c2VjcmV0}\n")...), nil, importProfile(), "ops-dependencies", run); err == nil {
 		t.Fatal("embedded credential accepted")
 	}
 }
@@ -89,7 +107,7 @@ type: ops.platform.io/external-credential-reference
 func TestRenderRefusesUnexpectedNamespaceBeforeResourceAccess(t *testing.T) {
 	called := false
 	run := func(context.Context, string, ...string) ([]byte, error) { called = true; return nil, nil }
-	err := validateRenderedChart(context.Background(), []byte("kind: ConfigMap\nmetadata: {name: wrong, namespace: user-data, labels: {ops.platform.io/release: ops-dependencies}}\n"), nil, importProfile(), "ops-dependencies", run)
+	err := validateRenderedChart(context.Background(), "ops-system", []byte("kind: ConfigMap\nmetadata: {name: wrong, namespace: user-data, labels: {ops.platform.io/release: ops-dependencies}}\n"), nil, importProfile(), "ops-dependencies", run)
 	if err == nil || called {
 		t.Fatalf("namespace error=%v called=%v", err, called)
 	}
@@ -98,7 +116,7 @@ func TestRenderRefusesUnexpectedNamespaceBeforeResourceAccess(t *testing.T) {
 func TestRenderRejectsUnlabeledResourcesBeforeClusterAccess(t *testing.T) {
 	called := false
 	run := func(context.Context, string, ...string) ([]byte, error) { called = true; return nil, nil }
-	err := validateRenderedChart(context.Background(), []byte("kind: ConfigMap\nmetadata: {name: unowned}\n"), nil, importProfile(), "ops-platform", run)
+	err := validateRenderedChart(context.Background(), "ops-system", []byte("kind: ConfigMap\nmetadata: {name: unowned}\n"), nil, importProfile(), "ops-platform", run)
 	if err == nil || called || !strings.Contains(err.Error(), "release label") {
 		t.Fatalf("ownership error=%v called=%v", err, called)
 	}
@@ -180,7 +198,7 @@ func TestRequireAbsentReleaseRejectsExistingHelmRelease(t *testing.T) {
 	run := func(context.Context, string, ...string) ([]byte, error) {
 		return []byte(`[{"name":"ops-platform"}]`), nil
 	}
-	if err := requireAbsentRelease(context.Background(), importProfile(), "ops-platform", run); err == nil || !strings.Contains(err.Error(), "CONFLICT") {
+	if err := requireAbsentRelease(context.Background(), "ops-system", importProfile(), "ops-platform", run); err == nil || !strings.Contains(err.Error(), "CONFLICT") {
 		t.Fatalf("existing release error=%v", err)
 	}
 }

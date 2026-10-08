@@ -1,0 +1,30 @@
+{
+  "observedAt": "2026-10-08T00:41:46.358350+00:00",
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "-n",
+    "ops-pre-sp07-core-r8-20261007",
+    "logs",
+    "deployment/ops-investigator",
+    "--tail=100",
+    "--limit-bytes=65536"
+  ],
+  "exitCode": 0,
+  "privateLogSHA256": "74914291eb4d879c60a6f442ad02e5b0d7d31c774c0a75c5b234527ac88fab45",
+  "safeClasses": [
+    "ERROR:root:LLM call failed on model=openai/llama3.1:8b-16k (streaming iteration 1): ModelCallError: MODEL_TIMEOUT",
+    "Traceback (most recent call last):",
+    "    raise ModelCallError(kind) from None",
+    "investigator.budget.ModelCallError: MODEL_TIMEOUT",
+    "investigator-model-failure MODEL_TIMEOUT ",
+    "investigator-failure ModelCallError /app/src/investigator/worker.py 76",
+    "investigator-failure ModelCallError /app/src/investigator/holmes_adapter.py 79",
+    "investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154",
+    "investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657",
+    "investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216",
+    "investigator-failure ModelCallError /app/src/investigator/budget.py 69"
+  ],
+  "fullModelMCPPass": false
+}

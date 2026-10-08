@@ -1,0 +1,99 @@
+{
+  "observedAt": "2026-10-08T00:37:31.775441+00:00",
+  "namespace": "ops-pre-sp07-core-r8-20261007",
+  "evidenceId": "656ad43c-f936-5a12-9f04-6864a0fea6d9",
+  "holdReleaseRequested": false,
+  "historicalRestoreAcceptance": false,
+  "fullRecoveryAcceptance": false,
+  "directBusinessTableWrites": false,
+  "namespaceUID": "589123b6-e4fc-4983-8da0-2292a0a27de8",
+  "nativeBefore": {
+    "versionId": "6723d7b21a18d6556799719d5d06e780",
+    "hold": "OFF",
+    "mode": "COMPLIANCE",
+    "retainUntil": "2027-10-08T05:31:07+00:00",
+    "size": 1388,
+    "etag": "\"54c75e2fbd6235b2000b9c2470db178b\""
+  },
+  "freshRealLoA2SessionPersistedByFormalAPI": true,
+  "formalIdempotencyReplayEqual": true,
+  "formalHoldListPresent": true,
+  "nativeAfter": {
+    "versionId": "6723d7b21a18d6556799719d5d06e780",
+    "hold": "ON",
+    "mode": "COMPLIANCE",
+    "retainUntil": "2027-10-08T05:31:07+00:00",
+    "size": 1388,
+    "etag": "\"54c75e2fbd6235b2000b9c2470db178b\""
+  },
+  "actualProtectedVersionReadback": true,
+  "currentFormalHoldAndNativeVersionProtectionPass": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r8-20261007",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-api",
+        "53820:8080"
+      ]
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r8-20261007",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-seaweedfs-s3",
+        "53829:8333"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-sessions",
+      "status": 201,
+      "responseSHA256": "a485aa6f9458f95d438d1f219540e127f38ead750d5a279ec2743eac394b7804"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/656ad43c-f936-5a12-9f04-6864a0fea6d9",
+      "status": 200,
+      "responseSHA256": "66cd4a117cb07c176f7a45a96255e5e05ef884bb84aa27d769892cd65786c18d"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/legal-holds",
+      "status": 201,
+      "responseSHA256": "cbb51b90395849749ebceca8d6bf17930fba8e450c482d4b7f841b5901631b37"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/legal-holds",
+      "status": 201,
+      "responseSHA256": "cbb51b90395849749ebceca8d6bf17930fba8e450c482d4b7f841b5901631b37"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/legal-holds?limit=200",
+      "status": 200,
+      "responseSHA256": "f07b0632482b1809a32e0f348c017b54e846040d650bdcf96e9e3579495d7b4d"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/656ad43c-f936-5a12-9f04-6864a0fea6d9",
+      "status": 200,
+      "responseSHA256": "0378988421928fb080f86c38795f9c3fb7e8f313b53c385bc39d017af8d9447c"
+    }
+  ],
+  "ownedPortForwardsStopped": true
+}

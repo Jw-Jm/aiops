@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "docker",
+      "exec",
+      "7c44b74c662b687c0b5422044520ecdd71b93356a39705716dc611ebf87a85d9",
+      "psql",
+      "-U",
+      "pre_sp07_restore_admin",
+      "-d",
+      "postgres",
+      "-Atc",
+      "SELECT rolname FROM pg_roles"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "7c44b74c662b687c0b5422044520ecdd71b93356a39705716dc611ebf87a85d9",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres",
+      "--set",
+      "ON_ERROR_STOP=1",
+      "-f",
+      "/restore/postgres-globals-resume.sql"
+    ],
+    "exitCode": 3
+  }
+]

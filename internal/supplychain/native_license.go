@@ -22,6 +22,12 @@ var nativeLicenseRegistry []byte
 //go:embed licenses/sp06-investigator-reviewed.json
 var investigatorLicenseRegistry []byte
 
+// These four publisher notice scopes belong only to the measured Metrics
+// distribution. A Catalog entry cannot create additional permission scopes.
+//
+//go:embed licenses/pre-sp07-metrics-reviewed.json
+var metricsLicenseRegistry []byte
+
 type nativeLicenseScope struct {
 	ID                              string `json:"id"`
 	Component                       string `json:"component"`
@@ -46,7 +52,7 @@ func loadNativeLicenseScopes() map[string]nativeLicenseScope {
 		Licenses      []nativeLicenseScope `json:"licenses"`
 	}
 	result := make(map[string]nativeLicenseScope)
-	for _, inventory := range [][]byte{nativeLicenseRegistry, investigatorLicenseRegistry} {
+	for _, inventory := range [][]byte{nativeLicenseRegistry, investigatorLicenseRegistry, metricsLicenseRegistry} {
 		if err := json.Unmarshal(inventory, &document); err != nil || document.SchemaVersion != 1 {
 			return nil // A malformed compiled registry rejects every native reference.
 		}

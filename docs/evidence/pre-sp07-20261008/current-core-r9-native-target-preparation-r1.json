@@ -1,0 +1,142 @@
+{
+  "observedAt": "2026-10-08T02:47:17.091638+00:00",
+  "clusterUID": "607d16b7-8684-491b-bca8-be31264b371e",
+  "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+  "resources": [
+    {
+      "kind": "Namespace",
+      "name": "ops-pre-sp07-targets-r9-20261008",
+      "namespace": null,
+      "uid": "f46dabc1-1ae5-4201-8730-d5e9be19f01e"
+    },
+    {
+      "kind": "NetworkPolicy",
+      "name": "owned-targets-default-deny",
+      "namespace": "ops-pre-sp07-targets-r9-20261008",
+      "uid": "28fd926f-8d1e-4b01-bcb7-4d07540f24af"
+    },
+    {
+      "kind": "Pod",
+      "name": "pre-sp07-current-r9-ready",
+      "namespace": "ops-pre-sp07-targets-r9-20261008",
+      "uid": "e3ff5534-7981-49ac-beab-81f63e38e63a"
+    }
+  ],
+  "actualPhaseObservedAt": "2026-10-08T02:47:16.075138+00:00",
+  "targetCreationTimestamp": "2026-10-08T02:47:11Z",
+  "targetNode": "orbstack",
+  "modelHost": "host.docker.internal",
+  "actualModelAddresses": [
+    "0.250.250.254"
+  ],
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "kube-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "wait",
+        "--for=condition=Ready",
+        "pod/pre-sp07-current-r9-ready",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--timeout=40s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-current-r9-ready",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261008-r9",
+        "--label",
+        "ops.platform.purpose=model-dns-preparation",
+        "--entrypoint",
+        "/bin/bash",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-ec",
+        "getent ahostsv4 host.docker.internal"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "finiteOwnWorkload": true,
+  "performanceBenchmark": false,
+  "executionCommandChain": false,
+  "fullColdAcceptance": false
+}

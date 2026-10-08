@@ -1,0 +1,46 @@
+{
+  "observedAt": "2026-10-07T03:55:34.779293+00:00",
+  "commands": [
+    {
+      "command": [
+        "go",
+        "test",
+        "./test/contract",
+        "-run",
+        "^TestOperatorRoleStatusContractPreservesScopeAndRequiresRevision$",
+        "-count=1",
+        "-v"
+      ],
+      "exitCode": 0,
+      "evidence": "operator-role-contract-green-r69.log"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./test/integration",
+        "-run",
+        "^TestTenantProvisioningAndRoleBindingRevisions$",
+        "-count=1",
+        "-v"
+      ],
+      "exitCode": 0,
+      "evidence": "operator-role-database-regression-r69.log"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./internal/httpapi",
+        "./internal/tenant",
+        "-count=1",
+        "-v"
+      ],
+      "exitCode": 0,
+      "evidence": "operator-role-http-unit-regression-r69.log"
+    }
+  ],
+  "currentSignedRuntimeStillR9WithoutNewEndpoint": true,
+  "actualNewEndpointAcceptance": false,
+  "fullR0ThroughR6Complete": false
+}

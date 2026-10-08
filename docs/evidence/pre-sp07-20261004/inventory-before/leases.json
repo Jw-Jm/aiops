@@ -1,0 +1,93 @@
+{
+  "items": [
+    {
+      "apiVersion": "coordination.k8s.io/v1",
+      "kind": "Lease",
+      "metadata": {
+        "name": "orbstack",
+        "namespace": "kube-node-lease",
+        "uid": "1ef1f34f-c6ad-4337-a190-571484ab59f8",
+        "resourceVersion": "358262",
+        "creationTimestamp": "2026-09-24T14:09:30Z",
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "name": "orbstack",
+            "uid": "cc6ee959-3391-432f-b413-a5e7f2e64756"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "holderIdentity": "orbstack",
+        "leaseDurationSeconds": 40,
+        "renewTime": "2026-10-04T11:29:40.285520Z"
+      }
+    },
+    {
+      "apiVersion": "coordination.k8s.io/v1",
+      "kind": "Lease",
+      "metadata": {
+        "name": "apiserver-bw3b3ypxtf2h2ywzvntdxmbcse",
+        "namespace": "kube-system",
+        "uid": "da419acb-df66-4ebc-9205-b01030038969",
+        "resourceVersion": "358265",
+        "creationTimestamp": "2026-10-04T10:08:09Z",
+        "labels": {
+          "apiserver.kubernetes.io/identity": "kube-apiserver",
+          "kubernetes.io/hostname": "orbstack"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "holderIdentity": "apiserver-bw3b3ypxtf2h2ywzvntdxmbcse_5642dec2-a079-4462-82bb-06fc9e3d52a7",
+        "leaseDurationSeconds": 3600,
+        "renewTime": "2026-10-04T11:29:43.190785Z"
+      }
+    },
+    {
+      "apiVersion": "coordination.k8s.io/v1",
+      "kind": "Lease",
+      "metadata": {
+        "name": "57410f0d.victoriametrics.com",
+        "namespace": "monitoring",
+        "uid": "e976c1db-ef88-464a-b68a-619258c0223c",
+        "resourceVersion": "358268",
+        "creationTimestamp": "2026-09-25T05:16:53Z",
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "acquireTime": "2026-10-04T10:08:35.137263Z",
+        "holderIdentity": "vm-victoria-metrics-operator-6bb5dfbf4c-lxjb2_a4f9ee9f-fc47-4956-808b-d8ab1c888e7b",
+        "leaseDurationSeconds": 15,
+        "leaseTransitions": 25,
+        "renewTime": "2026-10-04T11:29:47.486447Z"
+      }
+    },
+    {
+      "apiVersion": "coordination.k8s.io/v1",
+      "kind": "Lease",
+      "metadata": {
+        "name": "sp04-graph",
+        "namespace": "sp04-chain-0587768a",
+        "uid": "fe228ef9-2a7e-4953-8052-4d7be4048f27",
+        "resourceVersion": "239225",
+        "creationTimestamp": "2026-10-02T01:18:24Z",
+        "labels": {
+          "ops.platform.test": "sp04-chain-0587768a"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {}
+    }
+  ]
+}

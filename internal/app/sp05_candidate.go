@@ -21,6 +21,9 @@ func SubmitSP05Candidate(ctx context.Context, archive *evidence.ArchiveService, 
 	if c.ObservedAt.IsZero() || c.NativeIdentity == "" || c.IndependenceGroup == "" || len(c.Data) == 0 {
 		return finding.ErrInvalid
 	}
+	if err := attachPodMetricContext(ctx, archive, binding, &c); err != nil {
+		return err
+	}
 	service := finding.Service{Pool: archive.Pool}
 	key := finding.Hash([]string{c.ResourceCanonicalID, c.RuleID})
 	occurrence, start, err := service.PollIdentity(ctx, bound, key, c.State, c.Namespace, c.ObservedAt)

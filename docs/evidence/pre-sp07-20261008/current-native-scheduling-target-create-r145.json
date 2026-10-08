@@ -1,0 +1,80 @@
+{
+  "observedAt": "2026-10-08T00:39:29.257954+00:00",
+  "namespace": "ops-pre-sp07-targets-r8-20261007",
+  "namespaceUID": "a956c347-c7b5-43b1-b621-b0ac50923489",
+  "podName": "pre-sp07-scheduling-r145",
+  "podUID": "bb4fdbf7-7ca9-4885-8093-7554dd17d793",
+  "manifest": {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "pre-sp07-scheduling-r145",
+      "namespace": "ops-pre-sp07-targets-r8-20261007",
+      "labels": {
+        "ops.platform.io/owner": "pre-sp07-20261007-r8",
+        "ops.platform.io/purpose": "pre-sp07-finite-scheduling-r145",
+        "tenant": "d0738868-8646-4715-9d99-b85d4bcb0b5e"
+      }
+    },
+    "spec": {
+      "activeDeadlineSeconds": 360,
+      "restartPolicy": "Never",
+      "automountServiceAccountToken": false,
+      "nodeSelector": {
+        "ops.platform.test.pre-sp07-r145": "absent"
+      },
+      "securityContext": {
+        "runAsNonRoot": true,
+        "runAsUser": 1000,
+        "seccompProfile": {
+          "type": "RuntimeDefault"
+        }
+      },
+      "containers": [
+        {
+          "name": "finite-native-target",
+          "image": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+          "imagePullPolicy": "Never",
+          "command": [
+            "/bin/sleep",
+            "300"
+          ],
+          "resources": {
+            "requests": {
+              "cpu": "10m",
+              "memory": "16Mi"
+            },
+            "limits": {
+              "cpu": "100m",
+              "memory": "32Mi"
+            }
+          },
+          "securityContext": {
+            "allowPrivilegeEscalation": false,
+            "readOnlyRootFilesystem": true,
+            "capabilities": {
+              "drop": [
+                "ALL"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "create",
+    "-f",
+    "-",
+    "-o",
+    "json"
+  ],
+  "exitCode": 0,
+  "nativeCreatedResourceOnly": true,
+  "mainlineRuntimeAndSourcesNotModified": true,
+  "SP07ExecutionImplemented": false,
+  "sourceAdapterFindingIncidentChainPass": false
+}

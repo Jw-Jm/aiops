@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/build-metrics-addon-bundle-r2.py", line 3, in <module>
+    expected=json.loads((e/'migration-signed-bundle-receipt-r2.json').read_text());key=cache/'bundle-trust.pem';actual=hashlib.sha256(key.read_bytes()).hexdigest();assert actual=='47f3b2279069c4b72c9b1ccb3db05de1e5805677d6922e7b2cc4d2a6f18569a7'
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mssc/Documents/Code/ops/platform/docs/evidence/pre-sp07-20261005/migration-signed-bundle-receipt-r2.json'

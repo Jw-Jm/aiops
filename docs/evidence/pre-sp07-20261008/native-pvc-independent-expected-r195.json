@@ -1,0 +1,16 @@
+{
+  "recordedBeforeMutationAt": "2026-10-08T01:47:16.886441+00:00",
+  "namespace": "ops-pre-sp07-targets-r8-20261007",
+  "namespaceUID": "a956c347-c7b5-43b1-b621-b0ac50923489",
+  "owner": "pre-sp07-20261007-r8",
+  "independentExpectations": {
+    "fault": "Owned PVC with explicitly nonexistent StorageClass stays Pending without volumeName/PV claim; native warning or provisioning state indicates unavailable storage class.",
+    "recovery": "Delete only that known never-bound PVC through normal UID/resourceVersion fenced deletion; controller handles PVC protection finalizer. Recreate same display name with discovered actual default class and read-only finite consumer. New PVC UID differs, Bound PV claimRef matches new UID, consumer Ready.",
+    "historicalIdentity": "Old PVC evidence remains old UID; no new cluster/Node registration or old-scope rebinding.",
+    "sourceUnavailable": "Unavailable source must not be counted as successful storage recovery; dedicated source outage case still pending."
+  },
+  "noDataWritesRequired": true,
+  "noFinalizerBypass": true,
+  "newBoundPVCDisposition": "retain as owned SP07 input, no data deletion authorized by a backup",
+  "executionBusinessImplemented": false
+}

@@ -1,0 +1,167 @@
+{
+  "observedAt": "2026-10-07T02:22:42.176119+00:00",
+  "fullR4RecoveryAcceptance": false,
+  "original27HistoricalRecovery": false,
+  "sourceNamespace": "ops-pre-sp07-core-r6-20261006",
+  "sourceObjectsDeleted": false,
+  "sourceProtectionChanged": false,
+  "newRuntimeEvidenceRestoration": true,
+  "evidenceId": "90ec6b28-4046-5e4b-85a9-ce3b94582200",
+  "versionId": "6723e3239845ad780600976b59601d4d",
+  "encryptionKeyVersion": "1",
+  "snapshotSHA256": "sha256:db048ea07e9d7f6a1018d429b7f43ec132db53b07e5c028d745dc2b1e60ee99f",
+  "snapshotBytes": 96798,
+  "plaintextDigest": "sha256:7d457a3181fda48e2876f740d3e74d4cc9f28a3a58bc5ccc74baf86beed51156",
+  "ciphertextDigest": "sha256:e2fd6dc0b99177f5f659eb8bf2397a2a4123bd0592b8561806bbfdcda7852eac",
+  "restoredOriginalIdentity": true,
+  "restoredTransitLatestVersion": 1,
+  "plaintextByteEqual": true,
+  "matchingSharesRequired": true,
+  "serverDoesNotMountRootRecoveryOrSourceCAKey": true,
+  "targetContainerId": "24e90e3f9de03c8e45f8005c0e25eda87be0f298914050cd56c11da78ffb2a58",
+  "targetVolume": "ops-pre-sp07-20261007-core-r6-raft-restore-r5-data",
+  "targetNetwork": "ops-pre-sp07-20261007-core-r6-raft-restore-r5",
+  "originalStorageDeleted": false,
+  "sourceObjectReadControlVerified": true,
+  "fullDatabaseObjectAuditRestore": false,
+  "isolatedTargetStoppedAndRetained": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-openbao",
+        "49367:8200"
+      ],
+      "pid": 22083
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-seaweedfs-s3",
+        "49380:8333"
+      ],
+      "pid": 22087
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "network",
+        "create",
+        "--internal",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-core-r6-raft-restore-r5",
+        "ops-pre-sp07-20261007-core-r6-raft-restore-r5"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "volume",
+        "create",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-core-r6-raft-restore-r5",
+        "--label",
+        "ops.platform.purpose=isolated-current-raft-restore",
+        "ops-pre-sp07-20261007-core-r6-raft-restore-r5-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--network=none",
+        "--pull=never",
+        "--user=0",
+        "--entrypoint=/bin/sh",
+        "--mount",
+        "type=volume,src=ops-pre-sp07-20261007-core-r6-raft-restore-r5-data,dst=/bao-data",
+        "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+        "-ec",
+        "chown 100:1000 /bao-data && chmod 0700 /bao-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "-d",
+        "--pull=never",
+        "--network=ops-pre-sp07-20261007-core-r6-raft-restore-r5",
+        "--name",
+        "ops-pre-sp07-20261007-core-r6-raft-restore-r5",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-core-r6-raft-restore-r5",
+        "--label",
+        "ops.platform.purpose=isolated-current-raft-restore",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--mount",
+        "type=bind,src=/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-raft-restore-r5/server,dst=/cfg,readonly",
+        "--mount",
+        "type=volume,src=ops-pre-sp07-20261007-core-r6-raft-restore-r5-data,dst=/bao-data",
+        "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+        "server",
+        "-config=/cfg/bao.hcl"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "24e90e3f9de03c8e45f8005c0e25eda87be0f298914050cd56c11da78ffb2a58"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "24e90e3f9de03c8e45f8005c0e25eda87be0f298914050cd56c11da78ffb2a58"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "stop",
+        "24e90e3f9de03c8e45f8005c0e25eda87be0f298914050cd56c11da78ffb2a58"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "ownedForwardsStopped": true
+}

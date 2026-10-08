@@ -1,0 +1,101 @@
+{
+  "observedAt": "2026-10-05T00:22:31.075433+00:00",
+  "containerId": "1f8f36db8fae80298ac00f5dbb934cdebf68755cc359df5d65c73a96a23633d7",
+  "imageId": "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+  "imageDigest": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+  "volume": "ops-pre-sp07-first-init-482f46035c-data",
+  "newEmptyVolume": true,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "template",
+        "ops-dependencies",
+        "deploy/charts/ops-dependencies",
+        "--namespace",
+        "ops-pre-sp07-first-init",
+        "--show-only",
+        "templates/postgresql.yaml"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "volume",
+        "create",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261004",
+        "--label",
+        "ops.platform.purpose=postgresql-first-init",
+        "ops-pre-sp07-first-init-482f46035c-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "-d",
+        "--name",
+        "ops-pre-sp07-first-init-482f46035c",
+        "--pull=never",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261004",
+        "--label",
+        "ops.platform.purpose=postgresql-first-init",
+        "--env-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/postgresql-first-init/postgresql.env",
+        "-p",
+        "127.0.0.1::5432",
+        "--mount",
+        "type=volume,source=ops-pre-sp07-first-init-482f46035c-data,target=/var/lib/postgresql/data",
+        "--mount",
+        "type=bind,source=/Users/mssc/.local/state/ops/pre-sp07-20261004/postgresql-first-init/01-keycloak.sql,target=/docker-entrypoint-initdb.d/01-keycloak.sql,readonly",
+        "--mount",
+        "type=bind,source=/Users/mssc/.local/state/ops/pre-sp07-20261004/postgresql-first-init/username,target=/etc/keycloak-database/username,readonly",
+        "--mount",
+        "type=bind,source=/Users/mssc/.local/state/ops/pre-sp07-20261004/postgresql-first-init/password,target=/etc/keycloak-database/password,readonly",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "1f8f36db8fae80298ac00f5dbb934cdebf68755cc359df5d65c73a96a23633d7"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-tags",
+        "pre_sp07_live",
+        "./internal/bootstrap",
+        "-run",
+        "^TestBundledDatabaseFirstInitEnforcesKeycloakBoundary$",
+        "-count=1",
+        "-v"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "exitCode": 0,
+  "privateSourceAndInputs": "/Users/mssc/.local/state/ops/pre-sp07-20261004/postgresql-first-init",
+  "source": "current fixed first-init SQL rendered from dependency Chart",
+  "fullFreshCoreAcceptance": false,
+  "signedBundleInstall": false,
+  "originalResourcesDeleted": false
+}

@@ -1,0 +1,239 @@
+{
+  "observedAt": "2026-10-05T15:57:31.266378+00:00",
+  "observations": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "get",
+        "lease",
+        "ops-graph-pre-sp07-current",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "data": {
+        "apiVersion": "coordination.k8s.io/v1",
+        "kind": "Lease",
+        "metadata": {
+          "annotations": {
+            "ops.platform.io/cluster-uid": "607d16b7-8684-491b-bca8-be31264b371e",
+            "ops.platform.io/tenant": "6e9d5fbe-6443-4620-b490-87dca8dc79ce",
+            "ops.platform/owner-epoch": "1"
+          },
+          "creationTimestamp": "2026-10-05T15:54:25Z",
+          "labels": {
+            "ops.platform.io/installation-id": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+            "ops.platform.io/managed-by": "opsctl-bootstrap"
+          },
+          "name": "ops-graph-pre-sp07-current",
+          "namespace": "ops-pre-sp07-core-r4-20261005",
+          "resourceVersion": "421668",
+          "uid": "2a352b83-7b20-48f8-ab00-9685ac5f9dc7"
+        },
+        "spec": {
+          "acquireTime": "2026-10-05T15:54:26.333026Z",
+          "holderIdentity": "a5986559-1570-4da4-9fe0-22a7a3a4c6fa",
+          "leaseDurationSeconds": 15,
+          "renewTime": "2026-10-05T15:57:30.345583Z"
+        }
+      }
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "logs",
+        "--selector=ops.platform.io/component=worker",
+        "--tail=15"
+      ],
+      "exitCode": 0,
+      "data": [
+        {
+          "time": "2026-10-05T15:54:23.504424225Z",
+          "msg": "Graph ownership not ready",
+          "qualification": {
+            "/v1/configmaps": "list_missing",
+            "/v1/events": "list_missing",
+            "/v1/persistentvolumeclaims": "list_missing",
+            "/v1/persistentvolumes": "list_missing",
+            "/v1/services": "list_missing",
+            "apps/v1/daemonsets": "list_missing",
+            "apps/v1/deployments": "list_missing",
+            "apps/v1/replicasets": "list_missing",
+            "apps/v1/statefulsets": "list_missing",
+            "batch/v1/jobs": "list_missing",
+            "discovery.k8s.io/v1/endpointslices": "list_missing",
+            "storage.k8s.io/v1/csidrivers": "list_missing",
+            "storage.k8s.io/v1/csinodes": "list_missing",
+            "storage.k8s.io/v1/storageclasses": "list_missing",
+            "storage.k8s.io/v1/volumeattachments": "list_missing"
+          }
+        },
+        {
+          "time": "2026-10-05T15:54:25.347600666Z",
+          "msg": "Graph Lease renewal unavailable",
+          "stage": "lease_read"
+        },
+        {
+          "time": "2026-10-05T15:54:51.346833765Z",
+          "msg": "SP05 fixed Analyzer unavailable",
+          "errorClass": "*errors.errorString"
+        },
+        {
+          "time": "2026-10-05T15:54:55.52727018Z",
+          "msg": "Graph ownership not ready",
+          "qualification": {
+            "/v1/persistentvolumeclaims": "watch_disconnected",
+            "/v1/persistentvolumes": "watch_disconnected",
+            "apps/v1/daemonsets": "watch_disconnected",
+            "apps/v1/deployments": "watch_disconnected",
+            "apps/v1/replicasets": "watch_disconnected",
+            "apps/v1/statefulsets": "watch_disconnected",
+            "batch/v1/jobs": "watch_disconnected",
+            "storage.k8s.io/v1/csidrivers": "watch_disconnected",
+            "storage.k8s.io/v1/csinodes": "watch_disconnected"
+          }
+        },
+        {
+          "time": "2026-10-05T15:55:21.444103662Z",
+          "msg": "SP05 fixed Analyzer unavailable",
+          "errorClass": "*errors.errorString"
+        },
+        {
+          "time": "2026-10-05T15:55:23.411164437Z",
+          "msg": "Graph ownership not ready",
+          "qualification": {
+            "/v1/pods": "watch_disconnected"
+          }
+        },
+        {
+          "time": "2026-10-05T15:55:51.445962868Z",
+          "msg": "SP05 fixed Analyzer unavailable",
+          "errorClass": "*errors.errorString"
+        },
+        {
+          "time": "2026-10-05T15:55:55.402254261Z",
+          "msg": "Graph ownership not ready",
+          "qualification": {
+            "storage.k8s.io/v1/volumeattachments": "watch_disconnected"
+          }
+        },
+        {
+          "time": "2026-10-05T15:55:57.500768795Z",
+          "msg": "Graph ownership not ready",
+          "qualification": {
+            "storage.k8s.io/v1/csinodes": "watch_disconnected"
+          }
+        },
+        {
+          "time": "2026-10-05T15:56:21.449342371Z",
+          "msg": "SP05 fixed Analyzer unavailable",
+          "errorClass": "*errors.errorString"
+        },
+        {
+          "time": "2026-10-05T15:56:27.494818721Z",
+          "msg": "Graph ownership not ready",
+          "qualification": {
+            "apps/v1/daemonsets": "watch_disconnected",
+            "apps/v1/replicasets": "watch_disconnected"
+          }
+        },
+        {
+          "time": "2026-10-05T15:56:51.451319572Z",
+          "msg": "SP05 fixed Analyzer unavailable",
+          "errorClass": "*errors.errorString"
+        },
+        {
+          "time": "2026-10-05T15:56:55.529163438Z",
+          "msg": "Graph ownership not ready",
+          "qualification": {
+            "/v1/nodes": "watch_disconnected"
+          }
+        },
+        {
+          "time": "2026-10-05T15:57:21.4542465Z",
+          "msg": "SP05 fixed Analyzer unavailable",
+          "errorClass": "*errors.errorString"
+        },
+        {
+          "time": "2026-10-05T15:57:25.42970573Z",
+          "msg": "Graph ownership not ready",
+          "qualification": {
+            "discovery.k8s.io/v1/endpointslices": "watch_disconnected"
+          }
+        },
+        {
+          "time": "2026-10-05T15:54:18.212151579Z",
+          "msg": "platform-worker started"
+        },
+        {
+          "time": "2026-10-05T15:54:18.329438913Z",
+          "msg": "SP05 fixed Analyzer unavailable",
+          "errorClass": "*errors.errorString"
+        },
+        {
+          "time": "2026-10-05T15:54:18.5351802Z",
+          "msg": "Graph ownership not ready",
+          "qualification": {
+            "/v1/configmaps": "list_missing",
+            "/v1/events": "list_missing",
+            "/v1/nodes": "list_missing",
+            "/v1/persistentvolumeclaims": "list_missing",
+            "/v1/persistentvolumes": "list_missing",
+            "/v1/pods": "list_missing",
+            "/v1/services": "list_missing",
+            "apps/v1/daemonsets": "list_missing",
+            "apps/v1/deployments": "list_missing",
+            "apps/v1/replicasets": "list_missing",
+            "apps/v1/statefulsets": "list_missing",
+            "batch/v1/jobs": "list_missing",
+            "discovery.k8s.io/v1/endpointslices": "list_missing",
+            "storage.k8s.io/v1/csidrivers": "list_missing",
+            "storage.k8s.io/v1/csinodes": "list_missing",
+            "storage.k8s.io/v1/storageclasses": "list_missing",
+            "storage.k8s.io/v1/volumeattachments": "list_missing"
+          }
+        },
+        {
+          "time": "2026-10-05T15:54:20.445745203Z",
+          "msg": "Graph ownership not ready",
+          "qualification": {
+            "/v1/configmaps": "list_missing",
+            "/v1/events": "list_missing",
+            "/v1/persistentvolumeclaims": "list_missing",
+            "/v1/persistentvolumes": "list_missing",
+            "/v1/pods": "list_missing",
+            "apps/v1/daemonsets": "list_missing",
+            "apps/v1/deployments": "list_missing",
+            "apps/v1/replicasets": "list_missing",
+            "apps/v1/statefulsets": "list_missing",
+            "batch/v1/jobs": "list_missing",
+            "discovery.k8s.io/v1/endpointslices": "list_missing",
+            "storage.k8s.io/v1/csidrivers": "list_missing",
+            "storage.k8s.io/v1/csinodes": "list_missing",
+            "storage.k8s.io/v1/storageclasses": "list_missing",
+            "storage.k8s.io/v1/volumeattachments": "list_missing"
+          }
+        },
+        {
+          "time": "2026-10-05T15:54:22.333178537Z",
+          "msg": "Graph Lease renewal unavailable",
+          "stage": "lease_read"
+        },
+        {
+          "time": "2026-10-05T15:54:24.336742641Z",
+          "msg": "Graph Lease renewal unavailable",
+          "stage": "lease_read"
+        }
+      ]
+    }
+  ],
+  "fullInvestigationChainPass": false
+}

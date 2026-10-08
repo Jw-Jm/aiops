@@ -1,12 +1,70 @@
 #!/usr/bin/env python3
 import json,hashlib,shutil,re,tarfile,argparse
 from pathlib import Path
+
+
+def verify_image_oci(path, expected):
+    """Bind admission to the exact arm64 manifest, not a Docker config ID."""
+    with tarfile.open(path) as archive:
+        members = {}
+        for member in archive:
+            if member.name in members:
+                raise ValueError('duplicate OCI member')
+            if member.isfile():
+                members[member.name] = member
+
+        def read_json(name):
+            member = members[name]
+            if member.size > 1 << 20:
+                raise ValueError('oversized OCI metadata')
+            return json.loads(archive.extractfile(member).read())
+
+        def verify_blob(descriptor):
+            digest = descriptor['digest']
+            if not re.fullmatch(r'sha256:[0-9a-f]{64}', digest):
+                raise ValueError('invalid OCI digest')
+            member = members['blobs/sha256/' + digest.split(':')[1]]
+            if member.size != descriptor['size']:
+                raise ValueError('OCI size mismatch')
+            actual = hashlib.sha256()
+            with archive.extractfile(member) as source:
+                for block in iter(lambda: source.read(1 << 20), b''):
+                    actual.update(block)
+            if 'sha256:' + actual.hexdigest() != digest:
+                raise ValueError('OCI blob digest mismatch')
+            return member.name
+
+        index = read_json('index.json')
+        if read_json('oci-layout') != {'imageLayoutVersion': '1.0.0'} or len(index['manifests']) != 1:
+            raise ValueError('one selected OCI manifest required')
+        descriptor = index['manifests'][0]
+        if descriptor['digest'] != expected:
+            raise ValueError('admission digest must be the selected OCI manifest')
+        manifest = read_json(verify_blob(descriptor))
+        if manifest.get('schemaVersion') != 2 or 'manifests' in manifest:
+            raise ValueError('selected native image manifest required')
+        config = read_json(verify_blob(manifest['config']))
+        if config.get('os') != 'linux' or config.get('architecture') != 'arm64':
+            raise ValueError('exact linux/arm64 image required')
+        if not manifest['layers']:
+            raise ValueError('image layers required')
+        for layer in manifest['layers']:
+            verify_blob(layer)
+
+
 parser=argparse.ArgumentParser(description="Bind the exact reviewed investigator source/image/license inventory")
 parser.add_argument("--image-digest",required=True)
+parser.add_argument("--image-oci",type=Path,required=True,help="One selected arm64 OCI manifest and its exact local closure")
+parser.add_argument("--verify-image-only",action="store_true",help="Read-only identity verification before material admission")
 parser.add_argument("--debian-source-index",type=Path,required=True)
+parser.add_argument("--material-root",type=Path,default=Path('artifacts/sp06-investigator'),help="Prepared exact source/image inputs; use a separate directory to preserve prior signed material")
 args=parser.parse_args()
+verify_image_oci(args.image_oci, args.image_digest)
+if args.verify_image_only:
+    print('Exact arm64 OCI manifest/config/layer identity verified; no admission files changed')
+    raise SystemExit(0)
 import yaml
-root=Path.cwd(); out=root/'artifacts/sp06-investigator';image=args.image_digest
+root=Path.cwd(); out=args.material_root.resolve();image=args.image_digest
 sha=lambda p:'sha256:'+hashlib.sha256(Path(p).read_bytes()).hexdigest()
 lock=json.loads((out/'runtime.lock.json').read_text());base=json.loads((out/'base/source.lock.json').read_text());bundle=sha(out/'python-runtime-source.tar')
 adr='docs/adr/0027-sp06-investigator-license-distribution.md';adrsha=sha(adr)
@@ -126,7 +184,7 @@ for p in [adr,'docs/poc/sp06-holmesgpt-runtime.md']+[x['path'] for x in notices]
  target=root/'bundle/evidence'/p;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(origin,target)
 print('exact admission inventory',len(deps),'dependencies',len(notices),'notices',len(native),'native bindings')
 source_manifest=Path('third_party/admission/sp06-holmesgpt-source.json')
-record=json.loads(source_manifest.read_text());record.update(state='qualified',runtimeAdmission='exact reuse/distribution admission; full SP06 final gates and independent review separate',imageDigest=image,correspondingSourceBundleSHA256=bundle,dependencyClosureLock='artifacts/sp06-investigator/runtime.lock.json',licenseReview='third_party/admission/sp06-investigator-license-review.json')
+record=json.loads(source_manifest.read_text());record.update(state='qualified',runtimeAdmission='exact reuse/distribution admission; full SP06 final gates and independent review separate',imageDigest=image,correspondingSourceBundleSHA256=bundle,dependencyClosureLock=str((out/'runtime.lock.json').relative_to(root)) if out.is_relative_to(root) else str(out/'runtime.lock.json'),licenseReview='third_party/admission/sp06-investigator-license-review.json')
 source_manifest.write_text(json.dumps(record,indent=2)+'\n')
 
 # Keep the public runtime reuse lock bound to this exact admitted material.

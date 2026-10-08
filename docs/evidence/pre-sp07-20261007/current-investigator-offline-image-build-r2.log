@@ -1,0 +1,257 @@
+#0 building with "orbstack" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.38kB done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+#2 DONE 2.8s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.1s
+
+#4 [internal] load build context
+#4 DONE 0.0s
+
+#5 [ 1/13] FROM docker.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+#5 resolve docker.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+#5 resolve docker.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f 0.1s done
+#5 DONE 0.1s
+
+#4 [internal] load build context
+#4 transferring context: 509.41MB 4.9s
+#4 transferring context: 1.08GB 9.2s done
+#4 DONE 9.3s
+
+#6 [ 2/13] WORKDIR /app
+#6 CACHED
+
+#7 [ 3/13] COPY wheels /material/wheels
+#7 DONE 1.5s
+
+#8 [ 4/13] COPY offline-requirements.txt /material/offline-requirements.txt
+#8 DONE 0.2s
+
+#9 [ 5/13] RUN python -m pip install --no-index --no-deps --require-hashes --find-links=/material/wheels -r /material/offline-requirements.txt && python -m pip check
+#9 1.438 Looking in links: /material/wheels
+#9 1.446 Processing /material/wheels/Events-0.5-py3-none-any.whl (from -r /material/offline-requirements.txt (line 1))
+#9 1.450 Processing /material/wheels/StrEnum-0.4.15-py3-none-any.whl (from -r /material/offline-requirements.txt (line 2))
+#9 1.452 Processing /material/wheels/ag_ui_protocol-0.1.22-py3-none-any.whl (from -r /material/offline-requirements.txt (line 3))
+#9 1.453 Processing /material/wheels/aiohappyeyeballs-2.7.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 4))
+#9 1.455 Processing /material/wheels/aiohttp-3.14.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 5))
+#9 1.462 Processing /material/wheels/aiosignal-1.4.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 6))
+#9 1.464 Processing /material/wheels/annotated_doc-0.0.5-py3-none-any.whl (from -r /material/offline-requirements.txt (line 7))
+#9 1.466 Processing /material/wheels/annotated_types-0.8.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 8))
+#9 1.467 Processing /material/wheels/anyio-4.15.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 9))
+#9 1.469 Processing /material/wheels/apscheduler-3.11.3-py3-none-any.whl (from -r /material/offline-requirements.txt (line 10))
+#9 1.474 Processing /material/wheels/asn1crypto-1.5.1-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 11))
+#9 1.476 Processing /material/wheels/asynch-0.4.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 12))
+#9 1.504 Processing /material/wheels/attrs-26.1.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 13))
+#9 1.506 Processing /material/wheels/azure_core-1.41.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 14))
+#9 1.510 Processing /material/wheels/azure_identity-1.26.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 15))
+#9 1.514 Processing /material/wheels/backoff-2.2.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 16))
+#9 1.518 Processing /material/wheels/bashlex-0.18-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 17))
+#9 1.518 Processing /material/wheels/beautifulsoup4-4.15.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 18))
+#9 1.520 Processing /material/wheels/boto3-1.43.108-py3-none-any.whl (from -r /material/offline-requirements.txt (line 19))
+#9 1.523 Processing /material/wheels/botocore-1.43.108-py3-none-any.whl (from -r /material/offline-requirements.txt (line 20))
+#9 1.558 Processing /material/wheels/bs4-0.0.2-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 21))
+#9 1.559 Processing /material/wheels/cachetools-5.5.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 22))
+#9 1.561 Processing /material/wheels/certifi-2024.12.14-py3-none-any.whl (from -r /material/offline-requirements.txt (line 23))
+#9 1.563 Processing /material/wheels/cffi-2.1.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (from -r /material/offline-requirements.txt (line 24))
+#9 1.566 Processing /material/wheels/charset_normalizer-3.5.2-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 25))
+#9 1.567 Processing /material/wheels/ciso8601-2.3.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 26))
+#9 1.569 Processing /material/wheels/click-8.5.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 27))
+#9 1.570 Processing /material/wheels/clickhouse_driver-0.2.11-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 28))
+#9 1.574 Processing /material/wheels/clickhouse_sqlalchemy-0.3.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 29))
+#9 1.576 Processing /material/wheels/colorlog-6.12.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 30))
+#9 1.578 Processing /material/wheels/confluent_kafka-2.15.1-cp312-cp312-manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 31))
+#9 1.626 Processing /material/wheels/cryptography-50.0.2-cp311-abi3-manylinux_2_34_aarch64.whl (from -r /material/offline-requirements.txt (line 32))
+#9 1.634 Processing /material/wheels/dateparser-1.4.3-py3-none-any.whl (from -r /material/offline-requirements.txt (line 33))
+#9 1.638 Processing /material/wheels/deprecation-2.1.0-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 34))
+#9 1.642 Processing /material/wheels/distro-1.9.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 35))
+#9 1.646 Processing /material/wheels/dnspython-2.8.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 36))
+#9 1.653 Processing /material/wheels/docstring_parser-0.18.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 37))
+#9 1.653 Processing /material/wheels/durationpy-0.11-py3-none-any.whl (from -r /material/offline-requirements.txt (line 38))
+#9 1.655 Processing /material/wheels/fastapi-0.136.3-py3-none-any.whl (from -r /material/offline-requirements.txt (line 39))
+#9 1.658 Processing /material/wheels/fastuuid-0.14.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (from -r /material/offline-requirements.txt (line 40))
+#9 1.659 Processing /material/wheels/filelock-4.0.9-py3-none-any.whl (from -r /material/offline-requirements.txt (line 41))
+#9 1.660 Processing /material/wheels/frozenlist-1.8.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 42))
+#9 1.666 Processing /material/wheels/fsspec-2026.9.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 43))
+#9 1.703 Processing /material/wheels/google_api_core-2.40.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 44))
+#9 1.710 Processing /material/wheels/google_auth-2.59.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 45))
+#9 1.720 Processing /material/wheels/google_cloud_aiplatform-2.3.0-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 46))
+#9 1.798 Processing /material/wheels/google_cloud_bigquery-3.46.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 47))
+#9 1.803 Processing /material/wheels/google_cloud_core-2.8.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 48))
+#9 1.804 Processing /material/wheels/google_cloud_resource_manager-1.19.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 49))
+#9 1.807 Processing /material/wheels/google_cloud_storage-3.16.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 50))
+#9 1.811 Processing /material/wheels/google_crc32c-1.9.0-cp312-cp312-linux_aarch64.whl (from -r /material/offline-requirements.txt (line 51))
+#9 1.813 Processing /material/wheels/google_genai-2.28.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 52))
+#9 1.826 Processing /material/wheels/google_resumable_media-2.11.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 53))
+#9 1.828 Processing /material/wheels/googleapis_common_protos-1.75.5-py3-none-any.whl (from -r /material/offline-requirements.txt (line 54))
+#9 1.830 Processing /material/wheels/greenlet-3.5.6-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 55))
+#9 1.833 Processing /material/wheels/grpc_google_iam_v1-0.14.5-py3-none-any.whl (from -r /material/offline-requirements.txt (line 56))
+#9 1.834 Processing /material/wheels/grpcio-1.84.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (from -r /material/offline-requirements.txt (line 57))
+#9 1.846 Processing /material/wheels/grpcio_status-1.84.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 58))
+#9 1.847 Processing /material/wheels/h11-0.16.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 59))
+#9 1.848 Processing /material/wheels/h2-4.4.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 60))
+#9 1.849 Processing /material/wheels/hf_xet-1.6.0-cp38-abi3-manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 61))
+#9 1.858 Processing /material/wheels/holmesgpt-0.42.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 62))
+#9 1.864 Processing /material/wheels/hpack-4.2.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 63))
+#9 1.867 Processing /material/wheels/httpcore-1.0.9-py3-none-any.whl (from -r /material/offline-requirements.txt (line 64))
+#9 1.867 Processing /material/wheels/httpx-0.28.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 65))
+#9 1.871 Processing /material/wheels/httpx_sse-0.4.3-py3-none-any.whl (from -r /material/offline-requirements.txt (line 66))
+#9 1.876 Processing /material/wheels/huggingface_hub-1.33.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 67))
+#9 1.888 Processing /material/wheels/humanize-4.16.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 68))
+#9 1.891 Processing /material/wheels/hyperframe-6.1.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 69))
+#9 1.892 Processing /material/wheels/idna-3.20-py3-none-any.whl (from -r /material/offline-requirements.txt (line 70))
+#9 1.894 Processing /material/wheels/importlib_metadata-8.9.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 71))
+#9 1.898 Processing /material/wheels/iso8601-2.1.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 72))
+#9 1.900 Processing /material/wheels/jinja2-3.1.6-py3-none-any.whl (from -r /material/offline-requirements.txt (line 73))
+#9 1.901 Processing /material/wheels/jiter-0.17.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (from -r /material/offline-requirements.txt (line 74))
+#9 1.904 Processing /material/wheels/jmespath-1.1.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 75))
+#9 1.904 Processing /material/wheels/jq-1.12.0-cp312-cp312-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 76))
+#9 1.907 Processing /material/wheels/jsonpatch-1.33-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 77))
+#9 1.908 Processing /material/wheels/jsonpointer-3.1.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 78))
+#9 1.909 Processing /material/wheels/jsonschema-4.26.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 79))
+#9 1.914 Processing /material/wheels/jsonschema_specifications-2025.9.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 80))
+#9 1.914 Processing /material/wheels/kopf-1.44.6-py3-none-any.whl (from -r /material/offline-requirements.txt (line 81))
+#9 1.915 Processing /material/wheels/kubernetes-32.0.1-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 82))
+#9 1.924 Processing /material/wheels/litellm-1.89.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 83))
+#9 1.965 Processing /material/wheels/markdown-3.11-py3-none-any.whl (from -r /material/offline-requirements.txt (line 84))
+#9 1.967 Processing /material/wheels/markdown_it_py-4.2.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 85))
+#9 1.971 Processing /material/wheels/markdownify-1.2.3-py3-none-any.whl (from -r /material/offline-requirements.txt (line 86))
+#9 1.972 Processing /material/wheels/markupsafe-3.0.4-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 87))
+#9 1.974 Processing /material/wheels/mcp-1.28.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 88))
+#9 1.977 Processing /material/wheels/mdurl-0.1.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 89))
+#9 1.978 Processing /material/wheels/mmh3-5.3.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 90))
+#9 1.981 Processing /material/wheels/msal-1.39.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 91))
+#9 1.985 Processing /material/wheels/msal_extensions-1.3.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 92))
+#9 1.995 Processing /material/wheels/multidict-6.9.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 93))
+#9 2.001 Processing /material/wheels/oauthlib-4.0.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 94))
+#9 2.006 Processing /material/wheels/openai-2.54.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 95))
+#9 2.022 Processing /material/wheels/opensearch_py-2.8.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 96))
+#9 2.025 Processing /material/wheels/opentelemetry_api-1.45.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 97))
+#9 2.027 Processing /material/wheels/packaging-26.3-py3-none-any.whl (from -r /material/offline-requirements.txt (line 98))
+#9 2.028 Processing /material/wheels/pg8000-1.31.5-py3-none-any.whl (from -r /material/offline-requirements.txt (line 99))
+#9 2.032 Processing /material/wheels/postgrest-2.28.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 100))
+#9 2.033 Processing /material/wheels/prometheus_api_client-0.7.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 101))
+#9 2.035 Processing /material/wheels/prometrix-0.2.12-py3-none-any.whl (from -r /material/offline-requirements.txt (line 102))
+#9 2.037 Processing /material/wheels/prompt_toolkit-3.0.53-py3-none-any.whl (from -r /material/offline-requirements.txt (line 103))
+#9 2.039 Processing /material/wheels/propcache-0.5.4-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 104))
+#9 2.041 Processing /material/wheels/proto_plus-1.29.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 105))
+#9 2.042 Processing /material/wheels/protobuf-6.33.6-cp39-abi3-manylinux2014_aarch64.whl (from -r /material/offline-requirements.txt (line 106))
+#9 2.044 Processing /material/wheels/pyasn1-0.6.4-py3-none-any.whl (from -r /material/offline-requirements.txt (line 107))
+#9 2.047 Processing /material/wheels/pyasn1_modules-0.4.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 108))
+#9 2.050 Processing /material/wheels/pycparser-3.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 109))
+#9 2.050 Processing /material/wheels/pydantic-2.13.5-py3-none-any.whl (from -r /material/offline-requirements.txt (line 110))
+#9 2.054 Processing /material/wheels/pydantic_core-2.46.5-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (from -r /material/offline-requirements.txt (line 111))
+#9 2.059 Processing /material/wheels/pydantic_settings-2.15.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 112))
+#9 2.061 Processing /material/wheels/pygments-2.21.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 113))
+#9 2.067 Processing /material/wheels/pyiceberg-0.12.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 114))
+#9 2.073 Processing /material/wheels/pyjwt-2.15.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 115))
+#9 2.075 Processing /material/wheels/pymongo-4.18.2-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 116))
+#9 2.082 Processing /material/wheels/pymysql-1.2.3-py3-none-any.whl (from -r /material/offline-requirements.txt (line 117))
+#9 2.083 Processing /material/wheels/pyopenssl-26.4.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 118))
+#9 2.086 Processing /material/wheels/pyparsing-3.3.3-py3-none-any.whl (from -r /material/offline-requirements.txt (line 119))
+#9 2.087 Processing /material/wheels/pyroaring-1.2.0-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 120))
+#9 2.094 Processing /material/wheels/python_benedict-0.33.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 121))
+#9 2.099 Processing /material/wheels/python_dateutil-2.9.0.post0-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 122))
+#9 2.099 Processing /material/wheels/python_dotenv-1.2.4-py3-none-any.whl (from -r /material/offline-requirements.txt (line 123))
+#9 2.101 Processing /material/wheels/python_fsutil-0.17.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 124))
+#9 2.106 Processing /material/wheels/python_json_logger-3.3.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 125))
+#9 2.106 Processing /material/wheels/python_multipart-0.0.32-py3-none-any.whl (from -r /material/offline-requirements.txt (line 126))
+#9 2.106 Processing /material/wheels/python_slugify-8.0.4-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 127))
+#9 2.110 Processing /material/wheels/python_socks-2.8.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 128))
+#9 2.110 Processing /material/wheels/python_tds-1.17.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 129))
+#9 2.110 Processing /material/wheels/pytz-2026.4-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 130))
+#9 2.114 Processing /material/wheels/pyyaml-6.0.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 131))
+#9 2.117 Processing /material/wheels/realtime-2.28.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 132))
+#9 2.118 Processing /material/wheels/referencing-0.37.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 133))
+#9 2.119 Processing /material/wheels/regex-2026.9.29-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 134))
+#9 2.123 Processing /material/wheels/requests-2.34.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 135))
+#9 2.125 Processing /material/wheels/requests_aws4auth-1.3.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 136))
+#9 2.127 Processing /material/wheels/requests_oauthlib-2.0.0-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 137))
+#9 2.130 Processing /material/wheels/rich-13.9.4-py3-none-any.whl (from -r /material/offline-requirements.txt (line 138))
+#9 2.135 Processing /material/wheels/rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (from -r /material/offline-requirements.txt (line 139))
+#9 2.135 Processing /material/wheels/s3transfer-0.19.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 140))
+#9 2.135 Processing /material/wheels/scramp-1.4.17-py3-none-any.whl (from -r /material/offline-requirements.txt (line 141))
+#9 2.137 Processing /material/wheels/sentry_sdk-2.71.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 142))
+#9 2.149 Processing /material/wheels/shellingham-1.5.4-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 143))
+#9 2.151 Processing /material/wheels/six-1.17.0-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 144))
+#9 2.151 Processing /material/wheels/slack_sdk-3.45.0-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 145))
+#9 2.155 Processing /material/wheels/sniffio-1.3.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 146))
+#9 2.157 Processing /material/wheels/socksio-1.0.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 147))
+#9 2.158 Processing /material/wheels/soupsieve-2.10-py3-none-any.whl (from -r /material/offline-requirements.txt (line 148))
+#9 2.161 Processing /material/wheels/sqlalchemy-2.0.54-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 149))
+#9 2.175 Processing /material/wheels/sqlalchemy_pytds-1.0.2-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 150))
+#9 2.177 Processing /material/wheels/sse_starlette-3.5.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 151))
+#9 2.180 Processing /material/wheels/starlette-1.7.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 152))
+#9 2.182 Processing /material/wheels/storage3-2.28.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 153))
+#9 2.184 Processing /material/wheels/strictyaml-1.7.3-py3-none-any.whl (from -r /material/offline-requirements.txt (line 154))
+#9 2.184 Processing /material/wheels/supabase-2.28.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 155))
+#9 2.186 Processing /material/wheels/supabase_auth-2.28.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 156))
+#9 2.187 Processing /material/wheels/supabase_functions-2.28.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 157))
+#9 2.189 Processing /material/wheels/tenacity-9.1.4-py3-none-any.whl (from -r /material/offline-requirements.txt (line 158))
+#9 2.190 Processing /material/wheels/text_unidecode-1.3-py2.py3-none-any.whl (from -r /material/offline-requirements.txt (line 159))
+#9 2.193 Processing /material/wheels/tiktoken-0.14.0-cp312-cp312-linux_aarch64.whl (from -r /material/offline-requirements.txt (line 160))
+#9 2.199 Processing /material/wheels/tokenizers-0.23.2-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (from -r /material/offline-requirements.txt (line 161))
+#9 2.206 Processing /material/wheels/tqdm-4.70.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 162))
+#9 2.210 Processing /material/wheels/typer-0.22.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 163))
+#9 2.212 Processing /material/wheels/typer_slim-0.22.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 164))
+#9 2.213 Processing /material/wheels/typing_extensions-4.16.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 165))
+#9 2.214 Processing /material/wheels/typing_inspection-0.4.4-py3-none-any.whl (from -r /material/offline-requirements.txt (line 166))
+#9 2.216 Processing /material/wheels/tzlocal-5.4.4-py3-none-any.whl (from -r /material/offline-requirements.txt (line 167))
+#9 2.218 Processing /material/wheels/urllib3-2.8.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 168))
+#9 2.221 Processing /material/wheels/uvicorn-0.40.0-py3-none-any.whl (from -r /material/offline-requirements.txt (line 169))
+#9 2.222 Processing /material/wheels/wcwidth-0.9.1-cp310-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (from -r /material/offline-requirements.txt (line 170))
+#9 2.226 Processing /material/wheels/websocket_client-1.9.2-py3-none-any.whl (from -r /material/offline-requirements.txt (line 171))
+#9 2.229 Processing /material/wheels/websockets-15.0.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (from -r /material/offline-requirements.txt (line 172))
+#9 2.230 Processing /material/wheels/yarl-1.25.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (from -r /material/offline-requirements.txt (line 173))
+#9 2.236 Processing /material/wheels/zipp-3.23.1-py3-none-any.whl (from -r /material/offline-requirements.txt (line 174))
+#9 2.239 Processing /material/wheels/zstandard-0.25.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (from -r /material/offline-requirements.txt (line 175))
+#9 2.547 Installing collected packages: text-unidecode, strenum, sqlalchemy-pytds, pytz, python-tds, python-fsutil, python-benedict, pyroaring, prometheus-api-client, markdownify, events, durationpy, deprecation, ciso8601, bs4, asn1crypto, zstandard, zipp, yarl, websockets, websocket-client, wcwidth, uvicorn, urllib3, tzlocal, typing-inspection, typing-extensions, typer-slim, typer, tqdm, tokenizers, tiktoken, tenacity, supabase-functions, supabase-auth, supabase, strictyaml, storage3, starlette, sse-starlette, sqlalchemy, soupsieve, socksio, sniffio, slack-sdk, six, shellingham, sentry-sdk, scramp, s3transfer, rpds-py, rich, requests-oauthlib, requests-aws4auth, requests, regex, referencing, realtime, pyyaml, python-socks, python-slugify, python-multipart, python-json-logger, python-dotenv, python-dateutil, pyparsing, pyopenssl, pymysql, pymongo, pyjwt, pyiceberg, pygments, pydantic-settings, pydantic-core, pydantic, pycparser, pyasn1-modules, pyasn1, protobuf, proto-plus, propcache, prompt-toolkit, prometrix, postgrest, pg8000, packaging, opentelemetry-api, opensearch-py, openai, oauthlib, multidict, msal-extensions, msal, mmh3, mdurl, mcp, markupsafe, markdown-it-py, markdown, litellm, kubernetes, kopf, jsonschema-specifications, jsonschema, jsonpointer, jsonpatch, jq, jmespath, jiter, jinja2, iso8601, importlib-metadata, idna, hyperframe, humanize, huggingface-hub, httpx-sse, httpx, httpcore, hpack, holmesgpt, hf-xet, h2, h11, grpcio-status, grpcio, grpc-google-iam-v1, greenlet, googleapis-common-protos, google-resumable-media, google-genai, google-crc32c, google-cloud-storage, google-cloud-resource-manager, google-cloud-core, google-cloud-bigquery, google-cloud-aiplatform, google-auth, google-api-core, fsspec, frozenlist, filelock, fastuuid, fastapi, docstring-parser, dnspython, distro, dateparser, cryptography, confluent-kafka, colorlog, clickhouse-sqlalchemy, clickhouse-driver, click, charset-normalizer, cffi, certifi, cachetools, botocore, boto3, beautifulsoup4, bashlex, backoff, azure-identity, azure-core, attrs, asynch, apscheduler, anyio, annotated-types, annotated-doc, aiosignal, aiohttp, aiohappyeyeballs, ag-ui-protocol
+#9 31.44 Successfully installed ag-ui-protocol-0.1.22 aiohappyeyeballs-2.7.1 aiohttp-3.14.3 aiosignal-1.4.0 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 apscheduler-3.11.3 asn1crypto-1.5.1 asynch-0.4.0 attrs-26.1.0 azure-core-1.41.0 azure-identity-1.26.0 backoff-2.2.1 bashlex-0.18 beautifulsoup4-4.15.0 boto3-1.43.108 botocore-1.43.108 bs4-0.0.2 cachetools-5.5.2 certifi-2024.12.14 cffi-2.1.1 charset-normalizer-3.5.2 ciso8601-2.3.3 click-8.5.0 clickhouse-driver-0.2.11 clickhouse-sqlalchemy-0.3.2 colorlog-6.12.0 confluent-kafka-2.15.1 cryptography-50.0.2 dateparser-1.4.3 deprecation-2.1.0 distro-1.9.0 dnspython-2.8.0 docstring-parser-0.18.0 durationpy-0.11 events-0.5 fastapi-0.136.3 fastuuid-0.14.0 filelock-4.0.9 frozenlist-1.8.0 fsspec-2026.9.0 google-api-core-2.40.0 google-auth-2.59.1 google-cloud-aiplatform-2.3.0 google-cloud-bigquery-3.46.1 google-cloud-core-2.8.0 google-cloud-resource-manager-1.19.0 google-cloud-storage-3.16.0 google-crc32c-1.9.0 google-genai-2.28.0 google-resumable-media-2.11.0 googleapis-common-protos-1.75.5 greenlet-3.5.6 grpc-google-iam-v1-0.14.5 grpcio-1.84.0 grpcio-status-1.84.0 h11-0.16.0 h2-4.4.1 hf-xet-1.6.0 holmesgpt-0.42.0 hpack-4.2.0 httpcore-1.0.9 httpx-0.28.1 httpx-sse-0.4.3 huggingface-hub-1.33.0 humanize-4.16.0 hyperframe-6.1.0 idna-3.20 importlib-metadata-8.9.0 iso8601-2.1.0 jinja2-3.1.6 jiter-0.17.0 jmespath-1.1.0 jq-1.12.0 jsonpatch-1.33 jsonpointer-3.1.1 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 kopf-1.44.6 kubernetes-32.0.1 litellm-1.89.0 markdown-3.11 markdown-it-py-4.2.0 markdownify-1.2.3 markupsafe-3.0.4 mcp-1.28.1 mdurl-0.1.2 mmh3-5.3.1 msal-1.39.0 msal-extensions-1.3.1 multidict-6.9.1 oauthlib-4.0.0 openai-2.54.0 opensearch-py-2.8.0 opentelemetry-api-1.45.0 packaging-26.3 pg8000-1.31.5 postgrest-2.28.1 prometheus-api-client-0.7.2 prometrix-0.2.12 prompt-toolkit-3.0.53 propcache-0.5.4 proto-plus-1.29.0 protobuf-6.33.6 pyasn1-0.6.4 pyasn1-modules-0.4.2 pycparser-3.0 pydantic-2.13.5 pydantic-core-2.46.5 pydantic-settings-2.15.0 pygments-2.21.0 pyiceberg-0.12.0 pyjwt-2.15.1 pymongo-4.18.2 pymysql-1.2.3 pyopenssl-26.4.0 pyparsing-3.3.3 pyroaring-1.2.0 python-benedict-0.33.2 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 python-fsutil-0.17.0 python-json-logger-3.3.0 python-multipart-0.0.32 python-slugify-8.0.4 python-socks-2.8.2 python-tds-1.17.1 pytz-2026.4 pyyaml-6.0.3 realtime-2.28.1 referencing-0.37.0 regex-2026.9.29 requests-2.34.2 requests-aws4auth-1.3.2 requests-oauthlib-2.0.0 rich-13.9.4 rpds-py-2026.6.3 s3transfer-0.19.2 scramp-1.4.17 sentry-sdk-2.71.0 shellingham-1.5.4 six-1.17.0 slack-sdk-3.45.0 sniffio-1.3.1 socksio-1.0.0 soupsieve-2.10 sqlalchemy-2.0.54 sqlalchemy-pytds-1.0.2 sse-starlette-3.5.0 starlette-1.7.0 storage3-2.28.1 strenum-0.4.15 strictyaml-1.7.3 supabase-2.28.1 supabase-auth-2.28.1 supabase-functions-2.28.1 tenacity-9.1.4 text-unidecode-1.3 tiktoken-0.14.0 tokenizers-0.23.2 tqdm-4.70.1 typer-0.22.0 typer-slim-0.22.0 typing-extensions-4.16.0 typing-inspection-0.4.4 tzlocal-5.4.4 urllib3-2.8.0 uvicorn-0.40.0 wcwidth-0.9.1 websocket-client-1.9.2 websockets-15.0.1 yarl-1.25.1 zipp-3.23.1 zstandard-0.25.0
+#9 31.44 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#9 32.64 No broken requirements found.
+#9 DONE 33.8s
+
+#10 [ 6/13] COPY wrapper/src /app/src
+#10 DONE 0.3s
+
+#11 [ 7/13] COPY notices /usr/share/ops/legal/python
+#11 DONE 0.2s
+
+#12 [ 8/13] COPY base/notices /usr/share/ops/legal/base
+#12 DONE 0.2s
+
+#13 [ 9/13] COPY base/source.lock.json base/python-source.lock.json /usr/share/ops/legal/base/
+#13 DONE 0.1s
+
+#14 [10/13] COPY wrapper/LICENSE wrapper/NOTICE /usr/share/ops/legal/wrapper/
+#14 DONE 0.1s
+
+#15 [11/13] COPY runtime.lock.json sbom.cdx.json /usr/share/ops/legal/
+#15 DONE 0.1s
+
+#16 [12/13] COPY python-runtime-source.tar /usr/share/ops/legal/python-runtime-source.tar
+#16 DONE 2.5s
+
+#17 [13/13] RUN python -c 'from holmes.core.tool_calling_llm import ToolCallingLLM; from holmes.core.llm import DefaultLLM; from mcp.client.streamable_http import streamable_http_client; import investigator.worker' && rm -rf /material
+#17 DONE 4.4s
+
+#18 exporting to image
+#18 exporting layers
+#18 exporting layers 43.4s done
+#18 exporting manifest sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593
+#18 exporting manifest sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593 0.1s done
+#18 exporting config sha256:792d04fd029d934de82fe435035216a542e53e192fdcd65b64250bdc426860a0 0.0s done
+#18 exporting attestation manifest sha256:23a61142c58e6fc9f79620f3f57ae0b5ce55c8588d724c993640019290c4843b 0.0s done
+#18 exporting manifest list sha256:7500c2732ed24308d05182fc3bf15dd9fb0e77ee324ca159a8811cef2ffaa632 0.0s done
+#18 naming to ops.local/pre-sp07/investigator:20261007-r2
+#18 naming to ops.local/pre-sp07/investigator:20261007-r2 0.0s done
+#18 unpacking to ops.local/pre-sp07/investigator:20261007-r2
+#18 unpacking to ops.local/pre-sp07/investigator:20261007-r2 17.9s done
+#18 DONE 61.5s
+
+View build details: docker-desktop://dashboard/build/orbstack/orbstack/qben0mywrtimgv6r6z7qtq0c9

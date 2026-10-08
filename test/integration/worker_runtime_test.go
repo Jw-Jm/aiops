@@ -38,12 +38,13 @@ func runAuditWorkerProjectedRecovery(t *testing.T, bao *openbao.Client, namespac
 		t.Fatal(err)
 	}
 	name := "sp03_worker_" + strings.ReplaceAll(uuid.NewString(), "-", "")
-	if _, err := db.ExecContext(ctx, `CREATE ROLE "`+name+`" LOGIN; GRANT worker_runtime_role TO "`+name+`"`); err != nil {
+	password := strings.ReplaceAll(uuid.NewString()+uuid.NewString(), "-", "")
+	if _, err := db.ExecContext(ctx, `CREATE ROLE "`+name+`" LOGIN PASSWORD '`+password+`'; GRANT worker_runtime_role TO "`+name+`"`); err != nil {
 		t.Fatal(err)
 	}
 	defer db.ExecContext(ctx, `DROP ROLE "`+name+`"`)
 	u, _ := url.Parse(dsn)
-	u.User = url.User(name)
+	u.User = url.UserPassword(name, password)
 	pool, err := app.OpenRuntimePool(ctx, u.String(), "worker_runtime_role")
 	if err != nil {
 		t.Fatal(err)

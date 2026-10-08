@@ -15,17 +15,17 @@ var ErrObservation = errors.New("official_inspection_observation_unavailable_or_
 // NodeMetrics has no dependable Node UID: the caller must fence its native Node
 // GET against the current identity before binding this name-based measurement.
 func MetricSignals(node, metrics unstructured.Unstructured, observed time.Time) ([]Candidate, error) {
-	if node.GetKind() != "Node" || node.GetAPIVersion() != "v1" || node.GetUID() == "" || node.GetName() == "" || metrics.GetKind() != "NodeMetrics" || metrics.GetAPIVersion() != "metrics.k8s.io/v1beta1" || metrics.GetName() != node.GetName() || metrics.GetNamespace() != "" || observed.IsZero() {
+	if node.GetKind() != "Node" || node.GetAPIVersion() != "v1" || node.GetUID() == "" || node.GetName() == "" || node.GetNamespace() != "" || node.GetDeletionTimestamp() != nil || node.GetCreationTimestamp().Time.IsZero() || metrics.GetKind() != "NodeMetrics" || metrics.GetAPIVersion() != "metrics.k8s.io/v1beta1" || metrics.GetName() != node.GetName() || metrics.GetNamespace() != "" || metrics.GetUID() != "" && metrics.GetUID() != node.GetUID() || observed.IsZero() {
 		return nil, ErrObservation
 	}
 	stamp, _, _ := unstructured.NestedString(metrics.Object, "timestamp")
 	clock, err := time.Parse(time.RFC3339Nano, stamp)
-	if err != nil || !node.GetCreationTimestamp().Time.IsZero() && clock.Before(node.GetCreationTimestamp().Time) || clock.After(observed) || clock.Before(observed.Add(-5*time.Minute)) {
+	if err != nil || clock.Before(node.GetCreationTimestamp().Time) || clock.After(observed) || clock.Before(observed.Add(-5*time.Minute)) {
 		return nil, ErrObservation
 	}
 	window, _, _ := unstructured.NestedString(metrics.Object, "window")
 	duration, err := time.ParseDuration(window)
-	if err != nil || duration <= 0 || duration > 5*time.Minute {
+	if err != nil || duration <= 0 || duration > 5*time.Minute || clock.Add(-duration).Before(node.GetCreationTimestamp().Time) {
 		return nil, ErrObservation
 	}
 	out := []Candidate{}
@@ -40,6 +40,15 @@ func MetricSignals(node, metrics unstructured.Unstructured, observed time.Time) 
 		if err != nil || cap.Sign() <= 0 {
 			return nil, ErrObservation
 		}
+		// Bind every usage sample to both native limits of the current Node.
+		nativeCapacity, present, capacityErr := unstructured.NestedString(node.Object, "status", "capacity", name)
+		if capacityErr != nil || !present {
+			return nil, ErrObservation
+		}
+		physical, err := apiresource.ParseQuantity(nativeCapacity)
+		if err != nil || physical.Sign() <= 0 || cap.Cmp(physical) > 0 {
+			return nil, ErrObservation
+		}
 		// Exact decimal comparison avoids rounding a nanocore boundary upward.
 		lhs, rhs := used.AsDec(), cap.AsDec()
 		lhs.Mul(lhs, apiresource.NewQuantity(10, apiresource.DecimalSI).AsDec())
@@ -52,7 +61,7 @@ func MetricSignals(node, metrics unstructured.Unstructured, observed time.Time) 
 		if name == "memory" {
 			symptom = "MemoryUtilizationHigh"
 		}
-		data, _ := json.Marshal(map[string]any{"reason": symptom, "nativeKind": "NodeMetrics", "nativeUID": string(node.GetUID()), "nodeResourceVersion": node.GetResourceVersion(), "metricAPI": "metrics.k8s.io/v1beta1", "timestamp": clock.UTC().Format(time.RFC3339Nano), "window": window, "resource": name, "usage": usage, "allocatable": capacity, "policy": "utilization-over-90-percent/v1", "causalConfirmation": false})
+		data, _ := json.Marshal(map[string]any{"reason": symptom, "nativeKind": "NodeMetrics", "nativeUID": string(node.GetUID()), "nodeResourceVersion": node.GetResourceVersion(), "metricAPI": "metrics.k8s.io/v1beta1", "timestamp": clock.UTC().Format(time.RFC3339Nano), "window": window, "resource": name, "usage": usage, "allocatable": capacity, "capacity": nativeCapacity, "policy": "utilization-over-90-percent/v1", "causalConfirmation": false})
 		out = append(out, Candidate{RuleID: "kubernetes/" + symptom + "/v1", RuleFamily: "node", NormalizedSymptom: symptom, ResourceKind: "Node", ResourceUID: string(node.GetUID()), State: state, ObservedAt: clock, StartsAt: clock.Add(-duration), TimeReliable: true, Object: metrics, NativeData: data})
 	}
 	return out, nil

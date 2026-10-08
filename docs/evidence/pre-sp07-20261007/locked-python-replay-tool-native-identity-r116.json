@@ -1,0 +1,35 @@
+{
+  "observedAt": "2026-10-07T07:42:02.257784+00:00",
+  "command": [
+    "docker",
+    "--context",
+    "orbstack",
+    "run",
+    "--rm",
+    "--pull=never",
+    "--network=none",
+    "--read-only",
+    "--cap-drop=ALL",
+    "--security-opt=no-new-privileges",
+    "--label",
+    "ops.platform.owner=pre-sp07-20261007",
+    "--label",
+    "ops.platform.purpose=locked-replay-tool-identity",
+    "--entrypoint",
+    "python3",
+    "python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+    "--version"
+  ],
+  "exitCode": 0,
+  "reportedVersion": "Python 3.12.14",
+  "imageID": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+  "repoDigests": [
+    "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f"
+  ],
+  "os": "linux",
+  "architecture": "arm64",
+  "networkDisabled": true,
+  "imagePullDisabled": true,
+  "sourceLocksUnchanged": true,
+  "fullReplayAcceptance": false
+}

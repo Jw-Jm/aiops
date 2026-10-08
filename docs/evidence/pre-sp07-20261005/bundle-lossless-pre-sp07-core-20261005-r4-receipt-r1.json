@@ -1,0 +1,52 @@
+{
+  "observedAt": "2026-10-05T14:56:09.220709+00:00",
+  "bundleId": "pre-sp07-core-20261005-r4",
+  "originalSignedPayloadDigest": "sha256:0194b8be33fe31866704292858fcf8d2589e8f2b21e5b45c2c01a781166ef49c",
+  "actualIsolatedRestoredPayloadDigest": "sha256:0194b8be33fe31866704292858fcf8d2589e8f2b21e5b45c2c01a781166ef49c",
+  "archiveSHA256": "sha256:81ac1fef347fbc5f6768e09fdd9bcea8817cba79fb017f17372d09844bd856f7",
+  "archiveBytes": 2557986656,
+  "originalBytes": 6100491365,
+  "fullReferenceBundle": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r5/signed-bundle-r5",
+  "referencePayloadDigest": "sha256:723bc9e546a1f8288343d8b2a40a6068760522d5467623e9d836aaede3fc3144",
+  "originalFileIdentity": {
+    "device": 16777233,
+    "inode": 71254990,
+    "uid": 501
+  },
+  "commands": [
+    {
+      "command": [
+        "cp",
+        "-c",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r5/signed-bundle-r5/payload.tar.zst",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-lossless-archives-r1/pre-sp07-core-20261005-r4/isolated-restore/payload.tar.zst"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "rsync",
+        "--no-whole-file",
+        "--checksum",
+        "--only-write-batch=/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-lossless-archives-r1/pre-sp07-core-20261005-r4/payload.rsync-batch",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/signed-bundle-r4/payload.tar.zst",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-lossless-archives-r1/pre-sp07-core-20261005-r4/isolated-restore/"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "rsync",
+        "--read-batch=/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-lossless-archives-r1/pre-sp07-core-20261005-r4/payload.rsync-batch",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-lossless-archives-r1/pre-sp07-core-20261005-r4/isolated-restore/"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "restoreTool": "/usr/bin/rsync",
+  "restoreToolSHA256": "sha256:6c4eff16c816cc8a309560982c60fc47857f9852ff54a067f98f0cf88b1d2923",
+  "retention": "all signed bytes preserved in reversible local archive; detached manifest/signature retained; historic r10 and current r5 remain full Bundles; this is private intermediate package storage only",
+  "noProtectedDataOrBackupOrKeyModified": true,
+  "historicalEvidenceRestore": false,
+  "fullR4Acceptance": false
+}

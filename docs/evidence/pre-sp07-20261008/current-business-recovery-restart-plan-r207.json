@@ -1,0 +1,27 @@
+{
+  "observedAt": "2026-10-08T02:47:44.156453+00:00",
+  "namespace": "ops-pre-sp07-core-r8-20261007",
+  "beforeMutation": true,
+  "reason": "Unseal completed; restart exact owned failed workloads to recover from backoff",
+  "resources": [
+    {
+      "deployment": "ops-api",
+      "uid": "1acbcf86-8595-4fe8-bfb5-68ddf0384d23",
+      "image": "ops.local/task27/platform-api@sha256:e449278def8189bba2bc558973d34f777beef7228792e0f84119994ea088f4b8",
+      "helmOwner": "ops-platform"
+    },
+    {
+      "deployment": "ops-worker",
+      "uid": "457331e2-7e85-4041-a659-b1eaec7a3def",
+      "image": "ops.local/task27/platform-worker@sha256:c68df70de5e1887f48238f18d19bfdb643f7b8f4b3205973b398b4a83c57769a",
+      "helmOwner": "ops-platform"
+    },
+    {
+      "deployment": "ops-investigator",
+      "uid": "f7831ffb-e5eb-4584-a882-a1036fcd1500",
+      "image": "ops.local/task27/holmesgpt@sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593",
+      "helmOwner": "ops-platform"
+    }
+  ],
+  "noStorageKeyOrScopeMutation": true
+}

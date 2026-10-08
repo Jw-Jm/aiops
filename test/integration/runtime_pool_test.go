@@ -20,12 +20,13 @@ func TestRuntimeDatabaseLoginCannotRegainOwnerOrOtherProcess(t *testing.T) {
 		t.Fatal("superuser login accepted after SET ROLE")
 	}
 	name := "sp03_runtime_" + strings.ReplaceAll(uuid.NewString(), "-", "")
-	if _, err := db.ExecContext(ctx, `CREATE ROLE "`+name+`" LOGIN; GRANT api_runtime_role TO "`+name+`"`); err != nil {
+	password := strings.ReplaceAll(uuid.NewString()+uuid.NewString(), "-", "")
+	if _, err := db.ExecContext(ctx, `CREATE ROLE "`+name+`" LOGIN PASSWORD '`+password+`'; GRANT api_runtime_role TO "`+name+`"`); err != nil {
 		t.Fatal(err)
 	}
 	defer db.ExecContext(ctx, `DROP ROLE "`+name+`"`)
 	u, _ := url.Parse(dsn)
-	u.User = url.User(name)
+	u.User = url.UserPassword(name, password)
 	pool, err := app.OpenRuntimePool(ctx, u.String(), "api_runtime_role")
 	if err != nil {
 		t.Fatal(err)

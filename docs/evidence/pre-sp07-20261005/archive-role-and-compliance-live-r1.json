@@ -1,0 +1,32 @@
+{
+  "observedAt": "2026-10-05T01:16:22.114558+00:00",
+  "command": [
+    "go",
+    "test",
+    "-tags",
+    "pre_sp07_live",
+    "./internal/bootstrap",
+    "-run",
+    "^TestFormalArchiveBootstrapActualIAMAndCompliance$",
+    "-count=1",
+    "-v"
+  ],
+  "exitCode": 0,
+  "namespace": "ops-pre-sp07-oidc-20261005",
+  "fixedTunnel": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "-n",
+    "ops-pre-sp07-oidc-20261005",
+    "port-forward",
+    "--address=127.0.0.1",
+    "service/ops-seaweedfs-s3",
+    "59033:8333"
+  ],
+  "ownedTunnelPID": 52096,
+  "fullFreshCoreAcceptance": false,
+  "signedBundleInstall": false,
+  "protectedObjectAndStorage": "retained; no protection disabled; no storage deletion",
+  "bootstrapCredentialRetirement": "pending"
+}

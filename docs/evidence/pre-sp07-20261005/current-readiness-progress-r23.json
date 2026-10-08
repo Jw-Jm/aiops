@@ -1,0 +1,74 @@
+{
+  "observedAt": "2026-10-05T06:15:52.338769+00:00",
+  "currentTargetedRegression": {
+    "command": [
+      "go",
+      "test",
+      "./internal/bundle",
+      "./internal/profile",
+      "./cmd/opsctl",
+      "-count=1"
+    ],
+    "exitCode": 0,
+    "log": "current-holmes-material-and-profile-selection-green-r3.log"
+  },
+  "confirmedFixes": [
+    {
+      "id": "PRE-SP07-INSTALL-002",
+      "defect": "authenticated material named investigator was absent from Catalog; workload investigator uses exact holmesgpt material",
+      "red": "current-holmes-material-and-profile-selection-red-r1.log",
+      "implementation": [
+        "internal/bundle/business_values.go",
+        "internal/bundle/model_probe.go"
+      ]
+    },
+    {
+      "id": "PRE-SP07-PROFILE-003",
+      "defect": "explicit namespace/name selection was ignored before conflict detection and bundled scope was discarded",
+      "red": "current-holmes-material-and-profile-selection-red-r1.log",
+      "implementation": [
+        "internal/profile/resolve.go",
+        "internal/profile/detect.go"
+      ]
+    }
+  ],
+  "metricsAddon": {
+    "signedBundle": "pre-sp07-metrics-addon-20261005-r3",
+    "formalInstall": "metrics-addon-formal-install-r1.json",
+    "status": "FORMAL_SIGNED_COLD_SELECTED_IMAGE_INSTALL_PASSED",
+    "fullR3Acceptance": false,
+    "pending": [
+      "runtime IPv4/IPv6 egress negative plus independent positive control",
+      "Pod metrics/current UID/scope association",
+      "Inspection/API/MCP end-to-end on final current core",
+      "authorization/freshness/rebuild/recovery matrix on final deployment"
+    ]
+  },
+  "currentNativeSampleRestore": {
+    "evidence": "current-native-evidence-restore-r3.json",
+    "status": "PASS_CURRENT_NATIVE_EVIDENCE_SAMPLE",
+    "original27HistoricalEvidenceRestored": false,
+    "signedAuditRestore": false,
+    "fullR4Acceptance": false
+  },
+  "deepflow": {
+    "exactOriginalModuleSourceRecords": 333,
+    "states": {
+      "SOURCE_PREPARED_BINARY_VERSION_ONLY_UNVERIFIED": 218,
+      "UNVERIFIED": 30,
+      "SOURCE_PREPARED_H1_VERIFIED": 85
+    },
+    "compilerVersionSourceArchives": 4,
+    "distributionAdmission": "PENDING",
+    "realCurrentChain": "PENDING"
+  },
+  "r0ToR6": "IN_PROGRESS",
+  "originalHistoricalRecovery": "BLOCKED_NO_MATCHING_TRANSIT_MATERIAL_USER_CONFIRMED_NONE",
+  "originalProtectedResourcesRetained": true,
+  "performance": "USER_WAIVED; no PASS",
+  "virtualization": "DEFERRED_DISABLED_UNVERIFIED",
+  "pyrca": "DISABLED_EXCLUDED",
+  "sp07Started": false,
+  "finalIndependentReview": "NOT_STARTED_DELIVERY_INCOMPLETE",
+  "gitDelivery": "NOT_COMMITTED_NOT_PUSHED"
+}

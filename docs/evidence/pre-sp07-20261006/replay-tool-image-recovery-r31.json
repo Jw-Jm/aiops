@@ -1,0 +1,55 @@
+{
+  "observedAt": "2026-10-06T00:45:48.219823+00:00",
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+      ],
+      "exitCode": 1,
+      "phase": "connected material preparation; not target offline install"
+    },
+    {
+      "command": [
+        "docker",
+        "pull",
+        "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+      ],
+      "exitCode": 0,
+      "phase": "connected material preparation; not target offline install"
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "save",
+        "-o",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/replay-tool-image-r31/locked-golang-image.tar",
+        "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "selectedReference": "golang:1.27.1-alpine@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414",
+  "imageConfigId": "sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414",
+  "repoDigests": [
+    "golang@sha256:8a5910f31396cd4d89662f56c68b3ae31d374308270a1c3bd96672ee5ed43414"
+  ],
+  "archiveSHA256": "1da27f9d91ba5897c372e830a7dce9ce7e37853341d21cfb222a0907a731cb4f",
+  "archiveBytes": 72326656,
+  "privateMaterialPath": "/Users/mssc/.local/state/ops/pre-sp07-20261004/replay-tool-image-r31/locked-golang-image.tar",
+  "offlineReplayUsesNetworkNoneAndPullNever": true,
+  "targetInstallNetworkUsed": false,
+  "fullColdCorePass": false
+}

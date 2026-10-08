@@ -1,0 +1,114 @@
+{
+  "observedAt": "2026-10-08T03:26:38.492245+00:00",
+  "priorFailuresRetained": [
+    "current-core-r9-raft-evidence-isolated-restore-r238.json",
+    "current-core-r9-raft-evidence-isolated-restore-r239.json"
+  ],
+  "sourceNamespace": "ops-pre-sp07-core-r9-20261008",
+  "sourceObjectsOrProtectionChanged": false,
+  "fullR4RecoveryAcceptance": false,
+  "original27HistoricalRecovery": false,
+  "targetContainerId": "86d27fe1f7118c2a10a9d981dce78ab88d1cbaaf6966160caaacea1420e05d83",
+  "targetVolume": "ops-pre-sp07-20261008-core-r9-raft-restore-r238-data",
+  "targetNetwork": "ops-pre-sp07-20261008-core-r9-raft-restore-r238",
+  "serverOnlyTLSConfigProjection": true,
+  "snapshotRestoreCompletedByPreviousAttempt": "current-core-r9-raft-evidence-isolated-restore-r239.json",
+  "snapshotNotReappliedByThisAttempt": true,
+  "newRuntimeEvidenceRestoration": true,
+  "restoredOriginalIdentity": true,
+  "restoredTransitLatestVersion": 1,
+  "matchingSharesRequired": true,
+  "evidenceId": "95705f64-86a2-5db3-bc03-9e1cc361820a",
+  "versionId": "672390d091d221b92f5751a1b304b24e",
+  "plaintextDigest": "sha256:1933835989fdf8e4c4b06369316d940d745d373f4293caa0adfa83db62c937c0",
+  "snapshotSHA256": "sha256:bef8a7234cfcc9ea6679e1a35a4066900ad846a17a8436183f932d30a5145e01",
+  "snapshotBytes": 75806,
+  "originalSourceVersionReadAndDecryptControl": "current-core-r9-raft-evidence-isolated-restore-r238.json",
+  "restoredTransitHistoricalDecryptionPassed": true,
+  "fullDatabaseObjectAuditRestore": false,
+  "isolatedTargetStoppedAndRetained": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "86d27fe1f7118c2a10a9d981dce78ab88d1cbaaf6966160caaacea1420e05d83"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "network",
+        "inspect",
+        "ops-pre-sp07-20261008-core-r9-raft-restore-r238"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "start",
+        "86d27fe1f7118c2a10a9d981dce78ab88d1cbaaf6966160caaacea1420e05d83"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "86d27fe1f7118c2a10a9d981dce78ab88d1cbaaf6966160caaacea1420e05d83"
+      ],
+      "exitCode": 0
+    },
+    {
+      "path": "sys/seal-status",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "sys/unseal",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "sys/unseal",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "sys/seal-status",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "transit/keys/evidence-archive",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "transit/decrypt/evidence-archive",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "stop",
+        "86d27fe1f7118c2a10a9d981dce78ab88d1cbaaf6966160caaacea1420e05d83"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

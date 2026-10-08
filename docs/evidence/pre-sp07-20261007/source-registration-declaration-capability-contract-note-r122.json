@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-10-07T07:58:34.762117+00:00",
+  "observation": "SourceRegistration response declares disabled/unverified, while separately authorized VictoriaMetrics adapter successfully queried",
+  "classification": "existing registration-declaration Contract, not independently confirmed runtime defect",
+  "formalContract": "api/openapi/platform-v1.yaml:1043; declaration cannot enable queries, adapter admission needs separately versioned verification contract",
+  "implementation": "internal/httpapi/source_handlers.go:288",
+  "registrationNotUsedAsRuntimeAdmissionProof": true,
+  "runtimeProof": "current-core-r8-native-victoria-evidence-api-r120.json",
+  "contractEnumsNotWidenedWithoutVersionedConsumerDecision": true,
+  "fullSourceAdmissionAcceptance": false
+}

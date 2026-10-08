@@ -1,0 +1,15 @@
+=== RUN   TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss
+=== RUN   TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss/#00
+=== RUN   TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss/Always
+=== RUN   TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss/IfNotPresent
+    installer_test.go:62: cache loss may contact a registry with policy "IfNotPresent"
+=== RUN   TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss/Never
+    installer_test.go:59: verified local image rejected: rendered image example.invalid/api@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa is not in the verified Bundle or uses online pull policy
+--- FAIL: TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss (0.00s)
+    --- PASS: TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss/#00 (0.00s)
+    --- PASS: TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss/Always (0.00s)
+    --- FAIL: TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss/IfNotPresent (0.00s)
+    --- FAIL: TestOfflineRenderedImagesNeverContactRegistryAfterCacheLoss/Never (0.00s)
+FAIL
+FAIL	ops-platform/internal/bundle	0.950s
+FAIL

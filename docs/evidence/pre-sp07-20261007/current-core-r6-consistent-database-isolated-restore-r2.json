@@ -1,0 +1,219 @@
+{
+  "observedAt": "2026-10-07T02:32:11.270091+00:00",
+  "sourceNamespace": "ops-pre-sp07-core-r6-20261006",
+  "fullR4RecoveryAcceptance": false,
+  "protectedOriginal27Restored": false,
+  "sourceDataDeletedOrReinitialized": false,
+  "fullObjectTransitAuditJointRestore": false,
+  "newFormalDatabaseActualIsolatedRestore": false,
+  "failureType": "RuntimeError",
+  "failureFrames": [
+    {
+      "file": "restore-current-core-r6-consistent-database-r2.py",
+      "line": 42
+    },
+    {
+      "file": "restore-current-core-r6-consistent-database-r2.py",
+      "line": 9
+    }
+  ],
+  "isolatedTargetStoppedAndRetained": true,
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "-i",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1"
+      ],
+      "purpose": "consistent read-only snapshot exporter",
+      "pid": 23324
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "pg_dump",
+        "-U",
+        "ops_bootstrap",
+        "-Fc",
+        "--snapshot=0000002B-00000002-1",
+        "ops"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "pg_dumpall",
+        "-U",
+        "ops_bootstrap",
+        "--globals-only"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "pg_dump",
+        "-U",
+        "ops_bootstrap",
+        "-Fc",
+        "--serializable-deferrable",
+        "keycloak"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "openssl",
+        "enc",
+        "-aes-256-cbc",
+        "-pbkdf2",
+        "-iter",
+        "200000",
+        "-salt",
+        "-in",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-database-restore-r2/database-backup.tar",
+        "-out",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-database-restore-r2/database-backup.tar.enc",
+        "-pass",
+        "file:/Users/mssc/.local/state/ops/pre-sp07-20261004/backup-encryption.pass"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "openssl",
+        "enc",
+        "-d",
+        "-aes-256-cbc",
+        "-pbkdf2",
+        "-iter",
+        "200000",
+        "-in",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-database-restore-r2/database-backup.tar.enc",
+        "-out",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-database-restore-r2/database-backup-readback.tar",
+        "-pass",
+        "file:/Users/mssc/.local/state/ops/pre-sp07-20261004/backup-encryption.pass"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "volume",
+        "create",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-core-r6-database-restore-r2",
+        "--label",
+        "ops.platform.purpose=isolated-current-database-restore",
+        "ops-pre-sp07-20261007-core-r6-database-restore-r2-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "-d",
+        "--pull=never",
+        "--network=none",
+        "--name",
+        "ops-pre-sp07-20261007-core-r6-database-restore-r2",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-core-r6-database-restore-r2",
+        "--label",
+        "ops.platform.purpose=isolated-current-database-restore",
+        "--env-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-database-restore-r2/restore-postgresql.env",
+        "--mount",
+        "type=volume,src=ops-pre-sp07-20261007-core-r6-database-restore-r2-data,dst=/var/lib/postgresql",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "-i",
+        "a27d53d2b928df26d9f0464ebeb1caf216f3f2cc7b09bb27d2420c108d9b6b4f",
+        "psql",
+        "-X",
+        "-U",
+        "restore_admin",
+        "-d",
+        "restore_admin",
+        "-v",
+        "ON_ERROR_STOP=1"
+      ],
+      "exitCode": 3
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "stop",
+        "a27d53d2b928df26d9f0464ebeb1caf216f3f2cc7b09bb27d2420c108d9b6b4f"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

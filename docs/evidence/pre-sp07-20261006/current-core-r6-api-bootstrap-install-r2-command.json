@@ -1,0 +1,77 @@
+{
+  "observedAt": "2026-10-06T13:18:21.618821+00:00",
+  "startedAt": "2026-10-06T13:17:03.828431+00:00",
+  "bundleId": "pre-sp07-core-20261006-r8",
+  "payloadDigest": "sha256:a7e265599e5436cb08bec35b0a6d522a5bcd90f912ba56568a3d9dc8d9d4d3d5",
+  "sourceBinding": "current-core-material-signing-input-r8.json",
+  "namespace": "ops-pre-sp07-core-r6-20261006",
+  "command": [
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+    "install",
+    "--profile",
+    "core",
+    "--resolved",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/profile-resolved-r1.yaml",
+    "--bundle",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8",
+    "--key",
+    "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem",
+    "--business-values",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/business-values-r1.json",
+    "--stage",
+    "bootstrap-api",
+    "--offline"
+  ],
+  "exitCode": 0,
+  "minimumHostFreeBytes": 13775486976,
+  "operatorStopReason": null,
+  "selectedComponentBeforeImport": [
+    {
+      "component": "keycloak",
+      "reference": "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+      "inspectExitCode": 0,
+      "presentBeforeImport": true
+    },
+    {
+      "component": "openbao",
+      "reference": "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+      "inspectExitCode": 0,
+      "presentBeforeImport": true
+    },
+    {
+      "component": "postgresql",
+      "reference": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+      "inspectExitCode": 0,
+      "presentBeforeImport": true
+    },
+    {
+      "component": "seaweedfs",
+      "reference": "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e",
+      "inspectExitCode": 0,
+      "presentBeforeImport": true
+    },
+    {
+      "component": "victoriaLogs",
+      "reference": "victoriametrics/victoria-logs@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e",
+      "inspectExitCode": 0,
+      "presentBeforeImport": true
+    },
+    {
+      "component": "victoriaMetrics",
+      "reference": "victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638",
+      "inspectExitCode": 0,
+      "presentBeforeImport": true
+    },
+    {
+      "component": "vmalert",
+      "reference": "docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311",
+      "inspectExitCode": 0,
+      "presentBeforeImport": true
+    }
+  ],
+  "currentSourceFormalAPIBootstrapInstall": true,
+  "allOCIReferencesAbsentBeforeImport": false,
+  "fullColdCoreAcceptance": false,
+  "businessAcceptance": false,
+  "rootProtectedDataAdoptedOrDeleted": false
+}

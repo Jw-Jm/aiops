@@ -1,0 +1,45 @@
+{
+  "observedAt": "2026-10-07T04:38:13.214802+00:00",
+  "bundleId": "pre-sp07-core-20261007-r10",
+  "payloadDigest": "sha256:4d4d97dfb1f6ceee959da86d9405b7d17b9faefe49a1fe9c639681230b450977",
+  "materialCount": 32,
+  "independentTrustFileSHA256": "sha256:47f3b2279069c4b72c9b1ccb3db05de1e5805677d6922e7b2cc4d2a6f18569a7",
+  "sourceBinding": "current-core-material-signing-input-r10.json",
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r10-retry-r3/opsctl-host",
+        "bundle",
+        "build",
+        "--spec",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r10-retry-r3/build-spec-r10.json",
+        "--output",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r10-retry-r3/signed-bundle-r10",
+        "--signing-key",
+        "/Users/mssc/.cache/ops-sp06-20261004/bundle-signing.pem"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r10-retry-r3/opsctl-host",
+        "bundle",
+        "verify",
+        "--manifest",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r10-retry-r3/signed-bundle-r10/bundle.lock.json",
+        "--signature",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r10-retry-r3/signed-bundle-r10/bundle.lock.sig",
+        "--payload",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r10-retry-r3/signed-bundle-r10/payload.tar.zst",
+        "--key",
+        "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "status": "SIGNED_CURRENT_CORE_MATERIAL_INDEPENDENTLY_VERIFIED",
+  "freshInstallAcceptance": false,
+  "coldCoreAcceptance": false,
+  "deepflowAcceptance": false,
+  "modelWeightsDistributed": false
+}

@@ -1,0 +1,35 @@
+{
+  "observedAt": "2026-10-08T03:07:35.441600+00:00",
+  "jobId": "01a11974-8d2d-7024-bc30-eb5d9f16bf4c",
+  "actualSuccessfulModelMCPChainPass": false,
+  "fullRecoveryAcceptance": false,
+  "APIOrWorkerRestartedByThisGate": true,
+  "completeJobTakeoverAndSuccessfulStepNoRerunPass": false,
+  "currentSuccessfulModelMCPChainPass": false,
+  "wireContract": "internal/httpapi/investigation_handlers.go: typed job.state payload and signed opaque cursor; eventId sequence in Envelope",
+  "currentSuccessfulChainReceipt": "current-core-r9-investigation-chain-live-receipt-r221.json",
+  "terminalSuccessfulJobProofOnly": true,
+  "activeJobTakeoverNotClaimed": true,
+  "newModelCallsByGate": 0,
+  "failureType": "AssertionError",
+  "exitCode": 1,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:e007949ac4aaf6cab5943fdc067a2ae1c2d423cd89a26d2f9808a9094ebe1ff4"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/events",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:25b9861bec553c7c5040f56d0dde3531e73ef64b0c62234c2b92a03a9d055764"
+    }
+  ],
+  "ownedPortForwardStopped": true,
+  "signalActuallyExecuted": false,
+  "operatorFailureBeforeSignal": "Successful terminal SSE uses job.completed; failed-job driver wrongly expected job.state. Actual frames preserved; no signal executed."
+}

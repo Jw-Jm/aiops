@@ -30,6 +30,7 @@ import (
 )
 
 type SP06Config struct {
+	IdentityMode         string               `json:"identityMode"`
 	Namespace            string               `json:"namespace"`
 	ListenAddress        string               `json:"listenAddress"`
 	InvestigatorEndpoint string               `json:"investigatorEndpoint"`
@@ -58,7 +59,7 @@ func loadSP06() (*SP06Config, error) {
 		return nil, errors.New("SP06 configuration invalid")
 	}
 	var extra any
-	if d.Decode(&extra) != io.EOF || c.Namespace == "" || c.PolicyName == "" || len(c.Tenants) == 0 || !c.Budget.Valid() {
+	if d.Decode(&extra) != io.EOF || c.Namespace == "" || c.PolicyName == "" || len(c.Tenants) == 0 || !c.Budget.Valid() || !validIdentityMode(c.IdentityMode) {
 		return nil, errors.New("SP06 configuration invalid")
 	}
 	u, err := url.Parse(c.InvestigatorEndpoint)
@@ -71,7 +72,17 @@ func loadSP06() (*SP06Config, error) {
 	}
 	return &c, nil
 }
-func (c *SP06Config) trust(ctx context.Context, allowed string) (*tls.Config, auth.WorkloadTrust, error) {
+func (c *SP06Config) trust(ctx context.Context, local, allowed string) (*tls.Config, auth.WorkloadTrust, error) {
+	if !validIdentityMode(c.IdentityMode) {
+		return nil, auth.WorkloadTrust{}, errors.New("SP06 workload identity mode invalid")
+	}
+	if c.IdentityMode == "openbao-kubernetes" {
+		identity, err := auth.NewWorkloadIdentity(c.Namespace, allowed)
+		if err != nil {
+			return nil, auth.WorkloadTrust{}, err
+		}
+		return runtimeWorkloadIdentity(ctx, c.Namespace, local, c.CAFile, []auth.WorkloadIdentity{identity})
+	}
 	b, err := os.ReadFile(c.CAFile)
 	if err != nil {
 		return nil, auth.WorkloadTrust{}, err
@@ -96,37 +107,42 @@ func (c *SP06Config) trust(ctx context.Context, allowed string) (*tls.Config, au
 	config.Certificates = []tls.Certificate{cert}
 	return config, trust, nil
 }
-func sp06Signer(ctx context.Context, serviceAccount string) (investigation.ContextSigner, error) {
+func sp06Signer(ctx context.Context, serviceAccount string, requireProjected bool) (investigation.ContextSigner, error) {
 	ca, err := os.ReadFile(os.Getenv("OPENBAO_CA_FILE"))
 	if err != nil {
 		return investigation.ContextSigner{}, err
 	}
-	bao, err := openbao.NewClient(openbao.ClientConfig{Address: os.Getenv("OPENBAO_ADDR"), CACertBundle: ca, ServiceDomain: os.Getenv("OPENBAO_SERVICE_DOMAIN")})
+	bao, err := openbao.NewClient(openbao.ClientConfig{Address: os.Getenv("OPENBAO_ADDR"), ServerName: os.Getenv("OPENBAO_SERVER_NAME"), CACertBundle: ca, ServiceDomain: os.Getenv("OPENBAO_SERVICE_DOMAIN")})
 	if err != nil {
 		return investigation.ContextSigner{}, err
 	}
+	var transit investigation.TransitSigning = bao
 	if tokenFile := os.Getenv("OPENBAO_INVOCATION_TOKEN_FILE"); tokenFile != "" {
+		if requireProjected {
+			return investigation.ContextSigner{}, errors.New("current workload Context signing requires projected TokenReview authentication")
+		}
 		token, err := os.ReadFile(tokenFile)
 		if err != nil || len(token) > 65536 {
 			return investigation.ContextSigner{}, errors.New("SP06 mounted Transit credential unavailable")
 		}
 		bao.SetToken(string(bytes.TrimSpace(token)))
 	} else {
-		if _, err = bao.LoginProjectedServiceAccount(ctx, os.Getenv("OPENBAO_PROJECTED_TOKEN_FILE"), serviceAccount+"-workload"); err != nil {
+		transit, err = openbao.NewProjectedInvocationSigning(bao, os.Getenv("OPENBAO_PROJECTED_TOKEN_FILE"), serviceAccount)
+		if err != nil {
 			return investigation.ContextSigner{}, err
 		}
 	}
-	if _, _, err = bao.SigningKeys(ctx, "investigation-signing"); err != nil {
+	if _, _, err = transit.SigningKeys(ctx, "investigation-signing"); err != nil {
 		return investigation.ContextSigner{}, err
 	}
-	return investigation.ContextSigner{Transit: bao, Key: "investigation-signing"}, nil
+	return investigation.ContextSigner{Transit: transit, Key: "investigation-signing"}, nil
 }
 func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Handlers, trust configregistry.SignatureVerifier) (func(), error) {
 	c, err := loadSP06()
 	if err != nil || c == nil {
 		return func() {}, err
 	}
-	signer, err := sp06Signer(ctx, "ops-api")
+	signer, err := sp06Signer(ctx, "ops-api", c.IdentityMode == "openbao-kubernetes")
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +181,7 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 		}
 		return nil
 	}
-	tlsConfig, workloadTrust, err := c.trust(ctx, "ops-investigator")
+	tlsConfig, workloadTrust, err := c.trust(ctx, "ops-api", "ops-investigator")
 	if err != nil {
 		return nil, err
 	}
@@ -226,11 +242,11 @@ func StartSP06Worker(ctx context.Context, pool *pgxpool.Pool) (func(), error) {
 	if err != nil || c == nil {
 		return func() {}, err
 	}
-	signer, err := sp06Signer(ctx, "ops-worker")
+	signer, err := sp06Signer(ctx, "ops-worker", c.IdentityMode == "openbao-kubernetes")
 	if err != nil {
 		return nil, err
 	}
-	tlsConfig, trust, err := c.trust(ctx, "ops-investigator")
+	tlsConfig, trust, err := c.trust(ctx, "ops-worker", "ops-investigator")
 	if err != nil {
 		return nil, err
 	}

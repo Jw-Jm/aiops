@@ -1,0 +1,1133 @@
+{
+  "items": [
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "kubernetes",
+        "namespace": "default",
+        "uid": "0dd56c06-d8e8-467f-8285-607b2a36c427",
+        "resourceVersion": "69",
+        "creationTimestamp": "2026-09-24T14:09:16Z",
+        "labels": {
+          "kubernetes.io/service-name": "kubernetes"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.139.2"
+          ],
+          "conditions": {
+            "ready": true
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "https",
+          "port": 26443,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "holmes-holmes-cndcs",
+        "namespace": "holmes",
+        "uid": "b1f638d4-09b0-4a73-8079-6ead91f0711e",
+        "resourceVersion": "352513",
+        "creationTimestamp": "2026-09-24T14:31:11Z",
+        "labels": {
+          "app": "holmes",
+          "app.kubernetes.io/managed-by": "Helm",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "kubernetes.io/service-name": "holmes-holmes"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "holmes-holmes",
+            "uid": "65a449df-b085-4b39-b339-5da5a9c1e8b5"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.33"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "holmes-holmes-69ff4b49cf-54mxf",
+            "namespace": "holmes",
+            "uid": "397650d2-bf53-4cfe-b2de-cce3e056d0a8"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "appProtocol": "http",
+          "name": "http",
+          "port": 5050,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "kube-dns-zs8c2",
+        "namespace": "kube-system",
+        "uid": "d763804d-35ef-4f3b-a955-4e2ae8ed75c5",
+        "resourceVersion": "352350",
+        "creationTimestamp": "2026-09-24T14:09:25Z",
+        "labels": {
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "k8s-app": "kube-dns",
+          "kubernetes.io/cluster-service": "true",
+          "kubernetes.io/name": "CoreDNS",
+          "kubernetes.io/service-name": "kube-dns",
+          "objectset.rio.cattle.io/hash": "90462e4597bdcacaa7038840f786450ac707bfa2"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "kube-dns",
+            "uid": "f3039347-6b0b-4c7e-b872-3de044b24ed1"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.23"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "coredns-75d478d48f-n4hg7",
+            "namespace": "kube-system",
+            "uid": "cb532633-cc5c-4036-b5b5-4b7c8f25394c"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "dns",
+          "port": 53,
+          "protocol": "UDP"
+        },
+        {
+          "name": "dns-tcp",
+          "port": 53,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "vm-core-dns-zllcp",
+        "namespace": "kube-system",
+        "uid": "17006258-479f-4611-a809-36660f384232",
+        "resourceVersion": "352348",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app": "vm-core-dns",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vm",
+          "app.kubernetes.io/version": "v1.116.0",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "jobLabel": "core-dns",
+          "kubernetes.io/service-name": "vm-core-dns",
+          "service.kubernetes.io/headless": ""
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "vm-core-dns",
+            "uid": "c7985f91-3c25-4f89-ae95-20119e5b05df"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.23"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "coredns-75d478d48f-n4hg7",
+            "namespace": "kube-system",
+            "uid": "cb532633-cc5c-4036-b5b5-4b7c8f25394c"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "http-metrics",
+          "port": 9153,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "vm-kube-controller-manager-4lf6k",
+        "namespace": "kube-system",
+        "uid": "46c38b2c-0592-4b92-b645-efdf040897c0",
+        "resourceVersion": "2459",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app": "vm-kube-controller-manager",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vm",
+          "app.kubernetes.io/version": "v1.116.0",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "jobLabel": "kube-controller-manager",
+          "kubernetes.io/service-name": "vm-kube-controller-manager",
+          "service.kubernetes.io/headless": ""
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "vm-kube-controller-manager",
+            "uid": "cb5031ed-de82-4e01-8d54-1134516b9bd8"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": null,
+      "ports": null
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "vm-kube-etcd-5cm2v",
+        "namespace": "kube-system",
+        "uid": "44d624b2-6247-4a61-bdaa-2617112be88a",
+        "resourceVersion": "2469",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app": "vm-kube-etcd",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vm",
+          "app.kubernetes.io/version": "v1.116.0",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "jobLabel": "kube-etcd",
+          "kubernetes.io/service-name": "vm-kube-etcd",
+          "service.kubernetes.io/headless": ""
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "vm-kube-etcd",
+            "uid": "e4ae27d3-e384-4a4a-b92b-ddc060c7c917"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": null,
+      "ports": null
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "vm-kube-scheduler-lvn4v",
+        "namespace": "kube-system",
+        "uid": "b09c90dc-a1b2-4aa7-bcd5-d8915ccb59bc",
+        "resourceVersion": "2466",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app": "vm-kube-scheduler",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vm",
+          "app.kubernetes.io/version": "v1.116.0",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "jobLabel": "kube-scheduler",
+          "kubernetes.io/service-name": "vm-kube-scheduler",
+          "service.kubernetes.io/headless": ""
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "vm-kube-scheduler",
+            "uid": "a2a78d57-6e3f-4c86-84fe-8c102d7d7090"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": null,
+      "ports": null
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "victoria-logs-fc5pp",
+        "namespace": "monitoring",
+        "uid": "107615f9-e5a2-4664-a01b-e498fd6af42b",
+        "resourceVersion": "352365",
+        "creationTimestamp": "2026-09-25T05:21:24Z",
+        "labels": {
+          "app": "victoria-logs",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "kubernetes.io/service-name": "victoria-logs"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "victoria-logs",
+            "uid": "21041d8f-8b02-46f7-9ab4-990b52b086d1"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.16"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "victoria-logs-85d7d5c6d6-j2q4w",
+            "namespace": "monitoring",
+            "uid": "1cc0c044-552e-4423-b5f3-c23aa776a517"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "port": 9428,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "vm-kube-state-metrics-9lrp4",
+        "namespace": "monitoring",
+        "uid": "deeff470-8be9-46c0-80ea-1dd9fc1aa986",
+        "resourceVersion": "352474",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/component": "metrics",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "kube-state-metrics",
+          "app.kubernetes.io/part-of": "kube-state-metrics",
+          "app.kubernetes.io/version": "2.15.0",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "helm.sh/chart": "kube-state-metrics-5.31.2",
+          "kubernetes.io/service-name": "vm-kube-state-metrics"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "vm-kube-state-metrics",
+            "uid": "50356868-45c4-46f0-bb9f-dc3c92fa2e73"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.19"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "vm-kube-state-metrics-6bdf7ddb76-mj9r2",
+            "namespace": "monitoring",
+            "uid": "611612df-0c42-4f88-a034-f619a280a260"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "port": 8080,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "vm-prometheus-node-exporter-r84zt",
+        "namespace": "monitoring",
+        "uid": "57ab6313-deb2-46db-a357-85dc97e598db",
+        "resourceVersion": "352437",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/component": "metrics",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "prometheus-node-exporter",
+          "app.kubernetes.io/part-of": "prometheus-node-exporter",
+          "app.kubernetes.io/version": "1.9.1",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "helm.sh/chart": "prometheus-node-exporter-4.45.2",
+          "jobLabel": "node-exporter",
+          "kubernetes.io/service-name": "vm-prometheus-node-exporter"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "vm-prometheus-node-exporter",
+            "uid": "99358cc4-2bfb-4926-a8dc-1d1ba39b8d34"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.139.2"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "vm-prometheus-node-exporter-n8bt4",
+            "namespace": "monitoring",
+            "uid": "8802c116-ab7a-4fee-ac31-d1a034276d8b"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "metrics",
+          "port": 9100,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "vm-victoria-metrics-operator-dvnfr",
+        "namespace": "monitoring",
+        "uid": "c52d77eb-f649-42a6-88c5-dabc1f2d8174",
+        "resourceVersion": "352410",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "victoria-metrics-operator",
+          "app.kubernetes.io/version": "v0.56.0",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "helm.sh/chart": "victoria-metrics-operator-0.45.0",
+          "kubernetes.io/service-name": "vm-victoria-metrics-operator"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "vm-victoria-metrics-operator",
+            "uid": "05852da6-613a-4f5d-9bce-5e1d146a267d"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.31"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "vm-victoria-metrics-operator-6bb5dfbf4c-lxjb2",
+            "namespace": "monitoring",
+            "uid": "e81d46ca-b401-4ef7-8124-4b8417c5a549"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "port": 8080,
+          "protocol": "TCP"
+        },
+        {
+          "name": "webhook",
+          "port": 9443,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "vmagent-vm-lmr45",
+        "namespace": "monitoring",
+        "uid": "b9a68853-4f24-4220-9f54-5dcab8dea928",
+        "resourceVersion": "352456",
+        "creationTimestamp": "2026-09-25T05:17:14Z",
+        "labels": {
+          "app.kubernetes.io/component": "monitoring",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vmagent",
+          "app.kubernetes.io/version": "v1.116.0",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "kubernetes.io/service-name": "vmagent-vm",
+          "managed-by": "vm-operator"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "vmagent-vm",
+            "uid": "f98a30f6-40c5-4f8c-b1b6-597c2d4ac163"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.20"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "vmagent-vm-85dff8857d-7qjrw",
+            "namespace": "monitoring",
+            "uid": "522ce219-d87a-4fd5-b0d2-a85f2036b47e"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "port": 8429,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "vmsingle-vm-tvx56",
+        "namespace": "monitoring",
+        "uid": "cd59a9e6-4ef3-4e37-aadc-dda4e7a214a3",
+        "resourceVersion": "352381",
+        "creationTimestamp": "2026-09-25T05:17:36Z",
+        "labels": {
+          "app.kubernetes.io/component": "monitoring",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vmsingle",
+          "app.kubernetes.io/version": "v1.116.0",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "kubernetes.io/service-name": "vmsingle-vm",
+          "managed-by": "vm-operator"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "vmsingle-vm",
+            "uid": "1b829aba-c6a2-4df6-a44f-c40929a89881"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.25"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "vmsingle-vm-5bb9646995-zbvt8",
+            "namespace": "monitoring",
+            "uid": "507ded5d-8c3a-4dcb-9935-008d54c5ac87"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "port": 8429,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "ops-api-cttxh",
+        "namespace": "ops-system",
+        "uid": "8d317ae2-355e-49c1-a7b5-5e76aa05f525",
+        "resourceVersion": "352555",
+        "creationTimestamp": "2026-10-01T11:04:50Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "kubernetes.io/service-name": "ops-api",
+          "ops.platform.io/component": "api",
+          "ops.platform.io/release": "ops-platform"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "ops-api",
+            "uid": "97df174e-42d1-486c-98bd-942c5a16e049"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.15"
+          ],
+          "conditions": {
+            "ready": false,
+            "serving": false,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "ops-api-65b6847cdd-jdn8c",
+            "namespace": "ops-system",
+            "uid": "09353c58-0f20-415e-be5f-42fa8ab53138"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "port": 8080,
+          "protocol": "TCP"
+        },
+        {
+          "name": "metrics",
+          "port": 9090,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "ops-keycloak-jnlmr",
+        "namespace": "ops-system",
+        "uid": "be671dfa-08c4-464b-8929-71c0c78ba9cd",
+        "resourceVersion": "352577",
+        "creationTimestamp": "2026-10-01T11:04:16Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-keycloak",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "kubernetes.io/service-name": "ops-keycloak",
+          "ops.platform.io/component": "keycloak",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-dependencies"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "ops-keycloak",
+            "uid": "938d8604-fbdb-42a7-8d89-c211584b9349"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.34"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "ops-keycloak-7fb7d8596c-67g2t",
+            "namespace": "ops-system",
+            "uid": "cbb090e4-42a1-45b1-a0bf-3fb1a74baf9e"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "https",
+          "port": 8443,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "ops-openbao-nwjqw",
+        "namespace": "ops-system",
+        "uid": "47ae1a29-6cc1-4978-9fee-c5ba365d4c8e",
+        "resourceVersion": "352485",
+        "creationTimestamp": "2026-09-27T11:36:05Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-openbao",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "kubernetes.io/service-name": "ops-openbao",
+          "ops.platform.io/component": "openbao",
+          "ops.platform.io/mode": "bundled"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "ops-openbao",
+            "uid": "bb7a6f45-71ca-4cad-803f-a247d033fbc7"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.26"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "hostname": "ops-openbao-0",
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "ops-openbao-0",
+            "namespace": "ops-system",
+            "uid": "d9fdbe25-51ba-4968-b72d-951158c785f8"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "api",
+          "port": 8200,
+          "protocol": "TCP"
+        },
+        {
+          "name": "cluster",
+          "port": 8201,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "ops-postgresql-zd9s2",
+        "namespace": "ops-system",
+        "uid": "d5cbac13-b208-4181-a52a-a3f7514ca382",
+        "resourceVersion": "352416",
+        "creationTimestamp": "2026-10-01T11:04:16Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-postgresql",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "kubernetes.io/service-name": "ops-postgresql",
+          "ops.platform.io/component": "postgresql",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-dependencies"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "ops-postgresql",
+            "uid": "4f5945da-289c-42d5-a1bb-b6c4d4893c4a"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.28"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "hostname": "ops-postgresql-0",
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "ops-postgresql-0",
+            "namespace": "ops-system",
+            "uid": "986978fc-4b67-4522-a395-0763c5ec379d"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "postgres",
+          "port": 5432,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "ops-seaweedfs-s3-fqtzt",
+        "namespace": "ops-system",
+        "uid": "8ef5e85b-344a-4a41-8b53-2b58d9dc7026",
+        "resourceVersion": "352442",
+        "creationTimestamp": "2026-10-01T11:04:16Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-seaweedfs",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "kubernetes.io/service-name": "ops-seaweedfs-s3",
+          "ops.platform.io/component": "seaweedfs",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-dependencies"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "ops-seaweedfs-s3",
+            "uid": "1fa30ece-9e85-4b68-8e57-c0e6ebc7b67b"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.30"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "hostname": "ops-seaweedfs-0",
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "ops-seaweedfs-0",
+            "namespace": "ops-system",
+            "uid": "94096705-34c0-40fe-834a-f3f6ca7c4ad3"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "appProtocol": "https",
+          "name": "s3",
+          "port": 8333,
+          "protocol": "TCP"
+        },
+        {
+          "name": "master",
+          "port": 9333,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "ops-vmalert-4mhhq",
+        "namespace": "ops-system",
+        "uid": "3ecd2fa1-ea83-45ee-8ce6-4abb391292b6",
+        "resourceVersion": "352496",
+        "creationTimestamp": "2026-09-29T12:40:15Z",
+        "labels": {
+          "app": "server",
+          "app.kubernetes.io/instance": "vmalert",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "victoria-metrics-alert",
+          "app.kubernetes.io/version": "v1.116.0",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "helm.sh/chart": "victoria-metrics-alert-0.18.0",
+          "kubernetes.io/service-name": "ops-vmalert",
+          "ops.platform.io/component": "vmalert",
+          "ops.platform.io/release": "vmalert"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "ops-vmalert",
+            "uid": "de8f02b6-be23-4247-8b63-5a280741978a"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.22"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "ops-vmalert-5b48cd5f47-5xqjc",
+            "namespace": "ops-system",
+            "uid": "7ccf45a0-875a-4806-a553-d3b963f10cbd"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "port": 8880,
+          "protocol": "TCP"
+        }
+      ]
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "ops-worker-67dg9",
+        "namespace": "ops-system",
+        "uid": "8c9aa26b-8755-4076-946a-10f66db5d1e7",
+        "resourceVersion": "352558",
+        "creationTimestamp": "2026-10-01T11:04:50Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "kubernetes.io/service-name": "ops-worker",
+          "ops.platform.io/component": "worker",
+          "ops.platform.io/release": "ops-platform"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "ops-worker",
+            "uid": "a31a4da7-0fad-480a-b76e-d42d8120908d"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "endpoints": [
+        {
+          "addresses": [
+            "192.168.194.24"
+          ],
+          "conditions": {
+            "ready": false,
+            "serving": false,
+            "terminating": false
+          },
+          "nodeName": "orbstack",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "ops-worker-567695474-vj9gt",
+            "namespace": "ops-system",
+            "uid": "5859b4ee-c93e-4355-9e24-9496a4aa5ff9"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "port": 8081,
+          "protocol": "TCP"
+        },
+        {
+          "name": "metrics",
+          "port": 9090,
+          "protocol": "TCP"
+        }
+      ]
+    }
+  ]
+}

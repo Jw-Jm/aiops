@@ -7,7 +7,25 @@ from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import NameOID
-from investigator.workload_tls import clients
+from investigator.workload_tls import clients, PeerVerifier
+
+def test_crl_for_another_trusted_issuer_cannot_authorize_peer(tmp_path):
+    now=datetime.datetime.now(datetime.timezone.utc)
+    def authority(serial):
+        key=rsa.generate_private_key(public_exponent=65537,key_size=2048)
+        name=x509.Name([x509.NameAttribute(NameOID.COMMON_NAME,"owned CA "+str(serial))])
+        ca=x509.CertificateBuilder().subject_name(name).issuer_name(name).public_key(key.public_key()).serial_number(serial).not_valid_before(now-datetime.timedelta(minutes=1)).not_valid_after(now+datetime.timedelta(hours=1)).add_extension(x509.BasicConstraints(ca=True,path_length=None),critical=True).sign(key,hashes.SHA256())
+        return ca,key,name
+    a,key_a,name_a=authority(1)
+    b,key_b,name_b=authority(2)
+    identity='spiffe://ops.local/ns/test/sa/ops-api'
+    leaf=x509.CertificateBuilder().subject_name(name_b).issuer_name(name_b).public_key(key_b.public_key()).serial_number(3).not_valid_before(now-datetime.timedelta(minutes=1)).not_valid_after(now+datetime.timedelta(hours=1)).add_extension(x509.SubjectAlternativeName([x509.DNSName('ops-api.test.svc.cluster.local'),x509.UniformResourceIdentifier(identity)]),critical=False).sign(key_b,hashes.SHA256())
+    (tmp_path/'ca.pem').write_bytes(a.public_bytes(serialization.Encoding.PEM)+b.public_bytes(serialization.Encoding.PEM))
+    crl=x509.CertificateRevocationListBuilder().issuer_name(name_a).last_update(now-datetime.timedelta(minutes=1)).next_update(now+datetime.timedelta(minutes=10)).sign(key_a,hashes.SHA256())
+    (tmp_path/'crl.pem').write_bytes(crl.public_bytes(serialization.Encoding.PEM))
+    verifier=PeerVerifier(tmp_path/'ca.pem',tmp_path/'crl.pem')
+    with pytest.raises(RuntimeError,match='WORKLOAD_IDENTITY_REJECTED'):
+        verifier.verify(leaf.public_bytes(serialization.Encoding.DER),identity)
 
 def test_wrong_workload_and_live_revocation_fail_before_http_headers(tmp_path):
     now=datetime.datetime.now(datetime.timezone.utc)

@@ -15,7 +15,7 @@ import (
 // NetworkPolicy creation is asynchronous. Prove enforcement before starting
 // dependencies, using the already authenticated/imported PostgreSQL image.
 // The public addresses are denial probes, never download or runtime endpoints.
-func verifyBootstrapEgress(ctx context.Context, p profile.ResolvedProfile, images []ImageArtifact, run CommandRunner) (result error) {
+func verifyBootstrapEgress(ctx context.Context, installationNamespace string, p profile.ResolvedProfile, images []ImageArtifact, run CommandRunner) (result error) {
 	image := ""
 	for _, item := range images {
 		if item.Name == "postgresql" {
@@ -56,7 +56,7 @@ for attempt in $(seq 1 10); do
 done
 echo NETWORK_POLICY_NOT_ENFORCED
 exit 1`
-	raw, err = run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system", "run", name,
+	raw, err = run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace, "run", name,
 		"--image="+image, "--image-pull-policy=Never", "--restart=Never", "--labels=ops.platform.io/release=ops-platform,ops.platform.io/component=api",
 		"--env=OPS_DNS_IP="+service.Spec.ClusterIP, "--override-type=strategic", "--overrides="+string(overrides), "-o", "json", "--command", "--", "/bin/bash", "-ec", script)
 	if err != nil {
@@ -73,7 +73,7 @@ exit 1`
 	defer func() {
 		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 30*time.Second)
 		defer cancel()
-		raw, err := run(cleanupCtx, "kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system", "get", "pod", name, "-o", "json")
+		raw, err := run(cleanupCtx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace, "get", "pod", name, "-o", "json")
 		var live struct {
 			Metadata struct {
 				UID string `json:"uid"`
@@ -83,13 +83,13 @@ exit 1`
 			result = errors.Join(result, errors.New("probe cleanup ownership cannot be verified"))
 			return
 		}
-		_, err = run(cleanupCtx, "kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system", "delete", "pod", name, "--wait=true", "--timeout=20s")
+		_, err = run(cleanupCtx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace, "delete", "pod", name, "--wait=true", "--timeout=20s")
 		result = errors.Join(result, err)
 	}()
-	if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system", "wait", "--for=jsonpath={.status.phase}=Succeeded", "pod/"+name, "--timeout=120s"); err != nil {
+	if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace, "wait", "--for=jsonpath={.status.phase}=Succeeded", "pod/"+name, "--timeout=120s"); err != nil {
 		return err
 	}
-	raw, err = run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", "ops-system", "logs", "pod/"+name)
+	raw, err = run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace, "logs", "pod/"+name)
 	if err != nil {
 		return err
 	}

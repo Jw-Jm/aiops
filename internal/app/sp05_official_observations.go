@@ -25,10 +25,12 @@ import (
 )
 
 type OfficialInspectionReport struct {
-	ProbeAvailable  bool     `json:"probeAvailable"`
-	MetricAvailable bool     `json:"metricAvailable"`
-	Candidates      int      `json:"candidates"`
-	DegradedSources []string `json:"degradedSources"`
+	ProbeAvailable     bool     `json:"probeAvailable"`
+	MetricAvailable    bool     `json:"metricAvailable"`
+	PodMetricAvailable bool     `json:"podMetricAvailable"`
+	PodMetricDegraded  bool     `json:"podMetricDegraded"`
+	Candidates         int      `json:"candidates"`
+	DegradedSources    []string `json:"degradedSources"`
 }
 
 func startSP05OfficialObservations(ctx context.Context, archive *evidence.ArchiveService, cluster SP04Cluster, client *kube.Client, runtime *observability.Runtime, group *sync.WaitGroup) {
@@ -43,6 +45,7 @@ func startSP05OfficialObservations(ctx context.Context, archive *evidence.Archiv
 			cancel()
 			runtime.Metrics.SetComponentDegraded("sp05-control-plane/"+cluster.SourceID, !report.ProbeAvailable || err != nil)
 			runtime.Metrics.SetComponentDegraded("sp05-metrics/"+cluster.SourceID, !report.MetricAvailable || err != nil)
+			runtime.Metrics.SetComponentDegraded("sp05-pod-metrics/"+cluster.SourceID, report.PodMetricDegraded || err != nil)
 			if err != nil {
 				runtime.Logger.WarnContext(ctx, "SP05 official observation unavailable", "errorClass", collectionErrorClass(err))
 			}
@@ -59,6 +62,31 @@ func startSP05OfficialObservations(ctx context.Context, archive *evidence.Archiv
 // all current admitted Node identities; no separate source/client or scan service
 // is introduced. Optional Metrics failures do not withdraw necessary Recipe facts.
 func InspectSP05OfficialObservations(ctx context.Context, archive *evidence.ArchiveService, cluster SP04Cluster, client *kube.Client, round int) (OfficialInspectionReport, error) {
+	report, err := inspectSP05NodeOfficialObservations(ctx, archive, cluster, client, round)
+	if err != nil || ctx.Err() != nil {
+		return report, err
+	}
+	// Primary native control-plane/Node observations finish first. Optional Pod
+	// metrics use the same client, limiter and round, with a bounded remainder.
+	pass, cancel := context.WithTimeout(ctx, 4*time.Second)
+	defer cancel()
+	repository := evidence.Repository{Pool: archive.Pool}
+	binding, err := repository.RegisteredBinding(pass, evidence.Binding{Tenant: cluster.Tenant, SourceID: cluster.SourceID, Revision: cluster.SourceRevision, SourceType: "kubernetes", BackendLogicalID: cluster.BackendLogicalID})
+	if err != nil {
+		return report, err
+	}
+	if cluster.SourceScopeDigest != "" && evidence.BindingScopeDigest(binding) != cluster.SourceScopeDigest {
+		return report, evidence.ErrScopeUnverified
+	}
+	report.PodMetricAvailable, err = inspectSP05PodMetricObservation(pass, archive, cluster, client, binding, round)
+	report.PodMetricDegraded = err != nil
+	if finalErr := repository.CheckBinding(ctx, binding); finalErr != nil {
+		return report, finalErr
+	}
+	return report, nil
+}
+
+func inspectSP05NodeOfficialObservations(ctx context.Context, archive *evidence.ArchiveService, cluster SP04Cluster, client *kube.Client, round int) (OfficialInspectionReport, error) {
 	report := OfficialInspectionReport{DegradedSources: []string{}}
 	if round < 0 || archive == nil || client == nil {
 		return report, inspection.ErrObservation
@@ -182,7 +210,15 @@ func fixedOfficialGET(ctx context.Context, client *kube.Client, path string, max
 		return res.StatusCode, unstructured.Unstructured{}, inspection.ErrObservation
 	}
 	var object unstructured.Unstructured
-	if json.Unmarshal(raw, &object.Object) != nil {
+	// /version is a kindless VersionInfo object. Kubernetes resource responses
+	// use the Unstructured decoder to preserve native integer identity fields.
+	var decodeErr error
+	if path == "/version" {
+		decodeErr = json.Unmarshal(raw, &object.Object)
+	} else {
+		decodeErr = json.Unmarshal(raw, &object)
+	}
+	if decodeErr != nil {
 		return res.StatusCode, object, inspection.ErrObservation
 	}
 	if path == "/version" {
@@ -219,7 +255,7 @@ func officialTransportClass(err error) string {
 
 func readAdmittedNode(ctx context.Context, client *kube.Client, expected unstructured.Unstructured, binding evidence.Binding) (unstructured.Unstructured, error) {
 	_, node, err := fixedOfficialGET(ctx, client, "/api/v1/nodes/"+url.PathEscape(expected.GetName()), 128<<10)
-	if err != nil || node.GetKind() != "Node" || node.GetAPIVersion() != "v1" || node.GetName() != expected.GetName() || node.GetUID() != expected.GetUID() || node.GetNamespace() != "" {
+	if err != nil || node.GetKind() != "Node" || node.GetAPIVersion() != "v1" || node.GetName() != expected.GetName() || node.GetUID() != expected.GetUID() || node.GetNamespace() != "" || node.GetDeletionTimestamp() != nil {
 		return node, inspection.ErrObservation
 	}
 	for key, value := range binding.ScopeMapping.RequiredLabels {

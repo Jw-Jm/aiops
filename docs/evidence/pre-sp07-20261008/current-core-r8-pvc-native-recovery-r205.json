@@ -1,0 +1,67 @@
+{
+  "observedAt": "2026-10-08T02:47:00.700954+00:00",
+  "SP07ExecutionImplemented": false,
+  "originalUIDRecovered": false,
+  "fullR6Acceptance": false,
+  "sourceScopeChanged": false,
+  "protectedDataDeleted": false,
+  "failureType": "RemoteDisconnected",
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "pre-sp07-pvc-r195",
+        "-n",
+        "ops-pre-sp07-targets-r8-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r8-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-targets-r8-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

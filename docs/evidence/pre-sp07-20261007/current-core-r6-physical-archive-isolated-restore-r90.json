@@ -1,0 +1,90 @@
+{
+  "observedAt": "2026-10-07T05:11:02.064184+00:00",
+  "sourceDataDeleted": false,
+  "sourceProtectionChanged": false,
+  "fullRecoveryAcceptance": false,
+  "jointAuditTransitVerification": false,
+  "original27Recovery": false,
+  "failureType": "AssertionError",
+  "failureFrames": [
+    {
+      "file": "restore-current-r6-physical-archive-r90.py",
+      "line": 35
+    }
+  ],
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r6-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-350dec64-7707-4898-b7e7-bac736f83075",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pods",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "deployments,statefulsets",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "failureCause": "Pre-mutation free-space precondition >=12GiB failed while formal business installation was expanding its signed payload",
+  "sourceArchiveMounted": false,
+  "backupOrRestoreStarted": false
+}

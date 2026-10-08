@@ -1,0 +1,54 @@
+{
+  "observedAt": "2026-10-07T03:35:06.323111+00:00",
+  "formalBusinessSeedUsed": false,
+  "newResidentCollectorAdded": false,
+  "syntheticMetricOrLogUsed": false,
+  "SP07Started": false,
+  "fullCoreAcceptance": false,
+  "retainedEarlierControlError": "current-core-r7-real-victoria-canary-r1.json; native health is public, control moved to actual protected query paths",
+  "nativePodUID": "3a913fd3-5ce5-4b39-a47a-99046fe6929e",
+  "phase": "Running",
+  "actualPhaseObservationAt": "2026-10-07T02:54:45.178363+00:00",
+  "historicalObservation": true,
+  "observationTimestampNotChanged": true,
+  "snapshotSHA256": "sha256:593e1fefc03aa683f8f49d03da253ada0057269addd3640938dbd40e3ec76df1",
+  "actualObservationReceipt": "current-core-r7-native-target-preparation-r1.json",
+  "observationReceiptSHA256": "sha256:c18347d858809c100fd3533cdf28e5adc22fc90a0c7c02ba59290748063bc877",
+  "checkpointOrBusinessConfigurationChanged": false,
+  "VictoriaLogsScopeProofPass": false,
+  "originalPositiveNativeResourceLogsAbsent": true,
+  "fullScopeQualificationPass": false,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "POST",
+      "service": "ops-victoria-metrics",
+      "path": "/api/v1/import",
+      "status": 204,
+      "independentWrongCredential": false,
+      "responseSHA256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "GET",
+      "service": "ops-victoria-metrics",
+      "path": "/api/v1/query?query=1",
+      "status": 401,
+      "independentWrongCredential": true,
+      "responseSHA256": "sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    }
+  ],
+  "ownedPortForwardsStopped": true
+}

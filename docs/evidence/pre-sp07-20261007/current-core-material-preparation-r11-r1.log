@@ -1,0 +1,18 @@
+prepared local first-party platform-api
+prepared local first-party platform-worker
+prepared local first-party opsctl
+Traceback (most recent call last):
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/offline-core/prepare-bundle-inputs.py", line 322, in <module>
+    if __name__=="__main__": main()
+                             ^^^^^^
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/offline-core/prepare-bundle-inputs.py", line 294, in main
+    payload,reference,image_digest=export('holmesgpt',args.sp06_investigator_image,c['digest'])
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/offline-core/prepare-bundle-inputs.py", line 53, in export
+    run(["docker","--context","orbstack","image","save","--platform","linux/arm64","--output",str(raw),reference])
+  File "/Users/mssc/Documents/Code/ops/platform/test/fixtures/offline-core/prepare-bundle-inputs.py", line 30, in run
+    return subprocess.run(args, check=True, capture_output=True, env=ENV, **kwargs).stdout
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/share/mise/installs/python/3.12.14/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['docker', '--context', 'orbstack', 'image', 'save', '--platform', 'linux/arm64', '--output', '/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r11/holmesgpt-raw.tar', 'ops.local/task27/holmesgpt@sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593']' returned non-zero exit status 1.

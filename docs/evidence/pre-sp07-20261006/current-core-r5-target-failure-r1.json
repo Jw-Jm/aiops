@@ -1,0 +1,232 @@
+{
+  "observedAt": "2026-10-06T00:16:59.307234+00:00",
+  "pod": {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "creationTimestamp": "2026-10-05T16:07:47Z",
+      "generation": 1,
+      "labels": {
+        "ops.platform.io/owner": "pre-sp07-20261004",
+        "ops.platform.io/purpose": "bounded-current-readiness-target",
+        "tenant": "06514e41-083b-4b7f-95d5-6b1d81474b7a"
+      },
+      "name": "pre-sp07-current-r5-ready",
+      "namespace": "ops-pre-sp07-targets-20261006",
+      "resourceVersion": "423122",
+      "uid": "624e1b63-cf58-40f6-ab47-3458f27d4304"
+    },
+    "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+        {
+          "command": [
+            "python",
+            "-u",
+            "-c",
+            "import time; print(\"pre-sp07 current target r5 ready\",flush=True); time.sleep(3600)"
+          ],
+          "image": "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+          "imagePullPolicy": "Never",
+          "name": "target",
+          "resources": {
+            "limits": {
+              "cpu": "100m",
+              "memory": "64Mi"
+            },
+            "requests": {
+              "cpu": "10m",
+              "memory": "16Mi"
+            }
+          },
+          "securityContext": {
+            "allowPrivilegeEscalation": false,
+            "capabilities": {
+              "drop": [
+                "ALL"
+              ]
+            },
+            "readOnlyRootFilesystem": true
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File"
+        }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "enableServiceLinks": true,
+      "nodeName": "orbstack",
+      "preemptionPolicy": "PreemptLowerPriority",
+      "priority": 0,
+      "restartPolicy": "Never",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+        "runAsNonRoot": true,
+        "runAsUser": 65532,
+        "seccompProfile": {
+          "type": "RuntimeDefault"
+        }
+      },
+      "serviceAccount": "default",
+      "serviceAccountName": "default",
+      "terminationGracePeriodSeconds": 30,
+      "tolerations": [
+        {
+          "effect": "NoExecute",
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "tolerationSeconds": 300
+        },
+        {
+          "effect": "NoExecute",
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "tolerationSeconds": 300
+        }
+      ]
+    },
+    "status": {
+      "conditions": [
+        {
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-10-06T00:11:41Z",
+          "observedGeneration": 1,
+          "status": "False",
+          "type": "PodReadyToStartContainers"
+        },
+        {
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-10-05T16:07:47Z",
+          "observedGeneration": 1,
+          "status": "True",
+          "type": "Initialized"
+        },
+        {
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-10-06T00:11:41Z",
+          "observedGeneration": 1,
+          "reason": "PodFailed",
+          "status": "False",
+          "type": "Ready"
+        },
+        {
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-10-06T00:11:41Z",
+          "observedGeneration": 1,
+          "reason": "PodFailed",
+          "status": "False",
+          "type": "ContainersReady"
+        },
+        {
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-10-05T16:07:47Z",
+          "observedGeneration": 1,
+          "status": "True",
+          "type": "PodScheduled"
+        }
+      ],
+      "containerStatuses": [
+        {
+          "allocatedResources": {
+            "cpu": "10m",
+            "memory": "16Mi"
+          },
+          "containerID": "docker://e82d94651b907b1b333a69f6a93af0a43135df0f14f47f3e68e11f50e1cffa5b",
+          "image": "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+          "imageID": "docker-pullable://python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+          "lastState": {},
+          "name": "target",
+          "ready": false,
+          "resources": {
+            "limits": {
+              "cpu": "100m",
+              "memory": "64Mi"
+            },
+            "requests": {
+              "cpu": "10m",
+              "memory": "16Mi"
+            }
+          },
+          "restartCount": 0,
+          "started": false,
+          "state": {
+            "terminated": {
+              "containerID": "docker://e82d94651b907b1b333a69f6a93af0a43135df0f14f47f3e68e11f50e1cffa5b",
+              "exitCode": 137,
+              "finishedAt": "2026-10-05T16:07:51Z",
+              "reason": "Error",
+              "startedAt": "2026-10-05T16:07:48Z"
+            }
+          }
+        }
+      ],
+      "hostIP": "192.168.139.2",
+      "hostIPs": [
+        {
+          "ip": "192.168.139.2"
+        },
+        {
+          "ip": "fd07:b51a:cc66::2"
+        }
+      ],
+      "observedGeneration": 1,
+      "phase": "Failed",
+      "qosClass": "Burstable",
+      "startTime": "2026-10-05T16:07:47Z"
+    }
+  },
+  "dockerState": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 137,
+    "Error": "",
+    "StartedAt": "2026-10-05T16:07:48.022531245Z",
+    "FinishedAt": "2026-10-05T16:07:51.079606793Z"
+  },
+  "logOutput": "failed to try resolving symlinks in path \"/var/log/pods/ops-pre-sp07-targets-20261006_pre-sp07-current-r5-ready_624e1b63-cf58-40f6-ab47-3458f27d4304/target/0.log\": lstat /var/log/pods/ops-pre-sp07-targets-20261006_pre-sp07-current-r5-ready_624e1b63-cf58-40f6-ab47-3458f27d4304: no such file or directory",
+  "cause": "UNDETERMINED; Docker OOMKilled=false, exit137, log path unavailable",
+  "originalDeleted": false,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-20261006",
+        "get",
+        "pod",
+        "pre-sp07-current-r5-ready",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "e82d94651b907b1b333a69f6a93af0a43135df0f14f47f3e68e11f50e1cffa5b",
+        "--format",
+        "{{json .State}}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-20261006",
+        "logs",
+        "pre-sp07-current-r5-ready"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pressly/goose/v3"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/graph"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/tenant"
 )
@@ -99,6 +100,55 @@ func TestTenantProvisioningAndRoleBindingRevisions(t *testing.T) {
 	if updated.Revision != 2 || updated.Subject != "operator-after" {
 		t.Fatalf("role binding revision did not advance: %#v", updated)
 	}
+	initialScope, err := (graph.Authorization{Pool: pool}).Effective(ctx, actorTenant, updated.Subject, "integration-cluster")
+	if err != nil {
+		t.Fatalf("positive current operator authority: %v", err)
+	}
+	var disabled tenant.RoleBinding
+	if err := persistence.WithTenantTx(ctx, pool, actorTenantID, func(tx pgx.Tx) error {
+		var err error
+		disabled, err = service.SetOperatorRoleBindingStatus(ctx, tx, actor, updated.ID, updated.Revision, "disabled")
+		return err
+	}); err != nil {
+		t.Fatalf("status-only operator revocation: %v", err)
+	}
+	if disabled.Status != "disabled" || disabled.Revision != 3 || disabled.Subject != updated.Subject || disabled.Role != updated.Role ||
+		len(disabled.ClusterScopes) != 1 || disabled.ClusterScopes[0] != clusterUUID || len(disabled.NamespaceScopes) != 1 || disabled.NamespaceScopes[0].Namespace != "production" {
+		t.Fatalf("status-only revocation altered identity/scopes: %#v", disabled)
+	}
+	if _, err := (graph.Authorization{Pool: pool}).Effective(ctx, actorTenant, disabled.Subject, "integration-cluster"); !errors.Is(err, graph.ErrScope) {
+		t.Fatalf("revoked operator retained graph authority: %v", err)
+	}
+	if err := persistence.WithTenantTx(ctx, pool, actorTenantID, func(tx pgx.Tx) error {
+		_, err := service.SetOperatorRoleBindingStatus(ctx, tx, actor, disabled.ID, updated.Revision, "active")
+		return err
+	}); !errors.Is(err, tenant.ErrRevisionConflict) {
+		t.Fatalf("stale status restoration returned %v", err)
+	}
+	var restored tenant.RoleBinding
+	if err := persistence.WithTenantTx(ctx, pool, actorTenantID, func(tx pgx.Tx) error {
+		var err error
+		restored, err = service.SetOperatorRoleBindingStatus(ctx, tx, actor, disabled.ID, disabled.Revision, "active")
+		return err
+	}); err != nil {
+		t.Fatalf("restore exact operator grant: %v", err)
+	}
+	if restored.Status != "active" || restored.Revision != 4 || restored.Subject != disabled.Subject {
+		t.Fatalf("status restoration lost its exact identity: %#v", restored)
+	}
+	restoredScope, err := (graph.Authorization{Pool: pool}).Effective(ctx, actorTenant, restored.Subject, "integration-cluster")
+	if err != nil {
+		t.Fatalf("restored exact operator authority: %v", err)
+	}
+	if restoredScope.AuthorizationRevision == initialScope.AuthorizationRevision || restoredScope.Cluster != initialScope.Cluster || restoredScope.Tenant != initialScope.Tenant {
+		t.Fatal("restoring operator grant restored the previous Context fence or changed target identity")
+	}
+	if err := persistence.WithTenantTx(ctx, pool, actorTenantID, func(tx pgx.Tx) error {
+		_, err := service.SetOperatorRoleBindingStatus(ctx, tx, actor, actorBindingID, 1, "disabled")
+		return err
+	}); !errors.Is(err, tenant.ErrInvalidInput) {
+		t.Fatalf("operator-only endpoint changed platform administrator: %v", err)
+	}
 	if err := persistence.WithTenantTx(ctx, pool, actorTenantID, func(tx pgx.Tx) error {
 		_, err := service.UpdateRoleBinding(ctx, tx, actor, binding.ID, binding.Revision, updatedInput, "active")
 		return err
@@ -107,7 +157,7 @@ func TestTenantProvisioningAndRoleBindingRevisions(t *testing.T) {
 	}
 
 	var beforeClusters json.RawMessage
-	if err := db.QueryRowContext(ctx, `SELECT record->'before'->'cluster_scopes' FROM audit.records WHERE tenant_id = $1 AND entity_id = $2 AND event_type = 'role_binding.updated'`, actorTenantID, binding.ID).Scan(&beforeClusters); err != nil {
+	if err := db.QueryRowContext(ctx, `SELECT record->'before'->'cluster_scopes' FROM audit.records WHERE tenant_id = $1 AND entity_id = $2 AND event_type = 'role_binding.updated' ORDER BY audit_seq LIMIT 1`, actorTenantID, binding.ID).Scan(&beforeClusters); err != nil {
 		t.Fatal(err)
 	}
 	var decodedClusters []uuid.UUID

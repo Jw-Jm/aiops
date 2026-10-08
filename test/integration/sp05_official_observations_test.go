@@ -110,6 +110,13 @@ func TestSP05OfficialObservationsActualOrbStackAndControlledProbeFailure(t *test
 		t.Fatal("actual missing/unauthorized Metrics silently claimed complete")
 	}
 	t.Logf("actual native official read report: %+v (Metrics availability is observed, never a performance measurement)", report)
+	if os.Getenv("PRE_SP07_REAL_METRICS") == "1" {
+		if !report.MetricAvailable || report.Candidates != 3 || len(report.DegradedSources) != 0 {
+			t.Fatalf("required actual Metrics-server positive sample unavailable: %+v", report)
+		}
+		t.Log("LIVE METRICS: actual authorized positive read; healthy samples correctly do not invent a firing Finding.")
+	}
+
 	fault.probeStatus = 503
 	report, err = app.InspectSP05OfficialObservations(ctx, archives, collector, client, 0)
 	if err != nil || report.ProbeAvailable || report.Candidates != 1 {
@@ -137,7 +144,7 @@ func TestSP05OfficialObservationsActualOrbStackAndControlledProbeFailure(t *test
 	if err := db.QueryRowContext(ctx, `SELECT count(*) FROM finding.records WHERE tenant_id=$1 AND payload->>'normalizedSymptom'='ControlPlaneUnreachable' AND lifecycle_state='resolved'`, b.TenantID).Scan(&active); err != nil || active != 1 {
 		t.Fatalf("actual native /version recovery did not resolve symptom: %d %v", active, err)
 	}
-	// Native Metrics API is absent on this cluster. Inject only its versioned
+	// Independently exercise the versioned protocol fault cases. Inject only the
 	// response transport, while reading both Node observations and scope from
 	// the real API; outcomes still use the production ingestion/relay/archive.
 	fault.metricMode = "high"
@@ -161,12 +168,65 @@ func TestSP05OfficialObservationsActualOrbStackAndControlledProbeFailure(t *test
 		t.Fatal("schema drift resolved unavailable metric")
 	}
 	fault.metricMode = "healthy"
+	if os.Getenv("PRE_SP07_REAL_METRICS") == "1" {
+		fault.metricMode = ""
+		// A new actual sample must follow the controlled previous firing.
+		deadline := time.Now().Add(45 * time.Second)
+		for time.Now().Before(deadline) {
+			if _, err := app.InspectSP05OfficialObservations(ctx, archives, collector, client, 0); err != nil {
+				t.Fatal(err)
+			}
+			var resolved int
+			if err := db.QueryRowContext(ctx, `SELECT count(*) FROM finding.records WHERE tenant_id=$1 AND payload->>'ruleId' IN ('kubernetes/CPUUtilizationHigh/v1','kubernetes/MemoryUtilizationHigh/v1') AND lifecycle_state='resolved'`, b.TenantID).Scan(&resolved); err != nil {
+				t.Fatal(err)
+			}
+			if resolved == 2 {
+				break
+			}
+			time.Sleep(time.Second)
+		}
+	}
 	report, err = app.InspectSP05OfficialObservations(ctx, archives, collector, client, 0)
 	if err != nil || !report.MetricAvailable {
 		t.Fatalf("positive protocol Metrics recovery unavailable: %+v %v", report, err)
 	}
 	if err = db.QueryRowContext(ctx, `SELECT count(*) FROM finding.records WHERE tenant_id=$1 AND payload->>'ruleId' IN ('kubernetes/CPUUtilizationHigh/v1','kubernetes/MemoryUtilizationHigh/v1') AND lifecycle_state='resolved'`, b.TenantID).Scan(&metricActive); err != nil || metricActive != 2 {
 		t.Fatal("healthy native-format metric did not recover both symptoms")
+	}
+	if os.Getenv("PRE_SP07_REAL_METRICS") == "1" {
+		if err := archives.MaintenancePass(ctx, nil); err != nil {
+			t.Fatal(err)
+		}
+		rows, err := db.QueryContext(ctx, `SELECT e.evidence_id::text FROM finding.evidence_refs f JOIN platform.evidence_metadata e USING(tenant_id,evidence_id) JOIN finding.records r USING(tenant_id,finding_id) WHERE e.tenant_id=$1 AND r.payload->>'ruleId' IN ('kubernetes/CPUUtilizationHigh/v1','kubernetes/MemoryUtilizationHigh/v1') AND r.lifecycle_state='resolved' AND (e.metadata->>'observedTo')::timestamptz=r.observed_at`, b.TenantID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var ids []string
+		for rows.Next() {
+			var id string
+			if err := rows.Scan(&id); err != nil {
+				t.Fatal(err)
+			}
+			ids = append(ids, id)
+		}
+		if err := rows.Err(); err != nil {
+			t.Fatal(err)
+		}
+		rows.Close()
+		if len(ids) != 2 {
+			t.Fatalf("actual NodeMetrics recovery -> Finding/Evidence missing: %d", len(ids))
+		}
+		for _, id := range ids {
+			plain, ref, err := archives.Read(ctx, b.TenantID, uuid.MustParse(id))
+			if err != nil || ref.Object.VersionID == "" || ref.EncryptionKeyVersion == "" {
+				t.Fatalf("actual Metrics immutable archive unreadable: %v", err)
+			}
+			var data map[string]any
+			if json.Unmarshal(plain, &data) != nil || data["nativeUID"] != string(nodes.Items[0].GetUID()) || data["capacity"] == "" || data["timestamp"] == "" || data["window"] == "" || data["causalConfirmation"] != false {
+				t.Fatal("actual Metric fact lost native identity/capacity/window or causal boundary")
+			}
+		}
+		t.Log("LIVE METRICS RECOVERY: actual Metrics-server -> fenced native Node UID/capacity -> official Inspection -> resolved Finding -> encrypted versioned Evidence readback. Previous firing was controlled protocol input; no live high-utilization or final cold delivery claim.")
 	}
 	if err = archives.MaintenancePass(ctx, nil); err != nil {
 		t.Fatal(err)
@@ -196,7 +256,7 @@ func TestSP05OfficialObservationsActualOrbStackAndControlledProbeFailure(t *test
 			t.Fatalf("actual immutable metric Evidence unreadable: %v", err)
 		}
 	}
-	t.Log("positive versioned Metrics transport Fixture -> real Node UID/auth fence -> unified Finding -> real Incident and immutable Evidence; native Metrics-server positive capability remains unverified")
+	t.Log("positive versioned Metrics transport Fixture -> real Node UID/auth fence -> unified Finding -> real Incident and immutable Evidence; Fixture thresholds do not prove live high-utilization symptoms")
 	if _, err := db.ExecContext(ctx, `UPDATE platform.source_registrations SET status='disabled',revision=revision+1 WHERE tenant_id=$1 AND source_id=$2`, b.TenantID, b.SourceID); err != nil {
 		t.Fatal(err)
 	}

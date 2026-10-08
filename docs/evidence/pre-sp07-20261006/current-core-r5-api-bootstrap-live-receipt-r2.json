@@ -1,0 +1,42 @@
+{
+  "observedAt": "2026-10-06T00:25:24.320954+00:00",
+  "namespace": "ops-pre-sp07-core-r5-20261006",
+  "apiBootstrapExitCode": 0,
+  "actualDeploymentNames": [
+    "ops-api",
+    "ops-keycloak",
+    "ops-vmalert"
+  ],
+  "onlyAPIFromPlatformRelease": true,
+  "workerStarted": false,
+  "investigatorStarted": false,
+  "formalBundle": "pre-sp07-core-20261005-r7",
+  "checkpointEdited": false,
+  "fullFreshBusinessAcceptance": false,
+  "deployments": [
+    {
+      "name": "ops-api",
+      "uid": "ed8d6701-30c8-41aa-8f6a-46affe7facfb",
+      "generation": 1,
+      "images": [
+        "ops.local/task27/platform-api@sha256:09fee7450c0d0a31e30f04f6e8eb52c42eef3fb3a62e5f7fcb20b8a0e9677927"
+      ]
+    },
+    {
+      "name": "ops-keycloak",
+      "uid": "fa518249-5a52-4108-9725-711caa8affbd",
+      "generation": 1,
+      "images": [
+        "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"
+      ]
+    },
+    {
+      "name": "ops-vmalert",
+      "uid": "f4bf5884-d0f4-4992-a05c-853f322afb3e",
+      "generation": 1,
+      "images": [
+        "docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311"
+      ]
+    }
+  ]
+}

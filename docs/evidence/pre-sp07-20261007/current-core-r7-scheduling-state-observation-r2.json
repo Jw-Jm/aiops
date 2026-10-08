@@ -1,0 +1,111 @@
+{
+  "observedAt": "2026-10-07T03:28:42.021208+00:00",
+  "oldNativePodUID": "0d7ecc8c-8e24-4cce-9841-066fbf77b505",
+  "originalUIDRecovered": false,
+  "SP07Started": false,
+  "sourceScopeChanged": false,
+  "protectedDataDeleted": false,
+  "actualSuccessfulModelMCPChainPass": false,
+  "retainedFullGraphGateFailure": "current-core-r7-scheduling-native-recovery-r1.json",
+  "completeNondegradedGraphPass": false,
+  "newNativePodUID": "dc261acd-e559-45bc-b473-4511b1615d0b",
+  "nativeNewPodReady": true,
+  "newPodCreationTimestamp": "2026-10-07T03:27:06Z",
+  "namespaceUID": "60bb33ba-b6d9-4ea1-ba80-ebe1b3c4b11f",
+  "finiteActiveDeadlineSeconds": 900,
+  "nativePhaseRecoveryObservationOnly": true,
+  "currentGraphPartial": true,
+  "currentDegradedSources": [
+    "01a11452-1f00-7b69-a27c-ae2e40c4e56d/proof",
+    "01a11452-1f13-71b5-9329-3a20b654a398/proof"
+  ],
+  "currentWarnings": [
+    "source_scope_unverified",
+    "source_scope_unverified"
+  ],
+  "VictoriaScopeProofAcceptance": false,
+  "currentAuthorizedGraphNewUID": true,
+  "currentCanonicalId": "k8s+v1://676d5ba5-0f08-433b-be13-8012ea7e3591/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/dc261acd-e559-45bc-b473-4511b1615d0b",
+  "currentGraphRevision": {
+    "ownerEpoch": 1,
+    "graphGeneration": 43
+  },
+  "currentGraphFreshness": "fresh",
+  "currentLastObservedAt": "2026-10-07T03:27:12.639540354Z",
+  "currentNativePhase": "Running",
+  "oldUIDEvidenceStillReadableAfterRecreation": true,
+  "oldEvidenceAutoBoundToNewUID": false,
+  "retainedEvidence": [
+    {
+      "evidenceId": "bb41211a-6f71-56f6-820a-fa1727f0e3ae",
+      "contentDigest": "sha256:cc9cdb36225784d6aa2ca9baaa7d5cfae5df09c963847ebcda3f8b47295134ca",
+      "canonicalId": "k8s+v1://676d5ba5-0f08-433b-be13-8012ea7e3591/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/0d7ecc8c-8e24-4cce-9841-066fbf77b505",
+      "versionId": "6723df3a12fee2a94a9867f8e18141ad",
+      "retainUntil": "2027-10-08T03:13:07Z"
+    },
+    {
+      "evidenceId": "bf030ca7-35dd-5779-b115-f6524a211da8",
+      "contentDigest": "sha256:1b6e9899a2f7cddbab7fdbb668639bdcad516b451446175d3234db2ac6910def",
+      "canonicalId": "k8s+v1://676d5ba5-0f08-433b-be13-8012ea7e3591/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/0d7ecc8c-8e24-4cce-9841-066fbf77b505",
+      "versionId": "6723df3a115a087bd65988fdfad1ea59",
+      "retainUntil": "2027-10-08T03:13:07Z"
+    }
+  ],
+  "crossTenantCanonicalIdStatus": 403,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r7-scheduling-r1",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/bb41211a-6f71-56f6-820a-fa1727f0e3ae",
+      "status": 200,
+      "responseSHA256": "sha256:3d752015b428d51b6a48a15c484886e98c84dd7733f3b56159ebb193418eab20"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/bf030ca7-35dd-5779-b115-f6524a211da8",
+      "status": 200,
+      "responseSHA256": "sha256:363ff25b17d5c525751e5e1995262885e833b16a86ce63f70c4e9a9ab83ec036"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F676d5ba5-0f08-433b-be13-8012ea7e3591%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2Fdc261acd-e559-45bc-b473-4511b1615d0b",
+      "status": 200,
+      "responseSHA256": "sha256:18f0693f4526df6c0b6d361217075a06e356286eb9f8c770254b5af04ffd6098"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2Fddca03c9-eba6-456d-b1e2-d28bb8c79525%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2Fdc261acd-e559-45bc-b473-4511b1615d0b",
+      "status": 403,
+      "responseSHA256": "sha256:099df968eeb1ef88820776eef2915441dd7bb3722ce77107a6880e4b7bd9817e"
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

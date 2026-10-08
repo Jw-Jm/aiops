@@ -20,7 +20,8 @@ func runtimePoolConfig(t *testing.T, ctx context.Context, admin *sql.DB, dsn, ro
 		t.Fatal("unsupported runtime role")
 	}
 	login := "review_runtime_" + strings.ReplaceAll(uuid.NewString(), "-", "")
-	if _, err := admin.ExecContext(ctx, `CREATE ROLE "`+login+`" LOGIN; GRANT `+role+` TO "`+login+`"`); err != nil {
+	password := strings.ReplaceAll(uuid.NewString()+uuid.NewString(), "-", "")
+	if _, err := admin.ExecContext(ctx, `CREATE ROLE "`+login+`" LOGIN PASSWORD '`+password+`'; GRANT `+role+` TO "`+login+`"`); err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() {
@@ -32,7 +33,7 @@ func runtimePoolConfig(t *testing.T, ctx context.Context, admin *sql.DB, dsn, ro
 	if err != nil {
 		t.Fatal(err)
 	}
-	u.User = url.User(login)
+	u.User = url.UserPassword(login, password)
 	checked, err := app.OpenRuntimePool(ctx, u.String(), role)
 	if err != nil {
 		t.Fatal(err)

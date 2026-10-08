@@ -1,0 +1,17 @@
+=== RUN   TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup
+=== RUN   TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup/owned_audit_database
+    migrations_test.go:436: retained owned integration database=sp03_mig_e70eea05a3bb424aae561877d73b50d3 test=TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup/owned_audit_database reason=audit.records; no automatic protected cleanup
+=== NAME  TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup
+    pre_sp07_fixture_retention_test.go:52: actual owned PostgreSQL Audit row/database remains after test cleanup; synthetic lifecycle probe, not full protected historical restore
+--- PASS: TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup (0.06s)
+    --- PASS: TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup/owned_audit_database (0.05s)
+=== RUN   TestIntegrationArchiveFixtureSurvivesCleanupAndActualRestart
+=== RUN   TestIntegrationArchiveFixtureSurvivesCleanupAndActualRestart/owned_compliance_object
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=3dd517c2bb21ddb7b45a226284c3ebcab010e232df6d992a19d7bda889941322 bucket=retention-lifecycle-a9d1947c tenants=1
+    archive_iam_test.go:155: retained owned Archive fixture id=3dd517c2bb21ddb7b45a226284c3ebcab010e232df6d992a19d7bda889941322 label=90143e3e-3943-4233-99ce-bfb25ee08ce2 bucket=retention-lifecycle-a9d1947c private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r17/archive-iam-364767968; process stopped, no storage/identity deletion
+=== NAME  TestIntegrationArchiveFixtureSurvivesCleanupAndActualRestart
+    pre_sp07_fixture_retention_test.go:152: actual Archive container=3dd517c2bb21ddb7b45a226284c3ebcab010e232df6d992a19d7bda889941322 object=tenants/fd80e9c05a1d3a4e8ebfe9325e6e3dc374382483e20a067997f08c411da95b07/evidence/17fc11f0-62d5-4d2f-aefa-ce27764a6c51 version=67247eeb378032d8a6a0ab6071ec3d38 retained through cleanup and restart; matching TLS/IAM private inputs, 365-day protection and Legal Hold unchanged; controlled storage retained
+--- PASS: TestIntegrationArchiveFixtureSurvivesCleanupAndActualRestart (47.20s)
+    --- PASS: TestIntegrationArchiveFixtureSurvivesCleanupAndActualRestart/owned_compliance_object (14.49s)
+PASS
+ok  	ops-platform/test/integration	48.437s

@@ -35,12 +35,31 @@ func NewTenantAdminRouter(service *tenant.Service, pool persistence.TxBeginner) 
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get(adminRoleBindingsPath, handlers.getRoleBindings)
 	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "create-tenant"), requireTenantAdminStepUp).Post(adminTenantsPath, handlers.createTenant)
 	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "create-role-binding"), requireTenantAdminStepUp).Post(adminRoleBindingsPath, handlers.createRoleBinding)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "set-operator-role-binding-status")).Patch(adminRoleBindingsPath+"/{bindingId}/status", handlers.setOperatorRoleBindingStatus)
 	return router, nil
 }
 
 func newTenantIdempotency(pool persistence.TxBeginner, operation string) func(http.Handler) http.Handler {
+	return tenantIdempotency(pool, operation, nil)
+}
+
+func newTenantAdminStepUpIdempotency(pool persistence.TxBeginner, operation string) func(http.Handler) http.Handler {
+	return tenantIdempotency(pool, operation, func(r *http.Request, tx pgx.Tx, _ persistence.Scope) error {
+		request, ok := auth.RequestContextFromContext(r.Context())
+		if !ok {
+			return auth.ErrUnauthenticated
+		}
+		// AuthorizeTx runs inside the tenant transaction before checking the
+		// idempotency ledger, including successful-response replay.
+		_, err := auth.TouchCurrentStepUpSession(r.Context(), tx, request, []string{auth.StepUpACRLevel2})
+		return err
+	})
+}
+
+func tenantIdempotency(pool persistence.TxBeginner, operation string, authorizeTx func(*http.Request, pgx.Tx, persistence.Scope) error) func(http.Handler) http.Handler {
 	middleware := IdempotencyMiddleware{
-		Pool: pool,
+		Pool:        pool,
+		AuthorizeTx: authorizeTx,
 		Resolve: func(r *http.Request) (persistence.Scope, error) {
 			request, ok := auth.RequestContextFromContext(r.Context())
 			if !ok {
@@ -147,6 +166,35 @@ func (h TenantAdminHandlers) createRoleBinding(w http.ResponseWriter, r *http.Re
 		return
 	}
 	writeJSON(w, http.StatusCreated, api.SuccessEnvelope{Data: roleBindingJSON(created), RequestId: request.RequestID})
+}
+
+func (h TenantAdminHandlers) setOperatorRoleBindingStatus(w http.ResponseWriter, r *http.Request) {
+	request, ok := auth.RequestContextFromContext(r.Context())
+	if !ok {
+		writeTenantError(w, 401, "UNAUTHENTICATED", "a verified request context is required", false, "")
+		return
+	}
+	bindingID, err := uuid.Parse(chi.URLParam(r, "bindingId"))
+	var body api.OperatorRoleBindingStatusUpdateRequest
+	decoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, 4096))
+	decoder.DisallowUnknownFields()
+	var trailing any
+	if err != nil || bindingID == uuid.Nil || decoder.Decode(&body) != nil || decoder.Decode(&trailing) != io.EOF ||
+		body.ExpectedRevision < 1 || (body.Status != "active" && body.Status != "disabled") {
+		writeTenantError(w, 400, "INVALID_ARGUMENT", "revision and operator binding status are required", false, request.RequestID)
+		return
+	}
+	tx, ok := TransactionFromContext(r.Context())
+	if !ok {
+		writeTenantError(w, 500, "INTERNAL", "tenant transaction is unavailable", true, request.RequestID)
+		return
+	}
+	updated, err := h.service.SetOperatorRoleBindingStatus(r.Context(), tx, request, bindingID, int64(body.ExpectedRevision), string(body.Status))
+	if err != nil {
+		writeTenantServiceError(w, err, request.RequestID)
+		return
+	}
+	writeJSON(w, 200, api.SuccessEnvelope{Data: roleBindingJSON(updated), RequestId: request.RequestID})
 }
 
 func decodeTenantBody(r *http.Request) (map[string]any, error) {

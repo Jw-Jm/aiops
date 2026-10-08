@@ -1,0 +1,33 @@
+{
+  "observedAt": "2026-10-07T03:58:46.436245+00:00",
+  "commands": [
+    {
+      "command": [
+        "go",
+        "test",
+        "./test/integration",
+        "-run",
+        "^TestTenantProvisioningAndRoleBindingRevisions$",
+        "-count=1",
+        "-v"
+      ],
+      "exitCode": 0,
+      "evidence": "operator-role-database-regression-r70.log"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./internal/httpapi",
+        "./internal/tenant",
+        "-count=1",
+        "-v"
+      ],
+      "exitCode": 0,
+      "evidence": "operator-role-http-security-regression-r70.log"
+    }
+  ],
+  "currentSignedRuntimeStillR9WithoutNewEndpoint": true,
+  "actualNewEndpointAcceptance": false,
+  "fullR0ThroughR6Complete": false
+}

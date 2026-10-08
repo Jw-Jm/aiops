@@ -1,0 +1,586 @@
+{
+  "observedAt": "2026-10-06T12:11:03.600971+00:00",
+  "bundleId": "pre-sp07-core-20261005-r6",
+  "originalSignedPayloadDigest": "sha256:854d8fa331214978d2706ca01fc816b5898423a93723789f654b16466a5c6157",
+  "actualIsolatedRestoredPayloadDigest": "sha256:854d8fa331214978d2706ca01fc816b5898423a93723789f654b16466a5c6157",
+  "regeneratedCanonicalManifestByteIdentical": true,
+  "originalDetachedSignatureByteIdenticalInIsolatedRestore": true,
+  "exactInputProductRebuildCommand": "bundle-r6-exact-input-restoration-failure-r8.json: rebuild-original-inputs exit 0; subsequent wrong-directory verify exit 1 retained",
+  "originalIndependentSignatureFullMaterialVerify": {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r6/opsctl-host",
+      "bundle",
+      "verify",
+      "--manifest",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-exact-input-restoration-r8/isolated-signed-r6/bundle.lock.json",
+      "--signature",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-exact-input-restoration-r8/isolated-signed-r6/bundle.lock.sig",
+      "--payload",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-exact-input-restoration-r8/isolated-signed-r6/payload.tar.zst",
+      "--key",
+      "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem"
+    ],
+    "exitCode": 0,
+    "minimumHostFreeBytes": 18015354880
+  },
+  "previousRequiredSameDirectoryGuardRetained": "bundle-r6-exact-input-verify-original-independent-signature-r8.log",
+  "independentTrustSHA256": "sha256:47f3b2279069c4b72c9b1ccb3db05de1e5805677d6922e7b2cc4d2a6f18569a7",
+  "exactInputSpec": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r6/build-spec-r6.json",
+  "exactInputSpecSHA256": "sha256:b91ad25b2e6c23e50eb7b4290b556333b71fc9a499926db2ad6bc70c14e03de9",
+  "restorationTool": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r6/opsctl-host",
+  "restorationToolSHA256": "sha256:bbd1512d1f56a8993c1672462f04502e4c77b317a2c16a746039afb5305e4bc0",
+  "exactInputs": [
+    {
+      "path": "oci/postgresql.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/postgresql.tar",
+      "sha256": "sha256:72ac22894968cdbdd1433497f47e2429bcdd5c2869b665522a5ac6556fa7c455",
+      "bytes": 154224640
+    },
+    {
+      "path": "sbom/postgresql.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/sbom/postgresql.spdx.json",
+      "sha256": "sha256:683fe5507908a5f657af1ed9b4b7cfd2ddb01b7291668695b165773e52917ff4",
+      "bytes": 6083884
+    },
+    {
+      "path": "licenses/postgresql.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/postgresql-notices.txt",
+      "sha256": "sha256:1019dd8fecd1e659cffdc7346d50f8d68b11656317d68a95e5461b4c022ea789",
+      "bytes": 2292970
+    },
+    {
+      "path": "sources/postgresql-source.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/corresponding-sources/postgresql-source.tar",
+      "sha256": "sha256:05f581328e66ea9cd7c972268986a93f0bb7ace12bdd753f189ae9ab86282bf0",
+      "bytes": 623626240
+    },
+    {
+      "path": "sbom/postgresql-source.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/postgresql-source-sbom.json",
+      "sha256": "sha256:a4bb93ecbb9c529c182e9791859af89b6e8a8b7e1f60825b5ae3f6b891a91990",
+      "bytes": 716
+    },
+    {
+      "path": "licenses/postgresql-source.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/postgresql-notices.txt",
+      "sha256": "sha256:1019dd8fecd1e659cffdc7346d50f8d68b11656317d68a95e5461b4c022ea789",
+      "bytes": 2292970
+    },
+    {
+      "path": "oci/keycloak.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/keycloak.tar",
+      "sha256": "sha256:c5c2e8d01ffb268cade4d13870347ada089eff64f7d69eac761bdec6d80e865b",
+      "bytes": 266424320
+    },
+    {
+      "path": "sbom/keycloak.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/sbom/keycloak.enriched.spdx.json",
+      "sha256": "sha256:67468001b3ddb940147da15cc5e97aa87be7c4be3a97a90798237e0c99e3dc59",
+      "bytes": 5111650
+    },
+    {
+      "path": "licenses/keycloak.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/keycloak-notices.txt",
+      "sha256": "sha256:b592a4ce3e24a2773de14bcd24697cf0978b7c58bbc64f2870681494f31d670d",
+      "bytes": 10867295
+    },
+    {
+      "path": "sources/keycloak-source.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/corresponding-sources/keycloak-source.tar",
+      "sha256": "sha256:5aeb90d8585c2b8f219b488563d9027789b5e59f193d56acf572a5b299086941",
+      "bytes": 584427520
+    },
+    {
+      "path": "sbom/keycloak-source.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/keycloak-source-sbom.json",
+      "sha256": "sha256:fe542714c24769b05fc1414072590d0938d372cf4d60d1bac8445a699b9256a1",
+      "bytes": 710
+    },
+    {
+      "path": "licenses/keycloak-source.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/keycloak-notices.txt",
+      "sha256": "sha256:b592a4ce3e24a2773de14bcd24697cf0978b7c58bbc64f2870681494f31d670d",
+      "bytes": 10867295
+    },
+    {
+      "path": "oci/seaweedfs.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/seaweedfs.tar",
+      "sha256": "sha256:1ddc460b4fdc5885676b7e002f29b5b71c71de4610854de2e974c7d6ece2b427",
+      "bytes": 186429440
+    },
+    {
+      "path": "sbom/seaweedfs.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/sbom/seaweedfs.enriched.spdx.json",
+      "sha256": "sha256:4250ee65a7bf4d5e5364ebe1f8f4e01635d2172c8e906d97357cd9a4fba56ccd",
+      "bytes": 547074
+    },
+    {
+      "path": "licenses/seaweedfs.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/seaweedfs-notices.txt",
+      "sha256": "sha256:af875648f61eb4e19d425d23027eaad43fbe13a305cc9b9b70293041a163e40c",
+      "bytes": 1018483
+    },
+    {
+      "path": "sources/seaweedfs-source.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/corresponding-sources/seaweedfs-source.tar",
+      "sha256": "sha256:e9e44db21bb72103a741943c33f64015c64e014c830ca0274eeff42e19003e69",
+      "bytes": 721612800
+    },
+    {
+      "path": "sbom/seaweedfs-source.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/seaweedfs-source-sbom.json",
+      "sha256": "sha256:408309cdb8fa3cbd24eb09bd289d5a9da29ae98c0cd9ea0c187f9a3a4ca0acab",
+      "bytes": 713
+    },
+    {
+      "path": "licenses/seaweedfs-source.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/seaweedfs-notices.txt",
+      "sha256": "sha256:af875648f61eb4e19d425d23027eaad43fbe13a305cc9b9b70293041a163e40c",
+      "bytes": 1018483
+    },
+    {
+      "path": "oci/openbao.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/openbao.tar",
+      "sha256": "sha256:9b64255b722e4d9f0933ab0213d09b1fedb9165da7aba2c908aa2a814c8117b5",
+      "bytes": 74526720
+    },
+    {
+      "path": "sbom/openbao.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/sbom/openbao.enriched.spdx.json",
+      "sha256": "sha256:af5e4dd9f0a94aa042d183c1008b38aac5b46995cee945ff1a691876a02e1afd",
+      "bytes": 1139324
+    },
+    {
+      "path": "licenses/openbao.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/openbao-notices.txt",
+      "sha256": "sha256:8a708a94713bd4430ccb7ee8af2f44ac342b1aea8460d91502b1140c30ba002f",
+      "bytes": 2405810
+    },
+    {
+      "path": "sources/openbao-source.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/corresponding-sources/openbao-source.tar",
+      "sha256": "sha256:01085bc91012c3c2156784f8d4dac84675275689e29e695e795f143725929251",
+      "bytes": 400343040
+    },
+    {
+      "path": "sbom/openbao-source.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/openbao-source-sbom.json",
+      "sha256": "sha256:e0b818c840041f143f6e743b7c90bf142e4e2287d29aed35e39f6afb180dfb5b",
+      "bytes": 707
+    },
+    {
+      "path": "licenses/openbao-source.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/openbao-notices.txt",
+      "sha256": "sha256:8a708a94713bd4430ccb7ee8af2f44ac342b1aea8460d91502b1140c30ba002f",
+      "bytes": 2405810
+    },
+    {
+      "path": "oci/victoria-metrics.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/victoria-metrics.tar",
+      "sha256": "sha256:1681a00f752f5e222571a2f952712b1a1a51616b26ee6e0bf6d2a20fc8b26772",
+      "bytes": 16199680
+    },
+    {
+      "path": "sbom/victoria-metrics.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/sbom/victoria-metrics.enriched.spdx.json",
+      "sha256": "sha256:e48cd23e9fd14c531b4f18fca10d533479f78b9c2867e7c148bd9fe34612c8f4",
+      "bytes": 124497
+    },
+    {
+      "path": "licenses/victoria-metrics.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/victoria-metrics-notices.txt",
+      "sha256": "sha256:245563f5709fb5d3b78652b59fc4bd1d77e00c2ae6b8f55de568f88b2dc3e652",
+      "bytes": 469610
+    },
+    {
+      "path": "sources/victoria-metrics-source.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/corresponding-sources/victoria-metrics-source.tar",
+      "sha256": "sha256:de696c433d8427c7ea75b79af8445ee06d2b9fd0116ff8ff8879f815a31cb320",
+      "bytes": 153753600
+    },
+    {
+      "path": "sbom/victoria-metrics-source.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/victoria-metrics-source-sbom.json",
+      "sha256": "sha256:b34652eae3b037d29c3c85438ff95a1315331cade0d0da52e1ec9ecb79d11dea",
+      "bytes": 734
+    },
+    {
+      "path": "licenses/victoria-metrics-source.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/victoria-metrics-notices.txt",
+      "sha256": "sha256:245563f5709fb5d3b78652b59fc4bd1d77e00c2ae6b8f55de568f88b2dc3e652",
+      "bytes": 469610
+    },
+    {
+      "path": "oci/victoria-logs.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/victoria-logs.tar",
+      "sha256": "sha256:2b9d94aaba5e51411e10a688504eb75701b28dc16dac4405113d971fdacb3789",
+      "bytes": 12840960
+    },
+    {
+      "path": "sbom/victoria-logs.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/sbom/victoria-logs.enriched.spdx.json",
+      "sha256": "sha256:eb7cd9afdce5491305fe7ec332c55bf803fc7f3ca31a4cfb8ff8cf6bf9bf4b77",
+      "bytes": 728967
+    },
+    {
+      "path": "licenses/victoria-logs.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/victoria-logs-notices.txt",
+      "sha256": "sha256:e1511d114a71229743795cef718b3ed006d12cd53ddb247784188eacb6c92dee",
+      "bytes": 232359
+    },
+    {
+      "path": "sources/victoria-logs-source.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/corresponding-sources/victoria-logs-source.tar",
+      "sha256": "sha256:13d48158f433a80c1bba153bb5150175080daa83cb98e9b90b4205951722ed82",
+      "bytes": 146851840
+    },
+    {
+      "path": "sbom/victoria-logs-source.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/victoria-logs-source-sbom.json",
+      "sha256": "sha256:ceec116229f42ba540ed61bec55fb1feefd030915e12ade3d2ff96198be8cb70",
+      "bytes": 725
+    },
+    {
+      "path": "licenses/victoria-logs-source.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/victoria-logs-notices.txt",
+      "sha256": "sha256:e1511d114a71229743795cef718b3ed006d12cd53ddb247784188eacb6c92dee",
+      "bytes": 232359
+    },
+    {
+      "path": "oci/vmalert.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/vmalert.tar",
+      "sha256": "sha256:43c966182f3a930a2a4372de66fcf32095796f63c21d4ae111cbc10a787e4453",
+      "bytes": 15779840
+    },
+    {
+      "path": "sbom/vmalert.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/sbom/vmalert.enriched.spdx.json",
+      "sha256": "sha256:43221ed32aff07e5a3903971b90124b8e05f77395f21c0c0d7e744021da2d9b9",
+      "bytes": 130804
+    },
+    {
+      "path": "licenses/vmalert.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/vmalert-notices.txt",
+      "sha256": "sha256:8a38490284babe328d5b161fed3e1fbd704b5a27b7c9134b37cd64b1ee3d69a0",
+      "bytes": 477164
+    },
+    {
+      "path": "sources/vmalert-source.tar",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/corresponding-sources/vmalert-source.tar",
+      "sha256": "sha256:886d81f17295939c9d5d976b9208714c818dbd70636f6b5d46176581ed9375e6",
+      "bytes": 154306560
+    },
+    {
+      "path": "sbom/vmalert-source.json",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/vmalert-source-sbom.json",
+      "sha256": "sha256:fddbb29843a9f1ac8e410265ed956293588898e0847b65cdb68e27a089f25be2",
+      "bytes": 707
+    },
+    {
+      "path": "licenses/vmalert-source.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/vmalert-notices.txt",
+      "sha256": "sha256:8a38490284babe328d5b161fed3e1fbd704b5a27b7c9134b37cd64b1ee3d69a0",
+      "bytes": 477164
+    },
+    {
+      "path": "oci/platform-api.tar",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/platform-api.tar",
+      "sha256": "sha256:bdb438dd32f95f9acca977e2551905b54ab0071a83ee3c5dccf7fcfdca1c5a8a",
+      "bytes": 12820480
+    },
+    {
+      "path": "sbom/platform-api.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/platform-api.spdx.json",
+      "sha256": "sha256:4e1b358d6d8a3d7acd3bddf6cefe394e34d557be170a0d1a33efbb5582752e64",
+      "bytes": 182348
+    },
+    {
+      "path": "licenses/platform-api.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/platform-api-notices.txt",
+      "sha256": "sha256:e0082a4a06746ff415465ccb8effcc8fedc7e7e336f9e3e6bf0942b60b8ee7f4",
+      "bytes": 754078
+    },
+    {
+      "path": "oci/platform-worker.tar",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/platform-worker.tar",
+      "sha256": "sha256:42fa9d11a1df9e245a8f2497995dfb127fcbd56f1f9a57015dc06560f0a09882",
+      "bytes": 60119040
+    },
+    {
+      "path": "sbom/platform-worker.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/platform-worker.spdx.json",
+      "sha256": "sha256:375566f71bcfe875c2d96eb52ce1028a76a40e39f39e614e8405d8473cf8581d",
+      "bytes": 579437
+    },
+    {
+      "path": "licenses/platform-worker.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/platform-worker-notices.txt",
+      "sha256": "sha256:424f77b2301684ff126bca317090f99495e6f8f7d51fcfe627b973522e8a9341",
+      "bytes": 1360154
+    },
+    {
+      "path": "binaries/opsctl-binary",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/opsctl-binary",
+      "sha256": "sha256:17e5e79951d4a34565881c087b37de9de4438115699693f6cf0d9e4c9e7f1d25",
+      "bytes": 61407392
+    },
+    {
+      "path": "sbom/opsctl.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/opsctl.spdx.json",
+      "sha256": "sha256:dd5b52dacfcb6c5b9203ad82556f04ff850b17bba9c0f366ac411791f7f23148",
+      "bytes": 132018
+    },
+    {
+      "path": "licenses/opsctl.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/opsctl-notices.txt",
+      "sha256": "sha256:7357908e7c388e85463623b2b5b7e341b71aad19040e0891cdd58e1b078d8dc8",
+      "bytes": 667136
+    },
+    {
+      "path": "charts/ops-platform-0.1.0.tgz",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r6/ops-platform-0.1.0.tgz",
+      "sha256": "sha256:cf81661db5110f3d1e4f06a0fbe016d2e16cc65fa97feb06ae5f255f60d0c663",
+      "bytes": 7099
+    },
+    {
+      "path": "sbom/ops-platform-chart.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r6/ops-platform-chart-sbom.json",
+      "sha256": "sha256:3d37d64aae1f9ceb795282d4e7b32ca8bb4ce616a149db42d2284b0121cb1b77",
+      "bytes": 1088
+    },
+    {
+      "path": "licenses/ops-platform-chart.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/ops-platform-chart-notices.txt",
+      "sha256": "sha256:ecce657bece7585ebd687234a38a6d68cce2930516d40da3946c30090b10fd78",
+      "bytes": 67
+    },
+    {
+      "path": "charts/ops-dependencies-0.1.0.tgz",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/ops-dependencies-0.1.0.tgz",
+      "sha256": "sha256:8c2d31e014c7324c83c9f848a68f1aa10a7782631538f7c316139d753e003b49",
+      "bytes": 4821
+    },
+    {
+      "path": "sbom/ops-dependencies-chart.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/ops-dependencies-chart-sbom.json",
+      "sha256": "sha256:6429702efdeea486214cb45be5fc15365920b175ac4591d8d71f6a0678697f56",
+      "bytes": 910
+    },
+    {
+      "path": "licenses/ops-dependencies-chart.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/ops-dependencies-chart-notices.txt",
+      "sha256": "sha256:ecce657bece7585ebd687234a38a6d68cce2930516d40da3946c30090b10fd78",
+      "bytes": 67
+    },
+    {
+      "path": "charts/victoria-metrics-single-0.18.0.tgz",
+      "source": "/Users/mssc/Documents/Code/ops/platform/deploy/addons/victoria/charts/victoria-metrics-single-0.18.0.tgz",
+      "sha256": "sha256:7ee8361ee6cfca692f0ad836817ceefaa96a9c020a8255f1a8c4f081009da0f1",
+      "bytes": 19055
+    },
+    {
+      "path": "sbom/victoria-metrics-chart.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/victoria-metrics-chart-sbom.json",
+      "sha256": "sha256:a596cd96849e259da375cd21134b6e0d927573188396c6508c33286aff55f933",
+      "bytes": 1049
+    },
+    {
+      "path": "licenses/victoria-metrics-chart.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/victoria-metrics-notices.txt",
+      "sha256": "sha256:245563f5709fb5d3b78652b59fc4bd1d77e00c2ae6b8f55de568f88b2dc3e652",
+      "bytes": 469610
+    },
+    {
+      "path": "charts/victoria-logs-single-0.13.9.tgz",
+      "source": "/Users/mssc/Documents/Code/ops/platform/deploy/addons/victoria/charts/victoria-logs-single-0.13.9.tgz",
+      "sha256": "sha256:593b3f8e0d26eb925a0e3d59848d17a0abc94597802dc26ba8e0925584176a86",
+      "bytes": 68925
+    },
+    {
+      "path": "sbom/victoria-logs-chart.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/victoria-logs-chart-sbom.json",
+      "sha256": "sha256:2a576a3362b9e7612523007f1b5cb0d41dfacfd028c4a9372256f9da60f74665",
+      "bytes": 1034
+    },
+    {
+      "path": "licenses/victoria-logs-chart.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/victoria-logs-notices.txt",
+      "sha256": "sha256:e1511d114a71229743795cef718b3ed006d12cd53ddb247784188eacb6c92dee",
+      "bytes": 232359
+    },
+    {
+      "path": "charts/victoria-metrics-alert-0.18.0.tgz",
+      "source": "/Users/mssc/Documents/Code/ops/platform/deploy/addons/victoria/charts/victoria-metrics-alert-0.18.0.tgz",
+      "sha256": "sha256:e2cf619cc58ffac532447654d9d0c072dcbf1185f5c59b86c83472da3cd44c20",
+      "bytes": 14811
+    },
+    {
+      "path": "sbom/vmalert-chart.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/vmalert-chart-sbom.json",
+      "sha256": "sha256:79f9c1ba4be5c3c6402a5d9783d42129ad462e928c9f83db02a640c4322bf063",
+      "bytes": 1044
+    },
+    {
+      "path": "licenses/vmalert-chart.txt",
+      "source": "/Users/mssc/Documents/Code/ops/platform/artifacts/task27-materials/core-inputs/vmalert-notices.txt",
+      "sha256": "sha256:8a38490284babe328d5b161fed3e1fbd704b5a27b7c9134b37cd64b1ee3d69a0",
+      "bytes": 477164
+    },
+    {
+      "path": "sources/runtime-go-source.tar",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/runtime-source/runtime-go-source.tar",
+      "sha256": "sha256:9628d31da79f4d4fcbffb303796aa805ee0508e732c66f203f2f330fb9bbe903",
+      "bytes": 61603840
+    },
+    {
+      "path": "sbom/opa-sdk-source.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/runtime-source.spdx.json",
+      "sha256": "sha256:46570f23da8c8fc47f29d993de669f02604a88b0e9ea302869d3e2a845aff9b4",
+      "bytes": 1689726
+    },
+    {
+      "path": "licenses/opa-sdk-source.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/runtime-source-notices.txt",
+      "sha256": "sha256:2c079c95637be8d8d4f7fa2d75d3ec84006d1d005dbaa5b71f6e4e3ff61f23f6",
+      "bytes": 843044
+    },
+    {
+      "path": "sources/k8sgpt-runtime-source.tar",
+      "source": "/Users/mssc/.cache/ops-sp06-20261004/sp05-worker-material/k8sgpt-runtime-source.tar",
+      "sha256": "sha256:2e34224848a9de13cb78e70c117c2d1e367ddab61076b691efad29fbc2f37e92",
+      "bytes": 347883520
+    },
+    {
+      "path": "sbom/k8sgpt-source.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/k8sgpt-source.spdx.json",
+      "sha256": "sha256:0f97075185878e8e4d0bd23a1b700fc7152e7f7a38e2a3f4dfb090aa1b04748b",
+      "bytes": 120338
+    },
+    {
+      "path": "licenses/k8sgpt-source.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/k8sgpt-source-notices.txt",
+      "sha256": "sha256:fcb0bbc863fca59c33151c01f0bf0b93a51eedaf30270658ffdb5757795660ba",
+      "bytes": 605264
+    },
+    {
+      "path": "oci/holmesgpt.tar",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/holmesgpt.tar",
+      "sha256": "sha256:2aeaf31bada5849298c5c669ce7bab269399deaad807375011d875c12cb02aa8",
+      "bytes": 1229127680
+    },
+    {
+      "path": "sbom/holmesgpt.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/holmesgpt.spdx.json",
+      "sha256": "sha256:f9af231e8ed64b216a2343926e016f58b0ed95db4e936ae42ed6fa49d3402fea",
+      "bytes": 3749824
+    },
+    {
+      "path": "licenses/holmesgpt.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/holmesgpt-notices.txt",
+      "sha256": "sha256:3a34243f25d85e54e0de6e84bfa382954254370108b89b2a9f527e5b38e865f0",
+      "bytes": 12312313
+    },
+    {
+      "path": "sources/python-runtime-source.tar",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r1/python-runtime-source.tar",
+      "sha256": "sha256:08b0ad496388101df5232aba3b3c7fb3ec30bec9bf64977c370f5a45c1861811",
+      "bytes": 951808000
+    },
+    {
+      "path": "sbom/holmesgpt-source.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r1/sbom.cdx.json",
+      "sha256": "sha256:4ed60b5e2c771c7e5e7a08907b9697ebcc097976d0d0e5817fa9762a643506bd",
+      "bytes": 473927
+    },
+    {
+      "path": "licenses/holmesgpt-source.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/holmesgpt-notices.txt",
+      "sha256": "sha256:3a34243f25d85e54e0de6e84bfa382954254370108b89b2a9f527e5b38e865f0",
+      "bytes": 12312313
+    },
+    {
+      "path": "binaries/db-migrate",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/migration-tool-material/offline-rebuild-r2/db-migrate",
+      "sha256": "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a",
+      "bytes": 14355369
+    },
+    {
+      "path": "sources/db-migrate-source.tar",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/migration-tool-material/source-r2/runtime-go-source.tar",
+      "sha256": "sha256:7eae032b1b99f0aec4b0ddbc6398e304fabeb68c176cf502c8c0f83bbc8d7639",
+      "bytes": 15267840
+    },
+    {
+      "path": "sbom/db-migrate.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/migration-tool-material/db-migrate.sbom-r2.json",
+      "sha256": "sha256:f8ee91a05007411360609b7d490098af0a31384792a9e3d84965c7b6f2f422a4",
+      "bytes": 5704
+    },
+    {
+      "path": "licenses/db-migrate.NOTICE.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/migration-tool-material/db-migrate.NOTICE.txt",
+      "sha256": "sha256:bceffaf5f0b24ef5c4ed1b18cde9398e2f2d208040ac74afbfb6164cf7d77275",
+      "bytes": 24033
+    },
+    {
+      "path": "oci/metrics-server.tar",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/metrics-server-oci.tar",
+      "sha256": "sha256:8836fac8543181b644011f859e00a5c8429e043691517b4756e1e95904cbfd2a",
+      "bytes": 20602880
+    },
+    {
+      "path": "sbom/image.syft.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/materials/metrics-server/image.syft.json",
+      "sha256": "sha256:d04a01adb5654b9bb77084566646087d68e92bf8f3f9184ff801b410220041d5",
+      "bytes": 767128
+    },
+    {
+      "path": "licenses/metrics-server-original-notices.txt",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/metrics-server-original-notices.txt",
+      "sha256": "sha256:22a0d6fcbbced6649e9f048d6380f6b6548c5bfe0baad8478781c7b762325b3d",
+      "bytes": 1194637
+    },
+    {
+      "path": "sources/metrics-server-source.tar.gz",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/materials/metrics-server/closure-r4/metrics-server-complete-source.tar.gz",
+      "sha256": "sha256:37621bbe0eb691271aab4163fe147dc34e472abeab5e3e31fda78f885296f4a8",
+      "bytes": 81937753
+    },
+    {
+      "path": "charts/ops-metrics-server-0.1.0.tgz",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/ops-metrics-server-0.1.0.tgz",
+      "sha256": "sha256:779c7d8ec66d3af51a363b43574a62a6c845ef4e7e91499ecc085ea4a4632ef5",
+      "bytes": 2240
+    },
+    {
+      "path": "sbom/ops-metrics-server-chart.sbom.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/ops-metrics-server-chart.sbom.json",
+      "sha256": "sha256:c769f925ab5f1fc504f1c4a9686e207f31d85a15dd96e3e8e5cb43db2301ad91",
+      "bytes": 1508
+    },
+    {
+      "path": "licenses/opsctl-notices.txt",
+      "source": "/Users/mssc/.cache/ops-sp06-20261004/signed-inputs-r10/opsctl-notices.txt",
+      "sha256": "sha256:382d082db1f17bfcacc12e1c245e154d1f8325938322dc65c407f57c331fbcc1",
+      "bytes": 529484
+    },
+    {
+      "path": "sources/current-platform-source.tar",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r6/current-platform-source.tar",
+      "sha256": "sha256:d1b06308d4cbabbfe6c23ed61336329fd9e5eec32aa15757dfc32324d5e60e68",
+      "bytes": 99287040
+    },
+    {
+      "path": "sbom/current-platform-source.spdx.json",
+      "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r6/current-platform-source.spdx.json",
+      "sha256": "sha256:4d5e515ee1274fb01a6410d76a6e0b95ea50ab2bddfdeab8a34a61044ec0da1e",
+      "bytes": 2550597
+    }
+  ],
+  "originalManifestSignaturePayloadDigestAndInputBytesRetained": true,
+  "scope": "task-owned intermediate signed material storage representation only; deterministic native product Bundle rebuild restores exact original signed bytes; no runtime data/object/backup/key/shared resource removed",
+  "historicalProtectedEvidenceRestore": false,
+  "fullR0Acceptance": false,
+  "fullR4Acceptance": false,
+  "intermediateFullPayloadReplacedByExactInputRestorationAfterActualVerification": true
+}

@@ -1,0 +1,32 @@
+{
+  "observedAt": "2026-10-08T02:41:16.452721+00:00",
+  "processMetadata": "768 Sun Oct  4 11:39:26 2026     /opt/homebrew/opt/ollama/bin/ollama",
+  "processMetadataExitCode": 0,
+  "whitelistedParallelValues": {
+    "OLLAMA_NUM_PARALLEL:([^\\s\\]]+)": [
+      "1"
+    ],
+    "n_seq_max\\s*=\\s*(\\d+)": [
+      "1"
+    ],
+    "--parallel\\s+(\\d+)": [],
+    "parallel=(\\d+)": []
+  },
+  "historicalStartupReceipt": "current-model-host-startup-metadata-r191.json",
+  "tenConcurrencyPriorResult": "current-core-r8-concurrency-live-receipt-r173.json",
+  "userInstruction": "If local model is single concurrent, stop this test",
+  "noModelOrTimeoutOrBudgetConfigurationChanged": true,
+  "supportsOnlyOneNotClaimed": "Configured single parallel inference; engine maximum capability is not inferred",
+  "historicalFailureRetained": true,
+  "disposition": "USER_WAIVED_NOT_PASS",
+  "stopFurtherTenConcurrentRealModelTests": true,
+  "scope": "ten simultaneous real local model tool-loop completion only",
+  "requiredCorrectnessSecurityBudgetTimeoutRecoveryChecksRemain": true,
+  "priorObservedPeakRunning": 10,
+  "priorMainlineReads": 126,
+  "priorTerminalCounts": {
+    "succeeded": 1,
+    "failed": 9
+  },
+  "failureRootCause": "Single configured inference slot is consistent with queued timeouts; not asserted sole cause"
+}

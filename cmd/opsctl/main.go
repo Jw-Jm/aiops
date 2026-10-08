@@ -23,7 +23,7 @@ import (
 	"ops-platform/internal/profile"
 )
 
-const usage = "usage: opsctl graph lease-recover --config <private-json> | opsctl bundle build --spec <json> --output <new-dir> --signing-key <external-private-key> | opsctl bundle verify --manifest <file> --signature <file> --payload <archive> --key <pubkey> | opsctl bundle import --profile <resolved> --bundle <dir> --key <pubkey> | opsctl install --profile core --resolved <file> --bundle <dir> --key <pubkey> --offline | opsctl profile detect --context <name> -o <file> | opsctl profile resolve -f <file> -o <file> | opsctl openbao status|init|unseal|configure --profile <resolved>"
+const usage = "usage: opsctl graph lease-recover --config <private-json> | opsctl bundle build --spec <json> --output <new-dir> --signing-key <external-private-key> | opsctl bundle verify --manifest <file> --signature <file> --payload <archive> --key <pubkey> | opsctl bundle import --profile <resolved> --bundle <dir> --key <pubkey> | opsctl install --profile core --resolved <file> --bundle <dir> --key <pubkey> --business-values <operator-values> --offline | opsctl profile detect --context <name> -o <file> | opsctl profile resolve -f <file> -o <file> | opsctl openbao status|init|unseal|configure --profile <resolved>"
 
 func main() {
 	if err := run(context.Background(), os.Args[1:], os.Stdout, os.Stderr); err != nil {
@@ -33,6 +33,39 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
+	if len(args) >= 2 && args[0] == "bootstrap" && args[1] == "graph-leases" {
+		return runBootstrapGraphLeases(ctx, args[2:], stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "victoria-trust" {
+		return runBootstrapVictoria(ctx, args[2:], stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "addon" && args[1] == "install" {
+		return runMetricsAddon(ctx, args[2:], stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "metrics-trust" {
+		return runBootstrapMetricsTrust(ctx, args[2:], stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "oidc-administrator" {
+		return runBootstrapOIDCAdministrator(ctx, args[2:], stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "archive-iam" {
+		return runBootstrapArchiveIAM(args[2:], stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "archive-bucket" {
+		return runBootstrapArchive(ctx, args[2:], stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "oidc-realm" {
+		return runBootstrapOIDC(ctx, args[2:], stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "database-logins" {
+		return runBootstrapDatabase(ctx, args[2:], stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "environment" {
+		return runBootstrapEnvironment(ctx, args[2:], stdout, stderr)
+	}
+	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "first-tenant" {
+		return runBootstrapTenant(ctx, args[2:], stdout, stderr)
+	}
 	if len(args) > 1 && args[0] == "graph" && args[1] == "lease-recover" {
 		return runGraphRecovery(ctx, args[2:], stdout, stderr)
 	}

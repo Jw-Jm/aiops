@@ -10,7 +10,7 @@ import (
 func TestInstallerChecksSelectedSecretVolumeKeys(t *testing.T) {
 	volume := map[string]any{"secret": map[string]any{"secretName": "ops-platform-runtime", "items": []any{map[string]any{"key": "archiveTenantCredentials", "path": "tenants.json"}}}}
 	checked := false
-	err := checkSecretReferences(context.Background(), volume, profile.ResolvedProfile{}, func(_ context.Context, _ string, args ...string) ([]byte, error) {
+	err := checkSecretReferences(context.Background(), "ops-system", volume, profile.ResolvedProfile{}, func(_ context.Context, _ string, args ...string) ([]byte, error) {
 		if strings.Contains(strings.Join(args, " "), "archiveTenantCredentials") {
 			checked = true
 			return nil, nil
@@ -20,7 +20,7 @@ func TestInstallerChecksSelectedSecretVolumeKeys(t *testing.T) {
 	if !checked || err == nil {
 		t.Fatal("missing selected Secret key was not rejected before import")
 	}
-	err = checkSecretReferences(context.Background(), volume, profile.ResolvedProfile{}, func(_ context.Context, _ string, args ...string) ([]byte, error) {
+	err = checkSecretReferences(context.Background(), "ops-system", volume, profile.ResolvedProfile{}, func(_ context.Context, _ string, args ...string) ([]byte, error) {
 		if strings.Contains(strings.Join(args, " "), "go-template=") {
 			return []byte("present"), nil
 		}

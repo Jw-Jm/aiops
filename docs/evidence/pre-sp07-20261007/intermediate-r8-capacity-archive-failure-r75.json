@@ -1,0 +1,77 @@
+{
+  "observedAt": "2026-10-07T04:15:58.054065+00:00",
+  "operationExitCode": 1,
+  "reason": "retained assertion: delta archive offers no useful space saving; original retained",
+  "commands": [
+    {
+      "command": [
+        "cp",
+        "-c",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r9/signed-bundle-r9/payload.tar.zst",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-lossless-archives-r75/pre-sp07-core-20261006-r8/isolated-restore/payload.tar.zst"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "rsync",
+        "--no-whole-file",
+        "--checksum",
+        "--only-write-batch=/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-lossless-archives-r75/pre-sp07-core-20261006-r8/payload.rsync-batch",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8/payload.tar.zst",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-lossless-archives-r75/pre-sp07-core-20261006-r8/isolated-restore/"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "rsync",
+        "--read-batch=/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-lossless-archives-r75/pre-sp07-core-20261006-r8/payload.rsync-batch",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/bundle-lossless-archives-r75/pre-sp07-core-20261006-r8/isolated-restore/"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "originalBundles": [
+    {
+      "bundleId": "pre-sp07-core-20261006-r8",
+      "path": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8",
+      "originalFullPayloadRetained": true,
+      "signedPayloadDigest": "sha256:a7e265599e5436cb08bec35b0a6d522a5bcd90f912ba56568a3d9dc8d9d4d3d5"
+    },
+    {
+      "bundleId": "pre-sp07-core-20261007-r9",
+      "path": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r9/signed-bundle-r9",
+      "originalFullPayloadRetained": true,
+      "signedPayloadDigest": "sha256:416cae45546a94a1d71d28d82565b481a44526b7deea0fbebcc5bb248a624c6f"
+    }
+  ],
+  "actuallyRestoredPayloadDigestVerified": true,
+  "fullR8BundleMaterialInventoryReverified": false,
+  "temporaryFiles": [
+    {
+      "relativePath": "pre-sp07-core-20261006-r8/payload.rsync-batch.sh",
+      "bytes": 304,
+      "sha256": "sha256:e7fb677dfb72bd314e709a537aad1b67c9329739e33ae80bfd714ccf5c1428be",
+      "lsofExitCode": 1,
+      "disposition": "delete exact failed capacity-representation staging; same R8/R9 signed bytes retained in full original files"
+    },
+    {
+      "relativePath": "pre-sp07-core-20261006-r8/payload.rsync-batch",
+      "bytes": 4189422604,
+      "sha256": "sha256:f8f5e38b62a9900afb688f97a35abeaa1410b7484806bbef09dc99bc064858f0",
+      "lsofExitCode": 1,
+      "disposition": "delete exact failed capacity-representation staging; same R8/R9 signed bytes retained in full original files"
+    },
+    {
+      "relativePath": "pre-sp07-core-20261006-r8/isolated-restore/payload.tar.zst",
+      "bytes": 6100850560,
+      "sha256": "sha256:a7e265599e5436cb08bec35b0a6d522a5bcd90f912ba56568a3d9dc8d9d4d3d5",
+      "lsofExitCode": 1,
+      "disposition": "delete exact failed capacity-representation staging; same R8/R9 signed bytes retained in full original files"
+    }
+  ],
+  "beforeFreeBytes": 12452069376,
+  "protectedDataOrBackupsOrKeysModified": false,
+  "noFullCleanupClaim": true
+}

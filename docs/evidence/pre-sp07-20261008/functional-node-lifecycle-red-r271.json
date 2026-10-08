@@ -1,0 +1,17 @@
+{
+  "command": [
+    "go",
+    "test",
+    "./internal/inspection/kubernetes",
+    "./internal/app",
+    "-run",
+    "TestMetricRejectsConflictingUIDAndPreviousNodeWindow|TestPodMetricObservationRejectsTerminatingNode|TestOfficialNodeMetricsRejectsTerminatingIdentity",
+    "-count=1",
+    "-v"
+  ],
+  "exitCode": 1,
+  "startedAt": "2026-10-08T06:28:58.236270+00:00",
+  "completedAt": "2026-10-08T06:29:06.081535+00:00",
+  "expected": "Existing code accepts terminating/malformed Node and emits recovery/context; failure retained",
+  "testKind": "Targeted production-function and native HTTP protocol regression; not installed live qualification"
+}

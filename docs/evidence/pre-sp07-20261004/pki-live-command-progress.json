@@ -1,0 +1,189 @@
+[
+  {
+    "command": [
+      "kubectl",
+      "get",
+      "namespace",
+      "ops-pre-sp07-pki-20261004",
+      "--ignore-not-found",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "get",
+      "namespace",
+      "ops-pre-sp07-pki-20261004",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "helm",
+      "template",
+      "pre-sp07-pki",
+      "deploy/charts/ops-dependencies",
+      "--namespace",
+      "ops-pre-sp07-pki-20261004",
+      "--set",
+      "global.imagePullPolicy=Never",
+      "--show-only",
+      "templates/openbao.yaml"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "go",
+      "build",
+      "-o",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/opsctl",
+      "./cmd/opsctl"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/opsctl",
+      "openbao",
+      "init",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/resolved-profile.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/bootstrap-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/recovery.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/opsctl",
+      "openbao",
+      "unseal",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/resolved-profile.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/bootstrap-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/recovery.json",
+      "--share-index",
+      "0"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/opsctl",
+      "openbao",
+      "unseal",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/resolved-profile.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/bootstrap-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/recovery.json",
+      "--share-index",
+      "1"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/opsctl",
+      "openbao",
+      "configure",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/resolved-profile.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/bootstrap-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/pki-live/recovery.json",
+      "--investigation-signing"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "create",
+      "serviceaccount",
+      "ops-api",
+      "-n",
+      "ops-pre-sp07-pki-20261004"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "create",
+      "token",
+      "ops-api",
+      "-n",
+      "ops-pre-sp07-pki-20261004",
+      "--audience",
+      "openbao",
+      "--duration",
+      "20m"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "create",
+      "serviceaccount",
+      "ops-worker",
+      "-n",
+      "ops-pre-sp07-pki-20261004"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "create",
+      "token",
+      "ops-worker",
+      "-n",
+      "ops-pre-sp07-pki-20261004",
+      "--audience",
+      "openbao",
+      "--duration",
+      "20m"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "create",
+      "serviceaccount",
+      "ops-investigator",
+      "-n",
+      "ops-pre-sp07-pki-20261004"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "create",
+      "token",
+      "ops-investigator",
+      "-n",
+      "ops-pre-sp07-pki-20261004",
+      "--audience",
+      "openbao",
+      "--duration",
+      "20m"
+    ],
+    "exitCode": 0
+  }
+]

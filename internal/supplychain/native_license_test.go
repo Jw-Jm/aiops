@@ -9,10 +9,13 @@ import (
 )
 
 func TestNativePermissionReferencesRejectDifferentScopeAndMissingEvidence(t *testing.T) {
-	var historical, investigator, debian, cargo, embedded, rustLibrary int
+	var historical, investigator, debian, cargo, embedded, rustLibrary, metrics int
 	for _, scope := range nativeLicenses {
 		if strings.HasPrefix(scope.ID, "LicenseRef-Task27-Native-") {
 			historical++
+		}
+		if scope.Component == "metrics-server" && strings.HasPrefix(scope.ID, "LicenseRef-PreSP07-Metrics-") {
+			metrics++
 		}
 		if scope.Component == "holmesgpt" && strings.HasPrefix(scope.ID, "LicenseRef-SP06-Native-") {
 			investigator++
@@ -28,8 +31,8 @@ func TestNativePermissionReferencesRejectDifferentScopeAndMissingEvidence(t *tes
 			}
 		}
 	}
-	if historical != 281 || debian != 87 || cargo != 767 || embedded != 8 || rustLibrary != 1 || investigator != debian+cargo+embedded+rustLibrary || len(nativeLicenses) != historical+investigator {
-		t.Fatalf("compiled exact native license registry incomplete: historical=%d investigator=%d total=%d", historical, investigator, len(nativeLicenses))
+	if historical != 281 || debian != 87 || cargo != 767 || embedded != 8 || rustLibrary != 1 || metrics != 4 || investigator != debian+cargo+embedded+rustLibrary || len(nativeLicenses) != historical+investigator+metrics {
+		t.Fatalf("compiled exact native license registry incomplete: historical=%d investigator=%d metrics=%d total=%d", historical, investigator, metrics, len(nativeLicenses))
 	}
 	var scope nativeLicenseScope
 	for _, s := range nativeLicenses {

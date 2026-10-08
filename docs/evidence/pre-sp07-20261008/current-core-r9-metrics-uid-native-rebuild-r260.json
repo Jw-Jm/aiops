@@ -1,0 +1,652 @@
+{
+  "observedAt": "2026-10-08T05:52:42.798150+00:00",
+  "SP07Started": false,
+  "executionBusinessCreated": false,
+  "oldEvidenceAutoBoundToNewUID": false,
+  "fullR6Acceptance": false,
+  "newPodUID": "42982816-5786-4d0f-aeaf-f51acb318e71",
+  "namespace": "ops-pre-sp07-targets-r9-20261008",
+  "namespaceUID": "f46dabc1-1ae5-4201-8730-d5e9be19f01e",
+  "podName": "pre-sp07-r9-metrics-r255",
+  "oldPodUID": "8997e07b-8fab-498b-8baf-8a846f537887",
+  "newCanonicalId": "k8s+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/42982816-5786-4d0f-aeaf-f51acb318e71",
+  "nativeNodeUID": "cc6ee959-3391-432f-b413-a5e7f2e64756",
+  "newNativeReady": true,
+  "freshFormalGraphNewUID": true,
+  "retiredLiveGraphStatus": 403,
+  "oldArchiveEvidenceStillAuthorizedAndUnchanged": true,
+  "oldEvidence": {
+    "evidenceId": "ca363a74-9949-55a2-9b00-858b8c176bcd",
+    "contentDigest": "sha256:7c4d18021a36b680aa7a8bbe218ffd20363a596830114857d85fde8fde8aeb01",
+    "archiveRef": {
+      "backendLogicalId": "pre-sp07-current-archive-ops-pre-sp07-core-r9-20261008",
+      "object": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "objectId": "ca363a74-9949-55a2-9b00-858b8c176bcd",
+        "category": "evidence",
+        "key": "tenants/e4a818ea0b2ea174e2e9c7e89e633d0c3aa5f77d92812723aecab889ee860e84/evidence/ca363a74-9949-55a2-9b00-858b8c176bcd",
+        "digest": "sha256:0b5b2884f34841fcac2df0372168a7af8dc631236d9807f62a61b4ab8ac90604",
+        "size": 1388,
+        "contentType": "application/vnd.ops.transit-envelope+json",
+        "versionId": "67238820f88530a3c6b36a8309ce7004",
+        "etag": "\"58fc4d0d92c7f9f14966018cb4febe12\"",
+        "retainUntil": "2027-10-09T05:49:12Z"
+      },
+      "encryptionKeyVersion": "1",
+      "plaintextDigest": "sha256:7c4d18021a36b680aa7a8bbe218ffd20363a596830114857d85fde8fde8aeb01",
+      "ciphertextDigest": "sha256:0b5b2884f34841fcac2df0372168a7af8dc631236d9807f62a61b4ab8ac90604"
+    },
+    "resourceCanonicalId": "k8s+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/8997e07b-8fab-498b-8baf-8a846f537887"
+  },
+  "nativeDeletionUIDAndRVPrecondition": true,
+  "finiteSleepSeconds": 900,
+  "finiteDeadlineSeconds": 1200,
+  "currentSourceScopeUnchanged": true,
+  "currentMetricsUIDRebuildPass": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/ca363a74-9949-55a2-9b00-858b8c176bcd",
+      "status": 200,
+      "sha256": "4610370c9e7ec12b95ea59cf5d8801ae2b80746e801dc82321dc0b783011902f"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "delete",
+        "--raw",
+        "/api/v1/namespaces/ops-pre-sp07-targets-r9-20261008/pods/pre-sp07-r9-metrics-r255",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/metrics-uid-rebuild-r260/uid-precondition-delete.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "wait",
+        "--for=condition=Ready",
+        "pod/pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--timeout=40s",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-metrics-r255",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "node",
+        "orbstack",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F42982816-5786-4d0f-aeaf-f51acb318e71",
+      "status": 200,
+      "sha256": "a296afd5555c28280a6aaf8ca2caf21b24d7de77c52b9e72faf0f9ee76fc2e92"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F8997e07b-8fab-498b-8baf-8a846f537887",
+      "status": 403,
+      "sha256": "8684241d7b05fd5eeed09c5ef9cecd2d626fae7a766233625be77685554b79fa"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/ca363a74-9949-55a2-9b00-858b8c176bcd",
+      "status": 200,
+      "sha256": "d747dac957c64f1e8570a3bcded08fd670aae8e20a21743c50d1cceaced664ad"
+    }
+  ],
+  "ownedForwardStopped": true
+}

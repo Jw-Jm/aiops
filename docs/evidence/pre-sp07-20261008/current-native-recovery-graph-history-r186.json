@@ -1,0 +1,88 @@
+{
+  "observedAt": "2026-10-08T01:26:11.422640+00:00",
+  "SP07ExecutionImplemented": false,
+  "newNativePodUID": "57f7f4c0-1d62-4452-955f-5f1bac26e4a0",
+  "oldNativePodUID": "b84fb634-54bf-45f3-9eb0-b1deed2130dc",
+  "sourceUnavailableCasePass": false,
+  "fullPostCheckPass": false,
+  "newGraph": {
+    "nodes": [
+      {
+        "canonicalId": "k8s+v1://d0738868-8646-4715-9d99-b85d4bcb0b5e/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/57f7f4c0-1d62-4452-955f-5f1bac26e4a0",
+        "kind": "Pod",
+        "name": "pre-sp07-scheduling-r155",
+        "updatedAt": "2026-10-08T01:24:15.25673802Z",
+        "tenantId": "d0738868-8646-4715-9d99-b85d4bcb0b5e",
+        "domain": "k8s",
+        "scope": "607d16b7-8684-491b-bca8-be31264b371e",
+        "apiGroup": "core",
+        "stableId": "57f7f4c0-1d62-4452-955f-5f1bac26e4a0",
+        "namespace": "ops-pre-sp07-targets-r8-20261007",
+        "labels": {
+          "ops.platform.io/owner": "pre-sp07-20261007-r8",
+          "ops.platform.io/purpose": "pre-sp07-native-recovery-r182",
+          "tenant": "d0738868-8646-4715-9d99-b85d4bcb0b5e"
+        },
+        "attributes": {
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-10-08T01:22:03Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-10-08T01:21:58Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-10-08T01:22:03Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-10-08T01:22:03Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-10-08T01:21:58Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a114c4-ccf5-7680-a906-3323ead7644e"
+        ],
+        "firstObservedAt": "2026-10-08T01:21:58.000438418Z",
+        "lastObservedAt": "2026-10-08T01:24:15.25673802Z"
+      }
+    ],
+    "graphRevision": {
+      "ownerEpoch": 3,
+      "graphGeneration": 234
+    },
+    "freshness": "fresh",
+    "partial": false,
+    "degradedSources": []
+  },
+  "failureType": "AssertionError",
+  "exitCode": 1,
+  "requests": [
+    {
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2Fd0738868-8646-4715-9d99-b85d4bcb0b5e%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F57f7f4c0-1d62-4452-955f-5f1bac26e4a0",
+      "status": 200,
+      "responseSHA256": "fd01c7b717a44bb5bc155a60667a8fbeac031ae02958ec22651e50c0077baf7c"
+    },
+    {
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2Fd0738868-8646-4715-9d99-b85d4bcb0b5e%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2Fb84fb634-54bf-45f3-9eb0-b1deed2130dc",
+      "status": 403,
+      "responseSHA256": "0ad503d3d845af6be6f75622af97a662eb73768a4b6a75cda41232f48f367cec"
+    }
+  ],
+  "ownedForwardStopped": true
+}

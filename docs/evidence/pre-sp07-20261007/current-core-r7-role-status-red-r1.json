@@ -1,0 +1,33 @@
+{
+  "observedAt": "2026-10-07T03:50:43.075133+00:00",
+  "gate": "formal operator RoleBinding revocation endpoint with actual installed Keycloak LoA2 identity",
+  "fullR0ThroughR6Complete": false,
+  "SP07Started": false,
+  "actualMutationRouteStatus": 404,
+  "currentBindingUnchanged": true,
+  "necessaryDefect": "PRE-R1-ROLE-001 formal status update route absent; existing Service UpdateRoleBinding cannot be invoked through installed product API",
+  "bindingId": "01a11452-1f20-71a1-95ca-891d5ea9b60a",
+  "failureType": "AssertionError",
+  "exitCode": 1,
+  "commands": [
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 200,
+      "responseSHA256": "sha256:6696ff34ebb1a2b82ea090d64daf388484e5d05ac64ec94891a2bbefdb77d4ce"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/role-bindings/01a11452-1f20-71a1-95ca-891d5ea9b60a/status",
+      "status": 404,
+      "responseSHA256": "sha256:b16e15764b8bc06c5c3f9f19bc8b99fa48e7894aa5a6ccdad65da49bbf564793"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 200,
+      "responseSHA256": "sha256:e0a8c5484914a144a736cd6d8744c2fc1d0f5cffc56d5b4ed05002c610fcc3f3"
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

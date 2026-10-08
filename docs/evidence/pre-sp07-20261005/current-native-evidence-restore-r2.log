@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/restore-current-native-evidence-r2.py", line 59, in <module>
+    head=read.head_object(Bucket=identity['bucket'],Key=obj['key'],VersionId=obj['versionId']);assert head.get('ObjectLockMode')=='COMPLIANCE';required=run(['docker','exec',pgID,'psql','-U','ops_bootstrap','-d',database,'-Atc',"SELECT max(required_until) FROM platform.evidence_retention_references WHERE tenant_id='"+tenant+"'"]).decode().strip();assert head['ObjectLockRetainUntilDate']>=datetime.datetime.fromisoformat(required)
+                                                                                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/restore-current-native-evidence-r2.py", line 8, in run
+    if c.returncode:(d/'private-failure-r2.log').write_bytes(c.stderr);raise RuntimeError('owned native Evidence recovery failed; private diagnostics retained')
+                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: owned native Evidence recovery failed; private diagnostics retained

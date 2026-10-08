@@ -29,6 +29,7 @@ import (
 	"ops-platform/internal/investigation/tools"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/rca"
+	"ops-platform/internal/resource"
 	"ops-platform/internal/source"
 	"os"
 	"strings"
@@ -248,10 +249,17 @@ func sp06GoldenInvestigationValidator(t *testing.T, ctx context.Context, db *sql
 	plan["dataRisk"] = "D0"
 	encoded, _ = json.Marshal(plan)
 	p.ActionPlans = []json.RawMessage{encoded}
+	apiPool, err := pgxpool.NewWithConfig(ctx, runtimePoolConfig(t, ctx, db, pool.Config().ConnConfig.ConnString(), "api_runtime_role"))
+	if err != nil {
+		t.Fatal("formal API database identity: ", err)
+	}
+	defer apiPool.Close()
+	validator := repo
+	validator.Pool = apiPool
 	invalid := p
 	invalid.CandidateUpdates = []investigation.CandidateSuggestion{{CandidateKey: "sha256:" + strings.Repeat("f", 64), Reason: "model-ranked"}}
 	encoded, _ = json.Marshal(invalid)
-	if err = repo.Complete(ctx, l, encoded); !errors.Is(err, investigation.ErrDenied) {
+	if err = validator.Complete(ctx, l, encoded); !errors.Is(err, investigation.ErrDenied) {
 		t.Fatalf("forged candidate accepted: %v", err)
 	}
 	plan["executionId"] = uuid.NewString()
@@ -259,7 +267,7 @@ func sp06GoldenInvestigationValidator(t *testing.T, ctx context.Context, db *sql
 	invalid = p
 	invalid.ActionPlans = []json.RawMessage{encoded}
 	encoded, _ = json.Marshal(invalid)
-	if err = repo.Complete(ctx, l, encoded); !errors.Is(err, investigation.ErrInvalid) {
+	if err = validator.Complete(ctx, l, encoded); !errors.Is(err, investigation.ErrInvalid) {
 		t.Fatalf("execution handle accepted: %v", err)
 	}
 	delete(plan, "executionId")
@@ -269,11 +277,31 @@ func sp06GoldenInvestigationValidator(t *testing.T, ctx context.Context, db *sql
 	encoded, _ = json.Marshal(plan)
 	invalid.ActionPlans = []json.RawMessage{encoded}
 	encoded, _ = json.Marshal(invalid)
-	if err = repo.Complete(ctx, l, encoded); !errors.Is(err, investigation.ErrDenied) {
+	if err = validator.Complete(ctx, l, encoded); !errors.Is(err, investigation.ErrDenied) {
 		t.Fatalf("foreign tenant rejection class: %v contract=%v proposal=%s", err, contract.Validate("https://ops.local/schemas/investigation-result/v1", encoded), encoded)
 	}
+	// Historical rows deliberately survive deletion for Evidence/replay. A
+	// different same-scope target must still be current before a recommendation
+	// can name it; validating the Incident's current RCA does not check this row.
+	retired, err := resource.ParseCanonicalID(primary)
+	if err != nil {
+		t.Fatal(err)
+	}
+	retired.StableID = uuid.NewString()
+	retiredTarget := retired.String()
+	if _, err := db.ExecContext(ctx, `INSERT INTO platform.resource_entities(tenant_id,canonical_id,cluster_id,kind,namespace,name,metadata,observed_at,deleted_at) SELECT tenant_id,$3,cluster_id,kind,namespace,name,metadata,observed_at,clock_timestamp() FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2`, job.TenantID, primary, retiredTarget); err != nil {
+		t.Fatal("prepare isolated retained target row: ", err)
+	}
+	plan["tenantId"] = job.TenantID.String()
+	plan["targetCanonicalId"] = retiredTarget
+	encoded, _ = json.Marshal(plan)
+	invalid.ActionPlans = []json.RawMessage{encoded}
+	encoded, _ = json.Marshal(invalid)
+	if err = validator.Complete(ctx, l, encoded); !errors.Is(err, investigation.ErrDenied) {
+		t.Fatalf("deleted same-scope ActionPlan target accepted: %v", err)
+	}
 	encoded, _ = json.Marshal(p)
-	if err = repo.Complete(ctx, l, encoded); err != nil {
+	if err = validator.Complete(ctx, l, encoded); err != nil {
 		t.Fatal("valid recommendation rejected: ", err)
 	}
 	final, err := repo.Get(ctx, job.TenantID, job.JobID)
@@ -284,5 +312,5 @@ func sp06GoldenInvestigationValidator(t *testing.T, ctx context.Context, db *sql
 	if err != nil || finding.Hash(unchanged) != finding.Hash(rev) {
 		t.Fatal("model proposal changed deterministic RCA")
 	}
-	t.Log("actual native Lease + mTLS Graph + current signed Recipe/facts + authorized ranked Evidence + Ledger + Go advisory validator; forged candidate, foreign tenant and execution handle rejected; deterministic RCA unchanged")
+	t.Log("actual native Lease + mTLS Graph + current signed Recipe/facts + authorized ranked Evidence + Ledger + Go advisory validator; forged candidate, foreign tenant, deleted same-scope target and execution handle rejected; current target accepted and deterministic RCA unchanged")
 }

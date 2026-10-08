@@ -1,0 +1,277 @@
+{
+  "observedAt": "2026-10-07T02:38:46.292562+00:00",
+  "previousProgress": "current-readiness-progress-r55.json",
+  "r0ToR6": "IN_PROGRESS",
+  "fullR0ThroughR6Complete": false,
+  "gitBaseline": {
+    "branch": "pre-sp07/nonvirtual-readiness",
+    "head": "cd577dfc4e9d1d53f93b5c031d9b0a303ef32dc8",
+    "uncommittedChangesPreserved": true
+  },
+  "environment": {
+    "latestResourceInventory": "../pre-sp07-20261006/current-orbstack-resource-inventory-r34.json",
+    "latestProcessInventory": "../pre-sp07-20261006/current-platform-process-inventory-r35.json",
+    "protectedOriginalHistoricalRecovery": "BLOCKED_ENV001_USER_CONFIRMED_NO_MATCHING_TRANSIT_MATERIAL",
+    "protectedOriginalsRetained": true,
+    "originalFullCleanupComplete": false,
+    "freshInstallationRequiresOldTransitKeys": false,
+    "nodeDiskPressure": {
+      "actualPressureFailureRetained": "../pre-sp07-20261006/current-native-node-filesystem-pressure-r41.json",
+      "automaticallyRecoveredAt": "2026-10-06T01:58:42Z",
+      "thresholdOrTLSNotRelaxed": true,
+      "metricsAndInvestigatorSignedMaterialRecovery": "../pre-sp07-20261006/current-signed-image-recovery-r42.json"
+    },
+    "currentDevelopmentOpenBaoRestartSeal": "current-core-r6-openbao-restart-recovery-r1.json",
+    "formalMatchingUnsealExitCodes": [
+      0,
+      0
+    ],
+    "newPostRestartBusinessChainExitCode": 0,
+    "preRestartPersistentChainReadbackExitCode": 0
+  },
+  "currentFormalRuntime": {
+    "namespace": "ops-pre-sp07-core-r6-20261006",
+    "bundle": "pre-sp07-core-20261006-r8",
+    "actualAPIModelMCPValidatorArchiveLedgerAuditSSE": "../pre-sp07-20261006/current-core-r6-investigation-chain-live-receipt-r1.json",
+    "narrowChainExitCode": 0,
+    "conclusion": "unresolved",
+    "accuracyPass": false,
+    "fullColdInstallPass": false,
+    "actualTenConcurrency": "current-core-r6-concurrency-live-receipt-r4.json",
+    "tenConcurrencyExitCode": 1,
+    "formalTimeoutUnchanged": 45,
+    "sharedModelNotReconfigured": true,
+    "modelOwnershipQuestionPending": true,
+    "newPostRestartActualJob": "01a11125-cd91-77d3-a465-8ee658220fe7",
+    "newPostRestartModelMCPValidatorEvidenceLedgerAuditSSE": "../pre-sp07-20261006/current-core-r5-investigation-restart-chain-live-receipt-r50.json",
+    "preRestartPersistentStepsEvidenceAuditSSEResume": "../pre-sp07-20261006/current-core-r5-investigation-pre-restart-persistent-chain-receipt-r51.json",
+    "currentRuntimeBundleStillR7": false,
+    "currentBundleR8NotYetInstalled": false,
+    "newInstalledJob": "01a1116e-1c26-7247-bdbc-ad045b1fc12c",
+    "podMetricActualWorkerArchiveAPI": "../pre-sp07-20261006/current-core-r6-pod-metric-archive-api-r1.json",
+    "podMetricArchiveAPIExitCode": 0,
+    "podMetricMCPAcceptance": false,
+    "formalBusinessInstall": "../pre-sp07-20261006/current-core-r6-business-install-r1-command.json",
+    "formalBusinessInstallExitCode": 0,
+    "emptyDatabaseProof": "../pre-sp07-20261006/current-core-r6-empty-migration-receipt-r1.json",
+    "actualAPISignedRegistry": "../pre-sp07-20261006/current-core-r6-formal-api-initialization-r5.json",
+    "coldCachePass": false,
+    "currentRestartRecovery": "current-core-r6-openbao-restart-recovery-r1.json",
+    "postRestartCurrentChainReadback": "current-core-r6-investigation-pre-restart-persistent-chain-receipt-r2.json",
+    "currentTenConcurrencyMainlineReads": 78,
+    "currentTenConcurrencyPeakRunning": 10,
+    "currentTenConcurrencyToolCalls": 0,
+    "podMetricUIDRecreation": "current-core-r6-pod-metric-archive-api-r3.json",
+    "podMetricUIDRecreationExitCode": 0,
+    "realMountMetricNativeScenario": "current-core-r6-real-mount-metric-native-fault-and-restoration-r1.json",
+    "realMountModelJob": "01a1141a-a287-7a89-a6c3-6f64f65cf0d9",
+    "realMountModelJobState": "failed",
+    "realMountModelStep": "MODEL_FAILURE, first model call, no MCP",
+    "realMountPositiveChainPass": false,
+    "networkQualification": "current-core-r6-network-boundary-r1.json",
+    "fullNetworkAcceptance": false,
+    "IPv6IndependentPositiveControlAvailable": false,
+    "finiteCPUHighSymptomAcceptanceExitCode": 1,
+    "finiteCPUThresholdUnchanged": 90,
+    "finiteCPULoadStoppedAutomatically": true
+  },
+  "mandatorySixCommands": {
+    "evidence": "../pre-sp07-20261006/current-regression-gates-r47.json",
+    "sourceSnapshot": "../pre-sp07-20261006/source-state-after-gates-r47.json",
+    "sourceUnchanged": true,
+    "commands": [
+      {
+        "command": [
+          "make",
+          "check-toolchain"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "make",
+          "check-generated"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "make",
+          "check-runtime-source"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "make",
+          "check"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "make",
+          "test-security"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "make",
+          "test-replay"
+        ],
+        "exitCode": 0,
+        "earlierFailedExitCode": 2,
+        "latestEvidence": "../pre-sp07-20261006/current-test-replay-r53.log"
+      }
+    ],
+    "allPassed": true,
+    "retainedReplayFailure": "locked Go container image absent; prepare exact pinned toolchain and rerun; do not relax network=none/pull=never",
+    "replayCorrectionEvidence": "../pre-sp07-20261006/current-regression-gates-r53.json",
+    "sourceFileMapSHA256": "880e4491542a0262d7270c5f906d46815fe98fa2f6a7d84a47bee3fe6ccb7e16"
+  },
+  "newSignedBundle": {
+    "observedAt": "2026-10-06T12:13:04.866535+00:00",
+    "bundleId": "pre-sp07-core-20261006-r8",
+    "payloadDigest": "sha256:a7e265599e5436cb08bec35b0a6d522a5bcd90f912ba56568a3d9dc8d9d4d3d5",
+    "materialCount": 32,
+    "independentTrustFileSHA256": "sha256:47f3b2279069c4b72c9b1ccb3db05de1e5805677d6922e7b2cc4d2a6f18569a7",
+    "sourceBinding": "../pre-sp07-20261006/current-core-material-signing-input-r8.json",
+    "commands": [
+      {
+        "command": [
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+          "bundle",
+          "build",
+          "--spec",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/build-spec-r8.json",
+          "--output",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8",
+          "--signing-key",
+          "/Users/mssc/.cache/ops-sp06-20261004/bundle-signing.pem"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+          "bundle",
+          "verify",
+          "--manifest",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8/bundle.lock.json",
+          "--signature",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8/bundle.lock.sig",
+          "--payload",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8/payload.tar.zst",
+          "--key",
+          "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem"
+        ],
+        "exitCode": 0
+      }
+    ],
+    "status": "SIGNED_CURRENT_CORE_MATERIAL_INDEPENDENTLY_VERIFIED",
+    "freshInstallAcceptance": false,
+    "coldCoreAcceptance": false,
+    "deepflowAcceptance": false,
+    "modelWeightsDistributed": false
+  },
+  "storagePreparation": {
+    "taskOwnedImmutableCopiesByteVerifiedAPFSClones": [
+      "../pre-sp07-20261006/immutable-preparation-copy-deduplication-r45.json",
+      "../pre-sp07-20261006/immutable-preparation-copy-deduplication-r46.json"
+    ],
+    "intermediateR6ActualByteIdenticalOriginalSignatureFullVerify": "../pre-sp07-20261006/bundle-r6-exact-input-actual-restoration-r9.json",
+    "businessOrProtectedHistoricalDataDeleted": false,
+    "fullCleanupComplete": false
+  },
+  "deepflowMaterial": {
+    "exactClickHouseRootGitlinks": "../pre-sp07-20261006/deepflow-clickhouse-native-submodule-source-inventory-r1.json",
+    "nativeCpp117SubmoduleSourcePreparation": "../pre-sp07-20261006/deepflow-clickhouse-native-submodule-source-preparation-r3.json",
+    "nativeSourceClosureComplete": false,
+    "bundledAdmission": false,
+    "nativePodLcuuidNotEquivalentToKubernetesUID": "../pre-sp07-20261006/deepflow-original-pod-identity-contract-review-r6.json",
+    "exactRecursiveSubmoduleArchives": 134,
+    "originalNotices": 630,
+    "nativeSourceClosureAudit": "../pre-sp07-20261006/deepflow-clickhouse-native-source-closure-audit-r6.json",
+    "actualICULFSOriginalObject": "../pre-sp07-20261006/deepflow-clickhouse-icu-original-lfs-source-r7.json",
+    "nlpDatasetsEmbeddedInLockedImage": "../pre-sp07-20261006/deepflow-clickhouse-native-nlp-distribution-review-r8.json",
+    "nlpOriginalLicenseCoverage": "UNRESOLVED; 3 exact original datasets are embedded, original dataset repository has no standalone license"
+  },
+  "operatorHomebrewScopeDeviationRemediation": "../pre-sp07-20261006/native-tool-preparation-remediation-r11.json",
+  "remainingMandatory": [
+    "ENV001 original historical Evidence/Transit full restoration and protected original cleanup",
+    "All selected OCI cold import proof and complete core acceptance; formal new empty database dependencies/API/Registry/business stages now exit0",
+    "DeepFlow exact embedded NLP dataset license coverage and remaining source/native license adjudication, signed bundled install and real source-authorized traffic investigation",
+    "Metrics formal MCP business path and lifecycle/source revoke/recovery cases; actual new SourceRegistration -> Worker Inspection -> retained Pod Metric -> API exit0",
+    "ten simultaneous actual model investigations with mainline; provider ownership input pending",
+    "full restore/reinstall Job takeover Context fencing successful Step no rerun conservative unknown usage and durable SSE closure",
+    "remaining finite scenarios/necessary security/recovery gates",
+    "R6 formal target trust/boundary input qualification",
+    "final complete uninvolved read-only independent PASS then authorized main Git delivery"
+  ],
+  "boundaries": {
+    "performance": "USER_WAIVED_NOT_PASS",
+    "virtualization": "DEFERRED_DISABLED_UNVERIFIED",
+    "PyRCA": "DISABLED_EXCLUDED",
+    "physicalBmcDimmNic": "UNVERIFIED_WITHOUT_REAL_TARGET",
+    "SP07Started": false,
+    "independentFullReviewStarted": false,
+    "commitOrPushPerformed": false
+  },
+  "r6SSHPreparation": {
+    "confirmedDefect": "PRE-R6-SSH-001 client and CA signer reachable through old full-directory target mount",
+    "redEvidence": "../pre-sp07-20261006/ssh-target-private-key-isolation-red-r3.json",
+    "redExitCode": 1,
+    "repairEvidence": "../pre-sp07-20261006/ssh-target-server-only-projection-green-r3.json",
+    "repairExitCode": 0,
+    "newCAAndHostIdentity": true,
+    "originalStoppedTargetNotRestarted": true,
+    "currentAuthenticationRenewalRequired": true,
+    "formalFutureTask75Accepted": false
+  },
+  "sourceAfterNewFix": {
+    "changes": [
+      "services/investigator/src/investigator/budget.py",
+      "services/investigator/src/investigator/worker.py",
+      "services/investigator/tests/test_budget_failures.py"
+    ],
+    "unitFailureReproductionExitCode": 1,
+    "unitFailureCount": 9,
+    "allInvestigatorUnitRegressionExitCode": 0,
+    "newSignedBundle": "R9 prepared and source-bound; unsigned build stopped at disk floor, no Bundle PASS",
+    "newRuntimeDeployed": false,
+    "mandatorySixCommandsForCurrentSource": "five 0; make check 2 because stopped isolated dependencies; actual resume with retained Transit and strict TLS renewal 0; corrected make check r57 running",
+    "publicContractBudgetTimeoutUnchanged": true,
+    "currentSourceFileMapSHA256": "153297868b1d4bdd23d4c0f74138d4414d2839c89106e2ab85fa1da8a1d286c9",
+    "investigatorSourceImageAdmission": "current-investigator-distribution-r2.json"
+  },
+  "sshCurrentPreparation": {
+    "evidence": "ssh-target-server-only-projection-renewal-r4.json",
+    "exitCode": 0,
+    "serverOnlyProjection": true,
+    "clientCASignerExcludedFromTarget": true,
+    "expiredAndRetiredCertificatesRejected": true,
+    "task75Accepted": false,
+    "commandChainExecuted": false
+  },
+  "currentRecoveryNarrow": {
+    "matchingCurrentRaftAndActualArchiveEvidenceDecryption": "current-core-r6-raft-evidence-isolated-restore-r5.json",
+    "exitCode": 0,
+    "databaseObjectAuditJointFullC": false,
+    "consistentDatabaseRestore": "running; driver failures retained",
+    "sourceObjectsProtectionNotChanged": true
+  },
+  "storageBlocker": {
+    "signedBundle": "R9",
+    "actualSignedPublished": false,
+    "evidence": "current-core-r9-signing-capacity-blocker-r1.json",
+    "retainedSignedR8": true,
+    "onlyUnsignedFailedStagingDeleted": true,
+    "immutableCopyConsolidation": [
+      "immutable-preparation-copy-deduplication-r58.json",
+      "immutable-investigator-source-partial-clone-r59.json"
+    ],
+    "minimumPrivateStorageInput": "25 GiB available for compressed payload, verification expansion and 10 GiB safety floor",
+    "questionPending": true
+  }
+}

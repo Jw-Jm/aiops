@@ -1,0 +1,25 @@
+{
+  "observedAt": "2026-10-06T13:34:52.023142+00:00",
+  "namespace": "ops-pre-sp07-targets-r6-20261006",
+  "podName": "pre-sp07-current-r6-unschedulable-r1",
+  "nativePodUID": "b689711c-2edf-4d75-b3e2-d71168d25997",
+  "nativeCreationTimestamp": "2026-10-06T13:34:52Z",
+  "explicitExpectedFact": "PodScheduled False, reason Unschedulable, no Node matches dedicated nonexistent owned selector",
+  "positiveRecoveryPreparation": "After retaining original failed native snapshots and verified Evidence, replace only this own stateless Pod with the same name and a new UID without the unschedulable selector; verify the old UID remains historical and new current identity is collected independently. Pod nodeSelector is immutable.",
+  "finiteActiveDeadlineSeconds": 600,
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "create",
+    "-f",
+    "-",
+    "-o",
+    "json"
+  ],
+  "exitCode": 0,
+  "nodeModified": false,
+  "fixture": false,
+  "performanceBenchmark": false,
+  "executionCommandChain": false
+}

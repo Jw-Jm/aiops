@@ -1,0 +1,123 @@
+schemaVersion: 1
+kind: resolved
+profileId: pre-sp07-current-core-r6-20261006
+environment: development
+architecture: arm64
+selectedProfile: core
+kubernetes:
+  distribution: orbstack
+  version: v1.35.6+orb1
+  architecture: arm64
+  context: orbstack
+  clusterUid: 607d16b7-8684-491b-bca8-be31264b371e
+  storageClass: local-path
+  crds:
+    - addons.k3s.cattle.io
+    - etcdsnapshotfiles.k3s.cattle.io
+    - healthchecks.holmesgpt.dev
+    - scheduledhealthchecks.holmesgpt.dev
+    - triggeredhealthchecks.holmesgpt.dev
+    - vlogs.operator.victoriametrics.com
+    - vmagents.operator.victoriametrics.com
+    - vmalertmanagerconfigs.operator.victoriametrics.com
+    - vmalertmanagers.operator.victoriametrics.com
+    - vmalerts.operator.victoriametrics.com
+    - vmauths.operator.victoriametrics.com
+    - vmclusters.operator.victoriametrics.com
+    - vmnodescrapes.operator.victoriametrics.com
+    - vmpodscrapes.operator.victoriametrics.com
+    - vmprobes.operator.victoriametrics.com
+    - vmrules.operator.victoriametrics.com
+    - vmscrapeconfigs.operator.victoriametrics.com
+    - vmservicescrapes.operator.victoriametrics.com
+    - vmsingles.operator.victoriametrics.com
+    - vmstaticscrapes.operator.victoriametrics.com
+    - vmusers.operator.victoriametrics.com
+  kubevirtCompatibility: unverified
+  kubevirtInstalled: false
+  kubevirtVersion: 1.9.0
+  cdiInstalled: false
+  cdiVersion: 1.63.0
+runtime:
+  publicEgress: deny
+  cpuBudget: 8
+  memoryMiB: 18432
+  imageImporter: orbstack_shared_store
+components:
+  cdi:
+    mode: disabled
+    compatibility: unverified
+  deepflow:
+    mode: disabled
+    compatibility: unverified
+  keycloak:
+    mode: bundled
+    version: 26.7.4
+    digest: sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c
+    image: quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c
+    endpoint: https://ops-keycloak.ops-pre-sp07-core-r6-20261006.svc.cluster.local:8443
+    namespace: ops-pre-sp07-core-r6-20261006
+    admissionState: qualified
+  kubevirt:
+    mode: disabled
+    compatibility: unverified
+  openbao:
+    mode: bundled
+    version: 2.7.0
+    digest: sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6
+    image: ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6
+    endpoint: https://ops-openbao.ops-pre-sp07-core-r6-20261006.svc.cluster.local:8200
+    namespace: ops-pre-sp07-core-r6-20261006
+    admissionState: qualified
+  postgresql:
+    mode: bundled
+    version: "17.11"
+    digest: sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+    image: docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257
+    endpoint: postgresql://ops-postgresql.ops-pre-sp07-core-r6-20261006.svc.cluster.local:5432
+    namespace: ops-pre-sp07-core-r6-20261006
+    admissionState: qualified
+  seaweedfs:
+    mode: bundled
+    version: "4.47"
+    digest: sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e
+    image: docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e
+    endpoint: https://ops-seaweedfs-s3.ops-pre-sp07-core-r6-20261006.svc.cluster.local:8333
+    namespace: ops-pre-sp07-core-r6-20261006
+    admissionState: qualified
+  victoriaLogs:
+    mode: bundled
+    version: v1.52.0
+    digest: sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e
+    image: victoriametrics/victoria-logs@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e
+    endpoint: https://ops-victoria-logs.ops-pre-sp07-core-r6-20261006.svc.cluster.local:9428
+    namespace: ops-pre-sp07-core-r6-20261006
+    admissionState: qualified
+  victoriaMetrics:
+    mode: bundled
+    version: v1.116.0
+    digest: sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638
+    image: victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638
+    endpoint: https://ops-victoria-metrics.ops-pre-sp07-core-r6-20261006.svc.cluster.local:8428
+    namespace: ops-pre-sp07-core-r6-20261006
+    admissionState: qualified
+  vmalert:
+    mode: bundled
+    version: v1.116.0
+    digest: sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+    image: docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311
+    endpoint: http://ops-vmalert.ops-pre-sp07-core-r6-20261006.svc.cluster.local:8880
+    namespace: ops-pre-sp07-core-r6-20261006
+    admissionState: qualified
+model:
+  api: openai-compatible
+  endpoint: http://host.docker.internal:11434/v1
+  providerForDevelopment: ollama-0.34.2
+  model: llama3.1:8b-16k
+  bundleWeights: false
+discovery:
+  observedAt: "2026-10-06T12:28:36.995337+00:00"
+  context: orbstack
+  clusterUid: 607d16b7-8684-491b-bca8-be31264b371e
+  serverVersion: v1.35.6+orb1
+installable: true

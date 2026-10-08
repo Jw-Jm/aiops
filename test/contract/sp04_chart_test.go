@@ -89,6 +89,16 @@ func TestSP04ChartUsesExistingWorkerAndSeparateCredentials(t *testing.T) {
 				}
 			}
 		}
+		if kind == "RoleBinding" || kind == "ClusterRoleBinding" {
+			role, ok := obj["roleRef"].(map[string]any)
+			if !ok || len(role) != 3 || role["apiGroup"] != "rbac.authorization.k8s.io" || role["kind"] == nil || role["name"] == nil {
+				t.Fatalf("%s/%s has an invalid Kubernetes RoleRef: %v", kind, name, role)
+			}
+			labels, _ := meta["labels"].(map[string]any)
+			if labels["ops.platform.io/release"] != "sp04" {
+				t.Fatalf("%s/%s lacks release ownership", kind, name)
+			}
+		}
 		if kind == "NetworkPolicy" && name == "ops-sp04-worker-graph-ingress" {
 			encoded, _ := json.Marshal(obj["spec"])
 			if !bytes.Contains(encoded, []byte("api")) || !bytes.Contains(encoded, []byte("8082")) {

@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/restore-current-protected-databases-r2.py", line 21, in <module>
+    run(['docker','exec','-i',ident,'psql','-X','-v','ON_ERROR_STOP=1','-U',user,'-d','postgres'],membership.encode())
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/restore-current-protected-databases-r2.py", line 13, in run
+    if c.returncode:(d/'private-failure-r2.log').write_bytes(c.stderr);raise RuntimeError('owned isolated restore failed; private diagnostics retained')
+                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: owned isolated restore failed; private diagnostics retained

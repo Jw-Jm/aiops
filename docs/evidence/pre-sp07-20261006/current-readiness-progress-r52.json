@@ -1,0 +1,184 @@
+{
+  "observedAt": "2026-10-06T12:21:57.119770+00:00",
+  "previousProgress": "current-readiness-progress-r44.json",
+  "r0ToR6": "IN_PROGRESS",
+  "fullR0ThroughR6Complete": false,
+  "gitBaseline": {
+    "branch": "pre-sp07/nonvirtual-readiness",
+    "head": "cd577dfc4e9d1d53f93b5c031d9b0a303ef32dc8",
+    "uncommittedChangesPreserved": true
+  },
+  "environment": {
+    "latestResourceInventory": "current-orbstack-resource-inventory-r34.json",
+    "latestProcessInventory": "current-platform-process-inventory-r35.json",
+    "protectedOriginalHistoricalRecovery": "BLOCKED_ENV001_USER_CONFIRMED_NO_MATCHING_TRANSIT_MATERIAL",
+    "protectedOriginalsRetained": true,
+    "originalFullCleanupComplete": false,
+    "freshInstallationRequiresOldTransitKeys": false,
+    "nodeDiskPressure": {
+      "actualPressureFailureRetained": "current-native-node-filesystem-pressure-r41.json",
+      "automaticallyRecoveredAt": "2026-10-06T01:58:42Z",
+      "thresholdOrTLSNotRelaxed": true,
+      "metricsAndInvestigatorSignedMaterialRecovery": "current-signed-image-recovery-r42.json"
+    },
+    "currentDevelopmentOpenBaoRestartSeal": "current-core-r5-openbao-restart-recovery-r49.json",
+    "formalMatchingUnsealExitCodes": [
+      0,
+      0
+    ],
+    "newPostRestartBusinessChainExitCode": 0,
+    "preRestartPersistentChainReadbackExitCode": 0
+  },
+  "currentFormalRuntime": {
+    "namespace": "ops-pre-sp07-core-r5-20261006",
+    "bundle": "pre-sp07-core-20261005-r7",
+    "actualAPIModelMCPValidatorArchiveLedgerAuditSSE": "current-core-r5-investigation-chain-live-receipt-r1.json",
+    "narrowChainExitCode": 0,
+    "conclusion": "unresolved",
+    "accuracyPass": false,
+    "fullColdInstallPass": false,
+    "actualTenConcurrency": "current-core-r5-concurrency-live-receipt-r3.json",
+    "tenConcurrencyExitCode": 1,
+    "formalTimeoutUnchanged": 45,
+    "sharedModelNotReconfigured": true,
+    "modelOwnershipQuestionPending": true,
+    "newPostRestartActualJob": "01a11125-cd91-77d3-a465-8ee658220fe7",
+    "newPostRestartModelMCPValidatorEvidenceLedgerAuditSSE": "current-core-r5-investigation-restart-chain-live-receipt-r50.json",
+    "preRestartPersistentStepsEvidenceAuditSSEResume": "current-core-r5-investigation-pre-restart-persistent-chain-receipt-r51.json",
+    "currentRuntimeBundleStillR7": true,
+    "currentBundleR8NotYetInstalled": true
+  },
+  "mandatorySixCommands": {
+    "evidence": "current-regression-gates-r47.json",
+    "sourceSnapshot": "source-state-after-gates-r47.json",
+    "sourceUnchanged": true,
+    "commands": [
+      {
+        "command": [
+          "make",
+          "check-toolchain"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "make",
+          "check-generated"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "make",
+          "check-runtime-source"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "make",
+          "check"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "make",
+          "test-security"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "make",
+          "test-replay"
+        ],
+        "exitCode": 2
+      }
+    ],
+    "replayFailure": "locked Go container image absent; prepare exact pinned toolchain and rerun; do not relax network=none/pull=never",
+    "allPassed": false
+  },
+  "newSignedBundle": {
+    "observedAt": "2026-10-06T12:13:04.866535+00:00",
+    "bundleId": "pre-sp07-core-20261006-r8",
+    "payloadDigest": "sha256:a7e265599e5436cb08bec35b0a6d522a5bcd90f912ba56568a3d9dc8d9d4d3d5",
+    "materialCount": 32,
+    "independentTrustFileSHA256": "sha256:47f3b2279069c4b72c9b1ccb3db05de1e5805677d6922e7b2cc4d2a6f18569a7",
+    "sourceBinding": "current-core-material-signing-input-r8.json",
+    "commands": [
+      {
+        "command": [
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+          "bundle",
+          "build",
+          "--spec",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/build-spec-r8.json",
+          "--output",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8",
+          "--signing-key",
+          "/Users/mssc/.cache/ops-sp06-20261004/bundle-signing.pem"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+          "bundle",
+          "verify",
+          "--manifest",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8/bundle.lock.json",
+          "--signature",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8/bundle.lock.sig",
+          "--payload",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/signed-bundle-r8/payload.tar.zst",
+          "--key",
+          "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem"
+        ],
+        "exitCode": 0
+      }
+    ],
+    "status": "SIGNED_CURRENT_CORE_MATERIAL_INDEPENDENTLY_VERIFIED",
+    "freshInstallAcceptance": false,
+    "coldCoreAcceptance": false,
+    "deepflowAcceptance": false,
+    "modelWeightsDistributed": false
+  },
+  "storagePreparation": {
+    "taskOwnedImmutableCopiesByteVerifiedAPFSClones": [
+      "immutable-preparation-copy-deduplication-r45.json",
+      "immutable-preparation-copy-deduplication-r46.json"
+    ],
+    "intermediateR6ActualByteIdenticalOriginalSignatureFullVerify": "bundle-r6-exact-input-actual-restoration-r9.json",
+    "businessOrProtectedHistoricalDataDeleted": false,
+    "fullCleanupComplete": false
+  },
+  "deepflowMaterial": {
+    "exactClickHouseRootGitlinks": "deepflow-clickhouse-native-submodule-source-inventory-r1.json",
+    "nativeCpp117SubmoduleSourcePreparation": "deepflow-clickhouse-native-submodule-source-preparation-r3.json",
+    "nativeSourceClosureComplete": false,
+    "bundledAdmission": false,
+    "nativePodLcuuidNotEquivalentToKubernetesUID": "deepflow-original-pod-identity-contract-review-r6.json"
+  },
+  "operatorHomebrewScopeDeviationRemediation": "native-tool-preparation-remediation-r11.json",
+  "remainingMandatory": [
+    "ENV001 original historical Evidence/Transit full restoration and protected original cleanup",
+    "current R8 formal fresh offline core install and all selected OCI cold import proof",
+    "DeepFlow original recursive source/license closure and genuine admission, bundled install and real source-authorized traffic investigation",
+    "Metrics new SourceRegistration→Inspection→retained Evidence→API/MCP business path and lifecycle/revocation cases",
+    "ten simultaneous actual model investigations with mainline; provider ownership input pending",
+    "full restore/reinstall Job takeover Context fencing successful Step no rerun conservative unknown usage and durable SSE closure",
+    "remaining finite scenarios/necessary security/recovery gates",
+    "R6 formal target trust/boundary input qualification",
+    "final complete uninvolved read-only independent PASS then authorized main Git delivery"
+  ],
+  "boundaries": {
+    "performance": "USER_WAIVED_NOT_PASS",
+    "virtualization": "DEFERRED_DISABLED_UNVERIFIED",
+    "PyRCA": "DISABLED_EXCLUDED",
+    "physicalBmcDimmNic": "UNVERIFIED_WITHOUT_REAL_TARGET",
+    "SP07Started": false,
+    "independentFullReviewStarted": false,
+    "commitOrPushPerformed": false
+  }
+}

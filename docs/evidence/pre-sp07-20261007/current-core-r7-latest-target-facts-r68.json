@@ -1,0 +1,304 @@
+{
+  "observedAt": "2026-10-07T03:42:17.951439+00:00",
+  "purpose": "current native observation for future Post-check input, no execution functionality",
+  "SP07Started": false,
+  "fullR6Acceptance": false,
+  "currentModelMCPChainPass": false,
+  "performanceGate": "USER_WAIVED_NOT_PASS",
+  "mutations": [],
+  "namespaceUID": "60bb33ba-b6d9-4ea1-ba80-ebe1b3c4b11f",
+  "node": {
+    "uid": "cc6ee959-3391-432f-b413-a5e7f2e64756",
+    "name": "orbstack",
+    "capacity": {
+      "cpu": "8",
+      "devices.kubevirt.io/kvm": "0",
+      "devices.kubevirt.io/sev": "0",
+      "devices.kubevirt.io/tun": "0",
+      "devices.kubevirt.io/vhost-net": "0",
+      "ephemeral-storage": "68032Mi",
+      "memory": "18462244Ki",
+      "pods": "110"
+    },
+    "allocatable": {
+      "cpu": "8",
+      "devices.kubevirt.io/kvm": "0",
+      "devices.kubevirt.io/sev": "0",
+      "devices.kubevirt.io/tun": "0",
+      "devices.kubevirt.io/vhost-net": "0",
+      "ephemeral-storage": "67769886258",
+      "memory": "18462244Ki",
+      "pods": "110"
+    },
+    "ready": "True",
+    "latestMetricTimestamp": "2026-10-07T03:41:59Z",
+    "latestMetricWindow": "20.32s",
+    "latestMetricUsage": {
+      "cpu": "5833744438n",
+      "memory": "8162700Ki"
+    },
+    "UIDBeforeAfterStable": true
+  },
+  "pods": [
+    {
+      "name": "pre-sp07-current-r7-ready",
+      "uid": "3a913fd3-5ce5-4b39-a47a-99046fe6929e",
+      "phase": "Running",
+      "ready": true,
+      "activeDeadlineSeconds": 3600,
+      "creationTimestamp": "2026-10-07T02:54:26Z",
+      "containerStates": [
+        {}
+      ]
+    },
+    {
+      "name": "pre-sp07-current-r7-source-canary",
+      "uid": "41561dd5-4da3-4763-acb9-cfdfcabf32cd",
+      "phase": "Running",
+      "ready": true,
+      "activeDeadlineSeconds": 1800,
+      "creationTimestamp": "2026-10-07T03:30:28Z",
+      "containerStates": [
+        {}
+      ]
+    },
+    {
+      "name": "pre-sp07-r7-scheduling-r1",
+      "uid": "dc261acd-e559-45bc-b473-4511b1615d0b",
+      "phase": "Succeeded",
+      "ready": false,
+      "activeDeadlineSeconds": 900,
+      "creationTimestamp": "2026-10-07T03:27:06Z",
+      "containerStates": [
+        {
+          "exitCode": 0,
+          "finishedAt": "2026-10-07T03:41:20Z",
+          "reason": "Completed",
+          "startedAt": "2026-10-07T03:27:09Z"
+        }
+      ]
+    }
+  ],
+  "nativeMetrics": [
+    {
+      "podUIDFromBeforeAfterNativeObservation": "3a913fd3-5ce5-4b39-a47a-99046fe6929e",
+      "name": "pre-sp07-current-r7-ready",
+      "namespace": "ops-pre-sp07-targets-r7-20261007",
+      "timestamp": "2026-10-07T03:42:13Z",
+      "window": "14.934s",
+      "containerUsage": [
+        {
+          "name": "owned-finite-target",
+          "usage": {
+            "cpu": "0",
+            "memory": "112Ki"
+          }
+        }
+      ],
+      "metricAPIDoesNotSupplyPodUID": true,
+      "MCPAcceptance": false
+    },
+    {
+      "podUIDFromBeforeAfterNativeObservation": "41561dd5-4da3-4763-acb9-cfdfcabf32cd",
+      "name": "pre-sp07-current-r7-source-canary",
+      "namespace": "ops-pre-sp07-targets-r7-20261007",
+      "timestamp": "2026-10-07T03:42:13Z",
+      "window": "14.933s",
+      "containerUsage": [
+        {
+          "name": "owned-finite-target",
+          "usage": {
+            "cpu": "0",
+            "memory": "112Ki"
+          }
+        }
+      ],
+      "metricAPIDoesNotSupplyPodUID": true,
+      "MCPAcceptance": false
+    }
+  ],
+  "currentGraphObservations": [
+    {
+      "canonicalId": "k8s+v1://676d5ba5-0f08-433b-be13-8012ea7e3591/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/3a913fd3-5ce5-4b39-a47a-99046fe6929e",
+      "lastObservedAt": "2026-10-07T03:27:08.374017941Z",
+      "phase": "Running",
+      "collectedAt": "2026-10-07T03:42:19.947118019Z",
+      "freshness": "fresh",
+      "partial": true,
+      "degradedSources": [
+        "01a11452-1f13-71b5-9329-3a20b654a398/proof"
+      ],
+      "warnings": [
+        "source_scope_unverified"
+      ],
+      "graphRevision": {
+        "ownerEpoch": 1,
+        "graphGeneration": 74
+      }
+    },
+    {
+      "canonicalId": "k8s+v1://676d5ba5-0f08-433b-be13-8012ea7e3591/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/41561dd5-4da3-4763-acb9-cfdfcabf32cd",
+      "lastObservedAt": "2026-10-07T03:30:33.216191964Z",
+      "phase": "Running",
+      "collectedAt": "2026-10-07T03:42:20.251226783Z",
+      "freshness": "fresh",
+      "partial": true,
+      "degradedSources": [
+        "01a11452-1f13-71b5-9329-3a20b654a398/proof"
+      ],
+      "warnings": [
+        "source_scope_unverified"
+      ],
+      "graphRevision": {
+        "ownerEpoch": 1,
+        "graphGeneration": 74
+      }
+    },
+    {
+      "canonicalId": "k8s+v1://676d5ba5-0f08-433b-be13-8012ea7e3591/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/dc261acd-e559-45bc-b473-4511b1615d0b",
+      "lastObservedAt": "2026-10-07T03:41:24.137054066Z",
+      "phase": "Succeeded",
+      "collectedAt": "2026-10-07T03:42:20.653272055Z",
+      "freshness": "fresh",
+      "partial": true,
+      "degradedSources": [
+        "01a11452-1f13-71b5-9329-3a20b654a398/proof"
+      ],
+      "warnings": [
+        "source_scope_unverified"
+      ],
+      "graphRevision": {
+        "ownerEpoch": 1,
+        "graphGeneration": 74
+      }
+    }
+  ],
+  "currentFailedJobHonest": true,
+  "currentFailedJobEventSeq": 6,
+  "nativeMetricsAreNotHighUtilizationFinding": true,
+  "nativeTerminalTargetNotReportedAsRunning": true,
+  "sourceUnavailabilityNotReportedAsRecovery": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:7f13463e9a1cb110be2fd279aeed362c58b0184eca9a121fb11a431be36ec445"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:daeadb3c213680cee5f2091fd948c8c1c4d586b3e59b19d0a4b6d01f69c3628e"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "nodes",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:274889c12d7dc99e6370af112846ecc0895152bf5cffda6ef34a9e7558356d9d"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "--raw",
+        "/apis/metrics.k8s.io/v1beta1/nodes/orbstack"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:fbdf4c347d90c0b31cb95e5dc353ef219ff7c1d68ec91e8e1c8eaaa5addefdd3"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "--raw",
+        "/apis/metrics.k8s.io/v1beta1/namespaces/ops-pre-sp07-targets-r7-20261007/pods"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:bfc561088d086673eb12ae51d956cb9469cbe307bf42bf99c20f8cedf3370eba"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:daeadb3c213680cee5f2091fd948c8c1c4d586b3e59b19d0a4b6d01f69c3628e"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "node",
+        "orbstack",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:5557594b9b9f84905c137e4f3604b82debab8a23b96ec8cbf99e6a68322a21ad"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F676d5ba5-0f08-433b-be13-8012ea7e3591%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F3a913fd3-5ce5-4b39-a47a-99046fe6929e",
+      "status": 200,
+      "responseSHA256": "sha256:548039ba8e3cede699cc8c4e60486edde48ca412d6fb4859748e57cdb97235b9"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F676d5ba5-0f08-433b-be13-8012ea7e3591%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F41561dd5-4da3-4763-acb9-cfdfcabf32cd",
+      "status": 200,
+      "responseSHA256": "sha256:13812460816c6de34233181e44aa1100adfe9871feaca24bf2e37319dcd042b7"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F676d5ba5-0f08-433b-be13-8012ea7e3591%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2Fdc261acd-e559-45bc-b473-4511b1615d0b",
+      "status": 200,
+      "responseSHA256": "sha256:712f0edd83130063ae05ace35d33b26925e1dec1de39ea0c9f9f77be110a49ad"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18",
+      "status": 200,
+      "responseSHA256": "sha256:5da0fc1510c7cab602466600920edb94a42d0428a6cf1cb8a2c7165eba3bd1c7"
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

@@ -1,0 +1,122 @@
+{
+  "observedAt": "2026-10-08T05:39:45.262254+00:00",
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "rollout",
+        "restart",
+        "deployment/ops-api"
+      ],
+      "exitCode": 0,
+      "deploymentUID": "0ffe2644-809e-4519-b833-9ca265e2d226",
+      "lockedImages": [
+        "ops.local/task27/platform-api@sha256:12cb35bf0c0bfd15170095378dce73de768858ecaab0f0ba07a7000b6038d315"
+      ]
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "rollout",
+        "restart",
+        "deployment/ops-worker"
+      ],
+      "exitCode": 0,
+      "deploymentUID": "277f0c7b-40df-4de0-9d19-b3886694fd23",
+      "lockedImages": [
+        "ops.local/task27/platform-worker@sha256:abc472fb806003dead9174cd5a3a3de4d3c66832529d0c0da8f7e34515f60da9"
+      ]
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "rollout",
+        "restart",
+        "deployment/ops-investigator"
+      ],
+      "exitCode": 0,
+      "deploymentUID": "4db11183-63d6-40c2-b30e-1a48fe8f5c2a",
+      "lockedImages": [
+        "ops.local/task27/holmesgpt@sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593"
+      ]
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "rollout",
+        "status",
+        "deployment/ops-api",
+        "--timeout=120s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "rollout",
+        "status",
+        "deployment/ops-worker",
+        "--timeout=120s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "rollout",
+        "status",
+        "deployment/ops-investigator",
+        "--timeout=120s"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "resources": [
+    {
+      "deployment": "ops-api",
+      "uid": "0ffe2644-809e-4519-b833-9ca265e2d226",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "deployment": "ops-worker",
+      "uid": "277f0c7b-40df-4de0-9d19-b3886694fd23",
+      "desired": 2,
+      "ready": 2
+    },
+    {
+      "deployment": "ops-investigator",
+      "uid": "4db11183-63d6-40c2-b30e-1a48fe8f5c2a",
+      "desired": 1,
+      "ready": 1
+    }
+  ],
+  "formalUnseal": "formal-openbao-current-restart-recovery-r251.json",
+  "sourceKeysReinitializedOrRotated": false,
+  "completeBusinessRecoveryPass": false
+}

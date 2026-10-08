@@ -1,0 +1,67 @@
+{
+  "observedAt": "2026-10-07T02:17:31.497983+00:00",
+  "commands": [
+    {
+      "command": [
+        "cp",
+        "-cR",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r1",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r2"
+      ],
+      "exitCode": 0,
+      "completedAt": "2026-10-07T02:14:53.646272+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "scripts/prepare-investigator-material.py",
+        "--out",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r2"
+      ],
+      "exitCode": 0,
+      "completedAt": "2026-10-07T02:14:58.903921+00:00"
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "build",
+        "--network=none",
+        "--pull=false",
+        "-f",
+        "/Users/mssc/Documents/Code/ops/platform/build/images/investigator/Dockerfile",
+        "-t",
+        "ops.local/pre-sp07/investigator:20261007-r2",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r2"
+      ],
+      "exitCode": 0,
+      "completedAt": "2026-10-07T02:16:57.827485+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "scripts/admit-investigator-material.py",
+        "--material-root",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r2",
+        "--debian-source-index",
+        "/Users/mssc/.cache/ops-sp06-20261004/debian-sources-index.txt",
+        "--image-oci",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r2/holmesgpt.tar",
+        "--image-digest",
+        "sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593"
+      ],
+      "exitCode": 0,
+      "completedAt": "2026-10-07T02:17:31.496831+00:00"
+    }
+  ],
+  "imageDigest": "sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593",
+  "imageTag": "ops.local/pre-sp07/investigator:20261007-r2",
+  "originalMaterialsPreserved": true,
+  "exactSourceBundleSHA256": "sha256:f386fd82ced894c5d4fe438f5b8ad0a40d392aaed309c9ca76ed24805d124054",
+  "noPublicContractBudgetOrTimeoutChange": true,
+  "liveInvestigationAcceptance": false,
+  "sourceChanges": "Provider failure classification and separation of successful settlement from provider failure",
+  "pyrca": "disabled-excluded",
+  "virtualization": "disabled-unverified-deferred"
+}

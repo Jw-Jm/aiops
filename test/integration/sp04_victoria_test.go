@@ -118,7 +118,7 @@ func TestSP04VictoriaLiveScopeProofAndRevocation(t *testing.T) {
 				}
 			}
 			durations := []time.Duration{}
-			waived := (os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp06-user-20261003")
+			waived := ((os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "pre-sp07-user-20261004" || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002") || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp06-user-20261003")
 			observations := 50
 			if waived {
 				observations = 1
@@ -145,7 +145,7 @@ func TestSP04VictoriaLiveScopeProofAndRevocation(t *testing.T) {
 				}
 			}
 			if waived {
-				t.Log("SP05/SP06 explicit user waiver: Victoria repeated latency sampling/P95 not executed; actual isolation, redaction and revoke checks retained")
+				t.Log("SP05/SP06/pre-SP07 explicit user waiver: Victoria repeated latency sampling/P95 not executed; actual isolation, redaction and revoke checks retained")
 			} else {
 				sort.Slice(durations, func(i, j int) bool { return durations[i] < durations[j] })
 				p95 := durations[47]

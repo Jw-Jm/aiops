@@ -1,0 +1,10 @@
+Actual immutable buildinfo exported server
+Actual immutable buildinfo exported ecapture
+Traceback (most recent call last):
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/extract-deepflow-buildinfo-r1.py", line 7, in <module>
+    config=json.loads(run(['docker','image','inspect',image]))[0];args=['docker','create','--network','none','--read-only','--label','ops.platform.owner=pre-sp07-20261005','--label','ops.platform.purpose=deepflow-binary-export-r1']
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/extract-deepflow-buildinfo-r1.py", line 5, in run
+    c=subprocess.run(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE);commands.append({'command':args,'exitCode':c.returncode});assert c.returncode==0,(args,c.stderr.decode()[:200]);return c.stdout
+                                                                                                                                          ^^^^^^^^^^^^^^^
+AssertionError: (['docker', 'image', 'inspect', 'sha256:a224e47ff4b4196857c3db35136115545d5039715a87ebfffdc6616836fbf1a7'], 'Error response from daemon: No such image: sha256:a224e47ff4b4196857c3db35136115545d5039715a87ebfffdc6616836fbf1a7\n')

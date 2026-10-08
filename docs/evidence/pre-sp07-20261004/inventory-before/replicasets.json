@@ -1,0 +1,1170 @@
+{
+  "items": [
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "holmes-holmes-668d9bfcc9",
+        "namespace": "holmes",
+        "uid": "fd6ff132-5311-4518-bac8-b5b44987f5e1",
+        "resourceVersion": "3898",
+        "creationTimestamp": "2026-09-24T14:31:11Z",
+        "labels": {
+          "app": "holmes",
+          "pod-template-hash": "668d9bfcc9"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "holmes-holmes",
+            "uid": "59415e06-4a7a-45bd-bb31-c4d6821a7ae1"
+          }
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "holmes",
+          "meta.helm.sh/release-namespace": "holmes"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "holmes",
+          "image": "us-central1-docker.pkg.dev/genuine-flight-317411/devel/holmes:0.42.0",
+          "volumeMounts": [
+            {
+              "mountPath": "/tmp",
+              "name": "tmp-volume"
+            },
+            {
+              "mountPath": "/etc/robusta/config",
+              "name": "playbooks-config-secret"
+            },
+            {
+              "mountPath": "/etc/holmes/config",
+              "name": "custom-toolsets-configmap"
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "emptyDir": {
+            "sizeLimit": "256Mi"
+          },
+          "name": "tmp-volume"
+        },
+        {
+          "name": "playbooks-config-secret",
+          "secret": {
+            "defaultMode": 420,
+            "optional": true,
+            "secretName": "robusta-playbooks-config-secret"
+          }
+        },
+        {
+          "configMap": {
+            "defaultMode": 420,
+            "name": "custom-toolsets-configmap",
+            "optional": true
+          },
+          "name": "custom-toolsets-configmap"
+        }
+      ],
+      "serviceAccountName": "holmes-holmes-service-account",
+      "nodeName": null,
+      "status": {
+        "observedGeneration": 2,
+        "replicas": 0,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "holmes-holmes-69ff4b49cf",
+        "namespace": "holmes",
+        "uid": "498663a1-73f1-4c31-b8b3-405a12232215",
+        "resourceVersion": "352510",
+        "creationTimestamp": "2026-09-25T05:34:45Z",
+        "labels": {
+          "app": "holmes",
+          "pod-template-hash": "69ff4b49cf"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "holmes-holmes",
+            "uid": "59415e06-4a7a-45bd-bb31-c4d6821a7ae1"
+          }
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "holmes",
+          "meta.helm.sh/release-namespace": "holmes"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "holmes",
+          "image": "us-central1-docker.pkg.dev/genuine-flight-317411/devel/holmes:0.42.0",
+          "volumeMounts": [
+            {
+              "mountPath": "/tmp",
+              "name": "tmp-volume"
+            },
+            {
+              "mountPath": "/etc/robusta/config",
+              "name": "playbooks-config-secret"
+            },
+            {
+              "mountPath": "/etc/holmes/config",
+              "name": "custom-toolsets-configmap"
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "emptyDir": {
+            "sizeLimit": "256Mi"
+          },
+          "name": "tmp-volume"
+        },
+        {
+          "name": "playbooks-config-secret",
+          "secret": {
+            "defaultMode": 420,
+            "optional": true,
+            "secretName": "robusta-playbooks-config-secret"
+          }
+        },
+        {
+          "configMap": {
+            "defaultMode": 420,
+            "name": "custom-toolsets-configmap",
+            "optional": true
+          },
+          "name": "custom-toolsets-configmap"
+        }
+      ],
+      "serviceAccountName": "holmes-holmes-service-account",
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "coredns-75d478d48f",
+        "namespace": "kube-system",
+        "uid": "564a79ac-e35f-400a-a706-7087da030647",
+        "resourceVersion": "352349",
+        "creationTimestamp": "2026-09-24T14:09:25Z",
+        "labels": {
+          "k8s-app": "kube-dns",
+          "pod-template-hash": "75d478d48f"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "coredns",
+            "uid": "a4e64a40-f093-4d52-8eca-be7a40155070"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "coredns",
+          "image": "rancher/mirrored-coredns-coredns:1.10.1",
+          "volumeMounts": [
+            {
+              "mountPath": "/etc/coredns",
+              "name": "config-volume",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/etc/coredns/custom",
+              "name": "custom-config-volume",
+              "readOnly": true
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "configMap": {
+            "defaultMode": 420,
+            "items": [
+              {
+                "key": "Corefile",
+                "path": "Corefile"
+              },
+              {
+                "key": "NodeHosts",
+                "path": "NodeHosts"
+              }
+            ],
+            "name": "coredns"
+          },
+          "name": "config-volume"
+        },
+        {
+          "name": "custom-config-volume",
+          "projected": {
+            "defaultMode": 420,
+            "sources": [
+              {
+                "configMap": {
+                  "name": "coredns-custom",
+                  "optional": true
+                }
+              },
+              {
+                "configMap": {
+                  "items": [
+                    {
+                      "key": "empty.override",
+                      "path": "empty.override"
+                    },
+                    {
+                      "key": "empty.server",
+                      "path": "empty.server"
+                    }
+                  ],
+                  "name": "coredns"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "serviceAccountName": "coredns",
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "local-path-provisioner-5d9d9885bc",
+        "namespace": "kube-system",
+        "uid": "3aa74206-b10c-4e8e-9d2a-dbf9fde75b14",
+        "resourceVersion": "352336",
+        "creationTimestamp": "2026-09-24T14:09:24Z",
+        "labels": {
+          "app": "local-path-provisioner",
+          "pod-template-hash": "5d9d9885bc"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "local-path-provisioner",
+            "uid": "b80792c5-6744-4f0a-b8b5-e906db71134e"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "local-path-provisioner",
+          "image": "rancher/local-path-provisioner:v0.0.36",
+          "volumeMounts": [
+            {
+              "mountPath": "/etc/config/",
+              "name": "config-volume"
+            }
+          ],
+          "envReferences": [
+            {
+              "name": "POD_NAMESPACE",
+              "valueFrom": {
+                "fieldRef": {
+                  "apiVersion": "v1",
+                  "fieldPath": "metadata.namespace"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "volumes": [
+        {
+          "configMap": {
+            "defaultMode": 420,
+            "name": "local-path-config"
+          },
+          "name": "config-volume"
+        }
+      ],
+      "serviceAccountName": "local-path-provisioner-service-account",
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "victoria-logs-85d7d5c6d6",
+        "namespace": "monitoring",
+        "uid": "58de4790-d76c-4d8e-b49a-e754ee6fb125",
+        "resourceVersion": "352364",
+        "creationTimestamp": "2026-09-25T05:21:24Z",
+        "labels": {
+          "app": "victoria-logs",
+          "pod-template-hash": "85d7d5c6d6"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "victoria-logs",
+            "uid": "20b96ff3-9472-4380-87bb-b99f08d800e4"
+          }
+        ],
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "victoria-logs",
+          "image": "victoriametrics/victoria-logs:v1.52.0",
+          "volumeMounts": [
+            {
+              "mountPath": "/vlogs-data",
+              "name": "data"
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "emptyDir": {},
+          "name": "data"
+        }
+      ],
+      "serviceAccountName": null,
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "vm-kube-state-metrics-6bdf7ddb76",
+        "namespace": "monitoring",
+        "uid": "ccc40602-30b7-43f1-ae30-88cb542ce117",
+        "resourceVersion": "352473",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/component": "metrics",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "kube-state-metrics",
+          "app.kubernetes.io/part-of": "kube-state-metrics",
+          "app.kubernetes.io/version": "2.15.0",
+          "helm.sh/chart": "kube-state-metrics-5.31.2",
+          "pod-template-hash": "6bdf7ddb76"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "vm-kube-state-metrics",
+            "uid": "7c5e3e5e-de0d-47f6-90bf-13fe0e928b0f"
+          }
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "kube-state-metrics",
+          "image": "registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.15.0",
+          "volumeMounts": [],
+          "envReferences": []
+        }
+      ],
+      "volumes": [],
+      "serviceAccountName": "vm-kube-state-metrics",
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "vm-victoria-metrics-operator-6bb5dfbf4c",
+        "namespace": "monitoring",
+        "uid": "18beee89-5bf1-4763-b8e4-2196c8c8fc7d",
+        "resourceVersion": "352411",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "victoria-metrics-operator",
+          "pod-template-hash": "6bb5dfbf4c"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "vm-victoria-metrics-operator",
+            "uid": "0767d700-d98b-48cf-81cc-93682d75056c"
+          }
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "operator",
+          "image": "victoriametrics/operator:v0.56.0",
+          "volumeMounts": [
+            {
+              "mountPath": "/tmp/k8s-webhook-server/serving-certs",
+              "name": "cert",
+              "readOnly": true
+            }
+          ],
+          "envReferences": [
+            {
+              "name": "POD_NAME",
+              "valueFrom": {
+                "fieldRef": {
+                  "apiVersion": "v1",
+                  "fieldPath": "metadata.name"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "volumes": [
+        {
+          "name": "cert",
+          "secret": {
+            "defaultMode": 420,
+            "secretName": "vm-victoria-metrics-operator-validation"
+          }
+        }
+      ],
+      "serviceAccountName": "vm-victoria-metrics-operator",
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "vmagent-vm-85dff8857d",
+        "namespace": "monitoring",
+        "uid": "cb4728d3-7b97-4ff9-a3fb-6b9507108b32",
+        "resourceVersion": "352458",
+        "creationTimestamp": "2026-09-25T05:17:14Z",
+        "labels": {
+          "app.kubernetes.io/component": "monitoring",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/name": "vmagent",
+          "managed-by": "vm-operator",
+          "pod-template-hash": "85dff8857d"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "vmagent-vm",
+            "uid": "e694476a-e6cf-40b2-9d1c-75781c380ec2"
+          }
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "config-reloader",
+          "image": "quay.io/prometheus-operator/prometheus-config-reloader:v0.68.0",
+          "volumeMounts": [
+            {
+              "mountPath": "/etc/vmagent/config_out",
+              "name": "config-out"
+            },
+            {
+              "mountPath": "/etc/vmagent/config",
+              "name": "config"
+            }
+          ],
+          "envReferences": [
+            {
+              "name": "POD_NAME",
+              "valueFrom": {
+                "fieldRef": {
+                  "apiVersion": "v1",
+                  "fieldPath": "metadata.name"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "vmagent",
+          "image": "victoriametrics/vmagent:v1.116.0",
+          "volumeMounts": [
+            {
+              "mountPath": "/tmp/vmagent-remotewrite-data",
+              "name": "persistent-queue-data"
+            },
+            {
+              "mountPath": "/etc/vmagent/config_out",
+              "name": "config-out",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/etc/vmagent-tls/certs",
+              "name": "tls-assets",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/etc/vmagent/config",
+              "name": "config",
+              "readOnly": true
+            }
+          ],
+          "envReferences": []
+        },
+        {
+          "name": "config-init",
+          "image": "quay.io/prometheus-operator/prometheus-config-reloader:v0.68.0",
+          "volumeMounts": [
+            {
+              "mountPath": "/etc/vmagent/config",
+              "name": "config"
+            },
+            {
+              "mountPath": "/etc/vmagent/config_out",
+              "name": "config-out"
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "emptyDir": {},
+          "name": "persistent-queue-data"
+        },
+        {
+          "name": "tls-assets",
+          "secret": {
+            "defaultMode": 420,
+            "secretName": "tls-assets-vmagent-vm"
+          }
+        },
+        {
+          "emptyDir": {},
+          "name": "config-out"
+        },
+        {
+          "name": "config",
+          "secret": {
+            "defaultMode": 420,
+            "secretName": "vmagent-vm"
+          }
+        }
+      ],
+      "serviceAccountName": "vmagent-vm",
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "vmsingle-vm-5bb9646995",
+        "namespace": "monitoring",
+        "uid": "0be27777-3874-48f7-a11d-0f5ec00560dd",
+        "resourceVersion": "352382",
+        "creationTimestamp": "2026-09-25T05:17:36Z",
+        "labels": {
+          "app.kubernetes.io/component": "monitoring",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/name": "vmsingle",
+          "managed-by": "vm-operator",
+          "pod-template-hash": "5bb9646995"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "vmsingle-vm",
+            "uid": "d2e9c396-647f-441a-b609-04e08be956cf"
+          }
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "vmsingle",
+          "image": "victoriametrics/victoria-metrics:v1.116.0",
+          "volumeMounts": [
+            {
+              "mountPath": "/victoria-metrics-data",
+              "name": "data"
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "name": "data",
+          "persistentVolumeClaim": {
+            "claimName": "vmsingle-vm"
+          }
+        }
+      ],
+      "serviceAccountName": "vmsingle-vm",
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "ops-api-65b6847cdd",
+        "namespace": "ops-system",
+        "uid": "80c4b8e3-a54e-43df-8287-c167482628c6",
+        "resourceVersion": "252555",
+        "creationTimestamp": "2026-10-01T11:04:50Z",
+        "labels": {
+          "ops.platform.io/component": "api",
+          "ops.platform.io/release": "ops-platform",
+          "pod-template-hash": "65b6847cdd"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "ops-api",
+            "uid": "2bd68c67-aa95-42cf-ae1e-452d95b68ca9"
+          }
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-platform",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "api",
+          "image": "ops.local/task27/platform-api@sha256:a189f2a00da94cf8b885c5f4dd6f118f8e3f91b7be87680133f92ba903f3e0ed",
+          "volumeMounts": [
+            {
+              "mountPath": "/etc/ops",
+              "name": "profile",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/tmp",
+              "name": "tmp"
+            },
+            {
+              "mountPath": "/var/run/secrets/ops-platform/openbao",
+              "name": "openbao-identity",
+              "readOnly": true
+            }
+          ],
+          "envReferences": [
+            {
+              "name": "DATABASE_URL",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "key": "apiDatabaseURL",
+                  "name": "ops-platform-runtime"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "volumes": [
+        {
+          "configMap": {
+            "defaultMode": 420,
+            "name": "ops-core-profile"
+          },
+          "name": "profile"
+        },
+        {
+          "emptyDir": {},
+          "name": "tmp"
+        },
+        {
+          "name": "openbao-identity",
+          "projected": {
+            "defaultMode": 292,
+            "sources": [
+              {
+                "serviceAccountToken": {
+                  "audience": "openbao",
+                  "expirationSeconds": 3600,
+                  "path": "token"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "serviceAccountName": "ops-api",
+      "nodeName": null,
+      "status": {
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "ops-keycloak-7fb7d8596c",
+        "namespace": "ops-system",
+        "uid": "15b9d3f0-a6aa-4784-b769-6c2a060d8884",
+        "resourceVersion": "352578",
+        "creationTimestamp": "2026-10-01T11:04:16Z",
+        "labels": {
+          "app.kubernetes.io/name": "ops-keycloak",
+          "ops.platform.io/component": "keycloak",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-dependencies",
+          "pod-template-hash": "7fb7d8596c"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "ops-keycloak",
+            "uid": "d809a551-77fb-48b8-9d54-b0f265474fd7"
+          }
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-dependencies",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "keycloak",
+          "image": "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+          "volumeMounts": [
+            {
+              "mountPath": "/etc/keycloak/tls",
+              "name": "tls",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/opt/keycloak",
+              "name": "distribution",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/opt/keycloak/data",
+              "name": "data"
+            },
+            {
+              "mountPath": "/tmp",
+              "name": "tmp"
+            }
+          ],
+          "envReferences": [
+            {
+              "name": "KC_DB_USERNAME",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "key": "username",
+                  "name": "ops-postgresql-auth"
+                }
+              }
+            },
+            {
+              "name": "KC_DB_PASSWORD",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "key": "password",
+                  "name": "ops-postgresql-auth"
+                }
+              }
+            },
+            {
+              "name": "KC_BOOTSTRAP_ADMIN_USERNAME",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "key": "username",
+                  "name": "ops-keycloak-auth"
+                }
+              }
+            },
+            {
+              "name": "KC_BOOTSTRAP_ADMIN_PASSWORD",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "key": "password",
+                  "name": "ops-keycloak-auth"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "prepare-keycloak",
+          "image": "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c",
+          "volumeMounts": [
+            {
+              "mountPath": "/work",
+              "name": "distribution"
+            },
+            {
+              "mountPath": "/tmp",
+              "name": "tmp"
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "name": "tls",
+          "secret": {
+            "defaultMode": 420,
+            "secretName": "ops-keycloak-tls"
+          }
+        },
+        {
+          "emptyDir": {},
+          "name": "distribution"
+        },
+        {
+          "emptyDir": {},
+          "name": "data"
+        },
+        {
+          "emptyDir": {},
+          "name": "tmp"
+        }
+      ],
+      "serviceAccountName": null,
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "ops-vmalert-5b48cd5f47",
+        "namespace": "ops-system",
+        "uid": "598f0a2e-aebc-4a73-96d9-c529e68fccd9",
+        "resourceVersion": "352497",
+        "creationTimestamp": "2026-09-29T12:40:15Z",
+        "labels": {
+          "app": "server",
+          "app.kubernetes.io/instance": "vmalert",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "victoria-metrics-alert",
+          "ops.platform.io/component": "vmalert",
+          "ops.platform.io/release": "vmalert",
+          "pod-template-hash": "5b48cd5f47"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "ops-vmalert",
+            "uid": "57c9279c-b713-49b7-b722-cee4d7e49171"
+          }
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vmalert",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "vmalert",
+          "image": "docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311",
+          "volumeMounts": [
+            {
+              "mountPath": "/config",
+              "name": "alerts-config"
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "configMap": {
+            "defaultMode": 420,
+            "name": "ops-vmalert-alert-rules-config"
+          },
+          "name": "alerts-config"
+        }
+      ],
+      "serviceAccountName": null,
+      "nodeName": null,
+      "status": {
+        "availableReplicas": 1,
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "ops-worker-567695474",
+        "namespace": "ops-system",
+        "uid": "60d5827c-1928-49fb-bdbd-a865d0bd3d60",
+        "resourceVersion": "252526",
+        "creationTimestamp": "2026-10-01T11:04:50Z",
+        "labels": {
+          "ops.platform.io/component": "worker",
+          "ops.platform.io/release": "ops-platform",
+          "pod-template-hash": "567695474"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Deployment",
+            "name": "ops-worker",
+            "uid": "031497f3-ec24-49ba-9bec-a808a9a5e0da"
+          }
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-platform",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "worker",
+          "image": "ops.local/task27/platform-worker@sha256:d143739dc440254dc01ad15f05fefe6e352442aebaad187ac7d665698263733a",
+          "volumeMounts": [
+            {
+              "mountPath": "/etc/archive-credentials",
+              "name": "archive-credentials",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/etc/ops",
+              "name": "profile",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/tmp",
+              "name": "tmp"
+            },
+            {
+              "mountPath": "/var/run/secrets/ops-platform/openbao",
+              "name": "openbao-identity",
+              "readOnly": true
+            }
+          ],
+          "envReferences": [
+            {
+              "name": "DATABASE_URL",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "key": "workerDatabaseURL",
+                  "name": "ops-platform-runtime"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "volumes": [
+        {
+          "name": "archive-credentials",
+          "secret": {
+            "defaultMode": 288,
+            "items": [
+              {
+                "key": "archiveTenantCredentials",
+                "path": "tenants.json"
+              }
+            ],
+            "secretName": "ops-platform-runtime"
+          }
+        },
+        {
+          "configMap": {
+            "defaultMode": 420,
+            "name": "ops-core-profile"
+          },
+          "name": "profile"
+        },
+        {
+          "emptyDir": {},
+          "name": "tmp"
+        },
+        {
+          "name": "openbao-identity",
+          "projected": {
+            "defaultMode": 292,
+            "sources": [
+              {
+                "serviceAccountToken": {
+                  "audience": "openbao",
+                  "expirationSeconds": 3600,
+                  "path": "token"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "serviceAccountName": "ops-worker",
+      "nodeName": null,
+      "status": {
+        "fullyLabeledReplicas": 1,
+        "observedGeneration": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0
+      }
+    }
+  ]
+}

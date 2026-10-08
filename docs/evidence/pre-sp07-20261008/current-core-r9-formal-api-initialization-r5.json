@@ -1,0 +1,606 @@
+{
+  "observedAt": "2026-10-08T02:52:50.839875+00:00",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "actualInstalledAPI": true,
+  "actualOIDCStepUp": true,
+  "noBusinessTableSeed": true,
+  "cluster": {
+    "actualVersions": {
+      "kubernetes": "v1.35.6+orb1"
+    },
+    "apiEndpointRef": "openbao://pre-sp07/current/kubernetes",
+    "capabilities": {
+      "cdi": false,
+      "kubernetes": true,
+      "kubevirt": false,
+      "metrics": true
+    },
+    "clusterId": "01a1196d-82ce-74e7-9418-d67765626af4",
+    "clusterUid": "607d16b7-8684-491b-bca8-be31264b371e",
+    "createdAt": "2026-10-08T02:52:49.742654Z",
+    "displayName": "Pre-SP07 actual OrbStack nonvirtual cluster",
+    "distribution": "orbstack",
+    "revision": 1,
+    "status": "active",
+    "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+    "updatedAt": "2026-10-08T02:52:49.742654Z"
+  },
+  "sources": [
+    {
+      "allowedSchemas": [
+        "finding-envelope/v2"
+      ],
+      "authRef": "openbao://pre-sp07/current/kubernetes",
+      "backendLogicalId": "pre-sp07-current-kubernetes-607d16b7-8684-491b-bca8-be31264b371e",
+      "clusterId": "01a1196d-82ce-74e7-9418-d67765626af4",
+      "clusterUid": "607d16b7-8684-491b-bca8-be31264b371e",
+      "createdAt": "2026-10-08T02:52:49.81246Z",
+      "credentialRevision": 1,
+      "dataScopeMapping": {
+        "scopes": {
+          "cluster": [
+            "607d16b7-8684-491b-bca8-be31264b371e"
+          ],
+          "namespace": [
+            "ops-pre-sp07-targets-r9-20261008"
+          ]
+        }
+      },
+      "instanceKey": "pre-sp07-current-kubernetes-ops-pre-sp07-core-r9-20261008",
+      "queryCapability": {
+        "reason": "adapter_scope_verification_pending",
+        "state": "disabled",
+        "verification": "unverified"
+      },
+      "revision": 1,
+      "sourceId": "01a1196d-82ff-7071-a499-02e0cfa5baaf",
+      "sourceType": "kubernetes",
+      "status": "active",
+      "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+      "updatedAt": "2026-10-08T02:52:49.81246Z"
+    },
+    {
+      "allowedSchemas": [
+        "finding-envelope/v2"
+      ],
+      "authRef": "openbao://pre-sp07/current/victoriametrics",
+      "backendLogicalId": "pre-sp07-current-victoriametrics-ops-pre-sp07-core-r9-20261008",
+      "clusterId": "01a1196d-82ce-74e7-9418-d67765626af4",
+      "clusterUid": "607d16b7-8684-491b-bca8-be31264b371e",
+      "createdAt": "2026-10-08T02:52:49.844959Z",
+      "credentialRevision": 1,
+      "dataScopeMapping": {
+        "scopes": {
+          "cluster": [
+            "607d16b7-8684-491b-bca8-be31264b371e"
+          ],
+          "namespace": [
+            "ops-pre-sp07-targets-r9-20261008"
+          ]
+        },
+        "requiredLabels": {
+          "tenant": "12443ef7-3326-4e87-9b0a-a3444bfd16bc"
+        }
+      },
+      "instanceKey": "pre-sp07-current-victoriametrics-ops-pre-sp07-core-r9-20261008",
+      "queryCapability": {
+        "reason": "adapter_scope_verification_pending",
+        "state": "disabled",
+        "verification": "unverified"
+      },
+      "revision": 1,
+      "sourceId": "01a1196d-8334-7dc1-9b71-8f9c0f18047b",
+      "sourceType": "victoriametrics",
+      "status": "active",
+      "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+      "updatedAt": "2026-10-08T02:52:49.844959Z"
+    },
+    {
+      "allowedSchemas": [
+        "finding-envelope/v2"
+      ],
+      "authRef": "openbao://pre-sp07/current/victorialogs",
+      "backendLogicalId": "pre-sp07-current-victorialogs-ops-pre-sp07-core-r9-20261008",
+      "clusterId": "01a1196d-82ce-74e7-9418-d67765626af4",
+      "clusterUid": "607d16b7-8684-491b-bca8-be31264b371e",
+      "createdAt": "2026-10-08T02:52:49.867281Z",
+      "credentialRevision": 1,
+      "dataScopeMapping": {
+        "scopes": {
+          "cluster": [
+            "607d16b7-8684-491b-bca8-be31264b371e"
+          ],
+          "namespace": [
+            "ops-pre-sp07-targets-r9-20261008"
+          ]
+        },
+        "requiredLabels": {
+          "tenant": "12443ef7-3326-4e87-9b0a-a3444bfd16bc"
+        }
+      },
+      "instanceKey": "pre-sp07-current-victorialogs-ops-pre-sp07-core-r9-20261008",
+      "queryCapability": {
+        "reason": "adapter_scope_verification_pending",
+        "state": "disabled",
+        "verification": "unverified"
+      },
+      "revision": 1,
+      "sourceId": "01a1196d-834b-735e-b91e-b14014b7ec45",
+      "sourceType": "victorialogs",
+      "status": "active",
+      "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+      "updatedAt": "2026-10-08T02:52:49.867281Z"
+    }
+  ],
+  "roleBinding": {
+    "bindingId": "01a1196d-837c-7a73-98ea-15f78d8b433f",
+    "clusterScopes": [
+      "01a1196d-82ce-74e7-9418-d67765626af4"
+    ],
+    "createdAt": "2026-10-08T02:52:49.917132Z",
+    "namespaceScopes": [
+      {
+        "clusterId": "01a1196d-82ce-74e7-9418-d67765626af4",
+        "namespace": "ops-pre-sp07-targets-r9-20261008"
+      }
+    ],
+    "revision": 1,
+    "role": "operator",
+    "status": "active",
+    "subject": "976ab4e3-bf29-40f0-9288-aa1dd9ae1db6",
+    "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+    "updatedAt": "2026-10-08T02:52:49.917132Z"
+  },
+  "signedPublications": [
+    {
+      "kind": "policy",
+      "logicalName": "pre-sp07-read-only-current",
+      "digest": "sha256:013af11d851954dd100500bed300a4c62b081d10f771d29a1e4ae81d438196f3",
+      "versionId": "01a1196d-83cc-7ef6-be07-de7c61b0f340",
+      "activation": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "activationId": "01a1196d-83f4-7c93-8e73-fc01d991978d",
+        "kind": "policy",
+        "logicalName": "pre-sp07-read-only-current",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a1196d-83cc-7ef6-be07-de7c61b0f340",
+        "revision": 1,
+        "activatedBy": "976ab4e3-bf29-40f0-9288-aa1dd9ae1db6",
+        "activatedAt": "2026-10-08T02:52:50.036929Z"
+      }
+    },
+    {
+      "kind": "recipe",
+      "logicalName": "pvc-csi-failure",
+      "digest": "sha256:094d7926216600d90b606fed587cc086336b14e8f8991786b199539649472b74",
+      "versionId": "01a1196d-8441-7023-86f2-e71efeebdee9",
+      "activation": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "activationId": "01a1196d-8454-73dc-826c-8022f2732442",
+        "kind": "recipe",
+        "logicalName": "pvc-csi-failure",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a1196d-8441-7023-86f2-e71efeebdee9",
+        "revision": 1,
+        "activatedBy": "976ab4e3-bf29-40f0-9288-aa1dd9ae1db6",
+        "activatedAt": "2026-10-08T02:52:50.132287Z"
+      }
+    },
+    {
+      "kind": "recipe",
+      "logicalName": "node-failure",
+      "digest": "sha256:b4409be25fca5383745dfe2cb293a1c66d49ca4fffcba7bb1b872f46a2ff3071",
+      "versionId": "01a1196d-848c-732c-9133-087bce55acba",
+      "activation": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "activationId": "01a1196d-84a1-70f1-a258-b926b1c97d82",
+        "kind": "recipe",
+        "logicalName": "node-failure",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a1196d-848c-732c-9133-087bce55acba",
+        "revision": 1,
+        "activatedBy": "976ab4e3-bf29-40f0-9288-aa1dd9ae1db6",
+        "activatedAt": "2026-10-08T02:52:50.209092Z"
+      }
+    },
+    {
+      "kind": "recipe",
+      "logicalName": "node-failure",
+      "digest": "sha256:8673849b34ea0ca6894666db6cc3eae7cc5c29b742334e87b2216d1c14ab58be",
+      "versionId": "01a1196d-84d7-7d90-8b7f-7d17367f2ec6",
+      "activation": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "activationId": "01a1196d-84a1-70f1-a258-b926b1c97d82",
+        "kind": "recipe",
+        "logicalName": "node-failure",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a1196d-84d7-7d90-8b7f-7d17367f2ec6",
+        "revision": 2,
+        "activatedBy": "976ab4e3-bf29-40f0-9288-aa1dd9ae1db6",
+        "activatedAt": "2026-10-08T02:52:50.310333Z"
+      }
+    },
+    {
+      "kind": "tool",
+      "logicalName": "get_incident_context",
+      "digest": "sha256:d8d241e8063f20bd2096090b762f4ecec050cad80aeb0ca7db76e173f74ce8b8",
+      "versionId": "01a1196d-8554-7513-bf32-0d56b5f634a9",
+      "activation": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "activationId": "01a1196d-8572-7c77-b863-c93b1c5fddc5",
+        "kind": "tool",
+        "logicalName": "get_incident_context",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a1196d-8554-7513-bf32-0d56b5f634a9",
+        "revision": 1,
+        "activatedBy": "976ab4e3-bf29-40f0-9288-aa1dd9ae1db6",
+        "activatedAt": "2026-10-08T02:52:50.41885Z"
+      }
+    },
+    {
+      "kind": "tool",
+      "logicalName": "get_resource_context",
+      "digest": "sha256:68a12ba9fc892445a24d194831a04f304d998968fdc1f090c6560b31b50bb239",
+      "versionId": "01a1196d-85b3-7256-81b4-2028237e8484",
+      "activation": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "activationId": "01a1196d-85cc-7f0a-b778-97600118303a",
+        "kind": "tool",
+        "logicalName": "get_resource_context",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a1196d-85b3-7256-81b4-2028237e8484",
+        "revision": 1,
+        "activatedBy": "976ab4e3-bf29-40f0-9288-aa1dd9ae1db6",
+        "activatedAt": "2026-10-08T02:52:50.509017Z"
+      }
+    },
+    {
+      "kind": "tool",
+      "logicalName": "query_kubernetes",
+      "digest": "sha256:7fc38ad922532df5523d7453c093ff1e4e60d57b0f7eb94b0394e260f2f8f595",
+      "versionId": "01a1196d-8623-7aeb-b7c2-62220c436363",
+      "activation": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "activationId": "01a1196d-8646-78c4-87b5-2f2cae803b16",
+        "kind": "tool",
+        "logicalName": "query_kubernetes",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a1196d-8623-7aeb-b7c2-62220c436363",
+        "revision": 1,
+        "activatedBy": "976ab4e3-bf29-40f0-9288-aa1dd9ae1db6",
+        "activatedAt": "2026-10-08T02:52:50.630648Z"
+      }
+    },
+    {
+      "kind": "tool",
+      "logicalName": "query_metrics",
+      "digest": "sha256:20705abc2515fcf441889575a2676c16597ddf03b7bef3373fca02e45728e3f6",
+      "versionId": "01a1196d-8693-73e7-963d-aa4a92a8dd2c",
+      "activation": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "activationId": "01a1196d-86b9-7654-adf7-980b2750a4f7",
+        "kind": "tool",
+        "logicalName": "query_metrics",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a1196d-8693-73e7-963d-aa4a92a8dd2c",
+        "revision": 1,
+        "activatedBy": "976ab4e3-bf29-40f0-9288-aa1dd9ae1db6",
+        "activatedAt": "2026-10-08T02:52:50.745448Z"
+      }
+    },
+    {
+      "kind": "tool",
+      "logicalName": "query_logs",
+      "digest": "sha256:139f1df203f927cca880632e243b7261f4647560720c9e12692b52061bb63af3",
+      "versionId": "01a1196d-86ed-7b44-9579-92152aa7c23c",
+      "activation": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "activationId": "01a1196d-8702-7df5-857e-233b555a4b46",
+        "kind": "tool",
+        "logicalName": "query_logs",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a1196d-86ed-7b44-9579-92152aa7c23c",
+        "revision": 1,
+        "activatedBy": "976ab4e3-bf29-40f0-9288-aa1dd9ae1db6",
+        "activatedAt": "2026-10-08T02:52:50.818935Z"
+      }
+    }
+  ],
+  "commands": [
+    {
+      "operation": "actual-step-up-current-login-r5",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-sessions",
+      "status": 201,
+      "responseSHA256": "sha256:897e2851acfe598f80639bddd6e1bf5c4c9924074ed7283c9749a3ef11931721",
+      "errorCode": null
+    },
+    {
+      "operation": "current-cluster",
+      "method": "POST",
+      "path": "/api/v1/admin/clusters",
+      "status": 201,
+      "responseSHA256": "sha256:d9ba5f2f7bbbf84a5981e2c04500ca365557ca2ba8a402656781a5dec898bdec",
+      "errorCode": null
+    },
+    {
+      "operation": "current-source-kubernetes",
+      "method": "POST",
+      "path": "/api/v1/admin/source-registrations",
+      "status": 201,
+      "responseSHA256": "sha256:42623c65680ef0aa24e63fd4aa5b5f58a905aaff72842c0ba73a27e4a8e5d17f",
+      "errorCode": null
+    },
+    {
+      "operation": "current-source-victoriametrics",
+      "method": "POST",
+      "path": "/api/v1/admin/source-registrations",
+      "status": 201,
+      "responseSHA256": "sha256:907308fe1ee9258cb9346f2ca92fe53cee8619d80994161c314272f0b262e9b8",
+      "errorCode": null
+    },
+    {
+      "operation": "current-source-victorialogs",
+      "method": "POST",
+      "path": "/api/v1/admin/source-registrations",
+      "status": 201,
+      "responseSHA256": "sha256:c745b695e130be90ab5cf69c3783cd98055140d3e8bf87e930a5d82cf9f9a6c0",
+      "errorCode": null
+    },
+    {
+      "operation": "current-operator-scope-explicit-cluster-r3",
+      "method": "POST",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 201,
+      "responseSHA256": "sha256:ac5b20805948748017bacfe5fcd1336fcb25cfd3abba9b54111c14b49a53edfd",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-pre-sp07-read-only-current",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:e6a95847143c31149284ded9334d8b4bf0cd27b5420ce0827a19d813df1cb98c",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-pre-sp07-read-only-current",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a1196d-83a5-7440-b2f7-a8c8f613aeec:publish",
+      "status": 201,
+      "responseSHA256": "sha256:d15c016398ceecacbd7ec10b978b38ea0d4473c79d1fda046df4df74e5c0f193",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-pre-sp07-read-only-current",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:e21305d0eb5a6d722f24a32ed51d8ac402f47ba11df76018adecdd154c4afa7b",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-pvc-csi-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:f22c294529b2ca8f8171a6f5467add0a53c9324ef254aebf49c3a258ae81a5a7",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-pvc-csi-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a1196d-842a-7624-b4e4-7b844a72a5c6:publish",
+      "status": 201,
+      "responseSHA256": "sha256:c541bf271a51d3ec734b6d7b6f370b527881840f6969dadd9dcd5a0b6a262a0c",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-pvc-csi-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:9e7ef760f3be6716466b33d1f56562979234e716b82f2f036e4d0aacf2af7580",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-node-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:cf65d4502b8db5596bbd2d701feda9344973db90816893929b467f763cc36700",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-node-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a1196d-846d-765d-b7d6-29cc48c02643:publish",
+      "status": 201,
+      "responseSHA256": "sha256:8ba561052f6eea9c515d01d15b8931553051589fbea4997072719505bc362132",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-node-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:9a8a30e1ddcc99fd6002497223be69fc449d2e9dfde82f1028f7d9de0f474a59",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-node-failure-v2",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:ade76b68c2b1b6a620fdece809667c0826afdb07d9f0085a61284b4e4cf8dd23",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-node-failure-v2",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a1196d-84b8-7821-a331-c5a5c37e0fe1:publish",
+      "status": 201,
+      "responseSHA256": "sha256:18f5708578a1d7df1f8ff7701badda8fb4b729d923539b9fd02007fe5d1f7d64",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-node-failure-v2",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:fa5f976b596ed2f2e16437b5178b8962226a3c389f697a521fda3e0104321284",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-get_incident_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:23ab7d412fd5a66bda6d951845b105a0cf6642c1f9702decbebe771fb55eaf60",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-get_incident_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a1196d-851a-7e98-92b0-2c6f776fbdea:publish",
+      "status": 201,
+      "responseSHA256": "sha256:9cab5c59c854e82e155d164daa713a11d7a1d7638dac359bc10f03f5c7931f98",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-get_incident_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:fea6e1dc4902cc369c8e3823db39430fce64ec1d6de82b502b17e4daf00cacb8",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-get_resource_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:52ae7fb5aba7315f9c798c23970328723c76145db10a01448871c7cd907ef444",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-get_resource_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a1196d-858f-73b6-896d-59a6814e70eb:publish",
+      "status": 201,
+      "responseSHA256": "sha256:13c513903a659997cb122d027b0dbb15ae6415471a0857d9b7dbb22c067a7a15",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-get_resource_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:de3a4ad3055d6701c4a43195ee65b4fee2c014a1dde2c918630355b5a122160e",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-query_kubernetes",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:080dba82ddfb170918ac551990aa4ed683696415921f3130982239ce41afa86b",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-query_kubernetes",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a1196d-85ea-77b0-893f-97e9dd64b636:publish",
+      "status": 201,
+      "responseSHA256": "sha256:4058a2d0e32df693ac6f56c0978a4605a77599a3d296ad95fb330335bf3f8091",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-query_kubernetes",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:83a95fe9b01519898142579a60c49c6825d4c5f44f06b727d30eb40423b6ffbf",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-query_metrics",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:804b2acf576613429c983725036f068d1f4a06702efb88e00ad29590f5543302",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-query_metrics",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a1196d-866f-790f-a4d7-b4d4a5cbe42c:publish",
+      "status": 201,
+      "responseSHA256": "sha256:762ed7a1c7306f0825e2bfdae7585bbd39594ac422c9cc9b41fd7be46c96a234",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-query_metrics",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:b4a9b22e7c9c32ff177562bc85128a67c412d0ab4de2fed077139a94c4b319c3",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-query_logs",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:825daccdfb6454cd0d0f306ad9f15ecb3e08c1d3263c1b5c23d2b6f5b93cbece",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-query_logs",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a1196d-86db-7811-9c4a-15d230c2bf2f:publish",
+      "status": 201,
+      "responseSHA256": "sha256:d03d219e6af476361d7020827d3086b0d8757cb0e4f022442130debcc065dc9a",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-query_logs",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:ff35c110736364e77ebb5a9f24e37167d5d997f3ea4e48e7a6f441c9f16531cf",
+      "errorCode": null
+    }
+  ],
+  "sourceCapabilitiesStillRequireNativeScopeVerification": true,
+  "fullBusinessAcceptance": false,
+  "deferredVirtualization": true,
+  "physicalDIMMUnverifiedNotActivated": true
+}

@@ -21,12 +21,50 @@ func runOffline(ctx context.Context, args []string, install bool, stdout, stderr
 	resolvedPath := flags.String("resolved", "", "resolved Profile path for install")
 	bundlePath := flags.String("bundle", "", "local verified Bundle directory")
 	keyPath := flags.String("key", "", "independently trusted public key outside Bundle")
+	businessPath := flags.String("business-values", "", "explicit installation-business-values/v1 operator input for SP04–SP06")
+	foundationOnly := flags.Bool("foundation-only", false, "explicit historical foundation deployment; does not deliver SP04–SP06")
+	stage := flags.String("stage", "", "current initialization phase: dependencies, bootstrap-api or business")
+	tokenPath := flags.String("registration-token-file", "", "repository-external private operator token for formal source binding verification")
 	offline := flags.Bool("offline", false, "require offline installation")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
 	if flags.NArg() != 0 || *bundlePath == "" || *keyPath == "" || *selected == "" {
 		return errors.New("requires --profile, --bundle, --key")
+	}
+	var business bundle.BusinessValues
+	if install {
+		if (*businessPath == "") == (!*foundationOnly) {
+			return errors.New("current install requires --business-values; historical foundation requires explicit --foundation-only (mutually exclusive)")
+		}
+		if !*foundationOnly && *stage != "dependencies" && *stage != "bootstrap-api" && *stage != "business" {
+			return errors.New("current install requires explicit --stage dependencies, bootstrap-api or business")
+		}
+		if *foundationOnly && *stage != "" {
+			return errors.New("stages require current business values")
+		}
+		if *businessPath != "" {
+			f, err := os.Open(*businessPath)
+			if err != nil {
+				return errors.New("business values file unavailable")
+			}
+			business, err = bundle.ReadBusinessValues(f)
+			closeErr := f.Close()
+			if err != nil {
+				return err
+			}
+			if closeErr != nil {
+				return closeErr
+			}
+		}
+	} else if *businessPath != "" || *foundationOnly || *stage != "" {
+		return errors.New("business values and foundation-only are install-only options")
+	}
+	if *tokenPath != "" && (!install || *foundationOnly || *stage != "business") {
+		return errors.New("registration token is only valid for current business activation")
+	}
+	if install && !*foundationOnly && *stage == "business" && *tokenPath == "" {
+		return errors.New("business activation requires --registration-token-file for actual API registrations")
 	}
 	profilePath := *selected
 	if install {
@@ -74,9 +112,19 @@ func runOffline(ctx context.Context, args []string, install bool, stdout, stderr
 		return closeErr
 	}
 	var report bundle.ImportReport
+	if install && !*foundationOnly && *stage == "business" {
+		business, err = verifyInstalledSourceBindings(ctx, p, business, *tokenPath)
+		if err != nil {
+			return err
+		}
+	}
 	runtime := drivers.OrbStackSharedStore{}
 	if install {
-		report, err = bundle.Install(ctx, manifest, trust, p, runtime, drivers.Run)
+		if *foundationOnly {
+			report, err = bundle.Install(ctx, manifest, trust, p, runtime, drivers.Run)
+		} else {
+			report, err = bundle.InstallCurrent(ctx, manifest, trust, p, runtime, drivers.Run, business, *stage)
+		}
 	} else {
 		report, err = bundle.Import(ctx, manifest, trust, p, runtime)
 	}

@@ -1,0 +1,47 @@
+{
+  "observedAt": "2026-10-06T12:14:43.215461+00:00",
+  "cause": "actual OpenBao Raft service sealed after observed Pod restart; API/Worker/investigator rejected login while sealed",
+  "statusEvidence": "current-core-r5-openbao-restart-status-r49.log",
+  "developmentRecovery": "formal opsctl unseal using matching repository-external current install recovery material; no reinitialization",
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+        "openbao",
+        "unseal",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/signed-bundle-r7",
+        "--share-index",
+        "0"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r8/opsctl-host",
+        "openbao",
+        "unseal",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/signed-bundle-r7",
+        "--share-index",
+        "1"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "originalHistorical27EvidenceRecovery": false,
+  "fullRecoveryAcceptance": false,
+  "postUnsealBusinessValidation": "pending"
+}

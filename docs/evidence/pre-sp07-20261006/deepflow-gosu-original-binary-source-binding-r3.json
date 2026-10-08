@@ -1,0 +1,185 @@
+{
+  "observedAt": "2026-10-06T01:49:05.510739+00:00",
+  "component": "mysql upstream gosu",
+  "version": "1.17",
+  "nativeBinarySHA256": "sha256:c3805a85d17f4454c23d7059bcb97e1ec1af272b90126e79ed002342de08389b",
+  "actualOfficialReleaseBytesEqualNativeImage": true,
+  "publisherSignatureVerified": true,
+  "publicSignerFingerprint": "B42F6819007F00F88E364FD4036A9C25BF357DD4",
+  "signatureStatus": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED B42F6819007F00F88E364FD4036A9C25BF357DD4 0\n[GNUPG:] SIG_ID EtTg0YfWWJoMcqRQTekfUOmRvTA 2023-11-02 1698961043\n[GNUPG:] GOODSIG 036A9C25BF357DD4 Tianon Gravi <tianon@tianon.xyz>\n[GNUPG:] VALIDSIG B42F6819007F00F88E364FD4036A9C25BF357DD4 2023-11-02 1698961043 0 4 0 1 10 00 B42F6819007F00F88E364FD4036A9C25BF357DD4\n[GNUPG:] TRUST_UNDEFINED 0 pgp\n",
+  "commands": [
+    {
+      "command": [
+        "gpg",
+        "--homedir",
+        "/Users/mssc/.local/state/ops/gosu-pub-r3",
+        "--batch",
+        "--import",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/materials/deepflow/gosu-original-publisher-r2/publisher-public-key.asc"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "gpg",
+        "--homedir",
+        "/Users/mssc/.local/state/ops/gosu-pub-r3",
+        "--batch",
+        "--with-colons",
+        "--fingerprint"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "gpg",
+        "--homedir",
+        "/Users/mssc/.local/state/ops/gosu-pub-r3",
+        "--batch",
+        "--status-fd",
+        "1",
+        "--verify",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/materials/deepflow/gosu-original-publisher-r2/gosu-arm64.asc",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/materials/deepflow/gosu-original-publisher-r2/gosu-arm64"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "sourceURL": "https://codeload.github.com/tianon/gosu/tar.gz/0d1847490b448a17eb347e5e357f2c0478df87ad",
+  "sourceCommit": "0d1847490b448a17eb347e5e357f2c0478df87ad",
+  "sourceArchiveSHA256": "sha256:09b5a49c2e00ef33b1ab57e1ad7a7f3a03bd3cf54b30ac24640bd544a7bde790",
+  "sourceFiles": [
+    {
+      "originalPath": ".github/workflows/ci.yml",
+      "sha256": "sha256:5d9cf2def938cb0ba5bf22e4b52ebf08e1924078720079f5a476b887d4124e6b",
+      "bytes": 1155
+    },
+    {
+      "originalPath": ".gitignore",
+      "sha256": "sha256:dd47fb280cd0361438fec1c5d57868984459d86652127d13a2e7e4bbe6142f6e",
+      "bytes": 23
+    },
+    {
+      "originalPath": "Dockerfile",
+      "sha256": "sha256:b65636246a830e7fd34bd15585e025a7ddd6b2349a714f3dda6e62293272d0f1",
+      "bytes": 2361
+    },
+    {
+      "originalPath": "Dockerfile.test-alpine",
+      "sha256": "sha256:22a976b73f39f214f5193f90c8ebb53b604e47246a6d0ae8d020d222d38b4c83",
+      "bytes": 3390
+    },
+    {
+      "originalPath": "Dockerfile.test-debian",
+      "sha256": "sha256:67326617ba4de565c30b52481db69a3ad6575d62c38d082e83bd9a6215d08ad2",
+      "bytes": 3512
+    },
+    {
+      "originalPath": "INSTALL.md",
+      "sha256": "sha256:6d0bdd25a992e120e9c9891cde63c29b4fa23cd153749f70ae57e5477a5e771d",
+      "bytes": 2949
+    },
+    {
+      "originalPath": "LICENSE",
+      "sha256": "sha256:cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    {
+      "originalPath": "README.md",
+      "sha256": "sha256:45068a2a6a256b42664094bd36125102bbcd8df5d8c9e7135cea6623eee5ea18",
+      "bytes": 4684
+    },
+    {
+      "originalPath": "SECURITY.md",
+      "sha256": "sha256:2bc29c01d00e374b84b65dd6db1a3f695972bd2069103cf8852cadc92fc71c59",
+      "bytes": 2360
+    },
+    {
+      "originalPath": "build.sh",
+      "sha256": "sha256:71e2ee3fd6c5125f235609aa14ddd1ae80a68534f480668cf8390651251f00e5",
+      "bytes": 314
+    },
+    {
+      "originalPath": "go.mod",
+      "sha256": "sha256:a7cb71ce90d49a2067c77ea22d6d5767b92d1d430a204946ce9bd5cb3039d696",
+      "bytes": 111
+    },
+    {
+      "originalPath": "go.sum",
+      "sha256": "sha256:4b69a1a6c71f7b59ecbbf41bdc532cd98547cd99363321786c83d841ef0efbcb",
+      "bytes": 320
+    },
+    {
+      "originalPath": "govulncheck-with-excludes.sh",
+      "sha256": "sha256:5cf5375cae506d6518d5055d288499c92bbdfd975262c28c424b86c0e7bff6b8",
+      "bytes": 1630
+    },
+    {
+      "originalPath": "hub/Dockerfile.alpine",
+      "sha256": "sha256:2ffca3c72f5363780267ed05a34785f2f3355143c50d1cb653922a3bd3eb905f",
+      "bytes": 922
+    },
+    {
+      "originalPath": "hub/Dockerfile.debian",
+      "sha256": "sha256:0aaf70c2b13ef2dd2c63a24aa67aa20747e83a0297df06dce22d45b859df65cc",
+      "bytes": 1201
+    },
+    {
+      "originalPath": "hub/gsl.sh",
+      "sha256": "sha256:d30523f6f2b3341cf935e7ae307070cba637d85284b59bcbd37a09f0152b1713",
+      "bytes": 1668
+    },
+    {
+      "originalPath": "main.go",
+      "sha256": "sha256:918a734a320618f2949681d4be32dc72ed89b4b68c041d1f990c4827fa6f48a5",
+      "bytes": 2817
+    },
+    {
+      "originalPath": "setup-user.go",
+      "sha256": "sha256:f21349f300624fd41cbf35514d5a85d559806a98e53d50dee7e3d1e54f973a46",
+      "bytes": 1221
+    },
+    {
+      "originalPath": "sign.sh",
+      "sha256": "sha256:4522a48bda888ca324b9d5ec27baf8af821634f83529d255b77b1f9431d655ce",
+      "bytes": 281
+    },
+    {
+      "originalPath": "test.sh",
+      "sha256": "sha256:ba5fa0135f264d210a87eaf67950177e2faf04240d1bc27b41b7f521e0234c7c",
+      "bytes": 1171
+    },
+    {
+      "originalPath": "version.go",
+      "sha256": "sha256:a05854b36622bab67b14b60d57bdc4c3eb0efd91a7b902e62a3429047135ccf6",
+      "bytes": 37
+    }
+  ],
+  "binaryDependencyBindings": [
+    {
+      "module": "github.com/moby/sys/user",
+      "version": "v0.1.0",
+      "binaryH1MatchesOriginalZIPAndLockedGoSum": true,
+      "zipSHA256": "85178932dc13b1c404c32e1b9f68fe88bf0b43e57dda39f24c45113e0bcf00ee"
+    },
+    {
+      "module": "golang.org/x/sys",
+      "version": "v0.13.0",
+      "binaryH1MatchesOriginalZIPAndLockedGoSum": true,
+      "zipSHA256": "3d149afc9939980354374c0d47461dcdbd1d3980eb2f77e60304b23fee6f3d37"
+    }
+  ],
+  "publisherBuildToolchain": "go1.18.2 with official referenced Go patch 2c7c98c3ad719aa9d6d2594827a6894ff9950042",
+  "officialReferencedBuildPatchSHA256": "sha256:8ec3786efe20444a0894eb405e53b0eb8394b8fd7e6c3483b1e875d2f3cb8fb2",
+  "originalSourceNotices": [
+    {
+      "originalPath": "LICENSE",
+      "sha256": "sha256:cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    }
+  ],
+  "noImageOrBinaryExecuted": true,
+  "longPathGPGImportFailure": "native import exit 2: gpg-agent unix socket path too long; original failure log retained; short isolated public-key trust directory used without changing signer",
+  "distributionAdmission": "PENDING",
+  "fullR2Acceptance": false
+}

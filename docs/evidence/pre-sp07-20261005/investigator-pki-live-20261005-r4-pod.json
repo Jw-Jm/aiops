@@ -1,0 +1,330 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "creationTimestamp": "2026-10-04T16:33:54Z",
+    "generation": 1,
+    "labels": {
+      "ops.platform.io/owner": "pre-sp07-20261004",
+      "ops.platform.io/purpose": "investigator-pki-live"
+    },
+    "name": "investigator-pki-live-20261005-r4",
+    "namespace": "ops-pre-sp07-pki-20261004",
+    "resourceVersion": "371253",
+    "uid": "bc83aa56-03e4-4774-aee6-1676105ec60c"
+  },
+  "spec": {
+    "automountServiceAccountToken": false,
+    "containers": [
+      {
+        "env": [
+          {
+            "name": "PYTHONPATH",
+            "value": "/gate"
+          },
+          {
+            "name": "SP06_INVESTIGATOR_FILE",
+            "value": "/gate/runtime.json"
+          },
+          {
+            "name": "OPENBAO_ADDR",
+            "value": "https://ops-openbao.ops-pre-sp07-pki-20261004.svc.cluster.local:8200"
+          },
+          {
+            "name": "OPENBAO_CA_FILE",
+            "value": "/gate/openbao-ca.pem"
+          },
+          {
+            "name": "OPENBAO_PROJECTED_TOKEN_FILE",
+            "value": "/var/run/secrets/ops-platform/openbao/token"
+          }
+        ],
+        "image": "ops.local/sp06/investigator@sha256:41916431835e1319e25dad000c54454f5565f9347bdf9d175f313d3837591af6",
+        "imagePullPolicy": "Never",
+        "name": "investigator",
+        "ports": [
+          {
+            "containerPort": 8090,
+            "protocol": "TCP"
+          }
+        ],
+        "readinessProbe": {
+          "failureThreshold": 90,
+          "periodSeconds": 2,
+          "successThreshold": 1,
+          "tcpSocket": {
+            "port": 8090
+          },
+          "timeoutSeconds": 1
+        },
+        "resources": {
+          "limits": {
+            "cpu": "1",
+            "memory": "2Gi"
+          },
+          "requests": {
+            "cpu": "100m",
+            "memory": "512Mi"
+          }
+        },
+        "securityContext": {
+          "allowPrivilegeEscalation": false,
+          "capabilities": {
+            "drop": [
+              "ALL"
+            ]
+          },
+          "readOnlyRootFilesystem": true
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+          {
+            "mountPath": "/gate",
+            "name": "gate",
+            "readOnly": true
+          },
+          {
+            "mountPath": "/var/run/secrets/ops-platform/openbao",
+            "name": "identity",
+            "readOnly": true
+          },
+          {
+            "mountPath": "/tmp",
+            "name": "tmp"
+          }
+        ]
+      }
+    ],
+    "dnsPolicy": "ClusterFirst",
+    "enableServiceLinks": true,
+    "nodeName": "orbstack",
+    "preemptionPolicy": "PreemptLowerPriority",
+    "priority": 0,
+    "restartPolicy": "Never",
+    "schedulerName": "default-scheduler",
+    "securityContext": {
+      "fsGroup": 65532,
+      "runAsGroup": 65532,
+      "runAsNonRoot": true,
+      "runAsUser": 65532,
+      "seccompProfile": {
+        "type": "RuntimeDefault"
+      }
+    },
+    "serviceAccount": "ops-investigator",
+    "serviceAccountName": "ops-investigator",
+    "terminationGracePeriodSeconds": 30,
+    "tolerations": [
+      {
+        "effect": "NoExecute",
+        "key": "node.kubernetes.io/not-ready",
+        "operator": "Exists",
+        "tolerationSeconds": 300
+      },
+      {
+        "effect": "NoExecute",
+        "key": "node.kubernetes.io/unreachable",
+        "operator": "Exists",
+        "tolerationSeconds": 300
+      }
+    ],
+    "volumes": [
+      {
+        "configMap": {
+          "defaultMode": 420,
+          "items": [
+            {
+              "key": "worker.py",
+              "path": "investigator/worker.py"
+            },
+            {
+              "key": "redaction.py",
+              "path": "investigator/redaction.py"
+            },
+            {
+              "key": "runtime_config.py",
+              "path": "investigator/runtime_config.py"
+            },
+            {
+              "key": "workload_identity.py",
+              "path": "investigator/workload_identity.py"
+            },
+            {
+              "key": "model_config.py",
+              "path": "investigator/model_config.py"
+            },
+            {
+              "key": "budget.py",
+              "path": "investigator/budget.py"
+            },
+            {
+              "key": "workload_tls.py",
+              "path": "investigator/workload_tls.py"
+            },
+            {
+              "key": "__init__.py",
+              "path": "investigator/__init__.py"
+            },
+            {
+              "key": "prompt_binding.py",
+              "path": "investigator/prompt_binding.py"
+            },
+            {
+              "key": "holmes_adapter.py",
+              "path": "investigator/holmes_adapter.py"
+            },
+            {
+              "key": "job_api.py",
+              "path": "investigator/job_api.py"
+            },
+            {
+              "key": "output.schema.json",
+              "path": "investigator/output.schema.json"
+            },
+            {
+              "key": "runtime.json",
+              "path": "runtime.json"
+            },
+            {
+              "key": "workload-ca.pem",
+              "path": "workload-ca.pem"
+            },
+            {
+              "key": "openbao-ca.pem",
+              "path": "openbao-ca.pem"
+            }
+          ],
+          "name": "investigator-pki-live-20261005-r4"
+        },
+        "name": "gate"
+      },
+      {
+        "name": "identity",
+        "projected": {
+          "defaultMode": 292,
+          "sources": [
+            {
+              "serviceAccountToken": {
+                "audience": "openbao",
+                "expirationSeconds": 3600,
+                "path": "token"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "emptyDir": {},
+        "name": "tmp"
+      }
+    ]
+  },
+  "status": {
+    "conditions": [
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2026-10-04T16:33:56Z",
+        "observedGeneration": 1,
+        "status": "True",
+        "type": "PodReadyToStartContainers"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2026-10-04T16:33:54Z",
+        "observedGeneration": 1,
+        "status": "True",
+        "type": "Initialized"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2026-10-04T16:33:59Z",
+        "observedGeneration": 1,
+        "status": "True",
+        "type": "Ready"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2026-10-04T16:33:59Z",
+        "observedGeneration": 1,
+        "status": "True",
+        "type": "ContainersReady"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2026-10-04T16:33:54Z",
+        "observedGeneration": 1,
+        "status": "True",
+        "type": "PodScheduled"
+      }
+    ],
+    "containerStatuses": [
+      {
+        "allocatedResources": {
+          "cpu": "100m",
+          "memory": "512Mi"
+        },
+        "containerID": "docker://a1b686d886c19b5f7e6607b4fa145b0e761fe45bf6b0a0bb0de5ac1a9c6fc040",
+        "image": "ops.local/sp06/investigator:20261003",
+        "imageID": "docker-pullable://ops.local/sp06/investigator@sha256:41916431835e1319e25dad000c54454f5565f9347bdf9d175f313d3837591af6",
+        "lastState": {},
+        "name": "investigator",
+        "ready": true,
+        "resources": {
+          "limits": {
+            "cpu": "1",
+            "memory": "2Gi"
+          },
+          "requests": {
+            "cpu": "100m",
+            "memory": "512Mi"
+          }
+        },
+        "restartCount": 0,
+        "started": true,
+        "state": {
+          "running": {
+            "startedAt": "2026-10-04T16:33:55Z"
+          }
+        },
+        "volumeMounts": [
+          {
+            "mountPath": "/gate",
+            "name": "gate",
+            "readOnly": true,
+            "recursiveReadOnly": "Disabled"
+          },
+          {
+            "mountPath": "/var/run/secrets/ops-platform/openbao",
+            "name": "identity",
+            "readOnly": true,
+            "recursiveReadOnly": "Disabled"
+          },
+          {
+            "mountPath": "/tmp",
+            "name": "tmp"
+          }
+        ]
+      }
+    ],
+    "hostIP": "192.168.139.2",
+    "hostIPs": [
+      {
+        "ip": "192.168.139.2"
+      },
+      {
+        "ip": "fd07:b51a:cc66::2"
+      }
+    ],
+    "observedGeneration": 1,
+    "phase": "Running",
+    "podIP": "192.168.194.96",
+    "podIPs": [
+      {
+        "ip": "192.168.194.96"
+      }
+    ],
+    "qosClass": "Burstable",
+    "startTime": "2026-10-04T16:33:54Z"
+  }
+}

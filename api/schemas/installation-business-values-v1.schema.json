@@ -1,0 +1,690 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/installation-business-values/v1",
+  "title": "Explicit nonvirtual SP03\u2013SP06 operator installation values",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "sp04": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "const": true
+        },
+        "graphPort": {
+          "const": 8082
+        },
+        "workerReplicas": {
+          "const": 2
+        },
+        "apiIdentitySecret": {
+          "type": "string",
+          "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+        },
+        "workerIdentitySecret": {
+          "type": "string",
+          "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+        },
+        "sourceCredentialsSecret": {
+          "type": "string",
+          "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+        },
+        "allowedWorkerCIDRs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 50
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "archiveBackendLogicalID": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Tenant": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "ClusterUID": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "SourceID": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "BackendLogicalID": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "Endpoint": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "CAFile": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "TokenFile": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "LeaseNamespace": {
+                "type": "string",
+                "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+              },
+              "LeaseName": {
+                "type": "string",
+                "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+              },
+              "SourceRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9223372036854775807
+              },
+              "QPS": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "Burst": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 25
+              }
+            },
+            "required": [
+              "Tenant",
+              "ClusterUID",
+              "SourceID",
+              "BackendLogicalID",
+              "Endpoint",
+              "CAFile",
+              "TokenFile",
+              "LeaseNamespace",
+              "LeaseName",
+              "SourceRevision",
+              "QPS",
+              "Burst"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Name": {
+                "enum": [
+                  "victoriametrics",
+                  "victorialogs"
+                ]
+              },
+              "Binding": {
+                "type": "object",
+                "properties": {
+                  "SourceType": {
+                    "enum": [
+                      "victoriametrics",
+                      "victorialogs"
+                    ]
+                  },
+                  "Tenant": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "SourceID": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "Revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9223372036854775807
+                  },
+                  "BackendLogicalID": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "Endpoint": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "SourceRetentionSeconds": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 31536000
+                  },
+                  "ScopeMapping": {
+                    "type": "object",
+                    "properties": {
+                      "nativeTenant": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      },
+                      "scopes": {
+                        "type": "object",
+                        "properties": {
+                          "account": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 253
+                            },
+                            "minItems": 1,
+                            "maxItems": 100,
+                            "uniqueItems": true
+                          },
+                          "project": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 253
+                            },
+                            "minItems": 1,
+                            "maxItems": 100,
+                            "uniqueItems": true
+                          },
+                          "organization": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 253
+                            },
+                            "minItems": 1,
+                            "maxItems": 100,
+                            "uniqueItems": true
+                          },
+                          "team": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 253
+                            },
+                            "minItems": 1,
+                            "maxItems": 100,
+                            "uniqueItems": true
+                          },
+                          "cluster": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 253
+                            },
+                            "minItems": 1,
+                            "maxItems": 100,
+                            "uniqueItems": true
+                          },
+                          "namespace": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 253
+                            },
+                            "minItems": 1,
+                            "maxItems": 100,
+                            "uniqueItems": true
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "cluster",
+                          "namespace"
+                        ]
+                      },
+                      "requiredLabels": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1024
+                        }
+                      }
+                    },
+                    "required": [
+                      "scopes"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "SourceType",
+                  "Tenant",
+                  "SourceID",
+                  "Revision",
+                  "BackendLogicalID",
+                  "Endpoint",
+                  "SourceRetentionSeconds",
+                  "ScopeMapping"
+                ],
+                "additionalProperties": false
+              },
+              "CAFile": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "CredentialFile": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "ScopeProbe": {
+                "type": "object",
+                "properties": {
+                  "resourceCanonicalId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "namespace": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+                  },
+                  "queryTemplate": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "from": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "to": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 200
+                  },
+                  "maxBytes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65536
+                  },
+                  "timeoutMs": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3000
+                  }
+                },
+                "required": [
+                  "resourceCanonicalId",
+                  "namespace",
+                  "queryTemplate",
+                  "from",
+                  "to",
+                  "limit"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "Name",
+              "Binding",
+              "CAFile",
+              "CredentialFile",
+              "ScopeProbe"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 2,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "kubernetesAPI": {
+          "type": "object",
+          "properties": {
+            "cidrs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 50
+              },
+              "minItems": 1,
+              "maxItems": 20,
+              "uniqueItems": true
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            "localCollector": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "cidrs",
+            "port",
+            "localCollector"
+          ],
+          "additionalProperties": false
+        },
+        "leaseNames": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "enabled",
+        "graphPort",
+        "workerReplicas",
+        "apiIdentitySecret",
+        "workerIdentitySecret",
+        "sourceCredentialsSecret",
+        "allowedWorkerCIDRs",
+        "archiveBackendLogicalID",
+        "clusters",
+        "sources",
+        "kubernetesAPI",
+        "leaseNames"
+      ],
+      "additionalProperties": false
+    },
+    "sp05": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "const": true
+        },
+        "ingestionBindings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Tenant": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "Subject": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "SourceID": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "RegistrationRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9223372036854775807
+              },
+              "CredentialRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9223372036854775807
+              }
+            },
+            "required": [
+              "Tenant",
+              "Subject",
+              "SourceID",
+              "RegistrationRevision",
+              "CredentialRevision"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "analyzer": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "const": true
+            },
+            "sha256": {
+              "const": "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53"
+            }
+          },
+          "required": [
+            "enabled",
+            "sha256"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "enabled",
+        "ingestionBindings",
+        "analyzer"
+      ],
+      "additionalProperties": false
+    },
+    "sp06": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "const": true
+        },
+        "gatewayPort": {
+          "const": 8083
+        },
+        "policyName": {
+          "type": "string",
+          "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+        },
+        "identitySecret": {
+          "type": "string",
+          "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+        },
+        "modelKeySecret": {
+          "type": "string",
+          "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+        },
+        "tenants": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "modelCIDRs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 50
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "modelPort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "model": {
+          "type": "object",
+          "properties": {
+            "base_url": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "api_key_ref": {
+              "const": "secret://model/api-key"
+            },
+            "model": {
+              "const": "llama3.1:8b-16k"
+            },
+            "timeout": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
+            },
+            "token_budget": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 8192
+            }
+          },
+          "required": [
+            "base_url",
+            "api_key_ref",
+            "model",
+            "timeout",
+            "token_budget"
+          ],
+          "additionalProperties": false
+        },
+        "budget": {
+          "allOf": [
+            {
+              "$ref": "https://ops.local/schemas/investigation-budget/v1"
+            },
+            {
+              "properties": {
+                "toolCalls": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 40
+                },
+                "rawQueries": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "resultBytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 41943040
+                },
+                "graphNodes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 8000
+                },
+                "evidenceItems": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4000
+                },
+                "modelRequests": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 8
+                },
+                "inputTokens": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 32768
+                },
+                "outputTokens": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 8192
+                },
+                "modelCostMicros": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 0
+                }
+              }
+            }
+          ]
+        },
+        "modelNetworkMode": {
+          "type": "string",
+          "enum": [
+            "private",
+            "orbstack-host"
+          ]
+        }
+      },
+      "required": [
+        "enabled",
+        "gatewayPort",
+        "policyName",
+        "identitySecret",
+        "modelKeySecret",
+        "tenants",
+        "modelCIDRs",
+        "modelPort",
+        "model",
+        "budget"
+      ],
+      "additionalProperties": false
+    },
+    "workloadIdentity": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "const": true
+        },
+        "mode": {
+          "const": "openbao-kubernetes"
+        }
+      },
+      "required": [
+        "enabled",
+        "mode"
+      ],
+      "additionalProperties": false
+    },
+    "namespace": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 63,
+      "pattern": "^[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?$"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "sp04",
+    "sp05",
+    "sp06",
+    "workloadIdentity",
+    "namespace"
+  ],
+  "additionalProperties": false
+}

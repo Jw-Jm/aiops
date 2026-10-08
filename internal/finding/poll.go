@@ -49,9 +49,16 @@ func (s Service) PollIdentity(ctx context.Context, b source.BoundSourceContext, 
 		}
 		// Ingestion may have durably resolved before a process died ahead of
 		// ClosePoll. Recover from the aggregate rather than trusting that flag.
-		var aggregateResolved *time.Time
-		if err := tx.QueryRow(ctx, `SELECT max(observed_at) FROM finding.records WHERE tenant_id=$1 AND source_id=$2 AND occurrence_id=$3 AND lifecycle_state='resolved'`, b.TenantID, b.SourceID, id).Scan(&aggregateResolved); err != nil {
+		var aggregateResolved, latestObservation *time.Time
+		if err := tx.QueryRow(ctx, `SELECT max(observed_at) FILTER (WHERE lifecycle_state='resolved'),max(observed_at) FROM finding.records WHERE tenant_id=$1 AND source_id=$2 AND occurrence_id=$3`, b.TenantID, b.SourceID, id).Scan(&aggregateResolved, &latestObservation); err != nil {
 			return err
+		}
+		// Metrics caches can legitimately return a healthy sample older than
+		// the current fault. It cannot settle a newer observation or generate
+		// an invalid archive/ingestion attempt. Wait for a new native sample.
+		if active && state == "resolved" && len(observation) == 1 &&
+			(observation[0].Before(start) || latestObservation != nil && observation[0].Before(*latestObservation)) {
+			return pgx.ErrNoRows
 		}
 		if aggregateResolved != nil && (resolved == nil || aggregateResolved.After(*resolved)) {
 			resolved = aggregateResolved

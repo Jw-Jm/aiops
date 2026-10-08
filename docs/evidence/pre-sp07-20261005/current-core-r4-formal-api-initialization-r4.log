@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/initialize-current-formal-api-r4-retry-r4.py", line 32, in <module>
+    published.append(publish('recipe',content['name'],content))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/initialize-current-formal-api-r4-retry-r4.py", line 13, in publish
+    draft=call('draft-'+name,'POST','/api/v1/admin/registry-drafts',{'kind':kind,'logicalName':name,'content':content});digest='sha256:'+hashlib.sha256(canonical(content)).hexdigest();message=canonical({'domain':'ops-config-registry/v1','tenantId':ids['tenantId'],'kind':kind,'logicalName':name,'schemaId':'https://ops.local/schemas/'+content['schemaVersion'],'digest':digest});signature=base64.b64encode(signer.sign(message)).decode();version=call('publish-'+name,'POST','/api/v1/admin/registry-drafts/'+draft['draftId']+':publish',{'expectedRevision':draft['revision'],'signerKeyId':'pre-sp07-current-registry','signature':signature});activation=call('activate-'+name,'POST','/api/v1/admin/registry-activations',{'kind':kind,'logicalName':name,'versionId':version['versionId'],'scopeType':'tenant','expectedRevision':0},expected=200);return {'kind':kind,'logicalName':name,'digest':digest,'versionId':version['versionId'],'activation':activation}
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/initialize-current-formal-api-r4-retry-r4.py", line 9, in call
+    if operation.exists():saved=json.loads(operation.read_text());assert saved['body']==body and saved['path']==path;key=saved['idempotencyKey']
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

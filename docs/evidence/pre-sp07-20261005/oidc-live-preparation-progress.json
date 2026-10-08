@@ -1,0 +1,165 @@
+[
+  {
+    "command": [
+      "helm",
+      "template",
+      "ops-platform",
+      "deploy/charts/ops-platform",
+      "--namespace",
+      "ops-pre-sp07-oidc-20261005",
+      "--set",
+      "networkPolicyOnly=true",
+      "--set",
+      "networkPolicy.managedDependencyReleases={ops-oidc-dependencies}"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "create",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "-f",
+      "-"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "helm",
+      "template",
+      "ops-oidc-dependencies",
+      "deploy/charts/ops-dependencies",
+      "--namespace",
+      "ops-pre-sp07-oidc-20261005",
+      "--set",
+      "global.imagePullPolicy=Never",
+      "--set",
+      "components.keycloak.endpoint=https://ops-keycloak.ops-pre-sp07-oidc-20261005.svc.cluster.local:8443",
+      "--show-only",
+      "templates/postgresql.yaml"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "create",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "-f",
+      "-"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "helm",
+      "template",
+      "ops-oidc-dependencies",
+      "deploy/charts/ops-dependencies",
+      "--namespace",
+      "ops-pre-sp07-oidc-20261005",
+      "--set",
+      "global.imagePullPolicy=Never",
+      "--set",
+      "components.keycloak.endpoint=https://ops-keycloak.ops-pre-sp07-oidc-20261005.svc.cluster.local:8443",
+      "--show-only",
+      "templates/keycloak.yaml"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "create",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "-f",
+      "-"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "rollout",
+      "status",
+      "statefulset/ops-postgresql",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "--timeout=180s"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "rollout",
+      "status",
+      "deployment/ops-keycloak",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "--timeout=300s"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "go",
+      "build",
+      "-o",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl",
+      "./cmd/opsctl"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl",
+      "bootstrap",
+      "oidc-realm",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/resolved-profile.yaml",
+      "--config",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-input.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-private.json",
+      "--ca",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-ca.pem"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl",
+      "bootstrap",
+      "oidc-realm",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/resolved-profile.yaml",
+      "--config",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-input.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-private.json",
+      "--ca",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-ca.pem"
+    ],
+    "exitCode": 1
+  },
+  {
+    "command": [
+      "kubectl",
+      "get",
+      "pods",
+      "statefulsets",
+      "deployments",
+      "pvc",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "-o",
+      "json"
+    ],
+    "exitCode": 1
+  }
+]

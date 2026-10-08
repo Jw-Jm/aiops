@@ -1,0 +1,246 @@
+{
+  "observedAt": "2026-10-05T00:31:14.039078+00:00",
+  "namespace": "ops-pre-sp07-oidc-20261005",
+  "resources": [
+    {
+      "kind": "Pod",
+      "name": "ops-keycloak-566c9cc469-4rpkx",
+      "uid": "290972ad-df5c-4b11-8257-991599ac52d7",
+      "labels": {
+        "app.kubernetes.io/name": "ops-keycloak",
+        "ops.platform.io/component": "keycloak",
+        "ops.platform.io/mode": "bundled",
+        "ops.platform.io/release": "ops-oidc-dependencies",
+        "pod-template-hash": "566c9cc469"
+      }
+    },
+    {
+      "kind": "Pod",
+      "name": "ops-postgresql-0",
+      "uid": "e10343a9-3d2b-41d4-9e97-358caba7cdab",
+      "labels": {
+        "app.kubernetes.io/name": "ops-postgresql",
+        "apps.kubernetes.io/pod-index": "0",
+        "controller-revision-hash": "ops-postgresql-66f4d8d4bf",
+        "ops.platform.io/component": "postgresql",
+        "ops.platform.io/mode": "bundled",
+        "ops.platform.io/release": "ops-oidc-dependencies",
+        "statefulset.kubernetes.io/pod-name": "ops-postgresql-0"
+      }
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-postgresql",
+      "uid": "cc1f9939-353a-43aa-b8ec-d82ab0c6239f",
+      "labels": {
+        "app.kubernetes.io/name": "ops-postgresql",
+        "ops.platform.io/component": "postgresql",
+        "ops.platform.io/mode": "bundled",
+        "ops.platform.io/release": "ops-oidc-dependencies"
+      }
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-keycloak",
+      "uid": "3405bb28-0ec1-4c82-9b7b-13a0b59682cb",
+      "labels": {
+        "app.kubernetes.io/name": "ops-keycloak",
+        "ops.platform.io/component": "keycloak",
+        "ops.platform.io/mode": "bundled",
+        "ops.platform.io/release": "ops-oidc-dependencies"
+      }
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "data-ops-postgresql-0",
+      "uid": "9ce92658-7b5e-471d-bb2b-3adbac982abe",
+      "labels": {
+        "app.kubernetes.io/name": "ops-postgresql",
+        "ops.platform.io/component": "postgresql",
+        "ops.platform.io/release": "ops-oidc-dependencies"
+      }
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "helm",
+        "template",
+        "ops-platform",
+        "deploy/charts/ops-platform",
+        "--namespace",
+        "ops-pre-sp07-oidc-20261005",
+        "--set",
+        "networkPolicyOnly=true",
+        "--set",
+        "networkPolicy.managedDependencyReleases={ops-oidc-dependencies}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "create",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-f",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "template",
+        "ops-oidc-dependencies",
+        "deploy/charts/ops-dependencies",
+        "--namespace",
+        "ops-pre-sp07-oidc-20261005",
+        "--set",
+        "global.imagePullPolicy=Never",
+        "--set",
+        "components.keycloak.endpoint=https://ops-keycloak.ops-pre-sp07-oidc-20261005.svc.cluster.local:8443",
+        "--show-only",
+        "templates/postgresql.yaml"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "create",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-f",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "template",
+        "ops-oidc-dependencies",
+        "deploy/charts/ops-dependencies",
+        "--namespace",
+        "ops-pre-sp07-oidc-20261005",
+        "--set",
+        "global.imagePullPolicy=Never",
+        "--set",
+        "components.keycloak.endpoint=https://ops-keycloak.ops-pre-sp07-oidc-20261005.svc.cluster.local:8443",
+        "--show-only",
+        "templates/keycloak.yaml"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "create",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-f",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "rollout",
+        "status",
+        "statefulset/ops-postgresql",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "--timeout=180s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "rollout",
+        "status",
+        "deployment/ops-keycloak",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "--timeout=300s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl",
+        "./cmd/opsctl"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl",
+        "bootstrap",
+        "oidc-realm",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/resolved-profile.yaml",
+        "--config",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-input.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-private.json",
+        "--ca",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-ca.pem"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl",
+        "bootstrap",
+        "oidc-realm",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/resolved-profile.yaml",
+        "--config",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-input.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-private.json",
+        "--ca",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/oidc-ca.pem"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "statefulsets",
+        "deployments",
+        "pvc",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods,statefulsets,deployments,pvc",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "formalOIDCInitializerInvoked": true,
+  "signedBundleInstall": false,
+  "fullFreshCoreAcceptance": false,
+  "realLoA2AndTenantBootstrap": "pending",
+  "retention": "dedicated first-init data retained; no original data deletion"
+}

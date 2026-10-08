@@ -1,0 +1,126 @@
+{
+  "observedAt": "2026-10-06T00:43:20.256854+00:00",
+  "cause": "not established; stopped container timestamps and coincident Kubernetes Pod restarts observed",
+  "resources": [
+    {
+      "component": "postgresql",
+      "containerID": "1f8f36db8fae80298ac00f5dbb934cdebf68755cc359df5d65c73a96a23633d7",
+      "owner": "pre-sp07-20261004",
+      "purpose": "postgresql-first-init",
+      "before": {
+        "status": "exited",
+        "finishedAt": "2026-10-05T15:05:14.159433042Z",
+        "mounts": [
+          {
+            "type": "bind",
+            "name": null,
+            "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/postgresql-first-init/01-keycloak.sql",
+            "destination": "/docker-entrypoint-initdb.d/01-keycloak.sql"
+          },
+          {
+            "type": "bind",
+            "name": null,
+            "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/postgresql-first-init/password",
+            "destination": "/etc/keycloak-database/password"
+          },
+          {
+            "type": "bind",
+            "name": null,
+            "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/postgresql-first-init/username",
+            "destination": "/etc/keycloak-database/username"
+          },
+          {
+            "type": "volume",
+            "name": "ops-pre-sp07-first-init-482f46035c-data",
+            "source": "/var/lib/docker/volumes/ops-pre-sp07-first-init-482f46035c-data/_data",
+            "destination": "/var/lib/postgresql/data"
+          }
+        ]
+      },
+      "restartPerformed": true,
+      "rediscoveredLoopbackPort": 32771,
+      "storageIdentityUnchanged": true
+    },
+    {
+      "component": "openbao",
+      "containerID": "e1e55bc76b6735165aae7f22b7bf29320b737e1dd178061fe55a2d3b01193ab5",
+      "owner": "pre-sp07-20261005-r15",
+      "purpose": "regression-only",
+      "before": {
+        "status": "exited",
+        "finishedAt": "2026-10-05T15:05:14.249024209Z",
+        "mounts": [
+          {
+            "type": "volume",
+            "name": "ops-sp06-regression-bao-pre-sp07-20261005-r15",
+            "source": "/var/lib/docker/volumes/ops-sp06-regression-bao-pre-sp07-20261005-r15/_data",
+            "destination": "/bao-data"
+          },
+          {
+            "type": "bind",
+            "name": null,
+            "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/ops-sp06-services-pre-sp07-20261005-r15-duxqgmj1",
+            "destination": "/cfg"
+          }
+        ]
+      },
+      "restartPerformed": true,
+      "rediscoveredLoopbackPort": 32772,
+      "storageIdentityUnchanged": true
+    },
+    {
+      "component": "seaweedfs",
+      "containerID": "ef7229e8b72cfa9f1e777bd2efc9f935630050ca77d66a4c335ca4a9ad7032f5",
+      "owner": "pre-sp07-20261005-r15",
+      "purpose": "regression-only",
+      "before": {
+        "status": "exited",
+        "finishedAt": "2026-10-05T15:05:14.294208834Z",
+        "mounts": [
+          {
+            "type": "bind",
+            "name": null,
+            "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/ops-sp06-services-pre-sp07-20261005-r15-duxqgmj1/s3.json",
+            "destination": "/cfg/s3.json"
+          },
+          {
+            "type": "bind",
+            "name": null,
+            "source": "/Users/mssc/.local/state/ops/pre-sp07-20261004/ops-sp06-services-pre-sp07-20261005-r15-duxqgmj1/seaweed-data",
+            "destination": "/data"
+          }
+        ]
+      },
+      "restartPerformed": true,
+      "rediscoveredLoopbackPort": 32773,
+      "storageIdentityUnchanged": true
+    },
+    {
+      "component": "keycloak",
+      "containerID": "ab9c3f3c3461a1de053ebd797e84ffa6600d147935b137bf74eab0a48d1e5509",
+      "owner": "pre-sp07-20261005-r15",
+      "purpose": "regression-only",
+      "before": {
+        "status": "exited",
+        "finishedAt": "2026-10-05T15:05:14.248873834Z",
+        "mounts": [
+          {
+            "type": "bind",
+            "name": null,
+            "source": "/Users/mssc/Documents/Code/ops/platform/deploy/keycloak/realm-ops.json",
+            "destination": "/opt/keycloak/data/import/realm-ops.json"
+          }
+        ]
+      },
+      "restartPerformed": true,
+      "rediscoveredLoopbackPort": 32774,
+      "storageIdentityUnchanged": true
+    }
+  ],
+  "openbaoInitializedPreserved": true,
+  "transitCurrentKeyVersions": 13,
+  "noStorageReinitialized": true,
+  "originalHistoricalResourcesRestarted": false,
+  "privateRediscoveredConfiguration": "/Users/mssc/.local/state/ops/pre-sp07-20261004/ops-sp06-services-pre-sp07-20261005-r15-duxqgmj1/credentials-resumed-r31.env",
+  "fullRecoveryAcceptance": false
+}

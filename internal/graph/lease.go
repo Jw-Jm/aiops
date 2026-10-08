@@ -25,6 +25,7 @@ type LeaseDocument struct {
 		UID             string            `json:"uid"`
 		ResourceVersion string            `json:"resourceVersion"`
 		Annotations     map[string]string `json:"annotations"`
+		Labels          map[string]string `json:"labels,omitempty"`
 	} `json:"metadata"`
 	Spec struct {
 		HolderIdentity       string           `json:"holderIdentity"`

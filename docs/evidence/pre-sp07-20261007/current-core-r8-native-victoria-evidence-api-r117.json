@@ -1,0 +1,116 @@
+{
+  "observedAt": "2026-10-07T07:45:30.667854+00:00",
+  "actualNativeFactsOnly": true,
+  "directBusinessTableWrites": false,
+  "modelMCPAcceptance": false,
+  "fullCoreAcceptance": false,
+  "historicalCanaryNotClaimedCurrentFault": true,
+  "currentSourceCapabilities": [
+    {
+      "sourceId": "01a114c4-ccf5-7680-a906-3323ead7644e",
+      "sourceType": "kubernetes",
+      "revision": 1,
+      "status": "active",
+      "queryCapability": {
+        "reason": "adapter_scope_verification_pending",
+        "state": "disabled",
+        "verification": "unverified"
+      }
+    },
+    {
+      "sourceId": "01a114c4-cd3e-76c8-89d8-6dbf7c6233bd",
+      "sourceType": "victorialogs",
+      "revision": 1,
+      "status": "active",
+      "queryCapability": {
+        "reason": "adapter_scope_verification_pending",
+        "state": "disabled",
+        "verification": "unverified"
+      }
+    },
+    {
+      "sourceId": "01a114c4-cd20-7d6a-8ab0-7cbdfd52b28b",
+      "sourceType": "victoriametrics",
+      "revision": 1,
+      "status": "active",
+      "queryCapability": {
+        "reason": "adapter_scope_verification_pending",
+        "state": "disabled",
+        "verification": "unverified"
+      }
+    }
+  ],
+  "results": [
+    {
+      "source": "victoriametrics",
+      "status": 200,
+      "canonicalId": "k8s+v1://d0738868-8646-4715-9d99-b85d4bcb0b5e/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/c6a490bb-6638-47d6-a371-75d7ca26ec8f",
+      "observationWindow": {
+        "from": "2026-10-07T04:44:01.158875+00:00",
+        "to": "2026-10-07T04:45:01.158875+00:00"
+      },
+      "evidenceId": "01a11553-1f9b-794e-8c6b-adc71ea0ac0a",
+      "contentDigest": "sha256:3a35b487ba83b67c964f0ea2705168028b4503d9a36bea242eeedd356589c725",
+      "archiveRef": {
+        "backendLogicalId": "pre-sp07-current-archive-ops-pre-sp07-core-r8-20261007",
+        "object": {
+          "tenantId": "d0738868-8646-4715-9d99-b85d4bcb0b5e",
+          "objectId": "01a11553-1f9b-794e-8c6b-adc71ea0ac0a",
+          "category": "evidence",
+          "key": "tenants/6e6a555893c917dc243367a152b39897de3f44d503392f8c233ee470b96f3c59/evidence/01a11553-1f9b-794e-8c6b-adc71ea0ac0a",
+          "digest": "sha256:fc310baa2ed324354248e4e912ba28f07d46cbb7f4e3e703b422f7ec78216ea0",
+          "size": 720,
+          "contentType": "application/vnd.ops.transit-envelope+json",
+          "versionId": "6723d05c5f1d900507a2d1d49d9630da",
+          "etag": "\"626836c8d4e63a18d7952a1eae121471\"",
+          "retainUntil": "2027-10-08T07:45:32Z"
+        },
+        "encryptionKeyVersion": "1",
+        "plaintextDigest": "sha256:3a35b487ba83b67c964f0ea2705168028b4503d9a36bea242eeedd356589c725",
+        "ciphertextDigest": "sha256:fc310baa2ed324354248e4e912ba28f07d46cbb7f4e3e703b422f7ec78216ea0"
+      },
+      "sourceRevision": 1,
+      "archiveReadbackStatus": 200,
+      "partial": false,
+      "warnings": []
+    },
+    {
+      "source": "victorialogs",
+      "status": 503,
+      "canonicalId": "k8s+v1://d0738868-8646-4715-9d99-b85d4bcb0b5e/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/c6a490bb-6638-47d6-a371-75d7ca26ec8f",
+      "observationWindow": {
+        "from": "2026-10-07T04:44:01.158875+00:00",
+        "to": "2026-10-07T04:45:01.158875+00:00"
+      }
+    }
+  ],
+  "failureType": "AssertionError",
+  "exitCode": 1,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/source-registrations",
+      "status": 200,
+      "responseSHA256": "12ccefcbd8b51c4b1f6ce293253071c12e7ad550d4c043187fa02405c8e551c4"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/evidence:query",
+      "status": 200,
+      "responseSHA256": "da6c690219cabd33f1f861ca8acafd564f039130321736a63ddc885bb11e2a8f"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/01a11553-1f9b-794e-8c6b-adc71ea0ac0a",
+      "status": 200,
+      "responseSHA256": "c6853c95d48ac1a98b879ffaa5185714b2e4c2feec46b9b2f081189bad6389ed"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/evidence:query",
+      "status": 503,
+      "responseSHA256": "7644762ad18bc2f52fc9c084c0a01dbd72922c87d1c4f818af8b93f2f0380f2c"
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

@@ -1,0 +1,53 @@
+{
+  "observedAt": "2026-10-08T06:15:37.146356+00:00",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-api",
+        "58988:8080"
+      ],
+      "pid": 63740
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-postgresql",
+        "58995:5432"
+      ],
+      "pid": 63741
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-tags",
+        "pre_sp07_live",
+        "./test/integration",
+        "-run",
+        "^TestFormalCurrentInstalledInvestigationLedgerEvidenceAndSSE$",
+        "-count=1",
+        "-v"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "ownedPortForwardsStopped": true,
+  "noDBSeed": true,
+  "auditQueriesReadOnlyTransaction": true,
+  "coldCorePass": false
+}

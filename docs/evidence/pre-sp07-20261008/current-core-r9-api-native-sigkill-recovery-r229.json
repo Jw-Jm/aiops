@@ -1,0 +1,207 @@
+{
+  "observedAt": "2026-10-08T03:09:30.571253+00:00",
+  "jobId": "01a11974-8d2d-7024-bc30-eb5d9f16bf4c",
+  "actualSuccessfulModelMCPChainPass": false,
+  "fullRecoveryAcceptance": false,
+  "APIOrWorkerRestartedByThisGate": true,
+  "completeJobTakeoverAndSuccessfulStepNoRerunPass": false,
+  "currentSuccessfulModelMCPChainPass": false,
+  "wireContract": "internal/httpapi/investigation_handlers.go: typed job.state payload and signed opaque cursor; eventId sequence in Envelope",
+  "currentSuccessfulChainReceipt": "current-core-r9-investigation-chain-live-receipt-r221.json",
+  "terminalSuccessfulJobProofOnly": true,
+  "activeJobTakeoverNotClaimed": true,
+  "newModelCallsByGate": 0,
+  "retainedSchedulingEvidence": [
+    {
+      "evidenceId": "406783e1-27a4-5a21-aa60-1adac508f309",
+      "contentDigest": "sha256:adedddb6710f484a3838f613268c61c704bcb2ae33cd5ca4c25aa2528b553d77",
+      "archiveVersionId": "67239160e865885f77f45e0690462a6a",
+      "retainUntil": "2027-10-09T02:59:42Z",
+      "sourceId": "01a1196d-82ff-7071-a499-02e0cfa5baaf",
+      "sourceRevision": 1
+    }
+  ],
+  "apiPodUID": "0b1a3f24-ad3d-469f-a13e-760d47e58c26",
+  "apiOldContainerId": "250626be06e6473f01085bcd0685384319d82653a979155e480b70e89eb1967b",
+  "apiNewContainerId": "docker://7d1f7bdbc26b31688aac925043d0852d6880465863d8462c8d37926a0ce7ffc4",
+  "nativeSamePodUID": true,
+  "apiRestartCountBefore": 1,
+  "apiRestartCountAfter": 2,
+  "nativeSIGKILLExitCode": 0,
+  "nativeAPIRecovered": true,
+  "terminalSuccessfulStatePreserved": true,
+  "unknownUsageConservativeSettlementNotClaimed": true,
+  "budgetReservedZero": true,
+  "sseEventSequence": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "sseResumeExactSuffix": true,
+  "crossTenantStatus": 403,
+  "actualForeignTenantSSE403": true,
+  "actualDurableEventsByteDigestUnchangedAfterNativeAPISIGKILL": true,
+  "actualPreRestartCursorSuffixAfterRestart": true,
+  "archivedEvidenceDigestAndVersionPreserved": true,
+  "terminalSuccessfulBudgetAndEventCountUnchangedAfterRestart": true,
+  "exitCode": 0,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:0a9ebc778315ac57c28a07848439af82913511fbef0f3752ed1467a04bca41c7"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/events",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:35ce28e6c9dd303a1e5592d6aec25495facfd23c3541aeac5e08238b2f2273bf"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/events",
+      "status": 200,
+      "cursorSHA256": "sha256:8d685d59b4330d9536e8a6fddf0cdae8954a4176ade083f1fb55ec143acba4c9",
+      "responseSHA256": "sha256:bfb7d3119029267e7cf202a514ce24afc4efb1187816bb71e6845a1e1ee16397"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/events",
+      "status": 403,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:890b1c62736b650c9fcdc9dbfd0f9339c383b0a0512175338449fe8d7191c6ad"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/406783e1-27a4-5a21-aa60-1adac508f309",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:cf1759d0315f2ad1387474faeac452055d829bb8b9f54f3b34c6700a0cb48ba2"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "replicaset",
+        "ops-api-87c77749c",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "kill",
+        "--signal=KILL",
+        "250626be06e6473f01085bcd0685384319d82653a979155e480b70e89eb1967b"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-api-87c77749c-hhp42",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-api-87c77749c-hhp42",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-api-87c77749c-hhp42",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:07cbf74fdeb02af34ab046b3e6467668516460edf10ce95a7be5f6ad27017d82"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/events",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:750663e608d0d4c6a2061d82603b0a43603dc847262e8839ee2dd9aebb62cd7e"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/events",
+      "status": 200,
+      "cursorSHA256": "sha256:8d685d59b4330d9536e8a6fddf0cdae8954a4176ade083f1fb55ec143acba4c9",
+      "responseSHA256": "sha256:d442a6f362a9f1a0dde5adf9ac47c7df7c0f2721f2e3c3a05c23ac5df4b246be"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/406783e1-27a4-5a21-aa60-1adac508f309",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:52803324c1ca9d3d0bd6ed02eb6bff569faceea6b7bd4b76dc8c150a67856ad7"
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

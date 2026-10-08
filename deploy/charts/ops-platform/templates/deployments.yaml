@@ -1,8 +1,12 @@
 {{- if and .Values.sp05.enabled (not .Values.sp04.enabled) }}{{ fail "SP05 requires the existing SP04 Graph/Evidence runtime" }}{{- end }}
 {{- if and .Values.workloadsEnabled (not .Values.networkPolicyOnly) }}
+{{- if eq .Values.workloadIdentity.mode "openbao-kubernetes" }}
+{{- if not .Values.workloadIdentity.enabled }}{{ fail "Projected PKI identity must be explicitly enabled" }}{{- end }}
+{{- if not .Values.runtime.openbaoCABundle }}{{ fail "Projected PKI requires independently provisioned OpenBao CA trust" }}{{- end }}
+{{- end }}
 {{- range $name := list "api" "worker" "web" }}
 {{- $component := index $.Values.components $name }}
-{{- if and $component.enabled (not (and $.Values.sp06.enabled (eq $name "investigator"))) }}
+{{- if and $component.enabled (or (not $.Values.bootstrapAPIOnly) (eq $name "api")) (not (and $.Values.sp06.enabled (eq $name "investigator"))) }}
 {{- $image := required (printf "components.%s.image is required" $name) $component.image }}
 {{- if not (regexMatch "^.+@sha256:[0-9a-f]{64}$" $image) }}{{ fail "platform images must be digest pinned" }}{{- end }}
 apiVersion: apps/v1
@@ -19,6 +23,10 @@ spec:
       ops.platform.io/component: {{ $name }}
   template:
     metadata:
+      {{ if has $name (list "api" "worker") }}
+      annotations:
+        checksum/runtime-config: {{ dict "namespace" $.Release.Namespace "runtime" $.Values.runtime "identity" $.Values.workloadIdentity "sp04" $.Values.sp04 "sp05" $.Values.sp05 "sp06" $.Values.sp06 | toJson | sha256sum | quote }}
+      {{ end }}
       labels:
         ops.platform.io/release: {{ $.Release.Name | quote }}
         ops.platform.io/component: {{ $name }}

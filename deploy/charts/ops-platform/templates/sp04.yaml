@@ -5,6 +5,8 @@
 {{- if and .Values.sp05.enabled .Values.sp05.analyzer.enabled (ne .Values.sp05.analyzer.sha256 "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53") }}{{ fail "SP05 requires the admitted fixed Analyzer binary SHA256" }}{{- end }}
 {{- $_ := set $common "SP05" (dict "Enabled" .Values.sp05.enabled "IngestionBindings" .Values.sp05.ingestionBindings "Analyzer" (dict "Enabled" (and .Values.sp05.enabled .Values.sp05.analyzer.enabled) "SHA256" .Values.sp05.analyzer.sha256)) }}
 {{- $api := deepCopy $common }}
+{{- $_ := set $common "IdentityMode" (.Values.workloadIdentity.mode | default "file") }}
+{{- $_ := set $api "IdentityMode" (.Values.workloadIdentity.mode | default "file") }}
 {{- $_ := set $api "ContextPrivateKeyFile" "/etc/sp04/identity/context.key" }}
 {{- $worker := deepCopy $common }}
 {{- $_ := set $worker "ContextPublicKeyFile" "/etc/sp04/identity/context.pub" }}
@@ -75,13 +77,15 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{ printf "%s-%s-sp04-collector" .Release.Namespace .Release.Name | quote }}
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
 rules:
   - apiGroups: [""]
     resources: [pods, nodes, services, configmaps, persistentvolumeclaims, persistentvolumes, events]
     verbs: [get, list, watch]
 {{- if .Values.sp05.enabled }}
   - apiGroups: [metrics.k8s.io]
-    resources: [nodes]
+    resources: [nodes, pods]
     verbs: [get]
   - nonResourceURLs: [/version]
     verbs: [get]
@@ -103,6 +107,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ printf "%s-%s-sp04-collector" .Release.Namespace .Release.Name | quote }}
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -116,6 +122,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: ops-sp04-lease
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
 rules:
   - apiGroups: [coordination.k8s.io]
     resources: [leases]
@@ -126,6 +134,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: ops-sp04-lease
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

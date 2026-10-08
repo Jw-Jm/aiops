@@ -1,0 +1,165 @@
+{
+  "observedAt": "2026-10-04T16:28:38.803867+00:00",
+  "namespace": "ops-pre-sp07-pki-20261004",
+  "imageUsedForDependencies": "ops.local/sp06/investigator@sha256:41916431835e1319e25dad000c54454f5565f9347bdf9d175f313d3837591af6",
+  "currentWorkloadCode": "current source files projected from a public-only ConfigMap",
+  "refreshOwner": "production investigator WorkloadIdentity; no test refresh thread",
+  "modelInvoked": false,
+  "fullFreshCoreAcceptance": false,
+  "signedColdImport": false,
+  "originalResourcesDeleted": false,
+  "podUID": "561feb0e-8628-4542-ae51-45a6ca1c971d",
+  "gate": "FAIL",
+  "failureType": "RuntimeError",
+  "failure": "Production investigator TLS did not start",
+  "ownedEphemeralPodDeletedUID": "561feb0e-8628-4542-ae51-45a6ca1c971d",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-pki-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-openbao",
+        "53850:8200"
+      ],
+      "pid": 42021,
+      "createdByGate": true
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "/Users/mssc/Documents/Code/ops/platform/docs/evidence/pre-sp07-20261005/investigator-pki-live-20261005-r2-resources.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "get",
+        "pod",
+        "investigator-pki-live-20261005-r2",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "wait",
+        "--for=condition=Ready",
+        "pod/investigator-pki-live-20261005-r2",
+        "--timeout=90s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "pod/investigator-pki-live-20261005-r2",
+        "53864:8090"
+      ],
+      "pid": 42037,
+      "createdByGate": true
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "get",
+        "pod",
+        "investigator-pki-live-20261005-r2",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "delete",
+        "pod",
+        "investigator-pki-live-20261005-r2",
+        "--wait=true"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "operatorOperations": [
+    {
+      "method": "GET",
+      "fixedPath": "/v1/pki/ca/pem",
+      "httpStatus": 200
+    },
+    {
+      "method": "GET",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-investigator",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-investigator",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/sign/platform-workload-ops-worker",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/sign/platform-workload-ops-api",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-investigator",
+      "httpStatus": 200
+    }
+  ],
+  "completedAt": "2026-10-04T16:29:43.527283+00:00"
+}

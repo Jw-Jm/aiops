@@ -1,9 +1,11 @@
 workloadsEnabled: false
 global:
-  imagePullPolicy: IfNotPresent
+  imagePullPolicy: Never
 networkPolicyOnly: false
+bootstrapAPIOnly: false
 workloadIdentity:
   enabled: true
+  mode: file
 observability:
   # auto resolves from the installed CRDs; explicit values are reserved for offline render checks.
   scrapeKind: auto

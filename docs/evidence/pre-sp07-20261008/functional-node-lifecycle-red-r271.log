@@ -1,0 +1,32 @@
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/explicit_wrong_uid
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/window_crosses_recreation
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/allocatable_exceeds_capacity
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/positive_capacity_binding
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/missing_native_capacity
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/terminating_node
+    metrics_identity_test.go:72: invalid Node emitted recovery signals: signals=2 err=<nil>
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/missing_creation_time
+    metrics_identity_test.go:72: invalid Node emitted recovery signals: signals=2 err=<nil>
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/namespaced_node
+    metrics_identity_test.go:72: invalid Node emitted recovery signals: signals=2 err=<nil>
+--- FAIL: TestMetricRejectsConflictingUIDAndPreviousNodeWindow (0.00s)
+    --- PASS: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/explicit_wrong_uid (0.00s)
+    --- PASS: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/window_crosses_recreation (0.00s)
+    --- PASS: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/allocatable_exceeds_capacity (0.00s)
+    --- PASS: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/positive_capacity_binding (0.00s)
+    --- PASS: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/missing_native_capacity (0.00s)
+    --- FAIL: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/terminating_node (0.00s)
+    --- FAIL: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/missing_creation_time (0.00s)
+    --- FAIL: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/namespaced_node (0.00s)
+=== RUN   TestPodMetricObservationRejectsTerminatingNode
+    pod_metrics_test.go:26: Pod usage bound to terminating Node: bytes=627 err=<nil>
+--- FAIL: TestPodMetricObservationRejectsTerminatingNode (0.00s)
+FAIL
+FAIL	ops-platform/internal/inspection/kubernetes	0.876s
+=== RUN   TestOfficialNodeMetricsRejectsTerminatingIdentity
+    sp05_node_metrics_identity_test.go:42: native recheck accepted terminating Node with unchanged UID
+--- FAIL: TestOfficialNodeMetricsRejectsTerminatingIdentity (0.10s)
+FAIL
+FAIL	ops-platform/internal/app	1.072s
+FAIL

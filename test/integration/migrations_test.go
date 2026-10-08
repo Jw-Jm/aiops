@@ -350,7 +350,8 @@ func TestWithTenantTxIsolatesTenantsAndUsesAppendOnlyAudit(t *testing.T) {
 func runRemainingMigrationsAsMigrationRole(t *testing.T, ctx context.Context, adminDB *sql.DB, adminURL, migrationDir string) error {
 	t.Helper()
 	roleName := "sp03_migrator_" + strings.ReplaceAll(uuid.NewString(), "-", "")
-	if _, err := adminDB.ExecContext(ctx, `CREATE ROLE "`+roleName+`" LOGIN`); err != nil {
+	password := strings.ReplaceAll(uuid.NewString()+uuid.NewString(), "-", "")
+	if _, err := adminDB.ExecContext(ctx, `CREATE ROLE "`+roleName+`" LOGIN PASSWORD '`+password+`'`); err != nil {
 		return fmt.Errorf("create isolated migration login: %w", err)
 	}
 	t.Cleanup(func() {
@@ -364,7 +365,7 @@ func runRemainingMigrationsAsMigrationRole(t *testing.T, ctx context.Context, ad
 	if err != nil {
 		return err
 	}
-	parsed.User = url.User(roleName)
+	parsed.User = url.UserPassword(roleName, password)
 	query := parsed.Query()
 	query.Set("options", "-c role=migration_role")
 	parsed.RawQuery = strings.ReplaceAll(query.Encode(), "+", "%20")
@@ -427,8 +428,21 @@ func newMigrationDatabaseWithTimeout(t *testing.T, timeout time.Duration) (conte
 		t.Fatalf("connect to isolated database: %v", err)
 	}
 	t.Cleanup(func() {
+		check, stop := context.WithTimeout(context.Background(), 5*time.Second)
+		retain, reason := integrationDatabaseRetention(check, db)
+		stop()
 		_ = db.Close()
-		_, _ = admin.ExecContext(context.Background(), "DROP DATABASE IF EXISTS \""+name+"\" WITH (FORCE)")
+		if retain {
+			t.Logf("retained owned integration database=%s test=%s reason=%s; no automatic protected cleanup", name, t.Name(), reason)
+		} else {
+			check, stop := context.WithTimeout(context.Background(), 5*time.Second)
+			// Active/unknown consumers also refuse deletion. Never terminate a
+			// connection or bypass Evidence/Audit protection to clean a test.
+			if _, err := admin.ExecContext(check, "DROP DATABASE IF EXISTS \""+name+"\""); err != nil {
+				t.Logf("retained owned integration database=%s test=%s reason=empty-database-delete-not-confirmed", name, t.Name())
+			}
+			stop()
+		}
 		_ = admin.Close()
 	})
 	goose.SetDialect("postgres")
@@ -437,6 +451,32 @@ func newMigrationDatabaseWithTimeout(t *testing.T, timeout time.Duration) (conte
 		t.Fatal(err)
 	}
 	return ctx, db, filepath.Clean(filepath.Join(wd, "../../migrations")), dbURL
+}
+
+func integrationDatabaseRetention(ctx context.Context, db *sql.DB) (bool, string) {
+	if db == nil {
+		return true, "database-unavailable"
+	}
+	// Even an expired Evidence sample may support a retained Investigation,
+	// Audit or Legal Hold. Tests do not make source-retention deletion decisions.
+	for _, table := range []string{"audit.records", "audit.signed_segments", "platform.evidence_metadata", "platform.evidence_archive_intents", "platform.evidence_dependencies", "platform.evidence_retention_references"} {
+		var exists bool
+		if err := db.QueryRowContext(ctx, `SELECT to_regclass($1) IS NOT NULL`, table).Scan(&exists); err != nil {
+			return true, "retention-state-unavailable"
+		}
+		if !exists {
+			continue
+		}
+		var records bool
+		// Only fixed implementation-owned identifiers enter this statement.
+		if err := db.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM "+table+")").Scan(&records); err != nil {
+			return true, "retention-state-unavailable"
+		}
+		if records {
+			return true, table
+		}
+	}
+	return false, "no-audit-or-evidence-records"
 }
 
 func databaseURLForDatabase(raw, database string) (string, error) {

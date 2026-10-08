@@ -1,0 +1,150 @@
+---
+# Source: ops-dependencies/templates/seaweedfs.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-seaweedfs-master-config
+  labels:
+    ops.platform.io/release: "ops-oidc-dependencies"
+    ops.platform.io/component: seaweedfs
+    ops.platform.io/mode: bundled
+data:
+  master.toml: |
+    [master.volume_growth]
+    copy_1 = 1
+---
+# Source: ops-dependencies/templates/seaweedfs.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-seaweedfs-s3
+  labels:
+    ops.platform.io/release: "ops-oidc-dependencies"
+    app.kubernetes.io/name: ops-seaweedfs
+    ops.platform.io/component: seaweedfs
+    ops.platform.io/mode: bundled
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ops-seaweedfs
+  ports:
+    - name: s3
+      appProtocol: https
+      port: 8333
+      targetPort: s3
+    - name: master
+      port: 9333
+      targetPort: master
+---
+# Source: ops-dependencies/templates/seaweedfs.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ops-seaweedfs
+  labels:
+    ops.platform.io/release: "ops-oidc-dependencies"
+    app.kubernetes.io/name: ops-seaweedfs
+    ops.platform.io/component: seaweedfs
+    ops.platform.io/mode: bundled
+spec:
+  serviceName: ops-seaweedfs-s3
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ops-seaweedfs
+  template:
+    metadata:
+      labels:
+        ops.platform.io/release: "ops-oidc-dependencies"
+        app.kubernetes.io/name: ops-seaweedfs
+        ops.platform.io/component: seaweedfs
+        ops.platform.io/mode: bundled
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: seaweedfs
+          image: "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e"
+          imagePullPolicy: Never
+          command: ["weed"]
+          args: ["-config_dir=/etc/seaweedfs", "server", "-dir=/data", "-s3", "-s3.config=/etc/archive-iam/s3.json", "-volume.max=12", "-master.volumeSizeLimitMB=128", "-master.telemetry=false", "-s3.cert.file=/etc/archive-tls/tls.crt", "-s3.key.file=/etc/archive-tls/tls.key"]
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: "ops-seaweedfs-auth"
+                  key: "accessKey"
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "ops-seaweedfs-auth"
+                  key: "secretKey"
+          ports:
+            - name: s3
+              containerPort: 8333
+            - name: master
+              containerPort: 9333
+          readinessProbe:
+            httpGet:
+              path: /cluster/status
+              port: master
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: archive-iam
+              mountPath: /etc/archive-iam
+              readOnly: true
+            - name: archive-tls
+              mountPath: /etc/archive-tls
+              readOnly: true
+            - name: data
+              mountPath: /data
+            - name: master-config
+              mountPath: /etc/seaweedfs
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: archive-iam
+          secret:
+            secretName: "ops-seaweedfs-iam"
+            items:
+              - key: s3.json
+                path: s3.json
+        - name: archive-tls
+          secret:
+            secretName: "ops-seaweedfs-tls"
+        - name: master-config
+          configMap:
+            name: ops-seaweedfs-master-config
+        - name: tmp
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          ops.platform.io/release: "ops-oidc-dependencies"
+          ops.platform.io/component: seaweedfs
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: "2Gi"

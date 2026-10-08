@@ -1,5 +1,32 @@
 {{- $component := .Values.components.postgresql -}}
 {{- if eq $component.mode "bundled" }}
+{{- if eq $.Values.components.keycloak.mode "bundled" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-postgresql-init
+  labels:
+    ops.platform.io/release: {{ $.Release.Name | quote }}
+    ops.platform.io/component: postgresql
+data:
+  01-keycloak.sql: |
+    \set ON_ERROR_STOP on
+    DO $keycloak$
+    DECLARE
+      login_name text := pg_read_file('/etc/keycloak-database/username');
+      login_password text := pg_read_file('/etc/keycloak-database/password');
+    BEGIN
+      IF login_name <> 'ops_keycloak' OR length(login_password) < 1
+         OR login_name = current_user THEN
+        RAISE EXCEPTION 'separate explicit Keycloak database identity required';
+      END IF;
+      EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD %L', login_name, login_password);
+    END $keycloak$;
+    CREATE DATABASE keycloak OWNER ops_keycloak;
+    REVOKE ALL ON DATABASE keycloak FROM PUBLIC;
+    REVOKE ALL ON DATABASE ops FROM PUBLIC;
+---
+{{- end }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -90,6 +117,14 @@ spec:
             capabilities:
               drop: ["ALL"]
           volumeMounts:
+            {{- if eq $.Values.components.keycloak.mode "bundled" }}
+            - name: database-init
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+            - name: keycloak-database
+              mountPath: /etc/keycloak-database
+              readOnly: true
+            {{- end }}
             - name: data
               mountPath: /var/lib/postgresql/data
             - name: tmp
@@ -97,6 +132,20 @@ spec:
             - name: postgres-run
               mountPath: /var/run/postgresql
       volumes:
+        {{- if eq $.Values.components.keycloak.mode "bundled" }}
+        - name: database-init
+          configMap:
+            name: ops-postgresql-init
+        - name: keycloak-database
+          secret:
+            secretName: {{ $.Values.components.keycloak.database.existingSecret }}
+            defaultMode: 0440
+            items:
+              - key: {{ $.Values.components.keycloak.database.usernameKey }}
+                path: username
+              - key: {{ $.Values.components.keycloak.database.passwordKey }}
+                path: password
+        {{- end }}
         - name: tmp
           emptyDir: {}
         - name: postgres-run

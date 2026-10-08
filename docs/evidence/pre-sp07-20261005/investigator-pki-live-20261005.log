@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/gate/investigator/worker.py", line 93, in <module>
+    serve(config)
+  File "/gate/investigator/worker.py", line 19, in serve
+    config=RuntimeConfig.model_validate(config).checked()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pydantic/main.py", line 732, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for RuntimeConfig
+model.base_url
+  Value error, an approved internal OpenAI-compatible endpoint is required [type=value_error, input_value='http://localhost:11434/v1', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error

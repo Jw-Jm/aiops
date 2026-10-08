@@ -1,0 +1,17 @@
+{
+  "command": [
+    "go",
+    "test",
+    "./test/integration",
+    "-run",
+    "^TestSP06ActualCurrentRCARecommendationValidator$",
+    "-count=1",
+    "-v",
+    "-timeout=5m"
+  ],
+  "exitCode": 0,
+  "startedAt": "2026-10-08T06:36:32.273779+00:00",
+  "completedAt": "2026-10-08T06:37:09.880956+00:00",
+  "expected": "Deleted same-scope target denied; valid current target succeeds; deterministic RCA unchanged",
+  "scope": "Production Go Validator + real PostgreSQL, Transit, S3, Kubernetes Lease and mTLS Graph; isolated labelled golden facts, not physical DIMM or model accuracy qualification"
+}

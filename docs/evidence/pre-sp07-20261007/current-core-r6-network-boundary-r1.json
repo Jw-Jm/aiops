@@ -1,0 +1,305 @@
+{
+  "observedAt": "2026-10-07T01:42:50.598314+00:00",
+  "namespace": "ops-pre-sp07-core-r6-20261006",
+  "fullColdInstallPass": false,
+  "fullNetworkAcceptance": false,
+  "IPv6IndependentPositiveControlPass": false,
+  "businessOrSharedResourcesDeleted": false,
+  "roleProbes": [
+    {
+      "roleLabelsMatchInstalledPolicy": "investigator",
+      "podName": "ops-r6-network-investigator-87ec9126",
+      "podUid": "d4c4e570-e754-41bd-931d-70444ccfe166",
+      "observed": {
+        "mcp": "reachable",
+        "openbao": "reachable",
+        "model": "reachable",
+        "postgresql": "denied",
+        "victoriametrics": "denied",
+        "victorialogs": "denied",
+        "archive": "denied",
+        "kubernetes": "denied",
+        "public_ipv4": "denied",
+        "public_ipv6": "denied"
+      },
+      "expected": {
+        "mcp": "reachable",
+        "openbao": "reachable",
+        "model": "reachable",
+        "postgresql": "denied",
+        "victoriametrics": "denied",
+        "victorialogs": "denied",
+        "archive": "denied",
+        "kubernetes": "denied",
+        "public_ipv4": "denied",
+        "public_ipv6": "denied"
+      },
+      "matched": true,
+      "readinessAlwaysFalseNotServiceEndpoint": true,
+      "logSHA256": "sha256:da604c229b7f11cf28c08639316bd6dbec4195c1581200a0308813bb31ad083a"
+    },
+    {
+      "roleLabelsMatchInstalledPolicy": "web",
+      "podName": "ops-r6-network-web-bef5b870",
+      "podUid": "775e5cd4-2479-4403-981e-57da1e354e96",
+      "observed": {
+        "mcp": "reachable",
+        "openbao": "reachable",
+        "postgresql": "reachable",
+        "victoriametrics": "reachable",
+        "victorialogs": "reachable",
+        "archive": "reachable"
+      },
+      "expected": {
+        "mcp": "reachable",
+        "openbao": "reachable",
+        "postgresql": "reachable",
+        "victoriametrics": "reachable",
+        "victorialogs": "reachable",
+        "archive": "reachable"
+      },
+      "matched": true,
+      "readinessAlwaysFalseNotServiceEndpoint": true,
+      "logSHA256": "sha256:a5111e21770066b16f073f7c0ff34e8b3a163e7432c8a1accf6bbd254d7dbfa0"
+    }
+  ],
+  "independentPublicControls": [
+    {
+      "family": "ipv4",
+      "fixedAddress": "1.1.1.1",
+      "port": 443,
+      "exitCode": 0,
+      "independentlyReachable": true
+    },
+    {
+      "family": "ipv6",
+      "fixedAddress": "2606:4700:4700::1111",
+      "port": 443,
+      "exitCode": 1,
+      "independentlyReachable": false
+    }
+  ],
+  "IPv4IndependentPositiveControlPass": true,
+  "internalMCPBaoModelPositivePass": true,
+  "investigatorDatabaseFactsArchiveKubernetesDenied": true,
+  "publicIPv4AndIPv6DeniedInInvestigatorProbe": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "services",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "wait",
+        "--for=jsonpath={.status.phase}=Succeeded",
+        "pod/ops-r6-network-investigator-87ec9126",
+        "--timeout=110s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "logs",
+        "pod/ops-r6-network-investigator-87ec9126"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "wait",
+        "--for=jsonpath={.status.phase}=Succeeded",
+        "pod/ops-r6-network-web-bef5b870",
+        "--timeout=110s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "logs",
+        "pod/ops-r6-network-web-bef5b870"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--user",
+        "65532:65532",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-network-r1",
+        "--entrypoint",
+        "/bin/bash",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-ec",
+        "timeout 5 /bin/bash -c 'exec 3<>/dev/tcp/$1/443' _ 1.1.1.1"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--user",
+        "65532:65532",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-network-r1",
+        "--entrypoint",
+        "/bin/bash",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-ec",
+        "timeout 5 /bin/bash -c 'exec 3<>/dev/tcp/$1/443' _ 2606:4700:4700::1111"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "ops-r6-network-investigator-87ec9126",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "delete",
+        "pod",
+        "ops-r6-network-investigator-87ec9126",
+        "--wait=true",
+        "--timeout=20s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "ops-r6-network-web-bef5b870",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "delete",
+        "pod",
+        "ops-r6-network-web-bef5b870",
+        "--wait=true",
+        "--timeout=20s"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "onlyExactOwnedStatelessProbesCleaned": [
+    {
+      "podName": "ops-r6-network-investigator-87ec9126",
+      "podUid": "d4c4e570-e754-41bd-931d-70444ccfe166",
+      "exitCode": 0,
+      "verifiedOwnStatelessProbe": true
+    },
+    {
+      "podName": "ops-r6-network-web-bef5b870",
+      "podUid": "775e5cd4-2479-4403-981e-57da1e354e96",
+      "exitCode": 0,
+      "verifiedOwnStatelessProbe": true
+    }
+  ]
+}

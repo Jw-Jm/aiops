@@ -1,0 +1,159 @@
+---
+# Source: ops-dependencies/templates/postgresql.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-postgresql-init
+  labels:
+    ops.platform.io/release: "ops-oidc-dependencies"
+    ops.platform.io/component: postgresql
+data:
+  01-keycloak.sql: |
+    \set ON_ERROR_STOP on
+    DO $keycloak$
+    DECLARE
+      login_name text := pg_read_file('/etc/keycloak-database/username');
+      login_password text := pg_read_file('/etc/keycloak-database/password');
+    BEGIN
+      IF login_name <> 'ops_keycloak' OR length(login_password) < 1
+         OR login_name = current_user THEN
+        RAISE EXCEPTION 'separate explicit Keycloak database identity required';
+      END IF;
+      EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD %L', login_name, login_password);
+    END $keycloak$;
+    CREATE DATABASE keycloak OWNER ops_keycloak;
+    REVOKE ALL ON DATABASE keycloak FROM PUBLIC;
+    REVOKE ALL ON DATABASE ops FROM PUBLIC;
+---
+# Source: ops-dependencies/templates/postgresql.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-postgresql
+  labels:
+    ops.platform.io/release: "ops-oidc-dependencies"
+    app.kubernetes.io/name: ops-postgresql
+    ops.platform.io/component: postgresql
+    ops.platform.io/mode: bundled
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ops-postgresql
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+# Source: ops-dependencies/templates/postgresql.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ops-postgresql
+  labels:
+    ops.platform.io/release: "ops-oidc-dependencies"
+    app.kubernetes.io/name: ops-postgresql
+    ops.platform.io/component: postgresql
+    ops.platform.io/mode: bundled
+spec:
+  serviceName: ops-postgresql
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ops-postgresql
+  template:
+    metadata:
+      labels:
+        ops.platform.io/release: "ops-oidc-dependencies"
+        app.kubernetes.io/name: ops-postgresql
+        ops.platform.io/component: postgresql
+        ops.platform.io/mode: bundled
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: postgresql
+          image: "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+          imagePullPolicy: Never
+          args: ["-c", "listen_addresses=*"]
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: ops
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: "ops-postgresql-auth"
+                  key: "username"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "ops-postgresql-auth"
+                  key: "password"
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            tcpSocket:
+              port: postgres
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: database-init
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+            - name: keycloak-database
+              mountPath: /etc/keycloak-database
+              readOnly: true
+            - name: data
+              mountPath: /var/lib/postgresql/data
+            - name: tmp
+              mountPath: /tmp
+            - name: postgres-run
+              mountPath: /var/run/postgresql
+      volumes:
+        - name: database-init
+          configMap:
+            name: ops-postgresql-init
+        - name: keycloak-database
+          secret:
+            secretName: ops-keycloak-database
+            defaultMode: 0440
+            items:
+              - key: username
+                path: username
+              - key: password
+                path: password
+        - name: tmp
+          emptyDir: {}
+        - name: postgres-run
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          ops.platform.io/release: "ops-oidc-dependencies"
+          ops.platform.io/component: postgresql
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: "2Gi"

@@ -1,0 +1,58 @@
+{
+  "observedAt": "2026-10-06T00:17:33.347884+00:00",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "ops-pre-sp07-r5-model-discovery",
+    "--label",
+    "ops.platform.io/owner=pre-sp07-20261004",
+    "--pull",
+    "never",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--user",
+    "65532",
+    "--memory",
+    "64m",
+    "--cpus",
+    "0.1",
+    "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+    "python",
+    "-S",
+    "-c",
+    "import socket,json,urllib.request; ips=sorted(set(x[4][0] for x in socket.getaddrinfo(\"host.docker.internal\",11434,type=socket.SOCK_STREAM))); print(json.dumps({\"addresses\":ips,\"version\":json.load(urllib.request.urlopen(\"http://host.docker.internal:11434/api/version\",timeout=5)),\"models\":json.load(urllib.request.urlopen(\"http://host.docker.internal:11434/v1/models\",timeout=5))}))"
+  ],
+  "exitCode": 0,
+  "observations": {
+    "addresses": [
+      "0.250.250.254"
+    ],
+    "version": {
+      "version": "0.34.2"
+    },
+    "models": {
+      "object": "list",
+      "data": [
+        {
+          "id": "llama3.1:8b-16k",
+          "object": "model",
+          "created": 1790256429,
+          "owned_by": "library"
+        },
+        {
+          "id": "llama3.1:8b",
+          "object": "model",
+          "created": 1762740482,
+          "owned_by": "library"
+        }
+      ]
+    }
+  },
+  "modelWeightsBundled": false,
+  "modelAccuracyPass": false
+}

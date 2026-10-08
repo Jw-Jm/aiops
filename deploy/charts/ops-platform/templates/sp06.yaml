@@ -1,9 +1,11 @@
-{{- if and .Values.sp06.enabled (not .Values.networkPolicyOnly) }}
+{{- if .Values.sp06.enabled }}
 {{- if not (and .Values.sp04.enabled .Values.sp05.enabled) }}{{ fail "SP06 requires SP04 and SP05" }}{{- end }}
 {{- if not .Values.sp06.tenants }}{{ fail "SP06 requires explicit tenant dispatch scopes" }}{{- end }}
 {{- if not .Values.sp06.modelCIDRs }}{{ fail "SP06 requires exact model endpoint host CIDRs" }}{{- end }}
 {{- range .Values.sp06.modelCIDRs }}{{- if not (or (hasSuffix "/32" .) (hasSuffix "/128" .)) }}{{ fail "SP06 model egress must use exact host CIDRs" }}{{- end }}{{- end }}
+{{- if not .Values.networkPolicyOnly }}
 {{- $common := dict "namespace" .Release.Namespace "listenAddress" (printf ":%d" (int .Values.sp06.gatewayPort)) "investigatorEndpoint" (printf "https://ops-investigator.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.components.investigator.port)) "certificateFile" "/etc/sp04/identity/tls.crt" "privateKeyFile" "/etc/sp04/identity/tls.key" "caFile" "/etc/sp04/identity/ca.pem" "crlFile" "/etc/sp04/identity/crl.pem" "policyName" .Values.sp06.policyName "tenants" .Values.sp06.tenants "budget" .Values.sp06.budget }}
+{{- $_ := set $common "identityMode" (.Values.workloadIdentity.mode | default "file") }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -13,8 +15,9 @@ metadata:
 data:
   api.json: {{ $common | toJson | quote }}
   worker.json: {{ $common | toJson | quote }}
-  investigator.json: {{ dict "listenAddress" (printf "0.0.0.0:%d" (int .Values.components.investigator.port)) "jobAPI" (printf "https://ops-api.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.sp06.gatewayPort)) "mcpEndpoint" (printf "https://ops-api.%s.svc.cluster.local:%d/mcp" .Release.Namespace (int .Values.sp06.gatewayPort)) "apiServerName" (printf "ops-api.%s.svc.cluster.local" .Release.Namespace) "workerIdentity" (printf "spiffe://ops.local/ns/%s/sa/ops-worker" .Release.Namespace) "caFile" "/etc/identity/ca.pem" "crlFile" "/etc/identity/crl.pem" "certificateFile" "/etc/identity/tls.crt" "privateKeyFile" "/etc/identity/tls.key" "modelAPIKeyFile" "/run/secrets/model-api-key" "model" .Values.sp06.model | toJson | quote }}
+  investigator.json: {{ dict "listenAddress" (printf "0.0.0.0:%d" (int .Values.components.investigator.port)) "jobAPI" (printf "https://ops-api.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.sp06.gatewayPort)) "mcpEndpoint" (printf "https://ops-api.%s.svc.cluster.local:%d/mcp" .Release.Namespace (int .Values.sp06.gatewayPort)) "apiServerName" (printf "ops-api.%s.svc.cluster.local" .Release.Namespace) "workerIdentity" (printf "spiffe://ops.local/ns/%s/sa/ops-worker" .Release.Namespace) "caFile" "/etc/identity/ca.pem" "crlFile" "/etc/identity/crl.pem" "certificateFile" "/etc/identity/tls.crt" "privateKeyFile" "/etc/identity/tls.key" "identityMode" (.Values.workloadIdentity.mode | default "file") "modelAPIKeyFile" "/run/model-credentials/model-api-key" "model" .Values.sp06.model | toJson | quote }}
 ---
+{{- if not .Values.bootstrapAPIOnly }}
 {{- $image := required "SP06 admitted investigator digest is required" .Values.components.investigator.image }}
 {{- if not (regexMatch "^.+@sha256:[0-9a-f]{64}$" $image) }}{{ fail "SP06 investigator image must be digest pinned" }}{{- end }}
 apiVersion: apps/v1
@@ -30,6 +33,8 @@ spec:
     matchLabels: {ops.platform.io/component: investigator}
   template:
     metadata:
+      annotations:
+        checksum/runtime-config: {{ dict "namespace" .Release.Namespace "identity" .Values.workloadIdentity "sp06" .Values.sp06 | toJson | sha256sum | quote }}
       labels:
         ops.platform.io/release: {{ .Release.Name | quote }}
         ops.platform.io/component: investigator
@@ -49,6 +54,11 @@ spec:
           ports: [{name: http, containerPort: {{ .Values.components.investigator.port }}}]
           env:
             - {name: SP06_INVESTIGATOR_FILE, value: /etc/runtime/investigator.json}
+            {{- if eq .Values.workloadIdentity.mode "openbao-kubernetes" }}
+            - {name: OPENBAO_PROJECTED_TOKEN_FILE, value: /var/run/secrets/ops-platform/openbao/token}
+            - {name: OPENBAO_ADDR, value: {{ .Values.runtime.openbaoAddress | default (printf "https://ops-openbao.%s.svc.cluster.local:8200" .Release.Namespace) | quote }}}
+            - {name: OPENBAO_CA_FILE, value: /etc/openbao/openbao-ca.pem}
+            {{- end }}
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -64,8 +74,12 @@ spec:
           volumeMounts:
             - {name: runtime, mountPath: /etc/runtime, readOnly: true}
             - {name: identity, mountPath: /etc/identity, readOnly: true}
-            - {name: model-key, mountPath: /run/secrets, readOnly: true}
+            - {name: model-key, mountPath: /run/model-credentials, readOnly: true}
             - {name: tmp, mountPath: /tmp}
+            {{- if eq .Values.workloadIdentity.mode "openbao-kubernetes" }}
+            - {name: openbao-trust, mountPath: /etc/openbao, readOnly: true}
+{{ include "ops-platform.workloadIdentityMount" (dict "enabled" .Values.workloadIdentity.enabled "name" "investigator") | indent 12 }}
+            {{- end }}
       volumes:
         - name: runtime
           configMap: {name: ops-sp06-runtime}
@@ -78,11 +92,22 @@ spec:
             items: [{key: apiKey, path: model-api-key}]
         - name: tmp
           emptyDir: {}
+        {{- if eq .Values.workloadIdentity.mode "openbao-kubernetes" }}
+        - name: openbao-trust
+          configMap:
+            name: ops-core-profile
+            items: [{key: openbao-ca.pem, path: openbao-ca.pem}]
+{{ include "ops-platform.workloadIdentityVolume" (dict "enabled" .Values.workloadIdentity.enabled "name" "investigator") | indent 8 }}
+        {{- end }}
+{{- end }}
+{{- end }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: ops-sp06-investigator
+  labels:
+    ops.platform.io/release: {{ .Release.Name | quote }}
 spec:
   podSelector:
     matchLabels:
@@ -97,6 +122,17 @@ spec:
               ops.platform.io/component: worker
       ports: [{protocol: TCP, port: {{ .Values.components.investigator.port }}}]
   egress:
+    {{- if eq .Values.workloadIdentity.mode "openbao-kubernetes" }}
+    - to:
+        - podSelector:
+            matchLabels:
+              ops.platform.io/component: openbao
+            matchExpressions:
+              - key: ops.platform.io/release
+                operator: In
+                values: {{ required "Current bundled PKI requires explicit dependency release ownership" .Values.networkPolicy.managedDependencyReleases | toJson }}
+      ports: [{protocol: TCP, port: 8200}]
+    {{- end }}
     - to:
         - podSelector:
             matchLabels:

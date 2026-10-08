@@ -42,6 +42,7 @@ fmt:
 
 check-runtime-source:
 	python3 scripts/prepare-runtime-source.py --check
+	python3 scripts/prepare-migration-source.py --check
 
 lint:
 	$(GO) vet ./...

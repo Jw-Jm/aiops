@@ -50,7 +50,8 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 		t.Fatal(err)
 	}
 	login := "source_review_" + strings.ReplaceAll(uuid.NewString(), "-", "")
-	if _, err := db.ExecContext(dbctx, `CREATE ROLE "`+login+`" LOGIN; GRANT api_runtime_role TO "`+login+`"`); err != nil {
+	password := strings.ReplaceAll(uuid.NewString()+uuid.NewString(), "-", "")
+	if _, err := db.ExecContext(dbctx, `CREATE ROLE "`+login+`" LOGIN PASSWORD '`+password+`'; GRANT api_runtime_role TO "`+login+`"`); err != nil {
 		t.Fatal(err)
 	}
 	defer db.ExecContext(dbctx, `DROP ROLE "`+login+`"`)
@@ -58,7 +59,7 @@ func TestSourceRegistrationsAreTenantBoundRevisionedAndAudited(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	runtimeURL.User = url.User(login)
+	runtimeURL.User = url.UserPassword(login, password)
 	pool, err := app.OpenRuntimePool(dbctx, runtimeURL.String(), "api_runtime_role")
 	if err != nil {
 		t.Fatal(err)

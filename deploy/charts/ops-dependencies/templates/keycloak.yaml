@@ -101,17 +101,17 @@ spec:
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL
-              value: {{ printf "jdbc:%s/ops" (trimSuffix "/" (required "components.postgresql.endpoint is required" $.Values.components.postgresql.endpoint)) | quote }}
+              value: {{ printf "jdbc:%s/keycloak" (trimSuffix "/" (required "components.postgresql.endpoint is required" $.Values.components.postgresql.endpoint)) | quote }}
             - name: KC_DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ $.Values.components.postgresql.auth.existingSecret | quote }}
-                  key: {{ $.Values.components.postgresql.auth.usernameKey | quote }}
+                  name: {{ $component.database.existingSecret | quote }}
+                  key: {{ $component.database.usernameKey | quote }}
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ $.Values.components.postgresql.auth.existingSecret | quote }}
-                  key: {{ $.Values.components.postgresql.auth.passwordKey | quote }}
+                  name: {{ $component.database.existingSecret | quote }}
+                  key: {{ $component.database.passwordKey | quote }}
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:

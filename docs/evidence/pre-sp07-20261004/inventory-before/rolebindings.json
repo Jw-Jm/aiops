@@ -1,0 +1,322 @@
+{
+  "items": [
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "system:controller:bootstrap-signer",
+        "namespace": "kube-public",
+        "uid": "1432fd86-35a9-445e-a51b-0735b50e87cb",
+        "resourceVersion": "204",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "bootstrap-signer",
+          "namespace": "kube-system"
+        }
+      ],
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "system:controller:bootstrap-signer"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "k3s-cloud-controller-manager-authentication-reader",
+        "namespace": "kube-system",
+        "uid": "93590126-51e2-4893-b219-705685451682",
+        "resourceVersion": "261",
+        "creationTimestamp": "2026-09-24T14:09:21Z",
+        "labels": {
+          "objectset.rio.cattle.io/hash": "5089468545c5482413c7f05e837e9b88f02ad052"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "subjects": [
+        {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "User",
+          "name": "k3s-cloud-controller-manager",
+          "namespace": "kube-system"
+        }
+      ],
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "extension-apiserver-authentication-reader"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "system::extension-apiserver-authentication-reader",
+        "namespace": "kube-system",
+        "uid": "1a8f63df-1bdd-4161-9253-79747a71da1b",
+        "resourceVersion": "198",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "subjects": [
+        {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "User",
+          "name": "system:kube-controller-manager"
+        },
+        {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "User",
+          "name": "system:kube-scheduler"
+        }
+      ],
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "extension-apiserver-authentication-reader"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "system::leader-locking-kube-controller-manager",
+        "namespace": "kube-system",
+        "uid": "d936a430-09a4-4d6a-8584-b8533fa1bd70",
+        "resourceVersion": "199",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "subjects": [
+        {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "User",
+          "name": "system:kube-controller-manager"
+        },
+        {
+          "kind": "ServiceAccount",
+          "name": "kube-controller-manager",
+          "namespace": "kube-system"
+        },
+        {
+          "kind": "ServiceAccount",
+          "name": "leader-election-controller",
+          "namespace": "kube-system"
+        }
+      ],
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "system::leader-locking-kube-controller-manager"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "system::leader-locking-kube-scheduler",
+        "namespace": "kube-system",
+        "uid": "825e6fcf-888d-4b32-8c53-fd5297f8342b",
+        "resourceVersion": "200",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "subjects": [
+        {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "User",
+          "name": "system:kube-scheduler"
+        },
+        {
+          "kind": "ServiceAccount",
+          "name": "kube-scheduler",
+          "namespace": "kube-system"
+        }
+      ],
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "system::leader-locking-kube-scheduler"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "system:controller:bootstrap-signer",
+        "namespace": "kube-system",
+        "uid": "7e4fbb52-75cb-49e9-b6a4-54de0443c726",
+        "resourceVersion": "201",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "bootstrap-signer",
+          "namespace": "kube-system"
+        }
+      ],
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "system:controller:bootstrap-signer"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "system:controller:cloud-provider",
+        "namespace": "kube-system",
+        "uid": "fbc3f05f-aae2-4c6a-ba5d-887b0be0c13f",
+        "resourceVersion": "202",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "cloud-provider",
+          "namespace": "kube-system"
+        }
+      ],
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "system:controller:cloud-provider"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "system:controller:token-cleaner",
+        "namespace": "kube-system",
+        "uid": "9d207cb9-ea40-4b57-8611-54ba915bb5d8",
+        "resourceVersion": "203",
+        "creationTimestamp": "2026-09-24T14:09:17Z",
+        "labels": {
+          "kubernetes.io/bootstrapping": "rbac-defaults"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "token-cleaner",
+          "namespace": "kube-system"
+        }
+      ],
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "system:controller:token-cleaner"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "vm-victoria-metrics-operator",
+        "namespace": "monitoring",
+        "uid": "4e6680db-abf1-43b5-b37d-7628e33d57c8",
+        "resourceVersion": "2448",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "victoria-metrics-operator",
+          "app.kubernetes.io/version": "v0.56.0",
+          "helm.sh/chart": "victoria-metrics-operator-0.45.0"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "vm-victoria-metrics-operator",
+          "namespace": "monitoring"
+        }
+      ],
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "vm-victoria-metrics-operator"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "lease",
+        "namespace": "sp04-chain-0587768a",
+        "uid": "c04a069e-0b1b-4d79-9553-3fda086bf6bc",
+        "resourceVersion": "239229",
+        "creationTimestamp": "2026-10-02T01:18:24Z",
+        "labels": {
+          "ops.platform.test": "sp04-chain-0587768a"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "collector",
+          "namespace": "sp04-chain-0587768a"
+        }
+      ],
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "lease"
+      }
+    }
+  ]
+}

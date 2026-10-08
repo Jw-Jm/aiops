@@ -1,0 +1,14 @@
+# ops-platform/internal/bundle
+package ops-platform/internal/bundle
+	imports ops-platform/internal/source from registration_bindings.go
+	imports ops-platform/internal/audit from cluster.go
+	imports ops-platform/internal/bundle from append.go: import cycle not allowed
+FAIL	ops-platform/internal/bundle [setup failed]
+# ops-platform/cmd/opsctl
+package ops-platform/internal/bundle
+	imports ops-platform/internal/source from registration_bindings.go
+	imports ops-platform/internal/audit from cluster.go
+	imports ops-platform/internal/bundle from append.go: import cycle not allowed
+FAIL	ops-platform/cmd/opsctl [setup failed]
+ok  	ops-platform/test/contract	20.860s
+FAIL

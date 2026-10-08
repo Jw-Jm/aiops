@@ -1,0 +1,376 @@
+{
+  "observedAt": "2026-10-07T05:17:13.876529+00:00",
+  "sourceDataDeleted": false,
+  "sourceProtectionChanged": false,
+  "fullRecoveryAcceptance": false,
+  "jointAuditTransitVerification": false,
+  "original27Recovery": false,
+  "nativePVCProjectionSource": "/var/lib/kubelet/pods/06c0b057-5411-4431-8379-34b1a9d00d26/volumes/kubernetes.io~local-volume/pvc-350dec64-7707-4898-b7e7-bac736f83075",
+  "actualPVBackendPath": "/var/lib/rancher/k3s/storage/pvc-350dec64-7707-4898-b7e7-bac736f83075_ops-pre-sp07-core-r6-20261006_data-ops-seaweedfs-0",
+  "projectionAndBackendSameDeviceInodeOwnerMode": true,
+  "storageBackendIdentity": "42:1484499:0:10001:2777",
+  "sourceNamespaceUID": "74e60b64-c489-4713-99c5-fcf92e666111",
+  "sourcePVCUID": "350dec64-7707-4898-b7e7-bac736f83075",
+  "sourcePVUID": "8a026975-95b0-4673-a0b0-2a806f13d5cd",
+  "sourceHolderPodUID": "06c0b057-5411-4431-8379-34b1a9d00d26",
+  "sourceHolderContainerId": "472568d123e4f88eee86a0a126476af51df5d3583e5e9b10615c667be76d620d",
+  "sourceDataBytes": 188522496,
+  "backupSHA256": "sha256:2bd2f96e5fd5096f55578357a66eb27efadf30a6c163ed4a7715b6896ed6ad5b",
+  "backupBytes": 188354592,
+  "backupStoredOutsideRepository": true,
+  "actualPhysicalRestore": true,
+  "exactFileContentAndMetadataEqual": true,
+  "inventoryFiles": 70,
+  "inventorySHA256": "sha256:d458ca12e14d42545f8e1807a8e07220f0b82fe933eae9c858465406149dd563",
+  "restoreVolume": "ops-pre-sp07-20261007-archive-restore-r94-data",
+  "holderRemovedWithUIDPrecondition": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r6-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-350dec64-7707-4898-b7e7-bac736f83075",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pods",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "deployments,statefulsets",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "pre-sp07-readonly-archive-backup-r94",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "wait",
+        "--for=condition=Ready",
+        "pod/pre-sp07-readonly-archive-backup-r94",
+        "--timeout=90s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "pre-sp07-readonly-archive-backup-r94",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "logs",
+        "pre-sp07-readonly-archive-backup-r94",
+        "--limit-bytes=4096"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "472568d123e4f88eee86a0a126476af51df5d3583e5e9b10615c667be76d620d"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--network=none",
+        "--read-only",
+        "--volumes-from",
+        "472568d123e4f88eee86a0a126476af51df5d3583e5e9b10615c667be76d620d:ro",
+        "--mount",
+        "type=bind,src=/var/lib/rancher/k3s/storage/pvc-350dec64-7707-4898-b7e7-bac736f83075_ops-pre-sp07-core-r6-20261006_data-ops-seaweedfs-0,dst=/backend,readonly",
+        "--entrypoint",
+        "stat",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-c",
+        "%d:%i:%u:%g:%a",
+        "/data",
+        "/backend"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--network=none",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--cap-add=DAC_READ_SEARCH",
+        "--security-opt=no-new-privileges",
+        "--volumes-from",
+        "472568d123e4f88eee86a0a126476af51df5d3583e5e9b10615c667be76d620d:ro",
+        "--entrypoint",
+        "tar",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-C",
+        "/data",
+        "-cf",
+        "-",
+        "."
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "openssl",
+        "enc",
+        "-aes-256-cbc",
+        "-pbkdf2",
+        "-iter",
+        "200000",
+        "-salt",
+        "-out",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-physical-archive-restore-r94/seaweedfs-full-data.tar.enc",
+        "-pass",
+        "file:/Users/mssc/.local/state/ops/pre-sp07-20261004/backup-encryption.pass"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "openssl",
+        "enc",
+        "-d",
+        "-aes-256-cbc",
+        "-pbkdf2",
+        "-iter",
+        "200000",
+        "-in",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-physical-archive-restore-r94/seaweedfs-full-data.tar.enc",
+        "-pass",
+        "file:/Users/mssc/.local/state/ops/pre-sp07-20261004/backup-encryption.pass"
+      ],
+      "purpose": "validate all member names/types and hash original encrypted-backup readback",
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "volume",
+        "create",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261007-archive-restore-r94",
+        "--label",
+        "ops.platform.purpose=isolated-physical-archive-restore",
+        "ops-pre-sp07-20261007-archive-restore-r94-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "volume",
+        "inspect",
+        "ops-pre-sp07-20261007-archive-restore-r94-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "openssl",
+        "enc",
+        "-d",
+        "-aes-256-cbc",
+        "-pbkdf2",
+        "-iter",
+        "200000",
+        "-in",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-physical-archive-restore-r94/seaweedfs-full-data.tar.enc",
+        "-pass",
+        "file:/Users/mssc/.local/state/ops/pre-sp07-20261004/backup-encryption.pass"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "-i",
+        "--pull=never",
+        "--network=none",
+        "--read-only",
+        "--mount",
+        "type=volume,src=ops-pre-sp07-20261007-archive-restore-r94-data,dst=/restore",
+        "--entrypoint",
+        "tar",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-C",
+        "/restore",
+        "-xf",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--network=none",
+        "--read-only",
+        "--mount",
+        "type=volume,src=ops-pre-sp07-20261007-archive-restore-r94-data,dst=/restore,readonly",
+        "--entrypoint",
+        "tar",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-C",
+        "/restore",
+        "-cf",
+        "-",
+        "."
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "pre-sp07-readonly-archive-backup-r94",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "delete",
+        "--raw",
+        "/api/v1/namespaces/ops-pre-sp07-core-r6-20261006/pods/pre-sp07-readonly-archive-backup-r94",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-physical-archive-restore-r94/holder-delete-options.json"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

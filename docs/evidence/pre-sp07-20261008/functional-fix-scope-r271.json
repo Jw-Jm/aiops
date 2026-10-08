@@ -1,0 +1,81 @@
+{
+  "observedAt": "2026-10-08T07:08:33.424711+00:00",
+  "authorization": "清理完成后，仅完成功能类问题修复",
+  "scope": [
+    "Formal bootstrap/API role status and Evidence retention functional fixes already implemented",
+    "Bounded DeepFlow Adapter/Graph authorization and freshness code",
+    "Metrics identity, lifecycle, freshness and source authorization",
+    "Investigation MCP, Context, budgets, Validator, ActionPlan recommendation boundary",
+    "Job takeover, conservative unknown usage, no successful step rerun and persistent SSE"
+  ],
+  "excludedOperationalWork": [
+    "Additional cleanup",
+    "New full cold install or Bundle production",
+    "DeepFlow supplier admission and bundled deployment",
+    "Original historical recovery lacking matching Transit materials",
+    "SP07 target preparation and implementation"
+  ],
+  "finding": {
+    "id": "PRE-R3-METRIC-001",
+    "severity": "P2",
+    "trigger": "Same-UID native Node is terminating, or Node identity lacks creation time/has namespace; valid recent low usage sample",
+    "impact": "Invalid Node produces resolved CPU/memory symptoms or accepts Pod context, misleading current recovery state",
+    "requirements": [
+      "R3 actual native UID and timestamp/window association",
+      "ADR-0023 unavailable/changed identity must not resolve symptom"
+    ],
+    "red": "functional-node-lifecycle-red-r271.json",
+    "redExitCode": 1,
+    "fix": [
+      "Reject terminating native Node at GET/recheck and both Inspector projections",
+      "Require creation time and cluster-scoped Node identity for NodeMetrics window association",
+      "Preserve current thresholds and budgets"
+    ],
+    "green": "functional-node-lifecycle-green-r272.json",
+    "greenExitCode": 0,
+    "actualCurrentMetrics": "functional-current-metrics-command-r273.json",
+    "actualCurrentMetricsExitCode": 0,
+    "liveScope": "Read current real Node and owned API Pod through aggregated Metrics API; run current source projections; no real Node deletion or admission/Evidence/MCP end-to-end claim",
+    "installedR12ContainsFix": false,
+    "status": "CLOSED_SOURCE_AND_NECESSARY_REGRESSION"
+  },
+  "independentReview": "PASS_COMPLETE_CURRENT_FUNCTIONAL_REPAIR_SCOPE_ONLY",
+  "performance": "USER_WAIVED_NOT_PASS",
+  "tenSimultaneousRealModelInvestigations": "USER_WAIVED_NOT_PASS actual local configured parallelism=1",
+  "virtualization": "DEFERRED_DISABLED_UNVERIFIED",
+  "PyRCA": "DISABLED_EXCLUDED",
+  "fullR0ThroughR6Complete": false,
+  "SP07Started": false,
+  "additionalFinding": {
+    "id": "PRE-FUNC-ACTION-TARGET-001",
+    "severity": "P2",
+    "initialReview": "functional-independent-review-initial-r276.md",
+    "red": "functional-action-target-red-r277.json",
+    "redExitCode": 1,
+    "initialWorkerRoleGreen": "functional-action-target-green-r278.json",
+    "finalAPIRoleGreen": "functional-action-target-green-r279.json",
+    "finalAPIRoleGreenExitCode": 0,
+    "fix": "Filter deleted_at IS NULL using existing read-only inventory privilege; no API inventory writes, new permission or execution authority",
+    "boundary": "Validate current visible target identity within existing completion transaction; no SP07 execution or future target validity claim",
+    "status": "CLOSED_SOURCE_AND_NECESSARY_REGRESSION"
+  },
+  "finalRegression": "functional-current-check-r280.json exit2 retained; sole real model timeout; functional-single-real-model-retry-r282.json exit0 observation; subsequent explicit Ollama user waiver r285; remainder r284",
+  "ollamaRealModelAcceptance": "USER_WAIVED_NOT_PASS",
+  "ollamaWaiverReceipt": "ollama-user-waiver-r285.json",
+  "remainingCheckReceipt": "functional-check-remainder-r284.json",
+  "remainingCheckExitCodes": [
+    0,
+    0
+  ],
+  "dependencyPriorStateRestoration": "functional-regression-dependency-state-restored-r286.json",
+  "evidenceCredentialCheck": "functional-evidence-redaction-check-r287.json",
+  "independentReviewReport": "functional-independent-review-final-r288.md",
+  "independentReviewer": "/root/functional_readonly_review",
+  "modelEvidenceGap": {
+    "id": "PRE-FUNC-EVIDENCE-002",
+    "status": "CLOSED_USER_WAIVED_NOT_PASS",
+    "waiverReceipt": "ollama-user-waiver-r285.json"
+  },
+  "finalSourceState": "functional-final-source-state-r289.json",
+  "currentFunctionScopeComplete": true
+}

@@ -1,0 +1,585 @@
+{
+  "observedAt": "2026-10-06T13:40:48.339230+00:00",
+  "findingId": "PRE-R6-SSH-001",
+  "commandChainExecuted": false,
+  "futureTask75Accepted": false,
+  "runtimeBundleMaterialAdmitted": false,
+  "fullR6Acceptance": false,
+  "containerId": "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+  "imageId": "sha256:00eee79001379945b8cc241774c621b0552b3953e1cad6609927a68c24d380ee",
+  "networkId": "da6c56c1e2b491d6a00a980c1921c302a0e953b4953a62f6c79fe26580a7adcc",
+  "networkInternal": true,
+  "endpoint": "192.168.117.2:2222",
+  "hostKeyFingerprint": "256 SHA256:TGtEo2OG6hnKnkCCOUTmeq1i47R0xW+6fG3U/lTqqnY pre-sp07-20261006-r3-host (ED25519)",
+  "userCAFingerprint": "256 SHA256:C6WuECmMymj/sb8GghR/QiI7CG78s8qrSl+QStfOdJY pre-sp07-20261006-r3-user_ca (ED25519)",
+  "hostKeyIndependentComparison": true,
+  "onlyServerMaterialMounted": true,
+  "serverMountedFileNames": [
+    "host_ed25519",
+    "host_ed25519.pub",
+    "principals-opsordinary",
+    "principals-opssudo",
+    "principals-root",
+    "sshd_config",
+    "user_ca.pub"
+  ],
+  "clientPrivateKeysAndCASignerNotMounted": true,
+  "retiredTargetStillStopped": true,
+  "retiredCertificateRejected": true,
+  "retiredCAOrClientKeysReused": false,
+  "ordinaryIdentity": "uid=1000(opsordinary) gid=1000(opsordinary) groups=1000(opsordinary)",
+  "sudoIdentity": "uid=1001(opssudo) gid=1001(opssudo) groups=1001(opssudo),27(sudo)",
+  "sudoBoundary": "ordinary has no sudo group; sudo account retains password-required Debian policy; root has a distinct explicit principal; no sudo command executed",
+  "authentication": [
+    {
+      "certificate": "ordinary",
+      "login": "opsordinary",
+      "expectedAuthentication": true,
+      "authenticatedWithoutRemoteCommand": true,
+      "exitCodeAfterControlledDisconnect": 0
+    },
+    {
+      "certificate": "sudo",
+      "login": "opssudo",
+      "expectedAuthentication": true,
+      "authenticatedWithoutRemoteCommand": true,
+      "exitCodeAfterControlledDisconnect": 0
+    },
+    {
+      "certificate": "root",
+      "login": "root",
+      "expectedAuthentication": true,
+      "authenticatedWithoutRemoteCommand": true,
+      "exitCodeAfterControlledDisconnect": 0
+    },
+    {
+      "certificate": "ordinary",
+      "login": "root",
+      "expectedAuthentication": false,
+      "authenticatedWithoutRemoteCommand": false,
+      "exitCodeAfterControlledDisconnect": 255
+    },
+    {
+      "certificate": "ordinary",
+      "login": "opssudo",
+      "expectedAuthentication": false,
+      "authenticatedWithoutRemoteCommand": false,
+      "exitCodeAfterControlledDisconnect": 255
+    },
+    {
+      "certificate": "retired-ordinary",
+      "login": "opsordinary",
+      "expectedAuthentication": false,
+      "authenticatedWithoutRemoteCommand": false,
+      "exitCodeAfterControlledDisconnect": 255
+    }
+  ],
+  "certificateValidityHours": 8,
+  "privatePreparationDirectory": "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3",
+  "preparationOnlySSHAuthenticationPass": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "ops-pre-sp07-ssh-target-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "network",
+        "inspect",
+        "ops-pre-sp07-ssh-isolated-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "image",
+        "inspect",
+        "sha256:00eee79001379945b8cc241774c621b0552b3953e1cad6609927a68c24d380ee"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-C",
+        "pre-sp07-20261006-r3-user_ca",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/user_ca"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-C",
+        "pre-sp07-20261006-r3-ordinary",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/ordinary"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-C",
+        "pre-sp07-20261006-r3-sudo",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/sudo"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-C",
+        "pre-sp07-20261006-r3-root",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/root"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-C",
+        "pre-sp07-20261006-r3-host",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/server/host_ed25519"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-q",
+        "-s",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/user_ca",
+        "-I",
+        "pre-sp07-20261006-r3-ordinary",
+        "-n",
+        "ops-readiness-ordinary",
+        "-V",
+        "-1m:+8h",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/ordinary.pub"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-q",
+        "-s",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/user_ca",
+        "-I",
+        "pre-sp07-20261006-r3-sudo",
+        "-n",
+        "ops-readiness-sudo",
+        "-V",
+        "-1m:+8h",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/sudo.pub"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-q",
+        "-s",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/user_ca",
+        "-I",
+        "pre-sp07-20261006-r3-root",
+        "-n",
+        "ops-readiness-root",
+        "-V",
+        "-1m:+8h",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/root.pub"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "-d",
+        "--pull=never",
+        "--name",
+        "ops-pre-sp07-ssh-target-20261006-r3",
+        "--network",
+        "ops-pre-sp07-ssh-isolated-20261004",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261006-r3",
+        "--label",
+        "ops.platform.purpose=ssh-target-preparation-server-only",
+        "--mount",
+        "type=bind,src=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/server,dst=/readiness,readonly",
+        "sha256:00eee79001379945b8cc241774c621b0552b3953e1cad6609927a68c24d380ee"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "-i",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "chpasswd"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "visudo",
+        "-c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "sshd",
+        "-t",
+        "-f",
+        "/readiness/sshd_config"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "test",
+        "!",
+        "-e",
+        "/readiness/user_ca"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "test",
+        "!",
+        "-e",
+        "/readiness/ordinary"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "test",
+        "!",
+        "-e",
+        "/readiness/sudo"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "test",
+        "!",
+        "-e",
+        "/readiness/root"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "test",
+        "!",
+        "-e",
+        "/readiness/account-passwords.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keyscan",
+        "-p",
+        "2222",
+        "-t",
+        "ed25519",
+        "192.168.117.2"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh",
+        "-v",
+        "-N",
+        "-p",
+        "2222",
+        "-i",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/ordinary",
+        "-o",
+        "CertificateFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/ordinary-cert.pub",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "UserKnownHostsFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/known_hosts",
+        "-o",
+        "ConnectTimeout=5",
+        "opsordinary@192.168.117.2"
+      ],
+      "exitCodeAfterControlledDisconnect": 0,
+      "expectedAuthentication": true
+    },
+    {
+      "command": [
+        "ssh",
+        "-v",
+        "-N",
+        "-p",
+        "2222",
+        "-i",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/sudo",
+        "-o",
+        "CertificateFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/sudo-cert.pub",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "UserKnownHostsFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/known_hosts",
+        "-o",
+        "ConnectTimeout=5",
+        "opssudo@192.168.117.2"
+      ],
+      "exitCodeAfterControlledDisconnect": 0,
+      "expectedAuthentication": true
+    },
+    {
+      "command": [
+        "ssh",
+        "-v",
+        "-N",
+        "-p",
+        "2222",
+        "-i",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/root",
+        "-o",
+        "CertificateFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/root-cert.pub",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "UserKnownHostsFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/known_hosts",
+        "-o",
+        "ConnectTimeout=5",
+        "root@192.168.117.2"
+      ],
+      "exitCodeAfterControlledDisconnect": 0,
+      "expectedAuthentication": true
+    },
+    {
+      "command": [
+        "ssh",
+        "-v",
+        "-N",
+        "-p",
+        "2222",
+        "-i",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/ordinary",
+        "-o",
+        "CertificateFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/ordinary-cert.pub",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "UserKnownHostsFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/known_hosts",
+        "-o",
+        "ConnectTimeout=5",
+        "root@192.168.117.2"
+      ],
+      "exitCodeAfterControlledDisconnect": 255,
+      "expectedAuthentication": false
+    },
+    {
+      "command": [
+        "ssh",
+        "-v",
+        "-N",
+        "-p",
+        "2222",
+        "-i",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/ordinary",
+        "-o",
+        "CertificateFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/ordinary-cert.pub",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "UserKnownHostsFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/known_hosts",
+        "-o",
+        "ConnectTimeout=5",
+        "opssudo@192.168.117.2"
+      ],
+      "exitCodeAfterControlledDisconnect": 255,
+      "expectedAuthentication": false
+    },
+    {
+      "command": [
+        "ssh",
+        "-v",
+        "-N",
+        "-p",
+        "2222",
+        "-i",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target/ordinary",
+        "-o",
+        "CertificateFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target/ordinary-cert.pub",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "UserKnownHostsFile=/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/known_hosts",
+        "-o",
+        "ConnectTimeout=5",
+        "opsordinary@192.168.117.2"
+      ],
+      "exitCodeAfterControlledDisconnect": 255,
+      "expectedAuthentication": false
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-lf",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/server/host_ed25519.pub"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-lf",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target-current-r3/client/user_ca.pub"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "id",
+        "opsordinary"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "id",
+        "opssudo"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

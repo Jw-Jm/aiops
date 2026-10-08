@@ -1,0 +1,38 @@
+{
+  "observedAt": "2026-10-07T02:54:55.504706+00:00",
+  "namespaceUID": "df53016a-e1fa-4ada-9628-34136140a9dc",
+  "secretUID": "151f0384-e8bc-4fb5-a2dd-885a262d69e3",
+  "beforeResourceVersion": "468122",
+  "afterResourceVersion": "468123",
+  "privateIAMFile": "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r7/archive-iam-r1.json",
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r9/opsctl-host",
+        "bootstrap",
+        "archive-iam",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r7/archive-iam-input-r1.json",
+        "--output",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r7/archive-iam-r1.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "replace",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "preparedBeforeDependencyPods": true,
+  "oldProtectedObjectsOrIdentityAdopted": false,
+  "fullArchiveRuntimeAcceptance": false
+}

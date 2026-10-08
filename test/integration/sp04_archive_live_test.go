@@ -169,8 +169,8 @@ func TestSP04ArchiveLiveTransitTLSIAMAndRecovery(t *testing.T) {
 	if err != nil || oldRef.EncryptionKeyVersion != ref.EncryptionKeyVersion {
 		t.Fatalf("old key version lost %v", err)
 	}
-	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp06-user-20261003" {
-		t.Log("SP05/SP06 explicit user waiver: archive latency sampling/P95 not executed; correctness, retention, Legal Hold and historical-key checks above remain required")
+	if (os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "pre-sp07-user-20261004" || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002") || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp06-user-20261003" {
+		t.Log("SP05/SP06/pre-SP07 explicit user waiver: archive latency sampling/P95 not executed; correctness, retention, Legal Hold and historical-key checks above remain required")
 	} else {
 		samples := []time.Duration{}
 		for i := 0; i < 20; i++ {

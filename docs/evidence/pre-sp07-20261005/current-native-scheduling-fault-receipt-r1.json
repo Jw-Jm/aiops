@@ -1,0 +1,28 @@
+{
+  "observedAt": "2026-10-05T14:42:21.835656+00:00",
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "create",
+    "-f",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/current-native-scheduling-fault-r1.json",
+    "-o",
+    "json"
+  ],
+  "exitCode": 0,
+  "namespaceUid": "a1b96696-8756-4a43-a8bc-fe630a5a833b",
+  "podName": "ops-pre-sp07-current-unsched-r1",
+  "podUid": "87e0dc6f-92b8-44b4-9f91-59e57fc8496d",
+  "image": "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+  "independentExpected": [
+    "current native scheduler reports Unschedulable because no Node matches exact nodeSelector",
+    "SP05 scheduling Finding identifies same current UID and scoped actual source",
+    "model correlation must not become confirmed",
+    "after UID-bound Pod removal current facts report recovery/deletion separately from source unavailable"
+  ],
+  "boundedSelfOwnedFault": true,
+  "performance": "USER_WAIVED; no benchmark or load",
+  "cleanupDisposition": "remove only this exact Pod after evidence; no PVC or protected object deletion",
+  "fullBusinessAcceptance": false
+}

@@ -51,6 +51,7 @@ type SP04Source struct {
 	FrozenEndpoints []deepflow.Endpoint
 }
 type SP04Config struct {
+	IdentityMode                                                                                                                                                                string
 	SP05                                                                                                                                                                        *SP05Config
 	ListenAddress, OwnerEndpoint, ServerName, CertificateFile, PrivateKeyFile, CAFile, CRLFile, Namespace, ContextPrivateKeyFile, ContextPublicKeyFile, ArchiveBackendLogicalID string
 	AllowedWorkerCIDRs                                                                                                                                                          []string
@@ -72,6 +73,9 @@ func loadSP04() (*SP04Config, error) {
 	decoder.DisallowUnknownFields()
 	if decoder.Decode(&c) != nil || c.Namespace == "" || c.CAFile == "" || c.CRLFile == "" || c.CertificateFile == "" || c.PrivateKeyFile == "" || c.ServerName == "" {
 		return nil, errors.New("SP04 runtime configuration invalid")
+	}
+	if !validIdentityMode(c.IdentityMode) {
+		return nil, errors.New("SP04 workload identity mode invalid")
 	}
 	var trailing any
 	if decoder.Decode(&trailing) != io.EOF {
@@ -119,6 +123,33 @@ func (f fileCRL) CurrentWorkloadCRL() (*x509.RevocationList, time.Time) {
 	return crl, stat.ModTime()
 }
 func (c *SP04Config) tls(ctx context.Context, server bool) (*tls.Config, auth.WorkloadTrust, error) {
+	if !validIdentityMode(c.IdentityMode) {
+		return nil, auth.WorkloadTrust{}, errors.New("SP04 workload identity mode invalid")
+	}
+	if c.IdentityMode == "openbao-kubernetes" {
+		local, peer := "ops-api", "ops-worker"
+		if server {
+			local, peer = peer, local
+		}
+		identity, err := auth.NewWorkloadIdentity(c.Namespace, peer)
+		if err != nil {
+			return nil, auth.WorkloadTrust{}, err
+		}
+		config, trust, err := runtimeWorkloadIdentity(ctx, c.Namespace, local, c.CAFile, []auth.WorkloadIdentity{identity})
+		if err != nil || server {
+			return config, trust, err
+		}
+		config.ClientAuth = tls.NoClientCert
+		config.RootCAs, config.ServerName = trust.Roots, c.ServerName
+		config.VerifyConnection = func(state tls.ConnectionState) error {
+			if len(state.PeerCertificates) == 0 {
+				return graph.ErrScope
+			}
+			_, err := auth.VerifyWorkload(auth.WithWorkloadTrust(ctx, trust), state.PeerCertificates[0])
+			return err
+		}
+		return config, trust, nil
+	}
 	raw, err := os.ReadFile(c.CAFile)
 	if err != nil {
 		return nil, auth.WorkloadTrust{}, err
@@ -417,7 +448,11 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 			if base == nil {
 				base = http.DefaultTransport
 			}
-			client.Transport = tokenTransport{base, source.CredentialFile}
+			if source.Name == "victoriametrics" || source.Name == "victorialogs" {
+				client.Transport = httpSourceTransport{base, source.CredentialFile}
+			} else {
+				client.Transport = tokenTransport{base, source.CredentialFile}
+			}
 		}
 		source.Binding.SourceType = source.Name
 		repo := evidence.Repository{Pool: pool}

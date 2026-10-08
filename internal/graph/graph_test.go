@@ -222,8 +222,8 @@ func TestEventUIDDoesNotRelateToRecreatedResource(t *testing.T) {
 }
 
 func TestDiagnosticGraphAt200NodeBudgetLatency(t *testing.T) {
-	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp06-user-20261003" {
-		t.Skip("SP05/SP06 user waived dedicated performance measurements; not an acceptance pass")
+	if os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "pre-sp07-user-20261004" || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp05-user-20261002" || os.Getenv("OPS_PERFORMANCE_EXEMPTION") == "sp06-user-20261003" {
+		t.Skip("SP05/SP06/pre-SP07 user waived dedicated performance measurements; not an acceptance pass")
 	}
 	pods := kubernetes.GVR{Version: "v1", Resource: "pods"}
 	nodes := kubernetes.GVR{Version: "v1", Resource: "nodes"}

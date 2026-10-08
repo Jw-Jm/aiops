@@ -1,5 +1,5 @@
 global:
-  imagePullPolicy: IfNotPresent
+  imagePullPolicy: Never
 
 components:
   postgresql:
@@ -12,6 +12,10 @@ components:
       usernameKey: username
       passwordKey: password
   keycloak:
+    database:
+      existingSecret: ops-keycloak-database
+      usernameKey: username
+      passwordKey: password
     mode: bundled
     endpoint: https://ops-keycloak:8443
     tlsSecretName: ops-keycloak-tls

@@ -18,7 +18,7 @@ import (
 
 // Runtime trust and the archive destination are provisioned independently by
 // the operator. A signed Bundle must not bootstrap its own application trust.
-func platformRuntimeValues(ctx context.Context, p profile.ResolvedProfile, run CommandRunner) (map[string]any, error) {
+func platformRuntimeValues(ctx context.Context, installationNamespace string, p profile.ResolvedProfile, run CommandRunner) (map[string]any, error) {
 	issuer := strings.TrimSuffix(p.Components["keycloak"].Endpoint, "/")
 	for _, endpoint := range []string{issuer, p.Components["openbao"].Endpoint} {
 		u, err := url.Parse(endpoint)
@@ -31,7 +31,7 @@ func platformRuntimeValues(ctx context.Context, p profile.ResolvedProfile, run C
 	if err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" {
 		return nil, errors.New("runtime archive endpoint requires HTTPS without credentials")
 	}
-	encoded, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "--namespace", "ops-system", "get", "configmap", "ops-platform-bootstrap", "-o", "json")
+	encoded, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "--namespace", installationNamespace, "get", "configmap", "ops-platform-bootstrap", "-o", "json")
 	if err != nil {
 		return nil, errors.New("independent ops-platform-bootstrap ConfigMap is required before import")
 	}

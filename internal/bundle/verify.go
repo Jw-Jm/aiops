@@ -23,12 +23,14 @@ import (
 )
 
 var firstPartyMaterialNames = map[string]struct{}{
-	"platform-api":           {},
-	"platform-worker":        {},
-	"platform-web":           {},
-	"opsctl":                 {},
-	"ops-platform-chart":     {},
-	"ops-dependencies-chart": {},
+	"platform-api":             {},
+	"platform-worker":          {},
+	"platform-web":             {},
+	"opsctl":                   {},
+	"ops-platform-chart":       {},
+	"ops-dependencies-chart":   {},
+	"ops-metrics-server-chart": {},
+	"opsctl-source":            {},
 }
 
 // Verify authenticates the canonical manifest using the independently trusted
@@ -192,6 +194,9 @@ func validateCatalogAdmissionWithEvidence(materials []Material, catalogYAML []by
 }
 
 func validateCatalogAdmissionWithCatalog(materials []Material, catalog *supplychain.Catalog) error {
+	if err := validateMigrationMaterialAdmission(materials); err != nil {
+		return err
+	}
 	selectedNames := make([]string, 0, len(materials))
 	selected := make(map[string]bool, len(materials))
 	for _, material := range materials {
@@ -235,6 +240,11 @@ func validateCatalogAdmissionWithCatalog(materials []Material, catalog *supplych
 		return errors.New("SP06 investigator requires its complete corresponding-source/license closure, including GPL wrapper and runtime dependencies")
 	}
 	for _, material := range materials {
+		if material.Name == "db-migrate" || material.Name == "db-migrate-source" {
+			// These exact first-party CLI/source identities have a separate
+			// embedded admission; they do not borrow a runtime SDK allowlist.
+			continue
+		}
 		if _, known := catalog.Component(material.Name); known {
 			selectedNames = append(selectedNames, material.Name)
 			continue

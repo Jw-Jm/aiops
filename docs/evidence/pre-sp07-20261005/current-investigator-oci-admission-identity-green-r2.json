@@ -1,0 +1,43 @@
+{
+  "observedAt": "2026-10-05T06:25:30.157261+00:00",
+  "records": [
+    {
+      "name": "selected-native-manifest",
+      "command": [
+        "python3",
+        "scripts/admit-investigator-material.py",
+        "--material-root",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r1",
+        "--debian-source-index",
+        "/Users/mssc/.cache/ops-sp06-20261004/debian-sources-index.txt",
+        "--image-oci",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r1/current-image.oci.tar",
+        "--verify-image-only",
+        "--image-digest",
+        "sha256:69830c1cd09e93271a090318f46ac4c4c8f9c17d4e3a35f498fbd4178c7786b3"
+      ],
+      "exitCode": 0,
+      "expectedOutcome": "accepted"
+    },
+    {
+      "name": "config-id-rejected",
+      "command": [
+        "python3",
+        "scripts/admit-investigator-material.py",
+        "--material-root",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r1",
+        "--debian-source-index",
+        "/Users/mssc/.cache/ops-sp06-20261004/debian-sources-index.txt",
+        "--image-oci",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-investigator-material-r1/current-image.oci.tar",
+        "--verify-image-only",
+        "--image-digest",
+        "sha256:7b285d4dbe353e43f5b66019f7f47064d2555e3ece6623c053b8f048406e1c85"
+      ],
+      "exitCode": 1,
+      "expectedOutcome": "rejected"
+    }
+  ],
+  "status": "PASS_EXACT_MANIFEST_CONFIG_DISTINCTION",
+  "fullR1Acceptance": false
+}

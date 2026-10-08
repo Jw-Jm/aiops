@@ -1,0 +1,41 @@
+{
+  "observedAt": "2026-10-04T23:34:34.653430+00:00",
+  "containerId": "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8",
+  "labels": {
+    "ops.platform.owner": "pre-sp07-20261004",
+    "ops.platform.purpose": "history-restore"
+  },
+  "stateBefore": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-04T15:51:09.896992514Z",
+    "FinishedAt": "2026-10-04T16:40:20.695095644Z"
+  },
+  "reason": "resume owned isolated PostgreSQL after cross-service interruption during r7; preserves originals",
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "start",
+        "05b91a19ca3c788d0e71467dfc0f7a62758ac0423c3bdb5ce4a93601315773d8"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "portsAfter": {
+    "5432/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "32768"
+      }
+    ]
+  },
+  "originalResourcesDeleted": false
+}

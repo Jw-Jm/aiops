@@ -1,0 +1,88 @@
+{
+  "observedAt": "2026-10-08T03:12:31.198586+00:00",
+  "beforeMutation": true,
+  "oldPodUID": "9796e290-ef68-4559-9344-879cee69287e",
+  "namespaceUID": "f46dabc1-1ae5-4201-8730-d5e9be19f01e",
+  "oldEvidence": {
+    "archiveRef": {
+      "backendLogicalId": "pre-sp07-current-archive-ops-pre-sp07-core-r9-20261008",
+      "object": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "objectId": "406783e1-27a4-5a21-aa60-1adac508f309",
+        "category": "evidence",
+        "key": "tenants/e4a818ea0b2ea174e2e9c7e89e633d0c3aa5f77d92812723aecab889ee860e84/evidence/406783e1-27a4-5a21-aa60-1adac508f309",
+        "digest": "sha256:bdd78094d721e77e1ece17a26c06972058779324dc3dbaa88c27302a55727b2d",
+        "size": 500,
+        "contentType": "application/vnd.ops.transit-envelope+json",
+        "versionId": "67239160e865885f77f45e0690462a6a",
+        "etag": "\"86791ab83ef5e752fa409d57e923e098\"",
+        "retainUntil": "2027-10-09T02:59:42Z"
+      },
+      "encryptionKeyVersion": "1",
+      "plaintextDigest": "sha256:adedddb6710f484a3838f613268c61c704bcb2ae33cd5ca4c25aa2528b553d77",
+      "ciphertextDigest": "sha256:bdd78094d721e77e1ece17a26c06972058779324dc3dbaa88c27302a55727b2d"
+    },
+    "contentDigest": "sha256:adedddb6710f484a3838f613268c61c704bcb2ae33cd5ca4c25aa2528b553d77",
+    "evidenceId": "406783e1-27a4-5a21-aa60-1adac508f309",
+    "resourceCanonicalId": "k8s+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/9796e290-ef68-4559-9344-879cee69287e",
+    "sourceId": "01a1196d-82ff-7071-a499-02e0cfa5baaf",
+    "sourceRevision": 1
+  },
+  "expected": "exact UID/RV normal stateless Pod replacement, same name new UID Ready; fresh formal Graph uses new UID; old live entity fail closed and archived Evidence remains old UID/digest/version; no source scope or credentials rebound",
+  "newManifest": {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "pre-sp07-r9-scheduling-r218",
+      "namespace": "ops-pre-sp07-targets-r9-20261008",
+      "labels": {
+        "ops.platform.io/owner": "pre-sp07-20261008-r9",
+        "ops.platform.io/purpose": "finite-current-recovered-target-r232",
+        "tenant": "12443ef7-3326-4e87-9b0a-a3444bfd16bc"
+      }
+    },
+    "spec": {
+      "restartPolicy": "Never",
+      "activeDeadlineSeconds": 3600,
+      "automountServiceAccountToken": false,
+      "securityContext": {
+        "runAsNonRoot": true,
+        "runAsUser": 65532,
+        "runAsGroup": 65532,
+        "seccompProfile": {
+          "type": "RuntimeDefault"
+        }
+      },
+      "containers": [
+        {
+          "name": "finite-own-target",
+          "image": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+          "imagePullPolicy": "Never",
+          "command": [
+            "/bin/sleep",
+            "1800"
+          ],
+          "resources": {
+            "requests": {
+              "cpu": "10m",
+              "memory": "16Mi"
+            },
+            "limits": {
+              "cpu": "50m",
+              "memory": "32Mi"
+            }
+          },
+          "securityContext": {
+            "allowPrivilegeEscalation": false,
+            "readOnlyRootFilesystem": true,
+            "capabilities": {
+              "drop": [
+                "ALL"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

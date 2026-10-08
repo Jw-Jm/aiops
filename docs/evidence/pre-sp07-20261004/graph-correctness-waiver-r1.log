@@ -1,0 +1,75 @@
+=== RUN   TestCommitFenceRejectsChangedGenerationAndNewDegradation
+--- PASS: TestCommitFenceRejectsChangedGenerationAndNewDegradation (0.00s)
+=== RUN   TestPublishedGraphMatchesVersionedContract
+--- PASS: TestPublishedGraphMatchesVersionedContract (0.01s)
+=== RUN   TestFrozenInputClockPreservesQualificationAndExpiry
+--- PASS: TestFrozenInputClockPreservesQualificationAndExpiry (0.00s)
+=== RUN   TestGraphScopeGenerationAndFencing
+--- PASS: TestGraphScopeGenerationAndFencing (0.00s)
+=== RUN   TestGraphRebuildDoesNotClaimFresh
+--- PASS: TestGraphRebuildDoesNotClaimFresh (0.00s)
+=== RUN   TestInvalidReplacementCannotPublishFreshState
+--- PASS: TestInvalidReplacementCannotPublishFreshState (0.00s)
+=== RUN   TestExternalMutationInvalidatesCursorAndRejectsForeignCluster
+--- PASS: TestExternalMutationInvalidatesCursorAndRejectsForeignCluster (0.00s)
+=== RUN   TestSourceFailurePreservesPublishedObjectsAndInvalidatesFreshness
+--- PASS: TestSourceFailurePreservesPublishedObjectsAndInvalidatesFreshness (0.00s)
+=== RUN   TestHealthProbeDoesNotRebuildGenerationOrReTimestampFacts
+--- PASS: TestHealthProbeDoesNotRebuildGenerationOrReTimestampFacts (0.00s)
+=== RUN   TestPublishedGraphQueriesContinueDuringLargeRebuild
+--- PASS: TestPublishedGraphQueriesContinueDuringLargeRebuild (0.38s)
+=== RUN   TestEventUIDDoesNotRelateToRecreatedResource
+--- PASS: TestEventUIDDoesNotRelateToRecreatedResource (0.00s)
+=== RUN   TestDiagnosticGraphAt200NodeBudgetLatency
+    graph_test.go:226: SP05/SP06/pre-SP07 user waived dedicated performance measurements; not an acceptance pass
+--- SKIP: TestDiagnosticGraphAt200NodeBudgetLatency (0.00s)
+=== RUN   TestObservationOnlyPreservesPublishedFactsAndGeneration
+--- PASS: TestObservationOnlyPreservesPublishedFactsAndGeneration (0.00s)
+=== RUN   TestHardwareProjectionAcceptsTypedMetal3Model
+--- PASS: TestHardwareProjectionAcceptsTypedMetal3Model (0.00s)
+=== RUN   TestHardwareCapacityFitsVersionedEntityContract
+--- PASS: TestHardwareCapacityFitsVersionedEntityContract (0.00s)
+=== RUN   TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS
+=== RUN   TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/unknown-floor
+=== RUN   TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/live-holder
+=== RUN   TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/wrong-cluster
+=== RUN   TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/native-CAS-conflict
+=== RUN   TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/receipt-failure
+=== RUN   TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/expired-authority
+--- PASS: TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS (0.67s)
+    --- PASS: TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/unknown-floor (0.05s)
+    --- PASS: TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/live-holder (0.10s)
+    --- PASS: TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/wrong-cluster (0.05s)
+    --- PASS: TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/native-CAS-conflict (0.15s)
+    --- PASS: TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/receipt-failure (0.15s)
+    --- PASS: TestLeaseRecoveryFailsClosedForUnknownFloorLiveHolderAndCAS/expired-authority (0.15s)
+=== RUN   TestLeaseIsOnlyAuthorityRestartStandbyPartitionAndRecreation
+--- PASS: TestLeaseIsOnlyAuthorityRestartStandbyPartitionAndRecreation (0.46s)
+=== RUN   TestQualifiedFirstOwnerAcquisitionFailureIsObservable
+--- PASS: TestQualifiedFirstOwnerAcquisitionFailureIsObservable (0.00s)
+=== RUN   TestLeaseWireUsesNativeMicroTimeWithNanosecondClock
+--- PASS: TestLeaseWireUsesNativeMicroTimeWithNanosecondClock (0.00s)
+=== RUN   TestFilteredSortedScopedPages
+--- PASS: TestFilteredSortedScopedPages (0.00s)
+=== RUN   TestImpactProjectsUpstreamDirectIndirectAndDependencies
+--- PASS: TestImpactProjectsUpstreamDirectIndirectAndDependencies (0.00s)
+=== RUN   TestNeighborsDirectionFilterDepthAndBudget
+--- PASS: TestNeighborsDirectionFilterDepthAndBudget (0.00s)
+=== RUN   TestImpactDoesNotPropagateFaultsToObservationEvents
+--- PASS: TestImpactDoesNotPropagateFaultsToObservationEvents (0.00s)
+=== RUN   TestReadResponseUsesCurrentSnapshotAndFencesSerialization
+--- PASS: TestReadResponseUsesCurrentSnapshotAndFencesSerialization (0.02s)
+=== RUN   TestResponseRevalidatesGenerationAndRebuildFreshness
+--- PASS: TestResponseRevalidatesGenerationAndRebuildFreshness (0.00s)
+=== RUN   TestDIMMFaultFollowsPhysicalHostAndScheduledPodInBoundedKernel
+--- PASS: TestDIMMFaultFollowsPhysicalHostAndScheduledPodInBoundedKernel (0.00s)
+=== RUN   TestSP05IdenticalExternalReplayCannotInvalidateFrozenGraphRevision
+--- PASS: TestSP05IdenticalExternalReplayCannotInvalidateFrozenGraphRevision (0.00s)
+=== RUN   TestUpstreamConformanceAnd20KPlatformGeneration
+    upstream_conformance_test.go:95: SP06/pre-SP07 user waiver: 20k capacity construction omitted; frozen input digest and small-sample upstream relation correctness still checked; capacity is not passed
+    upstream_conformance_test.go:123: frozen 20k input: platform projection nodes=10 generation load=527.875µs (external fixtures are tested via bounded overlay contract separately)
+    upstream_conformance_test.go:221: critical frozen K8s owner/selector/PVC/PV/CSI relationships: expected=9 truePositive=9 falsePositive=0 falseNegative=0 precision=1 recall=1; synthetic fixture sample, Wilson 95% lower bound recorded in report
+    upstream_conformance_test.go:223: SP05/SP06/pre-SP07 explicit user waiver: correctness/conformance above executed; dedicated P95 measurement not executed or passed
+--- PASS: TestUpstreamConformanceAnd20KPlatformGeneration (0.07s)
+PASS
+ok  	ops-platform/internal/graph	2.289s

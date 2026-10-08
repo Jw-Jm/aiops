@@ -1,0 +1,52 @@
+{
+  "observedAt": "2026-10-07T02:41:36.422633+00:00",
+  "formalFindingAcceptance": false,
+  "noSharedPVOrStorageClassModified": true,
+  "noSourceDataDeleted": true,
+  "namespace": "ops-pre-sp07-targets-r6-20261006",
+  "nativePVCUID": "f882cae4-1681-4697-92e6-5326690d6d20",
+  "owner": "pre-sp07-20261006-r6",
+  "expectations": "current-core-r6-native-pvc-independent-expectations-r1.json",
+  "noDataBackendCreatedByThisPendingPVC": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r6-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "observedAt": "2026-10-06T13:39:39.530365+00:00",
+  "findingId": "PRE-R6-SSH-001",
+  "severity": "HIGH",
+  "trigger": "root or sufficiently privileged process inside preparatory target can read client private keys and the user CA signer from its full-directory bind mount",
+  "impact": "target privilege does not remain separate from client/signing authority",
+  "violatedRequirement": "R0 private material outside target/cleanup boundaries; R6 SSH ordinary/root/sudo and dedicated CA trust separation",
+  "containerId": "c07ad6fac45d90fe87a0dc7c12034bd1d9f9b68da540e1421abd4272d181187f",
+  "containerRunning": false,
+  "mountSource": "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target",
+  "mountDestination": "/readiness",
+  "mountReadOnly": true,
+  "forbiddenPrivateFileNamesReachableByMount": [
+    "user_ca",
+    "ordinary",
+    "sudo",
+    "root",
+    "account-passwords.json"
+  ],
+  "privateContentsPrinted": false,
+  "command": [
+    "docker",
+    "--context",
+    "orbstack",
+    "inspect",
+    "ops-pre-sp07-ssh-target-20261004"
+  ],
+  "commandExitCode": 0,
+  "keyIsolationGateExitCode": 1,
+  "remediation": "keep old target stopped; new host identity, user CA, short-lived client certificates and a server-only projection; do not mount client/password/CA signer"
+}

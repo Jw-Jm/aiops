@@ -1,0 +1,163 @@
+{
+  "observedAt": "2026-10-08T03:23:41.388924+00:00",
+  "fullR4RecoveryAcceptance": false,
+  "original27HistoricalRecovery": false,
+  "sourceNamespace": "ops-pre-sp07-core-r9-20261008",
+  "sourceObjectsDeleted": false,
+  "sourceProtectionChanged": false,
+  "newRuntimeEvidenceRestoration": false,
+  "evidenceId": "95705f64-86a2-5db3-bc03-9e1cc361820a",
+  "versionId": "672390d091d221b92f5751a1b304b24e",
+  "encryptionKeyVersion": "1",
+  "snapshotSHA256": "sha256:bef8a7234cfcc9ea6679e1a35a4066900ad846a17a8436183f932d30a5145e01",
+  "snapshotBytes": 75806,
+  "plaintextDigest": "sha256:1933835989fdf8e4c4b06369316d940d745d373f4293caa0adfa83db62c937c0",
+  "ciphertextDigest": "sha256:5ae3ef550d07ff17aa292c26dcbd6532a06f8862c00775766d810c2c6dda7453",
+  "failureFrames": [
+    {
+      "file": "restore-current-core-r9-raft-evidence-r238.py",
+      "line": 59
+    },
+    {
+      "file": "restore-current-core-r9-raft-evidence-r238.py",
+      "line": 48
+    },
+    {
+      "file": "restore-current-core-r9-raft-evidence-r238.py",
+      "line": 28
+    }
+  ],
+  "failureType": "AssertionError",
+  "isolatedTargetStoppedAndRetained": true,
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-openbao",
+        "57634:8200"
+      ],
+      "pid": 57265
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-seaweedfs-s3",
+        "57642:8333"
+      ],
+      "pid": 57270
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "network",
+        "create",
+        "--internal",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261008-core-r9-raft-restore-r238",
+        "ops-pre-sp07-20261008-core-r9-raft-restore-r238"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "volume",
+        "create",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261008-core-r9-raft-restore-r238",
+        "--label",
+        "ops.platform.purpose=isolated-current-raft-restore",
+        "ops-pre-sp07-20261008-core-r9-raft-restore-r238-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--network=none",
+        "--pull=never",
+        "--user=0",
+        "--entrypoint=/bin/sh",
+        "--mount",
+        "type=volume,src=ops-pre-sp07-20261008-core-r9-raft-restore-r238-data,dst=/bao-data",
+        "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+        "-ec",
+        "chown 100:1000 /bao-data && chmod 0700 /bao-data"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "-d",
+        "--pull=never",
+        "--network=ops-pre-sp07-20261008-core-r9-raft-restore-r238",
+        "--name",
+        "ops-pre-sp07-20261008-core-r9-raft-restore-r238",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261008-core-r9-raft-restore-r238",
+        "--label",
+        "ops.platform.purpose=isolated-current-raft-restore",
+        "--memory=384m",
+        "--cpus=1",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--mount",
+        "type=bind,src=/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r9-raft-restore-r238/server,dst=/cfg,readonly",
+        "--mount",
+        "type=volume,src=ops-pre-sp07-20261008-core-r9-raft-restore-r238-data,dst=/bao-data",
+        "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6",
+        "server",
+        "-config=/cfg/bao.hcl"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "86d27fe1f7118c2a10a9d981dce78ab88d1cbaaf6966160caaacea1420e05d83"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "stop",
+        "86d27fe1f7118c2a10a9d981dce78ab88d1cbaaf6966160caaacea1420e05d83"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "ownedForwardsStopped": true
+}

@@ -21,7 +21,7 @@ func TestInstallerRejectsMissingRuntimeBootstrapBeforeImport(t *testing.T) {
 	p.Components["keycloak"] = profile.ResolvedComponent{Mode: "external", Endpoint: "https://keycloak.identity.svc:8443"}
 	p.Components["openbao"] = profile.ResolvedComponent{Mode: "external", Endpoint: "https://bao.trust.svc:8200"}
 	p.Components["seaweedfs"] = profile.ResolvedComponent{Mode: "bundled", Endpoint: "https://archive.ops-system.svc:8333"}
-	if _, err := platformRuntimeValues(context.Background(), p, func(context.Context, string, ...string) ([]byte, error) {
+	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, func(context.Context, string, ...string) ([]byte, error) {
 		return []byte(`{"data":{}}`), nil
 	}); err == nil {
 		t.Fatal("missing independent OpenBao CA and archive bucket accepted")
@@ -51,7 +51,7 @@ func TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust(t *testing.T)
 		}
 		return json.Marshal(map[string]any{"data": data})
 	}
-	values, err := platformRuntimeValues(context.Background(), p, run)
+	values, err := platformRuntimeValues(context.Background(), "ops-system", p, run)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,18 +63,18 @@ func TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust(t *testing.T)
 	for _, key := range []string{"openbao-ca.pem", "oidc-ca.pem", "archive-ca.pem", "registry-trust.json", "archive-bucket"} {
 		old := data[key]
 		data[key] = "invalid_"
-		if _, err := platformRuntimeValues(context.Background(), p, run); err == nil {
+		if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run); err == nil {
 			t.Errorf("invalid %s accepted", key)
 		}
 		data[key] = old
 	}
 	delete(data, "oidc-ca.pem")
-	if _, err := platformRuntimeValues(context.Background(), p, run); err == nil {
+	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run); err == nil {
 		t.Fatal("scratch API accepted TLS issuer without independently supplied trust")
 	}
 	data["oidc-ca.pem"] = ca
 	p.Components["keycloak"] = profile.ResolvedComponent{Mode: "external", Endpoint: "http://keycloak.identity.svc:8080"}
-	if _, err := platformRuntimeValues(context.Background(), p, run); err == nil {
+	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run); err == nil {
 		t.Fatal("in-cluster plaintext OIDC accepted")
 	}
 }

@@ -1,0 +1,1826 @@
+=== RUN   TestSP05LockedAnalyzerRealOrbStackSandboxAndNativeFaults
+    sp05_analyzer_live_test.go:164: locked source f071b32aa85d77b197cd2d0f9868294f7b55c5eb binarySHA256=6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53 image=sha256:20193cc85bae96baa35a253682aa02ec891057903d154e237a5e67307d6a5b6a; real OrbStack Pod/PVC and Node Analyzer, fixed argv, no explain/provider, actual finite CPU/memory and read-only root
+--- PASS: TestSP05LockedAnalyzerRealOrbStackSandboxAndNativeFaults (20.09s)
+=== RUN   TestSP05APIListFiltersAndAllLinkedNamespaceAuthorization
+2026/10/06 09:35:03 OK   00001_roles_and_schemas.sql (12.93ms)
+2026/10/06 09:35:03 goose: successfully migrated database to version: 1
+2026/10/06 09:35:03 OK   00002_platform_meta.sql (36.25ms)
+2026/10/06 09:35:03 OK   00003_finding.sql (160.3ms)
+2026/10/06 09:35:03 OK   00004_incident.sql (39.11ms)
+2026/10/06 09:35:03 OK   00005_investigation.sql (8.08ms)
+2026/10/06 09:35:03 OK   00006_action_command.sql (15.5ms)
+2026/10/06 09:35:03 OK   00007_audit.sql (22.69ms)
+2026/10/06 09:35:03 OK   00008_rls.sql (10.65ms)
+2026/10/06 09:35:03 OK   00009_idempotency_ledger.sql (13.01ms)
+2026/10/06 09:35:03 OK   00010_tenant_provisioning.sql (12.1ms)
+2026/10/06 09:35:03 OK   00011_source_registration_history.sql (12.25ms)
+2026/10/06 09:35:04 OK   00012_config_registry_lifecycle.sql (35.45ms)
+2026/10/06 09:35:04 OK   00013_audit_signed_segments.sql (12.72ms)
+2026/10/06 09:35:04 OK   00014_audit_segment_predecessors.sql (29.58ms)
+2026/10/06 09:35:04 OK   00015_source_schema_scope.sql (7.3ms)
+2026/10/06 09:35:04 OK   00016_cluster_registration_metadata.sql (17.13ms)
+2026/10/06 09:35:04 OK   00017_source_data_scope.sql (7.54ms)
+2026/10/06 09:35:04 OK   00018_sp04_resources_evidence.sql (35.67ms)
+2026/10/06 09:35:04 OK   00019_sp04_archive_ciphertext_bytes.sql (4.38ms)
+2026/10/06 09:35:04 OK   00020_sp04_request_ledger.sql (21.25ms)
+2026/10/06 09:35:04 OK   00021_sp04_archive_protection.sql (10ms)
+2026/10/06 09:35:04 OK   00022_sp04_legal_hold_dependencies.sql (3.84ms)
+2026/10/06 09:35:04 OK   00023_sp04_archive_query_intent.sql (7.43ms)
+2026/10/06 09:35:04 OK   00024_sp05_finding_incident.sql (39.21ms)
+2026/10/06 09:35:04 OK   00025_sp05_incident_event_time.sql (5.96ms)
+2026/10/06 09:35:04 OK   00026_sp05_source_binding_lock.sql (6.39ms)
+2026/10/06 09:35:04 OK   00027_sp05_rca_and_poll.sql (19.97ms)
+2026/10/06 09:35:04 OK   00028_sp05_operator_lock.sql (6.2ms)
+2026/10/06 09:35:04 OK   00029_sp05_evidence_links.sql (5.83ms)
+2026/10/06 09:35:04 OK   00030_sp05_recipe_fence.sql (5.6ms)
+2026/10/06 09:35:04 OK   00031_sp05_rca_postcheck.sql (11.92ms)
+2026/10/06 09:35:04 OK   00032_sp05_transport_audit.sql (13.01ms)
+2026/10/06 09:35:04 OK   00033_sp05_poll_resolution_clock.sql (4.06ms)
+2026/10/06 09:35:04 OK   00034_sp06_investigation_ledger.sql (49.56ms)
+2026/10/06 09:35:04 OK   00035_sp06_admission_data_classes.sql (32.06ms)
+2026/10/06 09:35:04 goose: successfully migrated database to version: 35
+--- PASS: TestSP05APIListFiltersAndAllLinkedNamespaceAuthorization (1.24s)
+=== RUN   TestSP05FindingAtomicConcurrentTransportAndRecovery
+2026/10/06 09:35:04 OK   00001_roles_and_schemas.sql (17.9ms)
+2026/10/06 09:35:04 goose: successfully migrated database to version: 1
+2026/10/06 09:35:04 OK   00002_platform_meta.sql (31.9ms)
+2026/10/06 09:35:04 OK   00003_finding.sql (13.89ms)
+2026/10/06 09:35:04 OK   00004_incident.sql (11.96ms)
+2026/10/06 09:35:04 OK   00005_investigation.sql (21.58ms)
+2026/10/06 09:35:04 OK   00006_action_command.sql (12.17ms)
+2026/10/06 09:35:04 OK   00007_audit.sql (23.94ms)
+2026/10/06 09:35:04 OK   00008_rls.sql (22.08ms)
+2026/10/06 09:35:05 OK   00009_idempotency_ledger.sql (14.42ms)
+2026/10/06 09:35:05 OK   00010_tenant_provisioning.sql (7.91ms)
+2026/10/06 09:35:05 OK   00011_source_registration_history.sql (18.64ms)
+2026/10/06 09:35:05 OK   00012_config_registry_lifecycle.sql (32.7ms)
+2026/10/06 09:35:05 OK   00013_audit_signed_segments.sql (18.46ms)
+2026/10/06 09:35:05 OK   00014_audit_segment_predecessors.sql (13.97ms)
+2026/10/06 09:35:05 OK   00015_source_schema_scope.sql (9.7ms)
+2026/10/06 09:35:05 OK   00016_cluster_registration_metadata.sql (8.05ms)
+2026/10/06 09:35:05 OK   00017_source_data_scope.sql (4.77ms)
+2026/10/06 09:35:05 OK   00018_sp04_resources_evidence.sql (32.76ms)
+2026/10/06 09:35:05 OK   00019_sp04_archive_ciphertext_bytes.sql (6ms)
+2026/10/06 09:35:05 OK   00020_sp04_request_ledger.sql (12.73ms)
+2026/10/06 09:35:05 OK   00021_sp04_archive_protection.sql (9.41ms)
+2026/10/06 09:35:05 OK   00022_sp04_legal_hold_dependencies.sql (3.21ms)
+2026/10/06 09:35:05 OK   00023_sp04_archive_query_intent.sql (3.54ms)
+2026/10/06 09:35:05 OK   00024_sp05_finding_incident.sql (43.66ms)
+2026/10/06 09:35:05 OK   00025_sp05_incident_event_time.sql (6.58ms)
+2026/10/06 09:35:05 OK   00026_sp05_source_binding_lock.sql (5.46ms)
+2026/10/06 09:35:05 OK   00027_sp05_rca_and_poll.sql (8.77ms)
+2026/10/06 09:35:05 OK   00028_sp05_operator_lock.sql (6.29ms)
+2026/10/06 09:35:05 OK   00029_sp05_evidence_links.sql (17.37ms)
+2026/10/06 09:35:05 OK   00030_sp05_recipe_fence.sql (4.92ms)
+2026/10/06 09:35:05 OK   00031_sp05_rca_postcheck.sql (4.26ms)
+2026/10/06 09:35:05 OK   00032_sp05_transport_audit.sql (3.35ms)
+2026/10/06 09:35:05 OK   00033_sp05_poll_resolution_clock.sql (3.57ms)
+2026/10/06 09:35:05 OK   00034_sp06_investigation_ledger.sql (36.39ms)
+2026/10/06 09:35:05 OK   00035_sp06_admission_data_classes.sql (6.67ms)
+2026/10/06 09:35:05 goose: successfully migrated database to version: 35
+--- PASS: TestSP05FindingAtomicConcurrentTransportAndRecovery (1.06s)
+=== RUN   TestSP05ResolvedBeforeFiringAndTenantIsolation
+2026/10/06 09:35:05 OK   00001_roles_and_schemas.sql (14.51ms)
+2026/10/06 09:35:05 goose: successfully migrated database to version: 1
+2026/10/06 09:35:05 OK   00002_platform_meta.sql (37.26ms)
+2026/10/06 09:35:05 OK   00003_finding.sql (7.24ms)
+2026/10/06 09:35:05 OK   00004_incident.sql (7.14ms)
+2026/10/06 09:35:05 OK   00005_investigation.sql (12.01ms)
+2026/10/06 09:35:05 OK   00006_action_command.sql (15.88ms)
+2026/10/06 09:35:05 OK   00007_audit.sql (8.94ms)
+2026/10/06 09:35:06 OK   00008_rls.sql (29.32ms)
+2026/10/06 09:35:06 OK   00009_idempotency_ledger.sql (6.22ms)
+2026/10/06 09:35:06 OK   00010_tenant_provisioning.sql (6.56ms)
+2026/10/06 09:35:06 OK   00011_source_registration_history.sql (13.41ms)
+2026/10/06 09:35:06 OK   00012_config_registry_lifecycle.sql (20.6ms)
+2026/10/06 09:35:06 OK   00013_audit_signed_segments.sql (18.96ms)
+2026/10/06 09:35:06 OK   00014_audit_segment_predecessors.sql (11.79ms)
+2026/10/06 09:35:06 OK   00015_source_schema_scope.sql (5.52ms)
+2026/10/06 09:35:06 OK   00016_cluster_registration_metadata.sql (7.71ms)
+2026/10/06 09:35:06 OK   00017_source_data_scope.sql (3.26ms)
+2026/10/06 09:35:06 OK   00018_sp04_resources_evidence.sql (17.66ms)
+2026/10/06 09:35:06 OK   00019_sp04_archive_ciphertext_bytes.sql (5.63ms)
+2026/10/06 09:35:06 OK   00020_sp04_request_ledger.sql (8.96ms)
+2026/10/06 09:35:06 OK   00021_sp04_archive_protection.sql (7.06ms)
+2026/10/06 09:35:06 OK   00022_sp04_legal_hold_dependencies.sql (6.55ms)
+2026/10/06 09:35:06 OK   00023_sp04_archive_query_intent.sql (2.73ms)
+2026/10/06 09:35:06 OK   00024_sp05_finding_incident.sql (16.04ms)
+2026/10/06 09:35:06 OK   00025_sp05_incident_event_time.sql (7.21ms)
+2026/10/06 09:35:06 OK   00026_sp05_source_binding_lock.sql (8.78ms)
+2026/10/06 09:35:06 OK   00027_sp05_rca_and_poll.sql (9.62ms)
+2026/10/06 09:35:06 OK   00028_sp05_operator_lock.sql (5.72ms)
+2026/10/06 09:35:06 OK   00029_sp05_evidence_links.sql (6.34ms)
+2026/10/06 09:35:06 OK   00030_sp05_recipe_fence.sql (2.37ms)
+2026/10/06 09:35:06 OK   00031_sp05_rca_postcheck.sql (2ms)
+2026/10/06 09:35:06 OK   00032_sp05_transport_audit.sql (2.1ms)
+2026/10/06 09:35:06 OK   00033_sp05_poll_resolution_clock.sql (2.47ms)
+2026/10/06 09:35:06 OK   00034_sp06_investigation_ledger.sql (33.75ms)
+2026/10/06 09:35:06 OK   00035_sp06_admission_data_classes.sql (4.26ms)
+2026/10/06 09:35:06 goose: successfully migrated database to version: 35
+--- PASS: TestSP05ResolvedBeforeFiringAndTenantIsolation (0.68s)
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/valid
+2026/10/06 09:35:06 OK   00001_roles_and_schemas.sql (27.03ms)
+2026/10/06 09:35:06 goose: successfully migrated database to version: 1
+2026/10/06 09:35:06 OK   00002_platform_meta.sql (30.01ms)
+2026/10/06 09:35:06 OK   00003_finding.sql (20.86ms)
+2026/10/06 09:35:06 OK   00004_incident.sql (15.81ms)
+2026/10/06 09:35:06 OK   00005_investigation.sql (19.17ms)
+2026/10/06 09:35:06 OK   00006_action_command.sql (12.81ms)
+2026/10/06 09:35:06 OK   00007_audit.sql (21ms)
+2026/10/06 09:35:06 OK   00008_rls.sql (30.53ms)
+2026/10/06 09:35:06 OK   00009_idempotency_ledger.sql (6ms)
+2026/10/06 09:35:06 OK   00010_tenant_provisioning.sql (7.16ms)
+2026/10/06 09:35:06 OK   00011_source_registration_history.sql (17.78ms)
+2026/10/06 09:35:06 OK   00012_config_registry_lifecycle.sql (12.15ms)
+2026/10/06 09:35:06 OK   00013_audit_signed_segments.sql (12.54ms)
+2026/10/06 09:35:06 OK   00014_audit_segment_predecessors.sql (15.37ms)
+2026/10/06 09:35:06 OK   00015_source_schema_scope.sql (7.02ms)
+2026/10/06 09:35:06 OK   00016_cluster_registration_metadata.sql (4.25ms)
+2026/10/06 09:35:06 OK   00017_source_data_scope.sql (3.46ms)
+2026/10/06 09:35:06 OK   00018_sp04_resources_evidence.sql (30.64ms)
+2026/10/06 09:35:06 OK   00019_sp04_archive_ciphertext_bytes.sql (2.4ms)
+2026/10/06 09:35:06 OK   00020_sp04_request_ledger.sql (3.54ms)
+2026/10/06 09:35:06 OK   00021_sp04_archive_protection.sql (2.87ms)
+2026/10/06 09:35:06 OK   00022_sp04_legal_hold_dependencies.sql (2.72ms)
+2026/10/06 09:35:06 OK   00023_sp04_archive_query_intent.sql (5.35ms)
+2026/10/06 09:35:06 OK   00024_sp05_finding_incident.sql (25.99ms)
+2026/10/06 09:35:06 OK   00025_sp05_incident_event_time.sql (2.26ms)
+2026/10/06 09:35:06 OK   00026_sp05_source_binding_lock.sql (2.18ms)
+2026/10/06 09:35:06 OK   00027_sp05_rca_and_poll.sql (7.98ms)
+2026/10/06 09:35:06 OK   00028_sp05_operator_lock.sql (5.76ms)
+2026/10/06 09:35:06 OK   00029_sp05_evidence_links.sql (14.07ms)
+2026/10/06 09:35:06 OK   00030_sp05_recipe_fence.sql (5.16ms)
+2026/10/06 09:35:06 OK   00031_sp05_rca_postcheck.sql (3.13ms)
+2026/10/06 09:35:06 OK   00032_sp05_transport_audit.sql (2.3ms)
+2026/10/06 09:35:06 OK   00033_sp05_poll_resolution_clock.sql (3.29ms)
+2026/10/06 09:35:06 OK   00034_sp06_investigation_ledger.sql (34.67ms)
+2026/10/06 09:35:06 OK   00035_sp06_admission_data_classes.sql (3.27ms)
+2026/10/06 09:35:06 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=7cf3f606341f235cb46b57d271432042bbef2a878ad6b0af436e9eec0a9c9351 bucket=sp05-golden-aec0e391 tenants=1
+    sp05_golden_vertical_test.go:340: dimm-failure/valid: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=7cf3f606341f235cb46b57d271432042bbef2a878ad6b0af436e9eec0a9c9351 label=a68f9603-2c82-4ac4-9451-235ef4dae816 bucket=sp05-golden-aec0e391 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-2137823228; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_89ee7c4f079c48e9b5d442b49a1eef1b test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/valid reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/missing
+2026/10/06 09:35:22 OK   00001_roles_and_schemas.sql (8.5ms)
+2026/10/06 09:35:22 goose: successfully migrated database to version: 1
+2026/10/06 09:35:22 OK   00002_platform_meta.sql (21.54ms)
+2026/10/06 09:35:22 OK   00003_finding.sql (12.83ms)
+2026/10/06 09:35:22 OK   00004_incident.sql (14.76ms)
+2026/10/06 09:35:22 OK   00005_investigation.sql (7.85ms)
+2026/10/06 09:35:22 OK   00006_action_command.sql (4.86ms)
+2026/10/06 09:35:22 OK   00007_audit.sql (17.3ms)
+2026/10/06 09:35:22 OK   00008_rls.sql (24.16ms)
+2026/10/06 09:35:22 OK   00009_idempotency_ledger.sql (6.62ms)
+2026/10/06 09:35:22 OK   00010_tenant_provisioning.sql (6.55ms)
+2026/10/06 09:35:22 OK   00011_source_registration_history.sql (28ms)
+2026/10/06 09:35:22 OK   00012_config_registry_lifecycle.sql (14.8ms)
+2026/10/06 09:35:23 OK   00013_audit_signed_segments.sql (39.88ms)
+2026/10/06 09:35:23 OK   00014_audit_segment_predecessors.sql (13.59ms)
+2026/10/06 09:35:23 OK   00015_source_schema_scope.sql (7.87ms)
+2026/10/06 09:35:23 OK   00016_cluster_registration_metadata.sql (26.25ms)
+2026/10/06 09:35:23 OK   00017_source_data_scope.sql (11.7ms)
+2026/10/06 09:35:23 OK   00018_sp04_resources_evidence.sql (39.6ms)
+2026/10/06 09:35:23 OK   00019_sp04_archive_ciphertext_bytes.sql (9.05ms)
+2026/10/06 09:35:23 OK   00020_sp04_request_ledger.sql (26.61ms)
+2026/10/06 09:35:23 OK   00021_sp04_archive_protection.sql (12.32ms)
+2026/10/06 09:35:23 OK   00022_sp04_legal_hold_dependencies.sql (7.16ms)
+2026/10/06 09:35:23 OK   00023_sp04_archive_query_intent.sql (3.58ms)
+2026/10/06 09:35:23 OK   00024_sp05_finding_incident.sql (21.66ms)
+2026/10/06 09:35:23 OK   00025_sp05_incident_event_time.sql (4.82ms)
+2026/10/06 09:35:23 OK   00026_sp05_source_binding_lock.sql (11.95ms)
+2026/10/06 09:35:23 OK   00027_sp05_rca_and_poll.sql (9.38ms)
+2026/10/06 09:35:23 OK   00028_sp05_operator_lock.sql (2.67ms)
+2026/10/06 09:35:23 OK   00029_sp05_evidence_links.sql (6.51ms)
+2026/10/06 09:35:23 OK   00030_sp05_recipe_fence.sql (7.18ms)
+2026/10/06 09:35:23 OK   00031_sp05_rca_postcheck.sql (6.94ms)
+2026/10/06 09:35:23 OK   00032_sp05_transport_audit.sql (4.55ms)
+2026/10/06 09:35:23 OK   00033_sp05_poll_resolution_clock.sql (9.69ms)
+2026/10/06 09:35:23 OK   00034_sp06_investigation_ledger.sql (27.76ms)
+2026/10/06 09:35:23 OK   00035_sp06_admission_data_classes.sql (7.28ms)
+2026/10/06 09:35:23 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=4a391e00f4062340ef4a7294eec47f5ce00fe62cd9e03643e2e5a752c5fd49ca bucket=sp05-golden-ba660cac tenants=1
+    sp05_golden_vertical_test.go:340: dimm-failure/missing: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=4a391e00f4062340ef4a7294eec47f5ce00fe62cd9e03643e2e5a752c5fd49ca label=d0254a93-a2e6-4181-a0e1-92c2e33f07ce bucket=sp05-golden-ba660cac private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-4031960007; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_e9657c4b34d94df5b9780e47ff5e535c test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/missing reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/conflict
+2026/10/06 09:35:43 OK   00001_roles_and_schemas.sql (16.66ms)
+2026/10/06 09:35:43 goose: successfully migrated database to version: 1
+2026/10/06 09:35:43 OK   00002_platform_meta.sql (30.29ms)
+2026/10/06 09:35:43 OK   00003_finding.sql (21.13ms)
+2026/10/06 09:35:43 OK   00004_incident.sql (11.64ms)
+2026/10/06 09:35:43 OK   00005_investigation.sql (12.03ms)
+2026/10/06 09:35:43 OK   00006_action_command.sql (6.3ms)
+2026/10/06 09:35:43 OK   00007_audit.sql (31.9ms)
+2026/10/06 09:35:43 OK   00008_rls.sql (10.99ms)
+2026/10/06 09:35:43 OK   00009_idempotency_ledger.sql (6.69ms)
+2026/10/06 09:35:43 OK   00010_tenant_provisioning.sql (4.54ms)
+2026/10/06 09:35:43 OK   00011_source_registration_history.sql (9.83ms)
+2026/10/06 09:35:43 OK   00012_config_registry_lifecycle.sql (17.21ms)
+2026/10/06 09:35:43 OK   00013_audit_signed_segments.sql (18.52ms)
+2026/10/06 09:35:43 OK   00014_audit_segment_predecessors.sql (6.37ms)
+2026/10/06 09:35:43 OK   00015_source_schema_scope.sql (5.13ms)
+2026/10/06 09:35:44 OK   00016_cluster_registration_metadata.sql (13.06ms)
+2026/10/06 09:35:44 OK   00017_source_data_scope.sql (7.41ms)
+2026/10/06 09:35:44 OK   00018_sp04_resources_evidence.sql (21.34ms)
+2026/10/06 09:35:44 OK   00019_sp04_archive_ciphertext_bytes.sql (4ms)
+2026/10/06 09:35:44 OK   00020_sp04_request_ledger.sql (8.63ms)
+2026/10/06 09:35:44 OK   00021_sp04_archive_protection.sql (5.95ms)
+2026/10/06 09:35:44 OK   00022_sp04_legal_hold_dependencies.sql (4.4ms)
+2026/10/06 09:35:44 OK   00023_sp04_archive_query_intent.sql (4.77ms)
+2026/10/06 09:35:44 OK   00024_sp05_finding_incident.sql (25.84ms)
+2026/10/06 09:35:44 OK   00025_sp05_incident_event_time.sql (3.05ms)
+2026/10/06 09:35:44 OK   00026_sp05_source_binding_lock.sql (2.68ms)
+2026/10/06 09:35:44 OK   00027_sp05_rca_and_poll.sql (5.81ms)
+2026/10/06 09:35:44 OK   00028_sp05_operator_lock.sql (6.36ms)
+2026/10/06 09:35:44 OK   00029_sp05_evidence_links.sql (20.88ms)
+2026/10/06 09:35:44 OK   00030_sp05_recipe_fence.sql (9.99ms)
+2026/10/06 09:35:44 OK   00031_sp05_rca_postcheck.sql (4.98ms)
+2026/10/06 09:35:44 OK   00032_sp05_transport_audit.sql (3.04ms)
+2026/10/06 09:35:44 OK   00033_sp05_poll_resolution_clock.sql (4.48ms)
+2026/10/06 09:35:44 OK   00034_sp06_investigation_ledger.sql (41.94ms)
+2026/10/06 09:35:44 OK   00035_sp06_admission_data_classes.sql (11ms)
+2026/10/06 09:35:44 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=6fab2d212cd007fc696b41e3179f3158c7d49d27dc59a63f801ca032fb19dc39 bucket=sp05-golden-63e782aa tenants=1
+    sp05_golden_vertical_test.go:340: dimm-failure/conflict: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=6fab2d212cd007fc696b41e3179f3158c7d49d27dc59a63f801ca032fb19dc39 label=f08ec907-89a6-4bfb-8279-48cde8fb8840 bucket=sp05-golden-63e782aa private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-1457682331; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_e6e19b516b904b2982a135663c3b87d3 test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/conflict reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/degraded
+2026/10/06 09:36:01 OK   00001_roles_and_schemas.sql (9.38ms)
+2026/10/06 09:36:01 goose: successfully migrated database to version: 1
+2026/10/06 09:36:01 OK   00002_platform_meta.sql (44.34ms)
+2026/10/06 09:36:01 OK   00003_finding.sql (9.98ms)
+2026/10/06 09:36:01 OK   00004_incident.sql (17.32ms)
+2026/10/06 09:36:01 OK   00005_investigation.sql (7.35ms)
+2026/10/06 09:36:01 OK   00006_action_command.sql (8.17ms)
+2026/10/06 09:36:01 OK   00007_audit.sql (16.05ms)
+2026/10/06 09:36:01 OK   00008_rls.sql (32.89ms)
+2026/10/06 09:36:01 OK   00009_idempotency_ledger.sql (8.48ms)
+2026/10/06 09:36:01 OK   00010_tenant_provisioning.sql (35.92ms)
+2026/10/06 09:36:01 OK   00011_source_registration_history.sql (39.94ms)
+2026/10/06 09:36:01 OK   00012_config_registry_lifecycle.sql (27.73ms)
+2026/10/06 09:36:01 OK   00013_audit_signed_segments.sql (67.29ms)
+2026/10/06 09:36:01 OK   00014_audit_segment_predecessors.sql (10.75ms)
+2026/10/06 09:36:01 OK   00015_source_schema_scope.sql (3.62ms)
+2026/10/06 09:36:02 OK   00016_cluster_registration_metadata.sql (4.39ms)
+2026/10/06 09:36:02 OK   00017_source_data_scope.sql (4.16ms)
+2026/10/06 09:36:02 OK   00018_sp04_resources_evidence.sql (29.81ms)
+2026/10/06 09:36:02 OK   00019_sp04_archive_ciphertext_bytes.sql (10.31ms)
+2026/10/06 09:36:02 OK   00020_sp04_request_ledger.sql (8.79ms)
+2026/10/06 09:36:02 OK   00021_sp04_archive_protection.sql (4.03ms)
+2026/10/06 09:36:02 OK   00022_sp04_legal_hold_dependencies.sql (4.88ms)
+2026/10/06 09:36:02 OK   00023_sp04_archive_query_intent.sql (35.32ms)
+2026/10/06 09:36:02 OK   00024_sp05_finding_incident.sql (54.71ms)
+2026/10/06 09:36:02 OK   00025_sp05_incident_event_time.sql (12.95ms)
+2026/10/06 09:36:02 OK   00026_sp05_source_binding_lock.sql (34.98ms)
+2026/10/06 09:36:02 OK   00027_sp05_rca_and_poll.sql (8.45ms)
+2026/10/06 09:36:02 OK   00028_sp05_operator_lock.sql (9.35ms)
+2026/10/06 09:36:02 OK   00029_sp05_evidence_links.sql (167.43ms)
+2026/10/06 09:36:02 OK   00030_sp05_recipe_fence.sql (38.07ms)
+2026/10/06 09:36:02 OK   00031_sp05_rca_postcheck.sql (26.52ms)
+2026/10/06 09:36:02 OK   00032_sp05_transport_audit.sql (9.26ms)
+2026/10/06 09:36:02 OK   00033_sp05_poll_resolution_clock.sql (6.64ms)
+2026/10/06 09:36:02 OK   00034_sp06_investigation_ledger.sql (42.06ms)
+2026/10/06 09:36:02 OK   00035_sp06_admission_data_classes.sql (7.77ms)
+2026/10/06 09:36:02 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=8314748c1b6f54d00ba8293978c5908bb82152c58f8d53c475a9c3fcbc72043e bucket=sp05-golden-2630390c tenants=1
+    sp05_golden_vertical_test.go:340: dimm-failure/degraded: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=8314748c1b6f54d00ba8293978c5908bb82152c58f8d53c475a9c3fcbc72043e label=0ff198e0-54a5-4e02-b995-c09dc64d7c47 bucket=sp05-golden-2630390c private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-2505968002; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_8ac827fdc9f046a8baf49b0c77503a29 test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/degraded reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/valid
+2026/10/06 09:36:19 OK   00001_roles_and_schemas.sql (11.95ms)
+2026/10/06 09:36:19 goose: successfully migrated database to version: 1
+2026/10/06 09:36:19 OK   00002_platform_meta.sql (38.29ms)
+2026/10/06 09:36:19 OK   00003_finding.sql (8.58ms)
+2026/10/06 09:36:19 OK   00004_incident.sql (5.89ms)
+2026/10/06 09:36:19 OK   00005_investigation.sql (4.86ms)
+2026/10/06 09:36:19 OK   00006_action_command.sql (4.13ms)
+2026/10/06 09:36:19 OK   00007_audit.sql (8.11ms)
+2026/10/06 09:36:19 OK   00008_rls.sql (6.76ms)
+2026/10/06 09:36:19 OK   00009_idempotency_ledger.sql (16.77ms)
+2026/10/06 09:36:19 OK   00010_tenant_provisioning.sql (7.23ms)
+2026/10/06 09:36:19 OK   00011_source_registration_history.sql (12.92ms)
+2026/10/06 09:36:19 OK   00012_config_registry_lifecycle.sql (13.29ms)
+2026/10/06 09:36:19 OK   00013_audit_signed_segments.sql (27.85ms)
+2026/10/06 09:36:19 OK   00014_audit_segment_predecessors.sql (5.96ms)
+2026/10/06 09:36:19 OK   00015_source_schema_scope.sql (4.44ms)
+2026/10/06 09:36:19 OK   00016_cluster_registration_metadata.sql (6.63ms)
+2026/10/06 09:36:19 OK   00017_source_data_scope.sql (12.16ms)
+2026/10/06 09:36:19 OK   00018_sp04_resources_evidence.sql (24.21ms)
+2026/10/06 09:36:19 OK   00019_sp04_archive_ciphertext_bytes.sql (11.82ms)
+2026/10/06 09:36:19 OK   00020_sp04_request_ledger.sql (19.65ms)
+2026/10/06 09:36:19 OK   00021_sp04_archive_protection.sql (3.85ms)
+2026/10/06 09:36:19 OK   00022_sp04_legal_hold_dependencies.sql (2.15ms)
+2026/10/06 09:36:19 OK   00023_sp04_archive_query_intent.sql (2.05ms)
+2026/10/06 09:36:19 OK   00024_sp05_finding_incident.sql (18.24ms)
+2026/10/06 09:36:19 OK   00025_sp05_incident_event_time.sql (4.81ms)
+2026/10/06 09:36:19 OK   00026_sp05_source_binding_lock.sql (14.66ms)
+2026/10/06 09:36:19 OK   00027_sp05_rca_and_poll.sql (8.92ms)
+2026/10/06 09:36:19 OK   00028_sp05_operator_lock.sql (2.93ms)
+2026/10/06 09:36:19 OK   00029_sp05_evidence_links.sql (16.09ms)
+2026/10/06 09:36:19 OK   00030_sp05_recipe_fence.sql (6.86ms)
+2026/10/06 09:36:19 OK   00031_sp05_rca_postcheck.sql (3.52ms)
+2026/10/06 09:36:19 OK   00032_sp05_transport_audit.sql (11.15ms)
+2026/10/06 09:36:19 OK   00033_sp05_poll_resolution_clock.sql (3.99ms)
+2026/10/06 09:36:20 OK   00034_sp06_investigation_ledger.sql (60.37ms)
+2026/10/06 09:36:20 OK   00035_sp06_admission_data_classes.sql (24.26ms)
+2026/10/06 09:36:20 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=8dd96d08d775a1a43c911d8e80bd32aec6808eeec6525b30104e386d881a038c bucket=sp05-golden-c0960351 tenants=1
+    sp05_golden_vertical_test.go:340: pvc-csi-failure/valid: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=8dd96d08d775a1a43c911d8e80bd32aec6808eeec6525b30104e386d881a038c label=c8d9e9c0-55d1-48a6-8232-38b00578a007 bucket=sp05-golden-c0960351 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-3521633947; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_d091c2ad0de745f18fdef4998b3d4832 test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/valid reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/missing
+2026/10/06 09:36:39 OK   00001_roles_and_schemas.sql (17.09ms)
+2026/10/06 09:36:39 goose: successfully migrated database to version: 1
+2026/10/06 09:36:39 OK   00002_platform_meta.sql (40.4ms)
+2026/10/06 09:36:39 OK   00003_finding.sql (14.31ms)
+2026/10/06 09:36:39 OK   00004_incident.sql (23.12ms)
+2026/10/06 09:36:39 OK   00005_investigation.sql (11.91ms)
+2026/10/06 09:36:39 OK   00006_action_command.sql (16.33ms)
+2026/10/06 09:36:39 OK   00007_audit.sql (29.67ms)
+2026/10/06 09:36:39 OK   00008_rls.sql (36.65ms)
+2026/10/06 09:36:39 OK   00009_idempotency_ledger.sql (9.5ms)
+2026/10/06 09:36:39 OK   00010_tenant_provisioning.sql (13.66ms)
+2026/10/06 09:36:39 OK   00011_source_registration_history.sql (24.18ms)
+2026/10/06 09:36:39 OK   00012_config_registry_lifecycle.sql (9.73ms)
+2026/10/06 09:36:39 OK   00013_audit_signed_segments.sql (21.18ms)
+2026/10/06 09:36:39 OK   00014_audit_segment_predecessors.sql (14.26ms)
+2026/10/06 09:36:39 OK   00015_source_schema_scope.sql (3.67ms)
+2026/10/06 09:36:39 OK   00016_cluster_registration_metadata.sql (11.45ms)
+2026/10/06 09:36:39 OK   00017_source_data_scope.sql (9.96ms)
+2026/10/06 09:36:39 OK   00018_sp04_resources_evidence.sql (35.38ms)
+2026/10/06 09:36:39 OK   00019_sp04_archive_ciphertext_bytes.sql (6.33ms)
+2026/10/06 09:36:39 OK   00020_sp04_request_ledger.sql (13.51ms)
+2026/10/06 09:36:39 OK   00021_sp04_archive_protection.sql (3.5ms)
+2026/10/06 09:36:39 OK   00022_sp04_legal_hold_dependencies.sql (3.51ms)
+2026/10/06 09:36:39 OK   00023_sp04_archive_query_intent.sql (3.87ms)
+2026/10/06 09:36:39 OK   00024_sp05_finding_incident.sql (21.94ms)
+2026/10/06 09:36:39 OK   00025_sp05_incident_event_time.sql (9.92ms)
+2026/10/06 09:36:39 OK   00026_sp05_source_binding_lock.sql (3.22ms)
+2026/10/06 09:36:39 OK   00027_sp05_rca_and_poll.sql (7.2ms)
+2026/10/06 09:36:39 OK   00028_sp05_operator_lock.sql (2.88ms)
+2026/10/06 09:36:39 OK   00029_sp05_evidence_links.sql (6.85ms)
+2026/10/06 09:36:39 OK   00030_sp05_recipe_fence.sql (4.17ms)
+2026/10/06 09:36:39 OK   00031_sp05_rca_postcheck.sql (5.85ms)
+2026/10/06 09:36:39 OK   00032_sp05_transport_audit.sql (5.89ms)
+2026/10/06 09:36:39 OK   00033_sp05_poll_resolution_clock.sql (8ms)
+2026/10/06 09:36:39 OK   00034_sp06_investigation_ledger.sql (48.46ms)
+2026/10/06 09:36:39 OK   00035_sp06_admission_data_classes.sql (11.19ms)
+2026/10/06 09:36:39 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=0b29c773b6bdf93b2d7032bc172e3157a3763419c09fe7064c0ee21ee77b7d98 bucket=sp05-golden-70922ac7 tenants=1
+    sp05_golden_vertical_test.go:340: pvc-csi-failure/missing: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=0b29c773b6bdf93b2d7032bc172e3157a3763419c09fe7064c0ee21ee77b7d98 label=2516a1e1-8551-4f5e-b494-f02b685abc52 bucket=sp05-golden-70922ac7 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-1295921217; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_69ed55a89ff14fdbb16b697d00ad126f test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/missing reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/conflict
+2026/10/06 09:36:54 OK   00001_roles_and_schemas.sql (45.28ms)
+2026/10/06 09:36:54 goose: successfully migrated database to version: 1
+2026/10/06 09:36:55 OK   00002_platform_meta.sql (56.13ms)
+2026/10/06 09:36:55 OK   00003_finding.sql (13.09ms)
+2026/10/06 09:36:55 OK   00004_incident.sql (27.43ms)
+2026/10/06 09:36:55 OK   00005_investigation.sql (14.71ms)
+2026/10/06 09:36:55 OK   00006_action_command.sql (5.71ms)
+2026/10/06 09:36:55 OK   00007_audit.sql (35.56ms)
+2026/10/06 09:36:55 OK   00008_rls.sql (13.29ms)
+2026/10/06 09:36:55 OK   00009_idempotency_ledger.sql (22.14ms)
+2026/10/06 09:36:55 OK   00010_tenant_provisioning.sql (10.34ms)
+2026/10/06 09:36:55 OK   00011_source_registration_history.sql (6.13ms)
+2026/10/06 09:36:55 OK   00012_config_registry_lifecycle.sql (7.29ms)
+2026/10/06 09:36:55 OK   00013_audit_signed_segments.sql (19.31ms)
+2026/10/06 09:36:55 OK   00014_audit_segment_predecessors.sql (12.87ms)
+2026/10/06 09:36:55 OK   00015_source_schema_scope.sql (4.52ms)
+2026/10/06 09:36:55 OK   00016_cluster_registration_metadata.sql (7.82ms)
+2026/10/06 09:36:55 OK   00017_source_data_scope.sql (3.9ms)
+2026/10/06 09:36:55 OK   00018_sp04_resources_evidence.sql (20.63ms)
+2026/10/06 09:36:55 OK   00019_sp04_archive_ciphertext_bytes.sql (7.98ms)
+2026/10/06 09:36:55 OK   00020_sp04_request_ledger.sql (10.19ms)
+2026/10/06 09:36:55 OK   00021_sp04_archive_protection.sql (3.73ms)
+2026/10/06 09:36:55 OK   00022_sp04_legal_hold_dependencies.sql (3.15ms)
+2026/10/06 09:36:55 OK   00023_sp04_archive_query_intent.sql (4.3ms)
+2026/10/06 09:36:55 OK   00024_sp05_finding_incident.sql (21.21ms)
+2026/10/06 09:36:55 OK   00025_sp05_incident_event_time.sql (7.3ms)
+2026/10/06 09:36:55 OK   00026_sp05_source_binding_lock.sql (28.32ms)
+2026/10/06 09:36:55 OK   00027_sp05_rca_and_poll.sql (7.76ms)
+2026/10/06 09:36:55 OK   00028_sp05_operator_lock.sql (2.86ms)
+2026/10/06 09:36:55 OK   00029_sp05_evidence_links.sql (11.44ms)
+2026/10/06 09:36:55 OK   00030_sp05_recipe_fence.sql (10.45ms)
+2026/10/06 09:36:55 OK   00031_sp05_rca_postcheck.sql (5.51ms)
+2026/10/06 09:36:55 OK   00032_sp05_transport_audit.sql (5.58ms)
+2026/10/06 09:36:55 OK   00033_sp05_poll_resolution_clock.sql (7.08ms)
+2026/10/06 09:36:55 OK   00034_sp06_investigation_ledger.sql (32.91ms)
+2026/10/06 09:36:55 OK   00035_sp06_admission_data_classes.sql (4.11ms)
+2026/10/06 09:36:55 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=3a8837122f011244c1b38f9496ee864651e15bf2770ce71f7365a9cc87efac6a bucket=sp05-golden-3a2fc470 tenants=1
+    sp05_golden_vertical_test.go:340: pvc-csi-failure/conflict: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=3a8837122f011244c1b38f9496ee864651e15bf2770ce71f7365a9cc87efac6a label=ef149406-c5d9-430c-b7c7-3f0992a4d03e bucket=sp05-golden-3a2fc470 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-492298084; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_b80972eba9cd4e42bc916342a3498d6c test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/conflict reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/degraded
+2026/10/06 09:37:12 OK   00001_roles_and_schemas.sql (63.48ms)
+2026/10/06 09:37:12 goose: successfully migrated database to version: 1
+2026/10/06 09:37:12 OK   00002_platform_meta.sql (194.3ms)
+2026/10/06 09:37:13 OK   00003_finding.sql (138.6ms)
+2026/10/06 09:37:13 OK   00004_incident.sql (104.26ms)
+2026/10/06 09:37:13 OK   00005_investigation.sql (141.69ms)
+2026/10/06 09:37:13 OK   00006_action_command.sql (134.88ms)
+2026/10/06 09:37:13 OK   00007_audit.sql (82.86ms)
+2026/10/06 09:37:14 OK   00008_rls.sql (630.19ms)
+2026/10/06 09:37:14 OK   00009_idempotency_ledger.sql (259.53ms)
+2026/10/06 09:37:14 OK   00010_tenant_provisioning.sql (150.26ms)
+2026/10/06 09:37:14 OK   00011_source_registration_history.sql (164.4ms)
+2026/10/06 09:37:14 OK   00012_config_registry_lifecycle.sql (79.52ms)
+2026/10/06 09:37:15 OK   00013_audit_signed_segments.sql (294.47ms)
+2026/10/06 09:37:15 OK   00014_audit_segment_predecessors.sql (149.87ms)
+2026/10/06 09:37:15 OK   00015_source_schema_scope.sql (120.14ms)
+2026/10/06 09:37:15 OK   00016_cluster_registration_metadata.sql (50.49ms)
+2026/10/06 09:37:15 OK   00017_source_data_scope.sql (110.32ms)
+2026/10/06 09:37:15 OK   00018_sp04_resources_evidence.sql (81.78ms)
+2026/10/06 09:37:15 OK   00019_sp04_archive_ciphertext_bytes.sql (87.17ms)
+2026/10/06 09:37:15 OK   00020_sp04_request_ledger.sql (244.72ms)
+2026/10/06 09:37:16 OK   00021_sp04_archive_protection.sql (181.47ms)
+2026/10/06 09:37:16 OK   00022_sp04_legal_hold_dependencies.sql (103.16ms)
+2026/10/06 09:37:16 OK   00023_sp04_archive_query_intent.sql (157.59ms)
+2026/10/06 09:37:16 OK   00024_sp05_finding_incident.sql (294.21ms)
+2026/10/06 09:37:16 OK   00025_sp05_incident_event_time.sql (113.77ms)
+2026/10/06 09:37:16 OK   00026_sp05_source_binding_lock.sql (57.21ms)
+2026/10/06 09:37:17 OK   00027_sp05_rca_and_poll.sql (563.99ms)
+2026/10/06 09:37:17 OK   00028_sp05_operator_lock.sql (68.59ms)
+2026/10/06 09:37:17 OK   00029_sp05_evidence_links.sql (81.38ms)
+2026/10/06 09:37:17 OK   00030_sp05_recipe_fence.sql (100.32ms)
+2026/10/06 09:37:17 OK   00031_sp05_rca_postcheck.sql (85.71ms)
+2026/10/06 09:37:17 OK   00032_sp05_transport_audit.sql (106.56ms)
+2026/10/06 09:37:17 OK   00033_sp05_poll_resolution_clock.sql (78.24ms)
+2026/10/06 09:37:18 OK   00034_sp06_investigation_ledger.sql (209.11ms)
+2026/10/06 09:37:18 OK   00035_sp06_admission_data_classes.sql (125.81ms)
+2026/10/06 09:37:18 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=ac004db180f7c4e72a8d0a82d9f401adfbae816c5dea936237f63f57e6d2f234 bucket=sp05-golden-c01f17c8 tenants=1
+    sp05_golden_vertical_test.go:340: pvc-csi-failure/degraded: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=ac004db180f7c4e72a8d0a82d9f401adfbae816c5dea936237f63f57e6d2f234 label=20787c58-07ee-4173-99e2-b12971b02316 bucket=sp05-golden-c01f17c8 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-4047665033; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_4a77326df3a148b8bbd46bd676fa1230 test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/degraded reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/valid
+2026/10/06 09:37:40 OK   00001_roles_and_schemas.sql (60.07ms)
+2026/10/06 09:37:40 goose: successfully migrated database to version: 1
+2026/10/06 09:37:41 OK   00002_platform_meta.sql (105.4ms)
+2026/10/06 09:37:41 OK   00003_finding.sql (23.33ms)
+2026/10/06 09:37:41 OK   00004_incident.sql (25.82ms)
+2026/10/06 09:37:41 OK   00005_investigation.sql (36.05ms)
+2026/10/06 09:37:41 OK   00006_action_command.sql (65.24ms)
+2026/10/06 09:37:41 OK   00007_audit.sql (21.1ms)
+2026/10/06 09:37:41 OK   00008_rls.sql (53.86ms)
+2026/10/06 09:37:41 OK   00009_idempotency_ledger.sql (19ms)
+2026/10/06 09:37:41 OK   00010_tenant_provisioning.sql (50.6ms)
+2026/10/06 09:37:41 OK   00011_source_registration_history.sql (57.23ms)
+2026/10/06 09:37:41 OK   00012_config_registry_lifecycle.sql (31.46ms)
+2026/10/06 09:37:41 OK   00013_audit_signed_segments.sql (66.23ms)
+2026/10/06 09:37:41 OK   00014_audit_segment_predecessors.sql (62.14ms)
+2026/10/06 09:37:41 OK   00015_source_schema_scope.sql (60.72ms)
+2026/10/06 09:37:41 OK   00016_cluster_registration_metadata.sql (17.91ms)
+2026/10/06 09:37:41 OK   00017_source_data_scope.sql (48.54ms)
+2026/10/06 09:37:41 OK   00018_sp04_resources_evidence.sql (74.9ms)
+2026/10/06 09:37:41 OK   00019_sp04_archive_ciphertext_bytes.sql (6.54ms)
+2026/10/06 09:37:41 OK   00020_sp04_request_ledger.sql (39.31ms)
+2026/10/06 09:37:41 OK   00021_sp04_archive_protection.sql (18.89ms)
+2026/10/06 09:37:41 OK   00022_sp04_legal_hold_dependencies.sql (17.89ms)
+2026/10/06 09:37:41 OK   00023_sp04_archive_query_intent.sql (6.66ms)
+2026/10/06 09:37:42 OK   00024_sp05_finding_incident.sql (132.36ms)
+2026/10/06 09:37:42 OK   00025_sp05_incident_event_time.sql (6.33ms)
+2026/10/06 09:37:42 OK   00026_sp05_source_binding_lock.sql (31.58ms)
+2026/10/06 09:37:42 OK   00027_sp05_rca_and_poll.sql (47.01ms)
+2026/10/06 09:37:42 OK   00028_sp05_operator_lock.sql (109.36ms)
+2026/10/06 09:37:42 OK   00029_sp05_evidence_links.sql (70.72ms)
+2026/10/06 09:37:42 OK   00030_sp05_recipe_fence.sql (21.35ms)
+2026/10/06 09:37:42 OK   00031_sp05_rca_postcheck.sql (14.86ms)
+2026/10/06 09:37:42 OK   00032_sp05_transport_audit.sql (8.85ms)
+2026/10/06 09:37:42 OK   00033_sp05_poll_resolution_clock.sql (15.05ms)
+2026/10/06 09:37:42 OK   00034_sp06_investigation_ledger.sql (259.77ms)
+2026/10/06 09:37:42 OK   00035_sp06_admission_data_classes.sql (40.54ms)
+2026/10/06 09:37:42 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=46cceb9914f676ab77401f8be4ddfd4b1003914a09a1b2ea792fc49f97ef2f8b bucket=sp05-golden-c2475f3a tenants=1
+    sp05_golden_vertical_test.go:340: node-failure/valid: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=46cceb9914f676ab77401f8be4ddfd4b1003914a09a1b2ea792fc49f97ef2f8b label=391b1958-d64b-45f2-97e0-5c4d3e7153dd bucket=sp05-golden-c2475f3a private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-1290063957; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_10808490f072400ba38e79da3e3531b9 test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/valid reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/missing
+2026/10/06 09:38:04 OK   00001_roles_and_schemas.sql (45.58ms)
+2026/10/06 09:38:04 goose: successfully migrated database to version: 1
+2026/10/06 09:38:04 OK   00002_platform_meta.sql (59.68ms)
+2026/10/06 09:38:04 OK   00003_finding.sql (27.09ms)
+2026/10/06 09:38:04 OK   00004_incident.sql (25.91ms)
+2026/10/06 09:38:04 OK   00005_investigation.sql (40.87ms)
+2026/10/06 09:38:04 OK   00006_action_command.sql (17.84ms)
+2026/10/06 09:38:05 OK   00007_audit.sql (15.73ms)
+2026/10/06 09:38:05 OK   00008_rls.sql (15.77ms)
+2026/10/06 09:38:05 OK   00009_idempotency_ledger.sql (30.77ms)
+2026/10/06 09:38:05 OK   00010_tenant_provisioning.sql (45.53ms)
+2026/10/06 09:38:05 OK   00011_source_registration_history.sql (11ms)
+2026/10/06 09:38:05 OK   00012_config_registry_lifecycle.sql (44.86ms)
+2026/10/06 09:38:05 OK   00013_audit_signed_segments.sql (50.6ms)
+2026/10/06 09:38:05 OK   00014_audit_segment_predecessors.sql (11.54ms)
+2026/10/06 09:38:05 OK   00015_source_schema_scope.sql (5.32ms)
+2026/10/06 09:38:05 OK   00016_cluster_registration_metadata.sql (9.96ms)
+2026/10/06 09:38:05 OK   00017_source_data_scope.sql (4.94ms)
+2026/10/06 09:38:05 OK   00018_sp04_resources_evidence.sql (14.38ms)
+2026/10/06 09:38:05 OK   00019_sp04_archive_ciphertext_bytes.sql (9.6ms)
+2026/10/06 09:38:05 OK   00020_sp04_request_ledger.sql (12.45ms)
+2026/10/06 09:38:05 OK   00021_sp04_archive_protection.sql (4.91ms)
+2026/10/06 09:38:05 OK   00022_sp04_legal_hold_dependencies.sql (3.2ms)
+2026/10/06 09:38:05 OK   00023_sp04_archive_query_intent.sql (3.65ms)
+2026/10/06 09:38:05 OK   00024_sp05_finding_incident.sql (29.96ms)
+2026/10/06 09:38:05 OK   00025_sp05_incident_event_time.sql (5.49ms)
+2026/10/06 09:38:05 OK   00026_sp05_source_binding_lock.sql (7.03ms)
+2026/10/06 09:38:05 OK   00027_sp05_rca_and_poll.sql (17.64ms)
+2026/10/06 09:38:05 OK   00028_sp05_operator_lock.sql (12.12ms)
+2026/10/06 09:38:05 OK   00029_sp05_evidence_links.sql (17.64ms)
+2026/10/06 09:38:05 OK   00030_sp05_recipe_fence.sql (4.19ms)
+2026/10/06 09:38:05 OK   00031_sp05_rca_postcheck.sql (3.57ms)
+2026/10/06 09:38:05 OK   00032_sp05_transport_audit.sql (5.36ms)
+2026/10/06 09:38:05 OK   00033_sp05_poll_resolution_clock.sql (6.52ms)
+2026/10/06 09:38:05 OK   00034_sp06_investigation_ledger.sql (168.45ms)
+2026/10/06 09:38:05 OK   00035_sp06_admission_data_classes.sql (23.41ms)
+2026/10/06 09:38:05 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=96c1e7cfe57a5b9086e27a8329a2b07dac43c2182b0ec04361ee8deb6e7226ae bucket=sp05-golden-e2524754 tenants=1
+    sp05_golden_vertical_test.go:340: node-failure/missing: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=96c1e7cfe57a5b9086e27a8329a2b07dac43c2182b0ec04361ee8deb6e7226ae label=9bf96b3f-6a95-4497-a933-4a77b36b2837 bucket=sp05-golden-e2524754 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-1655460652; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_1c92bbd5a1674c87a3ea4bcd5727e0ad test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/missing reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/conflict
+2026/10/06 09:38:22 OK   00001_roles_and_schemas.sql (61.84ms)
+2026/10/06 09:38:22 goose: successfully migrated database to version: 1
+2026/10/06 09:38:22 OK   00002_platform_meta.sql (62.27ms)
+2026/10/06 09:38:22 OK   00003_finding.sql (36.87ms)
+2026/10/06 09:38:22 OK   00004_incident.sql (24.31ms)
+2026/10/06 09:38:22 OK   00005_investigation.sql (14.99ms)
+2026/10/06 09:38:22 OK   00006_action_command.sql (6.05ms)
+2026/10/06 09:38:22 OK   00007_audit.sql (36.82ms)
+2026/10/06 09:38:22 OK   00008_rls.sql (12.91ms)
+2026/10/06 09:38:22 OK   00009_idempotency_ledger.sql (23.35ms)
+2026/10/06 09:38:22 OK   00010_tenant_provisioning.sql (15.59ms)
+2026/10/06 09:38:22 OK   00011_source_registration_history.sql (19.89ms)
+2026/10/06 09:38:22 OK   00012_config_registry_lifecycle.sql (27.07ms)
+2026/10/06 09:38:22 OK   00013_audit_signed_segments.sql (35.2ms)
+2026/10/06 09:38:22 OK   00014_audit_segment_predecessors.sql (17.66ms)
+2026/10/06 09:38:22 OK   00015_source_schema_scope.sql (32.74ms)
+2026/10/06 09:38:22 OK   00016_cluster_registration_metadata.sql (9.67ms)
+2026/10/06 09:38:22 OK   00017_source_data_scope.sql (18.37ms)
+2026/10/06 09:38:22 OK   00018_sp04_resources_evidence.sql (33.78ms)
+2026/10/06 09:38:22 OK   00019_sp04_archive_ciphertext_bytes.sql (22.03ms)
+2026/10/06 09:38:22 OK   00020_sp04_request_ledger.sql (33.32ms)
+2026/10/06 09:38:22 OK   00021_sp04_archive_protection.sql (35.24ms)
+2026/10/06 09:38:22 OK   00022_sp04_legal_hold_dependencies.sql (14.74ms)
+2026/10/06 09:38:22 OK   00023_sp04_archive_query_intent.sql (10.49ms)
+2026/10/06 09:38:22 OK   00024_sp05_finding_incident.sql (20.71ms)
+2026/10/06 09:38:22 OK   00025_sp05_incident_event_time.sql (5.04ms)
+2026/10/06 09:38:22 OK   00026_sp05_source_binding_lock.sql (5.37ms)
+2026/10/06 09:38:22 OK   00027_sp05_rca_and_poll.sql (74.65ms)
+2026/10/06 09:38:22 OK   00028_sp05_operator_lock.sql (46.69ms)
+2026/10/06 09:38:22 OK   00029_sp05_evidence_links.sql (26.14ms)
+2026/10/06 09:38:22 OK   00030_sp05_recipe_fence.sql (9.93ms)
+2026/10/06 09:38:22 OK   00031_sp05_rca_postcheck.sql (9.74ms)
+2026/10/06 09:38:22 OK   00032_sp05_transport_audit.sql (6.47ms)
+2026/10/06 09:38:22 OK   00033_sp05_poll_resolution_clock.sql (3.98ms)
+2026/10/06 09:38:22 OK   00034_sp06_investigation_ledger.sql (31.74ms)
+2026/10/06 09:38:22 OK   00035_sp06_admission_data_classes.sql (7.82ms)
+2026/10/06 09:38:22 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=8693cd832ffd56a2dfef06524609bd2aa17e71aafecc312452b0d3b5cb31be1c bucket=sp05-golden-107f0114 tenants=1
+    sp05_golden_vertical_test.go:340: node-failure/conflict: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=8693cd832ffd56a2dfef06524609bd2aa17e71aafecc312452b0d3b5cb31be1c label=028a96e7-6de6-456a-9a3e-7350cc07e321 bucket=sp05-golden-107f0114 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-2356860967; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_5d6f91dacf844becb5d6ccb80f3a0bf3 test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/conflict reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/degraded
+2026/10/06 09:38:41 OK   00001_roles_and_schemas.sql (17.64ms)
+2026/10/06 09:38:41 goose: successfully migrated database to version: 1
+2026/10/06 09:38:41 OK   00002_platform_meta.sql (46.91ms)
+2026/10/06 09:38:41 OK   00003_finding.sql (11.48ms)
+2026/10/06 09:38:41 OK   00004_incident.sql (11.01ms)
+2026/10/06 09:38:41 OK   00005_investigation.sql (13.21ms)
+2026/10/06 09:38:41 OK   00006_action_command.sql (10.98ms)
+2026/10/06 09:38:41 OK   00007_audit.sql (11.24ms)
+2026/10/06 09:38:42 OK   00008_rls.sql (20.91ms)
+2026/10/06 09:38:42 OK   00009_idempotency_ledger.sql (7.75ms)
+2026/10/06 09:38:42 OK   00010_tenant_provisioning.sql (4.79ms)
+2026/10/06 09:38:42 OK   00011_source_registration_history.sql (8.27ms)
+2026/10/06 09:38:42 OK   00012_config_registry_lifecycle.sql (22.78ms)
+2026/10/06 09:38:42 OK   00013_audit_signed_segments.sql (19.15ms)
+2026/10/06 09:38:42 OK   00014_audit_segment_predecessors.sql (5.87ms)
+2026/10/06 09:38:42 OK   00015_source_schema_scope.sql (2.69ms)
+2026/10/06 09:38:42 OK   00016_cluster_registration_metadata.sql (3.37ms)
+2026/10/06 09:38:42 OK   00017_source_data_scope.sql (6.04ms)
+2026/10/06 09:38:42 OK   00018_sp04_resources_evidence.sql (43.76ms)
+2026/10/06 09:38:42 OK   00019_sp04_archive_ciphertext_bytes.sql (11.84ms)
+2026/10/06 09:38:42 OK   00020_sp04_request_ledger.sql (30.74ms)
+2026/10/06 09:38:42 OK   00021_sp04_archive_protection.sql (3.59ms)
+2026/10/06 09:38:42 OK   00022_sp04_legal_hold_dependencies.sql (4.48ms)
+2026/10/06 09:38:42 OK   00023_sp04_archive_query_intent.sql (13.15ms)
+2026/10/06 09:38:42 OK   00024_sp05_finding_incident.sql (27.85ms)
+2026/10/06 09:38:42 OK   00025_sp05_incident_event_time.sql (3.7ms)
+2026/10/06 09:38:42 OK   00026_sp05_source_binding_lock.sql (4.96ms)
+2026/10/06 09:38:42 OK   00027_sp05_rca_and_poll.sql (20.43ms)
+2026/10/06 09:38:42 OK   00028_sp05_operator_lock.sql (16.49ms)
+2026/10/06 09:38:42 OK   00029_sp05_evidence_links.sql (38.98ms)
+2026/10/06 09:38:42 OK   00030_sp05_recipe_fence.sql (3.29ms)
+2026/10/06 09:38:42 OK   00031_sp05_rca_postcheck.sql (3.14ms)
+2026/10/06 09:38:42 OK   00032_sp05_transport_audit.sql (20.66ms)
+2026/10/06 09:38:42 OK   00033_sp05_poll_resolution_clock.sql (15.83ms)
+2026/10/06 09:38:42 OK   00034_sp06_investigation_ledger.sql (46.58ms)
+2026/10/06 09:38:42 OK   00035_sp06_admission_data_classes.sql (22.31ms)
+2026/10/06 09:38:42 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=8f6a64204728ed87a535a2817c8cb984d9db30892eebaa4a5e8096d35aff0ae1 bucket=sp05-golden-0f750b9a tenants=1
+    sp05_golden_vertical_test.go:340: node-failure/degraded: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=8f6a64204728ed87a535a2817c8cb984d9db30892eebaa4a5e8096d35aff0ae1 label=5312d06f-693a-4d16-a091-c841675474d1 bucket=sp05-golden-0f750b9a private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-4141969379; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_9c1bd3cd0e0249ad8daae20ae87c86e7 test=TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/degraded reason=audit.records; no automatic protected cleanup
+--- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay (232.40s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/valid (16.27s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/missing (20.96s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/conflict (17.84s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/dimm-failure/degraded (18.05s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/valid (19.53s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/missing (15.77s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/conflict (17.40s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/pvc-csi-failure/degraded (28.33s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/valid (24.08s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/missing (17.20s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/conflict (19.88s)
+    --- PASS: TestSP05FrozenNonvirtualGoldenVerticalAndReplay/node-failure/degraded (17.10s)
+=== RUN   TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay
+=== RUN   TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/valid
+2026/10/06 09:38:58 OK   00001_roles_and_schemas.sql (16.02ms)
+2026/10/06 09:38:58 goose: successfully migrated database to version: 1
+2026/10/06 09:38:59 OK   00002_platform_meta.sql (39.96ms)
+2026/10/06 09:38:59 OK   00003_finding.sql (22.18ms)
+2026/10/06 09:38:59 OK   00004_incident.sql (17.91ms)
+2026/10/06 09:38:59 OK   00005_investigation.sql (17.14ms)
+2026/10/06 09:38:59 OK   00006_action_command.sql (20.85ms)
+2026/10/06 09:38:59 OK   00007_audit.sql (20ms)
+2026/10/06 09:38:59 OK   00008_rls.sql (25.27ms)
+2026/10/06 09:38:59 OK   00009_idempotency_ledger.sql (23.43ms)
+2026/10/06 09:38:59 OK   00010_tenant_provisioning.sql (4.42ms)
+2026/10/06 09:38:59 OK   00011_source_registration_history.sql (44.1ms)
+2026/10/06 09:38:59 OK   00012_config_registry_lifecycle.sql (44.04ms)
+2026/10/06 09:38:59 OK   00013_audit_signed_segments.sql (27ms)
+2026/10/06 09:38:59 OK   00014_audit_segment_predecessors.sql (26.68ms)
+2026/10/06 09:38:59 OK   00015_source_schema_scope.sql (5.41ms)
+2026/10/06 09:38:59 OK   00016_cluster_registration_metadata.sql (6.32ms)
+2026/10/06 09:38:59 OK   00017_source_data_scope.sql (3.92ms)
+2026/10/06 09:38:59 OK   00018_sp04_resources_evidence.sql (21.14ms)
+2026/10/06 09:38:59 OK   00019_sp04_archive_ciphertext_bytes.sql (10.24ms)
+2026/10/06 09:38:59 OK   00020_sp04_request_ledger.sql (9.65ms)
+2026/10/06 09:38:59 OK   00021_sp04_archive_protection.sql (4.9ms)
+2026/10/06 09:38:59 OK   00022_sp04_legal_hold_dependencies.sql (6.44ms)
+2026/10/06 09:38:59 OK   00023_sp04_archive_query_intent.sql (7.88ms)
+2026/10/06 09:38:59 OK   00024_sp05_finding_incident.sql (35.96ms)
+2026/10/06 09:38:59 OK   00025_sp05_incident_event_time.sql (3.89ms)
+2026/10/06 09:38:59 OK   00026_sp05_source_binding_lock.sql (3.57ms)
+2026/10/06 09:38:59 OK   00027_sp05_rca_and_poll.sql (30.93ms)
+2026/10/06 09:38:59 OK   00028_sp05_operator_lock.sql (15.87ms)
+2026/10/06 09:38:59 OK   00029_sp05_evidence_links.sql (5.87ms)
+2026/10/06 09:38:59 OK   00030_sp05_recipe_fence.sql (5.09ms)
+2026/10/06 09:38:59 OK   00031_sp05_rca_postcheck.sql (6.17ms)
+2026/10/06 09:38:59 OK   00032_sp05_transport_audit.sql (8.81ms)
+2026/10/06 09:38:59 OK   00033_sp05_poll_resolution_clock.sql (14.63ms)
+2026/10/06 09:38:59 OK   00034_sp06_investigation_ledger.sql (42.11ms)
+2026/10/06 09:38:59 OK   00035_sp06_admission_data_classes.sql (9.88ms)
+2026/10/06 09:38:59 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=6f77a7196bda90abe93c6180624bc1cdf948bd10c8ef17713adf49b8ef3931d6 bucket=sp05-golden-5def361f tenants=1
+    sp05_golden_vertical_test.go:340: node-hardware-upstream/valid: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=6f77a7196bda90abe93c6180624bc1cdf948bd10c8ef17713adf49b8ef3931d6 label=a74353d4-aace-4a75-a23e-aaa1c0814824 bucket=sp05-golden-5def361f private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-2736981046; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_86acd2a088014e5494a78179a48cb153 test=TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/valid reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/missing
+2026/10/06 09:39:17 OK   00001_roles_and_schemas.sql (18.03ms)
+2026/10/06 09:39:17 goose: successfully migrated database to version: 1
+2026/10/06 09:39:17 OK   00002_platform_meta.sql (42.86ms)
+2026/10/06 09:39:17 OK   00003_finding.sql (127.39ms)
+2026/10/06 09:39:17 OK   00004_incident.sql (17.24ms)
+2026/10/06 09:39:17 OK   00005_investigation.sql (10.19ms)
+2026/10/06 09:39:17 OK   00006_action_command.sql (8.99ms)
+2026/10/06 09:39:17 OK   00007_audit.sql (21.92ms)
+2026/10/06 09:39:17 OK   00008_rls.sql (17.93ms)
+2026/10/06 09:39:17 OK   00009_idempotency_ledger.sql (8.08ms)
+2026/10/06 09:39:17 OK   00010_tenant_provisioning.sql (7.94ms)
+2026/10/06 09:39:17 OK   00011_source_registration_history.sql (14.31ms)
+2026/10/06 09:39:17 OK   00012_config_registry_lifecycle.sql (18.95ms)
+2026/10/06 09:39:17 OK   00013_audit_signed_segments.sql (20.97ms)
+2026/10/06 09:39:17 OK   00014_audit_segment_predecessors.sql (11.8ms)
+2026/10/06 09:39:17 OK   00015_source_schema_scope.sql (6.16ms)
+2026/10/06 09:39:17 OK   00016_cluster_registration_metadata.sql (8.95ms)
+2026/10/06 09:39:17 OK   00017_source_data_scope.sql (6.25ms)
+2026/10/06 09:39:17 OK   00018_sp04_resources_evidence.sql (55.71ms)
+2026/10/06 09:39:17 OK   00019_sp04_archive_ciphertext_bytes.sql (3.8ms)
+2026/10/06 09:39:17 OK   00020_sp04_request_ledger.sql (4.2ms)
+2026/10/06 09:39:17 OK   00021_sp04_archive_protection.sql (5.49ms)
+2026/10/06 09:39:17 OK   00022_sp04_legal_hold_dependencies.sql (4.53ms)
+2026/10/06 09:39:17 OK   00023_sp04_archive_query_intent.sql (5.84ms)
+2026/10/06 09:39:17 OK   00024_sp05_finding_incident.sql (34.53ms)
+2026/10/06 09:39:17 OK   00025_sp05_incident_event_time.sql (3.95ms)
+2026/10/06 09:39:18 OK   00026_sp05_source_binding_lock.sql (4.7ms)
+2026/10/06 09:39:18 OK   00027_sp05_rca_and_poll.sql (12.67ms)
+2026/10/06 09:39:18 OK   00028_sp05_operator_lock.sql (4.71ms)
+2026/10/06 09:39:18 OK   00029_sp05_evidence_links.sql (7.77ms)
+2026/10/06 09:39:18 OK   00030_sp05_recipe_fence.sql (3.94ms)
+2026/10/06 09:39:18 OK   00031_sp05_rca_postcheck.sql (3.28ms)
+2026/10/06 09:39:18 OK   00032_sp05_transport_audit.sql (3.98ms)
+2026/10/06 09:39:18 OK   00033_sp05_poll_resolution_clock.sql (7.56ms)
+2026/10/06 09:39:18 OK   00034_sp06_investigation_ledger.sql (24.76ms)
+2026/10/06 09:39:18 OK   00035_sp06_admission_data_classes.sql (40.48ms)
+2026/10/06 09:39:18 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=58f9d97aa338a239a91705a66d55a09faad34d4c579a9491410520953e38eda4 bucket=sp05-golden-13481596 tenants=1
+    sp05_golden_vertical_test.go:340: node-hardware-upstream/missing: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=58f9d97aa338a239a91705a66d55a09faad34d4c579a9491410520953e38eda4 label=41b6c066-26c7-4204-8b16-4e559f112ac4 bucket=sp05-golden-13481596 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-2886621058; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_afca39d18ba64c92945a31f3de4d29ec test=TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/missing reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/conflict
+2026/10/06 09:39:42 OK   00001_roles_and_schemas.sql (25.73ms)
+2026/10/06 09:39:42 goose: successfully migrated database to version: 1
+2026/10/06 09:39:42 OK   00002_platform_meta.sql (50.62ms)
+2026/10/06 09:39:42 OK   00003_finding.sql (10.22ms)
+2026/10/06 09:39:42 OK   00004_incident.sql (5.46ms)
+2026/10/06 09:39:42 OK   00005_investigation.sql (10.96ms)
+2026/10/06 09:39:42 OK   00006_action_command.sql (15.91ms)
+2026/10/06 09:39:42 OK   00007_audit.sql (23.17ms)
+2026/10/06 09:39:42 OK   00008_rls.sql (17.04ms)
+2026/10/06 09:39:42 OK   00009_idempotency_ledger.sql (19.3ms)
+2026/10/06 09:39:42 OK   00010_tenant_provisioning.sql (18.94ms)
+2026/10/06 09:39:42 OK   00011_source_registration_history.sql (38.06ms)
+2026/10/06 09:39:42 OK   00012_config_registry_lifecycle.sql (8.72ms)
+2026/10/06 09:39:42 OK   00013_audit_signed_segments.sql (10.7ms)
+2026/10/06 09:39:42 OK   00014_audit_segment_predecessors.sql (28.48ms)
+2026/10/06 09:39:42 OK   00015_source_schema_scope.sql (12.36ms)
+2026/10/06 09:39:42 OK   00016_cluster_registration_metadata.sql (6.99ms)
+2026/10/06 09:39:42 OK   00017_source_data_scope.sql (7.71ms)
+2026/10/06 09:39:42 OK   00018_sp04_resources_evidence.sql (42.63ms)
+2026/10/06 09:39:42 OK   00019_sp04_archive_ciphertext_bytes.sql (3.83ms)
+2026/10/06 09:39:42 OK   00020_sp04_request_ledger.sql (5.45ms)
+2026/10/06 09:39:42 OK   00021_sp04_archive_protection.sql (38.94ms)
+2026/10/06 09:39:42 OK   00022_sp04_legal_hold_dependencies.sql (3.87ms)
+2026/10/06 09:39:42 OK   00023_sp04_archive_query_intent.sql (3.16ms)
+2026/10/06 09:39:42 OK   00024_sp05_finding_incident.sql (54.28ms)
+2026/10/06 09:39:42 OK   00025_sp05_incident_event_time.sql (4.92ms)
+2026/10/06 09:39:42 OK   00026_sp05_source_binding_lock.sql (16.85ms)
+2026/10/06 09:39:42 OK   00027_sp05_rca_and_poll.sql (32.8ms)
+2026/10/06 09:39:42 OK   00028_sp05_operator_lock.sql (5.01ms)
+2026/10/06 09:39:42 OK   00029_sp05_evidence_links.sql (12.86ms)
+2026/10/06 09:39:42 OK   00030_sp05_recipe_fence.sql (7.83ms)
+2026/10/06 09:39:43 OK   00031_sp05_rca_postcheck.sql (9.37ms)
+2026/10/06 09:39:43 OK   00032_sp05_transport_audit.sql (19.6ms)
+2026/10/06 09:39:43 OK   00033_sp05_poll_resolution_clock.sql (9.55ms)
+2026/10/06 09:39:43 OK   00034_sp06_investigation_ledger.sql (53.59ms)
+2026/10/06 09:39:43 OK   00035_sp06_admission_data_classes.sql (3.67ms)
+2026/10/06 09:39:43 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=178837a1bd00e7acd952724f12a5571ec5a33b9117234c8bd5b7e54099e2b797 bucket=sp05-golden-6de07ec7 tenants=1
+    sp05_golden_vertical_test.go:340: node-hardware-upstream/conflict: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=178837a1bd00e7acd952724f12a5571ec5a33b9117234c8bd5b7e54099e2b797 label=a61b2d64-9f6f-40c2-9474-4da7eb9d330b bucket=sp05-golden-6de07ec7 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-2092922629; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_7588a6e6195e45a1808d95f42b436ef7 test=TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/conflict reason=audit.records; no automatic protected cleanup
+=== RUN   TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/degraded
+2026/10/06 09:40:01 OK   00001_roles_and_schemas.sql (11.43ms)
+2026/10/06 09:40:01 goose: successfully migrated database to version: 1
+2026/10/06 09:40:01 OK   00002_platform_meta.sql (54.16ms)
+2026/10/06 09:40:01 OK   00003_finding.sql (40.75ms)
+2026/10/06 09:40:01 OK   00004_incident.sql (22.12ms)
+2026/10/06 09:40:01 OK   00005_investigation.sql (42.14ms)
+2026/10/06 09:40:01 OK   00006_action_command.sql (8.49ms)
+2026/10/06 09:40:01 OK   00007_audit.sql (28.16ms)
+2026/10/06 09:40:01 OK   00008_rls.sql (31.89ms)
+2026/10/06 09:40:01 OK   00009_idempotency_ledger.sql (28.38ms)
+2026/10/06 09:40:01 OK   00010_tenant_provisioning.sql (12.27ms)
+2026/10/06 09:40:01 OK   00011_source_registration_history.sql (7.72ms)
+2026/10/06 09:40:01 OK   00012_config_registry_lifecycle.sql (9.93ms)
+2026/10/06 09:40:01 OK   00013_audit_signed_segments.sql (37.92ms)
+2026/10/06 09:40:01 OK   00014_audit_segment_predecessors.sql (7.26ms)
+2026/10/06 09:40:01 OK   00015_source_schema_scope.sql (8.87ms)
+2026/10/06 09:40:01 OK   00016_cluster_registration_metadata.sql (11.21ms)
+2026/10/06 09:40:01 OK   00017_source_data_scope.sql (24.12ms)
+2026/10/06 09:40:01 OK   00018_sp04_resources_evidence.sql (26.12ms)
+2026/10/06 09:40:01 OK   00019_sp04_archive_ciphertext_bytes.sql (29.2ms)
+2026/10/06 09:40:01 OK   00020_sp04_request_ledger.sql (5.83ms)
+2026/10/06 09:40:01 OK   00021_sp04_archive_protection.sql (11.32ms)
+2026/10/06 09:40:01 OK   00022_sp04_legal_hold_dependencies.sql (12.14ms)
+2026/10/06 09:40:01 OK   00023_sp04_archive_query_intent.sql (6.05ms)
+2026/10/06 09:40:01 OK   00024_sp05_finding_incident.sql (49.03ms)
+2026/10/06 09:40:01 OK   00025_sp05_incident_event_time.sql (9.19ms)
+2026/10/06 09:40:02 OK   00026_sp05_source_binding_lock.sql (8.06ms)
+2026/10/06 09:40:02 OK   00027_sp05_rca_and_poll.sql (13.82ms)
+2026/10/06 09:40:02 OK   00028_sp05_operator_lock.sql (37.38ms)
+2026/10/06 09:40:02 OK   00029_sp05_evidence_links.sql (16.93ms)
+2026/10/06 09:40:02 OK   00030_sp05_recipe_fence.sql (34.39ms)
+2026/10/06 09:40:02 OK   00031_sp05_rca_postcheck.sql (13.8ms)
+2026/10/06 09:40:02 OK   00032_sp05_transport_audit.sql (109.91ms)
+2026/10/06 09:40:02 OK   00033_sp05_poll_resolution_clock.sql (40.6ms)
+2026/10/06 09:40:02 OK   00034_sp06_investigation_ledger.sql (48.21ms)
+2026/10/06 09:40:02 OK   00035_sp06_admission_data_classes.sql (12.55ms)
+2026/10/06 09:40:02 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=e3a79c57ac737e6dd825cc60d572c96a55974a798b043f437613cb3e96fd1ffc bucket=sp05-golden-e7aec92e tenants=1
+    sp05_golden_vertical_test.go:340: node-hardware-upstream/degraded: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=e3a79c57ac737e6dd825cc60d572c96a55974a798b043f437613cb3e96fd1ffc label=1ffbb8cc-7618-4d34-b24b-8c688ff50e16 bucket=sp05-golden-e7aec92e private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-2841518892; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_c3a08cae173a466eb2aac1dc06a47183 test=TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/degraded reason=audit.records; no automatic protected cleanup
+--- PASS: TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay (82.57s)
+    --- PASS: TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/valid (18.48s)
+    --- PASS: TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/missing (24.96s)
+    --- PASS: TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/conflict (18.99s)
+    --- PASS: TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay/degraded (20.14s)
+=== RUN   TestSP05IncidentConcurrentCorrelationOverrideSplitMergeRecovery
+2026/10/06 09:40:21 OK   00001_roles_and_schemas.sql (31.4ms)
+2026/10/06 09:40:21 goose: successfully migrated database to version: 1
+2026/10/06 09:40:21 OK   00002_platform_meta.sql (61.2ms)
+2026/10/06 09:40:21 OK   00003_finding.sql (39.51ms)
+2026/10/06 09:40:21 OK   00004_incident.sql (10.95ms)
+2026/10/06 09:40:21 OK   00005_investigation.sql (21.4ms)
+2026/10/06 09:40:21 OK   00006_action_command.sql (14.97ms)
+2026/10/06 09:40:21 OK   00007_audit.sql (50.7ms)
+2026/10/06 09:40:21 OK   00008_rls.sql (22.81ms)
+2026/10/06 09:40:21 OK   00009_idempotency_ledger.sql (16.71ms)
+2026/10/06 09:40:21 OK   00010_tenant_provisioning.sql (8.09ms)
+2026/10/06 09:40:21 OK   00011_source_registration_history.sql (17.93ms)
+2026/10/06 09:40:21 OK   00012_config_registry_lifecycle.sql (24.04ms)
+2026/10/06 09:40:21 OK   00013_audit_signed_segments.sql (20.39ms)
+2026/10/06 09:40:21 OK   00014_audit_segment_predecessors.sql (6.71ms)
+2026/10/06 09:40:21 OK   00015_source_schema_scope.sql (6.41ms)
+2026/10/06 09:40:21 OK   00016_cluster_registration_metadata.sql (11.07ms)
+2026/10/06 09:40:21 OK   00017_source_data_scope.sql (10.25ms)
+2026/10/06 09:40:22 OK   00018_sp04_resources_evidence.sql (28.72ms)
+2026/10/06 09:40:22 OK   00019_sp04_archive_ciphertext_bytes.sql (5.63ms)
+2026/10/06 09:40:22 OK   00020_sp04_request_ledger.sql (13.27ms)
+2026/10/06 09:40:22 OK   00021_sp04_archive_protection.sql (30.78ms)
+2026/10/06 09:40:22 OK   00022_sp04_legal_hold_dependencies.sql (42.39ms)
+2026/10/06 09:40:22 OK   00023_sp04_archive_query_intent.sql (5.35ms)
+2026/10/06 09:40:22 OK   00024_sp05_finding_incident.sql (213.08ms)
+2026/10/06 09:40:22 OK   00025_sp05_incident_event_time.sql (6.23ms)
+2026/10/06 09:40:22 OK   00026_sp05_source_binding_lock.sql (9.29ms)
+2026/10/06 09:40:22 OK   00027_sp05_rca_and_poll.sql (32.82ms)
+2026/10/06 09:40:22 OK   00028_sp05_operator_lock.sql (6.38ms)
+2026/10/06 09:40:22 OK   00029_sp05_evidence_links.sql (36ms)
+2026/10/06 09:40:22 OK   00030_sp05_recipe_fence.sql (5.26ms)
+2026/10/06 09:40:22 OK   00031_sp05_rca_postcheck.sql (3.69ms)
+2026/10/06 09:40:22 OK   00032_sp05_transport_audit.sql (8.7ms)
+2026/10/06 09:40:22 OK   00033_sp05_poll_resolution_clock.sql (22.9ms)
+2026/10/06 09:40:22 OK   00034_sp06_investigation_ledger.sql (19.17ms)
+2026/10/06 09:40:22 OK   00035_sp06_admission_data_classes.sql (4.13ms)
+2026/10/06 09:40:22 goose: successfully migrated database to version: 35
+    migrations_test.go:436: retained owned integration database=sp03_mig_1a782021bcfa4619a69b681bd157a77a test=TestSP05IncidentConcurrentCorrelationOverrideSplitMergeRecovery reason=audit.records; no automatic protected cleanup
+--- PASS: TestSP05IncidentConcurrentCorrelationOverrideSplitMergeRecovery (1.95s)
+=== RUN   TestSP05LegacyOutboxIsPreservedAndExplicitlyQuarantined
+2026/10/06 09:40:23 OK   00001_roles_and_schemas.sql (35.18ms)
+2026/10/06 09:40:23 goose: successfully migrated database to version: 1
+2026/10/06 09:40:23 OK   00002_platform_meta.sql (99.9ms)
+2026/10/06 09:40:23 OK   00003_finding.sql (10.51ms)
+2026/10/06 09:40:23 OK   00004_incident.sql (5.62ms)
+2026/10/06 09:40:23 OK   00005_investigation.sql (6.04ms)
+2026/10/06 09:40:23 OK   00006_action_command.sql (22.5ms)
+2026/10/06 09:40:23 OK   00007_audit.sql (33.07ms)
+2026/10/06 09:40:23 OK   00008_rls.sql (50.75ms)
+2026/10/06 09:40:23 OK   00009_idempotency_ledger.sql (14.36ms)
+2026/10/06 09:40:23 OK   00010_tenant_provisioning.sql (12.7ms)
+2026/10/06 09:40:23 OK   00011_source_registration_history.sql (10.3ms)
+2026/10/06 09:40:23 OK   00012_config_registry_lifecycle.sql (11.28ms)
+2026/10/06 09:40:23 OK   00013_audit_signed_segments.sql (14.23ms)
+2026/10/06 09:40:23 OK   00014_audit_segment_predecessors.sql (21.44ms)
+2026/10/06 09:40:23 OK   00015_source_schema_scope.sql (3.52ms)
+2026/10/06 09:40:23 OK   00016_cluster_registration_metadata.sql (6.03ms)
+2026/10/06 09:40:23 OK   00017_source_data_scope.sql (7.11ms)
+2026/10/06 09:40:23 OK   00018_sp04_resources_evidence.sql (28.78ms)
+2026/10/06 09:40:23 OK   00019_sp04_archive_ciphertext_bytes.sql (3.45ms)
+2026/10/06 09:40:23 OK   00020_sp04_request_ledger.sql (28.56ms)
+2026/10/06 09:40:23 OK   00021_sp04_archive_protection.sql (24.1ms)
+2026/10/06 09:40:24 OK   00022_sp04_legal_hold_dependencies.sql (28.89ms)
+2026/10/06 09:40:24 OK   00023_sp04_archive_query_intent.sql (3.99ms)
+2026/10/06 09:40:24 OK   00024_sp05_finding_incident.sql (74.99ms)
+2026/10/06 09:40:24 OK   00025_sp05_incident_event_time.sql (3.8ms)
+2026/10/06 09:40:24 OK   00026_sp05_source_binding_lock.sql (11.27ms)
+2026/10/06 09:40:24 OK   00027_sp05_rca_and_poll.sql (14.5ms)
+2026/10/06 09:40:24 OK   00028_sp05_operator_lock.sql (11.8ms)
+2026/10/06 09:40:24 OK   00029_sp05_evidence_links.sql (18.25ms)
+2026/10/06 09:40:24 OK   00030_sp05_recipe_fence.sql (3.79ms)
+2026/10/06 09:40:24 OK   00031_sp05_rca_postcheck.sql (7.7ms)
+2026/10/06 09:40:24 OK   00032_sp05_transport_audit.sql (4.9ms)
+2026/10/06 09:40:24 OK   00033_sp05_poll_resolution_clock.sql (11.83ms)
+2026/10/06 09:40:24 OK   00034_sp06_investigation_ledger.sql (90.98ms)
+2026/10/06 09:40:24 OK   00035_sp06_admission_data_classes.sql (8.72ms)
+2026/10/06 09:40:24 goose: successfully migrated database to version: 35
+    migrations_test.go:442: retained owned integration database=sp03_mig_12cb98b72264498b9e29caae67c1dde4 test=TestSP05LegacyOutboxIsPreservedAndExplicitlyQuarantined reason=empty-database-delete-not-confirmed
+--- PASS: TestSP05LegacyOutboxIsPreservedAndExplicitlyQuarantined (6.27s)
+=== RUN   TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart
+2026/10/06 09:40:30 OK   00001_roles_and_schemas.sql (23.31ms)
+2026/10/06 09:40:30 goose: successfully migrated database to version: 1
+2026/10/06 09:40:30 OK   00002_platform_meta.sql (39.49ms)
+2026/10/06 09:40:30 OK   00003_finding.sql (27.15ms)
+2026/10/06 09:40:30 OK   00004_incident.sql (9.71ms)
+2026/10/06 09:40:30 OK   00005_investigation.sql (20.07ms)
+2026/10/06 09:40:30 OK   00006_action_command.sql (26.18ms)
+2026/10/06 09:40:30 OK   00007_audit.sql (15.03ms)
+2026/10/06 09:40:30 OK   00008_rls.sql (27.17ms)
+2026/10/06 09:40:30 OK   00009_idempotency_ledger.sql (8.18ms)
+2026/10/06 09:40:30 OK   00010_tenant_provisioning.sql (32.72ms)
+2026/10/06 09:40:30 OK   00011_source_registration_history.sql (6.94ms)
+2026/10/06 09:40:30 OK   00012_config_registry_lifecycle.sql (37.84ms)
+2026/10/06 09:40:31 OK   00013_audit_signed_segments.sql (12.85ms)
+2026/10/06 09:40:31 OK   00014_audit_segment_predecessors.sql (5.9ms)
+2026/10/06 09:40:31 OK   00015_source_schema_scope.sql (2.62ms)
+2026/10/06 09:40:31 OK   00016_cluster_registration_metadata.sql (3.89ms)
+2026/10/06 09:40:31 OK   00017_source_data_scope.sql (4.51ms)
+2026/10/06 09:40:31 OK   00018_sp04_resources_evidence.sql (41.59ms)
+2026/10/06 09:40:31 OK   00019_sp04_archive_ciphertext_bytes.sql (24.33ms)
+2026/10/06 09:40:31 OK   00020_sp04_request_ledger.sql (12.62ms)
+2026/10/06 09:40:31 OK   00021_sp04_archive_protection.sql (4.06ms)
+2026/10/06 09:40:31 OK   00022_sp04_legal_hold_dependencies.sql (3.82ms)
+2026/10/06 09:40:31 OK   00023_sp04_archive_query_intent.sql (4.19ms)
+2026/10/06 09:40:31 OK   00024_sp05_finding_incident.sql (76.09ms)
+2026/10/06 09:40:31 OK   00025_sp05_incident_event_time.sql (19.98ms)
+2026/10/06 09:40:31 OK   00026_sp05_source_binding_lock.sql (5.61ms)
+2026/10/06 09:40:31 OK   00027_sp05_rca_and_poll.sql (8.78ms)
+2026/10/06 09:40:31 OK   00028_sp05_operator_lock.sql (4.32ms)
+2026/10/06 09:40:31 OK   00029_sp05_evidence_links.sql (17.55ms)
+2026/10/06 09:40:31 OK   00030_sp05_recipe_fence.sql (31.38ms)
+2026/10/06 09:40:31 OK   00031_sp05_rca_postcheck.sql (8.98ms)
+2026/10/06 09:40:31 OK   00032_sp05_transport_audit.sql (30.63ms)
+2026/10/06 09:40:31 OK   00033_sp05_poll_resolution_clock.sql (4.48ms)
+2026/10/06 09:40:31 OK   00034_sp06_investigation_ledger.sql (62.12ms)
+2026/10/06 09:40:31 OK   00035_sp06_admission_data_classes.sql (26.8ms)
+2026/10/06 09:40:31 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=9dba1eed4b0d9be1e68c281786e8a4cbb127e058c694700e8092d7a36a291a03 bucket=sp05-chain-9daa3009 tenants=1
+{"time":"2026-10-06T09:40:43.076975+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-06T09:40:44.993327+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-06T09:40:46.845774+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/persistentvolumes":"watch_initializing"}}
+{"time":"2026-10-06T09:40:53.680837+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-ee7e-7315-bcc7-9b571ed13574","method":"GET","status_code":200,"duration_ms":178}
+{"time":"2026-10-06T09:40:53.722461+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-ef32-73e8-b7c2-e28333b4053e","method":"GET","status_code":200,"duration_ms":40}
+{"time":"2026-10-06T09:40:53.760039+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-ef5a-7e19-88f4-1380b5af90dd","method":"GET","status_code":200,"duration_ms":37}
+{"time":"2026-10-06T09:40:53.766233+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-ef80-7a58-a382-f525c24d3d23","method":"GET","status_code":200,"duration_ms":5}
+{"time":"2026-10-06T09:40:54.042118+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-ef87-705d-8b77-f37f58352bd6","method":"GET","status_code":200,"duration_ms":275}
+{"time":"2026-10-06T09:40:54.457381+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-f16b-7c02-9bcb-3b6a97a61ca0","method":"GET","status_code":200,"duration_ms":205}
+{"time":"2026-10-06T09:40:54.822162+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-f303-7109-84db-05ae1d977d3e","method":"GET","status_code":200,"duration_ms":163}
+{"time":"2026-10-06T09:40:55.548605+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-f471-7d90-88e3-cd61e020a130","method":"GET","status_code":200,"duration_ms":522}
+{"time":"2026-10-06T09:40:56.276219+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-f747-7e9e-990e-0b81e42a0881","method":"GET","status_code":200,"duration_ms":524}
+{"time":"2026-10-06T09:40:56.973168+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-fa20-7cdc-b193-778def8a4bda","method":"GET","status_code":200,"duration_ms":492}
+{"time":"2026-10-06T09:40:57.787028+08:00","level":"INFO","msg":"http request complete","request_id":"01a10ede-fcdb-7e25-9820-86bb70e820d1","method":"GET","status_code":200,"duration_ms":607}
+{"time":"2026-10-06T09:40:58.191393+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-0006-72f1-807b-c73213a93841","method":"GET","status_code":200,"duration_ms":201}
+{"time":"2026-10-06T09:40:58.519478+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-0199-7f2e-a2d5-6d8843253fdb","method":"GET","status_code":200,"duration_ms":125}
+{"time":"2026-10-06T09:40:58.952029+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-02e1-7115-b485-1ab7afb7a747","method":"GET","status_code":200,"duration_ms":230}
+{"time":"2026-10-06T09:40:59.33431+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-0495-7f07-9d0c-df23655ddfbc","method":"GET","status_code":200,"duration_ms":176}
+{"time":"2026-10-06T09:40:59.690104+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-0610-719e-a82a-64b3e65402f8","method":"GET","status_code":200,"duration_ms":153}
+{"time":"2026-10-06T09:41:00.054513+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-0778-7192-8480-88b64f76d906","method":"GET","status_code":200,"duration_ms":158}
+{"time":"2026-10-06T09:41:00.400591+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-08e3-7305-8112-da2114a7b1e2","method":"GET","status_code":200,"duration_ms":141}
+{"time":"2026-10-06T09:41:00.749804+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-0a3c-766c-a67c-9795703fcd9e","method":"GET","status_code":200,"duration_ms":145}
+{"time":"2026-10-06T09:41:01.160939+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-0b97-7468-b1c4-fe243b11fce7","method":"GET","status_code":200,"duration_ms":209}
+{"time":"2026-10-06T09:41:01.607339+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-0d32-7956-add7-a91adf62e825","method":"GET","status_code":200,"duration_ms":244}
+{"time":"2026-10-06T09:41:02.01933+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-0ef1-76fd-bac6-751c71c611c0","method":"GET","status_code":200,"duration_ms":209}
+{"time":"2026-10-06T09:41:02.429177+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-108d-7465-ba45-adfa7b9efde6","method":"GET","status_code":200,"duration_ms":207}
+{"time":"2026-10-06T09:41:02.876185+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-1226-730d-8156-38e7186511b9","method":"GET","status_code":200,"duration_ms":245}
+{"time":"2026-10-06T09:41:03.321366+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-13e8-7943-812d-7fd80f3cac6f","method":"GET","status_code":200,"duration_ms":240}
+{"time":"2026-10-06T09:41:03.663547+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-15a4-753f-ba46-ed53d0b9d133","method":"GET","status_code":200,"duration_ms":139}
+{"time":"2026-10-06T09:41:04.036714+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-16f9-7845-8ea6-b331dafc70fb","method":"GET","status_code":200,"duration_ms":171}
+{"time":"2026-10-06T09:41:04.369636+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-186f-7bf6-918d-76f3bd793618","method":"GET","status_code":200,"duration_ms":129}
+{"time":"2026-10-06T09:41:04.757427+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-19bb-71d4-a982-6e539f95ea09","method":"GET","status_code":200,"duration_ms":186}
+{"time":"2026-10-06T09:41:05.515188+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-1b42-7242-84bf-c40931481c62","method":"GET","status_code":200,"duration_ms":553}
+{"time":"2026-10-06T09:41:06.17389+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-1e34-7b71-bc7b-6e141ad2df00","method":"GET","status_code":200,"duration_ms":457}
+{"time":"2026-10-06T09:41:06.793995+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-20c8-7407-9077-7946e6f8cf7a","method":"GET","status_code":200,"duration_ms":417}
+{"time":"2026-10-06T09:41:07.63568+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-2337-7265-9884-f9b9d9807dc1","method":"GET","status_code":200,"duration_ms":636}
+{"time":"2026-10-06T09:41:08.052023+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-267e-7b62-b509-1c8ef2b0a69d","method":"GET","status_code":200,"duration_ms":213}
+{"time":"2026-10-06T09:41:08.437634+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-281d-7f1b-99c0-23dcb13c186c","method":"GET","status_code":200,"duration_ms":183}
+{"time":"2026-10-06T09:41:08.859385+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-299f-761e-9ed4-4cff20629796","method":"GET","status_code":200,"duration_ms":219}
+{"time":"2026-10-06T09:41:09.266491+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-2b45-70fd-9cb1-f4100d75b1ca","method":"GET","status_code":200,"duration_ms":205}
+{"time":"2026-10-06T09:41:09.596871+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-2cdc-7df2-ab90-c2c971253e38","method":"GET","status_code":200,"duration_ms":127}
+{"time":"2026-10-06T09:41:09.926786+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-2e26-7f17-b3ab-0beeecc5fb36","method":"GET","status_code":200,"duration_ms":127}
+{"time":"2026-10-06T09:41:10.281899+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-2f71-7119-a03d-4a806cd058df","method":"GET","status_code":200,"duration_ms":152}
+{"time":"2026-10-06T09:41:10.674277+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-30d6-7626-a5e4-c9f1bcb9feef","method":"GET","status_code":200,"duration_ms":187}
+{"time":"2026-10-06T09:41:11.166512+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-325d-7cbd-a215-b22444dea0fe","method":"GET","status_code":200,"duration_ms":288}
+{"time":"2026-10-06T09:41:11.526661+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-3449-723a-84e8-33638743f670","method":"GET","status_code":200,"duration_ms":157}
+{"time":"2026-10-06T09:41:11.883643+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-35b1-78a2-8fa8-01487a501c86","method":"GET","status_code":200,"duration_ms":154}
+{"time":"2026-10-06T09:41:12.247079+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-3715-7c63-a0cb-2f3da5d40a4d","method":"GET","status_code":200,"duration_ms":161}
+{"time":"2026-10-06T09:41:12.611022+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-3880-7c67-ba9c-affd6ac529c4","method":"GET","status_code":200,"duration_ms":162}
+{"time":"2026-10-06T09:41:13.140289+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-39ed-7b42-8a69-7fbd4ce7fd66","method":"GET","status_code":200,"duration_ms":326}
+{"time":"2026-10-06T09:41:13.481196+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-3bff-76f1-b688-036183b04544","method":"GET","status_code":200,"duration_ms":137}
+{"time":"2026-10-06T09:41:13.932938+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-3d53-74d2-8d74-7e9822262b8c","method":"GET","status_code":200,"duration_ms":249}
+{"time":"2026-10-06T09:41:14.276801+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-3f16-7c02-b07e-66ef99660791","method":"GET","status_code":200,"duration_ms":141}
+{"time":"2026-10-06T09:41:14.672389+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-406e-7d27-82b6-1c9adaf3d340","method":"GET","status_code":200,"duration_ms":193}
+{"time":"2026-10-06T09:41:15.515594+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-41f9-720f-a59b-afe93e377e5a","method":"GET","status_code":200,"duration_ms":642}
+{"time":"2026-10-06T09:41:16.232585+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-4544-7d8c-a596-1d4d7cf5f739","method":"GET","status_code":200,"duration_ms":515}
+{"time":"2026-10-06T09:41:16.924349+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-4812-7a9e-ad73-87ec7ea4785b","method":"GET","status_code":200,"duration_ms":489}
+{"time":"2026-10-06T09:41:17.748286+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-4ac7-73a1-a08f-ce9898f7f404","method":"GET","status_code":200,"duration_ms":621}
+{"time":"2026-10-06T09:41:18.13726+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-4dfd-7933-8dbd-d4d16fd4ed06","method":"GET","status_code":200,"duration_ms":187}
+{"time":"2026-10-06T09:41:18.502952+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-4f83-75eb-9faa-334eea281954","method":"GET","status_code":200,"duration_ms":163}
+{"time":"2026-10-06T09:41:18.910407+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-50f1-7c7b-aad7-7618b2c2a6f1","method":"GET","status_code":200,"duration_ms":204}
+{"time":"2026-10-06T09:41:19.330859+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5288-7b46-88bb-5d3a0c36aa39","method":"GET","status_code":200,"duration_ms":218}
+{"time":"2026-10-06T09:41:19.385408+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5363-7cb5-b948-37c59bba32cf","method":"GET","status_code":200,"duration_ms":53}
+{"time":"2026-10-06T09:41:19.413836+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-539a-791c-a816-c76373a56aee","method":"GET","status_code":200,"duration_ms":27}
+{"time":"2026-10-06T09:41:19.635197+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-06T09:41:19.635477+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:19.663074+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-53be-7799-a433-5a5e014d6e85","method":"GET","status_code":200,"duration_ms":240}
+{"time":"2026-10-06T09:41:19.913041+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:19.922674+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5579-715b-ba35-224afca923e2","method":"GET","status_code":200,"duration_ms":57}
+{"time":"2026-10-06T09:41:20.17463+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:20.204762+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-567b-7dc7-a05e-cd4350f59046","method":"GET","status_code":200,"duration_ms":80}
+{"time":"2026-10-06T09:41:20.446615+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:20.458948+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5798-7daf-9ca8-038df1510a24","method":"GET","status_code":200,"duration_ms":50}
+{"time":"2026-10-06T09:41:20.75385+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:20.763588+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5898-7904-86a4-3d49491a8860","method":"GET","status_code":200,"duration_ms":98}
+{"time":"2026-10-06T09:41:21.001907+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:21.034508+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-59c5-7c29-be90-1d7dc571b120","method":"GET","status_code":200,"duration_ms":68}
+{"time":"2026-10-06T09:41:21.273446+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5ad5-733c-a301-7c81ae8c3ef7","method":"GET","status_code":200,"duration_ms":36}
+{"time":"2026-10-06T09:41:21.503983+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5bc3-729f-b568-1a3df8945e56","method":"GET","status_code":200,"duration_ms":28}
+{"time":"2026-10-06T09:41:21.572213+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-06T09:41:21.726227+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:21.752333+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5cac-7416-b01b-5839033196af","method":"GET","status_code":200,"duration_ms":44}
+{"time":"2026-10-06T09:41:21.972466+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:21.990085+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5da2-7c96-9a22-3f2e91868579","method":"GET","status_code":200,"duration_ms":35}
+{"time":"2026-10-06T09:41:22.27901+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:22.290258+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5e91-7582-9ecb-dd672fe006d4","method":"GET","status_code":200,"duration_ms":96}
+{"time":"2026-10-06T09:41:22.551608+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:22.583328+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-5fbb-75c0-8dcc-8605fcded947","method":"GET","status_code":200,"duration_ms":91}
+{"time":"2026-10-06T09:41:22.843692+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:22.855971+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-60e0-7c1d-ae6b-b992f4ff9b99","method":"GET","status_code":200,"duration_ms":71}
+{"time":"2026-10-06T09:41:23.104968+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:23.118197+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-61f1-7278-8e31-3e2cdb5c7a5b","method":"GET","status_code":200,"duration_ms":61}
+{"time":"2026-10-06T09:41:23.365053+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:23.382062+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-62f7-7484-8320-6a76034eb463","method":"GET","status_code":200,"duration_ms":62}
+{"time":"2026-10-06T09:41:23.626642+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:23.650081+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-63ff-717e-b335-b9fd4f9643f9","method":"GET","status_code":200,"duration_ms":66}
+{"time":"2026-10-06T09:41:23.883439+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:23.891525+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-650e-7509-9085-708d07c8ed44","method":"GET","status_code":200,"duration_ms":37}
+{"time":"2026-10-06T09:41:24.125721+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:24.138042+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-6603-7cc5-ac9b-4bc12310d02a","method":"GET","status_code":200,"duration_ms":38}
+{"time":"2026-10-06T09:41:24.419713+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:24.430879+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-66f4-77b4-a261-042ebf2dcf69","method":"GET","status_code":200,"duration_ms":90}
+{"time":"2026-10-06T09:41:24.671785+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:24.674966+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-6818-7320-bd8b-d6d98b31f9d9","method":"GET","status_code":200,"duration_ms":42}
+{"time":"2026-10-06T09:41:24.913372+08:00","level":"WARN","msg":"Graph request unavailable","stage":"lease_before_query"}
+{"time":"2026-10-06T09:41:24.918012+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-690c-79f2-b3ba-834ae640c1dc","method":"GET","status_code":200,"duration_ms":41}
+{"time":"2026-10-06T09:41:25.143867+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-6a00-7829-bc42-188eef9bf14f","method":"GET","status_code":200,"duration_ms":23}
+{"time":"2026-10-06T09:41:25.389647+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-6ae1-7017-b253-50415fdd2f07","method":"GET","status_code":200,"duration_ms":44}
+{"time":"2026-10-06T09:41:25.644617+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-6bdc-763d-9d42-8792cdcc4772","method":"GET","status_code":200,"duration_ms":48}
+{"time":"2026-10-06T09:41:25.917186+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-6cd8-7812-9fc4-afa1aed09b17","method":"GET","status_code":200,"duration_ms":68}
+{"time":"2026-10-06T09:41:26.177561+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-6de7-78d9-bfdf-c592a62fdf8d","method":"GET","status_code":200,"duration_ms":57}
+{"time":"2026-10-06T09:41:26.403863+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-6eeb-7cb2-9f1b-598c60c64f3f","method":"GET","status_code":200,"duration_ms":24}
+{"time":"2026-10-06T09:41:26.655909+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-6fce-7023-b140-d256ceca8a99","method":"GET","status_code":200,"duration_ms":49}
+{"time":"2026-10-06T09:41:26.91402+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-70c9-774b-a25d-078ef31d3787","method":"GET","status_code":200,"duration_ms":56}
+{"time":"2026-10-06T09:41:27.128098+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-71cb-7be6-b4d8-4c1f4520fadd","method":"GET","status_code":200,"duration_ms":12}
+{"time":"2026-10-06T09:41:27.392054+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-72a2-794a-a2ab-95fcd50a3602","method":"GET","status_code":200,"duration_ms":61}
+{"time":"2026-10-06T09:41:27.673549+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-73ab-7023-b818-825f9ae8cca6","method":"GET","status_code":200,"duration_ms":78}
+{"time":"2026-10-06T09:41:27.917971+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-74c3-70cb-b782-da1069de2b5c","method":"GET","status_code":200,"duration_ms":42}
+{"time":"2026-10-06T09:41:28.136456+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-75b7-7a7b-8af6-75449b3ca9cf","method":"GET","status_code":200,"duration_ms":16}
+{"time":"2026-10-06T09:41:28.376409+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-7692-7f03-8f9f-ae3ab79a61fe","method":"GET","status_code":200,"duration_ms":37}
+{"time":"2026-10-06T09:41:28.70338+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-7782-7153-906a-1793e43b6515","method":"GET","status_code":200,"duration_ms":125}
+{"time":"2026-10-06T09:41:28.956214+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-78cd-72bf-8736-702fb20eb2b1","method":"GET","status_code":200,"duration_ms":47}
+{"time":"2026-10-06T09:41:29.247566+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-79c6-77fa-b4a1-6fa0920b1743","method":"GET","status_code":200,"duration_ms":88}
+{"time":"2026-10-06T09:41:29.489545+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-7aea-715f-8a3d-d565a881e71d","method":"GET","status_code":200,"duration_ms":39}
+{"time":"2026-10-06T09:41:29.750617+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-7be1-7b71-9d39-7eca02210a3c","method":"GET","status_code":200,"duration_ms":52}
+{"time":"2026-10-06T09:41:30.002503+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-7ce2-7b46-ad0c-fa0f9d574be4","method":"GET","status_code":200,"duration_ms":47}
+{"time":"2026-10-06T09:41:30.234362+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-7ddb-77cc-bdf9-05975d8878a1","method":"GET","status_code":200,"duration_ms":30}
+{"time":"2026-10-06T09:41:30.452612+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-7ec4-729b-8b86-afe87197d0b8","method":"GET","status_code":200,"duration_ms":16}
+{"time":"2026-10-06T09:41:30.69842+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-7fa1-71ad-b13f-19d637c5581f","method":"GET","status_code":200,"duration_ms":41}
+{"time":"2026-10-06T09:41:30.946914+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-8094-741a-87e6-9d550ccd4fa9","method":"GET","status_code":200,"duration_ms":46}
+{"time":"2026-10-06T09:41:31.167866+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-818f-79f2-8307-c50c52faf6dd","method":"GET","status_code":200,"duration_ms":16}
+{"time":"2026-10-06T09:41:31.441611+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-8269-7aaa-843b-24c5d921c959","method":"GET","status_code":200,"duration_ms":71}
+{"time":"2026-10-06T09:41:31.714502+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-837e-7718-b7a0-e802032cb393","method":"GET","status_code":200,"duration_ms":68}
+{"time":"2026-10-06T09:41:31.99302+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-848e-7ea6-adfa-e73c3609bcc7","method":"GET","status_code":200,"duration_ms":74}
+{"time":"2026-10-06T09:41:32.23614+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-85a2-70a0-96d4-3ba04756275b","method":"GET","status_code":200,"duration_ms":42}
+{"time":"2026-10-06T09:41:32.508557+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-8695-7718-a997-9a093f70b6a2","method":"GET","status_code":200,"duration_ms":71}
+{"time":"2026-10-06T09:41:32.768102+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-87a6-7c9a-9d69-4017f44c8b40","method":"GET","status_code":200,"duration_ms":57}
+{"time":"2026-10-06T09:41:33.007721+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-88aa-77df-b893-72e25d8a9c32","method":"GET","status_code":200,"duration_ms":37}
+{"time":"2026-10-06T09:41:33.274229+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-8999-78b6-b04c-c7b3c5ed1114","method":"GET","status_code":200,"duration_ms":64}
+{"time":"2026-10-06T09:41:33.521855+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-8aa5-72b3-96ad-c5d1c2ecaaea","method":"GET","status_code":200,"duration_ms":44}
+{"time":"2026-10-06T09:41:33.784584+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-8b9d-713c-bd51-ef8bc1690019","method":"GET","status_code":200,"duration_ms":59}
+{"time":"2026-10-06T09:41:34.059703+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-8ca3-7dea-afe5-23fe12a3252c","method":"GET","status_code":200,"duration_ms":71}
+{"time":"2026-10-06T09:41:34.282836+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-8db8-7105-a653-0b05e93f7d1a","method":"GET","status_code":200,"duration_ms":18}
+{"time":"2026-10-06T09:41:34.519341+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-8e95-79a4-9b97-5db03d57f039","method":"GET","status_code":200,"duration_ms":33}
+{"time":"2026-10-06T09:41:34.733849+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-8f81-7052-abaa-591b29070c45","method":"GET","status_code":200,"duration_ms":12}
+{"time":"2026-10-06T09:41:34.988035+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-9057-76f5-a9f9-f188ce2cca5d","method":"GET","status_code":200,"duration_ms":52}
+{"time":"2026-10-06T09:41:35.227127+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-9155-78ae-8809-9985dc971de1","method":"GET","status_code":200,"duration_ms":37}
+{"time":"2026-10-06T09:41:35.481175+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-9243-7bc3-a92d-4bee661498cd","method":"GET","status_code":200,"duration_ms":53}
+{"time":"2026-10-06T09:41:35.914276+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-9343-7966-98d4-ff6bc4399932","method":"GET","status_code":200,"duration_ms":230}
+{"time":"2026-10-06T09:41:36.28884+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-94f5-7add-86cf-d33f5342babe","method":"GET","status_code":200,"duration_ms":171}
+{"time":"2026-10-06T09:41:36.673815+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-966a-7426-809e-6a932b1e4c74","method":"GET","status_code":200,"duration_ms":183}
+{"time":"2026-10-06T09:41:37.072207+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-97eb-7753-9743-b9c92f099029","method":"GET","status_code":200,"duration_ms":196}
+{"time":"2026-10-06T09:41:37.417027+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-997a-7347-a7e0-b4ed4a40c76e","method":"GET","status_code":200,"duration_ms":142}
+{"time":"2026-10-06T09:41:37.835527+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-9ad4-7080-92ba-1032f18999e7","method":"GET","status_code":200,"duration_ms":215}
+{"time":"2026-10-06T09:41:38.223176+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-9c75-7d79-812f-df6ab5f17d77","method":"GET","status_code":200,"duration_ms":185}
+{"time":"2026-10-06T09:41:38.573388+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-9df7-7ea6-b354-e4fc485adb28","method":"GET","status_code":200,"duration_ms":149}
+{"time":"2026-10-06T09:41:38.967528+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-9f56-7ab2-82a2-69735974f176","method":"GET","status_code":200,"duration_ms":192}
+{"time":"2026-10-06T09:41:39.371393+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-a0e7-7795-9f8d-0169c013d85b","method":"GET","status_code":200,"duration_ms":195}
+{"time":"2026-10-06T09:41:39.78223+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-a275-70d6-80dd-d99ca4c10244","method":"GET","status_code":200,"duration_ms":209}
+{"time":"2026-10-06T09:41:40.193962+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-a40f-7449-9b79-5ef9f87bb39f","method":"GET","status_code":200,"duration_ms":210}
+{"time":"2026-10-06T09:41:40.442379+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-a5ab-7e63-8fcd-bce13a2ac5a5","method":"GET","status_code":200,"duration_ms":46}
+{"time":"2026-10-06T09:41:40.680283+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-a6a4-74e2-87e2-5d21af3dac64","method":"GET","status_code":200,"duration_ms":35}
+{"time":"2026-10-06T09:41:40.950421+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-a793-7c44-90f2-658afc222217","method":"GET","status_code":200,"duration_ms":66}
+{"time":"2026-10-06T09:41:41.170879+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-a8a0-7bd3-a873-df73d888def0","method":"GET","status_code":200,"duration_ms":18}
+{"time":"2026-10-06T09:41:41.382352+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-a97c-7883-82db-7150df7e1115","method":"GET","status_code":200,"duration_ms":9}
+{"time":"2026-10-06T09:41:41.608762+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-aa4f-7c6b-9a40-d6d524cf2937","method":"GET","status_code":200,"duration_ms":24}
+{"time":"2026-10-06T09:41:42.306694+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-ab33-72af-b603-c0273b44555b","method":"GET","status_code":200,"duration_ms":495}
+{"time":"2026-10-06T09:41:42.309428+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-ad24-7061-aca2-40613a256c61","method":"POST","status_code":409,"duration_ms":1}
+{"time":"2026-10-06T09:41:42.342016+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-ad25-7b69-bc4d-c7240ad58803","method":"POST","status_code":200,"duration_ms":32}
+{"time":"2026-10-06T09:41:42.351972+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-ad46-7a77-b6b4-8ea97255bd16","method":"POST","status_code":200,"duration_ms":9}
+{"time":"2026-10-06T09:41:42.573986+08:00","level":"WARN","msg":"SP05 official observation unavailable","errorClass":"canceled"}
+{"time":"2026-10-06T09:41:42.574088+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"source_scope_unverified","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-06T09:41:42.57432+08:00","level":"WARN","msg":"SP05 durable reducer pass unavailable","errorClass":"canceled"}
+{"time":"2026-10-06T09:41:42.603062+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-ae2f-731c-9397-9868a7efbc4e","method":"POST","status_code":200,"duration_ms":27}
+{"time":"2026-10-06T09:41:42.632859+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-ae4b-7781-ac5d-0e579331a026","method":"POST","status_code":200,"duration_ms":29}
+{"time":"2026-10-06T09:41:42.720183+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-aea7-78ae-a067-67c13600655d","method":"POST","status_code":200,"duration_ms":24}
+{"time":"2026-10-06T09:41:42.818086+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-aeec-7cb9-9f45-a0efcd49fc84","method":"POST","status_code":200,"duration_ms":53}
+{"time":"2026-10-06T09:41:42.857758+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-af22-74a3-b445-ec16902d0549","method":"POST","status_code":200,"duration_ms":39}
+{"time":"2026-10-06T09:41:42.898284+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-af4a-70c3-992b-2ac0ff7fb0e0","method":"POST","status_code":409,"duration_ms":40}
+{"time":"2026-10-06T09:41:42.903165+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-af75-7182-b03e-26d2b44c2a1b","method":"POST","status_code":403,"duration_ms":2}
+{"time":"2026-10-06T09:41:42.987254+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-af79-7ec5-a6f0-eca2f55f21c7","method":"POST","status_code":200,"duration_ms":81}
+{"time":"2026-10-06T09:41:43.022187+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-afcb-788f-ad43-8ec1c278ed9a","method":"POST","status_code":200,"duration_ms":34}
+{"time":"2026-10-06T09:41:43.064169+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-afee-7c19-823e-fb6d45b763b3","method":"POST","status_code":409,"duration_ms":41}
+{"time":"2026-10-06T09:41:43.106188+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-b018-7c2d-8fa0-ac0ff31e0bd5","method":"POST","status_code":200,"duration_ms":41}
+{"time":"2026-10-06T09:41:43.122001+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-b042-78ed-8f04-51e8da33cec3","method":"POST","status_code":200,"duration_ms":15}
+{"time":"2026-10-06T09:41:43.184181+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-b054-711d-a6cd-9f25be90fbe1","method":"POST","status_code":409,"duration_ms":60}
+{"time":"2026-10-06T09:41:43.189556+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-b092-747c-ae33-8b52983d0bdf","method":"POST","status_code":403,"duration_ms":3}
+{"time":"2026-10-06T09:41:43.193367+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-b098-7cc1-909d-f36a00231d8c","method":"POST","status_code":403,"duration_ms":0}
+{"time":"2026-10-06T09:41:43.19397+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-b099-7772-98d1-efea113d01fc","method":"POST","status_code":403,"duration_ms":0}
+{"time":"2026-10-06T09:41:43.194519+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-b09a-7130-bcee-60bcaae1c617","method":"POST","status_code":403,"duration_ms":0}
+    sp05_live_test.go:308: actual OIDC API HTTP transition/merge/split: typed success/error contracts, stale revisions, byte-identical replay and single mutation; linked namespace and role withdrawal deny cached replay
+{"time":"2026-10-06T09:41:43.198549+08:00","level":"INFO","msg":"http request complete","request_id":"01a10edf-b09d-7f32-84e6-d0a27099d6a2","method":"POST","status_code":403,"duration_ms":0}
+    sp05_live_test.go:316: actual OrbStack native PVC/scheduling -> Worker inspector -> unified Finding ingress -> PostgreSQL outbox consumer -> Incident -> real OpenBao/SeaweedFS archive; OIDC API replay and Worker restart; no performance measurement; hardware and Node fault injection remain separate frozen fixtures
+    archive_iam_test.go:155: retained owned Archive fixture id=9dba1eed4b0d9be1e68c281786e8a4cbb127e058c694700e8092d7a36a291a03 label=d063eb83-c647-453c-ad8c-a251dbde98b5 bucket=sp05-chain-9daa3009 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-529912340; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_a54f9e9dd5ba491da4f52c0dba259d9a test=TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart reason=audit.records; no automatic protected cleanup
+--- PASS: TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart (84.57s)
+=== RUN   TestSP05ResourceNamespaceCannotBeClaimedAsClusterScoped
+2026/10/06 09:41:54 OK   00001_roles_and_schemas.sql (82.35ms)
+2026/10/06 09:41:54 goose: successfully migrated database to version: 1
+2026/10/06 09:41:54 OK   00002_platform_meta.sql (68.85ms)
+2026/10/06 09:41:54 OK   00003_finding.sql (46.16ms)
+2026/10/06 09:41:54 OK   00004_incident.sql (44.45ms)
+2026/10/06 09:41:54 OK   00005_investigation.sql (43.13ms)
+2026/10/06 09:41:54 OK   00006_action_command.sql (32.44ms)
+2026/10/06 09:41:54 OK   00007_audit.sql (19.02ms)
+2026/10/06 09:41:54 OK   00008_rls.sql (69.98ms)
+2026/10/06 09:41:54 OK   00009_idempotency_ledger.sql (52.12ms)
+2026/10/06 09:41:54 OK   00010_tenant_provisioning.sql (28.32ms)
+2026/10/06 09:41:54 OK   00011_source_registration_history.sql (45.88ms)
+2026/10/06 09:41:54 OK   00012_config_registry_lifecycle.sql (35.5ms)
+2026/10/06 09:41:55 OK   00013_audit_signed_segments.sql (32.81ms)
+2026/10/06 09:41:55 OK   00014_audit_segment_predecessors.sql (12.05ms)
+2026/10/06 09:41:55 OK   00015_source_schema_scope.sql (5.97ms)
+2026/10/06 09:41:55 OK   00016_cluster_registration_metadata.sql (20.34ms)
+2026/10/06 09:41:55 OK   00017_source_data_scope.sql (4.54ms)
+2026/10/06 09:41:55 OK   00018_sp04_resources_evidence.sql (38.69ms)
+2026/10/06 09:41:55 OK   00019_sp04_archive_ciphertext_bytes.sql (8.09ms)
+2026/10/06 09:41:55 OK   00020_sp04_request_ledger.sql (4.33ms)
+2026/10/06 09:41:55 OK   00021_sp04_archive_protection.sql (2.48ms)
+2026/10/06 09:41:55 OK   00022_sp04_legal_hold_dependencies.sql (2.77ms)
+2026/10/06 09:41:55 OK   00023_sp04_archive_query_intent.sql (8.96ms)
+2026/10/06 09:41:55 OK   00024_sp05_finding_incident.sql (41.01ms)
+2026/10/06 09:41:55 OK   00025_sp05_incident_event_time.sql (26.67ms)
+2026/10/06 09:41:55 OK   00026_sp05_source_binding_lock.sql (2.93ms)
+2026/10/06 09:41:55 OK   00027_sp05_rca_and_poll.sql (6.14ms)
+2026/10/06 09:41:55 OK   00028_sp05_operator_lock.sql (2.28ms)
+2026/10/06 09:41:55 OK   00029_sp05_evidence_links.sql (6.63ms)
+2026/10/06 09:41:55 OK   00030_sp05_recipe_fence.sql (15.81ms)
+2026/10/06 09:41:55 OK   00031_sp05_rca_postcheck.sql (10.77ms)
+2026/10/06 09:41:55 OK   00032_sp05_transport_audit.sql (5.97ms)
+2026/10/06 09:41:55 OK   00033_sp05_poll_resolution_clock.sql (10.53ms)
+2026/10/06 09:41:55 OK   00034_sp06_investigation_ledger.sql (43.89ms)
+2026/10/06 09:41:55 OK   00035_sp06_admission_data_classes.sql (7.16ms)
+2026/10/06 09:41:55 goose: successfully migrated database to version: 35
+--- PASS: TestSP05ResourceNamespaceCannotBeClaimedAsClusterScoped (2.30s)
+=== RUN   TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain
+2026/10/06 09:41:57 OK   00001_roles_and_schemas.sql (18.82ms)
+2026/10/06 09:41:57 goose: successfully migrated database to version: 1
+2026/10/06 09:41:57 OK   00002_platform_meta.sql (41.49ms)
+2026/10/06 09:41:57 OK   00003_finding.sql (44.14ms)
+2026/10/06 09:41:57 OK   00004_incident.sql (18.8ms)
+2026/10/06 09:41:57 OK   00005_investigation.sql (8.1ms)
+2026/10/06 09:41:57 OK   00006_action_command.sql (15.93ms)
+2026/10/06 09:41:57 OK   00007_audit.sql (83.99ms)
+2026/10/06 09:41:57 OK   00008_rls.sql (24.42ms)
+2026/10/06 09:41:57 OK   00009_idempotency_ledger.sql (45.37ms)
+2026/10/06 09:41:57 OK   00010_tenant_provisioning.sql (5.72ms)
+2026/10/06 09:41:57 OK   00011_source_registration_history.sql (27.25ms)
+2026/10/06 09:41:57 OK   00012_config_registry_lifecycle.sql (24.7ms)
+2026/10/06 09:41:57 OK   00013_audit_signed_segments.sql (44.11ms)
+2026/10/06 09:41:57 OK   00014_audit_segment_predecessors.sql (21.44ms)
+2026/10/06 09:41:57 OK   00015_source_schema_scope.sql (14.08ms)
+2026/10/06 09:41:57 OK   00016_cluster_registration_metadata.sql (27.78ms)
+2026/10/06 09:41:57 OK   00017_source_data_scope.sql (8.49ms)
+2026/10/06 09:41:57 OK   00018_sp04_resources_evidence.sql (53.98ms)
+2026/10/06 09:41:57 OK   00019_sp04_archive_ciphertext_bytes.sql (22.36ms)
+2026/10/06 09:41:57 OK   00020_sp04_request_ledger.sql (18.79ms)
+2026/10/06 09:41:57 OK   00021_sp04_archive_protection.sql (5.6ms)
+2026/10/06 09:41:57 OK   00022_sp04_legal_hold_dependencies.sql (3.75ms)
+2026/10/06 09:41:57 OK   00023_sp04_archive_query_intent.sql (12.16ms)
+2026/10/06 09:41:58 OK   00024_sp05_finding_incident.sql (43.37ms)
+2026/10/06 09:41:58 OK   00025_sp05_incident_event_time.sql (5.08ms)
+2026/10/06 09:41:58 OK   00026_sp05_source_binding_lock.sql (6.2ms)
+2026/10/06 09:41:58 OK   00027_sp05_rca_and_poll.sql (25.67ms)
+2026/10/06 09:41:58 OK   00028_sp05_operator_lock.sql (15.29ms)
+2026/10/06 09:41:58 OK   00029_sp05_evidence_links.sql (12.81ms)
+2026/10/06 09:41:58 OK   00030_sp05_recipe_fence.sql (26.72ms)
+2026/10/06 09:41:58 OK   00031_sp05_rca_postcheck.sql (3.11ms)
+2026/10/06 09:41:58 OK   00032_sp05_transport_audit.sql (34.43ms)
+2026/10/06 09:41:58 OK   00033_sp05_poll_resolution_clock.sql (3.49ms)
+2026/10/06 09:41:58 OK   00034_sp06_investigation_ledger.sql (65.8ms)
+2026/10/06 09:41:58 OK   00035_sp06_admission_data_classes.sql (12.18ms)
+2026/10/06 09:41:58 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=b62dfe0d84ae868d715722a303f0d0bee00b5b9eb0ce8dd5f1062445cc9ca525 bucket=sp05-golden-d43081a9 tenants=1
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=a10045896153b7191f97c39258400c4c3109283d5f05a4a588d0c1c3b636b77d bucket=sp05-native-worker-c29be034 tenants=1
+    sp05_native_worker_test.go:153: actual authorized Worker startup + original fixed CLI + native OrbStack fault Pod + common ingestion + real PG Incident + real OpenBao/TLS/IAM S3 Evidence; image=sha256:c1d7b1fe8451560839665fb68e0476162924238684175749f047b615272850cf; private inputs remain in owned Secret, no performance samples
+    archive_iam_test.go:155: retained owned Archive fixture id=a10045896153b7191f97c39258400c4c3109283d5f05a4a588d0c1c3b636b77d label=b8483ca3-6fee-4814-83ff-1c83ac5abbc4 bucket=sp05-native-worker-c29be034 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-1869619477; process stopped, no storage/identity deletion
+    archive_iam_test.go:155: retained owned Archive fixture id=b62dfe0d84ae868d715722a303f0d0bee00b5b9eb0ce8dd5f1062445cc9ca525 label=84c6cd1c-e45d-40cc-8871-4088d5093ce5 bucket=sp05-golden-d43081a9 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-3230769129; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_674ccd9953834befb90538a5c17d6647 test=TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain reason=audit.records; no automatic protected cleanup
+--- PASS: TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain (125.49s)
+=== RUN   TestSP05OfficialObservationsActualOrbStackAndControlledProbeFailure
+2026/10/06 09:44:02 OK   00001_roles_and_schemas.sql (9.37ms)
+2026/10/06 09:44:02 goose: successfully migrated database to version: 1
+2026/10/06 09:44:02 OK   00002_platform_meta.sql (55.1ms)
+2026/10/06 09:44:02 OK   00003_finding.sql (16.08ms)
+2026/10/06 09:44:02 OK   00004_incident.sql (17.31ms)
+2026/10/06 09:44:03 OK   00005_investigation.sql (36.03ms)
+2026/10/06 09:44:03 OK   00006_action_command.sql (16.5ms)
+2026/10/06 09:44:03 OK   00007_audit.sql (49.38ms)
+2026/10/06 09:44:03 OK   00008_rls.sql (20.69ms)
+2026/10/06 09:44:03 OK   00009_idempotency_ledger.sql (31.98ms)
+2026/10/06 09:44:03 OK   00010_tenant_provisioning.sql (22.53ms)
+2026/10/06 09:44:03 OK   00011_source_registration_history.sql (10.35ms)
+2026/10/06 09:44:03 OK   00012_config_registry_lifecycle.sql (10.49ms)
+2026/10/06 09:44:03 OK   00013_audit_signed_segments.sql (17.29ms)
+2026/10/06 09:44:03 OK   00014_audit_segment_predecessors.sql (11.25ms)
+2026/10/06 09:44:03 OK   00015_source_schema_scope.sql (11.59ms)
+2026/10/06 09:44:03 OK   00016_cluster_registration_metadata.sql (7.01ms)
+2026/10/06 09:44:03 OK   00017_source_data_scope.sql (4.17ms)
+2026/10/06 09:44:03 OK   00018_sp04_resources_evidence.sql (31.53ms)
+2026/10/06 09:44:03 OK   00019_sp04_archive_ciphertext_bytes.sql (8.28ms)
+2026/10/06 09:44:03 OK   00020_sp04_request_ledger.sql (12.57ms)
+2026/10/06 09:44:03 OK   00021_sp04_archive_protection.sql (4.13ms)
+2026/10/06 09:44:03 OK   00022_sp04_legal_hold_dependencies.sql (3.71ms)
+2026/10/06 09:44:03 OK   00023_sp04_archive_query_intent.sql (6.24ms)
+2026/10/06 09:44:03 OK   00024_sp05_finding_incident.sql (40.85ms)
+2026/10/06 09:44:03 OK   00025_sp05_incident_event_time.sql (3.59ms)
+2026/10/06 09:44:03 OK   00026_sp05_source_binding_lock.sql (3.92ms)
+2026/10/06 09:44:03 OK   00027_sp05_rca_and_poll.sql (20.52ms)
+2026/10/06 09:44:03 OK   00028_sp05_operator_lock.sql (12.35ms)
+2026/10/06 09:44:03 OK   00029_sp05_evidence_links.sql (12.84ms)
+2026/10/06 09:44:03 OK   00030_sp05_recipe_fence.sql (4.36ms)
+2026/10/06 09:44:03 OK   00031_sp05_rca_postcheck.sql (5.11ms)
+2026/10/06 09:44:03 OK   00032_sp05_transport_audit.sql (7.11ms)
+2026/10/06 09:44:03 OK   00033_sp05_poll_resolution_clock.sql (4.33ms)
+2026/10/06 09:44:03 OK   00034_sp06_investigation_ledger.sql (29.78ms)
+2026/10/06 09:44:03 OK   00035_sp06_admission_data_classes.sql (6.65ms)
+2026/10/06 09:44:03 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=e9f99e95dd81cf49f612b161a9a53346ce6d0b7b02bf28f5a5cb862e42147789 bucket=sp05-golden-22945040 tenants=1
+    sp05_official_observations_test.go:107: native available control plane misclassified: {ProbeAvailable:false MetricAvailable:false PodMetricAvailable:false PodMetricDegraded:false Candidates:0 DegradedSources:[kubernetes/control-plane kubernetes/control-plane]} <nil>
+    archive_iam_test.go:155: retained owned Archive fixture id=e9f99e95dd81cf49f612b161a9a53346ce6d0b7b02bf28f5a5cb862e42147789 label=fdd9e463-0d40-4e7e-b5b6-7317ac9cc6af bucket=sp05-golden-22945040 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-2091290772; process stopped, no storage/identity deletion
+--- FAIL: TestSP05OfficialObservationsActualOrbStackAndControlledProbeFailure (18.63s)
+=== RUN   TestSP05EqualSequenceConflictAndTransportAliasAreAudited
+2026/10/06 09:44:20 OK   00001_roles_and_schemas.sql (7.81ms)
+2026/10/06 09:44:20 goose: successfully migrated database to version: 1
+2026/10/06 09:44:20 OK   00002_platform_meta.sql (46.4ms)
+2026/10/06 09:44:20 OK   00003_finding.sql (22.32ms)
+2026/10/06 09:44:20 OK   00004_incident.sql (5.63ms)
+2026/10/06 09:44:20 OK   00005_investigation.sql (10.38ms)
+2026/10/06 09:44:20 OK   00006_action_command.sql (13.36ms)
+2026/10/06 09:44:20 OK   00007_audit.sql (16.41ms)
+2026/10/06 09:44:20 OK   00008_rls.sql (22.06ms)
+2026/10/06 09:44:20 OK   00009_idempotency_ledger.sql (14.96ms)
+2026/10/06 09:44:20 OK   00010_tenant_provisioning.sql (4.16ms)
+2026/10/06 09:44:20 OK   00011_source_registration_history.sql (6.7ms)
+2026/10/06 09:44:20 OK   00012_config_registry_lifecycle.sql (33.04ms)
+2026/10/06 09:44:20 OK   00013_audit_signed_segments.sql (20.55ms)
+2026/10/06 09:44:21 OK   00014_audit_segment_predecessors.sql (17.33ms)
+2026/10/06 09:44:21 OK   00015_source_schema_scope.sql (4.47ms)
+2026/10/06 09:44:21 OK   00016_cluster_registration_metadata.sql (4.96ms)
+2026/10/06 09:44:21 OK   00017_source_data_scope.sql (4.04ms)
+2026/10/06 09:44:21 OK   00018_sp04_resources_evidence.sql (14.83ms)
+2026/10/06 09:44:21 OK   00019_sp04_archive_ciphertext_bytes.sql (14.75ms)
+2026/10/06 09:44:21 OK   00020_sp04_request_ledger.sql (20.85ms)
+2026/10/06 09:44:21 OK   00021_sp04_archive_protection.sql (5.39ms)
+2026/10/06 09:44:21 OK   00022_sp04_legal_hold_dependencies.sql (4.32ms)
+2026/10/06 09:44:21 OK   00023_sp04_archive_query_intent.sql (2.64ms)
+2026/10/06 09:44:21 OK   00024_sp05_finding_incident.sql (43ms)
+2026/10/06 09:44:21 OK   00025_sp05_incident_event_time.sql (3.28ms)
+2026/10/06 09:44:21 OK   00026_sp05_source_binding_lock.sql (20.77ms)
+2026/10/06 09:44:21 OK   00027_sp05_rca_and_poll.sql (26.89ms)
+2026/10/06 09:44:21 OK   00028_sp05_operator_lock.sql (8.64ms)
+2026/10/06 09:44:21 OK   00029_sp05_evidence_links.sql (11.56ms)
+2026/10/06 09:44:21 OK   00030_sp05_recipe_fence.sql (3.86ms)
+2026/10/06 09:44:21 OK   00031_sp05_rca_postcheck.sql (5.04ms)
+2026/10/06 09:44:21 OK   00032_sp05_transport_audit.sql (6.57ms)
+2026/10/06 09:44:21 OK   00033_sp05_poll_resolution_clock.sql (5.5ms)
+2026/10/06 09:44:21 OK   00034_sp06_investigation_ledger.sql (39.55ms)
+2026/10/06 09:44:21 OK   00035_sp06_admission_data_classes.sql (4.56ms)
+2026/10/06 09:44:21 goose: successfully migrated database to version: 35
+--- PASS: TestSP05EqualSequenceConflictAndTransportAliasAreAudited (0.79s)
+=== RUN   TestSP05PollBirthClockSurvivesPostgreSQLPrecisionAndRestart
+2026/10/06 09:44:21 OK   00001_roles_and_schemas.sql (38.92ms)
+2026/10/06 09:44:21 goose: successfully migrated database to version: 1
+2026/10/06 09:44:21 OK   00002_platform_meta.sql (38.05ms)
+2026/10/06 09:44:21 OK   00003_finding.sql (11.33ms)
+2026/10/06 09:44:21 OK   00004_incident.sql (9.88ms)
+2026/10/06 09:44:21 OK   00005_investigation.sql (17.74ms)
+2026/10/06 09:44:21 OK   00006_action_command.sql (10.09ms)
+2026/10/06 09:44:21 OK   00007_audit.sql (20.56ms)
+2026/10/06 09:44:21 OK   00008_rls.sql (21.01ms)
+2026/10/06 09:44:21 OK   00009_idempotency_ledger.sql (8.91ms)
+2026/10/06 09:44:21 OK   00010_tenant_provisioning.sql (11.04ms)
+2026/10/06 09:44:21 OK   00011_source_registration_history.sql (18.79ms)
+2026/10/06 09:44:21 OK   00012_config_registry_lifecycle.sql (8.58ms)
+2026/10/06 09:44:21 OK   00013_audit_signed_segments.sql (40.98ms)
+2026/10/06 09:44:21 OK   00014_audit_segment_predecessors.sql (16.88ms)
+2026/10/06 09:44:21 OK   00015_source_schema_scope.sql (10.74ms)
+2026/10/06 09:44:21 OK   00016_cluster_registration_metadata.sql (6.34ms)
+2026/10/06 09:44:21 OK   00017_source_data_scope.sql (3.89ms)
+2026/10/06 09:44:21 OK   00018_sp04_resources_evidence.sql (31.69ms)
+2026/10/06 09:44:21 OK   00019_sp04_archive_ciphertext_bytes.sql (3ms)
+2026/10/06 09:44:21 OK   00020_sp04_request_ledger.sql (12.04ms)
+2026/10/06 09:44:21 OK   00021_sp04_archive_protection.sql (14.37ms)
+2026/10/06 09:44:21 OK   00022_sp04_legal_hold_dependencies.sql (4.11ms)
+2026/10/06 09:44:21 OK   00023_sp04_archive_query_intent.sql (2.73ms)
+2026/10/06 09:44:21 OK   00024_sp05_finding_incident.sql (30.27ms)
+2026/10/06 09:44:21 OK   00025_sp05_incident_event_time.sql (4.03ms)
+2026/10/06 09:44:21 OK   00026_sp05_source_binding_lock.sql (3.41ms)
+2026/10/06 09:44:21 OK   00027_sp05_rca_and_poll.sql (9.14ms)
+2026/10/06 09:44:21 OK   00028_sp05_operator_lock.sql (4.43ms)
+2026/10/06 09:44:21 OK   00029_sp05_evidence_links.sql (7.75ms)
+2026/10/06 09:44:21 OK   00030_sp05_recipe_fence.sql (4.09ms)
+2026/10/06 09:44:21 OK   00031_sp05_rca_postcheck.sql (6.62ms)
+2026/10/06 09:44:21 OK   00032_sp05_transport_audit.sql (7.26ms)
+2026/10/06 09:44:22 OK   00033_sp05_poll_resolution_clock.sql (3.15ms)
+2026/10/06 09:44:22 OK   00034_sp06_investigation_ledger.sql (28.86ms)
+2026/10/06 09:44:22 OK   00035_sp06_admission_data_classes.sql (4.31ms)
+2026/10/06 09:44:22 goose: successfully migrated database to version: 35
+--- PASS: TestSP05PollBirthClockSurvivesPostgreSQLPrecisionAndRestart (0.78s)
+=== RUN   TestSP05PollCrashAfterResolveAndLateReplayCannotCreateOccurrence
+=== RUN   TestSP05PollCrashAfterResolveAndLateReplayCannotCreateOccurrence/crash-before-close
+2026/10/06 09:44:22 OK   00001_roles_and_schemas.sql (33.02ms)
+2026/10/06 09:44:22 goose: successfully migrated database to version: 1
+2026/10/06 09:44:22 OK   00002_platform_meta.sql (61.74ms)
+2026/10/06 09:44:22 OK   00003_finding.sql (10.15ms)
+2026/10/06 09:44:22 OK   00004_incident.sql (7.44ms)
+2026/10/06 09:44:22 OK   00005_investigation.sql (11.27ms)
+2026/10/06 09:44:22 OK   00006_action_command.sql (9.07ms)
+2026/10/06 09:44:22 OK   00007_audit.sql (16.13ms)
+2026/10/06 09:44:22 OK   00008_rls.sql (23.11ms)
+2026/10/06 09:44:22 OK   00009_idempotency_ledger.sql (7.25ms)
+2026/10/06 09:44:22 OK   00010_tenant_provisioning.sql (7.78ms)
+2026/10/06 09:44:22 OK   00011_source_registration_history.sql (15.1ms)
+2026/10/06 09:44:22 OK   00012_config_registry_lifecycle.sql (11.66ms)
+2026/10/06 09:44:22 OK   00013_audit_signed_segments.sql (13.42ms)
+2026/10/06 09:44:22 OK   00014_audit_segment_predecessors.sql (20.48ms)
+2026/10/06 09:44:22 OK   00015_source_schema_scope.sql (3.26ms)
+2026/10/06 09:44:22 OK   00016_cluster_registration_metadata.sql (3.45ms)
+2026/10/06 09:44:22 OK   00017_source_data_scope.sql (3.27ms)
+2026/10/06 09:44:22 OK   00018_sp04_resources_evidence.sql (35.56ms)
+2026/10/06 09:44:22 OK   00019_sp04_archive_ciphertext_bytes.sql (2.98ms)
+2026/10/06 09:44:22 OK   00020_sp04_request_ledger.sql (4.02ms)
+2026/10/06 09:44:22 OK   00021_sp04_archive_protection.sql (2.5ms)
+2026/10/06 09:44:22 OK   00022_sp04_legal_hold_dependencies.sql (3.26ms)
+2026/10/06 09:44:22 OK   00023_sp04_archive_query_intent.sql (4.87ms)
+2026/10/06 09:44:22 OK   00024_sp05_finding_incident.sql (31.6ms)
+2026/10/06 09:44:22 OK   00025_sp05_incident_event_time.sql (4.8ms)
+2026/10/06 09:44:22 OK   00026_sp05_source_binding_lock.sql (6.43ms)
+2026/10/06 09:44:22 OK   00027_sp05_rca_and_poll.sql (22.61ms)
+2026/10/06 09:44:22 OK   00028_sp05_operator_lock.sql (2.75ms)
+2026/10/06 09:44:22 OK   00029_sp05_evidence_links.sql (5.34ms)
+2026/10/06 09:44:22 OK   00030_sp05_recipe_fence.sql (5.59ms)
+2026/10/06 09:44:22 OK   00031_sp05_rca_postcheck.sql (4.53ms)
+2026/10/06 09:44:22 OK   00032_sp05_transport_audit.sql (5.97ms)
+2026/10/06 09:44:22 OK   00033_sp05_poll_resolution_clock.sql (6.46ms)
+2026/10/06 09:44:22 OK   00034_sp06_investigation_ledger.sql (23.84ms)
+2026/10/06 09:44:22 OK   00035_sp06_admission_data_classes.sql (2.8ms)
+2026/10/06 09:44:22 goose: successfully migrated database to version: 35
+=== RUN   TestSP05PollCrashAfterResolveAndLateReplayCannotCreateOccurrence/late-replay
+2026/10/06 09:44:23 OK   00001_roles_and_schemas.sql (8.87ms)
+2026/10/06 09:44:23 goose: successfully migrated database to version: 1
+2026/10/06 09:44:23 OK   00002_platform_meta.sql (38.34ms)
+2026/10/06 09:44:23 OK   00003_finding.sql (16.48ms)
+2026/10/06 09:44:23 OK   00004_incident.sql (18.54ms)
+2026/10/06 09:44:23 OK   00005_investigation.sql (9.9ms)
+2026/10/06 09:44:23 OK   00006_action_command.sql (10.26ms)
+2026/10/06 09:44:23 OK   00007_audit.sql (18.95ms)
+2026/10/06 09:44:23 OK   00008_rls.sql (8.82ms)
+2026/10/06 09:44:23 OK   00009_idempotency_ledger.sql (5.4ms)
+2026/10/06 09:44:23 OK   00010_tenant_provisioning.sql (3.29ms)
+2026/10/06 09:44:23 OK   00011_source_registration_history.sql (8.88ms)
+2026/10/06 09:44:23 OK   00012_config_registry_lifecycle.sql (21.14ms)
+2026/10/06 09:44:23 OK   00013_audit_signed_segments.sql (19.88ms)
+2026/10/06 09:44:23 OK   00014_audit_segment_predecessors.sql (10.27ms)
+2026/10/06 09:44:23 OK   00015_source_schema_scope.sql (6.38ms)
+2026/10/06 09:44:23 OK   00016_cluster_registration_metadata.sql (4.07ms)
+2026/10/06 09:44:23 OK   00017_source_data_scope.sql (7.14ms)
+2026/10/06 09:44:23 OK   00018_sp04_resources_evidence.sql (26.93ms)
+2026/10/06 09:44:23 OK   00019_sp04_archive_ciphertext_bytes.sql (4.63ms)
+2026/10/06 09:44:23 OK   00020_sp04_request_ledger.sql (9.11ms)
+2026/10/06 09:44:23 OK   00021_sp04_archive_protection.sql (9.33ms)
+2026/10/06 09:44:23 OK   00022_sp04_legal_hold_dependencies.sql (5.48ms)
+2026/10/06 09:44:23 OK   00023_sp04_archive_query_intent.sql (2.5ms)
+2026/10/06 09:44:23 OK   00024_sp05_finding_incident.sql (39.2ms)
+2026/10/06 09:44:23 OK   00025_sp05_incident_event_time.sql (2.28ms)
+2026/10/06 09:44:23 OK   00026_sp05_source_binding_lock.sql (8.48ms)
+2026/10/06 09:44:23 OK   00027_sp05_rca_and_poll.sql (13.67ms)
+2026/10/06 09:44:23 OK   00028_sp05_operator_lock.sql (6.9ms)
+2026/10/06 09:44:23 OK   00029_sp05_evidence_links.sql (18.11ms)
+2026/10/06 09:44:23 OK   00030_sp05_recipe_fence.sql (5.77ms)
+2026/10/06 09:44:23 OK   00031_sp05_rca_postcheck.sql (4.6ms)
+2026/10/06 09:44:23 OK   00032_sp05_transport_audit.sql (7.02ms)
+2026/10/06 09:44:23 OK   00033_sp05_poll_resolution_clock.sql (6.73ms)
+2026/10/06 09:44:23 OK   00034_sp06_investigation_ledger.sql (29.67ms)
+2026/10/06 09:44:23 OK   00035_sp06_admission_data_classes.sql (6.37ms)
+2026/10/06 09:44:23 goose: successfully migrated database to version: 35
+--- PASS: TestSP05PollCrashAfterResolveAndLateReplayCannotCreateOccurrence (1.69s)
+    --- PASS: TestSP05PollCrashAfterResolveAndLateReplayCannotCreateOccurrence/crash-before-close (0.82s)
+    --- PASS: TestSP05PollCrashAfterResolveAndLateReplayCannotCreateOccurrence/late-replay (0.87s)
+=== RUN   TestSP05FirstHealthyPollDurablyFencesLateAndRepeatedFiring
+2026/10/06 09:44:24 OK   00001_roles_and_schemas.sql (13.73ms)
+2026/10/06 09:44:24 goose: successfully migrated database to version: 1
+2026/10/06 09:44:24 OK   00002_platform_meta.sql (26.57ms)
+2026/10/06 09:44:24 OK   00003_finding.sql (15.48ms)
+2026/10/06 09:44:24 OK   00004_incident.sql (9.17ms)
+2026/10/06 09:44:24 OK   00005_investigation.sql (6.15ms)
+2026/10/06 09:44:24 OK   00006_action_command.sql (6.27ms)
+2026/10/06 09:44:24 OK   00007_audit.sql (13.95ms)
+2026/10/06 09:44:24 OK   00008_rls.sql (14.7ms)
+2026/10/06 09:44:24 OK   00009_idempotency_ledger.sql (11.59ms)
+2026/10/06 09:44:24 OK   00010_tenant_provisioning.sql (3.85ms)
+2026/10/06 09:44:24 OK   00011_source_registration_history.sql (9.93ms)
+2026/10/06 09:44:24 OK   00012_config_registry_lifecycle.sql (18.64ms)
+2026/10/06 09:44:24 OK   00013_audit_signed_segments.sql (12.27ms)
+2026/10/06 09:44:24 OK   00014_audit_segment_predecessors.sql (9.12ms)
+2026/10/06 09:44:24 OK   00015_source_schema_scope.sql (4.85ms)
+2026/10/06 09:44:24 OK   00016_cluster_registration_metadata.sql (10.08ms)
+2026/10/06 09:44:24 OK   00017_source_data_scope.sql (9.82ms)
+2026/10/06 09:44:24 OK   00018_sp04_resources_evidence.sql (33.82ms)
+2026/10/06 09:44:24 OK   00019_sp04_archive_ciphertext_bytes.sql (7.48ms)
+2026/10/06 09:44:24 OK   00020_sp04_request_ledger.sql (8.92ms)
+2026/10/06 09:44:24 OK   00021_sp04_archive_protection.sql (5.1ms)
+2026/10/06 09:44:24 OK   00022_sp04_legal_hold_dependencies.sql (7.53ms)
+2026/10/06 09:44:24 OK   00023_sp04_archive_query_intent.sql (5.87ms)
+2026/10/06 09:44:24 OK   00024_sp05_finding_incident.sql (18.22ms)
+2026/10/06 09:44:24 OK   00025_sp05_incident_event_time.sql (2.89ms)
+2026/10/06 09:44:24 OK   00026_sp05_source_binding_lock.sql (2.91ms)
+2026/10/06 09:44:24 OK   00027_sp05_rca_and_poll.sql (16.97ms)
+2026/10/06 09:44:24 OK   00028_sp05_operator_lock.sql (8.96ms)
+2026/10/06 09:44:24 OK   00029_sp05_evidence_links.sql (5.91ms)
+2026/10/06 09:44:24 OK   00030_sp05_recipe_fence.sql (4.68ms)
+2026/10/06 09:44:24 OK   00031_sp05_rca_postcheck.sql (10.34ms)
+2026/10/06 09:44:24 OK   00032_sp05_transport_audit.sql (12.11ms)
+2026/10/06 09:44:24 OK   00033_sp05_poll_resolution_clock.sql (3.81ms)
+2026/10/06 09:44:24 OK   00034_sp06_investigation_ledger.sql (40.13ms)
+2026/10/06 09:44:24 OK   00035_sp06_admission_data_classes.sql (6.07ms)
+2026/10/06 09:44:24 goose: successfully migrated database to version: 35
+--- PASS: TestSP05FirstHealthyPollDurablyFencesLateAndRepeatedFiring (0.80s)
+=== RUN   TestSP05EarlierHealthySampleCannotResolveActiveOccurrence
+2026/10/06 09:44:24 OK   00001_roles_and_schemas.sql (17.01ms)
+2026/10/06 09:44:24 goose: successfully migrated database to version: 1
+2026/10/06 09:44:24 OK   00002_platform_meta.sql (32.55ms)
+2026/10/06 09:44:24 OK   00003_finding.sql (13.08ms)
+2026/10/06 09:44:24 OK   00004_incident.sql (13.07ms)
+2026/10/06 09:44:24 OK   00005_investigation.sql (21.09ms)
+2026/10/06 09:44:24 OK   00006_action_command.sql (15.85ms)
+2026/10/06 09:44:24 OK   00007_audit.sql (18.25ms)
+2026/10/06 09:44:25 OK   00008_rls.sql (16.53ms)
+2026/10/06 09:44:25 OK   00009_idempotency_ledger.sql (14.06ms)
+2026/10/06 09:44:25 OK   00010_tenant_provisioning.sql (6.58ms)
+2026/10/06 09:44:25 OK   00011_source_registration_history.sql (6.76ms)
+2026/10/06 09:44:25 OK   00012_config_registry_lifecycle.sql (11.08ms)
+2026/10/06 09:44:25 OK   00013_audit_signed_segments.sql (12.42ms)
+2026/10/06 09:44:25 OK   00014_audit_segment_predecessors.sql (20.99ms)
+2026/10/06 09:44:25 OK   00015_source_schema_scope.sql (7.87ms)
+2026/10/06 09:44:25 OK   00016_cluster_registration_metadata.sql (4.79ms)
+2026/10/06 09:44:25 OK   00017_source_data_scope.sql (8.42ms)
+2026/10/06 09:44:25 OK   00018_sp04_resources_evidence.sql (14.29ms)
+2026/10/06 09:44:25 OK   00019_sp04_archive_ciphertext_bytes.sql (5.49ms)
+2026/10/06 09:44:25 OK   00020_sp04_request_ledger.sql (14.45ms)
+2026/10/06 09:44:25 OK   00021_sp04_archive_protection.sql (24.51ms)
+2026/10/06 09:44:25 OK   00022_sp04_legal_hold_dependencies.sql (4.05ms)
+2026/10/06 09:44:25 OK   00023_sp04_archive_query_intent.sql (5.11ms)
+2026/10/06 09:44:25 OK   00024_sp05_finding_incident.sql (26.2ms)
+2026/10/06 09:44:25 OK   00025_sp05_incident_event_time.sql (2.71ms)
+2026/10/06 09:44:25 OK   00026_sp05_source_binding_lock.sql (3.61ms)
+2026/10/06 09:44:25 OK   00027_sp05_rca_and_poll.sql (8.21ms)
+2026/10/06 09:44:25 OK   00028_sp05_operator_lock.sql (3.23ms)
+2026/10/06 09:44:25 OK   00029_sp05_evidence_links.sql (5.87ms)
+2026/10/06 09:44:25 OK   00030_sp05_recipe_fence.sql (4.03ms)
+2026/10/06 09:44:25 OK   00031_sp05_rca_postcheck.sql (2.54ms)
+2026/10/06 09:44:25 OK   00032_sp05_transport_audit.sql (4.93ms)
+2026/10/06 09:44:25 OK   00033_sp05_poll_resolution_clock.sql (30.03ms)
+2026/10/06 09:44:25 OK   00034_sp06_investigation_ledger.sql (26.4ms)
+2026/10/06 09:44:25 OK   00035_sp06_admission_data_classes.sql (8.03ms)
+2026/10/06 09:44:25 goose: successfully migrated database to version: 35
+--- PASS: TestSP05EarlierHealthySampleCannotResolveActiveOccurrence (0.86s)
+=== RUN   TestSP05OutboxChildProcessClaim
+--- PASS: TestSP05OutboxChildProcessClaim (0.00s)
+=== RUN   TestSP05SIGKILLClaimLeaseRecoverExactlyOnce
+2026/10/06 09:44:25 OK   00001_roles_and_schemas.sql (26.83ms)
+2026/10/06 09:44:25 goose: successfully migrated database to version: 1
+2026/10/06 09:44:25 OK   00002_platform_meta.sql (67.07ms)
+2026/10/06 09:44:25 OK   00003_finding.sql (21.88ms)
+2026/10/06 09:44:25 OK   00004_incident.sql (24.27ms)
+2026/10/06 09:44:25 OK   00005_investigation.sql (9.29ms)
+2026/10/06 09:44:25 OK   00006_action_command.sql (15.17ms)
+2026/10/06 09:44:25 OK   00007_audit.sql (11.54ms)
+2026/10/06 09:44:25 OK   00008_rls.sql (14.35ms)
+2026/10/06 09:44:25 OK   00009_idempotency_ledger.sql (13.5ms)
+2026/10/06 09:44:25 OK   00010_tenant_provisioning.sql (10.79ms)
+2026/10/06 09:44:25 OK   00011_source_registration_history.sql (8.26ms)
+2026/10/06 09:44:25 OK   00012_config_registry_lifecycle.sql (22.07ms)
+2026/10/06 09:44:25 OK   00013_audit_signed_segments.sql (22.47ms)
+2026/10/06 09:44:26 OK   00014_audit_segment_predecessors.sql (6.04ms)
+2026/10/06 09:44:26 OK   00015_source_schema_scope.sql (6.58ms)
+2026/10/06 09:44:26 OK   00016_cluster_registration_metadata.sql (8.27ms)
+2026/10/06 09:44:26 OK   00017_source_data_scope.sql (9.07ms)
+2026/10/06 09:44:26 OK   00018_sp04_resources_evidence.sql (26.49ms)
+2026/10/06 09:44:26 OK   00019_sp04_archive_ciphertext_bytes.sql (9.4ms)
+2026/10/06 09:44:26 OK   00020_sp04_request_ledger.sql (10.63ms)
+2026/10/06 09:44:26 OK   00021_sp04_archive_protection.sql (7.21ms)
+2026/10/06 09:44:26 OK   00022_sp04_legal_hold_dependencies.sql (3.98ms)
+2026/10/06 09:44:26 OK   00023_sp04_archive_query_intent.sql (4.69ms)
+2026/10/06 09:44:26 OK   00024_sp05_finding_incident.sql (23.1ms)
+2026/10/06 09:44:26 OK   00025_sp05_incident_event_time.sql (4.41ms)
+2026/10/06 09:44:26 OK   00026_sp05_source_binding_lock.sql (7.18ms)
+2026/10/06 09:44:26 OK   00027_sp05_rca_and_poll.sql (20.78ms)
+2026/10/06 09:44:26 OK   00028_sp05_operator_lock.sql (3.5ms)
+2026/10/06 09:44:26 OK   00029_sp05_evidence_links.sql (5.18ms)
+2026/10/06 09:44:26 OK   00030_sp05_recipe_fence.sql (7.85ms)
+2026/10/06 09:44:26 OK   00031_sp05_rca_postcheck.sql (11.34ms)
+2026/10/06 09:44:26 OK   00032_sp05_transport_audit.sql (7.6ms)
+2026/10/06 09:44:26 OK   00033_sp05_poll_resolution_clock.sql (9.04ms)
+2026/10/06 09:44:26 OK   00034_sp06_investigation_ledger.sql (38.02ms)
+2026/10/06 09:44:26 OK   00035_sp06_admission_data_classes.sql (7.58ms)
+2026/10/06 09:44:26 goose: successfully migrated database to version: 35
+    sp05_process_crash_test.go:105: real child SIGKILL after committed outbox claim; unchanged 30-second lease recovered exactly once; stale claim token rejected
+--- PASS: TestSP05SIGKILLClaimLeaseRecoverExactlyOnce (32.30s)
+=== RUN   TestSP05RCARegistryImmutableEvidenceAppendOnlyAndReplayRevocation
+2026/10/06 09:44:58 OK   00001_roles_and_schemas.sql (29.21ms)
+2026/10/06 09:44:58 goose: successfully migrated database to version: 1
+2026/10/06 09:44:58 OK   00002_platform_meta.sql (20.81ms)
+2026/10/06 09:44:58 OK   00003_finding.sql (27.88ms)
+2026/10/06 09:44:58 OK   00004_incident.sql (5.35ms)
+2026/10/06 09:44:58 OK   00005_investigation.sql (8.73ms)
+2026/10/06 09:44:58 OK   00006_action_command.sql (10.4ms)
+2026/10/06 09:44:58 OK   00007_audit.sql (15.29ms)
+2026/10/06 09:44:58 OK   00008_rls.sql (7.09ms)
+2026/10/06 09:44:58 OK   00009_idempotency_ledger.sql (7.61ms)
+2026/10/06 09:44:58 OK   00010_tenant_provisioning.sql (14.92ms)
+2026/10/06 09:44:58 OK   00011_source_registration_history.sql (14.19ms)
+2026/10/06 09:44:58 OK   00012_config_registry_lifecycle.sql (16.09ms)
+2026/10/06 09:44:58 OK   00013_audit_signed_segments.sql (22.37ms)
+2026/10/06 09:44:58 OK   00014_audit_segment_predecessors.sql (5.34ms)
+2026/10/06 09:44:58 OK   00015_source_schema_scope.sql (3.65ms)
+2026/10/06 09:44:58 OK   00016_cluster_registration_metadata.sql (8.31ms)
+2026/10/06 09:44:58 OK   00017_source_data_scope.sql (13.32ms)
+2026/10/06 09:44:58 OK   00018_sp04_resources_evidence.sql (22.49ms)
+2026/10/06 09:44:58 OK   00019_sp04_archive_ciphertext_bytes.sql (5.28ms)
+2026/10/06 09:44:58 OK   00020_sp04_request_ledger.sql (9.05ms)
+2026/10/06 09:44:58 OK   00021_sp04_archive_protection.sql (8.86ms)
+2026/10/06 09:44:58 OK   00022_sp04_legal_hold_dependencies.sql (14.02ms)
+2026/10/06 09:44:58 OK   00023_sp04_archive_query_intent.sql (3.06ms)
+2026/10/06 09:44:58 OK   00024_sp05_finding_incident.sql (37.88ms)
+2026/10/06 09:44:58 OK   00025_sp05_incident_event_time.sql (5.62ms)
+2026/10/06 09:44:58 OK   00026_sp05_source_binding_lock.sql (5.93ms)
+2026/10/06 09:44:58 OK   00027_sp05_rca_and_poll.sql (9.12ms)
+2026/10/06 09:44:58 OK   00028_sp05_operator_lock.sql (13.23ms)
+2026/10/06 09:44:58 OK   00029_sp05_evidence_links.sql (16.52ms)
+2026/10/06 09:44:58 OK   00030_sp05_recipe_fence.sql (4.06ms)
+2026/10/06 09:44:58 OK   00031_sp05_rca_postcheck.sql (2.95ms)
+2026/10/06 09:44:58 OK   00032_sp05_transport_audit.sql (4.23ms)
+2026/10/06 09:44:58 OK   00033_sp05_poll_resolution_clock.sql (6.78ms)
+2026/10/06 09:44:58 OK   00034_sp06_investigation_ledger.sql (33.75ms)
+2026/10/06 09:44:58 OK   00035_sp06_admission_data_classes.sql (5.63ms)
+2026/10/06 09:44:58 goose: successfully migrated database to version: 35
+    migrations_test.go:436: retained owned integration database=sp03_mig_1d70e5165beb4cb39025160f04c32685 test=TestSP05RCARegistryImmutableEvidenceAppendOnlyAndReplayRevocation reason=audit.records; no automatic protected cleanup
+--- PASS: TestSP05RCARegistryImmutableEvidenceAppendOnlyAndReplayRevocation (0.87s)
+=== RUN   TestSP05FindingRejectsMissingEvidenceWithoutPartialCommit
+2026/10/06 09:44:58 OK   00001_roles_and_schemas.sql (10.22ms)
+2026/10/06 09:44:58 goose: successfully migrated database to version: 1
+2026/10/06 09:44:58 OK   00002_platform_meta.sql (38.2ms)
+2026/10/06 09:44:58 OK   00003_finding.sql (27.65ms)
+2026/10/06 09:44:58 OK   00004_incident.sql (5.54ms)
+2026/10/06 09:44:58 OK   00005_investigation.sql (5.45ms)
+2026/10/06 09:44:58 OK   00006_action_command.sql (5.5ms)
+2026/10/06 09:44:58 OK   00007_audit.sql (28.02ms)
+2026/10/06 09:44:58 OK   00008_rls.sql (8ms)
+2026/10/06 09:44:58 OK   00009_idempotency_ledger.sql (8.5ms)
+2026/10/06 09:44:58 OK   00010_tenant_provisioning.sql (7.6ms)
+2026/10/06 09:44:59 OK   00011_source_registration_history.sql (17.39ms)
+2026/10/06 09:44:59 OK   00012_config_registry_lifecycle.sql (32.94ms)
+2026/10/06 09:44:59 OK   00013_audit_signed_segments.sql (19.15ms)
+2026/10/06 09:44:59 OK   00014_audit_segment_predecessors.sql (16.06ms)
+2026/10/06 09:44:59 OK   00015_source_schema_scope.sql (10.77ms)
+2026/10/06 09:44:59 OK   00016_cluster_registration_metadata.sql (4.6ms)
+2026/10/06 09:44:59 OK   00017_source_data_scope.sql (3.62ms)
+2026/10/06 09:44:59 OK   00018_sp04_resources_evidence.sql (26.42ms)
+2026/10/06 09:44:59 OK   00019_sp04_archive_ciphertext_bytes.sql (4.74ms)
+2026/10/06 09:44:59 OK   00020_sp04_request_ledger.sql (4.09ms)
+2026/10/06 09:44:59 OK   00021_sp04_archive_protection.sql (2.61ms)
+2026/10/06 09:44:59 OK   00022_sp04_legal_hold_dependencies.sql (2.34ms)
+2026/10/06 09:44:59 OK   00023_sp04_archive_query_intent.sql (8.72ms)
+2026/10/06 09:44:59 OK   00024_sp05_finding_incident.sql (30.47ms)
+2026/10/06 09:44:59 OK   00025_sp05_incident_event_time.sql (5.63ms)
+2026/10/06 09:44:59 OK   00026_sp05_source_binding_lock.sql (7.86ms)
+2026/10/06 09:44:59 OK   00027_sp05_rca_and_poll.sql (11.66ms)
+2026/10/06 09:44:59 OK   00028_sp05_operator_lock.sql (5.03ms)
+2026/10/06 09:44:59 OK   00029_sp05_evidence_links.sql (4.61ms)
+2026/10/06 09:44:59 OK   00030_sp05_recipe_fence.sql (5.85ms)
+2026/10/06 09:44:59 OK   00031_sp05_rca_postcheck.sql (6.17ms)
+2026/10/06 09:44:59 OK   00032_sp05_transport_audit.sql (6.56ms)
+2026/10/06 09:44:59 OK   00033_sp05_poll_resolution_clock.sql (11.66ms)
+2026/10/06 09:44:59 OK   00034_sp06_investigation_ledger.sql (23.6ms)
+2026/10/06 09:44:59 OK   00035_sp06_admission_data_classes.sql (6.39ms)
+2026/10/06 09:44:59 goose: successfully migrated database to version: 35
+--- PASS: TestSP05FindingRejectsMissingEvidenceWithoutPartialCommit (2.73s)
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression
+2026/10/06 09:45:01 OK   00001_roles_and_schemas.sql (26.62ms)
+2026/10/06 09:45:01 goose: successfully migrated database to version: 1
+2026/10/06 09:45:01 OK   00002_platform_meta.sql (14.68ms)
+2026/10/06 09:45:01 OK   00003_finding.sql (15.18ms)
+2026/10/06 09:45:01 OK   00004_incident.sql (10.84ms)
+2026/10/06 09:45:01 OK   00005_investigation.sql (9.81ms)
+2026/10/06 09:45:01 OK   00006_action_command.sql (8.49ms)
+2026/10/06 09:45:01 OK   00007_audit.sql (23.48ms)
+2026/10/06 09:45:01 OK   00008_rls.sql (9.74ms)
+2026/10/06 09:45:01 OK   00009_idempotency_ledger.sql (6.84ms)
+2026/10/06 09:45:01 OK   00010_tenant_provisioning.sql (8.73ms)
+2026/10/06 09:45:01 OK   00011_source_registration_history.sql (14.37ms)
+2026/10/06 09:45:01 OK   00012_config_registry_lifecycle.sql (8.68ms)
+2026/10/06 09:45:01 OK   00013_audit_signed_segments.sql (11.77ms)
+2026/10/06 09:45:01 OK   00014_audit_segment_predecessors.sql (9.83ms)
+2026/10/06 09:45:01 OK   00015_source_schema_scope.sql (6.18ms)
+2026/10/06 09:45:01 OK   00016_cluster_registration_metadata.sql (6.72ms)
+2026/10/06 09:45:01 OK   00017_source_data_scope.sql (3.57ms)
+2026/10/06 09:45:01 OK   00018_sp04_resources_evidence.sql (13.96ms)
+2026/10/06 09:45:01 OK   00019_sp04_archive_ciphertext_bytes.sql (3.45ms)
+2026/10/06 09:45:01 OK   00020_sp04_request_ledger.sql (8.64ms)
+2026/10/06 09:45:01 OK   00021_sp04_archive_protection.sql (6.9ms)
+2026/10/06 09:45:01 OK   00022_sp04_legal_hold_dependencies.sql (4.22ms)
+2026/10/06 09:45:01 OK   00023_sp04_archive_query_intent.sql (4.62ms)
+2026/10/06 09:45:01 OK   00024_sp05_finding_incident.sql (18.43ms)
+2026/10/06 09:45:01 OK   00025_sp05_incident_event_time.sql (4.32ms)
+2026/10/06 09:45:01 OK   00026_sp05_source_binding_lock.sql (8.98ms)
+2026/10/06 09:45:01 OK   00027_sp05_rca_and_poll.sql (19.26ms)
+2026/10/06 09:45:01 OK   00028_sp05_operator_lock.sql (4.89ms)
+2026/10/06 09:45:01 OK   00029_sp05_evidence_links.sql (8.3ms)
+2026/10/06 09:45:01 OK   00030_sp05_recipe_fence.sql (4.97ms)
+2026/10/06 09:45:01 OK   00031_sp05_rca_postcheck.sql (4.97ms)
+2026/10/06 09:45:01 OK   00032_sp05_transport_audit.sql (6.72ms)
+2026/10/06 09:45:01 OK   00033_sp05_poll_resolution_clock.sql (6.69ms)
+2026/10/06 09:45:01 OK   00034_sp06_investigation_ledger.sql (17.66ms)
+2026/10/06 09:45:01 OK   00035_sp06_admission_data_classes.sql (3.2ms)
+2026/10/06 09:45:01 goose: successfully migrated database to version: 35
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/active-expiry
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/recovered-expiry
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/split-moved-resolved
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/split-left-resolved
+=== RUN   TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/merge-all-resolved
+=== NAME  TestSP05SuppressionRecoveryAndMergeSplitReviewRegression
+    migrations_test.go:436: retained owned integration database=sp03_mig_d4b8b1d9368c4716bf64108a785d03c1 test=TestSP05SuppressionRecoveryAndMergeSplitReviewRegression reason=audit.records; no automatic protected cleanup
+--- PASS: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression (1.17s)
+    --- PASS: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/active-expiry (0.08s)
+    --- PASS: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/recovered-expiry (0.15s)
+    --- PASS: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/split-moved-resolved (0.18s)
+    --- PASS: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/split-left-resolved (0.12s)
+    --- PASS: TestSP05SuppressionRecoveryAndMergeSplitReviewRegression/merge-all-resolved (0.15s)
+=== RUN   TestSP05ExactNumericTransportConflictAndFormalWindowBoundaries
+2026/10/06 09:45:02 OK   00001_roles_and_schemas.sql (25.08ms)
+2026/10/06 09:45:02 goose: successfully migrated database to version: 1
+2026/10/06 09:45:02 OK   00002_platform_meta.sql (17.28ms)
+2026/10/06 09:45:02 OK   00003_finding.sql (8.01ms)
+2026/10/06 09:45:02 OK   00004_incident.sql (4.2ms)
+2026/10/06 09:45:02 OK   00005_investigation.sql (8.97ms)
+2026/10/06 09:45:02 OK   00006_action_command.sql (16.75ms)
+2026/10/06 09:45:02 OK   00007_audit.sql (20.55ms)
+2026/10/06 09:45:02 OK   00008_rls.sql (20.12ms)
+2026/10/06 09:45:02 OK   00009_idempotency_ledger.sql (22.24ms)
+2026/10/06 09:45:02 OK   00010_tenant_provisioning.sql (4.81ms)
+2026/10/06 09:45:02 OK   00011_source_registration_history.sql (33.75ms)
+2026/10/06 09:45:02 OK   00012_config_registry_lifecycle.sql (10.4ms)
+2026/10/06 09:45:03 OK   00013_audit_signed_segments.sql (53.94ms)
+2026/10/06 09:45:03 OK   00014_audit_segment_predecessors.sql (6.68ms)
+2026/10/06 09:45:03 OK   00015_source_schema_scope.sql (10.16ms)
+2026/10/06 09:45:03 OK   00016_cluster_registration_metadata.sql (11.16ms)
+2026/10/06 09:45:03 OK   00017_source_data_scope.sql (12.76ms)
+2026/10/06 09:45:03 OK   00018_sp04_resources_evidence.sql (22.86ms)
+2026/10/06 09:45:03 OK   00019_sp04_archive_ciphertext_bytes.sql (3.15ms)
+2026/10/06 09:45:03 OK   00020_sp04_request_ledger.sql (6.15ms)
+2026/10/06 09:45:03 OK   00021_sp04_archive_protection.sql (8.55ms)
+2026/10/06 09:45:03 OK   00022_sp04_legal_hold_dependencies.sql (5.94ms)
+2026/10/06 09:45:03 OK   00023_sp04_archive_query_intent.sql (9.58ms)
+2026/10/06 09:45:03 OK   00024_sp05_finding_incident.sql (32.82ms)
+2026/10/06 09:45:03 OK   00025_sp05_incident_event_time.sql (5.54ms)
+2026/10/06 09:45:03 OK   00026_sp05_source_binding_lock.sql (7.11ms)
+2026/10/06 09:45:03 OK   00027_sp05_rca_and_poll.sql (19.55ms)
+2026/10/06 09:45:03 OK   00028_sp05_operator_lock.sql (5.21ms)
+2026/10/06 09:45:03 OK   00029_sp05_evidence_links.sql (5.13ms)
+2026/10/06 09:45:03 OK   00030_sp05_recipe_fence.sql (4.7ms)
+2026/10/06 09:45:03 OK   00031_sp05_rca_postcheck.sql (5.72ms)
+2026/10/06 09:45:03 OK   00032_sp05_transport_audit.sql (9.86ms)
+2026/10/06 09:45:03 OK   00033_sp05_poll_resolution_clock.sql (12.42ms)
+2026/10/06 09:45:03 OK   00034_sp06_investigation_ledger.sql (21.78ms)
+2026/10/06 09:45:03 OK   00035_sp06_admission_data_classes.sql (9.78ms)
+2026/10/06 09:45:03 goose: successfully migrated database to version: 35
+--- PASS: TestSP05ExactNumericTransportConflictAndFormalWindowBoundaries (2.66s)
+=== RUN   TestSP05GoldenGraphOnlySourceWithdrawAndFindingRevisionFence
+2026/10/06 09:45:05 OK   00001_roles_and_schemas.sql (45.71ms)
+2026/10/06 09:45:05 goose: successfully migrated database to version: 1
+2026/10/06 09:45:05 OK   00002_platform_meta.sql (49.38ms)
+2026/10/06 09:45:05 OK   00003_finding.sql (8.44ms)
+2026/10/06 09:45:05 OK   00004_incident.sql (29.07ms)
+2026/10/06 09:45:05 OK   00005_investigation.sql (6.74ms)
+2026/10/06 09:45:05 OK   00006_action_command.sql (5.56ms)
+2026/10/06 09:45:05 OK   00007_audit.sql (33.84ms)
+2026/10/06 09:45:05 OK   00008_rls.sql (34.74ms)
+2026/10/06 09:45:05 OK   00009_idempotency_ledger.sql (36.31ms)
+2026/10/06 09:45:05 OK   00010_tenant_provisioning.sql (3.95ms)
+2026/10/06 09:45:05 OK   00011_source_registration_history.sql (5.12ms)
+2026/10/06 09:45:05 OK   00012_config_registry_lifecycle.sql (10.16ms)
+2026/10/06 09:45:05 OK   00013_audit_signed_segments.sql (34.27ms)
+2026/10/06 09:45:05 OK   00014_audit_segment_predecessors.sql (5.36ms)
+2026/10/06 09:45:05 OK   00015_source_schema_scope.sql (8.28ms)
+2026/10/06 09:45:05 OK   00016_cluster_registration_metadata.sql (8.16ms)
+2026/10/06 09:45:05 OK   00017_source_data_scope.sql (9.45ms)
+2026/10/06 09:45:05 OK   00018_sp04_resources_evidence.sql (17.65ms)
+2026/10/06 09:45:05 OK   00019_sp04_archive_ciphertext_bytes.sql (5.23ms)
+2026/10/06 09:45:05 OK   00020_sp04_request_ledger.sql (19.43ms)
+2026/10/06 09:45:05 OK   00021_sp04_archive_protection.sql (3.13ms)
+2026/10/06 09:45:05 OK   00022_sp04_legal_hold_dependencies.sql (2.55ms)
+2026/10/06 09:45:05 OK   00023_sp04_archive_query_intent.sql (3.88ms)
+2026/10/06 09:45:05 OK   00024_sp05_finding_incident.sql (41.5ms)
+2026/10/06 09:45:05 OK   00025_sp05_incident_event_time.sql (17.6ms)
+2026/10/06 09:45:05 OK   00026_sp05_source_binding_lock.sql (3.82ms)
+2026/10/06 09:45:05 OK   00027_sp05_rca_and_poll.sql (6.64ms)
+2026/10/06 09:45:05 OK   00028_sp05_operator_lock.sql (3.09ms)
+2026/10/06 09:45:05 OK   00029_sp05_evidence_links.sql (4.54ms)
+2026/10/06 09:45:05 OK   00030_sp05_recipe_fence.sql (2.45ms)
+2026/10/06 09:45:05 OK   00031_sp05_rca_postcheck.sql (3.1ms)
+2026/10/06 09:45:05 OK   00032_sp05_transport_audit.sql (8.63ms)
+2026/10/06 09:45:05 OK   00033_sp05_poll_resolution_clock.sql (29.99ms)
+2026/10/06 09:45:06 OK   00034_sp06_investigation_ledger.sql (36.27ms)
+2026/10/06 09:45:06 OK   00035_sp06_admission_data_classes.sql (3.34ms)
+2026/10/06 09:45:06 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=39c47ce0f2e7e1bb3bd382dc8bb95c4083d43fc576420d5333e43c4ddb42f9f5 bucket=sp05-golden-601e2780 tenants=1
+    sp05_golden_vertical_test.go:335: actual archive/Graph confirmed DIMM: Graph-only revoke/rotate is fenced, historical read denied; unapplied Finding revision rejected, same Evidence with new Finding snapshot appends, old input remains immutable
+    sp05_golden_vertical_test.go:340: dimm-failure/valid: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim
+    archive_iam_test.go:155: retained owned Archive fixture id=39c47ce0f2e7e1bb3bd382dc8bb95c4083d43fc576420d5333e43c4ddb42f9f5 label=9762c18a-34b2-4b62-bdbd-956d74b1842c bucket=sp05-golden-601e2780 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r35/archive-iam-2834738479; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_0b6674d0eda745b6abc4dbac4adf4064 test=TestSP05GoldenGraphOnlySourceWithdrawAndFindingRevisionFence reason=audit.records; no automatic protected cleanup
+--- PASS: TestSP05GoldenGraphOnlySourceWithdrawAndFindingRevisionFence (16.79s)
+=== RUN   TestSP05GraphSourceAuthoritySerializesRevocation
+2026/10/06 09:45:22 OK   00001_roles_and_schemas.sql (22.49ms)
+2026/10/06 09:45:22 goose: successfully migrated database to version: 1
+2026/10/06 09:45:22 OK   00002_platform_meta.sql (35.11ms)
+2026/10/06 09:45:22 OK   00003_finding.sql (15.19ms)
+2026/10/06 09:45:22 OK   00004_incident.sql (10.76ms)
+2026/10/06 09:45:22 OK   00005_investigation.sql (18.99ms)
+2026/10/06 09:45:22 OK   00006_action_command.sql (11.29ms)
+2026/10/06 09:45:22 OK   00007_audit.sql (11.77ms)
+2026/10/06 09:45:22 OK   00008_rls.sql (14.86ms)
+2026/10/06 09:45:22 OK   00009_idempotency_ledger.sql (21.89ms)
+2026/10/06 09:45:22 OK   00010_tenant_provisioning.sql (6.92ms)
+2026/10/06 09:45:22 OK   00011_source_registration_history.sql (13.43ms)
+2026/10/06 09:45:22 OK   00012_config_registry_lifecycle.sql (20.66ms)
+2026/10/06 09:45:22 OK   00013_audit_signed_segments.sql (17.04ms)
+2026/10/06 09:45:22 OK   00014_audit_segment_predecessors.sql (6.09ms)
+2026/10/06 09:45:22 OK   00015_source_schema_scope.sql (4.48ms)
+2026/10/06 09:45:22 OK   00016_cluster_registration_metadata.sql (7.23ms)
+2026/10/06 09:45:22 OK   00017_source_data_scope.sql (6.45ms)
+2026/10/06 09:45:22 OK   00018_sp04_resources_evidence.sql (29.08ms)
+2026/10/06 09:45:22 OK   00019_sp04_archive_ciphertext_bytes.sql (4.42ms)
+2026/10/06 09:45:22 OK   00020_sp04_request_ledger.sql (4.59ms)
+2026/10/06 09:45:22 OK   00021_sp04_archive_protection.sql (5.11ms)
+2026/10/06 09:45:22 OK   00022_sp04_legal_hold_dependencies.sql (7.11ms)
+2026/10/06 09:45:22 OK   00023_sp04_archive_query_intent.sql (6.52ms)
+2026/10/06 09:45:22 OK   00024_sp05_finding_incident.sql (35.03ms)
+2026/10/06 09:45:22 OK   00025_sp05_incident_event_time.sql (4.4ms)
+2026/10/06 09:45:22 OK   00026_sp05_source_binding_lock.sql (10.04ms)
+2026/10/06 09:45:22 OK   00027_sp05_rca_and_poll.sql (16.73ms)
+2026/10/06 09:45:22 OK   00028_sp05_operator_lock.sql (6.54ms)
+2026/10/06 09:45:22 OK   00029_sp05_evidence_links.sql (5.67ms)
+2026/10/06 09:45:22 OK   00030_sp05_recipe_fence.sql (3.39ms)
+2026/10/06 09:45:22 OK   00031_sp05_rca_postcheck.sql (2.56ms)
+2026/10/06 09:45:22 OK   00032_sp05_transport_audit.sql (4.14ms)
+2026/10/06 09:45:22 OK   00033_sp05_poll_resolution_clock.sql (5.07ms)
+2026/10/06 09:45:22 OK   00034_sp06_investigation_ledger.sql (51.12ms)
+2026/10/06 09:45:22 OK   00035_sp06_admission_data_classes.sql (15.4ms)
+2026/10/06 09:45:22 goose: successfully migrated database to version: 35
+    sp05_review_rca_test.go:216: actual Graph-source share lock blocked concurrent revocation until RCA transaction committed; next confirmation rejected
+--- PASS: TestSP05GraphSourceAuthoritySerializesRevocation (2.20s)
+=== RUN   TestSP05KubernetesBindingCannotForgeHardwareDomain
+2026/10/06 09:45:24 OK   00001_roles_and_schemas.sql (33.73ms)
+2026/10/06 09:45:24 goose: successfully migrated database to version: 1
+2026/10/06 09:45:24 OK   00002_platform_meta.sql (37.64ms)
+2026/10/06 09:45:24 OK   00003_finding.sql (28.51ms)
+2026/10/06 09:45:24 OK   00004_incident.sql (22.64ms)
+2026/10/06 09:45:24 OK   00005_investigation.sql (14.43ms)
+2026/10/06 09:45:24 OK   00006_action_command.sql (12.57ms)
+2026/10/06 09:45:24 OK   00007_audit.sql (26.85ms)
+2026/10/06 09:45:24 OK   00008_rls.sql (7.39ms)
+2026/10/06 09:45:24 OK   00009_idempotency_ledger.sql (7.02ms)
+2026/10/06 09:45:24 OK   00010_tenant_provisioning.sql (5.52ms)
+2026/10/06 09:45:24 OK   00011_source_registration_history.sql (26.75ms)
+2026/10/06 09:45:24 OK   00012_config_registry_lifecycle.sql (29.74ms)
+2026/10/06 09:45:24 OK   00013_audit_signed_segments.sql (15.11ms)
+2026/10/06 09:45:24 OK   00014_audit_segment_predecessors.sql (4.62ms)
+2026/10/06 09:45:24 OK   00015_source_schema_scope.sql (4.19ms)
+2026/10/06 09:45:24 OK   00016_cluster_registration_metadata.sql (10.1ms)
+2026/10/06 09:45:24 OK   00017_source_data_scope.sql (5.93ms)
+2026/10/06 09:45:24 OK   00018_sp04_resources_evidence.sql (16.49ms)
+2026/10/06 09:45:24 OK   00019_sp04_archive_ciphertext_bytes.sql (5.16ms)
+2026/10/06 09:45:24 OK   00020_sp04_request_ledger.sql (16.81ms)
+2026/10/06 09:45:24 OK   00021_sp04_archive_protection.sql (4.49ms)
+2026/10/06 09:45:24 OK   00022_sp04_legal_hold_dependencies.sql (2.88ms)
+2026/10/06 09:45:24 OK   00023_sp04_archive_query_intent.sql (2.76ms)
+2026/10/06 09:45:24 OK   00024_sp05_finding_incident.sql (34.4ms)
+2026/10/06 09:45:24 OK   00025_sp05_incident_event_time.sql (2.3ms)
+2026/10/06 09:45:24 OK   00026_sp05_source_binding_lock.sql (2.67ms)
+2026/10/06 09:45:24 OK   00027_sp05_rca_and_poll.sql (14.27ms)
+2026/10/06 09:45:24 OK   00028_sp05_operator_lock.sql (13.39ms)
+2026/10/06 09:45:24 OK   00029_sp05_evidence_links.sql (6.03ms)
+2026/10/06 09:45:24 OK   00030_sp05_recipe_fence.sql (9.34ms)
+2026/10/06 09:45:24 OK   00031_sp05_rca_postcheck.sql (14.06ms)
+2026/10/06 09:45:24 OK   00032_sp05_transport_audit.sql (7.06ms)
+2026/10/06 09:45:24 OK   00033_sp05_poll_resolution_clock.sql (6.4ms)
+2026/10/06 09:45:24 OK   00034_sp06_investigation_ledger.sql (30.35ms)
+2026/10/06 09:45:24 OK   00035_sp06_admission_data_classes.sql (6.69ms)
+2026/10/06 09:45:24 goose: successfully migrated database to version: 35
+--- PASS: TestSP05KubernetesBindingCannotForgeHardwareDomain (0.88s)
+FAIL
+FAIL	ops-platform/test/integration	643.094s
+FAIL

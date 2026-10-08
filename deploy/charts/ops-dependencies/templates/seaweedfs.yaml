@@ -90,9 +90,8 @@ spec:
             - name: master
               containerPort: 9333
           readinessProbe:
-            httpGet:
-              path: /cluster/status
-              port: master
+            tcpSocket:
+              port: s3
             initialDelaySeconds: 5
             periodSeconds: 10
           resources:

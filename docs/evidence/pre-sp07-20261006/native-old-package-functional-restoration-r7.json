@@ -1,0 +1,400 @@
+{
+  "observedAt": "2026-10-06T02:08:47.407041+00:00",
+  "scope": "only the four exact publisher old-version directories restored by this task; active links untouched",
+  "originalBottleHashesAndSourceRecord": "native-old-package-restoration-r6.json",
+  "relocationBasis": "local original Homebrew extend/os/mac/keg_relocate.rb: relocate dylib ID, install names and rpaths; re-sign changed native files",
+  "relocatedFiles": [
+    {
+      "path": "/opt/homebrew/Cellar/readline/8.3.3/lib/libreadline.8.3.dylib",
+      "beforeSHA256": "sha256:288f76fedc0cb632dda692a102eacf5fb3ca7ccdaf18b076f32682aedb9645c8",
+      "commands": [
+        {
+          "command": [
+            "install_name_tool",
+            "-id",
+            "/opt/homebrew/opt/readline/lib/libreadline.8.dylib",
+            "-change",
+            "@@HOMEBREW_PREFIX@@/opt/readline/lib/libreadline.8.dylib",
+            "/opt/homebrew/opt/readline/lib/libreadline.8.dylib",
+            "/opt/homebrew/Cellar/readline/8.3.3/lib/libreadline.8.3.dylib"
+          ],
+          "exitCode": 0,
+          "output": "/Library/Developer/CommandLineTools/usr/bin/install_name_tool: warning: changes being made to the file will invalidate the code signature in: /opt/homebrew/Cellar/readline/8.3.3/lib/libreadline.8.3.dylib\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "/opt/homebrew/Cellar/readline/8.3.3/lib/libreadline.8.3.dylib"
+          ],
+          "exitCode": 0,
+          "output": "/opt/homebrew/Cellar/readline/8.3.3/lib/libreadline.8.3.dylib: replacing existing signature\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--verify",
+            "/opt/homebrew/Cellar/readline/8.3.3/lib/libreadline.8.3.dylib"
+          ],
+          "exitCode": 0,
+          "output": ""
+        }
+      ],
+      "afterSHA256": "sha256:7d74566dcbd3f64a5ec6266c8285e48f0214a9d2f36ad5f158b4282a3f10b9a9",
+      "loadCommandsAfter": "/opt/homebrew/Cellar/readline/8.3.3/lib/libreadline.8.3.dylib:\n\t/opt/homebrew/opt/readline/lib/libreadline.8.dylib (compatibility version 8.3.0, current version 8.3.0)\n\t/usr/lib/libncurses.5.4.dylib (compatibility version 5.4.0, current version 5.4.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/readline/8.3.3/lib/libhistory.8.3.dylib",
+      "beforeSHA256": "sha256:a4cb0e13d4cec54a409e1b6152b3619868291852269765692d3b2311e3fe7d22",
+      "commands": [
+        {
+          "command": [
+            "install_name_tool",
+            "-id",
+            "/opt/homebrew/opt/readline/lib/libhistory.8.dylib",
+            "-change",
+            "@@HOMEBREW_PREFIX@@/opt/readline/lib/libhistory.8.dylib",
+            "/opt/homebrew/opt/readline/lib/libhistory.8.dylib",
+            "/opt/homebrew/Cellar/readline/8.3.3/lib/libhistory.8.3.dylib"
+          ],
+          "exitCode": 0,
+          "output": "/Library/Developer/CommandLineTools/usr/bin/install_name_tool: warning: changes being made to the file will invalidate the code signature in: /opt/homebrew/Cellar/readline/8.3.3/lib/libhistory.8.3.dylib\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "/opt/homebrew/Cellar/readline/8.3.3/lib/libhistory.8.3.dylib"
+          ],
+          "exitCode": 0,
+          "output": "/opt/homebrew/Cellar/readline/8.3.3/lib/libhistory.8.3.dylib: replacing existing signature\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--verify",
+            "/opt/homebrew/Cellar/readline/8.3.3/lib/libhistory.8.3.dylib"
+          ],
+          "exitCode": 0,
+          "output": ""
+        }
+      ],
+      "afterSHA256": "sha256:e7092be013e34aa548115cddd9bab3bd9416a1516c8ba50e360a1aff31c5d9e5",
+      "loadCommandsAfter": "/opt/homebrew/Cellar/readline/8.3.3/lib/libhistory.8.3.dylib:\n\t/opt/homebrew/opt/readline/lib/libhistory.8.dylib (compatibility version 8.3.0, current version 8.3.0)\n\t/usr/lib/libncurses.5.4.dylib (compatibility version 5.4.0, current version 5.4.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/sqlite/3.51.0/bin/sqlite3",
+      "beforeSHA256": "sha256:d9f974e122b9303ead0fb3a72feb6bc83825b35c2558695f5d345358c6964e66",
+      "commands": [
+        {
+          "command": [
+            "install_name_tool",
+            "-change",
+            "@@HOMEBREW_PREFIX@@/opt/readline/lib/libreadline.8.dylib",
+            "/opt/homebrew/opt/readline/lib/libreadline.8.dylib",
+            "-rpath",
+            "@@HOMEBREW_CELLAR@@/sqlite/3.51.0/lib",
+            "/opt/homebrew/Cellar/sqlite/3.51.0/lib",
+            "/opt/homebrew/Cellar/sqlite/3.51.0/bin/sqlite3"
+          ],
+          "exitCode": 0,
+          "output": "/Library/Developer/CommandLineTools/usr/bin/install_name_tool: warning: changes being made to the file will invalidate the code signature in: /opt/homebrew/Cellar/sqlite/3.51.0/bin/sqlite3\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "/opt/homebrew/Cellar/sqlite/3.51.0/bin/sqlite3"
+          ],
+          "exitCode": 0,
+          "output": "/opt/homebrew/Cellar/sqlite/3.51.0/bin/sqlite3: replacing existing signature\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--verify",
+            "/opt/homebrew/Cellar/sqlite/3.51.0/bin/sqlite3"
+          ],
+          "exitCode": 0,
+          "output": ""
+        }
+      ],
+      "afterSHA256": "sha256:f069dfaf5aa7e7534ed4ddf086a7a376b5c456cd3b03ac911244b1623b349505",
+      "loadCommandsAfter": "/opt/homebrew/Cellar/sqlite/3.51.0/bin/sqlite3:\n\t/usr/lib/libz.1.dylib (compatibility version 1.0.0, current version 1.2.12)\n\t/opt/homebrew/opt/readline/lib/libreadline.8.dylib (compatibility version 8.3.0, current version 8.3.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/sqlite/3.51.0/lib/libsqlite3.3.51.0.dylib",
+      "beforeSHA256": "sha256:9f47f069abfcc141d7822188ece4da361b44af0a37638ce894a92c9bcb4cf84d",
+      "commands": [
+        {
+          "command": [
+            "install_name_tool",
+            "-id",
+            "/opt/homebrew/opt/sqlite/lib/libsqlite3.dylib",
+            "-change",
+            "@@HOMEBREW_PREFIX@@/opt/sqlite/lib/libsqlite3.dylib",
+            "/opt/homebrew/opt/sqlite/lib/libsqlite3.dylib",
+            "-rpath",
+            "@@HOMEBREW_CELLAR@@/sqlite/3.51.0/lib",
+            "/opt/homebrew/Cellar/sqlite/3.51.0/lib",
+            "/opt/homebrew/Cellar/sqlite/3.51.0/lib/libsqlite3.3.51.0.dylib"
+          ],
+          "exitCode": 0,
+          "output": "/Library/Developer/CommandLineTools/usr/bin/install_name_tool: warning: changes being made to the file will invalidate the code signature in: /opt/homebrew/Cellar/sqlite/3.51.0/lib/libsqlite3.3.51.0.dylib\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "/opt/homebrew/Cellar/sqlite/3.51.0/lib/libsqlite3.3.51.0.dylib"
+          ],
+          "exitCode": 0,
+          "output": "/opt/homebrew/Cellar/sqlite/3.51.0/lib/libsqlite3.3.51.0.dylib: replacing existing signature\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--verify",
+            "/opt/homebrew/Cellar/sqlite/3.51.0/lib/libsqlite3.3.51.0.dylib"
+          ],
+          "exitCode": 0,
+          "output": ""
+        }
+      ],
+      "afterSHA256": "sha256:25c31cc0e041dcd04df87a13efdc0e50b01edceb0469ae99ae8786ac25a5daa5",
+      "loadCommandsAfter": "/opt/homebrew/Cellar/sqlite/3.51.0/lib/libsqlite3.3.51.0.dylib:\n\t/opt/homebrew/opt/sqlite/lib/libsqlite3.dylib (compatibility version 9.0.0, current version 9.6.0)\n\t/usr/lib/libz.1.dylib (compatibility version 1.0.0, current version 1.2.12)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmainfo",
+      "beforeSHA256": "sha256:c3bf907eecf934745cda4f2e4a34ba77c75942ee887a6d02ba1bf5defcc1e7fb",
+      "commands": [
+        {
+          "command": [
+            "install_name_tool",
+            "-change",
+            "@@HOMEBREW_CELLAR@@/xz/5.8.3/lib/liblzma.5.dylib",
+            "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmainfo"
+          ],
+          "exitCode": 0,
+          "output": "/Library/Developer/CommandLineTools/usr/bin/install_name_tool: warning: changes being made to the file will invalidate the code signature in: /opt/homebrew/Cellar/xz/5.8.3/bin/lzmainfo\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmainfo"
+          ],
+          "exitCode": 0,
+          "output": "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmainfo: replacing existing signature\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--verify",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmainfo"
+          ],
+          "exitCode": 0,
+          "output": ""
+        }
+      ],
+      "afterSHA256": "sha256:3c55c7327440d774bca73d7de509a0a2ec896fcfb7c7eb84a3dba7417054c32f",
+      "loadCommandsAfter": "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmainfo:\n\t/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib (compatibility version 14.0.0, current version 14.3.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/xz/5.8.3/bin/xzdec",
+      "beforeSHA256": "sha256:465f7ec1802dfd070999bd72b1613921f2a186932ef24a8919d63ca2cb5bc967",
+      "commands": [
+        {
+          "command": [
+            "install_name_tool",
+            "-change",
+            "@@HOMEBREW_CELLAR@@/xz/5.8.3/lib/liblzma.5.dylib",
+            "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/xzdec"
+          ],
+          "exitCode": 0,
+          "output": "/Library/Developer/CommandLineTools/usr/bin/install_name_tool: warning: changes being made to the file will invalidate the code signature in: /opt/homebrew/Cellar/xz/5.8.3/bin/xzdec\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/xzdec"
+          ],
+          "exitCode": 0,
+          "output": "/opt/homebrew/Cellar/xz/5.8.3/bin/xzdec: replacing existing signature\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--verify",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/xzdec"
+          ],
+          "exitCode": 0,
+          "output": ""
+        }
+      ],
+      "afterSHA256": "sha256:d2b156e6438a28a7566d313dde246d091e0e0138fb177c43960c5f38be4c3d8c",
+      "loadCommandsAfter": "/opt/homebrew/Cellar/xz/5.8.3/bin/xzdec:\n\t/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib (compatibility version 14.0.0, current version 14.3.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/xz/5.8.3/bin/xz",
+      "beforeSHA256": "sha256:c64a403261c490ccb770d616b2eb1238aa101da7edb33050b0ab0edf5fbd0e08",
+      "commands": [
+        {
+          "command": [
+            "install_name_tool",
+            "-change",
+            "@@HOMEBREW_CELLAR@@/xz/5.8.3/lib/liblzma.5.dylib",
+            "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/xz"
+          ],
+          "exitCode": 0,
+          "output": "/Library/Developer/CommandLineTools/usr/bin/install_name_tool: warning: changes being made to the file will invalidate the code signature in: /opt/homebrew/Cellar/xz/5.8.3/bin/xz\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/xz"
+          ],
+          "exitCode": 0,
+          "output": "/opt/homebrew/Cellar/xz/5.8.3/bin/xz: replacing existing signature\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--verify",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/xz"
+          ],
+          "exitCode": 0,
+          "output": ""
+        }
+      ],
+      "afterSHA256": "sha256:995c8e2f72446f0d0e3a29f6c3d52286cfecedfc4ffb2b42d25c3ce1ad77034c",
+      "loadCommandsAfter": "/opt/homebrew/Cellar/xz/5.8.3/bin/xz:\n\t/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib (compatibility version 14.0.0, current version 14.3.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmadec",
+      "beforeSHA256": "sha256:50fea530e18a413b19903a08228ca03cf99a35c41dac6451df5891b0a080afbc",
+      "commands": [
+        {
+          "command": [
+            "install_name_tool",
+            "-change",
+            "@@HOMEBREW_CELLAR@@/xz/5.8.3/lib/liblzma.5.dylib",
+            "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmadec"
+          ],
+          "exitCode": 0,
+          "output": "/Library/Developer/CommandLineTools/usr/bin/install_name_tool: warning: changes being made to the file will invalidate the code signature in: /opt/homebrew/Cellar/xz/5.8.3/bin/lzmadec\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmadec"
+          ],
+          "exitCode": 0,
+          "output": "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmadec: replacing existing signature\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--verify",
+            "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmadec"
+          ],
+          "exitCode": 0,
+          "output": ""
+        }
+      ],
+      "afterSHA256": "sha256:dd287d65e67467199103213afd41cf8e1a5295d8f1343fa4677944f06733696b",
+      "loadCommandsAfter": "/opt/homebrew/Cellar/xz/5.8.3/bin/lzmadec:\n\t/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib (compatibility version 14.0.0, current version 14.3.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib",
+      "beforeSHA256": "sha256:75ec6dbd7c2194e0c7ca48a182aee4fc84587e5fd05a875297c07a77a8504211",
+      "commands": [
+        {
+          "command": [
+            "install_name_tool",
+            "-id",
+            "/opt/homebrew/opt/xz/lib/liblzma.5.dylib",
+            "-change",
+            "@@HOMEBREW_PREFIX@@/opt/xz/lib/liblzma.5.dylib",
+            "/opt/homebrew/opt/xz/lib/liblzma.5.dylib",
+            "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib"
+          ],
+          "exitCode": 0,
+          "output": "/Library/Developer/CommandLineTools/usr/bin/install_name_tool: warning: changes being made to the file will invalidate the code signature in: /opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--force",
+            "--sign",
+            "-",
+            "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib"
+          ],
+          "exitCode": 0,
+          "output": "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib: replacing existing signature\n"
+        },
+        {
+          "command": [
+            "codesign",
+            "--verify",
+            "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib"
+          ],
+          "exitCode": 0,
+          "output": ""
+        }
+      ],
+      "afterSHA256": "sha256:3d5bfa2f097c31463642b1daab5e662b44368bb4da368f85e412e7f9adcbaa10",
+      "loadCommandsAfter": "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib:\n\t/opt/homebrew/opt/xz/lib/liblzma.5.dylib (compatibility version 14.0.0, current version 14.3.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    }
+  ],
+  "finiteNativeVersionChecks": [
+    {
+      "command": [
+        "/opt/homebrew/Cellar/sqlite/3.51.0/bin/sqlite3",
+        "--version"
+      ],
+      "exitCode": 0,
+      "output": "3.51.0 2025-11-04 19:38:17 fb2c931ae597f8d00a37574ff67aeed3eced4e5547f9120744ae4bfa8e74527b (64-bit)\n"
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/xz/5.8.3/bin/xz",
+        "--version"
+      ],
+      "exitCode": 0,
+      "output": "xz (XZ Utils) 5.8.3\nliblzma 5.8.3\n"
+    }
+  ],
+  "activeCurrentLinksUnchanged": {
+    "ca-certificates": "../Cellar/ca-certificates/2026-09-25",
+    "readline": "../Cellar/readline/8.3.6",
+    "sqlite": "../Cellar/sqlite/3.53.4",
+    "xz": "../Cellar/xz/5.8.4"
+  },
+  "originalPriorLocalByteIdentityOrReceiptNotClaimed": true,
+  "cacheAndOldLogRestoration": "PENDING",
+  "fullR0Acceptance": false
+}

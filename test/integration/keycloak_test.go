@@ -495,12 +495,13 @@ func verifyFoundationAPI(t *testing.T, ctx context.Context, dsn string, token ke
 	}
 	defer admin.Close(ctx)
 	name := "sp03_api_" + strings.ReplaceAll(uuid.NewString(), "-", "")
-	if _, err := admin.Exec(ctx, `CREATE ROLE "`+name+`" LOGIN; GRANT api_runtime_role TO "`+name+`"`); err != nil {
+	password := strings.ReplaceAll(uuid.NewString()+uuid.NewString(), "-", "")
+	if _, err := admin.Exec(ctx, `CREATE ROLE "`+name+`" LOGIN PASSWORD '`+password+`'; GRANT api_runtime_role TO "`+name+`"`); err != nil {
 		t.Fatal(err)
 	}
 	defer admin.Exec(ctx, `DROP ROLE "`+name+`"`)
 	u, _ := url.Parse(dsn)
-	u.User = url.User(name)
+	u.User = url.UserPassword(name, password)
 	issuer := os.Getenv("SP03_KEYCLOAK_TEST_ISSUER")
 	application, err := app.NewAPI(app.AppConfig{DatabaseURL: u.String(), OIDCIssuerURL: issuer, ProfilePath: isolatedRuntimeProfile(t, issuer, "", "")})
 	if err != nil {

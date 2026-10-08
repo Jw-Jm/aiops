@@ -1,0 +1,73 @@
+{
+  "observedAt": "2026-10-05T05:54:12.249934+00:00",
+  "scope": "selected official Metrics OCI image only; all other images and original/shared/protected resources retained",
+  "reference": "registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2",
+  "manifestDigest": "sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2",
+  "selectedImageMetadataAndReferenceAbsentBeforeImport": true,
+  "layerBlobGarbageCollection": "not requested or asserted; no global prune",
+  "retiredOwnedContainersRemoved": [],
+  "originalNamespaceAndTrustRetained": true,
+  "fullCurrentCoreColdInstallAcceptance": false,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "ancestor=registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2",
+        "--format",
+        "{{.ID}}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "ancestor=registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2",
+        "--format",
+        "{{.ID}}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "rm",
+        "registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2"
+      ],
+      "exitCode": 1
+    }
+  ]
+}

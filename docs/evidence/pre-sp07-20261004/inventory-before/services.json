@@ -1,0 +1,1091 @@
+{
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "kubernetes",
+        "namespace": "default",
+        "uid": "548c07ab-2558-4978-8c24-bb6202280783",
+        "resourceVersion": "66",
+        "creationTimestamp": "2026-09-24T14:09:16Z",
+        "labels": {
+          "component": "apiserver",
+          "provider": "kubernetes"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.129",
+        "clusterIPs": [
+          "192.168.194.129"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "https",
+            "port": 443,
+            "protocol": "TCP",
+            "targetPort": 26443
+          }
+        ],
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "holmes-holmes",
+        "namespace": "holmes",
+        "uid": "65a449df-b085-4b39-b339-5da5a9c1e8b5",
+        "resourceVersion": "1011",
+        "creationTimestamp": "2026-09-24T14:31:11Z",
+        "labels": {
+          "app": "holmes",
+          "app.kubernetes.io/managed-by": "Helm"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "holmes",
+          "meta.helm.sh/release-namespace": "holmes"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.145",
+        "clusterIPs": [
+          "192.168.194.145"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "appProtocol": "http",
+            "name": "http",
+            "port": 80,
+            "protocol": "TCP",
+            "targetPort": 5050
+          }
+        ],
+        "selector": {
+          "app": "holmes"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "kube-dns",
+        "namespace": "kube-system",
+        "uid": "f3039347-6b0b-4c7e-b872-3de044b24ed1",
+        "resourceVersion": "349",
+        "creationTimestamp": "2026-09-24T14:09:25Z",
+        "labels": {
+          "k8s-app": "kube-dns",
+          "kubernetes.io/cluster-service": "true",
+          "kubernetes.io/name": "CoreDNS",
+          "objectset.rio.cattle.io/hash": "90462e4597bdcacaa7038840f786450ac707bfa2"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.138",
+        "clusterIPs": [
+          "192.168.194.138"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "dns",
+            "port": 53,
+            "protocol": "UDP",
+            "targetPort": 53
+          },
+          {
+            "name": "dns-tcp",
+            "port": 53,
+            "protocol": "TCP",
+            "targetPort": 53
+          }
+        ],
+        "selector": {
+          "k8s-app": "kube-dns"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "vm-core-dns",
+        "namespace": "kube-system",
+        "uid": "c7985f91-3c25-4f89-ae95-20119e5b05df",
+        "resourceVersion": "2451",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app": "vm-core-dns",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vm",
+          "app.kubernetes.io/version": "v1.116.0",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "jobLabel": "core-dns"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "None",
+        "clusterIPs": [
+          "None"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http-metrics",
+            "port": 9153,
+            "protocol": "TCP",
+            "targetPort": 9153
+          }
+        ],
+        "selector": {
+          "k8s-app": "kube-dns"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "vm-kube-controller-manager",
+        "namespace": "kube-system",
+        "uid": "cb5031ed-de82-4e01-8d54-1134516b9bd8",
+        "resourceVersion": "2450",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app": "vm-kube-controller-manager",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vm",
+          "app.kubernetes.io/version": "v1.116.0",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "jobLabel": "kube-controller-manager"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "None",
+        "clusterIPs": [
+          "None"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http-metrics",
+            "port": 10257,
+            "protocol": "TCP",
+            "targetPort": 10257
+          }
+        ],
+        "selector": {
+          "component": "kube-controller-manager"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "vm-kube-etcd",
+        "namespace": "kube-system",
+        "uid": "e4ae27d3-e384-4a4a-b92b-ddc060c7c917",
+        "resourceVersion": "2454",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app": "vm-kube-etcd",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vm",
+          "app.kubernetes.io/version": "v1.116.0",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "jobLabel": "kube-etcd"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "None",
+        "clusterIPs": [
+          "None"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http-metrics",
+            "port": 2379,
+            "protocol": "TCP",
+            "targetPort": 2379
+          }
+        ],
+        "selector": {
+          "component": "etcd"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "vm-kube-scheduler",
+        "namespace": "kube-system",
+        "uid": "a2a78d57-6e3f-4c86-84fe-8c102d7d7090",
+        "resourceVersion": "2453",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app": "vm-kube-scheduler",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vm",
+          "app.kubernetes.io/version": "v1.116.0",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "jobLabel": "kube-scheduler"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "None",
+        "clusterIPs": [
+          "None"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http-metrics",
+            "port": 10259,
+            "protocol": "TCP",
+            "targetPort": 10259
+          }
+        ],
+        "selector": {
+          "component": "kube-scheduler"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "victoria-logs",
+        "namespace": "monitoring",
+        "uid": "21041d8f-8b02-46f7-9ab4-990b52b086d1",
+        "resourceVersion": "2963",
+        "creationTimestamp": "2026-09-25T05:21:24Z",
+        "labels": {
+          "app": "victoria-logs"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.162",
+        "clusterIPs": [
+          "192.168.194.162"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 9428,
+            "protocol": "TCP",
+            "targetPort": 9428
+          }
+        ],
+        "selector": {
+          "app": "victoria-logs"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "vm-kube-state-metrics",
+        "namespace": "monitoring",
+        "uid": "50356868-45c4-46f0-bb9f-dc3c92fa2e73",
+        "resourceVersion": "2464",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/component": "metrics",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "kube-state-metrics",
+          "app.kubernetes.io/part-of": "kube-state-metrics",
+          "app.kubernetes.io/version": "2.15.0",
+          "helm.sh/chart": "kube-state-metrics-5.31.2"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.237",
+        "clusterIPs": [
+          "192.168.194.237"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/name": "kube-state-metrics"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "vm-prometheus-node-exporter",
+        "namespace": "monitoring",
+        "uid": "99358cc4-2bfb-4926-a8dc-1d1ba39b8d34",
+        "resourceVersion": "2455",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/component": "metrics",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "prometheus-node-exporter",
+          "app.kubernetes.io/part-of": "prometheus-node-exporter",
+          "app.kubernetes.io/version": "1.9.1",
+          "helm.sh/chart": "prometheus-node-exporter-4.45.2",
+          "jobLabel": "node-exporter"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.192",
+        "clusterIPs": [
+          "192.168.194.192"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "metrics",
+            "port": 9100,
+            "protocol": "TCP",
+            "targetPort": 9100
+          }
+        ],
+        "selector": {
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/name": "prometheus-node-exporter"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "vm-victoria-metrics-operator",
+        "namespace": "monitoring",
+        "uid": "05852da6-613a-4f5d-9bce-5e1d146a267d",
+        "resourceVersion": "2461",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "victoria-metrics-operator",
+          "app.kubernetes.io/version": "v0.56.0",
+          "helm.sh/chart": "victoria-metrics-operator-0.45.0"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.189",
+        "clusterIPs": [
+          "192.168.194.189"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": "http"
+          },
+          {
+            "name": "webhook",
+            "port": 9443,
+            "protocol": "TCP",
+            "targetPort": "webhook"
+          }
+        ],
+        "selector": {
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/name": "victoria-metrics-operator"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "vmagent-vm",
+        "namespace": "monitoring",
+        "uid": "f98a30f6-40c5-4f8c-b1b6-597c2d4ac163",
+        "resourceVersion": "2644",
+        "creationTimestamp": "2026-09-25T05:17:14Z",
+        "labels": {
+          "app.kubernetes.io/component": "monitoring",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vmagent",
+          "app.kubernetes.io/version": "v1.116.0",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "managed-by": "vm-operator"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "operator.victoriametrics.com/v1beta1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "VMAgent",
+            "name": "vm",
+            "uid": "5def5de8-ceba-4b4f-8925-8bdf1ee70125"
+          }
+        ],
+        "finalizers": [
+          "apps.victoriametrics.com/finalizer"
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.245",
+        "clusterIPs": [
+          "192.168.194.245"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8429,
+            "protocol": "TCP",
+            "targetPort": 8429
+          }
+        ],
+        "selector": {
+          "app.kubernetes.io/component": "monitoring",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/name": "vmagent",
+          "managed-by": "vm-operator"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "vmsingle-vm",
+        "namespace": "monitoring",
+        "uid": "1b829aba-c6a2-4df6-a44f-c40929a89881",
+        "resourceVersion": "2718",
+        "creationTimestamp": "2026-09-25T05:17:36Z",
+        "labels": {
+          "app.kubernetes.io/component": "monitoring",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "vmsingle",
+          "app.kubernetes.io/version": "v1.116.0",
+          "helm.sh/chart": "victoria-metrics-k8s-stack-0.45.0",
+          "managed-by": "vm-operator"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "operator.victoriametrics.com/v1beta1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "VMSingle",
+            "name": "vm",
+            "uid": "f45b7e39-0286-4dba-9a57-4c1d6ee03962"
+          }
+        ],
+        "finalizers": [
+          "apps.victoriametrics.com/finalizer"
+        ],
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.210",
+        "clusterIPs": [
+          "192.168.194.210"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8429,
+            "protocol": "TCP",
+            "targetPort": 8429
+          }
+        ],
+        "selector": {
+          "app.kubernetes.io/component": "monitoring",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/name": "vmsingle",
+          "managed-by": "vm-operator"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "ops-api",
+        "namespace": "ops-system",
+        "uid": "97df174e-42d1-486c-98bd-942c5a16e049",
+        "resourceVersion": "205430",
+        "creationTimestamp": "2026-10-01T11:04:50Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "ops.platform.io/component": "api",
+          "ops.platform.io/release": "ops-platform"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-platform",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.149",
+        "clusterIPs": [
+          "192.168.194.149"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": "http"
+          },
+          {
+            "name": "metrics",
+            "port": 9090,
+            "protocol": "TCP",
+            "targetPort": "metrics"
+          }
+        ],
+        "selector": {
+          "ops.platform.io/component": "api"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "ops-keycloak",
+        "namespace": "ops-system",
+        "uid": "938d8604-fbdb-42a7-8d89-c211584b9349",
+        "resourceVersion": "205319",
+        "creationTimestamp": "2026-10-01T11:04:16Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-keycloak",
+          "ops.platform.io/component": "keycloak",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-dependencies"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-dependencies",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.199",
+        "clusterIPs": [
+          "192.168.194.199"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "https",
+            "port": 8443,
+            "protocol": "TCP",
+            "targetPort": "https"
+          }
+        ],
+        "selector": {
+          "app.kubernetes.io/name": "ops-keycloak"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "ops-openbao",
+        "namespace": "ops-system",
+        "uid": "bb7a6f45-71ca-4cad-803f-a247d033fbc7",
+        "resourceVersion": "58202",
+        "creationTimestamp": "2026-09-27T11:36:05Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-openbao",
+          "ops.platform.io/component": "openbao",
+          "ops.platform.io/mode": "bundled"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-core",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.151",
+        "clusterIPs": [
+          "192.168.194.151"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "api",
+            "port": 8200,
+            "protocol": "TCP",
+            "targetPort": "api"
+          },
+          {
+            "name": "cluster",
+            "port": 8201,
+            "protocol": "TCP",
+            "targetPort": "cluster"
+          }
+        ],
+        "selector": {
+          "app.kubernetes.io/name": "ops-openbao"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "ops-postgresql",
+        "namespace": "ops-system",
+        "uid": "4f5945da-289c-42d5-a1bb-b6c4d4893c4a",
+        "resourceVersion": "205321",
+        "creationTimestamp": "2026-10-01T11:04:16Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-postgresql",
+          "ops.platform.io/component": "postgresql",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-dependencies"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-dependencies",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.180",
+        "clusterIPs": [
+          "192.168.194.180"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "postgres",
+            "port": 5432,
+            "protocol": "TCP",
+            "targetPort": "postgres"
+          }
+        ],
+        "selector": {
+          "app.kubernetes.io/name": "ops-postgresql"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "ops-seaweedfs-s3",
+        "namespace": "ops-system",
+        "uid": "1fa30ece-9e85-4b68-8e57-c0e6ebc7b67b",
+        "resourceVersion": "205323",
+        "creationTimestamp": "2026-10-01T11:04:16Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ops-seaweedfs",
+          "ops.platform.io/component": "seaweedfs",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-dependencies"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-dependencies",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.183",
+        "clusterIPs": [
+          "192.168.194.183"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "appProtocol": "https",
+            "name": "s3",
+            "port": 8333,
+            "protocol": "TCP",
+            "targetPort": "s3"
+          },
+          {
+            "name": "master",
+            "port": 9333,
+            "protocol": "TCP",
+            "targetPort": "master"
+          }
+        ],
+        "selector": {
+          "app.kubernetes.io/name": "ops-seaweedfs"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "ops-vmalert",
+        "namespace": "ops-system",
+        "uid": "de8f02b6-be23-4247-8b63-5a280741978a",
+        "resourceVersion": "145933",
+        "creationTimestamp": "2026-09-29T12:40:15Z",
+        "labels": {
+          "app": "server",
+          "app.kubernetes.io/instance": "vmalert",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "victoria-metrics-alert",
+          "app.kubernetes.io/version": "v1.116.0",
+          "helm.sh/chart": "victoria-metrics-alert-0.18.0",
+          "ops.platform.io/component": "vmalert",
+          "ops.platform.io/release": "vmalert"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vmalert",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.158",
+        "clusterIPs": [
+          "192.168.194.158"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8880,
+            "protocol": "TCP",
+            "targetPort": "http"
+          }
+        ],
+        "selector": {
+          "app": "server",
+          "app.kubernetes.io/instance": "vmalert",
+          "app.kubernetes.io/name": "victoria-metrics-alert"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "ops-worker",
+        "namespace": "ops-system",
+        "uid": "a31a4da7-0fad-480a-b76e-d42d8120908d",
+        "resourceVersion": "205433",
+        "creationTimestamp": "2026-10-01T11:04:50Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "ops.platform.io/component": "worker",
+          "ops.platform.io/release": "ops-platform"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-platform",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "clusterIP": "192.168.194.152",
+        "clusterIPs": [
+          "192.168.194.152"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8081,
+            "protocol": "TCP",
+            "targetPort": "http"
+          },
+          {
+            "name": "metrics",
+            "port": 9090,
+            "protocol": "TCP",
+            "targetPort": "metrics"
+          }
+        ],
+        "selector": {
+          "ops.platform.io/component": "worker"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import (
 )
 
 var componentImages = map[string]string{
+	"metrics-server":   "registry.k8s.io/metrics-server/metrics-server",
 	"victoria-metrics": "victoriametrics/victoria-metrics",
 	"victoria-logs":    "victoriametrics/victoria-logs",
 	"postgresql":       "docker.io/library/postgres",

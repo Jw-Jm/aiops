@@ -1,0 +1,17 @@
+{
+  "observedAt": "2026-10-06T01:24:25.330100+00:00",
+  "command": [
+    "kubectl",
+    "auth",
+    "can-i",
+    "get",
+    "pods.metrics.k8s.io",
+    "--as=system:serviceaccount:ops-pre-sp07-core-r5-20261006:ops-worker",
+    "-n",
+    "ops-pre-sp07-targets-20261006"
+  ],
+  "exitCode": 1,
+  "result": "no",
+  "requiredProductPodMetricReadAuthorized": false,
+  "noRBACBypass": true
+}

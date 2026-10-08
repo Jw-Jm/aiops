@@ -1,0 +1,75 @@
+{
+  "observedAt": "2026-10-08T03:13:24.335240+00:00",
+  "findingId": "PRE-R6-SSH-001",
+  "commandChainExecuted": false,
+  "futureTask75Accepted": false,
+  "runtimeBundleMaterialAdmitted": false,
+  "currentSSHAuthenticationPass": false,
+  "failureType": "AssertionError",
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "network",
+        "inspect",
+        "ops-pre-sp07-ssh-isolated-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "c07ad6fac45d90fe87a0dc7c12034bd1d9f9b68da540e1421abd4272d181187f"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "start",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keyscan",
+        "-p",
+        "2222",
+        "-t",
+        "ed25519",
+        "192.168.117.2"
+      ],
+      "exitCode": 1
+    }
+  ],
+  "authentication": []
+}

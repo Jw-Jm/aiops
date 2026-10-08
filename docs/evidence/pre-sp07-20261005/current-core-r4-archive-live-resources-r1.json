@@ -1,0 +1,214 @@
+{
+  "observedAt": "2026-10-05T13:29:52.744682+00:00",
+  "namespaceUid": "cdeeb73a-7e37-4090-901b-eadde26df845",
+  "resources": [
+    {
+      "kind": "Pod",
+      "name": "ops-keycloak-7679958d5b-jqhsk",
+      "uid": "296b3cf7-89e3-4ae3-9cde-76f0009e9d0c"
+    },
+    {
+      "kind": "Pod",
+      "name": "ops-openbao-0",
+      "uid": "a25ba5fc-f41a-46a3-af3a-680ee1aff7e6"
+    },
+    {
+      "kind": "Pod",
+      "name": "ops-postgresql-0",
+      "uid": "9989ac1d-fc97-4cd0-8f52-c89d81684a8f"
+    },
+    {
+      "kind": "Pod",
+      "name": "ops-seaweedfs-0",
+      "uid": "d97048ee-4cc5-4d7e-a2b2-ed7a846a0a39"
+    },
+    {
+      "kind": "Pod",
+      "name": "ops-victoria-logs-0",
+      "uid": "b983f89d-74c8-4b35-801f-abfe1152e841"
+    },
+    {
+      "kind": "Pod",
+      "name": "ops-victoria-metrics-0",
+      "uid": "ff910253-4864-42c3-89d5-2b73ff0876b4"
+    },
+    {
+      "kind": "Pod",
+      "name": "ops-vmalert-7d66f7869-tgjtb",
+      "uid": "3b2930d6-ae54-455a-85fd-98adf4a015b2"
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-openbao",
+      "uid": "75004838-0d64-4226-920b-f8fffa7f33e3"
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-postgresql",
+      "uid": "5d1a1d1e-a4d3-430a-be21-76a762e255ca"
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-seaweedfs",
+      "uid": "680f1e76-43ad-42ac-abbd-20b9772c7a73"
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-victoria-logs",
+      "uid": "15bc3285-886b-4111-ad56-b719316f9dc0"
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-victoria-metrics",
+      "uid": "8c3df87b-33a0-4bcf-a624-1cfe89a79395"
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "data-ops-openbao-0",
+      "uid": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a"
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "data-ops-postgresql-0",
+      "uid": "b6feef84-77cc-4476-8a18-9e40b604f721"
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "data-ops-seaweedfs-0",
+      "uid": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7"
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "server-volume-ops-victoria-logs-0",
+      "uid": "7ec09a27-17cf-4789-805b-0cfaf4192dfa"
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "server-volume-ops-victoria-metrics-0",
+      "uid": "17d2cade-8dbb-426b-b347-f1517dc145a9"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/opsctl-host",
+        "bootstrap",
+        "archive-iam",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/archive-iam-input-r1.json",
+        "--output",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/archive-iam-r1.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "get",
+        "secret",
+        "ops-seaweedfs-iam",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "replace",
+        "-f",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "rollout",
+        "restart",
+        "statefulset/ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "rollout",
+        "status",
+        "statefulset/ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "--timeout=180s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/opsctl-host",
+        "bootstrap",
+        "archive-bucket",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/resolved-profile.yaml",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/archive-bootstrap-private-r1.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r4/opsctl-host",
+        "bootstrap",
+        "archive-bucket",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/resolved-profile.yaml",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/archive-bootstrap-private-r1.json"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods,statefulsets,pvc",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "actualFormalBootstrap": true,
+  "signedBundleInstall": true,
+  "fullFreshCoreAcceptance": false,
+  "originalsDeleted": false,
+  "scopeAndRoleOperations": "pending actual positive/negative gate"
+}

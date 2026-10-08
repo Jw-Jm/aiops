@@ -1,0 +1,97 @@
+{
+  "observedAt": "2026-10-07T07:34:33.775556+00:00",
+  "jobId": "01a1145b-78db-7741-b14c-3d244ecade18",
+  "actualSuccessfulModelMCPChainPass": false,
+  "fullRecoveryAcceptance": false,
+  "APIOrWorkerRestartedByThisGate": false,
+  "retainedEarlierDriverContractMismatch": "current-core-r7-failed-investigation-sse-r1.json",
+  "wireContract": "internal/httpapi/investigation_handlers.go: typed job.state payload and signed opaque cursor; eventId sequence in Envelope",
+  "preRestartCursorSHA256": "eae55398162405e3733f44b92beb4e2640ac8c5662f39735450466c860865818",
+  "preRestartCursorFromRetainedPriorNativeResponse": true,
+  "retainedSchedulingEvidence": [
+    {
+      "evidenceId": "bb41211a-6f71-56f6-820a-fa1727f0e3ae",
+      "contentDigest": "sha256:cc9cdb36225784d6aa2ca9baaa7d5cfae5df09c963847ebcda3f8b47295134ca",
+      "archiveVersionId": "6723df3a12fee2a94a9867f8e18141ad",
+      "retainUntil": "2027-10-08T03:13:07Z",
+      "sourceId": "01a11452-1ed6-7a7f-bf15-1fb7e725d06a",
+      "sourceRevision": 1
+    },
+    {
+      "evidenceId": "bf030ca7-35dd-5779-b115-f6524a211da8",
+      "contentDigest": "sha256:1b6e9899a2f7cddbab7fdbb668639bdcad516b451446175d3234db2ac6910def",
+      "archiveVersionId": "6723df3a115a087bd65988fdfad1ea59",
+      "retainUntil": "2027-10-08T03:13:07Z",
+      "sourceId": "01a11452-1ed6-7a7f-bf15-1fb7e725d06a",
+      "sourceRevision": 1
+    }
+  ],
+  "failedStateHonest": true,
+  "unknownUsageConservativelyCharged": true,
+  "budgetReservedZero": true,
+  "sseEventSequence": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "sseEventTypes": [
+    "job.state",
+    "job.state",
+    "job.state",
+    "step.started",
+    "step.completed",
+    "job.state"
+  ],
+  "sseResumeExactSuffix": true,
+  "crossTenantStatus": 403,
+  "actualForeignTenantSSE403": true,
+  "exitCode": 0,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:b45259df0e79e27e706eb3a6e00370eacecffa3f31c7f0e3c37ac84f78dbda96"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18/events",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:fb2fdea7c4e3087afcac1e4ec3cd9ce2144c58eeb652692e5fc6c1a7c7a2d908"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18/events",
+      "status": 200,
+      "cursorSHA256": "sha256:eae55398162405e3733f44b92beb4e2640ac8c5662f39735450466c860865818",
+      "responseSHA256": "sha256:501e619c0000eaea4dd803ee59fcbad252cc74ca66f4ea0fa63ef0b0927d92de"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18/events",
+      "status": 403,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:b7fa80f0f9fca05bda6b02b6d5a88dd5245c57e8f3caa140215e00e9ba641cdd"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/bb41211a-6f71-56f6-820a-fa1727f0e3ae",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:f2d103940e87269a775efb8101efdd1577e0a8116b6a7c6ae36f0325afd24ff7"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/bf030ca7-35dd-5779-b115-f6524a211da8",
+      "status": 200,
+      "cursorSHA256": null,
+      "responseSHA256": "sha256:04011f2b59d67cb0c77c8d159948201a999c1d2e8d891b2c2057250526c98517"
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

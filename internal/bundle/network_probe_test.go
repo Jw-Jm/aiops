@@ -33,7 +33,7 @@ func TestBootstrapEgressRequiresBothControlsAndCleansOnlyCreatedPod(t *testing.T
 				}
 				return nil, nil
 			}
-			err := verifyBootstrapEgress(context.Background(), importProfile(), []ImageArtifact{{Name: "postgresql", Reference: "local/pg@sha256:locked"}}, run)
+			err := verifyBootstrapEgress(context.Background(), "ops-system", importProfile(), []ImageArtifact{{Name: "postgresql", Reference: "local/pg@sha256:locked"}}, run)
 			if (err == nil) != (output == "INTERNAL_DNS_REACHABLE_PUBLIC_EGRESS_DENIED") || !deleted {
 				t.Fatalf("result=%v deleted=%v", err, deleted)
 			}
@@ -59,7 +59,7 @@ func TestBootstrapEgressRefusesChangedProbeOwnership(t *testing.T) {
 		}
 		return nil, nil
 	}
-	err := verifyBootstrapEgress(context.Background(), importProfile(), []ImageArtifact{{Name: "postgresql", Reference: "local/pg@sha256:locked"}}, run)
+	err := verifyBootstrapEgress(context.Background(), "ops-system", importProfile(), []ImageArtifact{{Name: "postgresql", Reference: "local/pg@sha256:locked"}}, run)
 	if err == nil || deleted {
 		t.Fatalf("changed ownership error=%v deleted=%v", err, deleted)
 	}

@@ -1,0 +1,4943 @@
+{
+  "observedAt": "2026-10-07T02:59:56.092041+00:00",
+  "operation": "reversible graceful replica suspension of exact owned superseded R4/R5 installations, preserve all storage and restoration identities",
+  "fullOriginalCleanup": false,
+  "dataOrSecretDeleted": false,
+  "currentR6MainlineSuspended": false,
+  "sharedOrOriginalENV001Touched": false,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "26d1ac80a37434e2ac52dc3ca51d5df7fe995114eb931106ac2ed49794e322e6"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--network=container:26d1ac80a37434e2ac52dc3ca51d5df7fe995114eb931106ac2ed49794e322e6",
+        "--user",
+        "65532:65532",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261004",
+        "--label",
+        "ops.platform.purpose=superseded-readonly-maintenance-preflight",
+        "--env-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/database-bootstrap.env",
+        "--entrypoint",
+        "psql",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-h",
+        "127.0.0.1",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SELECT count(*) FROM investigation.jobs WHERE state IN ('queued','running'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "deployments,statefulsets",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "8d8e3b647a6593b817790c7c695ee3a4f8d16ec10c75dfb54eaf23e436b6890f"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--network=container:8d8e3b647a6593b817790c7c695ee3a4f8d16ec10c75dfb54eaf23e436b6890f",
+        "--user",
+        "65532:65532",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261004",
+        "--label",
+        "ops.platform.purpose=superseded-readonly-maintenance-preflight",
+        "--env-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/database-bootstrap.env",
+        "--entrypoint",
+        "psql",
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+        "-h",
+        "127.0.0.1",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "BEGIN READ ONLY; SELECT count(*) FROM investigation.jobs WHERE state IN ('queued','running'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "deployments,statefulsets",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "scale",
+        "Deployment/ops-investigator",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=447517"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "scale",
+        "Deployment/ops-investigator",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=458753"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-worker",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "scale",
+        "Deployment/ops-worker",
+        "--replicas=0",
+        "--current-replicas=2",
+        "--resource-version=448670"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-worker",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-worker",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "scale",
+        "Deployment/ops-worker",
+        "--replicas=0",
+        "--current-replicas=2",
+        "--resource-version=458663"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-worker",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-api",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "scale",
+        "Deployment/ops-api",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=447443"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-api",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-api",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "scale",
+        "Deployment/ops-api",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459183"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-api",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "scale",
+        "Deployment/ops-keycloak",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459990"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-vmalert",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "scale",
+        "Deployment/ops-vmalert",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459742"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-vmalert",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "scale",
+        "Deployment/ops-keycloak",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=460027"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-vmalert",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "scale",
+        "Deployment/ops-vmalert",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459484"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-vmalert",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-openbao",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "scale",
+        "StatefulSet/ops-openbao",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459642"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-openbao",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-postgresql",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "scale",
+        "StatefulSet/ops-postgresql",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459554"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-postgresql",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "scale",
+        "StatefulSet/ops-seaweedfs",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459575"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-victoria-logs",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "scale",
+        "StatefulSet/ops-victoria-logs",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459636"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-victoria-logs",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-victoria-metrics",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "scale",
+        "StatefulSet/ops-victoria-metrics",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459355"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-victoria-metrics",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-openbao",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "scale",
+        "StatefulSet/ops-openbao",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459771"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-openbao",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-postgresql",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "scale",
+        "StatefulSet/ops-postgresql",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459622"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-postgresql",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "scale",
+        "StatefulSet/ops-seaweedfs",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459671"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-victoria-logs",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "scale",
+        "StatefulSet/ops-victoria-logs",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459348"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-victoria-logs",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-victoria-metrics",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "scale",
+        "StatefulSet/ops-victoria-metrics",
+        "--replicas=0",
+        "--current-replicas=1",
+        "--resource-version=459821"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-victoria-metrics",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-openbao-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-logs-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "server-volume-ops-victoria-metrics-0",
+        "-n",
+        "ops-pre-sp07-core-r5-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "resources": [
+    {
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "namespaceUID": "cdeeb73a-7e37-4090-901b-eadde26df845",
+      "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+      "kind": "Deployment",
+      "name": "ops-investigator",
+      "uid": "db395100-41c7-4c0a-9d1a-3f836ddc9965",
+      "oldReplicas": 1,
+      "resourceVersion": "447517",
+      "helmOwner": "ops-platform",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvName": "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvUID": "649e987b-64a8-4164-865a-37b78a6049f0",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvName": "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvUID": "f2523e7c-58a8-44fb-9d39-39cc06bd11be",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvName": "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvUID": "6872e4bc-06c7-48c5-9e3e-3f8f90e4fadf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvName": "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvUID": "2a070481-8360-4688-b6b9-2d05c9b1f769",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvName": "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvUID": "712dae7e-8cf6-4b5a-b647-8ad21c25d6b2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "namespaceUID": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+      "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+      "kind": "Deployment",
+      "name": "ops-investigator",
+      "uid": "373934af-a6aa-48fa-b4f6-48437e99616e",
+      "oldReplicas": 1,
+      "resourceVersion": "458753",
+      "helmOwner": "ops-platform",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvName": "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvUID": "cef1b29d-a686-4793-951c-e45fc2046151",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvName": "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvUID": "cdc8d7fb-74f5-4b1a-a991-2598d8eef7f2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvName": "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvUID": "6f561fde-71df-4f1a-835e-3029e0d5bfdf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvName": "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvUID": "8d5ece7e-54a2-4b5a-b342-a832b2582574",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvName": "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvUID": "4bf4154d-420e-4f24-b58e-1530f1cb09f9",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "namespaceUID": "cdeeb73a-7e37-4090-901b-eadde26df845",
+      "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+      "kind": "Deployment",
+      "name": "ops-worker",
+      "uid": "5af91f25-adea-447d-8b27-68a2e3a5d14d",
+      "oldReplicas": 2,
+      "resourceVersion": "448670",
+      "helmOwner": "ops-platform",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvName": "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvUID": "649e987b-64a8-4164-865a-37b78a6049f0",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvName": "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvUID": "f2523e7c-58a8-44fb-9d39-39cc06bd11be",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvName": "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvUID": "6872e4bc-06c7-48c5-9e3e-3f8f90e4fadf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvName": "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvUID": "2a070481-8360-4688-b6b9-2d05c9b1f769",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvName": "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvUID": "712dae7e-8cf6-4b5a-b647-8ad21c25d6b2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "namespaceUID": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+      "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+      "kind": "Deployment",
+      "name": "ops-worker",
+      "uid": "2e539967-2f74-4bf6-8770-7619a73c2f03",
+      "oldReplicas": 2,
+      "resourceVersion": "458663",
+      "helmOwner": "ops-platform",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvName": "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvUID": "cef1b29d-a686-4793-951c-e45fc2046151",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvName": "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvUID": "cdc8d7fb-74f5-4b1a-a991-2598d8eef7f2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvName": "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvUID": "6f561fde-71df-4f1a-835e-3029e0d5bfdf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvName": "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvUID": "8d5ece7e-54a2-4b5a-b342-a832b2582574",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvName": "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvUID": "4bf4154d-420e-4f24-b58e-1530f1cb09f9",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "namespaceUID": "cdeeb73a-7e37-4090-901b-eadde26df845",
+      "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+      "kind": "Deployment",
+      "name": "ops-api",
+      "uid": "af898e20-353c-4fd2-bde8-5fd5439b52e8",
+      "oldReplicas": 1,
+      "resourceVersion": "447443",
+      "helmOwner": "ops-platform",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvName": "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvUID": "649e987b-64a8-4164-865a-37b78a6049f0",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvName": "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvUID": "f2523e7c-58a8-44fb-9d39-39cc06bd11be",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvName": "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvUID": "6872e4bc-06c7-48c5-9e3e-3f8f90e4fadf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvName": "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvUID": "2a070481-8360-4688-b6b9-2d05c9b1f769",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvName": "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvUID": "712dae7e-8cf6-4b5a-b647-8ad21c25d6b2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "namespaceUID": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+      "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+      "kind": "Deployment",
+      "name": "ops-api",
+      "uid": "ed8d6701-30c8-41aa-8f6a-46affe7facfb",
+      "oldReplicas": 1,
+      "resourceVersion": "459183",
+      "helmOwner": "ops-platform",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvName": "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvUID": "cef1b29d-a686-4793-951c-e45fc2046151",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvName": "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvUID": "cdc8d7fb-74f5-4b1a-a991-2598d8eef7f2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvName": "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvUID": "6f561fde-71df-4f1a-835e-3029e0d5bfdf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvName": "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvUID": "8d5ece7e-54a2-4b5a-b342-a832b2582574",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvName": "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvUID": "4bf4154d-420e-4f24-b58e-1530f1cb09f9",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "namespaceUID": "cdeeb73a-7e37-4090-901b-eadde26df845",
+      "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+      "kind": "Deployment",
+      "name": "ops-keycloak",
+      "uid": "3cef3cc1-6cb2-4c39-8892-f945d4bbd151",
+      "oldReplicas": 1,
+      "resourceVersion": "459990",
+      "helmOwner": "ops-dependencies",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvName": "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvUID": "649e987b-64a8-4164-865a-37b78a6049f0",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvName": "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvUID": "f2523e7c-58a8-44fb-9d39-39cc06bd11be",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvName": "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvUID": "6872e4bc-06c7-48c5-9e3e-3f8f90e4fadf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvName": "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvUID": "2a070481-8360-4688-b6b9-2d05c9b1f769",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvName": "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvUID": "712dae7e-8cf6-4b5a-b647-8ad21c25d6b2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "namespaceUID": "cdeeb73a-7e37-4090-901b-eadde26df845",
+      "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+      "kind": "Deployment",
+      "name": "ops-vmalert",
+      "uid": "d81cf8cd-4e1a-4b87-b064-61ede0b4e5c6",
+      "oldReplicas": 1,
+      "resourceVersion": "459742",
+      "helmOwner": "vmalert",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvName": "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvUID": "649e987b-64a8-4164-865a-37b78a6049f0",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvName": "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvUID": "f2523e7c-58a8-44fb-9d39-39cc06bd11be",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvName": "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvUID": "6872e4bc-06c7-48c5-9e3e-3f8f90e4fadf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvName": "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvUID": "2a070481-8360-4688-b6b9-2d05c9b1f769",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvName": "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvUID": "712dae7e-8cf6-4b5a-b647-8ad21c25d6b2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "namespaceUID": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+      "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+      "kind": "Deployment",
+      "name": "ops-keycloak",
+      "uid": "fa518249-5a52-4108-9725-711caa8affbd",
+      "oldReplicas": 1,
+      "resourceVersion": "460027",
+      "helmOwner": "ops-dependencies",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvName": "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvUID": "cef1b29d-a686-4793-951c-e45fc2046151",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvName": "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvUID": "cdc8d7fb-74f5-4b1a-a991-2598d8eef7f2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvName": "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvUID": "6f561fde-71df-4f1a-835e-3029e0d5bfdf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvName": "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvUID": "8d5ece7e-54a2-4b5a-b342-a832b2582574",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvName": "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvUID": "4bf4154d-420e-4f24-b58e-1530f1cb09f9",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "namespaceUID": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+      "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+      "kind": "Deployment",
+      "name": "ops-vmalert",
+      "uid": "f4bf5884-d0f4-4992-a05c-853f322afb3e",
+      "oldReplicas": 1,
+      "resourceVersion": "459484",
+      "helmOwner": "vmalert",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvName": "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvUID": "cef1b29d-a686-4793-951c-e45fc2046151",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvName": "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvUID": "cdc8d7fb-74f5-4b1a-a991-2598d8eef7f2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvName": "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvUID": "6f561fde-71df-4f1a-835e-3029e0d5bfdf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvName": "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvUID": "8d5ece7e-54a2-4b5a-b342-a832b2582574",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvName": "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvUID": "4bf4154d-420e-4f24-b58e-1530f1cb09f9",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "namespaceUID": "cdeeb73a-7e37-4090-901b-eadde26df845",
+      "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+      "kind": "StatefulSet",
+      "name": "ops-openbao",
+      "uid": "75004838-0d64-4226-920b-f8fffa7f33e3",
+      "oldReplicas": 1,
+      "resourceVersion": "459642",
+      "helmOwner": "ops-dependencies",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvName": "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvUID": "649e987b-64a8-4164-865a-37b78a6049f0",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvName": "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvUID": "f2523e7c-58a8-44fb-9d39-39cc06bd11be",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvName": "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvUID": "6872e4bc-06c7-48c5-9e3e-3f8f90e4fadf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvName": "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvUID": "2a070481-8360-4688-b6b9-2d05c9b1f769",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvName": "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvUID": "712dae7e-8cf6-4b5a-b647-8ad21c25d6b2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "namespaceUID": "cdeeb73a-7e37-4090-901b-eadde26df845",
+      "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+      "kind": "StatefulSet",
+      "name": "ops-postgresql",
+      "uid": "5d1a1d1e-a4d3-430a-be21-76a762e255ca",
+      "oldReplicas": 1,
+      "resourceVersion": "459554",
+      "helmOwner": "ops-dependencies",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvName": "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvUID": "649e987b-64a8-4164-865a-37b78a6049f0",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvName": "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvUID": "f2523e7c-58a8-44fb-9d39-39cc06bd11be",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvName": "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvUID": "6872e4bc-06c7-48c5-9e3e-3f8f90e4fadf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvName": "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvUID": "2a070481-8360-4688-b6b9-2d05c9b1f769",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvName": "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvUID": "712dae7e-8cf6-4b5a-b647-8ad21c25d6b2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "namespaceUID": "cdeeb73a-7e37-4090-901b-eadde26df845",
+      "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+      "kind": "StatefulSet",
+      "name": "ops-seaweedfs",
+      "uid": "680f1e76-43ad-42ac-abbd-20b9772c7a73",
+      "oldReplicas": 1,
+      "resourceVersion": "459575",
+      "helmOwner": "ops-dependencies",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvName": "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvUID": "649e987b-64a8-4164-865a-37b78a6049f0",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvName": "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvUID": "f2523e7c-58a8-44fb-9d39-39cc06bd11be",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvName": "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvUID": "6872e4bc-06c7-48c5-9e3e-3f8f90e4fadf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvName": "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvUID": "2a070481-8360-4688-b6b9-2d05c9b1f769",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvName": "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvUID": "712dae7e-8cf6-4b5a-b647-8ad21c25d6b2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "namespaceUID": "cdeeb73a-7e37-4090-901b-eadde26df845",
+      "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+      "kind": "StatefulSet",
+      "name": "ops-victoria-logs",
+      "uid": "15bc3285-886b-4111-ad56-b719316f9dc0",
+      "oldReplicas": 1,
+      "resourceVersion": "459636",
+      "helmOwner": "victoria-logs",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvName": "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvUID": "649e987b-64a8-4164-865a-37b78a6049f0",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvName": "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvUID": "f2523e7c-58a8-44fb-9d39-39cc06bd11be",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvName": "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvUID": "6872e4bc-06c7-48c5-9e3e-3f8f90e4fadf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvName": "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvUID": "2a070481-8360-4688-b6b9-2d05c9b1f769",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvName": "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvUID": "712dae7e-8cf6-4b5a-b647-8ad21c25d6b2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "namespaceUID": "cdeeb73a-7e37-4090-901b-eadde26df845",
+      "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+      "kind": "StatefulSet",
+      "name": "ops-victoria-metrics",
+      "uid": "8c3df87b-33a0-4bcf-a624-1cfe89a79395",
+      "oldReplicas": 1,
+      "resourceVersion": "459355",
+      "helmOwner": "victoria-metrics",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvName": "pvc-a0d7e1b3-3f1c-4065-9333-8e7936272a6a",
+          "pvUID": "649e987b-64a8-4164-865a-37b78a6049f0",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvName": "pvc-b6feef84-77cc-4476-8a18-9e40b604f721",
+          "pvUID": "f2523e7c-58a8-44fb-9d39-39cc06bd11be",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvName": "pvc-fa658e11-3f32-4fa5-b284-4e9843d2cfc7",
+          "pvUID": "6872e4bc-06c7-48c5-9e3e-3f8f90e4fadf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvName": "pvc-7ec09a27-17cf-4789-805b-0cfaf4192dfa",
+          "pvUID": "2a070481-8360-4688-b6b9-2d05c9b1f769",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvName": "pvc-17d2cade-8dbb-426b-b347-f1517dc145a9",
+          "pvUID": "712dae7e-8cf6-4b5a-b647-8ad21c25d6b2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "namespaceUID": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+      "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+      "kind": "StatefulSet",
+      "name": "ops-openbao",
+      "uid": "8d9791b2-3f8b-4cb6-8090-46a8343e40bb",
+      "oldReplicas": 1,
+      "resourceVersion": "459771",
+      "helmOwner": "ops-dependencies",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvName": "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvUID": "cef1b29d-a686-4793-951c-e45fc2046151",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvName": "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvUID": "cdc8d7fb-74f5-4b1a-a991-2598d8eef7f2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvName": "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvUID": "6f561fde-71df-4f1a-835e-3029e0d5bfdf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvName": "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvUID": "8d5ece7e-54a2-4b5a-b342-a832b2582574",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvName": "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvUID": "4bf4154d-420e-4f24-b58e-1530f1cb09f9",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "namespaceUID": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+      "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+      "kind": "StatefulSet",
+      "name": "ops-postgresql",
+      "uid": "475da6d6-2499-446f-be2c-eca079237b43",
+      "oldReplicas": 1,
+      "resourceVersion": "459622",
+      "helmOwner": "ops-dependencies",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvName": "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvUID": "cef1b29d-a686-4793-951c-e45fc2046151",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvName": "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvUID": "cdc8d7fb-74f5-4b1a-a991-2598d8eef7f2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvName": "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvUID": "6f561fde-71df-4f1a-835e-3029e0d5bfdf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvName": "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvUID": "8d5ece7e-54a2-4b5a-b342-a832b2582574",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvName": "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvUID": "4bf4154d-420e-4f24-b58e-1530f1cb09f9",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "namespaceUID": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+      "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+      "kind": "StatefulSet",
+      "name": "ops-seaweedfs",
+      "uid": "e1b30d23-729c-480e-86c2-1cb619c7f904",
+      "oldReplicas": 1,
+      "resourceVersion": "459671",
+      "helmOwner": "ops-dependencies",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvName": "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvUID": "cef1b29d-a686-4793-951c-e45fc2046151",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvName": "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvUID": "cdc8d7fb-74f5-4b1a-a991-2598d8eef7f2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvName": "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvUID": "6f561fde-71df-4f1a-835e-3029e0d5bfdf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvName": "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvUID": "8d5ece7e-54a2-4b5a-b342-a832b2582574",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvName": "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvUID": "4bf4154d-420e-4f24-b58e-1530f1cb09f9",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "namespaceUID": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+      "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+      "kind": "StatefulSet",
+      "name": "ops-victoria-logs",
+      "uid": "a6d604bb-2999-4fcb-b373-4ac5fbe32bb0",
+      "oldReplicas": 1,
+      "resourceVersion": "459348",
+      "helmOwner": "victoria-logs",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvName": "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvUID": "cef1b29d-a686-4793-951c-e45fc2046151",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvName": "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvUID": "cdc8d7fb-74f5-4b1a-a991-2598d8eef7f2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvName": "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvUID": "6f561fde-71df-4f1a-835e-3029e0d5bfdf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvName": "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvUID": "8d5ece7e-54a2-4b5a-b342-a832b2582574",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvName": "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvUID": "4bf4154d-420e-4f24-b58e-1530f1cb09f9",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    },
+    {
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "namespaceUID": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+      "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+      "kind": "StatefulSet",
+      "name": "ops-victoria-metrics",
+      "uid": "f704cda3-8a70-421d-a63a-01ad4dfd7bd1",
+      "oldReplicas": 1,
+      "resourceVersion": "459821",
+      "helmOwner": "victoria-metrics",
+      "disposition": "gracefully suspend replicas; retain release, data, credentials and public trust",
+      "storage": [
+        {
+          "pvcName": "data-ops-openbao-0",
+          "pvcUID": "0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvName": "pvc-0accb064-4a8d-40f9-8412-9cead1143076",
+          "pvUID": "cef1b29d-a686-4793-951c-e45fc2046151",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-postgresql-0",
+          "pvcUID": "b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvName": "pvc-b1802595-3c4c-46af-9de6-5973e2c8f610",
+          "pvUID": "cdc8d7fb-74f5-4b1a-a991-2598d8eef7f2",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "data-ops-seaweedfs-0",
+          "pvcUID": "2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvName": "pvc-2010be0b-f7b0-4752-8152-7459612f71ca",
+          "pvUID": "6f561fde-71df-4f1a-835e-3029e0d5bfdf",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-logs-0",
+          "pvcUID": "e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvName": "pvc-e393c848-4064-43cb-8c1e-a440aa7ca965",
+          "pvUID": "8d5ece7e-54a2-4b5a-b342-a832b2582574",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        },
+        {
+          "pvcName": "server-volume-ops-victoria-metrics-0",
+          "pvcUID": "eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvName": "pvc-eecbbc7b-dccd-451a-b816-993a1e273d6b",
+          "pvUID": "4bf4154d-420e-4f24-b58e-1530f1cb09f9",
+          "disposition": "retain unchanged; no deletion/finalizer/retention change"
+        }
+      ],
+      "recoveryFilePresentOutsideRepository": true
+    }
+  ]
+}

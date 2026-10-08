@@ -1,0 +1,49 @@
+{
+  "observedAt": "2026-10-08T03:05:02.522176+00:00",
+  "beforeMutation": true,
+  "namespaceUID": "8ef6f18e-0621-45d0-877e-4e575cb34603",
+  "policyUID": "c0c2ef19-2c08-4b72-8034-20c6074846c4",
+  "originalSpec": {
+    "egress": [
+      {
+        "ports": [
+          {
+            "port": 26443,
+            "protocol": "TCP"
+          }
+        ],
+        "to": [
+          {
+            "ipBlock": {
+              "cidr": "192.168.139.2/32"
+            }
+          }
+        ]
+      }
+    ],
+    "podSelector": {
+      "matchLabels": {
+        "ops.platform.io/component": "worker",
+        "ops.platform.io/release": "ops-platform"
+      }
+    },
+    "policyTypes": [
+      "Egress"
+    ]
+  },
+  "temporarySpec": {
+    "egress": [],
+    "podSelector": {
+      "matchLabels": {
+        "ops.platform.io/component": "worker",
+        "ops.platform.io/release": "ops-platform"
+      }
+    },
+    "policyTypes": [
+      "Egress"
+    ]
+  },
+  "expected": "Worker-only Kubernetes source/lease unavailable => Graph 503 GRAPH_NOT_READY or truthful stale/partial, no recovery claim; incident mainline remains 200; exact restoration => fresh Graph; native external Kubernetes remains reachable and original target still Unschedulable",
+  "requireRestoreOriginalSpecUID": true,
+  "protectedDataOrScopeOrCredentialsModified": false
+}

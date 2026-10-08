@@ -1,0 +1,158 @@
+---
+# Source: ops-metrics-server/templates/metrics.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pre-sp07-metrics
+  namespace: ops-pre-sp07-metrics-20261004
+  labels: {app.kubernetes.io/instance: pre-sp07}
+spec:
+  podSelector:
+    matchLabels: {app.kubernetes.io/name: pre-sp07-metrics}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - ipBlock: {cidr: "192.168.139.2/32"}
+      ports: [{protocol: TCP, port: 10250}]
+  egress:
+    - to:
+        - ipBlock: {cidr: "192.168.139.2/32"}
+        - ipBlock: {cidr: "fd07:b51a:cc66::2/128"}
+      ports: [{protocol: TCP, port: 10250}]
+    - to:
+        - ipBlock: {cidr: "192.168.139.2/32"}
+      ports: [{protocol: TCP, port: 26443}]
+---
+# Source: ops-metrics-server/templates/metrics.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pre-sp07-metrics
+  namespace: ops-pre-sp07-metrics-20261004
+  labels: {app.kubernetes.io/instance: pre-sp07}
+---
+# Source: ops-metrics-server/templates/metrics.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pre-sp07-metrics
+  labels: {app.kubernetes.io/instance: pre-sp07}
+rules:
+  - apiGroups: [""]
+    resources: [nodes/metrics]
+    verbs: [get]
+  - apiGroups: [""]
+    resources: [pods, nodes]
+    verbs: [get, list, watch]
+---
+# Source: ops-metrics-server/templates/metrics.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pre-sp07-metrics
+  labels: {app.kubernetes.io/instance: pre-sp07}
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: pre-sp07-metrics}
+subjects:
+  - {kind: ServiceAccount, name: pre-sp07-metrics, namespace: ops-pre-sp07-metrics-20261004}
+---
+# Source: ops-metrics-server/templates/metrics.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pre-sp07-metrics-auth-delegator
+  labels: {app.kubernetes.io/instance: pre-sp07}
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: system:auth-delegator}
+subjects:
+  - {kind: ServiceAccount, name: pre-sp07-metrics, namespace: ops-pre-sp07-metrics-20261004}
+---
+# Source: ops-metrics-server/templates/metrics.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pre-sp07-metrics-auth-reader
+  namespace: kube-system
+  labels: {app.kubernetes.io/instance: pre-sp07}
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: extension-apiserver-authentication-reader}
+subjects:
+  - {kind: ServiceAccount, name: pre-sp07-metrics, namespace: ops-pre-sp07-metrics-20261004}
+---
+# Source: ops-metrics-server/templates/metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pre-sp07-metrics
+  namespace: ops-pre-sp07-metrics-20261004
+  labels: {app.kubernetes.io/instance: pre-sp07}
+spec:
+  selector: {app.kubernetes.io/name: pre-sp07-metrics}
+  ports: [{name: https, port: 443, targetPort: https}]
+---
+# Source: ops-metrics-server/templates/metrics.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pre-sp07-metrics
+  namespace: ops-pre-sp07-metrics-20261004
+  labels: {app.kubernetes.io/instance: pre-sp07}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app.kubernetes.io/name: pre-sp07-metrics}
+  strategy:
+    rollingUpdate: {maxUnavailable: 0}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: pre-sp07-metrics, app.kubernetes.io/instance: pre-sp07}
+    spec:
+      serviceAccountName: pre-sp07-metrics
+      nodeSelector: {kubernetes.io/os: linux, kubernetes.io/arch: arm64}
+      containers:
+        - name: metrics-server
+          image: "registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2"
+          imagePullPolicy: Never
+          args:
+            - --secure-port=10250
+            - --tls-cert-file=/etc/metrics-serving/tls.crt
+            - --tls-private-key-file=/etc/metrics-serving/tls.key
+            - --kubelet-certificate-authority=/etc/kubelet-ca/ca.crt
+            - --kubelet-preferred-address-types=InternalIP
+            - --kubelet-use-node-status-port
+            - --metric-resolution=15s
+          ports: [{name: https, containerPort: 10250}]
+          resources:
+            requests: {cpu: 100m, memory: 200Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+          readinessProbe:
+            httpGet: {path: /readyz, port: https, scheme: HTTPS}
+            initialDelaySeconds: 20
+          livenessProbe:
+            httpGet: {path: /livez, port: https, scheme: HTTPS}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+            seccompProfile: {type: RuntimeDefault}
+          volumeMounts:
+            - {name: serving, mountPath: /etc/metrics-serving, readOnly: true}
+            - {name: kubelet-ca, mountPath: /etc/kubelet-ca, readOnly: true}
+      volumes:
+        - name: serving
+          secret: {secretName: pre-sp07-metrics-tls, defaultMode: 0444}
+        - name: kubelet-ca
+          configMap: {name: pre-sp07-metrics-kubelet-ca}
+---
+# Source: ops-metrics-server/templates/metrics.yaml
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1beta1.metrics.k8s.io
+  labels: {app.kubernetes.io/instance: pre-sp07}
+spec:
+  group: metrics.k8s.io
+  version: v1beta1
+  groupPriorityMinimum: 100
+  versionPriority: 100
+  caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVNVENDQXBtZ0F3SUJBZ0lVWng0K3U2a0kzOFAra0JRNlNJakVaU0tOdkZnd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0tERW1NQ1FHQTFVRUF3d2RjSEpsTFhOd01EY3RiV1YwY21samN5MWhaRzFwYzNOcGIyNHRZMkV3SGhjTgpNall4TURBME1USTBPVFF4V2hjTk1qWXhNVEF6TVRJME9UUXhXakFvTVNZd0pBWURWUVFEREIxd2NtVXRjM0F3Ck55MXRaWFJ5YVdOekxXRmtiV2x6YzJsdmJpMWpZVENDQWFJd0RRWUpLb1pJaHZjTkFRRUJCUUFEZ2dHUEFEQ0MKQVlvQ2dnR0JBSXl6MTFNWGJJVlBUQVZTZm9xMTFFUHNnemRHTlZIS05GUFBtcHYxbG8xYUJZMnNlYmxMajhvRApxQ0diZGgxNCtXUE52ZjdYdVhJRCtBUElRVDVydUdkWnhub0h6RWtpZloyWm1ucm1oWVRZN1phZXFRWGtCNXE3CjVoSWtlbUhrNWpvaWxtRTQzUFpHMlNaQjBzbFY3Nkd6bDkwRFRabmltWlplcGVma2E5WlFCL3lpTlgxYXJZbHMKVGpiSUpiWkxucDl6L1AvcG5ISTFWTm9aVXk4d2ZERmRzdHRod29TZ0ljeDhhQWZsOGkzZzFUVWFDZzhLUTJ3cwpBZHdmVm1Mc1lzZzRKNUgxMjdyV2tnRWFndTVQenlTMmlZYnE5eWcrMDltMy9EUDhRSWRVa1VUWFNKNS81TXBCCnBGV1R3Z0JBMmhBL2pLQlhkNEZUMTZ2NlBHanJrS3VpdmJZYzNkeTAvQjV5NVFwZzBpOFZSOUF6MS9KZjREdTkKc3dyZmVxUkpnVG5yczZlQmZucHZ3d0M3TWhoWXB1enBUUmw1SjhlUzR2dWsxU29xZ3BZWGZ4UDNVcmFBMjJOVQpWSVZRUFJoY3dpTXNUTldENU9MOWdKVzMzMVA0dy9jZ2s2ejhRUGRLcGN3OHVSV1ZnTnFjU1Zza3R5blVSZW9BCmY5NmVvVTJtb3dJREFRQUJvMU13VVRBZEJnTlZIUTRFRmdRVXp0SHZ5YmIzcUcwYXdncVIydXY3K3FCRTB1UXcKSHdZRFZSMGpCQmd3Rm9BVXp0SHZ5YmIzcUcwYXdncVIydXY3K3FCRTB1UXdEd1lEVlIwVEFRSC9CQVV3QXdFQgovekFOQmdrcWhraUc5dzBCQVFzRkFBT0NBWUVBTW01ZVRNWHRoczFlWU0xNTVyeXZSdWt1SmhucktFOHhCUkVPCkcydFhyR0dtaDZVL2xOdzRVck55L0x5VzNZcFkxTExIcCtQbWRHdG5Vd2FwUG5GQTdnLzlMRFJVOFV6T0FVQXIKWS9BWitMcFArdlU3YXV3cEkxTlBZYmEwSE4rTVdMVnZQNjBMVnhDZVk4Qzl2TEJTU0RkK2g2RHppNzNJNDcvMwovTUZBdjVnYktMUE1RRlJteCtHZ1FJRk1WUERjRVFYUkRnOTlYYklEeUgrUzhvTisvelYzK3NQaGE4bTZlcnVoCkpBODRDY29DTjFvRUpuSXJPeUlLajhCcnkrZUlLbGRwUlBmL1hYUGhDVmNaVi9DZ3ZLRVJGTkRtQkk1RVZsSnYKdVB2SXluRDl0LzgwOTFnSnp0QVlDeTZQdnVISUdwR2ZkTGFYcldZTGRJaE9kb0k0K1hGSXU2OWtNWnZjSVVLZQpteXh6NmExeXlqRWhmMWhFMzlHQ1N0b0prNndFSlJlcFRYM21JTXBEUWJnZExwY2RzTjF6TXZITCtjMHNTdE5CCm5iUDl2NVZqUnZIcVJIVC82MGlkTWREcUVkZlB2ZXBQTCsxMEtKTjZXamk0U2VuUW5NRWlOdi9SRWsrQjNGN0gKVlhNaDdjckV2TVRTQkpLTkFpMDdncHRzRzR1LwotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=="
+  service: {name: pre-sp07-metrics, namespace: ops-pre-sp07-metrics-20261004}

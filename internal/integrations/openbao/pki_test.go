@@ -337,6 +337,71 @@ func makeTestCA(t *testing.T) (*x509.Certificate, *ecdsa.PrivateKey) {
 	return cert, key
 }
 
+func TestPinnedWorkloadIssuerDriftCannotReplaceActiveIdentity(t *testing.T) {
+	ca, key := makeTestCA(t)
+	other, otherKey := makeTestCA(t)
+	var drift atomic.Bool
+	server, client := newPKITestServer(t, ca, key, func(w http.ResponseWriter, r *http.Request) {
+		issuer, signer := ca, key
+		if drift.Load() {
+			issuer, signer = other, otherKey
+		}
+		switch r.URL.Path {
+		case "/v1/auth/kubernetes/login":
+			writeJSON(w, map[string]any{"auth": map[string]any{"client_token": "ephemeral", "lease_duration": 900}})
+		case "/v1/pki/sign/platform-workload-ops-api":
+			var body struct {
+				CSR string `json:"csr"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				t.Error(err)
+				return
+			}
+			block, _ := pem.Decode([]byte(body.CSR))
+			csr, err := x509.ParseCertificateRequest(block.Bytes)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+			issuerPEM := string(pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: issuer.Raw}))
+			writeJSON(w, map[string]any{"data": map[string]any{"certificate": signCSRForTest(t, issuer, signer, csr, 99, time.Hour), "issuing_ca": issuerPEM, "ca_chain": []string{issuerPEM}}})
+		case "/v1/pki/crl/pem":
+			_, _ = w.Write(testCRLPEM(t, issuer, signer))
+		default:
+			http.NotFound(w, r)
+		}
+	})
+	defer server.Close()
+	reloader, err := NewCertReloader(client, "ops-system", "ops-api")
+	if err != nil {
+		t.Fatal(err)
+	}
+	roots := x509.NewCertPool()
+	roots.AddCert(ca)
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+	token := writeProjectedToken(t)
+	if err := reloader.StartPinned(ctx, token, roots); err != nil {
+		t.Fatal(err)
+	}
+	first, err := reloader.getCertificate(&tls.CertificateRequestInfo{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	drift.Store(true)
+	if err := reloader.refresh(ctx, token); err == nil || !strings.Contains(err.Error(), "PINNED_TRUST") {
+		t.Fatalf("untrusted issuer renewal accepted: %v", err)
+	}
+	active, err := reloader.getCertificate(&tls.CertificateRequestInfo{})
+	if err != nil || active != first {
+		t.Fatal("failed renewal discarded the valid pinned identity")
+	}
+	otherReloader, _ := NewCertReloader(client, "ops-system", "ops-api")
+	if err := otherReloader.StartPinned(ctx, token, roots); err == nil || otherReloader.current.Load() != nil {
+		t.Fatal("untrusted initial issuer was published")
+	}
+}
+
 func signCSRForTest(t *testing.T, ca *x509.Certificate, caKey *ecdsa.PrivateKey, csr *x509.CertificateRequest, serial int32, lifetime time.Duration) string {
 	t.Helper()
 	now := time.Now().UTC()

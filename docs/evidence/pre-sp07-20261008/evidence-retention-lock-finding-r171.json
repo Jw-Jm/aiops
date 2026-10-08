@@ -1,0 +1,56 @@
+{
+  "id": "PRE-R1-RETENTION-001",
+  "severity": "P1",
+  "status": "source_fixed_targeted_real_pg_green_native_current_bundle_pending",
+  "observedAt": "2026-10-08T01:10:13.231079+00:00",
+  "trigger": "Source-created Finding/RCA FK references hold Evidence KEY SHARE before Protect takes tenant retention lock; archive/Legal Hold/protection pass takes retention lock before FOR UPDATE metadata guard.",
+  "impact": "Actual production Worker collection and reduction transactions abort with SQLSTATE 40P01 under concurrency; protected retention or references are not silently bypassed.",
+  "requirements": [
+    "R1 current SP04-SP06 shared business",
+    "R4/R5 ten concurrent investigations and mainline correctness",
+    "Evidence/Legal Hold/365-day closure"
+  ],
+  "nativeEvidence": [
+    "current-ten-preparation-failure-triage-r164.json",
+    "current-native-postgres-deadlock-structure-r165.json"
+  ],
+  "realFailureTest": "evidence-retention-lock-red-r166.json",
+  "realFixedRace": "evidence-retention-lock-green-r167.json",
+  "files": [
+    {
+      "path": "internal/evidence/retention.go",
+      "line": 32
+    },
+    {
+      "path": "internal/evidence/archive.go",
+      "line": 149
+    },
+    {
+      "path": "internal/evidence/protection.go",
+      "line": 22
+    },
+    {
+      "path": "internal/finding/evidence.go",
+      "line": 73
+    }
+  ],
+  "fix": "Metadata keys are immutable; FOR NO KEY UPDATE is compatible with FK KEY SHARE while excluding writers and DELETE. Keep tenant advisory lock, tombstone recheck, native protection and all retention durations. Intent row still FOR UPDATE.",
+  "reproduction": "go test ./test/integration -run ^TestPreSP07FindingEvidenceReferenceAndLegalHoldLockOrder$ -count=1 -v with real PG migration/runtime roles; wrappers only coordinate already executed real SQL.",
+  "remaining": [
+    "affected real archive/Finding/RCA/security/replay regressions",
+    "new source binding and signed Bundle",
+    "current installed native ten-concurrency/recovery retest",
+    "full independent review"
+  ],
+  "fullyClosed": false,
+  "affectedRegressions": {
+    "evidence": "evidence-retention-affected-regression-r172.json",
+    "exitCode": 0,
+    "actualPGTransitTLSIAMArchiveFindingRCA": true
+  },
+  "actualLinuxWorkerAnalyzerSeparateRetest": {
+    "evidence": "sp05-current-actual-repro-r169.json",
+    "exitCode": 0,
+    "fullRequiredCheckReplacesSeparateRetest": false
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "observedAt": "2026-10-07T02:07:04.415058+00:00",
+  "jobId": "01a1141a-a287-7a89-a6c3-6f64f65cf0d9",
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "-n",
+    "ops-pre-sp07-core-r6-20261006",
+    "logs",
+    "deployment/ops-investigator",
+    "--since=15m",
+    "--tail=180"
+  ],
+  "exitCode": 0,
+  "nativeSanitizedExceptionFrames": [
+    "investigator-failure RuntimeError /app/src/investigator/worker.py 75",
+    "investigator-failure RuntimeError /app/src/investigator/holmes_adapter.py 79",
+    "investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154",
+    "investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657",
+    "investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216",
+    "investigator-failure RuntimeError /app/src/investigator/budget.py 45"
+  ],
+  "rawNativeLogsRepositoryExternal": true,
+  "formalModelTimeoutUnchanged": 45,
+  "positiveInvestigationChainPassed": false,
+  "fullR3Acceptance": false
+}

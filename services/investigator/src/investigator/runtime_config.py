@@ -2,6 +2,7 @@
 from pydantic import BaseModel, ConfigDict, field_validator
 from urllib.parse import urlsplit
 import ipaddress
+from typing import Literal
 from .model_config import ModelContract
 
 class RuntimeConfig(BaseModel):
@@ -14,6 +15,7 @@ class RuntimeConfig(BaseModel):
     crlFile: str
     certificateFile: str
     privateKeyFile: str
+    identityMode: Literal["file","openbao-kubernetes"]="file"
     workerIdentity: str
     modelAPIKeyFile: str
     model: ModelContract

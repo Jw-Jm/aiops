@@ -1,0 +1,177 @@
+[
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "get",
+      "namespace",
+      "ops-pre-sp07-oidc-20261005",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "get",
+      "statefulset",
+      "ops-seaweedfs",
+      "--ignore-not-found=true",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "get",
+      "service",
+      "ops-seaweedfs-s3",
+      "--ignore-not-found=true",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "go",
+      "build",
+      "-o",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl-archive-r1",
+      "./cmd/opsctl"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl-archive-r1",
+      "bootstrap",
+      "archive-iam",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-iam-input-r1.json",
+      "--output",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-iam-r1.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "get",
+      "secret",
+      "ops-seaweedfs-iam",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "replace",
+      "-f",
+      "-"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "helm",
+      "template",
+      "ops-oidc-dependencies",
+      "deploy/charts/ops-dependencies",
+      "--namespace",
+      "ops-pre-sp07-oidc-20261005",
+      "--set",
+      "global.imagePullPolicy=Never",
+      "--set",
+      "components.seaweedfs.endpoint=https://ops-seaweedfs-s3.ops-pre-sp07-oidc-20261005.svc.cluster.local:8333",
+      "--show-only",
+      "templates/seaweedfs.yaml"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "create",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "-f",
+      "-"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "rollout",
+      "status",
+      "statefulset/ops-seaweedfs",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "--timeout=180s"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl-archive-r1",
+      "bootstrap",
+      "archive-bucket",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-resolved-profile-r1.yaml",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-bootstrap-private-r1.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl-archive-r1",
+      "bootstrap",
+      "archive-bucket",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-resolved-profile-r1.yaml",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-bootstrap-private-r1.json"
+    ],
+    "exitCode": 1
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "get",
+      "pods,statefulsets,pvc",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  }
+]

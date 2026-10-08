@@ -1,0 +1,17 @@
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/explicit_wrong_uid
+    metrics_identity_test.go:14: conflicting metric identity accepted
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/window_crosses_recreation
+    metrics_identity_test.go:15: window includes previous Node identity
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/allocatable_exceeds_capacity
+    metrics_identity_test.go:16: invalid native capacity accepted
+=== RUN   TestMetricRejectsConflictingUIDAndPreviousNodeWindow/positive_capacity_binding
+    metrics_identity_test.go:17: native capacity/UID missing from retained fact
+--- FAIL: TestMetricRejectsConflictingUIDAndPreviousNodeWindow (0.00s)
+    --- FAIL: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/explicit_wrong_uid (0.00s)
+    --- FAIL: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/window_crosses_recreation (0.00s)
+    --- FAIL: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/allocatable_exceeds_capacity (0.00s)
+    --- FAIL: TestMetricRejectsConflictingUIDAndPreviousNodeWindow/positive_capacity_binding (0.00s)
+FAIL
+FAIL	ops-platform/internal/inspection/kubernetes	0.742s
+FAIL

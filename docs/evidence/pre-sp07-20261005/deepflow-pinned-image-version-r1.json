@@ -1,0 +1,50 @@
+{
+  "observedAt": "2026-10-05T02:41:11.138711+00:00",
+  "records": [
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "none",
+        "--read-only",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261004",
+        "--label",
+        "ops.platform.purpose=deepflow-version-probe",
+        "--entrypoint",
+        "/bin/deepflow-server",
+        "sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939",
+        "-v"
+      ],
+      "exitCode": 0,
+      "actualOutput": "Name: deepflow-server community edition\nBranch: v7.2.0\nCommitID: e567b167453ffa99f08f26def20379b4f831e073\nRevCount: 12732\nCompiler: go version go1.26.5 linux/amd64\nCompileTime: 2026-08-13 06:11:42\n",
+      "sourceCommitMatched": true,
+      "qualification": false
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "none",
+        "--read-only",
+        "--label",
+        "ops.platform.owner=pre-sp07-20261004",
+        "--label",
+        "ops.platform.purpose=deepflow-version-probe",
+        "--entrypoint",
+        "/bin/deepflow-agent",
+        "sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9",
+        "-v"
+      ],
+      "exitCode": 0,
+      "actualOutput": "12732-e567b167453ffa99f08f26def20379b4f831e073\nName: deepflow-agent community edition\nBranch: v7.2.0\nCommitId: e567b167453ffa99f08f26def20379b4f831e073\nRevCount: 12732\nCompiler: rustc 1.83.0 (90b35a623 2024-11-26)\nCompileTime: 2026-08-13 06:13:43\n",
+      "sourceCommitMatched": true,
+      "qualification": false
+    }
+  ],
+  "scope": "actual immutable binary version outputs only; full dependency distribution admission pending"
+}

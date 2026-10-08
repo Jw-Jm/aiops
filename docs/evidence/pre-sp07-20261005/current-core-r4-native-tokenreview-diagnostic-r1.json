@@ -1,0 +1,69 @@
+{
+  "observedAt": "2026-10-05T14:14:06.382746+00:00",
+  "records": [
+    {
+      "serviceAccount": "ops-api",
+      "tokenCommand": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "create",
+        "token",
+        "ops-api",
+        "--audience=openbao",
+        "--duration=10m"
+      ],
+      "status": 200,
+      "serverCategories": [],
+      "tokenPresent": true
+    },
+    {
+      "serviceAccount": "ops-worker",
+      "tokenCommand": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "create",
+        "token",
+        "ops-worker",
+        "--audience=openbao",
+        "--duration=10m"
+      ],
+      "status": 200,
+      "serverCategories": [],
+      "tokenPresent": true
+    },
+    {
+      "serviceAccount": "ops-investigator",
+      "tokenCommand": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r4-20261005",
+        "create",
+        "token",
+        "ops-investigator",
+        "--audience=openbao",
+        "--duration=10m"
+      ],
+      "status": 200,
+      "serverCategories": [],
+      "tokenPresent": true
+    }
+  ],
+  "configuration": {
+    "status": 200,
+    "kubernetes_host": "https://kubernetes.default.svc",
+    "disable_iss_validation": true,
+    "disable_local_ca_jwt": false,
+    "token_reviewer_jwt_set": false
+  },
+  "actualTLSVerified": true,
+  "secretResponsesRetainedOutsideRepository": true,
+  "fullBusinessAcceptance": false
+}

@@ -1,0 +1,67 @@
+FFFFFFFFF.                                                               [100%]
+=================================== FAILURES ===================================
+_ test_provider_failure_is_classified_without_leaking_exception[exception0-MODEL_TIMEOUT] _
+services/investigator/tests/test_budget_failures.py:52: in test_provider_failure_is_classified_without_leaking_exception
+    assert getattr(caught.value, "kind", None) == kind
+E   AssertionError: assert None == 'MODEL_TIMEOUT'
+E    +  where None = getattr(RuntimeError('MODEL_FAILURE'), 'kind', None)
+E    +    where RuntimeError('MODEL_FAILURE') = <ExceptionInfo RuntimeError('MODEL_FAILURE') tblen=2>.value
+_ test_provider_failure_is_classified_without_leaking_exception[exception1-MODEL_UNAVAILABLE] _
+services/investigator/tests/test_budget_failures.py:52: in test_provider_failure_is_classified_without_leaking_exception
+    assert getattr(caught.value, "kind", None) == kind
+E   AssertionError: assert None == 'MODEL_UNAVAILABLE'
+E    +  where None = getattr(RuntimeError('MODEL_FAILURE'), 'kind', None)
+E    +    where RuntimeError('MODEL_FAILURE') = <ExceptionInfo RuntimeError('MODEL_FAILURE') tblen=2>.value
+_ test_provider_failure_is_classified_without_leaking_exception[exception2-MODEL_AUTHENTICATION_FAILED] _
+services/investigator/tests/test_budget_failures.py:52: in test_provider_failure_is_classified_without_leaking_exception
+    assert getattr(caught.value, "kind", None) == kind
+E   AssertionError: assert None == 'MODEL_AUTHENTICATION_FAILED'
+E    +  where None = getattr(RuntimeError('MODEL_FAILURE'), 'kind', None)
+E    +    where RuntimeError('MODEL_FAILURE') = <ExceptionInfo RuntimeError('MODEL_FAILURE') tblen=2>.value
+_ test_provider_failure_is_classified_without_leaking_exception[exception3-MODEL_CONTEXT_LIMIT] _
+services/investigator/tests/test_budget_failures.py:52: in test_provider_failure_is_classified_without_leaking_exception
+    assert getattr(caught.value, "kind", None) == kind
+E   AssertionError: assert None == 'MODEL_CONTEXT_LIMIT'
+E    +  where None = getattr(RuntimeError('MODEL_FAILURE'), 'kind', None)
+E    +    where RuntimeError('MODEL_FAILURE') = <ExceptionInfo RuntimeError('MODEL_FAILURE') tblen=2>.value
+_ test_provider_failure_is_classified_without_leaking_exception[exception4-MODEL_RATE_LIMITED] _
+services/investigator/tests/test_budget_failures.py:52: in test_provider_failure_is_classified_without_leaking_exception
+    assert getattr(caught.value, "kind", None) == kind
+E   AssertionError: assert None == 'MODEL_RATE_LIMITED'
+E    +  where None = getattr(RuntimeError('MODEL_FAILURE'), 'kind', None)
+E    +    where RuntimeError('MODEL_FAILURE') = <ExceptionInfo RuntimeError('MODEL_FAILURE') tblen=2>.value
+_ test_provider_failure_is_classified_without_leaking_exception[exception5-MODEL_REQUEST_REJECTED] _
+services/investigator/tests/test_budget_failures.py:52: in test_provider_failure_is_classified_without_leaking_exception
+    assert getattr(caught.value, "kind", None) == kind
+E   AssertionError: assert None == 'MODEL_REQUEST_REJECTED'
+E    +  where None = getattr(RuntimeError('MODEL_FAILURE'), 'kind', None)
+E    +    where RuntimeError('MODEL_FAILURE') = <ExceptionInfo RuntimeError('MODEL_FAILURE') tblen=2>.value
+_ test_provider_failure_is_classified_without_leaking_exception[exception6-MODEL_FAILURE] _
+services/investigator/tests/test_budget_failures.py:52: in test_provider_failure_is_classified_without_leaking_exception
+    assert getattr(caught.value, "kind", None) == kind
+E   AssertionError: assert None == 'MODEL_FAILURE'
+E    +  where None = getattr(RuntimeError('MODEL_FAILURE'), 'kind', None)
+E    +    where RuntimeError('MODEL_FAILURE') = <ExceptionInfo RuntimeError('MODEL_FAILURE') tblen=2>.value
+_ test_successful_provider_settlement_rejection_is_not_reclassified_or_settled_twice _
+services/investigator/tests/test_budget_failures.py:69: in test_successful_provider_settlement_rejection_is_not_reclassified_or_settled_twice
+    assert getattr(caught.value, "kind", None) == "MODEL_RESULT_SETTLEMENT_REJECTED"
+E   AssertionError: assert None == 'MODEL_RESULT_SETTLEMENT_REJECTED'
+E    +  where None = getattr(RuntimeError('JOB_API_REJECTED_409 token=do-not-log'), 'kind', None)
+E    +    where RuntimeError('JOB_API_REJECTED_409 token=do-not-log') = <ExceptionInfo RuntimeError('JOB_API_REJECTED_409 token=do-not-log') tblen=3>.value
+_ test_provider_failure_settlement_rejection_preserves_safe_provider_category __
+services/investigator/tests/test_budget_failures.py:83: in test_provider_failure_settlement_rejection_preserves_safe_provider_category
+    assert getattr(caught.value, "kind", None) == "MODEL_FAILURE_SETTLEMENT_REJECTED"
+E   AssertionError: assert None == 'MODEL_FAILURE_SETTLEMENT_REJECTED'
+E    +  where None = getattr(RuntimeError('JOB_API_REJECTED_409 token=do-not-log'), 'kind', None)
+E    +    where RuntimeError('JOB_API_REJECTED_409 token=do-not-log') = <ExceptionInfo RuntimeError('JOB_API_REJECTED_409 token=do-not-log') tblen=3>.value
+=========================== short test summary info ============================
+FAILED services/investigator/tests/test_budget_failures.py::test_provider_failure_is_classified_without_leaking_exception[exception0-MODEL_TIMEOUT]
+FAILED services/investigator/tests/test_budget_failures.py::test_provider_failure_is_classified_without_leaking_exception[exception1-MODEL_UNAVAILABLE]
+FAILED services/investigator/tests/test_budget_failures.py::test_provider_failure_is_classified_without_leaking_exception[exception2-MODEL_AUTHENTICATION_FAILED]
+FAILED services/investigator/tests/test_budget_failures.py::test_provider_failure_is_classified_without_leaking_exception[exception3-MODEL_CONTEXT_LIMIT]
+FAILED services/investigator/tests/test_budget_failures.py::test_provider_failure_is_classified_without_leaking_exception[exception4-MODEL_RATE_LIMITED]
+FAILED services/investigator/tests/test_budget_failures.py::test_provider_failure_is_classified_without_leaking_exception[exception5-MODEL_REQUEST_REJECTED]
+FAILED services/investigator/tests/test_budget_failures.py::test_provider_failure_is_classified_without_leaking_exception[exception6-MODEL_FAILURE]
+FAILED services/investigator/tests/test_budget_failures.py::test_successful_provider_settlement_rejection_is_not_reclassified_or_settled_twice
+FAILED services/investigator/tests/test_budget_failures.py::test_provider_failure_settlement_rejection_preserves_safe_provider_category
+9 failed, 1 passed in 3.25s

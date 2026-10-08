@@ -1,0 +1,144 @@
+{
+  "observedAt": "2026-10-07T03:13:53.181320+00:00",
+  "bundleId": "pre-sp07-core-20261007-r9",
+  "payloadDigest": "sha256:416cae45546a94a1d71d28d82565b481a44526b7deea0fbebcc5bb248a624c6f",
+  "nativeCommand": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "get",
+    "pods",
+    "-n",
+    "ops-pre-sp07-core-r7-20261007",
+    "-o",
+    "json"
+  ],
+  "exitCode": 0,
+  "formalBusinessInstallEvidence": "current-core-r7-business-install-r2-command.json",
+  "initialBusinessPodReady": true,
+  "fullBusinessChainAcceptance": false,
+  "fullColdCoreAcceptance": false,
+  "runtime": [
+    {
+      "name": "ops-api-dc97bbbd9-9lqk5",
+      "uid": "f2bd78f5-6265-4be4-8f83-c26a4fc7d171",
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "blockOwnerDeletion": true,
+          "controller": true,
+          "kind": "ReplicaSet",
+          "name": "ops-api-dc97bbbd9",
+          "uid": "c03983eb-22d1-4f61-a591-da9280d81b56"
+        }
+      ],
+      "containers": [
+        {
+          "name": "api",
+          "lockedImage": "ops.local/task27/platform-api@sha256:32eb255edcbfa400bdbaf787a021c36c4e2bbe2bf334733beeea16406908a57f"
+        }
+      ],
+      "status": [
+        {
+          "name": "api",
+          "ready": true,
+          "restartCount": 1,
+          "image": "ops.local/task27/platform-api@sha256:32eb255edcbfa400bdbaf787a021c36c4e2bbe2bf334733beeea16406908a57f",
+          "imageID": "docker-pullable://ops.local/task27/platform-api@sha256:32eb255edcbfa400bdbaf787a021c36c4e2bbe2bf334733beeea16406908a57f",
+          "containerID": "docker://849869d5a9ff86fe7b0d05a89bf19d71a3c2eee6aafd7775faa54550df58ed7c"
+        }
+      ]
+    },
+    {
+      "name": "ops-investigator-56c758c8d9-2mtbm",
+      "uid": "807aa745-0c48-4a6e-b134-d99cec4d70b0",
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "blockOwnerDeletion": true,
+          "controller": true,
+          "kind": "ReplicaSet",
+          "name": "ops-investigator-56c758c8d9",
+          "uid": "2b070ed9-4c97-4dbb-840f-4c10ada4a385"
+        }
+      ],
+      "containers": [
+        {
+          "name": "investigator",
+          "lockedImage": "ops.local/task27/holmesgpt@sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593"
+        }
+      ],
+      "status": [
+        {
+          "name": "investigator",
+          "ready": true,
+          "restartCount": 0,
+          "image": "ops.local/task27/holmesgpt@sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593",
+          "imageID": "docker-pullable://ops.local/task27/holmesgpt@sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593",
+          "containerID": "docker://0ca9565fd1da8e83a30c1bf2a5479ab6749a54a3b855cec59ddfbc74da410d8a"
+        }
+      ]
+    },
+    {
+      "name": "ops-worker-687fd98f7d-54p59",
+      "uid": "f6ba7459-b297-4cd7-9c39-070be1bdf42e",
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "blockOwnerDeletion": true,
+          "controller": true,
+          "kind": "ReplicaSet",
+          "name": "ops-worker-687fd98f7d",
+          "uid": "2fad6c2f-7e61-4f7b-b003-671d2066f0c2"
+        }
+      ],
+      "containers": [
+        {
+          "name": "worker",
+          "lockedImage": "ops.local/task27/platform-worker@sha256:09ca4212712286f9245c00018168dd8a44e708dc3a03098a8fd2f8bd9473b326"
+        }
+      ],
+      "status": [
+        {
+          "name": "worker",
+          "ready": true,
+          "restartCount": 1,
+          "image": "ops.local/task27/platform-worker@sha256:09ca4212712286f9245c00018168dd8a44e708dc3a03098a8fd2f8bd9473b326",
+          "imageID": "docker-pullable://ops.local/task27/platform-worker@sha256:09ca4212712286f9245c00018168dd8a44e708dc3a03098a8fd2f8bd9473b326",
+          "containerID": "docker://89aff0db92b183f6106bd3b97205d008430573802d95701f66aa0e19d226f3a0"
+        }
+      ]
+    },
+    {
+      "name": "ops-worker-687fd98f7d-9nc74",
+      "uid": "ecfa1a50-df1e-4110-ae65-2936c7f8bc62",
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "blockOwnerDeletion": true,
+          "controller": true,
+          "kind": "ReplicaSet",
+          "name": "ops-worker-687fd98f7d",
+          "uid": "2fad6c2f-7e61-4f7b-b003-671d2066f0c2"
+        }
+      ],
+      "containers": [
+        {
+          "name": "worker",
+          "lockedImage": "ops.local/task27/platform-worker@sha256:09ca4212712286f9245c00018168dd8a44e708dc3a03098a8fd2f8bd9473b326"
+        }
+      ],
+      "status": [
+        {
+          "name": "worker",
+          "ready": true,
+          "restartCount": 1,
+          "image": "ops.local/task27/platform-worker@sha256:09ca4212712286f9245c00018168dd8a44e708dc3a03098a8fd2f8bd9473b326",
+          "imageID": "docker-pullable://ops.local/task27/platform-worker@sha256:09ca4212712286f9245c00018168dd8a44e708dc3a03098a8fd2f8bd9473b326",
+          "containerID": "docker://c0429bac75783d218d717cc339b5582057eabdbec16f5627ed4bb004f893799b"
+        }
+      ]
+    }
+  ],
+  "noModelWeightsDistributed": true
+}

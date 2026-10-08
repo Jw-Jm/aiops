@@ -1,0 +1,104 @@
+{
+  "observedAt": "2026-10-05T07:42:47.988853+00:00",
+  "currentTargetedRegression": {
+    "evidence": "current-source-bootstrap-regression-r1.log",
+    "allFivePackagesExitCode": 0,
+    "sourceChangedAfterRun": true,
+    "finalGate": false
+  },
+  "confirmedFixes": [
+    {
+      "id": "PRE-SP07-INSTALL-002",
+      "defect": "authenticated material named investigator was absent from Catalog; workload investigator uses exact holmesgpt material",
+      "red": "current-holmes-material-and-profile-selection-red-r1.log",
+      "implementation": [
+        "internal/bundle/business_values.go",
+        "internal/bundle/model_probe.go"
+      ]
+    },
+    {
+      "id": "PRE-SP07-PROFILE-003",
+      "defect": "explicit namespace/name selection was ignored before conflict detection and bundled scope was discarded",
+      "red": "current-holmes-material-and-profile-selection-red-r1.log",
+      "implementation": [
+        "internal/profile/resolve.go",
+        "internal/profile/detect.go"
+      ]
+    }
+  ],
+  "metricsAddon": {
+    "signedBundle": "pre-sp07-metrics-addon-20261005-r3",
+    "formalInstall": "metrics-addon-formal-install-r1.json",
+    "status": "FORMAL_SIGNED_COLD_SELECTED_IMAGE_INSTALL_PASSED",
+    "fullR3Acceptance": false,
+    "pending": [
+      "runtime IPv4/IPv6 egress negative plus independent positive control",
+      "Pod metrics/current UID/scope association",
+      "Inspection/API/MCP end-to-end on final current core",
+      "authorization/freshness/rebuild/recovery matrix on final deployment"
+    ]
+  },
+  "currentNativeSampleRestore": {
+    "evidence": "current-native-evidence-restore-r3.json",
+    "status": "PASS_CURRENT_NATIVE_EVIDENCE_SAMPLE",
+    "original27HistoricalEvidenceRestored": false,
+    "signedAuditRestore": false,
+    "fullR4Acceptance": false
+  },
+  "deepflow": {
+    "exactOriginalModuleSourceRecords": 333,
+    "states": {
+      "SOURCE_PREPARED_BINARY_VERSION_ONLY_UNVERIFIED": 218,
+      "UNVERIFIED": 30,
+      "SOURCE_PREPARED_H1_VERIFIED": 85
+    },
+    "compilerVersionSourceArchives": 4,
+    "distributionAdmission": "PENDING",
+    "realCurrentChain": "PENDING",
+    "alpineNativeSourceFiles": {
+      "verified": 131,
+      "total": 131,
+      "evidence": "deepflow-alpine-native-source-preparation-r4.json",
+      "zlibChecksumMismatchRetained": "deepflow-zlib-original-source-mismatch-and-retry-r1.json",
+      "fullImageSourceBinding": false
+    }
+  },
+  "r0ToR6": "IN_PROGRESS",
+  "originalHistoricalRecovery": "BLOCKED_NO_MATCHING_TRANSIT_MATERIAL_USER_CONFIRMED_NONE",
+  "originalProtectedResourcesRetained": true,
+  "performance": "USER_WAIVED; no PASS",
+  "virtualization": "DEFERRED_DISABLED_UNVERIFIED",
+  "pyrca": "DISABLED_EXCLUDED",
+  "sp07Started": false,
+  "finalIndependentReview": "NOT_STARTED_DELIVERY_INCOMPLETE",
+  "gitDelivery": "NOT_COMMITTED_NOT_PUSHED",
+  "currentCore": {
+    "bundleId": "pre-sp07-core-20261005-r3",
+    "independentSignature": "current-core-signed-bundle-receipt-r3.json",
+    "dependencies": "current-core-dependencies-install-command-r1.json",
+    "namespace": "ops-pre-sp07-core-20261005",
+    "namespaceUid": "ae225aca-6520-4ee0-bc33-da2f6e2bbc9e",
+    "emptyDatabaseMigration": "current-core-empty-migration-receipt-r1.json",
+    "firstTenantOIDC": "current-core-oidc-first-tenant-green-r3.log",
+    "archive": "current-core-archive-bucket-retry-command-r2.json",
+    "actualStagesPassed": [
+      "signed dependency install",
+      "empty database to version 35 restricted migration",
+      "fresh OIDC OTP PKCE LoA2 first tenant",
+      "archive versioning/ObjectLock compliance 365"
+    ],
+    "businessInstalled": false,
+    "coldSharedImageCacheProven": false,
+    "latestSourceDiffRequiresNewBundle": true,
+    "latestSourceBundlePreparation": "pre-sp07-core-20261005-r4 IN_PROGRESS"
+  },
+  "victoriaNativeAuth": {
+    "red": "native-victoria-authentication-red-r1.log",
+    "nativeTLSBasicGreen": "native-victoria-authentication-green-r2.log",
+    "nativeEnvironmentFlagsAndHealth": "native-victoria-envflag-auth-regression-r3.json",
+    "formalChartRed": "victoria-formal-values-regression-r1.log",
+    "formalChartGreen": "victoria-trust-target-regression-r3.log",
+    "formalTrustBootstrap": "IMPLEMENTED; actual next-install validation pending",
+    "sourceScopeActivation": false
+  }
+}

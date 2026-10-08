@@ -1,0 +1,343 @@
+{
+  "observedAt": "2026-10-08T06:18:00.272429+00:00",
+  "onlyFailedOwnedHelperPods": true,
+  "PVC_PV_orSecretDeletion": false,
+  "fullOriginalOrbStackCleanupComplete": false,
+  "deletedCount": 2,
+  "protectedNamespacePVC_PV_SecretUIDAndStorageBindingsUnchanged": true,
+  "exitCode": 0,
+  "deletedPods": [
+    {
+      "namespace": "ops-pre-sp07-targets-20261004",
+      "name": "readiness-storage",
+      "uid": "80418e03-c817-468e-a69d-44f5a1e757db",
+      "proof": {
+        "namespaceUID": "a1b96696-8756-4a43-a8bc-fe630a5a833b",
+        "phase": "Failed",
+        "namespaceOwner": "pre-sp07-20261004",
+        "purpose": "obsolete failed read-only-root HTTP file observation helper; persistent data remains in exact PVC/PV",
+        "claims": [
+          {
+            "pvc": "readiness-data",
+            "pvcUID": "19e4c386-6c08-42d8-a556-727e4e6e9ff5",
+            "pvUID": "d29eae14-507c-4d5a-b05b-b0a6bd8ecd6b",
+            "backendPreserved": true
+          }
+        ]
+      }
+    },
+    {
+      "namespace": "ops-pre-sp07-oidc-20261005",
+      "name": "ops-keycloak-59d95d9d69-g442v",
+      "uid": "c7094cd4-5552-4738-81f3-8a451d2ffcc9",
+      "proof": {
+        "namespaceUID": "ec234ab4-e236-4adc-82e1-d77625602bfe",
+        "phase": "Failed",
+        "namespaceInstallationId": "61720d30-012a-4e5c-8380-954230decc49",
+        "replicaSetUID": "a979b6a2-1234-483f-a132-53ea78d295b7",
+        "deploymentUID": "3405bb28-0ec1-4c82-9b7b-13a0b59682cb",
+        "currentReplacementReady": true,
+        "baseline": "current-orbstack-resource-inventory-r263.json",
+        "purpose": "superseded failed Keycloak Pod; current Ready replacement and database retained"
+      }
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "readiness-storage",
+        "-n",
+        "ops-pre-sp07-targets-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "readiness-data",
+        "-n",
+        "ops-pre-sp07-targets-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-19e4c386-6c08-42d8-a556-727e4e6e9ff5",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "events",
+        "-n",
+        "ops-pre-sp07-targets-20261004",
+        "--field-selector",
+        "involvedObject.uid=80418e03-c817-468e-a69d-44f5a1e757db",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-targets-20261004",
+        "readiness-storage",
+        "-c",
+        "target",
+        "--timestamps",
+        "--tail=500",
+        "--limit-bytes=262144",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-keycloak-59d95d9d69-g442v",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "replicaset",
+        "ops-keycloak-59d95d9d69",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "events",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "--field-selector",
+        "involvedObject.uid=c7094cd4-5552-4738-81f3-8a451d2ffcc9",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "ops-keycloak-59d95d9d69-g442v",
+        "-c",
+        "keycloak",
+        "--timestamps",
+        "--tail=500",
+        "--limit-bytes=262144",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "readiness-storage",
+        "-n",
+        "ops-pre-sp07-targets-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "delete",
+        "--raw",
+        "/api/v1/namespaces/ops-pre-sp07-targets-20261004/pods/readiness-storage",
+        "-f",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "readiness-storage",
+        "-n",
+        "ops-pre-sp07-targets-20261004",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-keycloak-59d95d9d69-g442v",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "delete",
+        "--raw",
+        "/api/v1/namespaces/ops-pre-sp07-oidc-20261005/pods/ops-keycloak-59d95d9d69-g442v",
+        "-f",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-keycloak-59d95d9d69-g442v",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

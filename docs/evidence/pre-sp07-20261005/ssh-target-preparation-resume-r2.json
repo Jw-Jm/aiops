@@ -1,0 +1,132 @@
+{
+  "observedAt": "2026-10-05T00:23:46.500533+00:00",
+  "authorization": "User explicitly permits dedicated local isolated Linux target",
+  "containerID": "c07ad6fac45d90fe87a0dc7c12034bd1d9f9b68da540e1421abd4272d181187f",
+  "imageID": "sha256:00eee79001379945b8cc241774c621b0552b3953e1cad6609927a68c24d380ee",
+  "networkID": "da6c56c1e2b491d6a00a980c1921c302a0e953b4953a62f6c79fe26580a7adcc",
+  "networkInternal": true,
+  "endpoint": "192.168.117.2:2222",
+  "hostKeyFingerprint": "256 SHA256:HNainRs8tOQhqsUNOAqmhPRFFSyvm2Z2B8BEmCE2cX0 pre-sp07-readiness-host_ed25519 (ED25519)",
+  "userCAFingerprint": "256 SHA256:MWsvF3J9HZ28oMtgmllSb9sf3IzdA2g4TkEqElvUtms pre-sp07-readiness-user_ca (ED25519)",
+  "hostKeyIndependentComparison": true,
+  "ordinaryIdentity": "uid=1000(opsordinary) gid=1000(opsordinary) groups=1000(opsordinary)",
+  "sudoIdentity": "uid=1001(opssudo) gid=1001(opssudo) groups=1001(opssudo),27(sudo)",
+  "sudoBoundary": "opsordinary has no sudo group; opssudo requires password by Debian sudo policy; root uses a separate explicit principal certificate. Passwords outside repository.",
+  "packages": [
+    "openssh-client 1:10.0p1-7+deb13u4",
+    "openssh-server 1:10.0p1-7+deb13u4",
+    "sudo 1.9.16p2-3+deb13u2"
+  ],
+  "authentication": [
+    {
+      "certificate": "ordinary",
+      "login": "opsordinary",
+      "expectedAuthentication": true,
+      "authenticatedWithoutRemoteCommand": true,
+      "exitCodeAfterControlledDisconnect": 0
+    },
+    {
+      "certificate": "sudo",
+      "login": "opssudo",
+      "expectedAuthentication": true,
+      "authenticatedWithoutRemoteCommand": true,
+      "exitCodeAfterControlledDisconnect": 0
+    },
+    {
+      "certificate": "root",
+      "login": "root",
+      "expectedAuthentication": true,
+      "authenticatedWithoutRemoteCommand": true,
+      "exitCodeAfterControlledDisconnect": 0
+    },
+    {
+      "certificate": "ordinary",
+      "login": "root",
+      "expectedAuthentication": false,
+      "authenticatedWithoutRemoteCommand": false,
+      "exitCodeAfterControlledDisconnect": 255
+    },
+    {
+      "certificate": "ordinary",
+      "login": "opssudo",
+      "expectedAuthentication": false,
+      "authenticatedWithoutRemoteCommand": false,
+      "exitCodeAfterControlledDisconnect": 255
+    }
+  ],
+  "commandChainExecuted": false,
+  "futureTask75Accepted": false,
+  "distribution": "Preparation-only target; not admitted as Runner/Ansible or runtime Bundle material.",
+  "privateMaterialsOutsideRepository": "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target",
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "c07ad6fac45d90fe87a0dc7c12034bd1d9f9b68da540e1421abd4272d181187f"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keyscan",
+        "-p",
+        "2222",
+        "-t",
+        "ed25519",
+        "192.168.117.2"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "c07ad6fac45d90fe87a0dc7c12034bd1d9f9b68da540e1421abd4272d181187f",
+        "dpkg-query",
+        "-W",
+        "-f=${Package} ${Version}\n",
+        "openssh-server",
+        "openssh-client",
+        "sudo"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "c07ad6fac45d90fe87a0dc7c12034bd1d9f9b68da540e1421abd4272d181187f",
+        "id",
+        "opsordinary"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "c07ad6fac45d90fe87a0dc7c12034bd1d9f9b68da540e1421abd4272d181187f",
+        "id",
+        "opssudo"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-lf",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target/host_ed25519.pub"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-lf",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/ssh-target/user_ca.pub"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

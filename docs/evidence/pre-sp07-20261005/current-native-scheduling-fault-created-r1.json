@@ -1,0 +1,91 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "creationTimestamp": "2026-10-05T14:42:21Z",
+    "generation": 1,
+    "labels": {
+      "ops.platform.io/owner": "pre-sp07-20261004",
+      "ops.platform.io/purpose": "current-native-scheduling-fault",
+      "tenant": "6e9d5fbe-6443-4620-b490-87dca8dc79ce"
+    },
+    "name": "ops-pre-sp07-current-unsched-r1",
+    "namespace": "ops-pre-sp07-targets-20261004",
+    "resourceVersion": "417224",
+    "uid": "87e0dc6f-92b8-44b4-9f91-59e57fc8496d"
+  },
+  "spec": {
+    "automountServiceAccountToken": false,
+    "containers": [
+      {
+        "command": [
+          "python",
+          "-c",
+          "print(\"pre-sp07 current bounded scheduling recovery observation\")"
+        ],
+        "image": "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "imagePullPolicy": "Never",
+        "name": "subject",
+        "resources": {
+          "limits": {
+            "cpu": "100m",
+            "memory": "64Mi"
+          },
+          "requests": {
+            "cpu": "10m",
+            "memory": "16Mi"
+          }
+        },
+        "securityContext": {
+          "allowPrivilegeEscalation": false,
+          "capabilities": {
+            "drop": [
+              "ALL"
+            ]
+          },
+          "readOnlyRootFilesystem": true
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File"
+      }
+    ],
+    "dnsPolicy": "ClusterFirst",
+    "enableServiceLinks": true,
+    "nodeSelector": {
+      "ops.platform.io/pre-sp07-fault": "missing-node-selector-r1"
+    },
+    "preemptionPolicy": "PreemptLowerPriority",
+    "priority": 0,
+    "restartPolicy": "Never",
+    "schedulerName": "default-scheduler",
+    "securityContext": {
+      "runAsGroup": 65532,
+      "runAsNonRoot": true,
+      "runAsUser": 65532,
+      "seccompProfile": {
+        "type": "RuntimeDefault"
+      }
+    },
+    "serviceAccount": "default",
+    "serviceAccountName": "default",
+    "terminationGracePeriodSeconds": 30,
+    "tolerations": [
+      {
+        "effect": "NoExecute",
+        "key": "node.kubernetes.io/not-ready",
+        "operator": "Exists",
+        "tolerationSeconds": 300
+      },
+      {
+        "effect": "NoExecute",
+        "key": "node.kubernetes.io/unreachable",
+        "operator": "Exists",
+        "tolerationSeconds": 300
+      }
+    ]
+  },
+  "status": {
+    "phase": "Pending",
+    "qosClass": "Burstable"
+  }
+}

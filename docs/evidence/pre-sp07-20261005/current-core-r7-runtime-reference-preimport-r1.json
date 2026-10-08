@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-10-05T15:52:41.784398+00:00",
+  "references": [
+    {
+      "name": "api",
+      "reference": "ops.local/task27/platform-api@sha256:09fee7450c0d0a31e30f04f6e8eb52c42eef3fb3a62e5f7fcb20b8a0e9677927",
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "image",
+        "inspect",
+        "ops.local/task27/platform-api@sha256:09fee7450c0d0a31e30f04f6e8eb52c42eef3fb3a62e5f7fcb20b8a0e9677927",
+        "--format",
+        "{{json .RepoDigests}}"
+      ],
+      "exitCode": 1,
+      "referencePresent": false
+    },
+    {
+      "name": "worker",
+      "reference": "ops.local/task27/platform-worker@sha256:980b3c1eba10cead06922e90b586a4be45fd60c37de9d9a93907d2e86c2b3d49",
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "image",
+        "inspect",
+        "ops.local/task27/platform-worker@sha256:980b3c1eba10cead06922e90b586a4be45fd60c37de9d9a93907d2e86c2b3d49",
+        "--format",
+        "{{json .RepoDigests}}"
+      ],
+      "exitCode": 1,
+      "referencePresent": false
+    }
+  ],
+  "preparedOCIContentMayAlreadyExistUnderBuildTags": true,
+  "allDependenciesColdPass": false
+}

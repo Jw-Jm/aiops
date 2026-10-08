@@ -1,0 +1,232 @@
+{
+  "items": [
+    {
+      "apiVersion": "apps/v1",
+      "kind": "DaemonSet",
+      "metadata": {
+        "name": "vlagent",
+        "namespace": "monitoring",
+        "uid": "3f8be4f5-860e-4522-a7af-36ab3f4d1968",
+        "resourceVersion": "352391",
+        "creationTimestamp": "2026-09-25T05:21:24Z",
+        "labels": {
+          "app": "vlagent"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "vlagent",
+          "image": "victoriametrics/vlagent:v1.52.0",
+          "volumeMounts": [
+            {
+              "mountPath": "/var/log/containers",
+              "name": "varlogcontainers",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/var/log/pods",
+              "name": "varlogpods",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/var/lib/docker/containers",
+              "name": "dockercontainers",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/tmp/vlagent",
+              "name": "tmp"
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "hostPath": {
+            "path": "/var/log/containers",
+            "type": "DirectoryOrCreate"
+          },
+          "name": "varlogcontainers"
+        },
+        {
+          "hostPath": {
+            "path": "/var/log/pods",
+            "type": "DirectoryOrCreate"
+          },
+          "name": "varlogpods"
+        },
+        {
+          "hostPath": {
+            "path": "/var/lib/docker/containers",
+            "type": "DirectoryOrCreate"
+          },
+          "name": "dockercontainers"
+        },
+        {
+          "emptyDir": {},
+          "name": "tmp"
+        }
+      ],
+      "serviceAccountName": "vlagent",
+      "nodeName": null,
+      "status": {
+        "currentNumberScheduled": 1,
+        "desiredNumberScheduled": 1,
+        "numberAvailable": 1,
+        "numberMisscheduled": 0,
+        "numberReady": 1,
+        "observedGeneration": 2,
+        "updatedNumberScheduled": 1
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "DaemonSet",
+      "metadata": {
+        "name": "vm-prometheus-node-exporter",
+        "namespace": "monitoring",
+        "uid": "a8365e02-4bc4-481c-a9b6-ec8d93ef1d06",
+        "resourceVersion": "352436",
+        "creationTimestamp": "2026-09-25T05:16:40Z",
+        "labels": {
+          "app.kubernetes.io/component": "metrics",
+          "app.kubernetes.io/instance": "vm",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "prometheus-node-exporter",
+          "app.kubernetes.io/part-of": "prometheus-node-exporter",
+          "app.kubernetes.io/version": "1.9.1",
+          "helm.sh/chart": "prometheus-node-exporter-4.45.2"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "vm",
+          "meta.helm.sh/release-namespace": "monitoring"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "node-exporter",
+          "image": "quay.io/prometheus/node-exporter:v1.9.1",
+          "volumeMounts": [
+            {
+              "mountPath": "/host/proc",
+              "name": "proc",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/host/sys",
+              "name": "sys",
+              "readOnly": true
+            },
+            {
+              "mountPath": "/host/root",
+              "mountPropagation": "HostToContainer",
+              "name": "root",
+              "readOnly": true
+            }
+          ],
+          "envReferences": []
+        }
+      ],
+      "volumes": [
+        {
+          "hostPath": {
+            "path": "/proc",
+            "type": ""
+          },
+          "name": "proc"
+        },
+        {
+          "hostPath": {
+            "path": "/sys",
+            "type": ""
+          },
+          "name": "sys"
+        },
+        {
+          "hostPath": {
+            "path": "/",
+            "type": ""
+          },
+          "name": "root"
+        }
+      ],
+      "serviceAccountName": "vm-prometheus-node-exporter",
+      "nodeName": null,
+      "status": {
+        "currentNumberScheduled": 1,
+        "desiredNumberScheduled": 1,
+        "numberAvailable": 1,
+        "numberMisscheduled": 0,
+        "numberReady": 1,
+        "observedGeneration": 1,
+        "updatedNumberScheduled": 1
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "DaemonSet",
+      "metadata": {
+        "name": "ops-dev-network",
+        "namespace": "ops-dev-network",
+        "uid": "5940b2ba-1992-4f77-8e2a-1fe384eea048",
+        "resourceVersion": "352483",
+        "creationTimestamp": "2026-09-28T12:35:08Z",
+        "labels": {
+          "ops.platform.io/release": "ops-dev-network"
+        },
+        "helmOwner": {}
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "images": [
+        {
+          "name": "kube-router",
+          "image": "docker.io/cloudnativelabs/kube-router@sha256:fec5ac13d36a812636d545263fda75e5b729ac9dac624f1f19f1170d3372324b",
+          "volumeMounts": [
+            {
+              "mountPath": "/run/xtables.lock",
+              "name": "xtables-lock"
+            }
+          ],
+          "envReferences": [
+            {
+              "name": "NODE_NAME",
+              "valueFrom": {
+                "fieldRef": {
+                  "apiVersion": "v1",
+                  "fieldPath": "spec.nodeName"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "volumes": [
+        {
+          "hostPath": {
+            "path": "/run/xtables.lock",
+            "type": "FileOrCreate"
+          },
+          "name": "xtables-lock"
+        }
+      ],
+      "serviceAccountName": "ops-dev-network",
+      "nodeName": null,
+      "status": {
+        "currentNumberScheduled": 1,
+        "desiredNumberScheduled": 1,
+        "numberAvailable": 1,
+        "numberMisscheduled": 0,
+        "numberReady": 1,
+        "observedGeneration": 1,
+        "updatedNumberScheduled": 1
+      }
+    }
+  ]
+}

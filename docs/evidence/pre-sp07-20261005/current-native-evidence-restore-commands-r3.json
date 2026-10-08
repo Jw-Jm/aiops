@@ -1,0 +1,140 @@
+[
+  {
+    "command": [
+      "docker",
+      "inspect",
+      "0fd16edd0a6e58e806442d1808a98ff0c057ac46e1155778acfef3b195d48f92"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "start",
+      "0fd16edd0a6e58e806442d1808a98ff0c057ac46e1155778acfef3b195d48f92"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "0fd16edd0a6e58e806442d1808a98ff0c057ac46e1155778acfef3b195d48f92",
+      "psql",
+      "-U",
+      "ops_bootstrap",
+      "-d",
+      "sp03_mig_789f704501614b10a147787a7c761b61",
+      "-Atc",
+      "SELECT object_ref FROM platform.evidence_archive_intents WHERE status='verified' AND tenant_id='be60f79d-9c2b-4a6b-9d54-88da2dfeedee'"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "inspect",
+      "c01f5ace661b4b3700562883168f3ed14e81a0d81a311b63e73e309b5b5f5bc3"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "openssl",
+      "enc",
+      "-d",
+      "-aes-256-cbc",
+      "-pbkdf2",
+      "-iter",
+      "200000",
+      "-in",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-native-evidence-restore-r1/archive-backup.tar.enc",
+      "-out",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-native-evidence-restore-r1/readback-r3.tar",
+      "-pass",
+      "file:/Users/mssc/.local/state/ops/pre-sp07-20261004/backup-encryption.pass"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "inspect",
+      "a53445aeb2cc817ec117834bdb6a1766f9f0bfe65987b0eea06cbc45997c36f4"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "port",
+      "a53445aeb2cc817ec117834bdb6a1766f9f0bfe65987b0eea06cbc45997c36f4",
+      "8333/tcp"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "inspect",
+      "fb619fa88f576fc221a6740ddf5f6046429c2774b70a09ad86911c8f13a97170"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "start",
+      "fb619fa88f576fc221a6740ddf5f6046429c2774b70a09ad86911c8f13a97170"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "port",
+      "fb619fa88f576fc221a6740ddf5f6046429c2774b70a09ad86911c8f13a97170",
+      "8200/tcp"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "0fd16edd0a6e58e806442d1808a98ff0c057ac46e1155778acfef3b195d48f92",
+      "psql",
+      "-U",
+      "ops_bootstrap",
+      "-d",
+      "sp03_mig_789f704501614b10a147787a7c761b61",
+      "-Atc",
+      "SELECT max(retain_until) FROM platform.evidence_retention_references WHERE tenant_id='be60f79d-9c2b-4a6b-9d54-88da2dfeedee'"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "stop",
+      "a53445aeb2cc817ec117834bdb6a1766f9f0bfe65987b0eea06cbc45997c36f4"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "stop",
+      "fb619fa88f576fc221a6740ddf5f6046429c2774b70a09ad86911c8f13a97170"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "stop",
+      "0fd16edd0a6e58e806442d1808a98ff0c057ac46e1155778acfef3b195d48f92"
+    ],
+    "exitCode": 0
+  }
+]

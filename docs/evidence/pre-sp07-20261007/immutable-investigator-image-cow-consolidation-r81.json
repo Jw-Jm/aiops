@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-07T04:27:48.499779+00:00",
+  "recordedBeforeOperation": true,
+  "source": "/Users/mssc/.cache/ops-sp06-20261004/signed-inputs-r10/holmesgpt.tar",
+  "sourceSHA256": "sha256:623f5166c4d6d1d9e3487fe5457bb50910649d0ab22aca497ca925fe4a016659",
+  "target": "/Users/mssc/.cache/ops-sp06-20261004/investigator-r5-image.tar",
+  "targetSHA256": "sha256:64c6aaf0f1116406307051c599877d6e9844ea95d182710ac2f8d9c265e0b9f6",
+  "targetInode": 70171802,
+  "targetBytes": 1229121024,
+  "temporaryClone": "/Users/mssc/.cache/ops-sp06-20261004/.investigator-r5-image.owned-cow-consolidation-r81.tar",
+  "lsofExitCode": 1,
+  "scope": "one task-owned immutable investigator image preparation archive only; byte-preserving independent COW consolidation",
+  "protectedDataKeysBackupsOrSignedBundlePayloadModified": false,
+  "fullR0Cleanup": false,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "cp",
+        "-c",
+        "/Users/mssc/.cache/ops-sp06-20261004/signed-inputs-r10/holmesgpt.tar",
+        "/Users/mssc/.cache/ops-sp06-20261004/.investigator-r5-image.owned-cow-consolidation-r81.tar"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "rsync",
+        "--inplace",
+        "--no-whole-file",
+        "--checksum",
+        "/Users/mssc/.cache/ops-sp06-20261004/investigator-r5-image.tar",
+        "/Users/mssc/.cache/ops-sp06-20261004/.investigator-r5-image.owned-cow-consolidation-r81.tar"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "targetBytesUnchanged": true,
+  "sourceBytesUnchanged": true,
+  "independentInode": true,
+  "modeAndMtimePreserved": true,
+  "beforeFreeBytes": 23200088064,
+  "afterFreeBytes": 23056441344
+}

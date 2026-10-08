@@ -1,0 +1,92 @@
+[
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "get",
+      "namespace",
+      "ops-pre-sp07-core-20261005",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r2/opsctl-host",
+      "bootstrap",
+      "archive-iam",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current/archive-iam-input-r1.json",
+      "--output",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current/archive-iam-r1.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "-n",
+      "ops-pre-sp07-core-20261005",
+      "get",
+      "secret",
+      "ops-seaweedfs-iam",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "replace",
+      "-f",
+      "-"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "rollout",
+      "restart",
+      "statefulset/ops-seaweedfs",
+      "-n",
+      "ops-pre-sp07-core-20261005"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "rollout",
+      "status",
+      "statefulset/ops-seaweedfs",
+      "-n",
+      "ops-pre-sp07-core-20261005",
+      "--timeout=180s"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r2/opsctl-host",
+      "bootstrap",
+      "archive-bucket",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current/resolved-profile.yaml",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current/archive-bootstrap-private-r1.json"
+    ],
+    "exitCode": 1
+  }
+]

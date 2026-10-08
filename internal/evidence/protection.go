@@ -19,7 +19,7 @@ func (s *ArchiveService) ReconcileProtection(ctx context.Context, tenant, id uui
 			return err
 		}
 		var raw []byte
-		if err := tx.QueryRow(ctx, `SELECT i.object_ref FROM platform.evidence_archive_intents i JOIN platform.evidence_metadata m USING(tenant_id,evidence_id) WHERE i.tenant_id=$1 AND i.evidence_id=$2 AND i.status='verified' AND NOT m.deleting FOR UPDATE OF m,i`, tenant, id).Scan(&raw); err != nil {
+		if err := tx.QueryRow(ctx, `SELECT i.object_ref FROM platform.evidence_archive_intents i JOIN platform.evidence_metadata m USING(tenant_id,evidence_id) WHERE i.tenant_id=$1 AND i.evidence_id=$2 AND i.status='verified' AND NOT m.deleting FOR NO KEY UPDATE OF m FOR UPDATE OF i`, tenant, id).Scan(&raw); err != nil {
 			return err
 		}
 		var ref ArchiveRef

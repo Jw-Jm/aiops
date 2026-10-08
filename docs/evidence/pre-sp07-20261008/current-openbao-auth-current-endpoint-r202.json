@@ -1,0 +1,50 @@
+{
+  "observedAt": "2026-10-08T02:47:23.895406+00:00",
+  "kubernetesConfigWhitelisted": {
+    "kubernetes_host": "https://kubernetes.default.svc",
+    "disable_local_ca_jwt": false,
+    "disable_iss_validation": true,
+    "token_reviewer_jwt_set": false
+  },
+  "workloadRoleWhitelisted": {
+    "audience": "openbao",
+    "bound_service_account_names": [
+      "ops-api"
+    ],
+    "bound_service_account_namespaces": [
+      "ops-pre-sp07-core-r8-20261007"
+    ]
+  },
+  "freshWorkloadLoginStatus": 200,
+  "safeErrors": [],
+  "currentAPIEgressTarget": [
+    [
+      "192.168.139.2"
+    ]
+  ],
+  "installedAPIEgressConfig": {
+    "cidrs": [
+      "192.168.139.2/32"
+    ],
+    "port": 26443,
+    "localCollector": true
+  },
+  "requests": [
+    {
+      "path": "/v1/auth/kubernetes/config",
+      "status": 200,
+      "sha256": "26182ca25881e190e995cb7a9e87b888ac96ef5f64026e62c0559734f69f3890"
+    },
+    {
+      "path": "/v1/auth/kubernetes/role/ops-api-workload",
+      "status": 200,
+      "sha256": "4592e69152e916671d2a1102a592d35330d0f769430142ca5251d5df898afa79"
+    },
+    {
+      "path": "/v1/auth/kubernetes/login",
+      "status": 200,
+      "sha256": "de0076194875ed5ac4b6d99fff7573e2cdc5bb02c298501365160e61a4cbb4b4"
+    }
+  ],
+  "noPersistentMutation": true
+}

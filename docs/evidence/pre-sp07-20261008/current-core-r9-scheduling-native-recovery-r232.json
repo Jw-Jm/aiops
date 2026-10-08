@@ -1,0 +1,190 @@
+{
+  "observedAt": "2026-10-08T03:12:30.581650+00:00",
+  "SP07Started": false,
+  "executionBusinessCreated": false,
+  "oldEvidenceAutoBoundToNewUID": false,
+  "fullR6Acceptance": false,
+  "newPodUID": "0f138d83-f793-499d-84de-d25e0caadf04",
+  "namespace": "ops-pre-sp07-targets-r9-20261008",
+  "namespaceUID": "f46dabc1-1ae5-4201-8730-d5e9be19f01e",
+  "podName": "pre-sp07-r9-scheduling-r218",
+  "oldPodUID": "9796e290-ef68-4559-9344-879cee69287e",
+  "newCanonicalId": "k8s+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/0f138d83-f793-499d-84de-d25e0caadf04",
+  "nativeNodeUID": "cc6ee959-3391-432f-b413-a5e7f2e64756",
+  "newNativeReady": true,
+  "freshFormalGraphNewUID": true,
+  "retiredLiveGraphStatus": 403,
+  "oldArchiveEvidenceStillAuthorizedAndUnchanged": true,
+  "oldEvidence": {
+    "archiveRef": {
+      "backendLogicalId": "pre-sp07-current-archive-ops-pre-sp07-core-r9-20261008",
+      "object": {
+        "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+        "objectId": "406783e1-27a4-5a21-aa60-1adac508f309",
+        "category": "evidence",
+        "key": "tenants/e4a818ea0b2ea174e2e9c7e89e633d0c3aa5f77d92812723aecab889ee860e84/evidence/406783e1-27a4-5a21-aa60-1adac508f309",
+        "digest": "sha256:bdd78094d721e77e1ece17a26c06972058779324dc3dbaa88c27302a55727b2d",
+        "size": 500,
+        "contentType": "application/vnd.ops.transit-envelope+json",
+        "versionId": "67239160e865885f77f45e0690462a6a",
+        "etag": "\"86791ab83ef5e752fa409d57e923e098\"",
+        "retainUntil": "2027-10-09T02:59:42Z"
+      },
+      "encryptionKeyVersion": "1",
+      "plaintextDigest": "sha256:adedddb6710f484a3838f613268c61c704bcb2ae33cd5ca4c25aa2528b553d77",
+      "ciphertextDigest": "sha256:bdd78094d721e77e1ece17a26c06972058779324dc3dbaa88c27302a55727b2d"
+    },
+    "contentDigest": "sha256:adedddb6710f484a3838f613268c61c704bcb2ae33cd5ca4c25aa2528b553d77",
+    "evidenceId": "406783e1-27a4-5a21-aa60-1adac508f309",
+    "resourceCanonicalId": "k8s+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/9796e290-ef68-4559-9344-879cee69287e",
+    "sourceId": "01a1196d-82ff-7071-a499-02e0cfa5baaf",
+    "sourceRevision": 1
+  },
+  "nativeDeletionUIDAndRVPrecondition": true,
+  "finiteSleepSeconds": 1800,
+  "finiteDeadlineSeconds": 3600,
+  "currentSourceScopeUnchanged": true,
+  "currentSchedulingRecoveryPass": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-scheduling-r218",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/406783e1-27a4-5a21-aa60-1adac508f309",
+      "status": 200,
+      "sha256": "b3921b8b95390f3fb662b8355ba26726dd5ecfce0a7eeb5254f2a078179b7d9b"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "delete",
+        "--raw",
+        "/api/v1/namespaces/ops-pre-sp07-targets-r9-20261008/pods/pre-sp07-r9-scheduling-r218",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/scheduling-recovery-r232/uid-precondition-delete.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-scheduling-r218",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "wait",
+        "--for=condition=Ready",
+        "pod/pre-sp07-r9-scheduling-r218",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "--timeout=40s",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-r9-scheduling-r218",
+        "-n",
+        "ops-pre-sp07-targets-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "node",
+        "orbstack",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F0f138d83-f793-499d-84de-d25e0caadf04",
+      "status": 200,
+      "sha256": "b26818a6cf4fa40a7d2a163bd203eb8832be8e6a987485c0293d315d76add999"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F12443ef7-3326-4e87-9b0a-a3444bfd16bc%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F9796e290-ef68-4559-9344-879cee69287e",
+      "status": 403,
+      "sha256": "fdbaf9b458bf355e7c56aa12cc3a718aff58115b3314e3a7bb02c7872663e422"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/406783e1-27a4-5a21-aa60-1adac508f309",
+      "status": 200,
+      "sha256": "16b9477a2e1c82f7808373e57ea9d55ac756c15a8eeae6fd9f7b8dc197cf6017"
+    }
+  ],
+  "ownedForwardStopped": true
+}

@@ -1,0 +1,9 @@
+=== RUN   TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup
+=== RUN   TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup/owned_audit_database
+    migrations_test.go:436: retained owned integration database=sp03_mig_c268cb1dfc3247a0b047a12956ccde71 test=TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup/owned_audit_database reason=audit.records; no automatic protected cleanup
+=== NAME  TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup
+    pre_sp07_fixture_retention_test.go:44: actual owned PostgreSQL Audit row/database remains after test cleanup; synthetic lifecycle probe, not full protected historical restore
+--- PASS: TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup (0.09s)
+    --- PASS: TestIntegrationFixtureRetainsAuditDatabaseAfterCleanup/owned_audit_database (0.08s)
+PASS
+ok  	ops-platform/test/integration	1.277s

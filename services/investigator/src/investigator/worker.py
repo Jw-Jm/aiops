@@ -23,16 +23,23 @@ def serve(config):
     os.environ["OVERRIDE_MAX_OUTPUT_TOKEN"]=str(model.token_budget)
     os.environ["LITELLM_LOCAL_MODEL_COST_MAP"]="True"
     from .holmes_adapter import MCPBridge, investigate
+    from .budget import ModelCallError
     from .job_api import JobAPI
     import httpx
     gate=threading.BoundedSemaphore(10)
-    tls=ssl.create_default_context(ssl.Purpose.CLIENT_AUTH,cafile=config["caFile"])
-    tls.minimum_version=ssl.TLSVersion.TLSv1_3
-    tls.load_cert_chain(config["certificateFile"],config["privateKeyFile"])
-    tls.verify_mode=ssl.CERT_REQUIRED
+    identity=None
+    if config["identityMode"]=="openbao-kubernetes":
+        from .workload_identity import WorkloadIdentity
+        identity=WorkloadIdentity(config)
+        tls=identity.server_context()
+    else:
+        tls=ssl.create_default_context(ssl.Purpose.CLIENT_AUTH,cafile=config["caFile"])
+        tls.minimum_version=ssl.TLSVersion.TLSv1_3
+        tls.load_cert_chain(config["certificateFile"],config["privateKeyFile"])
+        tls.verify_mode=ssl.CERT_REQUIRED
 
     from .workload_tls import PeerVerifier, clients
-    verifier=PeerVerifier(config["caFile"],config["crlFile"])
+    verifier=PeerVerifier(config["caFile"],config["crlFile"],identity.current_trust if identity else None)
     def trusted_peer(connection):
         try:
             verifier.verify(connection.getpeercert(binary_form=True),config["workerIdentity"])
@@ -55,9 +62,13 @@ def serve(config):
             if not gate.acquire(blocking=False):self.respond(429,{"errorCode":"INVESTIGATOR_BUSY"});return
             job_api=None;bridge=None
             try:
-                payload=json.loads(self.rfile.read(length))
-                if set(payload)!={"job","jobContext","mcpContext"}:raise ValueError()
-                sync, asynchronous=clients(config)
+                try:
+                    payload=json.loads(self.rfile.read(length))
+                    if not isinstance(payload,dict) or set(payload)!={"job","jobContext","mcpContext"} or not isinstance(payload["job"],dict) or not isinstance(payload["job"].get("jobId"),str) or not payload["job"]["jobId"] or not all(isinstance(payload[key],str) and payload[key] for key in ("jobContext","mcpContext")):
+                        raise ValueError()
+                except (ValueError,UnicodeError):
+                    self.respond(400,{"errorCode":"INVALID_REQUEST"});return
+                sync, asynchronous=clients(config,identity)
                 job_api=JobAPI(config["jobAPI"],payload["job"]["jobId"],payload["jobContext"],sync)
                 job_api.start_renewal(payload["mcpContext"])
                 bridge=MCPBridge(config["mcpEndpoint"],payload["mcpContext"],asynchronous)
@@ -66,6 +77,8 @@ def serve(config):
                 result=job_api.request("/result:complete",result)
                 self.respond(200,{"data":result})
             except Exception as error:
+                if isinstance(error, ModelCallError):
+                    print("investigator-model-failure", error.kind, error.provider_failure_kind or "", file=sys.stderr)
                 for frame in traceback.extract_tb(error.__traceback__):print("investigator-failure",type(error).__name__,frame.filename,frame.lineno,file=sys.stderr)
                 self.respond(503,{"errorCode":"INVESTIGATION_FAILED"})
             finally:
@@ -76,7 +89,11 @@ def serve(config):
     server=ThreadingHTTPServer((host,int(port)),Handler)
     server.socket.settimeout(5)
     server.socket=tls.wrap_socket(server.socket,server_side=True)
-    server.serve_forever(poll_interval=0.2)
+    try:
+        server.serve_forever(poll_interval=0.2)
+    finally:
+        server.server_close()
+        if identity is not None:identity.close()
 
 if __name__=="__main__":
     config=json.loads(Path(os.environ["SP06_INVESTIGATOR_FILE"]).read_text())

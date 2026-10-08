@@ -1,0 +1,603 @@
+{
+  "observedAt": "2026-10-05T05:51:28.689992+00:00",
+  "namespace": "ops-pre-sp07-metrics-20261004",
+  "namespaceUID": "f78f3154-53f3-4697-8e6c-9fd98fb230b4",
+  "operationScope": "exact temporary owned Metrics PoC release only; original/shared/protected deployments untouched",
+  "resources": [
+    {
+      "kind": "NetworkPolicy",
+      "name": "pre-sp07-metrics",
+      "namespace": "ops-pre-sp07-metrics-20261004",
+      "uid": "311ec1cf-43a6-4358-89a8-d7cb3d201070",
+      "helmOwner": "pre-sp07",
+      "disposition": "delete exact owned temporary Metrics PoC release; no persistent storage; raw observations retained; source requests temporarily unavailable",
+      "verification": "exact UID/Helm owner checked before uninstall; absence checked after; namespace/trust retained"
+    },
+    {
+      "kind": "ServiceAccount",
+      "name": "pre-sp07-metrics",
+      "namespace": "ops-pre-sp07-metrics-20261004",
+      "uid": "391392ed-cb74-47de-8d9a-2ac01f8e681d",
+      "helmOwner": "pre-sp07",
+      "disposition": "delete exact owned temporary Metrics PoC release; no persistent storage; raw observations retained; source requests temporarily unavailable",
+      "verification": "exact UID/Helm owner checked before uninstall; absence checked after; namespace/trust retained"
+    },
+    {
+      "kind": "ClusterRole",
+      "name": "pre-sp07-metrics",
+      "namespace": "",
+      "uid": "6351ff6f-e595-4654-9895-c1caf50e5e39",
+      "helmOwner": "pre-sp07",
+      "disposition": "delete exact owned temporary Metrics PoC release; no persistent storage; raw observations retained; source requests temporarily unavailable",
+      "verification": "exact UID/Helm owner checked before uninstall; absence checked after; namespace/trust retained"
+    },
+    {
+      "kind": "ClusterRoleBinding",
+      "name": "pre-sp07-metrics",
+      "namespace": "",
+      "uid": "2927d045-7d41-426c-b077-b78d83081c24",
+      "helmOwner": "pre-sp07",
+      "disposition": "delete exact owned temporary Metrics PoC release; no persistent storage; raw observations retained; source requests temporarily unavailable",
+      "verification": "exact UID/Helm owner checked before uninstall; absence checked after; namespace/trust retained"
+    },
+    {
+      "kind": "ClusterRoleBinding",
+      "name": "pre-sp07-metrics-auth-delegator",
+      "namespace": "",
+      "uid": "7b20e527-6519-4b64-b6c3-9943aa6a1257",
+      "helmOwner": "pre-sp07",
+      "disposition": "delete exact owned temporary Metrics PoC release; no persistent storage; raw observations retained; source requests temporarily unavailable",
+      "verification": "exact UID/Helm owner checked before uninstall; absence checked after; namespace/trust retained"
+    },
+    {
+      "kind": "RoleBinding",
+      "name": "pre-sp07-metrics-auth-reader",
+      "namespace": "kube-system",
+      "uid": "f528d5a0-c397-4571-8161-6538f91c559a",
+      "helmOwner": "pre-sp07",
+      "disposition": "delete exact owned temporary Metrics PoC release; no persistent storage; raw observations retained; source requests temporarily unavailable",
+      "verification": "exact UID/Helm owner checked before uninstall; absence checked after; namespace/trust retained"
+    },
+    {
+      "kind": "Service",
+      "name": "pre-sp07-metrics",
+      "namespace": "ops-pre-sp07-metrics-20261004",
+      "uid": "f6db96a8-67c4-4a60-b0b0-2ed339987108",
+      "helmOwner": "pre-sp07",
+      "disposition": "delete exact owned temporary Metrics PoC release; no persistent storage; raw observations retained; source requests temporarily unavailable",
+      "verification": "exact UID/Helm owner checked before uninstall; absence checked after; namespace/trust retained"
+    },
+    {
+      "kind": "Deployment",
+      "name": "pre-sp07-metrics",
+      "namespace": "ops-pre-sp07-metrics-20261004",
+      "uid": "abcca3c7-258c-453f-9a0c-f83e6583ac31",
+      "helmOwner": "pre-sp07",
+      "disposition": "delete exact owned temporary Metrics PoC release; no persistent storage; raw observations retained; source requests temporarily unavailable",
+      "verification": "exact UID/Helm owner checked before uninstall; absence checked after; namespace/trust retained"
+    },
+    {
+      "kind": "APIService",
+      "name": "v1beta1.metrics.k8s.io",
+      "namespace": "",
+      "uid": "5b68336c-a72f-4103-9463-f10ec1a844ba",
+      "helmOwner": "pre-sp07",
+      "disposition": "delete exact owned temporary Metrics PoC release; no persistent storage; raw observations retained; source requests temporarily unavailable",
+      "verification": "exact UID/Helm owner checked before uninstall; absence checked after; namespace/trust retained"
+    }
+  ],
+  "pods": [
+    {
+      "name": "pre-sp07-metrics-bd466b967-hjstz",
+      "uid": "4dfee993-b85c-4071-adb7-6bf286b5037d",
+      "containerIDs": [
+        "docker://d1597462b00a765bcab3af3cccb00319c093a70bf1154eac2d1dd8e9bda39255"
+      ]
+    }
+  ],
+  "namespaceAndTrustRetained": true,
+  "persistentClaims": 0,
+  "currentSignedReplacementBundle": "pre-sp07-metrics-addon-20261005-r3",
+  "replacementNotYetInstalled": true,
+  "fullOriginalOrbStackCleanupComplete": false,
+  "completedAt": "2026-10-05T05:51:29.411613+00:00",
+  "status": "PASS_EXACT_OWNED_RELEASE_CLEANUP",
+  "after": [
+    {
+      "kind": "NetworkPolicy",
+      "name": "pre-sp07-metrics",
+      "namespace": "ops-pre-sp07-metrics-20261004",
+      "originalUID": "311ec1cf-43a6-4358-89a8-d7cb3d201070",
+      "absent": true
+    },
+    {
+      "kind": "ServiceAccount",
+      "name": "pre-sp07-metrics",
+      "namespace": "ops-pre-sp07-metrics-20261004",
+      "originalUID": "391392ed-cb74-47de-8d9a-2ac01f8e681d",
+      "absent": true
+    },
+    {
+      "kind": "ClusterRole",
+      "name": "pre-sp07-metrics",
+      "namespace": "",
+      "originalUID": "6351ff6f-e595-4654-9895-c1caf50e5e39",
+      "absent": true
+    },
+    {
+      "kind": "ClusterRoleBinding",
+      "name": "pre-sp07-metrics",
+      "namespace": "",
+      "originalUID": "2927d045-7d41-426c-b077-b78d83081c24",
+      "absent": true
+    },
+    {
+      "kind": "ClusterRoleBinding",
+      "name": "pre-sp07-metrics-auth-delegator",
+      "namespace": "",
+      "originalUID": "7b20e527-6519-4b64-b6c3-9943aa6a1257",
+      "absent": true
+    },
+    {
+      "kind": "RoleBinding",
+      "name": "pre-sp07-metrics-auth-reader",
+      "namespace": "kube-system",
+      "originalUID": "f528d5a0-c397-4571-8161-6538f91c559a",
+      "absent": true
+    },
+    {
+      "kind": "Service",
+      "name": "pre-sp07-metrics",
+      "namespace": "ops-pre-sp07-metrics-20261004",
+      "originalUID": "f6db96a8-67c4-4a60-b0b0-2ed339987108",
+      "absent": true
+    },
+    {
+      "kind": "Deployment",
+      "name": "pre-sp07-metrics",
+      "namespace": "ops-pre-sp07-metrics-20261004",
+      "originalUID": "abcca3c7-258c-453f-9a0c-f83e6583ac31",
+      "absent": true
+    },
+    {
+      "kind": "APIService",
+      "name": "v1beta1.metrics.k8s.io",
+      "namespace": "",
+      "originalUID": "5b68336c-a72f-4103-9463-f10ec1a844ba",
+      "absent": true
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-metrics-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "get",
+        "manifest",
+        "pre-sp07",
+        "--kube-context",
+        "orbstack",
+        "--namespace",
+        "ops-pre-sp07-metrics-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "get",
+        "hooks",
+        "pre-sp07",
+        "--kube-context",
+        "orbstack",
+        "--namespace",
+        "ops-pre-sp07-metrics-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "NetworkPolicy",
+        "pre-sp07-metrics",
+        "-o",
+        "json",
+        "-n",
+        "ops-pre-sp07-metrics-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "ServiceAccount",
+        "pre-sp07-metrics",
+        "-o",
+        "json",
+        "-n",
+        "ops-pre-sp07-metrics-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "ClusterRole",
+        "pre-sp07-metrics",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "ClusterRoleBinding",
+        "pre-sp07-metrics",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "ClusterRoleBinding",
+        "pre-sp07-metrics-auth-delegator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "RoleBinding",
+        "pre-sp07-metrics-auth-reader",
+        "-o",
+        "json",
+        "-n",
+        "kube-system"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Service",
+        "pre-sp07-metrics",
+        "-o",
+        "json",
+        "-n",
+        "ops-pre-sp07-metrics-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "pre-sp07-metrics",
+        "-o",
+        "json",
+        "-n",
+        "ops-pre-sp07-metrics-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "APIService",
+        "v1beta1.metrics.k8s.io",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-metrics-20261004",
+        "get",
+        "pvc",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-metrics-20261004",
+        "get",
+        "pods",
+        "--selector=app.kubernetes.io/instance=pre-sp07",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-metrics-20261004",
+        "get",
+        "secrets,configmaps",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "openssl",
+        "enc",
+        "-aes-256-cbc",
+        "-pbkdf2",
+        "-iter",
+        "200000",
+        "-salt",
+        "-in",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-old-cleanup-r1/retained-trust-and-release.json",
+        "-out",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-old-cleanup-r1/retained-trust-and-release.json.enc",
+        "-pass",
+        "file:/Users/mssc/.local/state/ops/pre-sp07-20261004/backup-encryption.pass"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "openssl",
+        "enc",
+        "-d",
+        "-aes-256-cbc",
+        "-pbkdf2",
+        "-iter",
+        "200000",
+        "-in",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-old-cleanup-r1/retained-trust-and-release.json.enc",
+        "-out",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-old-cleanup-r1/trust-readback.json",
+        "-pass",
+        "file:/Users/mssc/.local/state/ops/pre-sp07-20261004/backup-encryption.pass"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "--raw",
+        "/apis/metrics.k8s.io/v1beta1/nodes"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "--raw",
+        "/apis/metrics.k8s.io/v1beta1/namespaces/ops-pre-sp07-metrics-20261004/pods"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "uninstall",
+        "pre-sp07",
+        "--kube-context",
+        "orbstack",
+        "--namespace",
+        "ops-pre-sp07-metrics-20261004",
+        "--wait",
+        "--timeout",
+        "120s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "NetworkPolicy",
+        "pre-sp07-metrics",
+        "--ignore-not-found",
+        "-o",
+        "json",
+        "-n",
+        "ops-pre-sp07-metrics-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "ServiceAccount",
+        "pre-sp07-metrics",
+        "--ignore-not-found",
+        "-o",
+        "json",
+        "-n",
+        "ops-pre-sp07-metrics-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "ClusterRole",
+        "pre-sp07-metrics",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "ClusterRoleBinding",
+        "pre-sp07-metrics",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "ClusterRoleBinding",
+        "pre-sp07-metrics-auth-delegator",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "RoleBinding",
+        "pre-sp07-metrics-auth-reader",
+        "--ignore-not-found",
+        "-o",
+        "json",
+        "-n",
+        "kube-system"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Service",
+        "pre-sp07-metrics",
+        "--ignore-not-found",
+        "-o",
+        "json",
+        "-n",
+        "ops-pre-sp07-metrics-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "pre-sp07-metrics",
+        "--ignore-not-found",
+        "-o",
+        "json",
+        "-n",
+        "ops-pre-sp07-metrics-20261004"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "APIService",
+        "v1beta1.metrics.k8s.io",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-metrics-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

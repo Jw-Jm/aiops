@@ -38,11 +38,14 @@ def run(*args):
         "GOSUMDB": "off", "GOTOOLCHAIN": "local"}, text=True)
 
 
-def prepare(out):
-    review = json.loads(Path("third_party/admission/platform-runtime-go-license-review.json").read_text())
+def prepare(out, *, review_path=Path("third_party/admission/platform-runtime-go-license-review.json"),
+        entrypoints=("./cmd/platform-api", "./cmd/platform-worker", "./cmd/opsctl"),
+        admission_paths=(Path("third_party/admission/sp04-selected-runtime.json"),
+            Path("third_party/admission/sp05-selected-runtime.json"))):
+    review = json.loads(review_path.read_text())
     reviewed = {m["path"]: m for m in review["modules"]}
     packages = list(objects(run("go", "list", "-mod=readonly", "-deps", "-json",
-        "./cmd/platform-api", "./cmd/platform-worker", "./cmd/opsctl")))
+        *entrypoints)))
     modules = {p["Module"]["Path"]: p["Module"] for p in packages
         if p.get("Module") and not p["Module"].get("Main")}
     if set(modules) != set(reviewed):
@@ -137,8 +140,6 @@ def prepare(out):
         contents["toolchain/"+compiler+"/"+relative] = (goroot/relative).read_bytes()
     # In-tree upstream snippets are not Go modules. Bind their selected bytes,
     # provenance and original notices alongside the module source closure.
-    admission_paths = [Path("third_party/admission/sp04-selected-runtime.json"),
-        Path("third_party/admission/sp05-selected-runtime.json")]
     selected_lock = []
     admission_digests = []
     for admission_path in admission_paths:
@@ -163,7 +164,7 @@ def prepare(out):
     if actual_selected != admitted_selected:
         raise ValueError("in-tree upstream compiled source differs from the reviewed selected-file closure")
     lock = {"schemaVersion": 1, "architecture": "linux/arm64", "cgoEnabled": False,
-        "goVersion": compiler, "licenseReviewSHA256": digest(Path("third_party/admission/platform-runtime-go-license-review.json").read_bytes()),
+        "goVersion": compiler, "licenseReviewSHA256": digest(review_path.read_bytes()),
         "modules": locked_modules, "standardLibraryFiles": std_lock,
         "selectedUpstreamFiles": selected_lock, "selectedUpstreamAdmissions":admission_digests,
         "buildInstructions": "Use go1.27.1, GOOS=linux GOARCH=arm64 CGO_ENABLED=0. Replace all locked modules with their selected local module directories before offline compilation. Only this target is qualified."}

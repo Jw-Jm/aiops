@@ -1,0 +1,261 @@
+{
+  "items": [
+    {
+      "apiVersion": "networking.k8s.io/v1",
+      "kind": "NetworkPolicy",
+      "metadata": {
+        "name": "ops-allow-internal-platform-traffic",
+        "namespace": "ops-system",
+        "uid": "0c919715-ef9d-44af-80b7-d3b397ec9d2a",
+        "resourceVersion": "205290",
+        "creationTimestamp": "2026-10-01T11:04:08Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "ops.platform.io/policy": "allow-internal",
+          "ops.platform.io/release": "ops-platform"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-platform",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "egress": [
+          {
+            "to": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "kubernetes.io/metadata.name": "ops-system"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "ports": [
+              {
+                "port": 53,
+                "protocol": "UDP"
+              },
+              {
+                "port": 53,
+                "protocol": "TCP"
+              }
+            ],
+            "to": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "kubernetes.io/metadata.name": "kube-system"
+                  }
+                },
+                "podSelector": {
+                  "matchLabels": {
+                    "k8s-app": "kube-dns"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "ports": [
+              {
+                "port": 8429,
+                "protocol": "TCP"
+              }
+            ],
+            "to": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "kubernetes.io/metadata.name": "monitoring"
+                  }
+                },
+                "podSelector": {
+                  "matchLabels": {
+                    "app.kubernetes.io/component": "monitoring",
+                    "app.kubernetes.io/instance": "vm",
+                    "app.kubernetes.io/name": "vmsingle",
+                    "managed-by": "vm-operator"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "ports": [
+              {
+                "port": 9428,
+                "protocol": "TCP"
+              }
+            ],
+            "to": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "kubernetes.io/metadata.name": "monitoring"
+                  }
+                },
+                "podSelector": {
+                  "matchLabels": {
+                    "app": "victoria-logs"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "ingress": [
+          {
+            "from": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "kubernetes.io/metadata.name": "ops-system"
+                  }
+                }
+              }
+            ],
+            "ports": [
+              {
+                "port": 3000,
+                "protocol": "TCP"
+              },
+              {
+                "port": 5432,
+                "protocol": "TCP"
+              },
+              {
+                "port": 8080,
+                "protocol": "TCP"
+              },
+              {
+                "port": 8200,
+                "protocol": "TCP"
+              },
+              {
+                "port": 8443,
+                "protocol": "TCP"
+              },
+              {
+                "port": 8333,
+                "protocol": "TCP"
+              },
+              {
+                "port": 8428,
+                "protocol": "TCP"
+              },
+              {
+                "port": 9428,
+                "protocol": "TCP"
+              },
+              {
+                "port": 8880,
+                "protocol": "TCP"
+              },
+              {
+                "port": 9090,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ],
+        "podSelector": {
+          "matchExpressions": [
+            {
+              "key": "ops.platform.io/release",
+              "operator": "In",
+              "values": [
+                "ops-platform",
+                "ops-dependencies"
+              ]
+            },
+            {
+              "key": "ops.platform.io/component",
+              "operator": "In",
+              "values": [
+                "api",
+                "worker",
+                "web",
+                "investigator",
+                "command-runner",
+                "postgresql",
+                "keycloak",
+                "seaweedfs",
+                "openbao",
+                "victoria-metrics",
+                "victoria-logs",
+                "vmalert"
+              ]
+            }
+          ]
+        },
+        "policyTypes": [
+          "Ingress",
+          "Egress"
+        ]
+      }
+    },
+    {
+      "apiVersion": "networking.k8s.io/v1",
+      "kind": "NetworkPolicy",
+      "metadata": {
+        "name": "ops-default-deny",
+        "namespace": "ops-system",
+        "uid": "3c821a71-da2d-4294-8ace-548910a1cfa1",
+        "resourceVersion": "205289",
+        "creationTimestamp": "2026-10-01T11:04:08Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "ops.platform.io/policy": "default-deny",
+          "ops.platform.io/release": "ops-platform"
+        },
+        "helmOwner": {
+          "meta.helm.sh/release-name": "ops-platform",
+          "meta.helm.sh/release-namespace": "ops-system"
+        }
+      },
+      "disposition": "ownership_pending_preserve",
+      "verification": "UID/owner/consumer and retention checks required before mutation",
+      "spec": {
+        "podSelector": {
+          "matchExpressions": [
+            {
+              "key": "ops.platform.io/release",
+              "operator": "In",
+              "values": [
+                "ops-platform",
+                "ops-dependencies"
+              ]
+            },
+            {
+              "key": "ops.platform.io/component",
+              "operator": "In",
+              "values": [
+                "api",
+                "worker",
+                "web",
+                "investigator",
+                "command-runner",
+                "postgresql",
+                "keycloak",
+                "seaweedfs",
+                "openbao",
+                "victoria-metrics",
+                "victoria-logs",
+                "vmalert"
+              ]
+            }
+          ]
+        },
+        "policyTypes": [
+          "Ingress",
+          "Egress"
+        ]
+      }
+    }
+  ]
+}

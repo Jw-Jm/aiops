@@ -1,0 +1,65 @@
+{
+  "observedAt": "2026-10-05T14:15:43.987377+00:00",
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "-n",
+    "ops-pre-sp07-core-r4-20261005",
+    "patch",
+    "deployment",
+    "ops-investigator",
+    "--type=json",
+    "--patch-file",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/failed-helm-obsolete-mount-removal-r1.json"
+  ],
+  "exitCode": 0,
+  "deploymentUID": "db395100-41c7-4c0a-9d1a-3f836ddc9965",
+  "previousResourceVersion": "415353",
+  "beforeMounts": [
+    {
+      "mountPath": "/etc/runtime",
+      "name": "runtime",
+      "readOnly": true
+    },
+    {
+      "mountPath": "/etc/identity",
+      "name": "identity",
+      "readOnly": true
+    },
+    {
+      "mountPath": "/run/model-credentials",
+      "name": "model-key",
+      "readOnly": true
+    },
+    {
+      "mountPath": "/run/secrets",
+      "name": "model-key",
+      "readOnly": true
+    },
+    {
+      "mountPath": "/tmp",
+      "name": "tmp"
+    },
+    {
+      "mountPath": "/etc/openbao",
+      "name": "openbao-trust",
+      "readOnly": true
+    },
+    {
+      "mountPath": "/var/run/secrets/ops-platform/openbao",
+      "name": "openbao-identity",
+      "readOnly": true
+    }
+  ],
+  "removedOnly": {
+    "mountPath": "/run/secrets",
+    "name": "model-key",
+    "readOnly": true
+  },
+  "desiredMountsFromIndependentlyVerifiedSignedChart": "pre-sp07-core-20261005-r5",
+  "reason": "failed prior Helm business revision left its obsolete strategic-merge mount in the live Deployment; r5 render itself has disjoint mounts",
+  "noProtectedStorageModified": true,
+  "noCheckpointModified": true,
+  "formalFreshInstallAcceptance": false
+}

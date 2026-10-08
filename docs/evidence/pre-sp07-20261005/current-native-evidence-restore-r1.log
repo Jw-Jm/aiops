@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/restore-current-native-evidence-r1.py", line 12, in <module>
+    q="SELECT object_ref FROM platform.evidence_archive_intents WHERE status='verified' AND tenant_id='"+tenant+"'";refraw=run(['docker','exec',pgID,'psql','-U','ops_bootstrap','-d',database,'-Atc',q]);refs=[json.loads(l) for l in refraw.splitlines()];assert len(refs)==1;ref=refs[0];(d/'archive-ref.json').write_text(json.dumps(ref));assert ref['backendLogicalId']=='archive-live' and int(ref['encryptionKeyVersion'])<=7
+                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/state/ops/pre-sp07-20261004/restore-current-native-evidence-r1.py", line 8, in run
+    if c.returncode:(d/'private-failure.log').write_bytes(c.stderr);raise RuntimeError('owned native Evidence recovery failed; private diagnostics retained')
+                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: owned native Evidence recovery failed; private diagnostics retained

@@ -29,6 +29,7 @@ const archiveIAMFixtureImage = "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa
 
 type tenantS3Fixture struct {
 	Endpoint, CAFile, CredentialFile string
+	ContainerID, PrivateDirectory    string
 	CA                               []byte
 	Credentials                      s3.TenantCredentials
 	Admin                            *s3.Client
@@ -45,7 +46,11 @@ func newTenantS3FixtureMode(t *testing.T, tenants []uuid.UUID, bucket string, se
 	if _, err := exec.CommandContext(t.Context(), "docker", "image", "inspect", archiveIAMFixtureImage).Output(); err != nil {
 		t.Fatal("locked SeaweedFS 4.47 image must already be present; fixture never pulls")
 	}
-	dir := t.TempDir()
+	dir := retainedArchiveFixtureDirectory(t)
+	dataDirectory := filepath.Join(dir, "data")
+	if err := os.Mkdir(dataDirectory, 0700); err != nil {
+		t.Fatal("controlled retained Archive storage unavailable")
+	}
 	secret := func() string {
 		var b [24]byte
 		if _, err := rand.Read(b[:]); err != nil {
@@ -113,11 +118,15 @@ func newTenantS3FixtureMode(t *testing.T, tenants []uuid.UUID, bucket string, se
 	}
 	label := uuid.NewString()
 	name := "ops-archive-iam-" + label
-	output, err := exec.CommandContext(t.Context(), "docker", "run", "-d", "--pull=never", "--name", name, "--label", "ops.sp03.archive-iam="+label, "-p", "127.0.0.1::8333", "-v", dir+":/fixture:ro", archiveIAMFixtureImage, "server", "-dir=/data", "-s3", "-s3.config=/fixture/s3.json", "-s3.cert.file=/fixture/tls.crt", "-s3.key.file=/fixture/tls.key", "-master.volumeSizeLimitMB=128").CombinedOutput()
+	output, err := exec.CommandContext(t.Context(), "docker", "run", "-d", "--pull=never", "--name", name, "--label", "ops.sp03.archive-iam="+label, "--label", "ops.platform.test.retention=protected-archive-fixture", "-p", "127.0.0.1::8333", "-v", dir+":/fixture:ro", "-v", dataDirectory+":/data", archiveIAMFixtureImage, "server", "-dir=/data", "-s3", "-s3.config=/fixture/s3.json", "-s3.cert.file=/fixture/tls.crt", "-s3.key.file=/fixture/tls.key", "-master.volumeSizeLimitMB=128").CombinedOutput()
 	if err != nil {
 		t.Fatalf("start owned TLS/IAM fixture: %v", err)
 	}
 	id := strings.TrimSpace(string(output))
+	receipt, _ := json.Marshal(map[string]any{"containerId": id, "ownerLabel": label, "image": archiveIAMFixtureImage, "test": t.Name(), "bucket": bucket, "retention": "container, exact bind storage, TLS and IAM materials retained outside Git; no automatic deletion"})
+	if os.WriteFile(filepath.Join(dir, "fixture-identity.json"), append(receipt, '\n'), 0600) != nil {
+		t.Fatal("retained Archive identity receipt unavailable")
+	}
 	inspect := func() (map[string]any, error) {
 		raw, err := exec.Command("docker", "inspect", id).Output()
 		if err != nil {
@@ -140,9 +149,10 @@ func newTenantS3FixtureMode(t *testing.T, tenants []uuid.UUID, bucket string, se
 			t.Error("refuse cleanup with mismatched ownership")
 			return
 		}
-		if err := exec.Command("docker", "rm", "-f", id).Run(); err != nil {
-			t.Error("owned fixture cleanup failed")
+		if err := exec.Command("docker", "stop", id).Run(); err != nil {
+			t.Error("owned fixture stop failed; protected data and identity retained")
 		}
+		t.Logf("retained owned Archive fixture id=%s label=%s bucket=%s private-material-directory=%s; process stopped, no storage/identity deletion", id, label, bucket, dir)
 	})
 	data, err := inspect()
 	if err != nil {
@@ -167,7 +177,46 @@ func newTenantS3FixtureMode(t *testing.T, tenants []uuid.UUID, bucket string, se
 		time.Sleep(200 * time.Millisecond)
 	}
 	t.Logf("owned TLS/IAM fixture image=%s id=%s bucket=%s tenants=%d", archiveIAMFixtureImage, id, bucket, len(tenants))
-	return tenantS3Fixture{Endpoint: endpoint, CAFile: certFile, CredentialFile: credentialFile, CA: ca, Credentials: credentials, Admin: admin}
+	return tenantS3Fixture{Endpoint: endpoint, CAFile: certFile, CredentialFile: credentialFile, ContainerID: id, PrivateDirectory: dir, CA: ca, Credentials: credentials, Admin: admin}
+}
+
+func retainedArchiveFixtureDirectory(t *testing.T) string {
+	t.Helper()
+	root := os.Getenv("OPS_TEST_PROTECTED_MATERIAL_ROOT")
+	if root == "" {
+		cache, err := os.UserCacheDir()
+		if err != nil {
+			t.Fatal("private retained fixture location unavailable")
+		}
+		root = filepath.Join(cache, "ops-protected-integration")
+	}
+	if !filepath.IsAbs(root) {
+		t.Fatal("retained fixture location must be absolute and outside Git")
+	}
+	if err := os.MkdirAll(root, 0700); err != nil {
+		t.Fatal("private retained fixture root unavailable")
+	}
+	actual, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		t.Fatal("retained fixture location cannot be resolved")
+	}
+	for parent := actual; ; parent = filepath.Dir(parent) {
+		if _, err := os.Stat(filepath.Join(parent, ".git")); err == nil || !os.IsNotExist(err) {
+			t.Fatal("private fixture material must stay outside every Git checkout")
+		}
+		if parent == filepath.Dir(parent) {
+			break
+		}
+	}
+	info, err := os.Stat(actual)
+	if err != nil || !info.IsDir() || info.Mode().Perm()&0077 != 0 {
+		t.Fatal("retained fixture root requires private directory permissions")
+	}
+	dir, err := os.MkdirTemp(actual, "archive-iam-")
+	if err != nil {
+		t.Fatal("private retained fixture directory unavailable")
+	}
+	return dir
 }
 
 func TestRealArchiveTenantIAMTLS(t *testing.T) {

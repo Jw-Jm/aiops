@@ -1,0 +1,63 @@
+{
+  "observedAt": "2026-10-08T00:42:47.428036+00:00",
+  "observationPlane": "owned finite Docker bridge probe, not investigator Pod",
+  "command": [
+    "docker",
+    "--context",
+    "orbstack",
+    "run",
+    "--rm",
+    "--name",
+    "ops-pre-sp07-model-readonly-20261008-r150",
+    "--label",
+    "ops.platform.owner=pre-sp07-20261008-r150",
+    "--label",
+    "ops.platform.purpose=read-only-model-state",
+    "--pull=never",
+    "--read-only",
+    "--cap-drop=ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+    "python",
+    "-c",
+    "import http.client,json,socket,urllib.parse,sys\nu=urllib.parse.urlparse(sys.argv[1]);out={\"resolved\":sorted(set(x[4][0] for x in socket.getaddrinfo(u.hostname,u.port,type=socket.SOCK_STREAM))),\"requests\":[]}\nfor path in [\"/v1/models\",\"/api/ps\"]:\n try:\n  h=http.client.HTTPConnection(u.hostname,u.port,timeout=5);h.request(\"GET\",path);res=h.getresponse();raw=res.read((1<<20)+1);h.close();assert len(raw)<=1<<20;d=json.loads(raw);row={\"path\":path,\"status\":res.status}\n  if path==\"/v1/models\":row[\"models\"]=[x[\"id\"]for x in d.get(\"data\",[])]\n  else:row[\"loadedModels\"]=[{\"name\":x.get(\"name\"),\"size\":x.get(\"size\"),\"sizeVram\":x.get(\"size_vram\"),\"contextLength\":x.get(\"context_length\"),\"expiresAt\":x.get(\"expires_at\")}for x in d.get(\"models\",[])]\n  out[\"requests\"].append(row)\n except Exception as exc:out[\"requests\"].append({\"path\":path,\"errorClass\":type(exc).__name__})\nprint(json.dumps(out))",
+    "http://host.docker.internal:11434/v1"
+  ],
+  "exitCode": 0,
+  "privateLogSHA256": "65559fda05d4fe8c96598a2125137a939a8eec01b063b0431e1296de16dcce60",
+  "providerMutated": false,
+  "actualInvestigationPass": false,
+  "configuredInvestigatorModelCIDRs": [
+    "0.250.250.254/32"
+  ],
+  "nativeResult": {
+    "resolved": [
+      "0.250.250.254"
+    ],
+    "requests": [
+      {
+        "path": "/v1/models",
+        "status": 200,
+        "models": [
+          "llama3.1:8b-16k",
+          "llama3.1:8b"
+        ]
+      },
+      {
+        "path": "/api/ps",
+        "status": 200,
+        "loadedModels": [
+          {
+            "name": "llama3.1:8b-16k",
+            "size": 5897359195,
+            "sizeVram": 5897359195,
+            "contextLength": 16384,
+            "expiresAt": "2026-10-08T08:46:19.091821+08:00"
+          }
+        ]
+      }
+    ]
+  },
+  "postActualInvestigation": "01a118f4-6211-7e8b-ac9e-7413103cad0c"
+}

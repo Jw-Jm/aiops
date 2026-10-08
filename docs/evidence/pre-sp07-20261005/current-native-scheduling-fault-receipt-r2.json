@@ -1,0 +1,65 @@
+{
+  "observedAt": "2026-10-05T15:36:16.636584+00:00",
+  "namespaceUid": "a1b96696-8756-4a43-a8bc-fe630a5a833b",
+  "podUid": "a3173e3d-46bd-4259-9885-83015b2b4b55",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/current-native-scheduling-fault-r2.json",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-20261004",
+        "get",
+        "pod",
+        "ops-pre-sp07-current-unsched-r2",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "phase": "Pending",
+  "conditions": [
+    {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-05T15:36:13Z",
+      "message": "0/1 nodes are available: 1 node(s) didn't match Pod's node affinity/selector. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+      "observedGeneration": 1,
+      "reason": "Unschedulable",
+      "status": "False",
+      "type": "PodScheduled"
+    }
+  ],
+  "priorFaultDeletedByTask": false,
+  "priorFaultUnavailableAfterEngineRestart": true,
+  "inspectionChainVerified": false,
+  "recoveryVerified": false,
+  "performanceBenchmark": false
+}

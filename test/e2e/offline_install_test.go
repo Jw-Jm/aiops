@@ -129,7 +129,7 @@ func TestCoreOfflineInstallation(t *testing.T) {
 	run("go", "run", "./cmd/opsctl", "bundle", "import", "--profile", profileFile, "--bundle", bundleDir, "--key", key)
 	t.Logf("signed Bundle imported offline through %s", p.Runtime.ImageImporter)
 	protectedBefore := snapshotProtectedResources(t, run)
-	run("go", "run", "./cmd/opsctl", "install", "--profile", "core", "--resolved", profileFile, "--bundle", bundleDir, "--key", key, "--offline")
+	run("go", "run", "./cmd/opsctl", "install", "--foundation-only", "--profile", "core", "--resolved", profileFile, "--bundle", bundleDir, "--key", key, "--offline")
 	verifyProcessAvailability(t, p.Kubernetes.Context, run)
 	verifyCoreCapabilities(t, p, bundleDir, run)
 	t.Log("initial offline core install and health/capability checks passed")
@@ -145,7 +145,7 @@ func TestCoreOfflineInstallation(t *testing.T) {
 	}
 	t.Logf("release-scoped cleanup passed for %s", strings.Join(releases, ","))
 	verifyProtectedResources(t, protectedBefore, snapshotProtectedResources(t, run))
-	run("go", "run", "./cmd/opsctl", "install", "--profile", "core", "--resolved", profileFile, "--bundle", bundleDir, "--key", key, "--offline")
+	run("go", "run", "./cmd/opsctl", "install", "--foundation-only", "--profile", "core", "--resolved", profileFile, "--bundle", bundleDir, "--key", key, "--offline")
 	verifyProcessAvailability(t, p.Kubernetes.Context, run)
 	verifyCoreCapabilities(t, p, bundleDir, run)
 	t.Log("clean reinstall and post-reinstall health/capability checks passed")

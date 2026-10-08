@@ -5,8 +5,8 @@ commit: bfd33247f154484bc2f734a0da709da133c6a434
 upstreamLicense: Apache-2.0
 wrapperLicense: GPL-3.0-or-later
 wrapperLicenseADR: docs/adr/0027-sp06-investigator-license-distribution.md
-imageDigest: sha256:41916431835e1319e25dad000c54454f5565f9347bdf9d175f313d3837591af6
-correspondingSourceBundleSHA256: sha256:2c302b34780f884db3dfdddae5d8d8e355695a7d00b621a21c1a773c7d7d8114
+imageDigest: sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593
+correspondingSourceBundleSHA256: sha256:f386fd82ced894c5d4fe438f5b8ad0a40d392aaed309c9ca76ed24805d124054
 architecture: linux/arm64
 protocol: '2025-06-18'
 pythonSDK: mcp==1.28.1
@@ -20,11 +20,11 @@ extensionPoints:
 - ToolExecutor
 - ToolCallingLLM.call
 coreCopied: false
-runtimeContract: 'Model Contract: base_url/api_key_ref/model/timeout/token_budget
-  only'
+runtimeContract: 'Model Contract: base_url/api_key_ref/model/timeout/token_budget only'
 model: llama3.1:8b-16k
 scope: real protocol, tool loop, budget/error/recovery; RCA accuracy unverified
 pyrca: disabled-excluded
 virtualization: disabled-unverified-deferred
 poc: docs/poc/sp06-holmesgpt-runtime.md
-fullStageAcceptance: See docs/evidence/sp06-20261003/final-gates.json and final-independent-review.md; reuse admission does not imply full stage acceptance
+fullStageAcceptance: See docs/evidence/sp06-20261003/final-gates.json and final-independent-review.md;
+  reuse admission does not imply full stage acceptance

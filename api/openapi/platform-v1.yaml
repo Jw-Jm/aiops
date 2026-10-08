@@ -3766,6 +3766,22 @@ components:
           type: string
         data:
           $ref: '#/components/schemas/PlatformCapabilitiesV1'
+    OperatorRoleBindingStatusUpdateRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedRevision
+      - status
+      properties:
+        expectedRevision:
+          type: integer
+          format: int64
+          minimum: 1
+        status:
+          type: string
+          enum:
+          - active
+          - disabled
   securitySchemes:
     BearerAuth:
       bearerFormat: JWT
@@ -3773,7 +3789,7 @@ components:
       type: http
 info:
   title: Smart Operations Platform API
-  version: 1.3.0
+  version: 1.4.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 openapi: 3.1.0
 paths:
@@ -6279,6 +6295,49 @@ paths:
       summary: getResourceNeighbors
       tags:
       - Resources
+  /api/v1/admin/role-bindings/{bindingId}/status:
+    patch:
+      operationId: setOperatorRoleBindingStatus
+      summary: Revoke or restore an operator binding while preserving its exact identity and scopes.
+      description: Platform administrator with current LoA2 step-up. Only operator bindings are accepted; subject, role, tenant and scopes cannot be supplied or changed. The expected revision is mandatory and the existing audited update advances it. This is an administrative authorization operation, with no command execution.
+      tags:
+      - Admin
+      security:
+      - BearerAuth: []
+      x-idempotency: required
+      x-step-up: required
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperatorRoleBindingStatusUpdateRequest'
+      responses:
+        '200':
+          description: Audited current operator binding with advanced revision.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
 security:
 - BearerAuth: []
 servers:

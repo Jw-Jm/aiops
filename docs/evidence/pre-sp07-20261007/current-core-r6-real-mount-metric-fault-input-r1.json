@@ -1,0 +1,27 @@
+{
+  "observedAt": "2026-10-07T02:01:58.662786+00:00",
+  "namespace": "ops-pre-sp07-targets-r6-20261006",
+  "configMapName": "pre-sp07-r6-owned-mount-source-r1",
+  "configMapUID": "d8e408ac-eecf-4b7d-8ac9-9a30c039c0f2",
+  "nativePodUID": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+  "verifiedMetricEvidenceRetained": "90ec6b28-4046-5e4b-85a9-ce3b94582200",
+  "verifiedArchiveVersionRetained": "6723e3239845ad780600976b59601d4d",
+  "inputDataOnlyPublicOwnedMarker": true,
+  "repositoryExternalExactRestorationInput": "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/native-real-mount-metric-configmap-r1.json",
+  "protectedPlatformDataOrHistoricalObjectsDeleted": false,
+  "UIDAndResourceVersionPreconditionDeletion": true,
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "delete",
+    "--raw",
+    "/api/v1/namespaces/ops-pre-sp07-targets-r6-20261006/configmaps/pre-sp07-r6-owned-mount-source-r1",
+    "-f",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/owned-public-marker-delete-options-r1.json"
+  ],
+  "exitCode": 0,
+  "expectedNativeObservation": "genuine kubelet FailedMount Warning on current Running Pod, with actual metrics still available; if not observed, retain non-PASS outcome and restore public marker",
+  "syntheticEventCreated": false,
+  "actualFaultPipelinePassed": false
+}

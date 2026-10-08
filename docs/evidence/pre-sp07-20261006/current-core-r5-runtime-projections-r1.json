@@ -1,0 +1,109 @@
+{
+  "observedAt": "2026-10-06T00:22:19.335263+00:00",
+  "namespace": "ops-pre-sp07-core-r5-20261006",
+  "namespaceUid": "cebe9bc5-cf5a-4228-b359-e5f9f786b338",
+  "installationId": "4c743bfb-cf28-467c-97b2-626c2efee584",
+  "records": [
+    {
+      "name": "ops-platform-runtime",
+      "uid": "0015ed9b-55a7-432a-899d-1ab71055af2a",
+      "keys": [
+        "apiDatabaseURL",
+        "archiveTenantCredentials",
+        "workerDatabaseURL"
+      ],
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "jsonpath={.metadata.uid}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "ops-sp04-api-identity",
+      "uid": "52c02ccc-693f-49d8-8f08-6ddfbd400de2",
+      "keys": [
+        "ca.pem",
+        "context.key"
+      ],
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "jsonpath={.metadata.uid}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "ops-sp04-worker-identity",
+      "uid": "127b9d08-5a3e-465f-be1d-08bf99050e64",
+      "keys": [
+        "ca.pem",
+        "context.pub"
+      ],
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "jsonpath={.metadata.uid}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "ops-sp06-investigator-identity",
+      "uid": "12586d59-5f99-4c53-b7b1-c05617595ee2",
+      "keys": [
+        "ca.pem"
+      ],
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "jsonpath={.metadata.uid}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "ops-sp06-model-key",
+      "uid": "9477e3cd-5c39-4da2-b568-42dc5a07553f",
+      "keys": [
+        "apiKey"
+      ],
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "jsonpath={.metadata.uid}"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "workloadCAReadViaPinnedTLS": true,
+  "workloadCASHA256": "11ee1da2fc0c9d8534213a91b042f34fea6a40c63b26c0a3a4939391a16ab316",
+  "contextPublicKeySHA256": "9b9f391b5116274facc7504fd211c9225e7d7c965c6750c6ed06cdc812ce36d5",
+  "privateInput": "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/runtime-secret-projections-r1.private.json",
+  "modelCredentialKind": "explicit local Ollama development API slot; Ollama does not authenticate this key; exact network and workload identity remain necessary",
+  "provisioningProcedure": "SP03/SP04 normal Kubernetes credential provisioning; no business table or Registry seed",
+  "fullBusinessAcceptance": false
+}

@@ -18,7 +18,7 @@ func TestExternalServicePolicyUsesObservedSelectorAndTargetPort(t *testing.T) {
 		}
 		return []byte(`{"metadata":{"uid":"original-service","namespace":"monitoring","name":"vmsingle-vm"},"spec":{"selector":{"app":"vmsingle"},"ports":[{"port":8429,"targetPort":"http","protocol":"TCP"}]}}`), nil
 	}
-	rules, err := externalServiceEgress(t.Context(), p, run)
+	rules, err := externalServiceEgress(t.Context(), "ops-system", p, run)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,11 +35,11 @@ func TestExternalServicePolicyRejectsPublicAndSelectorlessServices(t *testing.T)
 		calls++
 		return []byte(`{"spec":{"selector":{},"ports":[{"port":8429,"targetPort":8428}]}}`), nil
 	}
-	if _, err := externalServiceEgress(t.Context(), p, run); err == nil || calls != 0 {
+	if _, err := externalServiceEgress(t.Context(), "ops-system", p, run); err == nil || calls != 0 {
 		t.Fatalf("public endpoint error=%v calls=%d", err, calls)
 	}
 	p.Components["victoriaMetrics"] = profile.ResolvedComponent{Mode: "external", ObjectUID: "test-service", Namespace: "monitoring", Name: "vm", Endpoint: "http://vm.monitoring.svc:8429"}
-	if _, err := externalServiceEgress(t.Context(), p, run); err == nil || calls != 1 {
+	if _, err := externalServiceEgress(t.Context(), "ops-system", p, run); err == nil || calls != 1 {
 		t.Fatalf("selectorless endpoint error=%v calls=%d", err, calls)
 	}
 }
@@ -50,7 +50,7 @@ func TestExternalServicePolicyRejectsRecreatedInternalService(t *testing.T) {
 	run := func(context.Context, string, ...string) ([]byte, error) {
 		return []byte(`{"metadata":{"uid":"replacement-service","namespace":"ops-system","name":"bao"}}`), nil
 	}
-	if _, err := externalServiceEgress(t.Context(), p, run); err == nil {
+	if _, err := externalServiceEgress(t.Context(), "ops-system", p, run); err == nil {
 		t.Fatal("internal namespace bypassed Service UID lock")
 	}
 }

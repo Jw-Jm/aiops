@@ -1,0 +1,102 @@
+{
+  "observedAt": "2026-10-07T01:49:31.020504+00:00",
+  "command": [
+    "docker",
+    "--context",
+    "orbstack",
+    "run",
+    "--rm",
+    "--pull=never",
+    "--read-only",
+    "--cap-drop=ALL",
+    "--network=container:eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+    "--user",
+    "65532:65532",
+    "--label",
+    "ops.platform.owner=pre-sp07-20261007",
+    "--env-file",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r6/database-bootstrap.env",
+    "--entrypoint",
+    "psql",
+    "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+    "-h",
+    "127.0.0.1",
+    "-U",
+    "ops_bootstrap",
+    "-d",
+    "ops",
+    "-qAt",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-c",
+    "BEGIN READ ONLY; SELECT json_build_object('metricEvidence',(SELECT count(*) FROM platform.evidence_metadata WHERE tenant_id='ddca03c9-eba6-456d-b1e2-d28bb8c79525' AND source_id='01a11163-a977-7d94-9f20-9e44a5e3f779' AND metadata->>'queryTemplateVersion'='sp05-official-pod-metrics/v1'),'currentMetricEvidence',(SELECT json_agg(json_build_object('id',evidence_id,'canonical',canonical_id,'state',replay_state,'observed',metadata->>'observedTo')) FROM (SELECT * FROM platform.evidence_metadata WHERE tenant_id='ddca03c9-eba6-456d-b1e2-d28bb8c79525' AND source_id='01a11163-a977-7d94-9f20-9e44a5e3f779' AND metadata->>'queryTemplateVersion'='sp05-official-pod-metrics/v1' ORDER BY (metadata->>'observedTo')::timestamptz DESC LIMIT 3) x),'currentPods',(SELECT json_agg(json_build_object('name',name,'canonical',canonical_id,'namespace',namespace)) FROM platform.resource_entities WHERE tenant_id='ddca03c9-eba6-456d-b1e2-d28bb8c79525' AND kind='Pod' AND deleted_at IS NULL)); COMMIT;"
+  ],
+  "exitCode": 0,
+  "readOnlyTransaction": true,
+  "observation": {
+    "metricEvidence": 12,
+    "currentMetricEvidence": [
+      {
+        "id": "1e98c39a-8e13-5d7e-a422-120683901feb",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/292565cd-5356-4f88-9911-df352a885757",
+        "state": "archived_verified",
+        "observed": "2026-10-07T01:48:59Z"
+      },
+      {
+        "id": "06d0ee6a-aae9-5b36-b5ad-98b65e453b48",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/292565cd-5356-4f88-9911-df352a885757",
+        "state": "archived_verified",
+        "observed": "2026-10-07T01:48:13Z"
+      },
+      {
+        "id": "1934585b-1392-596a-af74-dc46d8563749",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/b9001d9f-60c1-4f6c-bdb8-cd29d72d77c5",
+        "state": "archived_verified",
+        "observed": "2026-10-06T13:40:47Z"
+      }
+    ],
+    "currentPods": [
+      {
+        "name": "pre-sp07-current-r6-unschedulable-r1",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/b689711c-2edf-4d75-b3e2-d71168d25997",
+        "namespace": "ops-pre-sp07-targets-r6-20261006"
+      },
+      {
+        "name": "pre-sp07-current-r6-ready",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/7480d7d7-030b-4177-b694-22dae2fbf7d4",
+        "namespace": "ops-pre-sp07-targets-r6-20261006"
+      },
+      {
+        "name": "pre-sp07-current-r6-metrics-r2",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/292565cd-5356-4f88-9911-df352a885757",
+        "namespace": "ops-pre-sp07-targets-r6-20261006"
+      },
+      {
+        "name": "pre-sp07-current-r6-concurrent-native-r4-0",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/63531a0a-2bfb-4b91-9465-afe698fc8fc5",
+        "namespace": "ops-pre-sp07-targets-r6-20261006"
+      },
+      {
+        "name": "pre-sp07-current-r6-concurrent-native-r4-4",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/859148e0-a5aa-4a84-a7b2-4b0eba03bbaf",
+        "namespace": "ops-pre-sp07-targets-r6-20261006"
+      },
+      {
+        "name": "pre-sp07-current-r6-concurrent-native-r4-2",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/003f1f2a-caa8-4d98-b784-896d31667310",
+        "namespace": "ops-pre-sp07-targets-r6-20261006"
+      },
+      {
+        "name": "pre-sp07-current-r6-concurrent-native-r4-1",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/4028c7d0-79a1-4686-88ec-50e386e78feb",
+        "namespace": "ops-pre-sp07-targets-r6-20261006"
+      },
+      {
+        "name": "pre-sp07-current-r6-concurrent-native-r4-3",
+        "canonical": "k8s+v1://ddca03c9-eba6-456d-b1e2-d28bb8c79525/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/84e0579a-b201-4a22-8b95-b53dea395fe9",
+        "namespace": "ops-pre-sp07-targets-r6-20261006"
+      }
+    ]
+  },
+  "metricPipelineAccepted": false
+}

@@ -1,0 +1,121 @@
+{
+  "date": "2026-10-04",
+  "status": "in_progress",
+  "tasks": [
+    {
+      "id": "R0",
+      "formalRequirements": "10 Task 2.7; 08 Evidence/保留",
+      "implementation": "opsctl/恢复入口、资源盘点",
+      "requiredTests": "资源身份/消费者；隔离恢复 Evidence/Audit",
+      "evidence": "inventory-before; resource-disposition; postgres-isolated-restore.json; historical-object-protection.json; platform-identity-backup.json; owned-restore-server-restart-r1.json; ../pre-sp07-20261005/fixture-cleanup-protection-finding-r1.json; fixture-retention-guard-red/green-r1; fixture-retention-lifecycle-real-r1 exit 0; prior regression cleanup impact being reconciled",
+      "completionCondition": "逐项处置清单、物料、隔离恢复证明",
+      "status": "in_progress_with_blocked_historical_decryption",
+      "currentEvidence": "../pre-sp07-20261008/current-readiness-progress-r209.json#R0"
+    },
+    {
+      "id": "R1",
+      "formalRequirements": "10 Task 2.7/3.1–3.8/4.7/6.6; 07 Contract",
+      "implementation": "internal/bundle/installer.go; cmd/opsctl; deploy/charts",
+      "requiredTests": "拒绝缺少配置；正式空库 bootstrap/迁移/身份",
+      "evidence": "business-source-scope-green-r2; first-tenant-bootstrap-real-r1; chart-role-ref-red/green-r1; workload-pki-and-invocation-renewal-r1; pki-live-preparation.json; workload-pki-live-receipt.json; full fresh delivery pending; ../pre-sp07-20261005/current-workload-identity-red/green-r1; metrics-and-current-identity-green-r1; investigator-crl-issuer-red/green-r1; production investigator PKI gate in progress; ../pre-sp07-20261005/environment-bootstrap-live-receipt.json; environment-bootstrap-live-resources.json; database-login-bootstrap-real-r1.json; current-install-stages-green-r1; investigator-pki-live-20261005-r4-receipt.json; current-bootstrap-regression-r6 (running); current staged signed fresh install remains pending; ../pre-sp07-20261005/postgresql-first-init-live-r1.json; oidc-bootstrap-live-receipt-r1.json; oidc-live-public-resources-r2.json; oidc-and-first-tenant-live-r1/r2/r3 failures and r4 PASS (formal HTTPS PKCE/OTP/LoA2 and first-tenant); checkpoint-probe-window-red/green-r1; check-toolchain/generated/runtime-source-r8 all 0; ../pre-sp07-20261005/migration-offline-rebuild-r1 (network none, empty cache, Linux binary); migration-binary-real-r2 exit 0; migration-source-admission-red/green-r1; archive-four-role-bootstrap-red/green-r1; archive-bucket-formal-live-receipt-r1; archive-role-and-compliance-live-r1 exit 0 (fixed HTTPS CA, four role native denials, 365-day compliance, Legal Hold, protected version retained); current-bootstrap-and-contracts-r13 exit 0; current-regression-gates-r15: all six required commands exit 0 against explicit source snapshot; migration complete-source/offline byte-identical rebuild r2; migration-signed-bundle-receipt-r1 (supplemental tools only), independent verify exit 0; check-runtime-source-r16 and migration-complete-source-admission-green-r2 exit 0; oidc-administrator entry red/green-r1; actual named retirement/restart r1 and separate fresh OTP login r2 exits 0; oidc-administrator-role-prepared/retired-r1; oidc-administrator-live-r1/r2 exit 0; security targeted r1 exit 0; ../pre-sp07-20261005/current-readiness-progress-r24.json: signed r3 dependencies/empty migration/real OIDC first tenant/archive subgates 0; native Victoria TLS/basic fixes and formal bootstrap in progress; complete current business pending; ../pre-sp07-20261007/current-readiness-progress-r66.json formal R9 fresh empty database/Registry/business install0; current model first-call timeout, Victoria scope proof unverified",
+      "completionCondition": "正式入口交付 SP03–06，缺输入失败",
+      "status": "in_progress",
+      "currentEvidence": "../pre-sp07-20261008/current-readiness-progress-r209.json#R1"
+    },
+    {
+      "id": "R2",
+      "formalRequirements": "02 FR023/INT003; 10 Task 2.5/4.5/6.3–6.6; 08 动态图",
+      "implementation": "internal/source; DeepFlow adapter; deploy/addons/deepflow",
+      "requiredTests": "物料准入、冷导入、真实流量→Graph/Evidence/MCP/模型",
+      "evidence": "deepflow-source-preparation.json; deepflow-host-oci-preparation-r2/r3.json; deepflow-cargo-source-preparation.json; full admission/live flow pending; ../pre-sp07-20261005/deepflow-host-oci-preparation-r4.json; deepflow-clickhouse-sbom-preparation.json; ../pre-sp07-20261005/deepflow-alpine-native-source-preparation-r4.json: 131/131 exact original SHA512; full image closure/admission still pending",
+      "completionCondition": "bundled/deepflow 全链及隔离/时效通过",
+      "status": "in_progress",
+      "currentEvidence": "../pre-sp07-20261008/current-readiness-progress-r209.json#R2"
+    },
+    {
+      "id": "R3",
+      "formalRequirements": "10 Task 5.3/6.3; ADR0023",
+      "implementation": "Kubernetes Inspection; metrics.k8s.io",
+      "requiredTests": "APIService/kubelet TLS/UID/Quantity/撤权恢复",
+      "evidence": "metrics-source-license-preparation-r2.json; metrics-admission-rendered.yaml; metrics-install.log/.exit; real Metrics/SP05 regression evidence; formal cold addon/Pod association pending; ../pre-sp07-20261005/metrics-missing-capacity-red-r1; metrics-and-current-identity-green-r1; ../pre-sp07-20261005/metrics-go-image-source-binding-r6.json (95 external Go modules); metrics-toolchain-source-binding-r6.json (actual image Go1.24.4 and official source/tag); formal admission and signed addon pending",
+      "completionCondition": "真实正向与缺失/过期/错 UID/403/撤权恢复",
+      "status": "in_progress",
+      "currentEvidence": "../pre-sp07-20261008/current-readiness-progress-r209.json#R3"
+    },
+    {
+      "id": "R4",
+      "formalRequirements": "10 Task 2.7; 08 保留",
+      "implementation": "bundle; installer; archive; Job recovery",
+      "requiredTests": "A空环境/Baddon/C恢复分开；公网阻断/内部控制",
+      "evidence": "core-fresh; addon; restore",
+      "completionCondition": "三条独立验收及清理范围真实",
+      "status": "pending_with_blocked_historical_decryption",
+      "currentEvidence": "../pre-sp07-20261008/current-readiness-progress-r209.json#R4"
+    },
+    {
+      "id": "R5",
+      "formalRequirements": "06 Recipe/RCA; 10 Task 6.4–6.6",
+      "implementation": "investigator; Go Validator; latest facts",
+      "requiredTests": "真实串行、恶意输出/拒绝；必要预算/超时/恢复/并发正确性；十并发本地模型闭环按用户本轮指示豁免，保留失败，不记PASS",
+      "evidence": "real-ten-investigations-r1; real-process-recovery-r1; investigation-provider-fault-matrix.json; current formal fresh scenes pending",
+      "completionCondition": "缺陷关闭，Post-check 最新事实与独立预期",
+      "status": "in_progress",
+      "currentEvidence": "../pre-sp07-20261008/current-readiness-progress-r209.json#R5"
+    },
+    {
+      "id": "R6",
+      "formalRequirements": "10 Task 7.1–7.6/14.7 前置；05/07",
+      "implementation": "身份/OPA/Transit/PKI; docs SP07 inputs",
+      "requiredTests": "底座复核、K8s/SSH目标与四类 Profile 条件",
+      "evidence": "ssh-target-preparation.json; kubernetes-target-current-facts.json; kubernetes-target-recovery-facts.json; sp07-target-inputs.md; formal identity/registry binding pending",
+      "completionCondition": "目标准备及下一阶段物料计划，不实施执行",
+      "status": "in_progress",
+      "currentEvidence": "../pre-sp07-20261008/current-readiness-progress-r209.json#R6"
+    }
+  ],
+  "mandatory": [
+    "R0–R6; DeepFlow bundled; Metrics live; fresh install; recovery; independent full PASS"
+  ],
+  "conditional": [
+    "物理 BMC/DIMM/NIC 未有真实目标时保持 unverified；生产 HA/容量不扩大为本轮门禁"
+  ],
+  "deferred": [
+    "KubeVirt/CDI/VM; SP07–SP09 execution"
+  ],
+  "waived": [
+    "performance benchmark",
+    "sustained load",
+    "capacity",
+    "additional P95",
+    "ten concurrent real local Ollama model tool-loop completion: USER_WAIVED_NOT_PASS (2026-10-08, configured NUM_PARALLEL=1 and n_seq_max=1); correctness/budget/timeout/recovery remain required"
+  ],
+  "runtimePrerequisites": [
+    "独立验签信任和签名材料",
+    "锁定离线工具及镜像/源码/许可证",
+    "真实模型 endpoint/model",
+    "精确身份/来源范围/Policy",
+    "匹配数据库/对象/Transit恢复材料",
+    "隔离 SSH目标"
+  ],
+  "blockers": [
+    {
+      "id": "ENV-001",
+      "requirement": "R0/R4 historical Evidence decryption and protected original cleanup",
+      "confirmedBy": "openbao-availability.json; user reply: no matching original Transit recovery material",
+      "impact": "Original inmem OpenBao lost evidence-archive v1; 27 historical Evidence cannot be decrypted. Protected originals preserved. Database-only isolated restore PASS does not satisfy full gate.",
+      "minimalInput": "Matching original Transit v1/storage backup if later discovered; otherwise this historical gate is not achievable under current completion requirements.",
+      "status": "confirmed_external_blocker"
+    }
+  ],
+  "updatedAt": "2026-10-08T02:49:50.319118+00:00",
+  "scopeClarification": {
+    "freshInstallRequiresHistoricalRecoveryMaterial": false,
+    "historicalRecoveryAndProtectedCleanupRequiresMatchingOriginalKeys": true,
+    "userQuestionAnswered": "New empty installation uses new keys and remains independent of ENV-001."
+  },
+  "latestProgress": "../pre-sp07-20261008/current-readiness-progress-r209.json",
+  "latestProgressEvidence": "../pre-sp07-20261008/current-readiness-progress-r209.json",
+  "lastUpdated": "2026-10-06T01:47:31.199564+00:00",
+  "fullR0ThroughR6Complete": false,
+  "lastUpdatedAt": "2026-10-08T02:49:50.319118+00:00"
+}

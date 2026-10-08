@@ -221,6 +221,42 @@ func (s *Service) UpdateRoleBinding(ctx context.Context, tx pgx.Tx, actor auth.R
 	return updated, nil
 }
 
+// SetOperatorRoleBindingStatus exposes revocation/restoration without allowing
+// a caller to substitute the subject, role, tenant or resource scopes. The row
+// remains locked while the existing revisioned, audited update is committed.
+func (s *Service) SetOperatorRoleBindingStatus(ctx context.Context, tx pgx.Tx, actor auth.RequestContext, bindingID uuid.UUID, expectedRevision int64, status string) (RoleBinding, error) {
+	if bindingID == uuid.Nil || expectedRevision < 1 || (status != "active" && status != "disabled") {
+		return RoleBinding{}, ErrInvalidInput
+	}
+	if err := authorizeAdmin(ctx, tx, actor); err != nil {
+		return RoleBinding{}, err
+	}
+	var current RoleBinding
+	var clustersJSON, namespacesJSON []byte
+	err := tx.QueryRow(ctx, "SELECT binding_id,tenant_id,subject,role_name,cluster_scopes,namespace_scopes,status,revision,created_at,updated_at "+
+		"FROM platform.role_bindings WHERE tenant_id=$1 AND binding_id=$2 FOR UPDATE", actor.TenantID, bindingID).
+		Scan(&current.ID, &current.TenantID, &current.Subject, &current.Role, &clustersJSON, &namespacesJSON,
+			&current.Status, &current.Revision, &current.CreatedAt, &current.UpdatedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return RoleBinding{}, ErrResourceNotFound
+	}
+	if err != nil {
+		return RoleBinding{}, fmt.Errorf("load operator binding for status update: %w", err)
+	}
+	if current.Role != auth.Operator {
+		return RoleBinding{}, ErrInvalidInput
+	}
+	if current.Revision != expectedRevision {
+		return RoleBinding{}, ErrRevisionConflict
+	}
+	if json.Unmarshal(clustersJSON, &current.ClusterScopes) != nil || json.Unmarshal(namespacesJSON, &current.NamespaceScopes) != nil {
+		return RoleBinding{}, errors.New("operator binding scope is invalid")
+	}
+	return s.UpdateRoleBinding(ctx, tx, actor, bindingID, expectedRevision, CreateRoleBindingInput{
+		Subject: current.Subject, Role: current.Role, ClusterScopes: current.ClusterScopes, NamespaceScopes: current.NamespaceScopes,
+	}, status)
+}
+
 func validateClusterScopes(ctx context.Context, tx pgx.Tx, tenantID uuid.UUID, clusterIDs []uuid.UUID) error {
 	for _, clusterID := range clusterIDs {
 		var exists bool

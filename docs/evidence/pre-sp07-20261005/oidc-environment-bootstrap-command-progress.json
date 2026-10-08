@@ -1,0 +1,86 @@
+[
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "get",
+      "namespace",
+      "ops-pre-sp07-oidc-20261005",
+      "--ignore-not-found",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "go",
+      "build",
+      "-o",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl",
+      "./cmd/opsctl"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl",
+      "bootstrap",
+      "environment",
+      "--config",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/environment.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/dependency-secrets-missing.json"
+    ],
+    "exitCode": 1
+  },
+  {
+    "command": [
+      "kubectl",
+      "get",
+      "namespace",
+      "ops-pre-sp07-oidc-20261005",
+      "--ignore-not-found",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl",
+      "bootstrap",
+      "environment",
+      "--config",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/environment.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/dependency-secrets.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl",
+      "bootstrap",
+      "environment",
+      "--config",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/environment.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/dependency-secrets.json"
+    ],
+    "exitCode": 1
+  },
+  {
+    "command": [
+      "kubectl",
+      "get",
+      "secrets",
+      "-n",
+      "ops-pre-sp07-oidc-20261005",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  }
+]

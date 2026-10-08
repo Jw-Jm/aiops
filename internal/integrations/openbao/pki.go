@@ -205,6 +205,7 @@ type CertReloader struct {
 	current        atomic.Pointer[workloadCertificateState]
 	mu             sync.Mutex
 	now            func() time.Time
+	pinnedRoots    *x509.CertPool
 }
 
 func NewCertReloader(client *Client, namespace, serviceAccount string) (*CertReloader, error) {
@@ -233,6 +234,16 @@ func NewCertReloader(client *Client, namespace, serviceAccount string) (*CertRel
 // of each certificate lifetime. Failed renewals retain the current certificate
 // while valid and retry; the TLS callback fails closed after its expiry.
 func (r *CertReloader) Start(ctx context.Context, projectedServiceAccountTokenPath string) error {
+	return r.StartPinned(ctx, projectedServiceAccountTokenPath, nil)
+}
+
+// StartPinned additionally binds every issued leaf, including renewals, to
+// independently provisioned workload trust. A failed initial issuance starts
+// no background work. The roots are immutable for this process lifetime.
+func (r *CertReloader) StartPinned(ctx context.Context, projectedServiceAccountTokenPath string, roots *x509.CertPool) error {
+	if roots != nil {
+		r.pinnedRoots = roots.Clone()
+	}
 	if err := r.refresh(ctx, projectedServiceAccountTokenPath); err != nil {
 		return err
 	}
@@ -294,6 +305,11 @@ func (r *CertReloader) refresh(ctx context.Context, tokenPath string) error {
 	certificate, trust, err := parseSignedWorkloadCertificate(response, privateKey, r.spiffeURI, r.dnsName, now)
 	if err != nil {
 		return err
+	}
+	if r.pinnedRoots != nil {
+		if _, err := certificate.Leaf.Verify(x509.VerifyOptions{Roots: r.pinnedRoots, Intermediates: trust.Intermediates, CurrentTime: now, KeyUsages: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth}}); err != nil {
+			return errors.New("OPENBAO_PKI_ISSUER_DIFFERS_FROM_PINNED_TRUST")
+		}
 	}
 	crlPEM, err := r.client.readPKICRL(ctx)
 	if err != nil {

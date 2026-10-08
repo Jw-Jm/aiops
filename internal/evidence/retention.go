@@ -15,7 +15,11 @@ import (
 var ErrProtected = errors.New("retention dependency or Legal Hold active")
 
 // Legal Hold and cleanup serialize on the same tenant lock and evidence row.
-// Dependency writes must use Protect, which shares that lock as well.
+// Metadata guards use NO KEY UPDATE: keys are immutable, and FK references may
+// already hold KEY SHARE before Protect takes the tenant lock. FOR UPDATE would
+// deadlock that order against an archive/hold/protection pass. NO KEY UPDATE
+// still excludes metadata writers and DELETE; Protect rechecks the tombstone
+// before any reference transaction can commit. Dependency writes must use it.
 func retentionLock(ctx context.Context, tx pgx.Tx, tenant uuid.UUID) error {
 	_, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1,180))`, tenant.String())
 	return err
@@ -25,7 +29,7 @@ func SetLegalHold(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, hold boo
 		return err
 	}
 	var deleting bool
-	if err := tx.QueryRow(ctx, `SELECT deleting FROM platform.evidence_metadata WHERE tenant_id=$1 AND evidence_id=$2 FOR UPDATE`, tenant, id).Scan(&deleting); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT deleting FROM platform.evidence_metadata WHERE tenant_id=$1 AND evidence_id=$2 FOR NO KEY UPDATE`, tenant, id).Scan(&deleting); err != nil {
 		return err
 	}
 	if deleting {
@@ -47,7 +51,7 @@ func Protect(ctx context.Context, tx pgx.Tx, tenant, id, reference uuid.UUID, ki
 		return err
 	}
 	var deleting bool
-	if err := tx.QueryRow(ctx, `SELECT deleting FROM platform.evidence_metadata WHERE tenant_id=$1 AND evidence_id=$2 FOR UPDATE`, tenant, id).Scan(&deleting); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT deleting FROM platform.evidence_metadata WHERE tenant_id=$1 AND evidence_id=$2 FOR NO KEY UPDATE`, tenant, id).Scan(&deleting); err != nil {
 		return err
 	}
 	if deleting {

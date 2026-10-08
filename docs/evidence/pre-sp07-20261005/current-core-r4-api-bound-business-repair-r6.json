@@ -1,0 +1,33 @@
+{
+  "observedAt": "2026-10-05T14:32:24.202139+00:00",
+  "command": [
+    "helm",
+    "upgrade",
+    "ops-platform",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r5/ops-platform-0.1.0.tgz",
+    "--kube-context",
+    "orbstack",
+    "--namespace",
+    "ops-pre-sp07-core-r4-20261005",
+    "--values",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/business-repair-api-bound-values-r6.json",
+    "--wait",
+    "--timeout",
+    "5m"
+  ],
+  "signedBundle": "pre-sp07-core-20261005-r5",
+  "bindingEvidence": "current-core-r4-source-id-binding-resolution-r2.json",
+  "publicProductValidationCommand": [
+    "go",
+    "run",
+    "./artifacts/pre-sp07/business-values-validation-r1",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r4/business-values-registered-r2.json"
+  ],
+  "validationExitCode": 0,
+  "onlyThreeSourceIDsChanged": true,
+  "checkpointNotModified": true,
+  "storageNotModified": true,
+  "formalFreshInstallAcceptance": false,
+  "status": "HELM_READINESS_ONLY_PASSED",
+  "exitCode": 0
+}

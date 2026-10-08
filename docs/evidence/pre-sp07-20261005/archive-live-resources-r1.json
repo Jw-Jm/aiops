@@ -1,0 +1,223 @@
+{
+  "observedAt": "2026-10-05T01:14:20.148688+00:00",
+  "namespaceUid": "ec234ab4-e236-4adc-82e1-d77625602bfe",
+  "resources": [
+    {
+      "kind": "Pod",
+      "name": "ops-keycloak-566c9cc469-4rpkx",
+      "uid": "290972ad-df5c-4b11-8257-991599ac52d7"
+    },
+    {
+      "kind": "Pod",
+      "name": "ops-postgresql-0",
+      "uid": "e10343a9-3d2b-41d4-9e97-358caba7cdab"
+    },
+    {
+      "kind": "Pod",
+      "name": "ops-seaweedfs-0",
+      "uid": "ecf9b8d5-386e-4196-92ad-ee325e3228aa"
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-postgresql",
+      "uid": "cc1f9939-353a-43aa-b8ec-d82ab0c6239f"
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-seaweedfs",
+      "uid": "752612ba-e2cd-44b6-9704-a14537e4b96c"
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "data-ops-postgresql-0",
+      "uid": "9ce92658-7b5e-471d-bb2b-3adbac982abe"
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "data-ops-seaweedfs-0",
+      "uid": "0613245d-8a6c-445e-8e25-575cf90f8960"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "get",
+        "statefulset",
+        "ops-seaweedfs",
+        "--ignore-not-found=true",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "get",
+        "service",
+        "ops-seaweedfs-s3",
+        "--ignore-not-found=true",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl-archive-r1",
+        "./cmd/opsctl"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl-archive-r1",
+        "bootstrap",
+        "archive-iam",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-iam-input-r1.json",
+        "--output",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-iam-r1.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "get",
+        "secret",
+        "ops-seaweedfs-iam",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "replace",
+        "-f",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "template",
+        "ops-oidc-dependencies",
+        "deploy/charts/ops-dependencies",
+        "--namespace",
+        "ops-pre-sp07-oidc-20261005",
+        "--set",
+        "global.imagePullPolicy=Never",
+        "--set",
+        "components.seaweedfs.endpoint=https://ops-seaweedfs-s3.ops-pre-sp07-oidc-20261005.svc.cluster.local:8333",
+        "--show-only",
+        "templates/seaweedfs.yaml"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-f",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "rollout",
+        "status",
+        "statefulset/ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "--timeout=180s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl-archive-r1",
+        "bootstrap",
+        "archive-bucket",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-resolved-profile-r1.yaml",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-bootstrap-private-r1.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/opsctl-archive-r1",
+        "bootstrap",
+        "archive-bucket",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-resolved-profile-r1.yaml",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/oidc-current/archive-bootstrap-private-r1.json"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods,statefulsets,pvc",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "actualFormalBootstrap": true,
+  "signedBundleInstall": false,
+  "fullFreshCoreAcceptance": false,
+  "originalsDeleted": false,
+  "scopeAndRoleOperations": "pending actual positive/negative gate"
+}

@@ -1,0 +1,121 @@
+{
+  "observedAt": "2026-10-07T03:30:28.261836+00:00",
+  "formalBusinessSeedUsed": false,
+  "newResidentCollectorAdded": false,
+  "syntheticMetricOrLogUsed": false,
+  "SP07Started": false,
+  "fullCoreAcceptance": false,
+  "failureType": "AssertionError",
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "wait",
+        "--for=condition=Ready",
+        "pod/pre-sp07-current-r7-source-canary",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "--timeout=60s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-current-r7-source-canary",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "pre-sp07-current-r7-source-canary",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "--timestamps=true",
+        "--limit-bytes=4096"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-current-r7-source-canary",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "POST",
+      "service": "ops-victoria-metrics",
+      "path": "/api/v1/import",
+      "status": 204,
+      "independentWrongCredential": false,
+      "responseSHA256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "POST",
+      "service": "ops-victoria-logs",
+      "path": "/insert/jsonline",
+      "status": 200,
+      "independentWrongCredential": false,
+      "responseSHA256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "GET",
+      "service": "ops-victoria-metrics",
+      "path": "/health",
+      "status": 200,
+      "independentWrongCredential": true,
+      "responseSHA256": "sha256:565339bc4d33d72817b583024112eb7f5cdf3e5eef0252d6ec1b9c9a94e12bb3"
+    }
+  ],
+  "ownedPortForwardsStopped": true
+}

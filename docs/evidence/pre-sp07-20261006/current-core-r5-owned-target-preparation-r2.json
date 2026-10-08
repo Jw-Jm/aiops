@@ -1,0 +1,164 @@
+{
+  "observedAt": "2026-10-06T00:17:00.697249+00:00",
+  "created": {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "creationTimestamp": "2026-10-06T00:16:59Z",
+      "generation": 1,
+      "labels": {
+        "ops.platform.io/owner": "pre-sp07-20261004",
+        "ops.platform.io/purpose": "bounded-current-readiness-target",
+        "tenant": "06514e41-083b-4b7f-95d5-6b1d81474b7a"
+      },
+      "name": "pre-sp07-current-r5-ready-r2",
+      "namespace": "ops-pre-sp07-targets-20261006",
+      "resourceVersion": "423826",
+      "uid": "eb32c415-c91a-4212-9911-fd5656dd0f4e"
+    },
+    "spec": {
+      "activeDeadlineSeconds": 21630,
+      "automountServiceAccountToken": false,
+      "containers": [
+        {
+          "command": [
+            "python",
+            "-S",
+            "-u",
+            "-c",
+            "import time; print(\"pre-sp07 r5 bounded target r2\",flush=True); time.sleep(21600)"
+          ],
+          "image": "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+          "imagePullPolicy": "Never",
+          "name": "target",
+          "resources": {
+            "limits": {
+              "cpu": "100m",
+              "memory": "64Mi"
+            },
+            "requests": {
+              "cpu": "10m",
+              "memory": "16Mi"
+            }
+          },
+          "securityContext": {
+            "allowPrivilegeEscalation": false,
+            "capabilities": {
+              "drop": [
+                "ALL"
+              ]
+            },
+            "readOnlyRootFilesystem": true
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File"
+        }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority",
+      "priority": 0,
+      "restartPolicy": "Never",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+        "runAsNonRoot": true,
+        "runAsUser": 65532,
+        "seccompProfile": {
+          "type": "RuntimeDefault"
+        }
+      },
+      "serviceAccount": "default",
+      "serviceAccountName": "default",
+      "terminationGracePeriodSeconds": 30,
+      "tolerations": [
+        {
+          "effect": "NoExecute",
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "tolerationSeconds": 300
+        },
+        {
+          "effect": "NoExecute",
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "tolerationSeconds": 300
+        }
+      ]
+    },
+    "status": {
+      "phase": "Pending",
+      "qosClass": "Burstable"
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-20261006",
+        "get",
+        "pod",
+        "pre-sp07-current-r5-ready",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "e82d94651b907b1b333a69f6a93af0a43135df0f14f47f3e68e11f50e1cffa5b",
+        "--format",
+        "{{json .State}}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-20261006",
+        "logs",
+        "pre-sp07-current-r5-ready"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/target-bootstrap-r2.json",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-20261006",
+        "wait",
+        "--for=condition=Ready",
+        "pod/pre-sp07-current-r5-ready-r2",
+        "--timeout=60s"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "readyExitCode": 0,
+  "originalDeleted": false,
+  "boundedDurationSeconds": 21600,
+  "performanceBenchmark": false,
+  "fullR6Pass": false
+}

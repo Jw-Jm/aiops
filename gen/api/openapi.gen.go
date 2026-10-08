@@ -540,6 +540,24 @@ func (e LegalHoldResultV1SchemaVersion) Valid() bool {
 	}
 }
 
+// Defines values for OperatorRoleBindingStatusUpdateRequestStatus.
+const (
+	OperatorRoleBindingStatusUpdateRequestStatusActive   OperatorRoleBindingStatusUpdateRequestStatus = "active"
+	OperatorRoleBindingStatusUpdateRequestStatusDisabled OperatorRoleBindingStatusUpdateRequestStatus = "disabled"
+)
+
+// Valid indicates whether the value is a known member of the OperatorRoleBindingStatusUpdateRequestStatus enum.
+func (e OperatorRoleBindingStatusUpdateRequestStatus) Valid() bool {
+	switch e {
+	case OperatorRoleBindingStatusUpdateRequestStatusActive:
+		return true
+	case OperatorRoleBindingStatusUpdateRequestStatusDisabled:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for PlatformCapabilitiesV1CdiStatus.
 const (
 	PlatformCapabilitiesV1CdiStatusDegraded   PlatformCapabilitiesV1CdiStatus = "degraded"
@@ -2065,6 +2083,15 @@ type LegalHoldV1 struct {
 	Hold       bool               `json:"hold"`
 }
 
+// OperatorRoleBindingStatusUpdateRequest defines model for OperatorRoleBindingStatusUpdateRequest.
+type OperatorRoleBindingStatusUpdateRequest struct {
+	ExpectedRevision int64                                        `json:"expectedRevision"`
+	Status           OperatorRoleBindingStatusUpdateRequestStatus `json:"status"`
+}
+
+// OperatorRoleBindingStatusUpdateRequestStatus defines model for OperatorRoleBindingStatusUpdateRequest.Status.
+type OperatorRoleBindingStatusUpdateRequestStatus string
+
 // PageEnvelope defines model for PageEnvelope.
 type PageEnvelope struct {
 	Data      []interface{}     `json:"data"`
@@ -2846,6 +2873,11 @@ type CreateRoleBindingParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
+// SetOperatorRoleBindingStatusParams defines parameters for SetOperatorRoleBindingStatus.
+type SetOperatorRoleBindingStatusParams struct {
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
 // GetSourceRegistrationsParams defines parameters for GetSourceRegistrations.
 type GetSourceRegistrationsParams struct {
 	// Cursor Opaque cursor for keyset pagination.
@@ -3296,6 +3328,9 @@ type RetireRegistryVersionJSONRequestBody = RegistryVersionRetireRequest
 
 // CreateRoleBindingJSONRequestBody defines body for CreateRoleBinding for application/json ContentType.
 type CreateRoleBindingJSONRequestBody = JSONRequest
+
+// SetOperatorRoleBindingStatusJSONRequestBody defines body for SetOperatorRoleBindingStatus for application/json ContentType.
+type SetOperatorRoleBindingStatusJSONRequestBody = OperatorRoleBindingStatusUpdateRequest
 
 // CreateSourceRegistrationJSONRequestBody defines body for CreateSourceRegistration for application/json ContentType.
 type CreateSourceRegistrationJSONRequestBody = SourceRegistrationRequest
@@ -6041,6 +6076,9 @@ type ServerInterface interface {
 	// CreateRoleBinding createRoleBinding
 	// (POST /api/v1/admin/role-bindings)
 	CreateRoleBinding(w http.ResponseWriter, r *http.Request, params CreateRoleBindingParams)
+	// SetOperatorRoleBindingStatus Revoke or restore an operator binding while preserving its exact identity and scopes.
+	// (PATCH /api/v1/admin/role-bindings/{bindingId}/status)
+	SetOperatorRoleBindingStatus(w http.ResponseWriter, r *http.Request, bindingId openapi_types.UUID, params SetOperatorRoleBindingStatusParams)
 	// GetSourceRegistrations getSourceRegistrations
 	// (GET /api/v1/admin/source-registrations)
 	GetSourceRegistrations(w http.ResponseWriter, r *http.Request, params GetSourceRegistrationsParams)
@@ -6304,6 +6342,12 @@ func (_ Unimplemented) GetRoleBindings(w http.ResponseWriter, r *http.Request, p
 // CreateRoleBinding createRoleBinding
 // (POST /api/v1/admin/role-bindings)
 func (_ Unimplemented) CreateRoleBinding(w http.ResponseWriter, r *http.Request, params CreateRoleBindingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetOperatorRoleBindingStatus Revoke or restore an operator binding while preserving its exact identity and scopes.
+// (PATCH /api/v1/admin/role-bindings/{bindingId}/status)
+func (_ Unimplemented) SetOperatorRoleBindingStatus(w http.ResponseWriter, r *http.Request, bindingId openapi_types.UUID, params SetOperatorRoleBindingStatusParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -7517,6 +7561,60 @@ func (siw *ServerInterfaceWrapper) CreateRoleBinding(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateRoleBinding(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetOperatorRoleBindingStatus operation middleware
+func (siw *ServerInterfaceWrapper) SetOperatorRoleBindingStatus(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "bindingId" -------------
+	var bindingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "bindingId", chi.URLParam(r, "bindingId"), &bindingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "bindingId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SetOperatorRoleBindingStatusParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetOperatorRoleBindingStatus(w, r, bindingId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -10236,6 +10334,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/resources/neighbors", wrapper.GetResourceNeighbors)
 	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/admin/role-bindings/{bindingId}/status", wrapper.SetOperatorRoleBindingStatus)
+	})
 
 	return r
 }
@@ -11027,6 +11128,47 @@ type CreateRoleBindingdefaultJSONResponse struct {
 }
 
 func (response CreateRoleBindingdefaultJSONResponse) VisitCreateRoleBindingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetOperatorRoleBindingStatusRequestObject struct {
+	BindingId openapi_types.UUID `json:"bindingId"`
+	Params    SetOperatorRoleBindingStatusParams
+	Body      *SetOperatorRoleBindingStatusJSONRequestBody
+}
+
+type SetOperatorRoleBindingStatusResponseObject interface {
+	VisitSetOperatorRoleBindingStatusResponse(w http.ResponseWriter) error
+}
+
+type SetOperatorRoleBindingStatus200JSONResponse SuccessEnvelope
+
+func (response SetOperatorRoleBindingStatus200JSONResponse) VisitSetOperatorRoleBindingStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetOperatorRoleBindingStatusdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response SetOperatorRoleBindingStatusdefaultJSONResponse) VisitSetOperatorRoleBindingStatusResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -12982,6 +13124,9 @@ type StrictServerInterface interface {
 	// CreateRoleBinding createRoleBinding
 	// (POST /api/v1/admin/role-bindings)
 	CreateRoleBinding(ctx context.Context, request CreateRoleBindingRequestObject) (CreateRoleBindingResponseObject, error)
+	// SetOperatorRoleBindingStatus Revoke or restore an operator binding while preserving its exact identity and scopes.
+	// (PATCH /api/v1/admin/role-bindings/{bindingId}/status)
+	SetOperatorRoleBindingStatus(ctx context.Context, request SetOperatorRoleBindingStatusRequestObject) (SetOperatorRoleBindingStatusResponseObject, error)
 	// GetSourceRegistrations getSourceRegistrations
 	// (GET /api/v1/admin/source-registrations)
 	GetSourceRegistrations(ctx context.Context, request GetSourceRegistrationsRequestObject) (GetSourceRegistrationsResponseObject, error)
@@ -13772,6 +13917,40 @@ func (sh *strictHandler) CreateRoleBinding(w http.ResponseWriter, r *http.Reques
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CreateRoleBindingResponseObject); ok {
 		if err := validResponse.VisitCreateRoleBindingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SetOperatorRoleBindingStatus operation middleware
+func (sh *strictHandler) SetOperatorRoleBindingStatus(w http.ResponseWriter, r *http.Request, bindingId openapi_types.UUID, params SetOperatorRoleBindingStatusParams) {
+	var request SetOperatorRoleBindingStatusRequestObject
+
+	request.BindingId = bindingId
+	request.Params = params
+
+	var body SetOperatorRoleBindingStatusJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SetOperatorRoleBindingStatus(ctx, request.(SetOperatorRoleBindingStatusRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SetOperatorRoleBindingStatus")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SetOperatorRoleBindingStatusResponseObject); ok {
+		if err := validResponse.VisitSetOperatorRoleBindingStatusResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

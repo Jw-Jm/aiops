@@ -1,0 +1,1679 @@
+{
+  "operation": "quiesce verified superseded platform workloads, preserving data and restoration identities",
+  "fullOrbStackCleanupComplete": false,
+  "protectedDataDeleted": false,
+  "SP07Started": false,
+  "controllersQuiesced": 18,
+  "podsGracefullyRemoved": 18,
+  "protectedIdentitiesAndBindingsUnchanged": true,
+  "currentControllersReady": [
+    {
+      "kind": "Deployment",
+      "name": "ops-api",
+      "uid": "0ffe2644-809e-4519-b833-9ca265e2d226",
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-investigator",
+      "uid": "4db11183-63d6-40c2-b30e-1a48fe8f5c2a",
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-keycloak",
+      "uid": "4cdc9b1a-4832-4023-aa43-04f4af16adf2",
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-vmalert",
+      "uid": "8f1065b7-060e-49b6-94c9-8ea57416c9d7",
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-worker",
+      "uid": "277f0c7b-40df-4de0-9d19-b3886694fd23",
+      "ready": 2
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-openbao",
+      "uid": "9048c726-dfda-41f8-b5f9-849c158918aa",
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-postgresql",
+      "uid": "b5b4329d-454c-49b7-8652-ca3c3e01f2f1",
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-seaweedfs",
+      "uid": "6b1b6f3e-feac-4577-b97f-e35658568699",
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-victoria-logs",
+      "uid": "0de550f5-1e48-473e-9cb7-8899cf551117",
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-victoria-metrics",
+      "uid": "30c1fc9e-576b-401e-8274-1be8550baf20",
+      "ready": 1
+    }
+  ],
+  "metricsAPINodeCount": 1,
+  "normalTerminationOnly": true,
+  "exitCode": 0,
+  "changedResources": [
+    {
+      "kind": "Deployment",
+      "namespace": "ops-system",
+      "namespaceUID": "e50d117a-8bc0-4a1d-ade6-7b6ab7d0ba70",
+      "name": "ops-api",
+      "uid": "2bd68c67-aa95-42cf-ae1e-452d95b68ca9",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-system",
+      "namespaceUID": "e50d117a-8bc0-4a1d-ade6-7b6ab7d0ba70",
+      "name": "ops-worker",
+      "uid": "031497f3-ec24-49ba-9bec-a808a9a5e0da",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "namespaceUID": "ae225aca-6520-4ee0-bc33-da2f6e2bbc9e",
+      "name": "ops-keycloak",
+      "uid": "319097a8-a904-46b2-b35a-a7a019ee5053",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "namespaceUID": "ae225aca-6520-4ee0-bc33-da2f6e2bbc9e",
+      "name": "ops-vmalert",
+      "uid": "32cbf035-a958-40b0-a70a-03c306a317cc",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-oidc-20261005",
+      "namespaceUID": "ec234ab4-e236-4adc-82e1-d77625602bfe",
+      "name": "ops-keycloak",
+      "uid": "3405bb28-0ec1-4c82-9b7b-13a0b59682cb",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-system",
+      "namespaceUID": "e50d117a-8bc0-4a1d-ade6-7b6ab7d0ba70",
+      "name": "ops-keycloak",
+      "uid": "d809a551-77fb-48b8-9d54-b0f265474fd7",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-system",
+      "namespaceUID": "e50d117a-8bc0-4a1d-ade6-7b6ab7d0ba70",
+      "name": "ops-vmalert",
+      "uid": "57c9279c-b713-49b7-b722-cee4d7e49171",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "namespaceUID": "ae225aca-6520-4ee0-bc33-da2f6e2bbc9e",
+      "name": "ops-openbao",
+      "uid": "fc364732-8bee-417b-a337-1b78bbe35afd",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "namespaceUID": "ae225aca-6520-4ee0-bc33-da2f6e2bbc9e",
+      "name": "ops-postgresql",
+      "uid": "571e78c9-75c9-4c19-945f-99fa738c4852",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "namespaceUID": "ae225aca-6520-4ee0-bc33-da2f6e2bbc9e",
+      "name": "ops-seaweedfs",
+      "uid": "c9718afc-c685-4dd9-9f1b-883177538699",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "namespaceUID": "ae225aca-6520-4ee0-bc33-da2f6e2bbc9e",
+      "name": "ops-victoria-logs",
+      "uid": "ddfae12c-e39e-45f4-9dd0-9f7d6be65e23",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "namespaceUID": "ae225aca-6520-4ee0-bc33-da2f6e2bbc9e",
+      "name": "ops-victoria-metrics",
+      "uid": "34c1aa60-7189-47d0-9659-dac6675484a9",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-oidc-20261005",
+      "namespaceUID": "ec234ab4-e236-4adc-82e1-d77625602bfe",
+      "name": "ops-postgresql",
+      "uid": "cc1f9939-353a-43aa-b8ec-d82ab0c6239f",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-oidc-20261005",
+      "namespaceUID": "ec234ab4-e236-4adc-82e1-d77625602bfe",
+      "name": "ops-seaweedfs",
+      "uid": "752612ba-e2cd-44b6-9704-a14537e4b96c",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-pki-20261004",
+      "namespaceUID": "843cf87e-0b13-46a4-ae24-229b50afa3ad",
+      "name": "ops-openbao",
+      "uid": "982a8854-5fbb-46a6-a0db-4142acbee69b",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-system",
+      "namespaceUID": "e50d117a-8bc0-4a1d-ade6-7b6ab7d0ba70",
+      "name": "ops-openbao",
+      "uid": "1a23d239-7ed2-4714-bcaf-6ce673071183",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-system",
+      "namespaceUID": "e50d117a-8bc0-4a1d-ade6-7b6ab7d0ba70",
+      "name": "ops-postgresql",
+      "uid": "656ffe6c-69d7-488d-a377-0afc4737ba91",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-system",
+      "namespaceUID": "e50d117a-8bc0-4a1d-ade6-7b6ab7d0ba70",
+      "name": "ops-seaweedfs",
+      "uid": "20e0b898-175a-4bcf-8841-9d6d0bd34ac6",
+      "oldReplicas": 1,
+      "newReplicas": 0,
+      "restore": "verify exact namespace/controller UID then restore replicas to 1; retain original Helm configuration"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pods,deployments,statefulsets,daemonsets,replicasets,configmaps,secrets,services,pvc,pv,apiservices",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "754d3f49d3d0db78479101c8a3579e085b832df7aeff3b8c694aabea8b77be8c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "754d3f49d3d0db78479101c8a3579e085b832df7aeff3b8c694aabea8b77be8c",
+        "psql",
+        "-X",
+        "-U",
+        "ops",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT to_regclass('investigation.jobs'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "9b031f068f306b0585161e4e9bea453d6f6f9f4f2193b5f3a8b5c760967c406f"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "9b031f068f306b0585161e4e9bea453d6f6f9f4f2193b5f3a8b5c760967c406f",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT to_regclass('investigation.jobs'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "9b031f068f306b0585161e4e9bea453d6f6f9f4f2193b5f3a8b5c760967c406f",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT count(*) FROM investigation.jobs WHERE state IN ('queued','running'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "e6d85bb89e8f45e8035d7b380b4b86ed68a680e000e514c03fc5223efaf173e8"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "e6d85bb89e8f45e8035d7b380b4b86ed68a680e000e514c03fc5223efaf173e8",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT to_regclass('investigation.jobs'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "e6d85bb89e8f45e8035d7b380b4b86ed68a680e000e514c03fc5223efaf173e8",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT count(*) FROM investigation.jobs WHERE state IN ('queued','running'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "ops-keycloak-79b487968-jpwp2",
+        "-c",
+        "keycloak",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "ops-openbao-0",
+        "-c",
+        "openbao",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "ops-postgresql-0",
+        "-c",
+        "postgresql",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "ops-seaweedfs-0",
+        "-c",
+        "seaweedfs",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "ops-victoria-logs-0",
+        "-c",
+        "vlogs",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "ops-victoria-metrics-0",
+        "-c",
+        "vmsingle",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "ops-vmalert-5b698d9dbd-7q42q",
+        "-c",
+        "vmalert",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "ops-keycloak-59d95d9d69-xnt9b",
+        "-c",
+        "keycloak",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "ops-postgresql-0",
+        "-c",
+        "postgresql",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "ops-seaweedfs-0",
+        "-c",
+        "seaweedfs",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "ops-openbao-0",
+        "-c",
+        "openbao",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-system",
+        "ops-api-65b6847cdd-nbhpg",
+        "-c",
+        "api",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-system",
+        "ops-keycloak-7fb7d8596c-flr9w",
+        "-c",
+        "keycloak",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-system",
+        "ops-openbao-0",
+        "-c",
+        "openbao",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-system",
+        "ops-postgresql-0",
+        "-c",
+        "postgresql",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-system",
+        "ops-seaweedfs-0",
+        "-c",
+        "seaweedfs",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-system",
+        "ops-vmalert-5b48cd5f47-fg4sw",
+        "-c",
+        "vmalert",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "-n",
+        "ops-system",
+        "ops-worker-567695474-f4vdv",
+        "-c",
+        "worker",
+        "--tail=100",
+        "--limit-bytes=65536",
+        "--timestamps",
+        "--request-timeout=3s"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-api",
+        "-n",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "Deployment",
+        "ops-api",
+        "-n",
+        "ops-system",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"2bd68c67-aa95-42cf-ae1e-452d95b68ca9\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"437513\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-worker",
+        "-n",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "Deployment",
+        "ops-worker",
+        "-n",
+        "ops-system",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"031497f3-ec24-49ba-9bec-a808a9a5e0da\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"437514\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "Deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"319097a8-a904-46b2-b35a-a7a019ee5053\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520505\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-vmalert",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "Deployment",
+        "ops-vmalert",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"32cbf035-a958-40b0-a70a-03c306a317cc\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"519849\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "Deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"3405bb28-0ec1-4c82-9b7b-13a0b59682cb\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520357\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "Deployment",
+        "ops-keycloak",
+        "-n",
+        "ops-system",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"d809a551-77fb-48b8-9d54-b0f265474fd7\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520350\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "Deployment",
+        "ops-vmalert",
+        "-n",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "Deployment",
+        "ops-vmalert",
+        "-n",
+        "ops-system",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"57c9279c-b713-49b7-b722-cee4d7e49171\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520231\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-openbao",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-openbao",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"fc364732-8bee-417b-a337-1b78bbe35afd\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520167\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-postgresql",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-postgresql",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"571e78c9-75c9-4c19-945f-99fa738c4852\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520069\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"c9718afc-c685-4dd9-9f1b-883177538699\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520191\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-victoria-logs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-victoria-logs",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"ddfae12c-e39e-45f4-9dd0-9f7d6be65e23\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"519960\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-victoria-metrics",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-victoria-metrics",
+        "-n",
+        "ops-pre-sp07-core-20261005",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"34c1aa60-7189-47d0-9659-dac6675484a9\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520238\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-postgresql",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-postgresql",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"cc1f9939-353a-43aa-b8ec-d82ab0c6239f\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520133\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-oidc-20261005",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-seaweedfs",
+        "-n",
+        "ops-pre-sp07-oidc-20261005",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"752612ba-e2cd-44b6-9704-a14537e4b96c\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520123\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-openbao",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-pki-20261004",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-openbao",
+        "-n",
+        "ops-pre-sp07-pki-20261004",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"982a8854-5fbb-46a6-a0db-4142acbee69b\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520222\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-openbao",
+        "-n",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-openbao",
+        "-n",
+        "ops-system",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"1a23d239-7ed2-4714-bcaf-6ce673071183\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520446\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-postgresql",
+        "-n",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-postgresql",
+        "-n",
+        "ops-system",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"656ffe6c-69d7-488d-a377-0afc4737ba91\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"520184\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "StatefulSet",
+        "ops-seaweedfs",
+        "-n",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "StatefulSet",
+        "ops-seaweedfs",
+        "-n",
+        "ops-system",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"20e0b898-175a-4bcf-8841-9d6d0bd34ac6\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"519897\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pods,deployments,statefulsets,daemonsets,replicasets,configmaps,secrets,services,pvc,pv,apiservices",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "--raw",
+        "/apis/metrics.k8s.io/v1beta1/nodes"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

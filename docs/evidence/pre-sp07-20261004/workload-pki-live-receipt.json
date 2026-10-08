@@ -1,0 +1,62 @@
+{
+  "observedAt": "2026-10-04T15:47:35.073709+00:00",
+  "commands": [
+    {
+      "method": "GET",
+      "fixedPath": "/v1/pki/ca/pem",
+      "httpStatus": 200
+    },
+    {
+      "method": "GET",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-api",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-api",
+      "httpStatus": 200
+    },
+    {
+      "method": "GET",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-worker",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-worker",
+      "httpStatus": 200
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-tags",
+        "pre_sp07_live",
+        "./internal/app",
+        "-run",
+        "^TestLiveRuntimePKIRotationAndRevocation$",
+        "-count=1",
+        "-v",
+        "-timeout=5m"
+      ],
+      "exitCode": 0,
+      "evidence": "workload-pki-live-r1.log"
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-api",
+      "httpStatus": 200
+    },
+    {
+      "method": "POST",
+      "fixedPath": "/v1/pki/roles/platform-workload-ops-worker",
+      "httpStatus": 200
+    }
+  ],
+  "namespace": "ops-pre-sp07-pki-20261004",
+  "temporaryTTL": "isolated role maximum reduced from 1h to 3m to observe actual renewal; original exact role config restored",
+  "refreshOwner": "production CertReloader, no test refresh thread",
+  "tokenProvenance": "actual Kubernetes TokenRequest; Pod projection delivery still requires full deployment",
+  "fullFreshCoreAcceptance": false,
+  "originalResourcesDeleted": false
+}

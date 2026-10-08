@@ -1,0 +1,146 @@
+{
+  "observedAt": "2026-10-07T03:30:55.113159+00:00",
+  "formalBusinessSeedUsed": false,
+  "newResidentCollectorAdded": false,
+  "syntheticMetricOrLogUsed": false,
+  "SP07Started": false,
+  "fullCoreAcceptance": false,
+  "retainedEarlierControlError": "current-core-r7-real-victoria-canary-r1.json; native health is public, control moved to actual protected query paths",
+  "nativePodUID": "41561dd5-4da3-4763-acb9-cfdfcabf32cd",
+  "namespaceUID": "60bb33ba-b6d9-4ea1-ba80-ebe1b3c4b11f",
+  "canonicalId": "k8s+v1://676d5ba5-0f08-433b-be13-8012ea7e3591/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/41561dd5-4da3-4763-acb9-cfdfcabf32cd",
+  "node": "orbstack",
+  "nativePhase": "Running",
+  "phaseCollectedAt": "2026-10-07T03:30:55.537395+00:00",
+  "nativeStartupLogTimestamp": "2026-10-07T03:30:32.240285216Z",
+  "nativeStartupLogSHA256": "sha256:d78e132b3a72afa3a0cd9d28c32b9875f98f35548e9a2cedab2dce43db29cf33",
+  "boundedProbeFrom": "2026-10-07T03:29:32.240285+00:00",
+  "boundedProbeTo": "2026-10-07T03:31:40.537395+00:00",
+  "finiteActiveDeadlineSeconds": 1800,
+  "sourceTLSVerifiedWithExactServiceSAN": true,
+  "independentInvalidCredential401": true,
+  "installerValuesSHA256": "sha256:44f50b0d42c77c3445b211974a327fa70c02da672f0c4951ad5c8940184fdfab",
+  "adapterScopeProofPass": false,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-current-r7-source-canary",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "wait",
+        "--for=condition=Ready",
+        "pod/pre-sp07-current-r7-source-canary",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "--timeout=60s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-current-r7-source-canary",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "logs",
+        "pre-sp07-current-r7-source-canary",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "--timestamps=true",
+        "--limit-bytes=4096"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "pre-sp07-current-r7-source-canary",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "POST",
+      "service": "ops-victoria-metrics",
+      "path": "/api/v1/import",
+      "status": 204,
+      "independentWrongCredential": false,
+      "responseSHA256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "POST",
+      "service": "ops-victoria-logs",
+      "path": "/insert/jsonline",
+      "status": 200,
+      "independentWrongCredential": false,
+      "responseSHA256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "GET",
+      "service": "ops-victoria-metrics",
+      "path": "/api/v1/query?query=1",
+      "status": 401,
+      "independentWrongCredential": true,
+      "responseSHA256": "sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "method": "GET",
+      "service": "ops-victoria-logs",
+      "path": "/select/logsql/query?query=*&limit=1",
+      "status": 401,
+      "independentWrongCredential": true,
+      "responseSHA256": "sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    }
+  ],
+  "ownedPortForwardsStopped": true
+}

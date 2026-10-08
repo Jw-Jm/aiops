@@ -1,0 +1,277 @@
+{
+  "observedAt": "2026-10-07T04:23:01.094627+00:00",
+  "purpose": "current native observation for future Post-check input, no execution functionality",
+  "SP07Started": false,
+  "fullR6Acceptance": false,
+  "currentModelMCPChainPass": false,
+  "performanceGate": "USER_WAIVED_NOT_PASS",
+  "mutations": [],
+  "namespaceUID": "60bb33ba-b6d9-4ea1-ba80-ebe1b3c4b11f",
+  "node": {
+    "uid": "cc6ee959-3391-432f-b413-a5e7f2e64756",
+    "name": "orbstack",
+    "capacity": {
+      "cpu": "8",
+      "devices.kubevirt.io/kvm": "0",
+      "devices.kubevirt.io/sev": "0",
+      "devices.kubevirt.io/tun": "0",
+      "devices.kubevirt.io/vhost-net": "0",
+      "ephemeral-storage": "68032Mi",
+      "memory": "18462244Ki",
+      "pods": "110"
+    },
+    "allocatable": {
+      "cpu": "8",
+      "devices.kubevirt.io/kvm": "0",
+      "devices.kubevirt.io/sev": "0",
+      "devices.kubevirt.io/tun": "0",
+      "devices.kubevirt.io/vhost-net": "0",
+      "ephemeral-storage": "67769886258",
+      "memory": "18462244Ki",
+      "pods": "110"
+    },
+    "ready": "True",
+    "latestMetricTimestamp": "2026-10-07T04:22:46Z",
+    "latestMetricWindow": "6.676s",
+    "latestMetricUsage": {
+      "cpu": "5727752995n",
+      "memory": "8517444Ki"
+    },
+    "UIDBeforeAfterStable": true
+  },
+  "pods": [
+    {
+      "name": "pre-sp07-current-r7-ready",
+      "uid": "3a913fd3-5ce5-4b39-a47a-99046fe6929e",
+      "phase": "Succeeded",
+      "ready": false,
+      "activeDeadlineSeconds": 3600,
+      "creationTimestamp": "2026-10-07T02:54:26Z",
+      "containerStates": [
+        {
+          "exitCode": 0,
+          "finishedAt": "2026-10-07T03:52:57Z",
+          "reason": "Completed",
+          "startedAt": "2026-10-07T02:54:34Z"
+        }
+      ]
+    },
+    {
+      "name": "pre-sp07-current-r7-source-canary",
+      "uid": "41561dd5-4da3-4763-acb9-cfdfcabf32cd",
+      "phase": "Succeeded",
+      "ready": false,
+      "activeDeadlineSeconds": 1800,
+      "creationTimestamp": "2026-10-07T03:30:28Z",
+      "containerStates": [
+        {
+          "exitCode": 0,
+          "finishedAt": "2026-10-07T03:58:52Z",
+          "reason": "Completed",
+          "startedAt": "2026-10-07T03:30:31Z"
+        }
+      ]
+    },
+    {
+      "name": "pre-sp07-r7-scheduling-r1",
+      "uid": "dc261acd-e559-45bc-b473-4511b1615d0b",
+      "phase": "Succeeded",
+      "ready": false,
+      "activeDeadlineSeconds": 900,
+      "creationTimestamp": "2026-10-07T03:27:06Z",
+      "containerStates": [
+        {
+          "exitCode": 0,
+          "finishedAt": "2026-10-07T03:41:20Z",
+          "reason": "Completed",
+          "startedAt": "2026-10-07T03:27:09Z"
+        }
+      ]
+    }
+  ],
+  "nativeMetrics": [],
+  "currentGraphObservations": [
+    {
+      "canonicalId": "k8s+v1://676d5ba5-0f08-433b-be13-8012ea7e3591/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/3a913fd3-5ce5-4b39-a47a-99046fe6929e",
+      "lastObservedAt": "2026-10-07T03:53:00.920699989Z",
+      "phase": "Succeeded",
+      "collectedAt": "2026-10-07T04:23:02.884822457Z",
+      "freshness": "fresh",
+      "partial": true,
+      "degradedSources": [
+        "01a11452-1f13-71b5-9329-3a20b654a398/proof"
+      ],
+      "warnings": [
+        "source_scope_unverified"
+      ],
+      "graphRevision": {
+        "ownerEpoch": 1,
+        "graphGeneration": 106
+      }
+    },
+    {
+      "canonicalId": "k8s+v1://676d5ba5-0f08-433b-be13-8012ea7e3591/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/41561dd5-4da3-4763-acb9-cfdfcabf32cd",
+      "lastObservedAt": "2026-10-07T03:58:55.401929094Z",
+      "phase": "Succeeded",
+      "collectedAt": "2026-10-07T04:23:03.284762681Z",
+      "freshness": "fresh",
+      "partial": true,
+      "degradedSources": [
+        "01a11452-1f13-71b5-9329-3a20b654a398/proof"
+      ],
+      "warnings": [
+        "source_scope_unverified"
+      ],
+      "graphRevision": {
+        "ownerEpoch": 1,
+        "graphGeneration": 106
+      }
+    },
+    {
+      "canonicalId": "k8s+v1://676d5ba5-0f08-433b-be13-8012ea7e3591/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/dc261acd-e559-45bc-b473-4511b1615d0b",
+      "lastObservedAt": "2026-10-07T03:41:24.137054066Z",
+      "phase": "Succeeded",
+      "collectedAt": "2026-10-07T04:23:03.687826005Z",
+      "freshness": "fresh",
+      "partial": true,
+      "degradedSources": [
+        "01a11452-1f13-71b5-9329-3a20b654a398/proof"
+      ],
+      "warnings": [
+        "source_scope_unverified"
+      ],
+      "graphRevision": {
+        "ownerEpoch": 1,
+        "graphGeneration": 106
+      }
+    }
+  ],
+  "currentFailedJobHonest": true,
+  "currentFailedJobEventSeq": 6,
+  "nativeMetricsAreNotHighUtilizationFinding": true,
+  "nativeTerminalTargetNotReportedAsRunning": true,
+  "sourceUnavailabilityNotReportedAsRecovery": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:7f13463e9a1cb110be2fd279aeed362c58b0184eca9a121fb11a431be36ec445"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:52438f3d971691a8ddcf6e6c8ab731acbd5caa4f0c372f8850368b543f4634f9"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "nodes",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:e3ebe4e1e02adae846209fb7c1c3d05ce73967fa51e859d983a57b2c54e53e96"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "--raw",
+        "/apis/metrics.k8s.io/v1beta1/nodes/orbstack"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:1498c6bc7bfbb2373671825ea387eba0453b1259068e39bf5fa83a5b1932c96a"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "--raw",
+        "/apis/metrics.k8s.io/v1beta1/namespaces/ops-pre-sp07-targets-r7-20261007/pods"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:c31acfa85d3b475631d560781cf7b7472215be2a8efe87e46ef0b60aba8ef441"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-targets-r7-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:52438f3d971691a8ddcf6e6c8ab731acbd5caa4f0c372f8850368b543f4634f9"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "node",
+        "orbstack",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "responseSHA256": "sha256:97ccb850702806c4c83d338d2a9db25babf458083b10136f3979e855e56a968e"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F676d5ba5-0f08-433b-be13-8012ea7e3591%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F3a913fd3-5ce5-4b39-a47a-99046fe6929e",
+      "status": 200,
+      "responseSHA256": "sha256:d09866c1117a790aac63a78cd866a63aa65f36d4ec452f81b1ff9184f07054a6"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F676d5ba5-0f08-433b-be13-8012ea7e3591%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F41561dd5-4da3-4763-acb9-cfdfcabf32cd",
+      "status": 200,
+      "responseSHA256": "sha256:227b0358ec19029c6b8407291f90331820d215c976512fdd01d7c9b22f4df53d"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2F676d5ba5-0f08-433b-be13-8012ea7e3591%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2Fdc261acd-e559-45bc-b473-4511b1615d0b",
+      "status": 200,
+      "responseSHA256": "sha256:5b3df32b5c2188f446b569ba729299c5af2ccf3a03ac877cfe05f6d04496c1f8"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a1145b-78db-7741-b14c-3d244ecade18",
+      "status": 200,
+      "responseSHA256": "sha256:3dddab8966813dd6ae672609c5d8b6d031f3be9d019acb6762128d570c1e994a"
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

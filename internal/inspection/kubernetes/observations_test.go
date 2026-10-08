@@ -31,7 +31,7 @@ func TestFrozenOfficialMetricAndControlPlaneLabels(t *testing.T) {
 	counts := map[string][3]int{}
 	for _, c := range fixture.Cases {
 		t.Run(c.Name, func(t *testing.T) {
-			node := unstructured.Unstructured{Object: map[string]any{"apiVersion": "v1", "kind": "Node", "metadata": map[string]any{"name": "node-a", "uid": "uid-a", "resourceVersion": "1"}, "status": map[string]any{"allocatable": c.Allocatable}}}
+			node := unstructured.Unstructured{Object: map[string]any{"apiVersion": "v1", "kind": "Node", "metadata": map[string]any{"name": "node-a", "uid": "uid-a", "resourceVersion": "1", "creationTimestamp": fixture.Clock.Add(-time.Hour).Format(time.RFC3339Nano)}, "status": map[string]any{"allocatable": c.Allocatable, "capacity": c.Allocatable}}}
 			var got []Candidate
 			var err error
 			if c.Domain == "metrics" {

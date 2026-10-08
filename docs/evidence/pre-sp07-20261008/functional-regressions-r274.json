@@ -1,0 +1,67 @@
+[
+  {
+    "command": [
+      "make",
+      "check-toolchain"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-10-08T06:32:14.883962+00:00",
+    "completedAt": "2026-10-08T06:32:15.193506+00:00",
+    "log": "functional-regression-1-r274.log"
+  },
+  {
+    "command": [
+      "make",
+      "check-generated"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-10-08T06:32:15.193874+00:00",
+    "completedAt": "2026-10-08T06:32:30.609556+00:00",
+    "log": "functional-regression-2-r274.log"
+  },
+  {
+    "command": [
+      "make",
+      "check-runtime-source"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-10-08T06:32:30.609859+00:00",
+    "completedAt": "2026-10-08T06:33:10.405430+00:00",
+    "log": "functional-regression-3-r274.log"
+  },
+  {
+    "command": [
+      "make",
+      "test-security"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-10-08T06:33:10.406282+00:00",
+    "completedAt": "2026-10-08T06:33:13.355017+00:00",
+    "log": "functional-regression-4-r274.log"
+  },
+  {
+    "command": [
+      "make",
+      "test-replay"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-10-08T06:33:13.355269+00:00",
+    "completedAt": "2026-10-08T06:44:03.982328+00:00",
+    "log": "functional-regression-5-r274.log"
+  },
+  {
+    "command": [
+      "go",
+      "test",
+      "-race",
+      "./internal/integrations/deepflow",
+      "./internal/investigation/...",
+      "./internal/rca/...",
+      "-count=1"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-10-08T06:44:03.982817+00:00",
+    "completedAt": "2026-10-08T06:44:14.067051+00:00",
+    "log": "functional-regression-6-r274.log"
+  }
+]

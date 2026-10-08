@@ -1,0 +1,143 @@
+{
+  "observedAt": "2026-10-08T07:05:01.139072+00:00",
+  "exitCode": 0,
+  "regressionOnlyDependencyPriorStateRestoration": [
+    {
+      "component": "keycloak",
+      "containerID": "ab9c3f3c3461a1de053ebd797e84ffa6600d147935b137bf74eab0a48d1e5509",
+      "command": [
+        "docker",
+        "stop",
+        "--time",
+        "20",
+        "ab9c3f3c3461a1de053ebd797e84ffa6600d147935b137bf74eab0a48d1e5509"
+      ],
+      "exitCode": 0,
+      "priorStoppedStateRestored": true,
+      "storageIdentityUnchanged": true,
+      "storageDeleted": false
+    },
+    {
+      "component": "seaweedfs",
+      "containerID": "ef7229e8b72cfa9f1e777bd2efc9f935630050ca77d66a4c335ca4a9ad7032f5",
+      "command": [
+        "docker",
+        "stop",
+        "--time",
+        "20",
+        "ef7229e8b72cfa9f1e777bd2efc9f935630050ca77d66a4c335ca4a9ad7032f5"
+      ],
+      "exitCode": 0,
+      "priorStoppedStateRestored": true,
+      "storageIdentityUnchanged": true,
+      "storageDeleted": false
+    },
+    {
+      "component": "openbao",
+      "containerID": "e1e55bc76b6735165aae7f22b7bf29320b737e1dd178061fe55a2d3b01193ab5",
+      "command": [
+        "docker",
+        "stop",
+        "--time",
+        "20",
+        "e1e55bc76b6735165aae7f22b7bf29320b737e1dd178061fe55a2d3b01193ab5"
+      ],
+      "exitCode": 0,
+      "priorStoppedStateRestored": true,
+      "storageIdentityUnchanged": true,
+      "storageDeleted": false
+    },
+    {
+      "component": "postgresql",
+      "containerID": "1f8f36db8fae80298ac00f5dbb934cdebf68755cc359df5d65c73a96a23633d7",
+      "command": [
+        "docker",
+        "stop",
+        "--time",
+        "20",
+        "1f8f36db8fae80298ac00f5dbb934cdebf68755cc359df5d65c73a96a23633d7"
+      ],
+      "exitCode": 0,
+      "priorStoppedStateRestored": true,
+      "storageIdentityUnchanged": true,
+      "storageDeleted": false
+    }
+  ],
+  "currentNativeNamespaceUID": "8ef6f18e-0621-45d0-877e-4e575cb34603",
+  "currentNativeControllers": [
+    {
+      "kind": "Deployment",
+      "name": "ops-api",
+      "uid": "0ffe2644-809e-4519-b833-9ca265e2d226",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-investigator",
+      "uid": "4db11183-63d6-40c2-b30e-1a48fe8f5c2a",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-keycloak",
+      "uid": "4cdc9b1a-4832-4023-aa43-04f4af16adf2",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-vmalert",
+      "uid": "8f1065b7-060e-49b6-94c9-8ea57416c9d7",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-worker",
+      "uid": "277f0c7b-40df-4de0-9d19-b3886694fd23",
+      "desired": 2,
+      "ready": 2
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-openbao",
+      "uid": "9048c726-dfda-41f8-b5f9-849c158918aa",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-postgresql",
+      "uid": "b5b4329d-454c-49b7-8652-ca3c3e01f2f1",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-seaweedfs",
+      "uid": "6b1b6f3e-feac-4577-b97f-e35658568699",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-victoria-logs",
+      "uid": "0de550f5-1e48-473e-9cb7-8899cf551117",
+      "desired": 1,
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-victoria-metrics",
+      "uid": "30c1fc9e-576b-401e-8274-1be8550baf20",
+      "desired": 1,
+      "ready": 1
+    }
+  ],
+  "currentR12ControllersReady": true,
+  "currentR12SourceOrImagesChanged": false,
+  "allArchiveFixturesAndProtectedDataRetained": true,
+  "noAdditionalCleanupOrModelTest": true
+}

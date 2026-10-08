@@ -1,0 +1,11 @@
+ok  	ops-platform/internal/bundle	15.602s
+--- FAIL: TestHelmRenderComponentModesAreExclusive (0.12s)
+    --- FAIL: TestHelmRenderComponentModesAreExclusive/all-bundled (0.03s)
+        helm_render_test.go:263: rendered ConfigMap count = 3, want snapshot 2
+--- FAIL: TestHelmRenderKeycloakUsesSelectedPostgresEndpointAndSecret (0.03s)
+    helm_render_test.go:364: KC_DB_URL = "jdbc:postgresql://database.example:5432/keycloak", want selected external endpoint
+    helm_render_test.go:367: KC_DB_USERNAME Secret reference = "ops-keycloak-database", want external-database-auth
+    helm_render_test.go:367: KC_DB_PASSWORD Secret reference = "ops-keycloak-database", want external-database-auth
+FAIL
+FAIL	ops-platform/test/contract	20.399s
+FAIL

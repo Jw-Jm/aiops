@@ -1,0 +1,111 @@
+{
+  "observedAt": "2026-10-06T00:27:11.992878+00:00",
+  "namespaceUid": "6a4937d4-fd4b-45ac-babf-b3e2a72be0c1",
+  "pod": {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "creationTimestamp": "2026-10-06T00:27:11Z",
+      "generation": 1,
+      "labels": {
+        "ops.platform.io/owner": "pre-sp07-20261004",
+        "ops.platform.io/purpose": "bounded-current-scheduling-fault",
+        "tenant": "06514e41-083b-4b7f-95d5-6b1d81474b7a"
+      },
+      "name": "pre-sp07-current-r5-unsched-r1",
+      "namespace": "ops-pre-sp07-targets-20261006",
+      "resourceVersion": "425188",
+      "uid": "b0ec3844-4d6d-4d26-b911-f3e87703a018"
+    },
+    "spec": {
+      "activeDeadlineSeconds": 3600,
+      "automountServiceAccountToken": false,
+      "containers": [
+        {
+          "command": [
+            "python",
+            "-S",
+            "-c",
+            "import time;time.sleep(3600)"
+          ],
+          "image": "python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+          "imagePullPolicy": "Never",
+          "name": "target",
+          "resources": {
+            "limits": {
+              "cpu": "100m",
+              "memory": "64Mi"
+            },
+            "requests": {
+              "cpu": "10m",
+              "memory": "16Mi"
+            }
+          },
+          "securityContext": {
+            "allowPrivilegeEscalation": false,
+            "capabilities": {
+              "drop": [
+                "ALL"
+              ]
+            },
+            "readOnlyRootFilesystem": true
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File"
+        }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "enableServiceLinks": true,
+      "nodeSelector": {
+        "ops.platform.io/pre-sp07-fault": "unmatched-r5-scheduling-r1"
+      },
+      "preemptionPolicy": "PreemptLowerPriority",
+      "priority": 0,
+      "restartPolicy": "Never",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+        "runAsNonRoot": true,
+        "runAsUser": 65532,
+        "seccompProfile": {
+          "type": "RuntimeDefault"
+        }
+      },
+      "serviceAccount": "default",
+      "serviceAccountName": "default",
+      "terminationGracePeriodSeconds": 30,
+      "tolerations": [
+        {
+          "effect": "NoExecute",
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "tolerationSeconds": 300
+        },
+        {
+          "effect": "NoExecute",
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "tolerationSeconds": 300
+        }
+      ]
+    },
+    "status": {
+      "phase": "Pending",
+      "qosClass": "Burstable"
+    }
+  },
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "create",
+    "-f",
+    "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/native-scheduling-fault-r1.json",
+    "-o",
+    "json"
+  ],
+  "exitCode": 0,
+  "independentExpectedState": "Pending, PodScheduled=False/Unschedulable because no Node has the dedicated selector; recovery only after UID-bound removal, never retarget previous UID",
+  "sharedNodeMutation": false,
+  "performanceBenchmark": false,
+  "fullPostCheckReadiness": false
+}

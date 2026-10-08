@@ -1,0 +1,117 @@
+{
+  "observedAt": "2026-10-08T01:47:17.668182+00:00",
+  "namespace": "ops-pre-sp07-targets-r8-20261007",
+  "namespaceUID": "a956c347-c7b5-43b1-b621-b0ac50923489",
+  "pvcName": "pre-sp07-pvc-r195",
+  "pvcUID": "47405f82-7803-4829-90e6-32f19d2726f8",
+  "canonicalId": "k8s+v1://d0738868-8646-4715-9d99-b85d4bcb0b5e/607d16b7-8684-491b-bca8-be31264b371e/core/PersistentVolumeClaim/47405f82-7803-4829-90e6-32f19d2726f8",
+  "phase": "Pending",
+  "storageClassName": "pre-sp07-r195-class-absent",
+  "volumeNameAbsent": true,
+  "actualDefaultClass": {
+    "name": "local-path",
+    "uid": "23b126cb-6924-476a-be45-3bf087e57c75",
+    "provisioner": "rancher.io/local-path",
+    "volumeBindingMode": "WaitForFirstConsumer"
+  },
+  "nativeEventsSHA256": "534a68ec8021ba3713623c0b8886330e6adcc36625cff857b93eabedfa9fd277",
+  "manifest": {
+    "apiVersion": "v1",
+    "kind": "PersistentVolumeClaim",
+    "metadata": {
+      "name": "pre-sp07-pvc-r195",
+      "namespace": "ops-pre-sp07-targets-r8-20261007",
+      "labels": {
+        "ops.platform.io/owner": "pre-sp07-20261007-r8",
+        "ops.platform.io/purpose": "pre-sp07-native-pvc-preparation-r195",
+        "tenant": "d0738868-8646-4715-9d99-b85d4bcb0b5e"
+      }
+    },
+    "spec": {
+      "storageClassName": "pre-sp07-r195-class-absent",
+      "accessModes": [
+        "ReadWriteOnce"
+      ],
+      "resources": {
+        "requests": {
+          "storage": "100Mi"
+        }
+      }
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-targets-r8-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "storageclasses",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pvc",
+        "pre-sp07-pvc-r195",
+        "-n",
+        "ops-pre-sp07-targets-r8-20261007",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "events",
+        "-n",
+        "ops-pre-sp07-targets-r8-20261007",
+        "--field-selector",
+        "involvedObject.uid=47405f82-7803-4829-90e6-32f19d2726f8",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "exitCode": 0,
+  "directBusinessTableWrites": false,
+  "formalFindingIncidentChainPass": false,
+  "SP07ExecutionImplemented": false
+}

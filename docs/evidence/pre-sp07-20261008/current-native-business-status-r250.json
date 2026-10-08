@@ -1,0 +1,606 @@
+{
+  "observedAt": "2026-10-08T05:38:02.632171+00:00",
+  "resources": [
+    {
+      "name": "ops-api-87c77749c-4w8dt",
+      "uid": "1a782abb-ce0c-4e9c-9974-9c3fed08fd49",
+      "created": "2026-10-08T03:28:51Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "False",
+          "reason": "ContainersNotReady"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "False",
+          "reason": "ContainersNotReady"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "api",
+          "ready": false,
+          "restartCount": 7,
+          "state": {
+            "terminated": {
+              "containerID": "docker://1721b1de1d3d93301e0c76c87bffe6856eb3bd2d7acf02abcb26d0d09e4c603d",
+              "exitCode": 1,
+              "finishedAt": "2026-10-08T05:37:42Z",
+              "reason": "Error",
+              "startedAt": "2026-10-08T05:37:42Z"
+            }
+          },
+          "lastState": {}
+        }
+      ]
+    },
+    {
+      "name": "ops-investigator-c59c9595-g849z",
+      "uid": "37861560-38e9-4b67-81fb-47a3154e9626",
+      "created": "2026-10-08T03:28:50Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "False",
+          "reason": "ContainersNotReady"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "False",
+          "reason": "ContainersNotReady"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "investigator",
+          "ready": false,
+          "restartCount": 6,
+          "state": {
+            "waiting": {
+              "message": "back-off 5m0s restarting failed container=investigator pod=ops-investigator-c59c9595-g849z_ops-pre-sp07-core-r9-20261008(37861560-38e9-4b67-81fb-47a3154e9626)",
+              "reason": "CrashLoopBackOff"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "containerID": "docker://c889af3a85f773bbc55b5403b9e4c7800f59d725ce0409f8e83bda052ab6398d",
+              "exitCode": 1,
+              "finishedAt": "2026-10-08T05:37:50Z",
+              "reason": "Error",
+              "startedAt": "2026-10-08T05:37:44Z"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ops-keycloak-6dcd55c746-pm9rn",
+      "uid": "4f1d3aa0-4335-45cc-b3b4-4a251a031e28",
+      "created": "2026-10-08T02:48:38Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "keycloak",
+          "ready": true,
+          "restartCount": 2,
+          "state": {
+            "running": {
+              "startedAt": "2026-10-08T05:31:49Z"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "containerID": "docker://39a38075f246795af4b49231ebd3d2517a1eb6a13a9b1db22c5732744a1c5a55",
+              "exitCode": 1,
+              "finishedAt": "2026-10-08T05:31:29Z",
+              "reason": "Error",
+              "startedAt": "2026-10-08T05:31:13Z"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ops-openbao-0",
+      "uid": "6dbc747a-d27e-4268-99eb-59cb77f144cf",
+      "created": "2026-10-08T02:48:38Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "openbao",
+          "ready": true,
+          "restartCount": 1,
+          "state": {
+            "running": {
+              "startedAt": "2026-10-08T05:30:31Z"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "containerID": "docker://d2c5c6455fa387574e5c576215786e1563df0eedd5629bdebff8b7d32421e5c6",
+              "exitCode": 0,
+              "finishedAt": "2026-10-08T03:30:39Z",
+              "reason": "Completed",
+              "startedAt": "2026-10-08T02:48:50Z"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ops-postgresql-0",
+      "uid": "f2f32c0d-31ae-4472-bc0e-4a831f0b44a0",
+      "created": "2026-10-08T02:48:38Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "postgresql",
+          "ready": true,
+          "restartCount": 1,
+          "state": {
+            "running": {
+              "startedAt": "2026-10-08T05:30:31Z"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "containerID": "docker://37b7e78537bd78c6170c3f5d0383e7083680034459fd0153f6bcbdae5bee06cd",
+              "exitCode": 0,
+              "finishedAt": "2026-10-08T03:30:40Z",
+              "reason": "Completed",
+              "startedAt": "2026-10-08T02:48:49Z"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ops-seaweedfs-0",
+      "uid": "a37d574b-4ed9-4740-b957-744b845abfe0",
+      "created": "2026-10-08T03:28:50Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "seaweedfs",
+          "ready": true,
+          "restartCount": 1,
+          "state": {
+            "running": {
+              "startedAt": "2026-10-08T05:31:03Z"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "containerID": "docker://b6069e5a988966e712008af0c45b5e7bfbfa180f28f2e6a7d9d8deb924635d5a",
+              "exitCode": 137,
+              "finishedAt": "2026-10-08T03:30:40Z",
+              "reason": "Error",
+              "startedAt": "2026-10-08T03:28:53Z"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ops-victoria-logs-0",
+      "uid": "e33777d3-cbd3-4911-8d42-9dc1ce3aa616",
+      "created": "2026-10-08T02:49:47Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "vlogs",
+          "ready": true,
+          "restartCount": 1,
+          "state": {
+            "running": {
+              "startedAt": "2026-10-08T05:31:10Z"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "containerID": "docker://e3001da0e3b19a7549c01097674499c83a03d1ed44d85410502982bb4b16ac7a",
+              "exitCode": 137,
+              "finishedAt": "2026-10-08T03:30:40Z",
+              "reason": "Error",
+              "startedAt": "2026-10-08T02:49:55Z"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ops-victoria-metrics-0",
+      "uid": "0e70a3fe-32a4-4ccc-b823-04d571b99fea",
+      "created": "2026-10-08T02:49:20Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "vmsingle",
+          "ready": true,
+          "restartCount": 1,
+          "state": {
+            "running": {
+              "startedAt": "2026-10-08T05:30:31Z"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "containerID": "docker://67dba08957a6e92d413ee6254a613539655e4b8c1de6ab487eefc195ef253a77",
+              "exitCode": 0,
+              "finishedAt": "2026-10-08T03:30:38Z",
+              "reason": "Completed",
+              "startedAt": "2026-10-08T02:49:29Z"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ops-vmalert-74c5744dd9-jth7d",
+      "uid": "b7088cfb-470a-4ce6-800c-159aa215053a",
+      "created": "2026-10-08T02:50:05Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "vmalert",
+          "ready": true,
+          "restartCount": 1,
+          "state": {
+            "running": {
+              "startedAt": "2026-10-08T05:31:02Z"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "containerID": "docker://7875464a9a8d74415a2da6637f34420d2824de61afbb016369bd3f37681a3c1c",
+              "exitCode": 0,
+              "finishedAt": "2026-10-08T03:30:37Z",
+              "reason": "Completed",
+              "startedAt": "2026-10-08T02:50:06Z"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ops-worker-6896678569-79wqb",
+      "uid": "b4e764c7-efb2-4f5b-bd5b-3dacffd74ed4",
+      "created": "2026-10-08T03:28:51Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "False",
+          "reason": "ContainersNotReady"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "False",
+          "reason": "ContainersNotReady"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "worker",
+          "ready": false,
+          "restartCount": 7,
+          "state": {
+            "terminated": {
+              "containerID": "docker://12d18de9504e9ea4980f69fde8bea5f6309ae91aaaf4c8dfc624add3fc159582",
+              "exitCode": 1,
+              "finishedAt": "2026-10-08T05:37:24Z",
+              "reason": "Error",
+              "startedAt": "2026-10-08T05:37:24Z"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "containerID": "docker://19217e0f557b9331fc94bf6e97f1b80823dbe24203e6cff3530bcc61113cacac",
+              "exitCode": 1,
+              "finishedAt": "2026-10-08T05:34:41Z",
+              "reason": "Error",
+              "startedAt": "2026-10-08T05:34:41Z"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ops-worker-6896678569-qcksz",
+      "uid": "75483b0f-d6bc-4ecb-94ac-e6e3dc51238b",
+      "created": "2026-10-08T03:28:51Z",
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "reason": null
+        },
+        {
+          "type": "Ready",
+          "status": "False",
+          "reason": "ContainersNotReady"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "False",
+          "reason": "ContainersNotReady"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "reason": null
+        }
+      ],
+      "containers": [
+        {
+          "name": "worker",
+          "ready": false,
+          "restartCount": 7,
+          "state": {
+            "terminated": {
+              "containerID": "docker://4d7f9dcbcc6ed1eb43e4de658b1e247be0eb711aec91bd2a6d1c5e00001bb9c2",
+              "exitCode": 1,
+              "finishedAt": "2026-10-08T05:37:02Z",
+              "reason": "Error",
+              "startedAt": "2026-10-08T05:37:02Z"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "containerID": "docker://de1675712e5e3e791ae2f9fcafddf05567f47ead7467bbcb980772a8eae01109",
+              "exitCode": 1,
+              "finishedAt": "2026-10-08T05:34:17Z",
+              "reason": "Error",
+              "startedAt": "2026-10-08T05:34:16Z"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "privateRaw": "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-native-status-r250",
+  "fullReadinessPass": false
+}

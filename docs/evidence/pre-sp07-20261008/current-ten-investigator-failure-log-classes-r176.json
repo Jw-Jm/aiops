@@ -1,0 +1,28 @@
+{
+  "observedAt": "2026-10-08T01:14:29.605324+00:00",
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "-n",
+    "ops-pre-sp07-core-r8-20261007",
+    "logs",
+    "deployment/ops-investigator",
+    "--all-pods=true",
+    "--since=12m",
+    "--tail=500"
+  ],
+  "exitCode": 0,
+  "privateLogSHA256": "b5936e8d2148cac61944d3387ca489f1509fa38ef42f7c9fce9a50fcab382cbd",
+  "safeClassOccurrences": {
+    "MODEL_TIMEOUT": 27,
+    "MODEL_UNAVAILABLE": 0,
+    "MODEL_FAILURE": 0,
+    "MCP": 0,
+    "INVESTIGATOR_FAILURE": 0
+  },
+  "tenJobReceipt": "current-core-r8-concurrency-live-receipt-r173.json",
+  "occurrencesNotUniqueJobCounts": true,
+  "rawProviderPromptsOrCredentialsNotPublished": true,
+  "budgetOrTimeoutChanged": false
+}

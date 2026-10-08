@@ -250,3 +250,41 @@ func TestServiceCandidateRejectsUnreadyOrSelectorlessService(t *testing.T) {
 		t.Fatal("selectorless Service matched arbitrary Pod")
 	}
 }
+
+func TestResolveExplicitNamespaceDoesNotAdoptOtherInstallations(t *testing.T) {
+	input := testProfile("external")
+	selected := input.Components["victoriaMetrics"]
+	selected.Namespace = "monitoring"
+	selected.Name = "vmsingle-vm"
+	input.Components["victoriaMetrics"] = selected
+	discovery := testDiscovery()
+	other := discovery.Components["victoriaMetrics"][0]
+	other.Namespace = "unrelated-project"
+	other.ObjectUID = "unrelated-uid"
+	discovery.Components["victoriaMetrics"] = append(discovery.Components["victoriaMetrics"], other)
+	resolved, err := Resolve(context.Background(), input, discovery)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resolved.Components["victoriaMetrics"].ObjectUID != "test-metrics-service-uid" {
+		t.Fatal("selected unrelated installation")
+	}
+	selected.Namespace = "empty-new-target"
+	selected.Name = ""
+	selected.Mode = "bundled"
+	selected.Endpoint = "http://ops-victoria-metrics.empty-new-target.svc:8429"
+	input.Components["victoriaMetrics"] = selected
+	discovery.Locks = map[string]ComponentLock{"victoriaMetrics": {State: "qualified", Version: other.Version, Digest: other.Digest, Image: other.Image}}
+	resolved, err = Resolve(context.Background(), input, discovery)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resolved.Components["victoriaMetrics"].Namespace != selected.Namespace {
+		t.Fatal("new bundled target namespace identity lost")
+	}
+	selected.Namespace = "monitoring"
+	input.Components["victoriaMetrics"] = selected
+	if _, err := Resolve(context.Background(), input, discovery); err == nil {
+		t.Fatal("bundled target overwrote existing selected service")
+	}
+}

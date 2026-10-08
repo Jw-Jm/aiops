@@ -1,0 +1,87 @@
+[
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/opsctl-host",
+      "openbao",
+      "init",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/profile-resolved-r1.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-recovery.json",
+      "--bundle-dir",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/signed-bundle-r7"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/opsctl-host",
+      "openbao",
+      "unseal",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/profile-resolved-r1.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-recovery.json",
+      "--bundle-dir",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/signed-bundle-r7",
+      "--share-index",
+      "0"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/opsctl-host",
+      "openbao",
+      "unseal",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/profile-resolved-r1.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-recovery.json",
+      "--bundle-dir",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/signed-bundle-r7",
+      "--share-index",
+      "1"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/opsctl-host",
+      "openbao",
+      "configure",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/profile-observed-openbao-r1.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/openbao-recovery.json",
+      "--bundle-dir",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/signed-bundle-r7",
+      "--investigation-signing"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r7-retry-r2/opsctl-host",
+      "bootstrap",
+      "oidc-realm",
+      "--profile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/profile-resolved-r1.yaml",
+      "--config",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/oidc-input.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/oidc-private.json",
+      "--ca",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r5/oidc-ca.pem"
+    ],
+    "exitCode": 0
+  }
+]

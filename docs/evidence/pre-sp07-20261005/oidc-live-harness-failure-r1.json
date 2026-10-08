@@ -1,0 +1,21 @@
+{
+  "observedAt": "2026-10-05T00:31:13.731397+00:00",
+  "phase": "public evidence collection after successful formal OIDC initializer",
+  "command": [
+    "kubectl",
+    "get",
+    "pods",
+    "statefulsets",
+    "deployments",
+    "pvc",
+    "-n",
+    "ops-pre-sp07-oidc-20261005",
+    "-o",
+    "json"
+  ],
+  "exitCode": 1,
+  "cause": "kubectl get multiple kinds require comma-separated kinds; namespace and live initialization preserved",
+  "productInitializerExitCode": 0,
+  "repeatRefusalExitCode": 1,
+  "fullFreshCoreAcceptance": false
+}

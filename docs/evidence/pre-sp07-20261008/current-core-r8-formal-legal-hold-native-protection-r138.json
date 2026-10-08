@@ -1,0 +1,63 @@
+{
+  "observedAt": "2026-10-08T00:35:32.074359+00:00",
+  "namespace": "ops-pre-sp07-core-r8-20261007",
+  "evidenceId": "656ad43c-f936-5a12-9f04-6864a0fea6d9",
+  "holdReleaseRequested": false,
+  "historicalRestoreAcceptance": false,
+  "fullRecoveryAcceptance": false,
+  "directBusinessTableWrites": false,
+  "namespaceUID": "589123b6-e4fc-4983-8da0-2292a0a27de8",
+  "nativeBefore": {
+    "versionId": "6723d7b21a18d6556799719d5d06e780",
+    "hold": "OFF",
+    "mode": "COMPLIANCE",
+    "retainUntil": "2027-10-08T05:31:07+00:00",
+    "size": 1388,
+    "etag": "\"54c75e2fbd6235b2000b9c2470db178b\""
+  },
+  "failureType": "AssertionError",
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r8-20261007",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-api",
+        "53342:8080"
+      ]
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r8-20261007",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-seaweedfs-s3",
+        "53352:8333"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/656ad43c-f936-5a12-9f04-6864a0fea6d9",
+      "status": 200,
+      "responseSHA256": "0c16f40d1553fb535953a013f1a7befafbbc3f08f026b48b800364e3790af711"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/legal-holds",
+      "status": 403,
+      "responseSHA256": "41530f605385a2f3270d6c3a75e4ef58fa0e849c12d29584185a3dc8637dd6aa"
+    }
+  ],
+  "ownedPortForwardsStopped": true
+}

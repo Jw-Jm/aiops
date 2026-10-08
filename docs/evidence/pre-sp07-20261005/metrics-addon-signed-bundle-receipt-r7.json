@@ -1,0 +1,126 @@
+{
+  "observedAt": "2026-10-05T05:48:28.627655+00:00",
+  "scope": "SUPPLEMENTAL current Metrics addon and opsctl/source delivery; not full current core/deepflow delivery or cold-install PASS",
+  "bundleId": "pre-sp07-metrics-addon-20261005-r3",
+  "payloadDigest": "sha256:8270c3caf6cdd95bf9a48f9c31509b8fb7c5d7f55d1d92eb06ce29fa4f813067",
+  "materials": 6,
+  "independentTrustFileSHA256": "sha256:47f3b2279069c4b72c9b1ccb3db05de1e5805677d6922e7b2cc4d2a6f18569a7",
+  "sourceBinding": {
+    "observedAt": "2026-10-05T05:46:26.124893+00:00",
+    "scope": "SUPPLEMENTAL Metrics addon and current installer tool/source preparation; not full cold core/deepflow installation",
+    "sourceFileMapSHA256": "e494a1a991d7db19df184459d90c94af3d222977f2f0991e03be2671e100a9b3",
+    "sourceArchiveSHA256": "sha256:926904c4541898d80c57ac37c6fa45ec5c4ff90553aa6f3e09c89ce5991a9098",
+    "hostOpsctlSHA256": "sha256:94ec768498984dd5152855e9ba83e93aa5f3508d541d6b967ff849a8ce709f23",
+    "linuxOpsctlSHA256": "sha256:f98b7a6e5d9093dd9957480c0f7ca600b930028ed046852c50e9bf43c2fb9842",
+    "metricsPublisherManifest": "sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2",
+    "dockerSaveOCIClosureDigest": "sha256:8836fac8543181b644011f859e00a5c8429e043691517b4756e1e95904cbfd2a",
+    "materialCount": 6,
+    "currentSourceMapMatchesR21": false,
+    "signed": "pending",
+    "commands": [
+      {
+        "command": [
+          "docker",
+          "image",
+          "save",
+          "--platform",
+          "linux/arm64",
+          "--output",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/metrics-server-docker-save.tar",
+          "registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "helm",
+          "package",
+          "/Users/mssc/Documents/Code/ops/platform/deploy/charts/ops-metrics-server",
+          "--destination",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "go",
+          "build",
+          "-trimpath",
+          "-buildvcs=false",
+          "-mod=readonly",
+          "-o",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/opsctl-host",
+          "./cmd/opsctl"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "go",
+          "build",
+          "-trimpath",
+          "-buildvcs=false",
+          "-mod=readonly",
+          "-o",
+          "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/opsctl-linux-arm64",
+          "./cmd/opsctl"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "git",
+          "ls-files",
+          "--cached",
+          "--others",
+          "--exclude-standard",
+          "-z"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exitCode": 0
+      }
+    ]
+  },
+  "signedMaterialsVerified": true,
+  "fullR3Acceptance": false,
+  "fullR4ColdInstallAcceptance": false,
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/opsctl-host",
+        "bundle",
+        "build",
+        "--spec",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/build-spec.json",
+        "--output",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/signed-bundle-r3",
+        "--signing-key",
+        "/Users/mssc/.cache/ops-sp06-20261004/bundle-signing.pem"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/opsctl-host",
+        "bundle",
+        "verify",
+        "--manifest",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/signed-bundle-r3/bundle.lock.json",
+        "--signature",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/signed-bundle-r3/bundle.lock.sig",
+        "--payload",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-addon-material-r2/signed-bundle-r3/payload.tar.zst",
+        "--key",
+        "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

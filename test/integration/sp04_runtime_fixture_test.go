@@ -44,6 +44,7 @@ func sp04OwnedKubernetes(t *testing.T, ctx context.Context, tenant, source strin
 		{"apiVersion": "coordination.k8s.io/v1", "kind": "Lease", "metadata": map[string]any{"name": "sp04-graph", "namespace": namespace, "labels": label, "annotations": map[string]string{"ops.platform/owner-epoch": "0"}}, "spec": map[string]any{}},
 		{"apiVersion": "rbac.authorization.k8s.io/v1", "kind": "ClusterRole", "metadata": map[string]any{"name": namespace, "labels": label}, "rules": []any{
 			map[string]any{"apiGroups": []string{""}, "resources": []string{"pods", "nodes", "services", "configmaps", "persistentvolumeclaims", "persistentvolumes", "events"}, "verbs": []string{"get", "list", "watch"}},
+			map[string]any{"apiGroups": []string{"metrics.k8s.io"}, "resources": []string{"nodes"}, "verbs": []string{"get"}},
 			map[string]any{"apiGroups": []string{"apps"}, "resources": []string{"deployments", "replicasets", "statefulsets", "daemonsets"}, "verbs": []string{"get", "list", "watch"}},
 			map[string]any{"apiGroups": []string{"batch"}, "resources": []string{"jobs"}, "verbs": []string{"get", "list", "watch"}},
 			map[string]any{"apiGroups": []string{"storage.k8s.io"}, "resources": []string{"storageclasses", "csidrivers", "csinodes", "volumeattachments"}, "verbs": []string{"get", "list", "watch"}},

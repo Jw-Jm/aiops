@@ -1,0 +1,177 @@
+[
+  {
+    "argv": [
+      "kubectl",
+      "get",
+      "apiservice",
+      "v1beta1.metrics.k8s.io",
+      "-o",
+      "json"
+    ],
+    "exitCode": 1
+  },
+  {
+    "argv": [
+      "kubectl",
+      "get",
+      "nodes",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "kubectl",
+      "get",
+      "endpoints",
+      "kubernetes",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "openssl",
+      "req",
+      "-x509",
+      "-newkey",
+      "rsa:3072",
+      "-nodes",
+      "-days",
+      "30",
+      "-subj",
+      "/CN=pre-sp07-metrics-admission-ca",
+      "-keyout",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/ca.key",
+      "-out",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/ca.crt"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "openssl",
+      "req",
+      "-new",
+      "-newkey",
+      "rsa:3072",
+      "-nodes",
+      "-subj",
+      "/CN=pre-sp07-metrics.ops-pre-sp07-metrics-20261004.svc",
+      "-keyout",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/tls.key",
+      "-out",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/tls.csr"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "openssl",
+      "x509",
+      "-req",
+      "-in",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/tls.csr",
+      "-CA",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/ca.crt",
+      "-CAkey",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/ca.key",
+      "-CAcreateserial",
+      "-days",
+      "7",
+      "-extfile",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/extensions.conf",
+      "-out",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/tls.crt"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "kubectl",
+      "create",
+      "-f",
+      "-"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "kubectl",
+      "create",
+      "secret",
+      "tls",
+      "pre-sp07-metrics-tls",
+      "-n",
+      "ops-pre-sp07-metrics-20261004",
+      "--cert",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/tls.crt",
+      "--key",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/tls.key",
+      "--dry-run=client",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "kubectl",
+      "create",
+      "-f",
+      "-"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "kubectl",
+      "create",
+      "configmap",
+      "pre-sp07-metrics-kubelet-ca",
+      "-n",
+      "ops-pre-sp07-metrics-20261004",
+      "--from-file=ca.crt=/Users/mssc/Documents/Code/ops/platform/docs/evidence/pre-sp07-20261004/kubelet-independent-cluster-ca.pem"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "docker",
+      "pull",
+      "registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "helm",
+      "template",
+      "pre-sp07",
+      "/Users/mssc/Documents/Code/ops/platform/deploy/charts/ops-metrics-server",
+      "-n",
+      "ops-pre-sp07-metrics-20261004",
+      "-f",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/values.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "argv": [
+      "helm",
+      "install",
+      "pre-sp07",
+      "/Users/mssc/Documents/Code/ops/platform/deploy/charts/ops-metrics-server",
+      "-n",
+      "ops-pre-sp07-metrics-20261004",
+      "-f",
+      "/Users/mssc/.local/state/ops/pre-sp07-20261004/metrics-live/values.json",
+      "--wait",
+      "--timeout",
+      "180s"
+    ],
+    "exitCode": 0
+  }
+]

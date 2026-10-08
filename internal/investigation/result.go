@@ -200,7 +200,10 @@ func (r Repository) Complete(ctx context.Context, l Lease, b []byte) error {
 				return ErrDenied
 			}
 			var ns string
-			if tx.QueryRow(ctx, `SELECT namespace FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2`, j.TenantID, a.Target).Scan(&ns) != nil || !j.Scope.Allows(a.Target, ns) {
+			// Historical identities remain readable for replay, but cannot be
+			// current recommendation targets. The API retains read-only access
+			// to resource inventory; this check grants no execution authority.
+			if tx.QueryRow(ctx, `SELECT namespace FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, j.TenantID, a.Target).Scan(&ns) != nil || !j.Scope.Allows(a.Target, ns) {
 				return ErrDenied
 			}
 		}

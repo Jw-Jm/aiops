@@ -1,0 +1,14 @@
+{
+  "recordedBeforeCreation": true,
+  "observedAt": "2026-10-07T02:41:36.690695+00:00",
+  "namespace": "ops-pre-sp07-targets-r6-20261006",
+  "namespaceUID": "17d739b2-a1f5-4d44-86a3-9a7310c457ce",
+  "sourceScope": "actual registered current R6 Kubernetes source includes this test namespace and the actual cluster",
+  "failure": "PVC has no storage class and selects a confirmed absent static PV marker; remains Pending with no bound PV/data backend",
+  "expectedProductFinding": "kubernetes/PVCUnbound/v1 on exact native PVC UID with retained Evidence via formal Worker/API",
+  "recovery": "normal UID+resourceVersion deletion only while still unbound/no consumers; recreate with discovered local-path and finite readonly consumer; new PVC/Pod UID required and old identity retained",
+  "recreatedTargetDoesNotCountAsOriginalUIDRecovered": true,
+  "sourceUnavailableMustNotCountAsRecovered": true,
+  "modelMCPPipelinePass": false,
+  "SP07ExecutionImplemented": false
+}

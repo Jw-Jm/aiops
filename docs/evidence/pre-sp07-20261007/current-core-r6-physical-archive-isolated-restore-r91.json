@@ -1,0 +1,194 @@
+{
+  "observedAt": "2026-10-07T05:12:34.195574+00:00",
+  "sourceDataDeleted": false,
+  "sourceProtectionChanged": false,
+  "fullRecoveryAcceptance": false,
+  "jointAuditTransitVerification": false,
+  "original27Recovery": false,
+  "failureType": "AssertionError",
+  "failureFrames": [
+    {
+      "file": "restore-current-r6-physical-archive-r91.py",
+      "line": 43
+    }
+  ],
+  "holderRemovedWithUIDPrecondition": true,
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r6-20261006",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pvc",
+        "data-ops-seaweedfs-0",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pv",
+        "pvc-350dec64-7707-4898-b7e7-bac736f83075",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pods",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "deployments,statefulsets",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "create",
+        "-f",
+        "-"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "pre-sp07-readonly-archive-backup-r91",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "wait",
+        "--for=condition=Ready",
+        "pod/pre-sp07-readonly-archive-backup-r91",
+        "--timeout=90s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "pre-sp07-readonly-archive-backup-r91",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "logs",
+        "pre-sp07-readonly-archive-backup-r91",
+        "--limit-bytes=4096"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "1d82bf66e31638be33a299ff2a99b8029662d3c5ee3bf46e8afd0107ea1e0b41"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "pre-sp07-readonly-archive-backup-r91",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "delete",
+        "--raw",
+        "/api/v1/namespaces/ops-pre-sp07-core-r6-20261006/pods/pre-sp07-readonly-archive-backup-r91",
+        "-f",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-r6-physical-archive-restore-r91/holder-delete-options.json"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

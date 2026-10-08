@@ -1,0 +1,47 @@
+=== RUN   TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain
+2026/10/08 09:09:30 OK   00001_roles_and_schemas.sql (35.61ms)
+2026/10/08 09:09:30 goose: successfully migrated database to version: 1
+2026/10/08 09:09:30 OK   00002_platform_meta.sql (73.18ms)
+2026/10/08 09:09:30 OK   00003_finding.sql (22.38ms)
+2026/10/08 09:09:30 OK   00004_incident.sql (24.24ms)
+2026/10/08 09:09:30 OK   00005_investigation.sql (18.61ms)
+2026/10/08 09:09:30 OK   00006_action_command.sql (7.99ms)
+2026/10/08 09:09:30 OK   00007_audit.sql (41.71ms)
+2026/10/08 09:09:31 OK   00008_rls.sql (36.7ms)
+2026/10/08 09:09:31 OK   00009_idempotency_ledger.sql (13.82ms)
+2026/10/08 09:09:31 OK   00010_tenant_provisioning.sql (10.75ms)
+2026/10/08 09:09:31 OK   00011_source_registration_history.sql (30.44ms)
+2026/10/08 09:09:31 OK   00012_config_registry_lifecycle.sql (25.46ms)
+2026/10/08 09:09:31 OK   00013_audit_signed_segments.sql (36.1ms)
+2026/10/08 09:09:31 OK   00014_audit_segment_predecessors.sql (17.84ms)
+2026/10/08 09:09:31 OK   00015_source_schema_scope.sql (14.76ms)
+2026/10/08 09:09:31 OK   00016_cluster_registration_metadata.sql (5.66ms)
+2026/10/08 09:09:31 OK   00017_source_data_scope.sql (4.65ms)
+2026/10/08 09:09:31 OK   00018_sp04_resources_evidence.sql (42.38ms)
+2026/10/08 09:09:31 OK   00019_sp04_archive_ciphertext_bytes.sql (3.24ms)
+2026/10/08 09:09:31 OK   00020_sp04_request_ledger.sql (6.55ms)
+2026/10/08 09:09:31 OK   00021_sp04_archive_protection.sql (17.76ms)
+2026/10/08 09:09:31 OK   00022_sp04_legal_hold_dependencies.sql (15.78ms)
+2026/10/08 09:09:31 OK   00023_sp04_archive_query_intent.sql (3.18ms)
+2026/10/08 09:09:31 OK   00024_sp05_finding_incident.sql (15.53ms)
+2026/10/08 09:09:31 OK   00025_sp05_incident_event_time.sql (7.17ms)
+2026/10/08 09:09:31 OK   00026_sp05_source_binding_lock.sql (32.87ms)
+2026/10/08 09:09:31 OK   00027_sp05_rca_and_poll.sql (8.29ms)
+2026/10/08 09:09:31 OK   00028_sp05_operator_lock.sql (4.26ms)
+2026/10/08 09:09:31 OK   00029_sp05_evidence_links.sql (37.96ms)
+2026/10/08 09:09:31 OK   00030_sp05_recipe_fence.sql (3.71ms)
+2026/10/08 09:09:31 OK   00031_sp05_rca_postcheck.sql (3.54ms)
+2026/10/08 09:09:31 OK   00032_sp05_transport_audit.sql (12.39ms)
+2026/10/08 09:09:31 OK   00033_sp05_poll_resolution_clock.sql (24.51ms)
+2026/10/08 09:09:31 OK   00034_sp06_investigation_ledger.sql (58.48ms)
+2026/10/08 09:09:31 OK   00035_sp06_admission_data_classes.sql (3.97ms)
+2026/10/08 09:09:31 goose: successfully migrated database to version: 35
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=ce74aa79fb1f5de299c5d6cd95751d0f2b20d41871123d2b446560e71bd275aa bucket=sp05-golden-6fbfde6a tenants=1
+    archive_iam_test.go:42: owned TLS/IAM fixture image=docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e id=1d1e1c4df8bc0d3876d772c9e9564a7188b570c0471c833e5c49c620e3a06b35 bucket=sp05-native-worker-6d0d7571 tenants=1
+    sp05_native_worker_test.go:153: actual authorized Worker startup + original fixed CLI + native OrbStack fault Pod + common ingestion + real PG Incident + real OpenBao/TLS/IAM S3 Evidence; image=sha256:9a57b936a7c06f690b5166449d11662fe981437ee989ed9e7d2f228591cfd6b6; private inputs remain in owned Secret, no performance samples
+    archive_iam_test.go:155: retained owned Archive fixture id=1d1e1c4df8bc0d3876d772c9e9564a7188b570c0471c833e5c49c620e3a06b35 label=5aa76995-d3b8-4f3a-adea-f689c0d69659 bucket=sp05-native-worker-6d0d7571 private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r169/archive-iam-1581125213; process stopped, no storage/identity deletion
+    archive_iam_test.go:155: retained owned Archive fixture id=ce74aa79fb1f5de299c5d6cd95751d0f2b20d41871123d2b446560e71bd275aa label=fff680b2-8f2f-4cb7-81f5-6f5b02a983e8 bucket=sp05-golden-6fbfde6a private-material-directory=/Users/mssc/.local/state/ops/pre-sp07-20261004/protected-integration-r169/archive-iam-2602230534; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_73f9ea1ab48f4f9eb0647ad11f355bca test=TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain reason=audit.records; no automatic protected cleanup
+--- PASS: TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain (94.64s)
+PASS
+ok  	ops-platform/test/integration	95.595s

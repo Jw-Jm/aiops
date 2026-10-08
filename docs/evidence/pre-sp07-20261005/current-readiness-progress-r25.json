@@ -1,0 +1,139 @@
+{
+  "observedAt": "2026-10-05T14:15:04.432637+00:00",
+  "currentTargetedRegression": {
+    "evidence": "current-source-bootstrap-regression-r1.log",
+    "allFivePackagesExitCode": 0,
+    "sourceChangedAfterRun": true,
+    "finalGate": false
+  },
+  "confirmedFixes": [
+    {
+      "id": "PRE-SP07-INSTALL-002",
+      "defect": "authenticated material named investigator was absent from Catalog; workload investigator uses exact holmesgpt material",
+      "red": "current-holmes-material-and-profile-selection-red-r1.log",
+      "implementation": [
+        "internal/bundle/business_values.go",
+        "internal/bundle/model_probe.go"
+      ]
+    },
+    {
+      "id": "PRE-SP07-PROFILE-003",
+      "defect": "explicit namespace/name selection was ignored before conflict detection and bundled scope was discarded",
+      "red": "current-holmes-material-and-profile-selection-red-r1.log",
+      "implementation": [
+        "internal/profile/resolve.go",
+        "internal/profile/detect.go"
+      ]
+    },
+    {
+      "id": "PRE-SP07-INSTALL-004",
+      "defect": "OpenBao native TokenReview lacks exact API egress under default deny",
+      "red": "current-startup-contract-red-r1.log",
+      "green": "current-startup-contract-green-r2.log",
+      "implementation": [
+        "deploy/charts/ops-platform/templates/network-policies.yaml"
+      ],
+      "liveVerified": false
+    },
+    {
+      "id": "PRE-SP07-INSTALL-005",
+      "defect": "investigator model Secret and projected JWT mount nest through /var/run symlink",
+      "red": "investigator-projected-mount-red-r2.json",
+      "green": "investigator-projected-mount-green-r3.json",
+      "implementation": [
+        "deploy/charts/ops-platform/templates/sp06.yaml"
+      ],
+      "liveVerified": false,
+      "remaining": "failed Helm revision preserved obsolete /run/secrets mount; exact owned deployment repair pending"
+    }
+  ],
+  "metricsAddon": {
+    "signedBundle": "pre-sp07-metrics-addon-20261005-r3",
+    "formalInstall": "metrics-addon-formal-install-r1.json",
+    "status": "FORMAL_SIGNED_COLD_SELECTED_IMAGE_INSTALL_PASSED",
+    "fullR3Acceptance": false,
+    "pending": [
+      "runtime IPv4/IPv6 egress negative plus independent positive control",
+      "Pod metrics/current UID/scope association",
+      "Inspection/API/MCP end-to-end on final current core",
+      "authorization/freshness/rebuild/recovery matrix on final deployment"
+    ]
+  },
+  "currentNativeSampleRestore": {
+    "evidence": "current-native-evidence-restore-r3.json",
+    "status": "PASS_CURRENT_NATIVE_EVIDENCE_SAMPLE",
+    "original27HistoricalEvidenceRestored": false,
+    "signedAuditRestore": false,
+    "fullR4Acceptance": false
+  },
+  "deepflow": {
+    "exactOriginalModuleSourceRecords": 333,
+    "states": {
+      "SOURCE_PREPARED_BINARY_VERSION_ONLY_UNVERIFIED": 218,
+      "UNVERIFIED": 30,
+      "SOURCE_PREPARED_H1_VERIFIED": 85
+    },
+    "compilerVersionSourceArchives": 4,
+    "distributionAdmission": "PENDING",
+    "realCurrentChain": "PENDING",
+    "alpineNativeSourceFiles": {
+      "verified": 131,
+      "total": 131,
+      "evidence": "deepflow-alpine-native-source-preparation-r4.json",
+      "zlibChecksumMismatchRetained": "deepflow-zlib-original-source-mismatch-and-retry-r1.json",
+      "fullImageSourceBinding": false
+    },
+    "ubuntuExactPublisherSourceMetadata": {
+      "evidence": "deepflow-ubuntu-native-source-metadata-r1.json",
+      "metadataPrepared": 82,
+      "totalSourcePackages": 82,
+      "sourceArchives": "IN_PROGRESS",
+      "distributionAdmission": "PENDING"
+    }
+  },
+  "r0ToR6": "IN_PROGRESS",
+  "originalHistoricalRecovery": "BLOCKED_NO_MATCHING_TRANSIT_MATERIAL_USER_CONFIRMED_NONE",
+  "originalProtectedResourcesRetained": true,
+  "performance": "USER_WAIVED; no PASS",
+  "virtualization": "DEFERRED_DISABLED_UNVERIFIED",
+  "pyrca": "DISABLED_EXCLUDED",
+  "sp07Started": false,
+  "finalIndependentReview": "NOT_STARTED_DELIVERY_INCOMPLETE",
+  "gitDelivery": "NOT_COMMITTED_NOT_PUSHED",
+  "currentCore": {
+    "namespace": "ops-pre-sp07-core-r4-20261005",
+    "namespaceUid": "cdeeb73a-7e37-4090-901b-eadde26df845",
+    "installationId": "dbdbc6c7-d8b4-467f-9fe3-0e2382275179",
+    "dependencyBundle": "pre-sp07-core-20261005-r4",
+    "repairBundle": "pre-sp07-core-20261005-r5",
+    "independentSignature": "current-core-signed-bundle-receipt-r5.json",
+    "dependencies": "current-core-r4-dependencies-install-r1.log",
+    "emptyDatabaseMigration": "current-core-r4-empty-migration-receipt-r1.json",
+    "firstTenantOIDC": "current-core-r4-oidc-first-tenant-green-r1.json",
+    "archive": "current-core-r4-archive-bucket-formal-live-receipt-r1.json",
+    "victoriaTrust": "current-core-r4-victoria-trust-live-receipt-r1.json",
+    "actualStagesPassed": [
+      "signed seven-dependency install",
+      "actual empty database version 0 to 1 to 35 and separate restricted roles",
+      "fresh real OTP PKCE nonce LoA2 first Tenant and Audit",
+      "native archive versioning ObjectLock compliance365",
+      "native Victoria trust provisioning"
+    ],
+    "businessStartup": "FAILED; real startup evidence retained; signed repair in progress",
+    "formalBusinessInstallExitCode": 1,
+    "businessFailureEvidence": "current-core-r4-business-startup-failure-r1.json",
+    "checkpointProfileDrift": "initialization added OpenBao observation; immutable installation profile retained; no checkpoint weakening",
+    "checkpointEvidence": "current-core-r4-checkpoint-binding-resolution-r2.json",
+    "coldSharedImageCacheProven": false,
+    "fullR4Acceptance": false
+  },
+  "victoriaNativeAuth": {
+    "red": "native-victoria-authentication-red-r1.log",
+    "nativeTLSBasicGreen": "native-victoria-authentication-green-r2.log",
+    "nativeEnvironmentFlagsAndHealth": "native-victoria-envflag-auth-regression-r3.json",
+    "formalChartRed": "victoria-formal-values-regression-r1.log",
+    "formalChartGreen": "victoria-trust-target-regression-r3.log",
+    "formalTrustBootstrap": "IMPLEMENTED; actual next-install validation pending",
+    "sourceScopeActivation": false
+  }
+}

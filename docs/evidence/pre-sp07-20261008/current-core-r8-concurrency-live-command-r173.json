@@ -1,0 +1,57 @@
+{
+  "observedAt": "2026-10-08T01:12:34.426405+00:00",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r8-20261007",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-api",
+        "59692:8080"
+      ],
+      "pid": 47477
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r8-20261007",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-postgresql",
+        "59700:5432"
+      ],
+      "pid": 47479
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-tags",
+        "pre_sp07_live",
+        "./test/integration",
+        "-run",
+        "^TestFormalCurrentTenInvestigationsAndMainline$",
+        "-count=1",
+        "-v"
+      ],
+      "exitCode": 1
+    }
+  ],
+  "ownedPortForwardsStopped": true,
+  "noDBSeed": true,
+  "auditQueriesReadOnlyTransaction": true,
+  "coldCorePass": false,
+  "installedBundle": "pre-sp07-core-20261007-r10",
+  "currentRetentionFixDeployed": false,
+  "currentRole002FixDeployed": false,
+  "performanceExemption": "USER_WAIVED_NOT_PASS"
+}

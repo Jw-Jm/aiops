@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-07T02:19:24.595420+00:00",
+  "fullR4RecoveryAcceptance": false,
+  "original27HistoricalRecovery": false,
+  "sourceNamespace": "ops-pre-sp07-core-r6-20261006",
+  "sourceObjectsDeleted": false,
+  "sourceProtectionChanged": false,
+  "newRuntimeEvidenceRestoration": false,
+  "failureType": "AssertionError",
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-openbao",
+        "65086:8200"
+      ],
+      "pid": 21105
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-seaweedfs-s3",
+        "65097:8333"
+      ],
+      "pid": 21106
+    }
+  ],
+  "ownedForwardsStopped": true
+}

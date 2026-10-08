@@ -1,0 +1,68 @@
+{
+  "observedAt": "2026-10-07T02:31:53.410352+00:00",
+  "sourceNamespace": "ops-pre-sp07-core-r6-20261006",
+  "fullR4RecoveryAcceptance": false,
+  "protectedOriginal27Restored": false,
+  "sourceDataDeletedOrReinitialized": false,
+  "fullObjectTransitAuditJointRestore": false,
+  "newFormalDatabaseActualIsolatedRestore": false,
+  "failureType": "AssertionError",
+  "failureFrames": [
+    {
+      "file": "restore-current-core-r6-consistent-database-r1.py",
+      "line": 24
+    },
+    {
+      "file": "restore-current-core-r6-consistent-database-r1.py",
+      "line": 23
+    }
+  ],
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r6-20261006",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "eed4bf77df5e43453c0d13a84ca193f0de3257996ae20e5d11ded208ea15fff7",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1"
+      ],
+      "purpose": "consistent read-only snapshot exporter",
+      "pid": 23297
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-05T02:29:15.144286+00:00",
+  "findingId": "PRE-SP07-RET-001",
+  "severity": "high",
+  "classification": "confirmed in-scope test/acceptance data-protection defect",
+  "trigger": "existing integration fixtures run with real PostgreSQL and S3 archives, then test cleanup",
+  "requirements": "R0/R4; Audit/Evidence/Legal Hold and 365-day dependency protection; no force data deletion or missing private recovery inputs",
+  "baseline": [
+    {
+      "file": "test/integration/migrations_test.go",
+      "baselineHEAD": "cd577dfc4e9d1d53f93b5c031d9b0a303ef32dc8",
+      "baselineFileSHA256": "4b6e2c5bbdeb93d1a0ff01bf737c5dff023adcef799f4e61f326f669107a94f1",
+      "cleanupLines": [
+        {
+          "line": 431,
+          "source": "_, _ = admin.ExecContext(context.Background(), \"DROP DATABASE IF EXISTS \\\"\"+name+\"\\\" WITH (FORCE)\")"
+        }
+      ]
+    },
+    {
+      "file": "test/integration/archive_iam_test.go",
+      "baselineHEAD": "cd577dfc4e9d1d53f93b5c031d9b0a303ef32dc8",
+      "baselineFileSHA256": "11271d2eef4e2cc9e38d795001071e0a9a5574b2742bf493c8e67e172e857413",
+      "cleanupLines": [
+        {
+          "line": 48,
+          "source": "dir := t.TempDir()"
+        },
+        {
+          "line": 143,
+          "source": "if err := exec.Command(\"docker\", \"rm\", \"-f\", id).Run(); err != nil {"
+        }
+      ]
+    }
+  ],
+  "functionalR15ExitCodes": "all 0; this does not certify retained data closure",
+  "priorRunImpact": "the prior helper issued DROP DATABASE WITH (FORCE) during cleanup and removed owned S3 fixture containers/private temp inputs. The helper ignored SQL deletion errors. Per-database/per-volume attribution is being reconciled; lost logical metadata is not represented as restored. Historical original PostgreSQL/Bao/storage were not targeted by this helper; ENV-001 remains separately blocked.",
+  "confirmedFix": "test cleanup retains any persisted Audit/Evidence/dependency row or unreadable retention state; no FORCE. S3 fixtures retain owned container, exact dedicated bind storage and private TLS/IAM inputs outside Git; cleanup stops only the owned process.",
+  "failureEvidence": "fixture-retention-guard-red-r1.log/.exit: missing guard compile failure, before any intentionally destructive reproduction",
+  "actualRegression": "fixture-retention-lifecycle-real-r1.log/.exit/.json: actual PostgreSQL row survives cleanup; actual immutable Archive version/digest/365-day/Legal Hold survive cleanup and restart; exit 0",
+  "fullHistoricalRestore": "NOT_PASS",
+  "protectedOriginalsDeleted": false,
+  "status": "source/lifecycle defect fixed; previous-run protection impact retained as evidence limitation"
+}

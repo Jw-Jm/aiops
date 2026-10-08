@@ -1,0 +1,105 @@
+python3 scripts/check-generated.py "go" gen web/src/api/generated internal/persistence/dbgen services/investigator/src/investigator/output.schema.json
+✓ Lockfile passes supply-chain policies (verified 8d ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+Done in 146ms using pnpm v12.7.0
+$ orval --config ./orval.config.ts
+🍻 orval v8.37.0 - A swagger client generator for typescript
+platform - Cleaning output folder
+platform - 🎉 Smart Operations Platform API - Your OpenAPI spec has been converted into ready to use orval!
+python3 scripts/prepare-runtime-source.py --check
+{"modules": 98, "selectedModuleFiles": 2993, "standardLibraryFiles": 1386, "sourceBundleSHA256": "sha256:9628d31da79f4d4fcbffb303796aa805ee0508e732c66f203f2f330fb9bbe903"}
+python3 scripts/prepare-migration-source.py --check
+{"modules": 10, "selectedModuleFiles": 296, "standardLibraryFiles": 1129, "sourceBundleSHA256": "sha256:7eae032b1b99f0aec4b0ddbc6398e304fabeb68c176cf502c8c0f83bbc8d7639"}
+go vet ./...
+?   	ops-platform/api	[no test files]
+?   	ops-platform/artifacts	[no test files]
+?   	ops-platform/artifacts/task27-materials/sp010203-bao-operator	[no test files]
+?   	ops-platform/artifacts/task27-materials/sp010203-cleanup-operator	[no test files]
+?   	ops-platform/artifacts/task27-materials/sp010203-live-runtime-probe	[no test files]
+?   	ops-platform/artifacts/task27-materials/sp010203-operator-helper	[no test files]
+?   	ops-platform/artifacts/task27-materials/sp010203-role-probe	[no test files]
+?   	ops-platform/bundle	[no test files]
+ok  	ops-platform/cmd/db-migrate	(cached)
+ok  	ops-platform/cmd/opsctl	18.879s
+?   	ops-platform/cmd/platform-api	[no test files]
+?   	ops-platform/cmd/platform-worker	[no test files]
+?   	ops-platform/gen/api	[no test files]
+?   	ops-platform/gen/internalgraph	[no test files]
+ok  	ops-platform/internal/app	0.948s
+ok  	ops-platform/internal/archive	(cached)
+ok  	ops-platform/internal/audit	1.364s
+ok  	ops-platform/internal/auth	1.658s
+ok  	ops-platform/internal/bootstrap	2.184s
+ok  	ops-platform/internal/bundle	23.203s
+ok  	ops-platform/internal/bundle/drivers	3.206s
+ok  	ops-platform/internal/configregistry	3.560s
+?   	ops-platform/internal/contract	[no test files]
+ok  	ops-platform/internal/crypto	(cached)
+?   	ops-platform/internal/datascope	[no test files]
+ok  	ops-platform/internal/evidence	3.763s
+ok  	ops-platform/internal/finding	3.853s
+ok  	ops-platform/internal/graph	5.464s
+ok  	ops-platform/internal/httpapi	3.881s
+ok  	ops-platform/internal/incident	3.290s
+ok  	ops-platform/internal/inspection/hardware	(cached)
+ok  	ops-platform/internal/inspection/kubernetes	3.374s
+ok  	ops-platform/internal/inspection/npd	3.371s
+?   	ops-platform/internal/integrations	[no test files]
+ok  	ops-platform/internal/integrations/deepflow	3.427s
+ok  	ops-platform/internal/integrations/k8sgpt	3.003s
+ok  	ops-platform/internal/integrations/keycloak	(cached)
+ok  	ops-platform/internal/integrations/kubernetes	(cached)
+ok  	ops-platform/internal/integrations/openbao	(cached)
+ok  	ops-platform/internal/integrations/redfish	2.940s
+ok  	ops-platform/internal/integrations/s3	(cached)
+?   	ops-platform/internal/integrations/victorialogs	[no test files]
+?   	ops-platform/internal/integrations/victorialogs/adapter	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics/adapter	[no test files]
+?   	ops-platform/internal/integrations/vmalert	[no test files]
+ok  	ops-platform/internal/investigation	2.897s
+?   	ops-platform/internal/investigation/mcp	[no test files]
+ok  	ops-platform/internal/investigation/tools	3.348s
+ok  	ops-platform/internal/observability	2.045s
+ok  	ops-platform/internal/persistence	(cached)
+?   	ops-platform/internal/persistence/dbgen	[no test files]
+ok  	ops-platform/internal/policy	2.507s
+ok  	ops-platform/internal/profile	5.561s
+ok  	ops-platform/internal/rca	2.452s
+ok  	ops-platform/internal/resource	(cached)
+?   	ops-platform/internal/resourcestore	[no test files]
+ok  	ops-platform/internal/source	2.710s
+ok  	ops-platform/internal/supplychain	3.984s
+?   	ops-platform/internal/tenant	[no test files]
+?   	ops-platform/internal/upstream/corootcheck	[no test files]
+?   	ops-platform/internal/upstream/keepmodel	[no test files]
+?   	ops-platform/internal/upstream/metal3	[no test files]
+?   	ops-platform/internal/upstream/ontology/api	[no test files]
+?   	ops-platform/internal/upstream/ontology/model	[no test files]
+?   	ops-platform/internal/upstream/ontology/service/diagnostic	[no test files]
+?   	ops-platform/policies	[no test files]
+ok  	ops-platform/test/contract	24.844s
+ok  	ops-platform/test/e2e	3.088s
+?   	ops-platform/test/fixtures/sp04/profile-detect	[no test files]
+?   	ops-platform/test/fixtures/upstream-inspection	[no test files]
+ok  	ops-platform/test/integration	813.762s
+ok  	ops-platform/test/security	0.644s
+?   	ops-platform/test/tools/sp05-analyzer-check	[no test files]
+?   	ops-platform/test/tools/sp05-worker-check	[no test files]
+?   	ops-platform/test/tools/sp06-dispatcher-process	[no test files]
+$ node --experimental-strip-types --test ./test/*.test.mjs
+✔ typed SSE reader yields a decoded envelope before the stream closes (36.366708ms)
+✔ typed SSE fetch client requests and parses text/event-stream (22.949709ms)
+✔ typed SSE envelope decoder rejects incomplete event data (0.303875ms)
+✔ investigation fetch SSE resumes with Bearer and durable cursor, suppresses duplicate event sequences (0.834625ms)
+✔ investigation SSE fails closed on missing Bearer, sequence gaps and 410 (0.593417ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.248084
+ok  	ops-platform/test/contract	37.780s

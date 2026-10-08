@@ -1,0 +1,51 @@
+{
+  "observedAt": "2026-10-07T01:57:23.152424+00:00",
+  "namespace": "ops-pre-sp07-targets-r6-20261006",
+  "resources": [
+    {
+      "kind": "ConfigMap",
+      "name": "pre-sp07-r6-owned-mount-source-r1",
+      "uid": "d8e408ac-eecf-4b7d-8ac9-9a30c039c0f2",
+      "createdAt": "2026-10-07T01:57:22Z",
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "kind": "Pod",
+      "name": "pre-sp07-r6-real-mount-metric-r1",
+      "uid": "dbea7a37-c298-45d2-b542-410cd1f140ad",
+      "createdAt": "2026-10-07T01:57:23Z",
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-targets-r6-20261006",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "finiteActiveDeadlineSeconds": 1200,
+  "expected": "first obtain real metrics for a Running owned Pod; then remove only the public marker ConfigMap with UID/resourceVersion preconditions and observe whether kubelet produces a genuine FailedMount Warning while existing container metrics remain available; do not synthesize an Event",
+  "businessSeed": false,
+  "fixtureEventCreated": false,
+  "genericExecutionIntroduced": false,
+  "performanceBenchmark": false,
+  "actualMountFaultAndMetricMCPPipelinePassed": false
+}

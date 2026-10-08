@@ -1,0 +1,85 @@
+{
+  "observedAt": "2026-10-08T01:28:51.508928+00:00",
+  "SP07ExecutionImplemented": false,
+  "sourceUnavailableCasePass": false,
+  "fullPostCheckPass": false,
+  "priorOperatorIncorrectRetiredEntityHTTP200Assumption": "current-native-recovery-graph-history-r186.json",
+  "publicRequiredTestsOrContractAssertionsChanged": false,
+  "newGraph": {
+    "canonicalId": "k8s+v1://d0738868-8646-4715-9d99-b85d4bcb0b5e/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/57f7f4c0-1d62-4452-955f-5f1bac26e4a0",
+    "uid": "57f7f4c0-1d62-4452-955f-5f1bac26e4a0",
+    "phase": "Running",
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-10-08T01:22:03Z",
+        "status": "True",
+        "type": "PodReadyToStartContainers"
+      },
+      {
+        "lastTransitionTime": "2026-10-08T01:21:58Z",
+        "status": "True",
+        "type": "Initialized"
+      },
+      {
+        "lastTransitionTime": "2026-10-08T01:22:03Z",
+        "status": "True",
+        "type": "Ready"
+      },
+      {
+        "lastTransitionTime": "2026-10-08T01:22:03Z",
+        "status": "True",
+        "type": "ContainersReady"
+      },
+      {
+        "lastTransitionTime": "2026-10-08T01:21:58Z",
+        "status": "True",
+        "type": "PodScheduled"
+      }
+    ],
+    "updatedAt": "2026-10-08T01:24:15.25673802Z",
+    "graphRevision": {
+      "ownerEpoch": 3,
+      "graphGeneration": 234
+    },
+    "freshness": "fresh",
+    "partial": false,
+    "degradedSources": []
+  },
+  "retiredLiveEntity": {
+    "canonicalId": "k8s+v1://d0738868-8646-4715-9d99-b85d4bcb0b5e/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/b84fb634-54bf-45f3-9eb0-b1deed2130dc",
+    "status": 403,
+    "code": "FORBIDDEN",
+    "newUIDNotReturned": true,
+    "noNamespaceGrantInferredForMissingLiveEntity": true
+  },
+  "oldArchivedEvidence": {
+    "evidenceId": "8a5e46b6-4c7e-5b66-87b7-fcc2303a0d07",
+    "resourceCanonicalId": "k8s+v1://d0738868-8646-4715-9d99-b85d4bcb0b5e/607d16b7-8684-491b-bca8-be31264b371e/core/Pod/b84fb634-54bf-45f3-9eb0-b1deed2130dc",
+    "contentDigest": "sha256:b3a96d49d9fab1b23890b0d6de932f5bc2a573c68a5150b4cf7a8685736e716d",
+    "sourceRegistrationId": "01a114c4-ccf5-7680-a906-3323ead7644e",
+    "sourceRevision": 1,
+    "replayState": "archived_verified",
+    "observedFrom": "2026-10-08T00:44:53.715883309Z",
+    "observedTo": "2026-10-08T00:44:53.715883309Z"
+  },
+  "currentNativeReadyGraphAndRetiredIdentityArchivePass": true,
+  "exitCode": 0,
+  "requests": [
+    {
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2Fd0738868-8646-4715-9d99-b85d4bcb0b5e%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2F57f7f4c0-1d62-4452-955f-5f1bac26e4a0",
+      "status": 200,
+      "responseSHA256": "923665df56deca8ddf5da27f6f32f9ad64707e7774cbfd1341b578c9fe6ee1a9"
+    },
+    {
+      "path": "/api/v1/resources/by-canonical-id?canonicalId=k8s%2Bv1%3A%2F%2Fd0738868-8646-4715-9d99-b85d4bcb0b5e%2F607d16b7-8684-491b-bca8-be31264b371e%2Fcore%2FPod%2Fb84fb634-54bf-45f3-9eb0-b1deed2130dc",
+      "status": 403,
+      "responseSHA256": "8f1ed5bbed31fd4897f43affad51c002f333998b6f75d9becf600dcefe8d4501"
+    },
+    {
+      "path": "/api/v1/evidence/8a5e46b6-4c7e-5b66-87b7-fcc2303a0d07",
+      "status": 200,
+      "responseSHA256": "311f32c530e2e19a7ea6dafc98671a7747adc40487a312554acf4fda5611ba58"
+    }
+  ],
+  "ownedForwardStopped": true
+}

@@ -1,0 +1,128 @@
+{
+  "observedAt": "2026-10-04T12:38:55.524879+00:00",
+  "phase": "Connected image preparation only; exact dependency/source/license closure still pending; candidate not promoted",
+  "images": [
+    {
+      "name": "deepflow-server",
+      "reference": "docker.io/deepflowce/deepflow-server@sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939",
+      "imageID": "sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939",
+      "os": "linux",
+      "architecture": "arm64",
+      "repoDigests": [
+        "deepflowce/deepflow-server@sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939"
+      ],
+      "publisherLabels": null,
+      "SBOMSHA256": "e3c89edc2e8b057310839a1c54946b31be33ab87ebf559b0c8c9c1a0841d8fe4",
+      "packages": 274,
+      "dependencyClosureVerified": false,
+      "qualificationPassed": false,
+      "commands": [
+        {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "docker.io/deepflowce/deepflow-server@sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939"
+          ],
+          "exitCode": 0
+        },
+        {
+          "command": [
+            "/tmp/ops-task27-tools/syft",
+            "docker:docker.io/deepflowce/deepflow-server@sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939",
+            "-o",
+            "syft-json=/Users/mssc/.local/state/ops/pre-sp07-20261004/materials/deepflow-server/image.syft.json"
+          ],
+          "exitCode": 0
+        }
+      ]
+    },
+    {
+      "name": "deepflow-agent",
+      "reference": "docker.io/deepflowce/deepflow-agent@sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9",
+      "imageID": "sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9",
+      "os": "linux",
+      "architecture": "arm64",
+      "repoDigests": [
+        "deepflowce/deepflow-agent@sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9"
+      ],
+      "publisherLabels": {
+        "org.opencontainers.image.version": "22.04"
+      },
+      "SBOMSHA256": "9a826ca473827488172ee779eb7de04bcbe349b78a79a8d7663805c3f97ecc7b",
+      "packages": 155,
+      "dependencyClosureVerified": false,
+      "qualificationPassed": false,
+      "commands": [
+        {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "docker.io/deepflowce/deepflow-agent@sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9"
+          ],
+          "exitCode": 0
+        },
+        {
+          "command": [
+            "/tmp/ops-task27-tools/syft",
+            "docker:docker.io/deepflowce/deepflow-agent@sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9",
+            "-o",
+            "syft-json=/Users/mssc/.local/state/ops/pre-sp07-20261004/materials/deepflow-agent/image.syft.json"
+          ],
+          "exitCode": 0
+        }
+      ]
+    },
+    {
+      "name": "mysql",
+      "reference": "docker.io/library/mysql@sha256:a1f202a397782b7e2a98359b3f476132189b179e04f9123d4750d527e937f138",
+      "qualificationPassed": false,
+      "failure": "Exact pinned image download failed; private original stderr retained",
+      "commands": [
+        {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "docker.io/library/mysql@sha256:a1f202a397782b7e2a98359b3f476132189b179e04f9123d4750d527e937f138"
+          ],
+          "exitCode": 1
+        },
+        {
+          "command": [
+            "docker",
+            "pull",
+            "docker.io/library/mysql@sha256:a1f202a397782b7e2a98359b3f476132189b179e04f9123d4750d527e937f138"
+          ],
+          "exitCode": 1
+        }
+      ]
+    },
+    {
+      "name": "clickhouse",
+      "reference": "docker.io/clickhouse/clickhouse-server@sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76",
+      "qualificationPassed": false,
+      "failure": "Exact pinned image download failed; private original stderr retained",
+      "commands": [
+        {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "docker.io/clickhouse/clickhouse-server@sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76"
+          ],
+          "exitCode": 1
+        },
+        {
+          "command": [
+            "docker",
+            "pull",
+            "docker.io/clickhouse/clickhouse-server@sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76"
+          ],
+          "exitCode": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "observedAt": "2026-10-08T05:42:08.717096+00:00",
+  "beforeCreationAndSignal": true,
+  "targetNamespaceUID": "f46dabc1-1ae5-4201-8730-d5e9be19f01e",
+  "target": {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "pre-sp07-r9-takeover-r253",
+      "namespace": "ops-pre-sp07-targets-r9-20261008",
+      "labels": {
+        "ops.platform.io/owner": "pre-sp07-20261008-r9",
+        "ops.platform.io/purpose": "finite-active-job-recovery",
+        "tenant": "12443ef7-3326-4e87-9b0a-a3444bfd16bc"
+      }
+    },
+    "spec": {
+      "restartPolicy": "Never",
+      "activeDeadlineSeconds": 1200,
+      "automountServiceAccountToken": false,
+      "nodeSelector": {
+        "ops.platform.io/pre-sp07-absent-node": "r253"
+      },
+      "securityContext": {
+        "runAsNonRoot": true,
+        "runAsUser": 65532,
+        "runAsGroup": 65532,
+        "seccompProfile": {
+          "type": "RuntimeDefault"
+        }
+      },
+      "containers": [
+        {
+          "name": "finite-native-target",
+          "image": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+          "imagePullPolicy": "Never",
+          "command": [
+            "/bin/bash",
+            "-ec",
+            "sleep 1100"
+          ],
+          "resources": {
+            "requests": {
+              "cpu": "10m",
+              "memory": "16Mi"
+            },
+            "limits": {
+              "cpu": "50m",
+              "memory": "32Mi"
+            }
+          },
+          "securityContext": {
+            "readOnlyRootFilesystem": true,
+            "allowPrivilegeEscalation": false,
+            "capabilities": {
+              "drop": [
+                "ALL"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "expectedFailure": "actual Unschedulable -> Source/Inspection/Finding/Incident; no seed",
+  "expectedCut": "one committed successful tool plus reserved model, kill exact two owned Workers and investigator",
+  "requiredRecovery": "actual lease generation increases; committed tool unchanged/not repeated; unknown model conservatively charged; zero reservations; durable pre-kill SSE cursor resumes; Incident readable",
+  "oldContextAndFullHistoricalRestoreNotClaimed": true
+}

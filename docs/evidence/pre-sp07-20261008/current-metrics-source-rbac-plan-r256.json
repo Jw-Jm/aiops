@@ -1,0 +1,207 @@
+{
+  "observedAt": "2026-10-08T05:49:01.344575+00:00",
+  "recordedBeforeMutation": true,
+  "clusterRole": "ops-pre-sp07-core-r9-20261008-ops-platform-sp04-collector",
+  "roleUID": "3faadaae-ac68-4fd8-89b3-2a38060dff79",
+  "bindingUID": "03934f60-7bd1-4140-8541-ab870ddb062b",
+  "exactOnlySubjects": [
+    {
+      "kind": "ServiceAccount",
+      "name": "ops-worker",
+      "namespace": "ops-pre-sp07-core-r9-20261008"
+    }
+  ],
+  "originalRules": [
+    {
+      "apiGroups": [
+        ""
+      ],
+      "resources": [
+        "pods",
+        "nodes",
+        "services",
+        "configmaps",
+        "persistentvolumeclaims",
+        "persistentvolumes",
+        "events"
+      ],
+      "verbs": [
+        "get",
+        "list",
+        "watch"
+      ]
+    },
+    {
+      "apiGroups": [
+        "metrics.k8s.io"
+      ],
+      "resources": [
+        "nodes",
+        "pods"
+      ],
+      "verbs": [
+        "get"
+      ]
+    },
+    {
+      "nonResourceURLs": [
+        "/version"
+      ],
+      "verbs": [
+        "get"
+      ]
+    },
+    {
+      "apiGroups": [
+        "apps"
+      ],
+      "resources": [
+        "deployments",
+        "replicasets",
+        "statefulsets",
+        "daemonsets"
+      ],
+      "verbs": [
+        "get",
+        "list",
+        "watch"
+      ]
+    },
+    {
+      "apiGroups": [
+        "batch"
+      ],
+      "resources": [
+        "jobs"
+      ],
+      "verbs": [
+        "get",
+        "list",
+        "watch"
+      ]
+    },
+    {
+      "apiGroups": [
+        "storage.k8s.io"
+      ],
+      "resources": [
+        "storageclasses",
+        "csidrivers",
+        "csinodes",
+        "volumeattachments"
+      ],
+      "verbs": [
+        "get",
+        "list",
+        "watch"
+      ]
+    },
+    {
+      "apiGroups": [
+        "discovery.k8s.io"
+      ],
+      "resources": [
+        "endpointslices"
+      ],
+      "verbs": [
+        "get",
+        "list",
+        "watch"
+      ]
+    }
+  ],
+  "faultRules": [
+    {
+      "apiGroups": [
+        ""
+      ],
+      "resources": [
+        "pods",
+        "nodes",
+        "services",
+        "configmaps",
+        "persistentvolumeclaims",
+        "persistentvolumes",
+        "events"
+      ],
+      "verbs": [
+        "get",
+        "list",
+        "watch"
+      ]
+    },
+    {
+      "nonResourceURLs": [
+        "/version"
+      ],
+      "verbs": [
+        "get"
+      ]
+    },
+    {
+      "apiGroups": [
+        "apps"
+      ],
+      "resources": [
+        "deployments",
+        "replicasets",
+        "statefulsets",
+        "daemonsets"
+      ],
+      "verbs": [
+        "get",
+        "list",
+        "watch"
+      ]
+    },
+    {
+      "apiGroups": [
+        "batch"
+      ],
+      "resources": [
+        "jobs"
+      ],
+      "verbs": [
+        "get",
+        "list",
+        "watch"
+      ]
+    },
+    {
+      "apiGroups": [
+        "storage.k8s.io"
+      ],
+      "resources": [
+        "storageclasses",
+        "csidrivers",
+        "csinodes",
+        "volumeattachments"
+      ],
+      "verbs": [
+        "get",
+        "list",
+        "watch"
+      ]
+    },
+    {
+      "apiGroups": [
+        "discovery.k8s.io"
+      ],
+      "resources": [
+        "endpointslices"
+      ],
+      "verbs": [
+        "get",
+        "list",
+        "watch"
+      ]
+    }
+  ],
+  "actualWorkerPodUID": "47934cc2-6f00-4326-b9da-28fc8851952f",
+  "actualWorkerContainerId": "431b3c49c095e7be2f92230adfa4f4fdff9ac9b7c0dc65cd00284787ff2289b6",
+  "sameProjectedCredentialUsedBeforeDuringAfter": true,
+  "targetPodUID": "8997e07b-8fab-498b-8baf-8a846f537887",
+  "nodeUID": "cc6ee959-3391-432f-b413-a5e7f2e64756",
+  "sourceTLSValidated": true,
+  "expected": "only Pod/Node Metrics get denied403; core Pod get and actual Incident API stay200; exact original rules restored then fresh timestamp"
+}
