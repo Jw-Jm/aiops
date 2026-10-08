@@ -1,0 +1,610 @@
+{
+  "observedAt": "2026-10-08T12:27:09.080612+00:00",
+  "sourceCommit": "95ae3dad9d80897f814eed5fb411e50f0c9044d9",
+  "bundleId": "pre-sp07-dev-20261008-r13",
+  "payloadDigest": "sha256:977b969618daa42b0dad1c8de52e1a410872a3f9b8d489047467ab9cd2cb0117",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "namespaceUID": "8ef6f18e-0621-45d0-877e-4e575cb34603",
+  "helmRevision": 4,
+  "pods": [
+    {
+      "name": "ops-api-5988978559-tqcsc",
+      "uid": "100f9503-e10e-4162-81f8-0185912ee801",
+      "images": [
+        "ops.local/task27/platform-api@sha256:cc4d73936cc0eca3442ecfc609a974594a40d80e3c43cb432bf7f7111b8bfcba"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-investigator-77744994b8-hgl6j",
+      "uid": "7b1852c6-b5ba-4235-a06e-70a82f6e6bf0",
+      "images": [
+        "ops.local/task27/holmesgpt@sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-keycloak-6dcd55c746-pm9rn",
+      "uid": "4f1d3aa0-4335-45cc-b3b4-4a251a031e28",
+      "images": [
+        "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-openbao-0",
+      "uid": "6dbc747a-d27e-4268-99eb-59cb77f144cf",
+      "images": [
+        "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-postgresql-0",
+      "uid": "f2f32c0d-31ae-4472-bc0e-4a831f0b44a0",
+      "images": [
+        "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-seaweedfs-0",
+      "uid": "a37d574b-4ed9-4740-b957-744b845abfe0",
+      "images": [
+        "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-victoria-logs-0",
+      "uid": "e33777d3-cbd3-4911-8d42-9dc1ce3aa616",
+      "images": [
+        "victoriametrics/victoria-logs@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-victoria-metrics-0",
+      "uid": "0e70a3fe-32a4-4ccc-b823-04d571b99fea",
+      "images": [
+        "victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-vmalert-74c5744dd9-jth7d",
+      "uid": "b7088cfb-470a-4ce6-800c-159aa215053a",
+      "images": [
+        "docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-worker-d44c5f5f5-dc6vg",
+      "uid": "cf564743-8275-41f8-b202-e5e415710069",
+      "images": [
+        "ops.local/task27/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b"
+      ],
+      "ready": true
+    },
+    {
+      "name": "ops-worker-d44c5f5f5-ljhrt",
+      "uid": "421cd18a-5299-41ee-bc4c-06cdc286b061",
+      "images": [
+        "ops.local/task27/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b"
+      ],
+      "ready": true
+    }
+  ],
+  "all11CurrentPodsReady": true,
+  "supersededControllersRemainQuiesced": 68,
+  "smokeExitCodes": {
+    "development-rolling-update-result-r305.exit": 0,
+    "current-core-r9-investigation-chain-live-r306.exit": 0,
+    "development-current-metrics-smoke-r307.exit": 0,
+    "development-operator-api-smoke-r308.exit": 0,
+    "development-current-authority-job-sse-smoke-r316.exit": 0
+  },
+  "newModelRequestsByThisRelease": 0,
+  "fullColdOrPerformanceAcceptanceRun": false,
+  "exitCode": 0,
+  "quiescedControllers": [
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "name": "ops-keycloak",
+      "uid": "319097a8-a904-46b2-b35a-a7a019ee5053",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "name": "ops-vmalert",
+      "uid": "32cbf035-a958-40b0-a70a-03c306a317cc",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "name": "ops-api",
+      "uid": "af898e20-353c-4fd2-bde8-5fd5439b52e8",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "name": "ops-investigator",
+      "uid": "db395100-41c7-4c0a-9d1a-3f836ddc9965",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "name": "ops-keycloak",
+      "uid": "3cef3cc1-6cb2-4c39-8892-f945d4bbd151",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "name": "ops-vmalert",
+      "uid": "d81cf8cd-4e1a-4b87-b064-61ede0b4e5c6",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "name": "ops-worker",
+      "uid": "5af91f25-adea-447d-8b27-68a2e3a5d14d",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "name": "ops-api",
+      "uid": "ed8d6701-30c8-41aa-8f6a-46affe7facfb",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "name": "ops-investigator",
+      "uid": "373934af-a6aa-48fa-b4f6-48437e99616e",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "name": "ops-keycloak",
+      "uid": "fa518249-5a52-4108-9725-711caa8affbd",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "name": "ops-vmalert",
+      "uid": "f4bf5884-d0f4-4992-a05c-853f322afb3e",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "name": "ops-worker",
+      "uid": "2e539967-2f74-4bf6-8770-7619a73c2f03",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "name": "ops-api",
+      "uid": "2ce99734-5886-4fd4-92f4-ea406af03592",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "name": "ops-investigator",
+      "uid": "344f350f-5104-4694-8750-896dc271ceeb",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "name": "ops-keycloak",
+      "uid": "2646e2ab-b554-495f-834c-ee04ebeefc2d",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "name": "ops-vmalert",
+      "uid": "2283447f-a8e5-441c-8aaa-6ea11bfec2f0",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "name": "ops-worker",
+      "uid": "4cdd65fd-1b37-4ae7-bd55-c39cc81aee4f",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r7-20261007",
+      "name": "ops-api",
+      "uid": "41aa8ccf-141e-40d9-b8f8-85e5aab2c8ce",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r7-20261007",
+      "name": "ops-investigator",
+      "uid": "a521f2a6-4504-48f1-982b-7b3167697210",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r7-20261007",
+      "name": "ops-keycloak",
+      "uid": "29acc4a3-f9e4-45dd-814e-fe1e4298670c",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r7-20261007",
+      "name": "ops-vmalert",
+      "uid": "faccb3a9-8fbc-44d9-bd8f-17818dcd5615",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r7-20261007",
+      "name": "ops-worker",
+      "uid": "bc7f9037-9a09-4da8-a873-d67375735337",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r8-20261007",
+      "name": "ops-api",
+      "uid": "1acbcf86-8595-4fe8-bfb5-68ddf0384d23",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r8-20261007",
+      "name": "ops-investigator",
+      "uid": "f7831ffb-e5eb-4584-a882-a1036fcd1500",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r8-20261007",
+      "name": "ops-keycloak",
+      "uid": "c431960d-e30a-47d8-8ebd-0355a0f2b2c2",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r8-20261007",
+      "name": "ops-vmalert",
+      "uid": "6d73fc8e-336f-435d-9372-dc27c5d3c36d",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r8-20261007",
+      "name": "ops-worker",
+      "uid": "457331e2-7e85-4041-a659-b1eaec7a3def",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-oidc-20261005",
+      "name": "ops-keycloak",
+      "uid": "3405bb28-0ec1-4c82-9b7b-13a0b59682cb",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-system",
+      "name": "ops-api",
+      "uid": "2bd68c67-aa95-42cf-ae1e-452d95b68ca9",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-system",
+      "name": "ops-keycloak",
+      "uid": "d809a551-77fb-48b8-9d54-b0f265474fd7",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-system",
+      "name": "ops-vmalert",
+      "uid": "57c9279c-b713-49b7-b722-cee4d7e49171",
+      "replicas": 0
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-system",
+      "name": "ops-worker",
+      "uid": "031497f3-ec24-49ba-9bec-a808a9a5e0da",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "name": "ops-openbao",
+      "uid": "fc364732-8bee-417b-a337-1b78bbe35afd",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "name": "ops-postgresql",
+      "uid": "571e78c9-75c9-4c19-945f-99fa738c4852",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "name": "ops-seaweedfs",
+      "uid": "c9718afc-c685-4dd9-9f1b-883177538699",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "name": "ops-victoria-logs",
+      "uid": "ddfae12c-e39e-45f4-9dd0-9f7d6be65e23",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-20261005",
+      "name": "ops-victoria-metrics",
+      "uid": "34c1aa60-7189-47d0-9659-dac6675484a9",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "name": "ops-openbao",
+      "uid": "75004838-0d64-4226-920b-f8fffa7f33e3",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "name": "ops-postgresql",
+      "uid": "5d1a1d1e-a4d3-430a-be21-76a762e255ca",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "name": "ops-seaweedfs",
+      "uid": "680f1e76-43ad-42ac-abbd-20b9772c7a73",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "name": "ops-victoria-logs",
+      "uid": "15bc3285-886b-4111-ad56-b719316f9dc0",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r4-20261005",
+      "name": "ops-victoria-metrics",
+      "uid": "8c3df87b-33a0-4bcf-a624-1cfe89a79395",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "name": "ops-openbao",
+      "uid": "8d9791b2-3f8b-4cb6-8090-46a8343e40bb",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "name": "ops-postgresql",
+      "uid": "475da6d6-2499-446f-be2c-eca079237b43",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "name": "ops-seaweedfs",
+      "uid": "e1b30d23-729c-480e-86c2-1cb619c7f904",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "name": "ops-victoria-logs",
+      "uid": "a6d604bb-2999-4fcb-b373-4ac5fbe32bb0",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r5-20261006",
+      "name": "ops-victoria-metrics",
+      "uid": "f704cda3-8a70-421d-a63a-01ad4dfd7bd1",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "name": "ops-openbao",
+      "uid": "f9d6830f-f05a-479f-89c2-c87b777be563",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "name": "ops-postgresql",
+      "uid": "3eae948d-f7e5-42f2-a022-29467e694fce",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "name": "ops-seaweedfs",
+      "uid": "1ac55fc9-bb74-4b93-9691-b5234f3636b9",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "name": "ops-victoria-logs",
+      "uid": "c3f521d1-438e-44b3-9250-5af5a7d4b47c",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r6-20261006",
+      "name": "ops-victoria-metrics",
+      "uid": "31351494-503b-40f8-b1de-4da444cb43ad",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r7-20261007",
+      "name": "ops-openbao",
+      "uid": "cb200ba9-f879-441f-9438-334340c3e8e8",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r7-20261007",
+      "name": "ops-postgresql",
+      "uid": "70409a82-d06a-43b3-9900-c15ddd211c71",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r7-20261007",
+      "name": "ops-seaweedfs",
+      "uid": "b99a9a31-ba55-4962-b03c-057dae43a4a1",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r7-20261007",
+      "name": "ops-victoria-logs",
+      "uid": "d1da5652-81e5-4659-ae3e-59e56af5d78a",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r7-20261007",
+      "name": "ops-victoria-metrics",
+      "uid": "bd685728-3191-4b90-bac6-2592e0998219",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r8-20261007",
+      "name": "ops-openbao",
+      "uid": "5711bac9-0764-4f39-ace5-f0a53dc1977d",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r8-20261007",
+      "name": "ops-postgresql",
+      "uid": "eb48e5ce-4e73-450b-80d1-88baa7dcabd6",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r8-20261007",
+      "name": "ops-seaweedfs",
+      "uid": "10c48a0d-e9c3-45ee-a41b-181ab7a98317",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r8-20261007",
+      "name": "ops-victoria-logs",
+      "uid": "f5d56b32-87cd-4225-8bff-2d2c99e0fc0b",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-core-r8-20261007",
+      "name": "ops-victoria-metrics",
+      "uid": "c1a12ed3-2a50-4a5f-aca6-2cb1636543e7",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-oidc-20261005",
+      "name": "ops-postgresql",
+      "uid": "cc1f9939-353a-43aa-b8ec-d82ab0c6239f",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-oidc-20261005",
+      "name": "ops-seaweedfs",
+      "uid": "752612ba-e2cd-44b6-9704-a14537e4b96c",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-pre-sp07-pki-20261004",
+      "name": "ops-openbao",
+      "uid": "982a8854-5fbb-46a6-a0db-4142acbee69b",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-system",
+      "name": "ops-openbao",
+      "uid": "1a23d239-7ed2-4714-bcaf-6ce673071183",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-system",
+      "name": "ops-postgresql",
+      "uid": "656ffe6c-69d7-488d-a377-0afc4737ba91",
+      "replicas": 0
+    },
+    {
+      "kind": "StatefulSet",
+      "namespace": "ops-system",
+      "name": "ops-seaweedfs",
+      "uid": "20e0b898-175a-4bcf-8841-9d6d0bd34ac6",
+      "replicas": 0
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods,deployments,statefulsets,namespaces",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "recoveryProof": "development-resumed-openbao-recovery-r313.json",
+  "currentAuthorityBusinessSmoke": "development-current-authority-job-sse-smoke-r316.json",
+  "receiptAssemblyInitialFailure": {
+    "exitCode": 1,
+    "reason": "private prior snapshot is JSON array, corrected parser without changing environment or raw snapshot"
+  }
+}

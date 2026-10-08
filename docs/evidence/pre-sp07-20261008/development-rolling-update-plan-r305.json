@@ -1,0 +1,52 @@
+{
+  "observedAt": "2026-10-08T07:50:02.043102+00:00",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "sourceCommit": "95ae3dad9d80897f814eed5fb411e50f0c9044d9",
+  "bundleId": "pre-sp07-dev-20261008-r13",
+  "operation": "development rolling Helm upgrade of API and Worker images",
+  "freshInstall": false,
+  "fullColdAcceptance": false,
+  "SP07Started": false,
+  "noMigrationOrBootstrapReinitialization": true,
+  "beforeMutation": true,
+  "namespaceUID": "8ef6f18e-0621-45d0-877e-4e575cb34603",
+  "resources": [
+    {
+      "name": "ops-api",
+      "uid": "0ffe2644-809e-4519-b833-9ca265e2d226",
+      "oldImage": "ops.local/task27/platform-api@sha256:12cb35bf0c0bfd15170095378dce73de768858ecaab0f0ba07a7000b6038d315",
+      "newImage": "ops.local/task27/platform-api@sha256:cc4d73936cc0eca3442ecfc609a974594a40d80e3c43cb432bf7f7111b8bfcba",
+      "replicas": 1
+    },
+    {
+      "name": "ops-worker",
+      "uid": "277f0c7b-40df-4de0-9d19-b3886694fd23",
+      "oldImage": "ops.local/task27/platform-worker@sha256:abc472fb806003dead9174cd5a3a3de4d3c66832529d0c0da8f7e34515f60da9",
+      "newImage": "ops.local/task27/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b",
+      "replicas": 2
+    }
+  ],
+  "renderedSemanticChanges": [
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r9-20261008",
+      "name": "ops-api",
+      "paths": [
+        "/spec/template/spec/containers/0/image"
+      ]
+    },
+    {
+      "kind": "Deployment",
+      "namespace": "ops-pre-sp07-core-r9-20261008",
+      "name": "ops-worker",
+      "paths": [
+        "/spec/template/spec/containers/0/image"
+      ]
+    }
+  ],
+  "activeInvestigationsBefore": 0,
+  "protectedObjectCount": 488,
+  "originalPrivateHelmValuesAndManifestRetained": true,
+  "rollback": "Use retained exact previous Chart/Helm values after verifying namespace and Deployment UIDs; preserve all data and secrets",
+  "initialInstallCheckpointPreserved": true
+}

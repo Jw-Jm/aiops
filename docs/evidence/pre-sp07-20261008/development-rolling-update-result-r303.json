@@ -1,0 +1,131 @@
+{
+  "observedAt": "2026-10-08T07:45:52.716359+00:00",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "sourceCommit": "95ae3dad9d80897f814eed5fb411e50f0c9044d9",
+  "bundleId": "pre-sp07-dev-20261008-r13",
+  "operation": "development rolling Helm upgrade of API and Worker images",
+  "freshInstall": false,
+  "fullColdAcceptance": false,
+  "SP07Started": false,
+  "noMigrationOrBootstrapReinitialization": true,
+  "failureType": "AssertionError",
+  "failureFrames": [
+    {
+      "file": "rollout-development-r303.py",
+      "line": 60
+    }
+  ],
+  "exitCode": 1,
+  "helmUpgradeCompleted": false,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "image",
+        "inspect",
+        "ops.local/task27/platform-api@sha256:cc4d73936cc0eca3442ecfc609a974594a40d80e3c43cb432bf7f7111b8bfcba"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "image",
+        "inspect",
+        "ops.local/task27/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets,configmaps,services,apiservices,deployments,statefulsets,daemonsets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "get",
+        "values",
+        "ops-platform",
+        "--kube-context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "--all",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "template",
+        "ops-platform",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/ops-platform-0.1.0.tgz",
+        "--namespace",
+        "ops-pre-sp07-core-r9-20261008",
+        "--values",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/development-update-r13/helm-values-r13.private.json",
+        "--include-crds"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "3505f4de2b5eb70b811b064395289dc27523f85890873cb8367b2f15dc71adf3"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "3505f4de2b5eb70b811b064395289dc27523f85890873cb8367b2f15dc71adf3",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT count(*) FROM investigation.jobs WHERE state IN ('queued','running'); COMMIT;"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

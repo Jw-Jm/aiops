@@ -1,0 +1,115 @@
+{
+  "observedAt": "2026-10-08T07:47:37.249380+00:00",
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/opsctl-host",
+        "openbao",
+        "status",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/signed-bundle-r13"
+      ],
+      "exitCode": 0,
+      "status": {
+        "state": "sealed",
+        "initialized": true,
+        "sealed": true,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 0,
+        "version": "2.7.0"
+      }
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/opsctl-host",
+        "openbao",
+        "unseal",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/signed-bundle-r13",
+        "--share-index",
+        "0"
+      ],
+      "exitCode": 0,
+      "status": {
+        "state": "sealed",
+        "initialized": true,
+        "sealed": true,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 1,
+        "version": "2.7.0"
+      }
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/opsctl-host",
+        "openbao",
+        "unseal",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/signed-bundle-r13",
+        "--share-index",
+        "1"
+      ],
+      "exitCode": 0,
+      "status": {
+        "state": "ready",
+        "initialized": true,
+        "sealed": false,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 0,
+        "version": "2.7.0"
+      }
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/opsctl-host",
+        "openbao",
+        "status",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/signed-bundle-r13"
+      ],
+      "exitCode": 0,
+      "status": {
+        "state": "ready",
+        "initialized": true,
+        "sealed": false,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 0,
+        "version": "2.7.0"
+      }
+    }
+  ],
+  "exitCode": 0,
+  "sourceReinitialized": false,
+  "sourceKeysRotated": false,
+  "privateRecoveryMaterialPrinted": false,
+  "initialPreflightFailure": "development-rolling-update-result-r303.json",
+  "businessRecoveryNotYetVerified": true
+}

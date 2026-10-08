@@ -1,0 +1,307 @@
+{
+  "observedAt": "2026-10-08T07:50:02.043102+00:00",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "sourceCommit": "95ae3dad9d80897f814eed5fb411e50f0c9044d9",
+  "bundleId": "pre-sp07-dev-20261008-r13",
+  "operation": "development rolling Helm upgrade of API and Worker images",
+  "freshInstall": false,
+  "fullColdAcceptance": false,
+  "SP07Started": false,
+  "noMigrationOrBootstrapReinitialization": true,
+  "namespaceUID": "8ef6f18e-0621-45d0-877e-4e575cb34603",
+  "payloadDigest": "sha256:977b969618daa42b0dad1c8de52e1a410872a3f9b8d489047467ab9cd2cb0117",
+  "helmRevision": 4,
+  "sourceArchiveSHA256": "sha256:a3a9c8d2e267507825e5c037700f7d75810f961bfa089076da9ecbf76a2b3aaf",
+  "resources": [
+    {
+      "name": "ops-api",
+      "uid": "0ffe2644-809e-4519-b833-9ca265e2d226",
+      "oldImage": "ops.local/task27/platform-api@sha256:12cb35bf0c0bfd15170095378dce73de768858ecaab0f0ba07a7000b6038d315",
+      "newImage": "ops.local/task27/platform-api@sha256:cc4d73936cc0eca3442ecfc609a974594a40d80e3c43cb432bf7f7111b8bfcba",
+      "replicas": 1
+    },
+    {
+      "name": "ops-worker",
+      "uid": "277f0c7b-40df-4de0-9d19-b3886694fd23",
+      "oldImage": "ops.local/task27/platform-worker@sha256:abc472fb806003dead9174cd5a3a3de4d3c66832529d0c0da8f7e34515f60da9",
+      "newImage": "ops.local/task27/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b",
+      "replicas": 2
+    }
+  ],
+  "runningImageProof": [
+    {
+      "component": "api",
+      "podName": "ops-api-5988978559-tqcsc",
+      "podUID": "100f9503-e10e-4162-81f8-0185912ee801",
+      "image": "ops.local/task27/platform-api@sha256:cc4d73936cc0eca3442ecfc609a974594a40d80e3c43cb432bf7f7111b8bfcba",
+      "runtimeImageID": "docker-pullable://ops.local/pre-sp07-dev-20261008-r13/platform-api@sha256:cc4d73936cc0eca3442ecfc609a974594a40d80e3c43cb432bf7f7111b8bfcba",
+      "ready": true
+    },
+    {
+      "component": "worker",
+      "podName": "ops-worker-d44c5f5f5-dc6vg",
+      "podUID": "cf564743-8275-41f8-b202-e5e415710069",
+      "image": "ops.local/task27/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b",
+      "runtimeImageID": "docker-pullable://ops.local/pre-sp07-dev-20261008-r13/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b",
+      "ready": true
+    },
+    {
+      "component": "worker",
+      "podName": "ops-worker-d44c5f5f5-ljhrt",
+      "podUID": "421cd18a-5299-41ee-bc4c-06cdc286b061",
+      "image": "ops.local/task27/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b",
+      "runtimeImageID": "docker-pullable://ops.local/pre-sp07-dev-20261008-r13/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b",
+      "ready": true
+    }
+  ],
+  "currentControllersReady": [
+    {
+      "kind": "Deployment",
+      "name": "ops-api",
+      "uid": "0ffe2644-809e-4519-b833-9ca265e2d226",
+      "replicas": 1,
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-investigator",
+      "uid": "4db11183-63d6-40c2-b30e-1a48fe8f5c2a",
+      "replicas": 1,
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-keycloak",
+      "uid": "4cdc9b1a-4832-4023-aa43-04f4af16adf2",
+      "replicas": 1,
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-vmalert",
+      "uid": "8f1065b7-060e-49b6-94c9-8ea57416c9d7",
+      "replicas": 1,
+      "ready": 1
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-worker",
+      "uid": "277f0c7b-40df-4de0-9d19-b3886694fd23",
+      "replicas": 2,
+      "ready": 2
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-openbao",
+      "uid": "9048c726-dfda-41f8-b5f9-849c158918aa",
+      "replicas": 1,
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-postgresql",
+      "uid": "b5b4329d-454c-49b7-8652-ca3c3e01f2f1",
+      "replicas": 1,
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-seaweedfs",
+      "uid": "6b1b6f3e-feac-4577-b97f-e35658568699",
+      "replicas": 1,
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-victoria-logs",
+      "uid": "0de550f5-1e48-473e-9cb7-8899cf551117",
+      "replicas": 1,
+      "ready": 1
+    },
+    {
+      "kind": "StatefulSet",
+      "name": "ops-victoria-metrics",
+      "uid": "30c1fc9e-576b-401e-8274-1be8550baf20",
+      "replicas": 1,
+      "ready": 1
+    }
+  ],
+  "protectedObjectsUnchanged": 488,
+  "otherControllerSpecsUnchanged": true,
+  "oldDeliveryReplicasNotReenabled": true,
+  "initialInstallCheckpointNotRewritten": true,
+  "exitCode": 0,
+  "helmUpgradeCompleted": true,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "image",
+        "inspect",
+        "ops.local/task27/platform-api@sha256:cc4d73936cc0eca3442ecfc609a974594a40d80e3c43cb432bf7f7111b8bfcba"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "image",
+        "inspect",
+        "ops.local/task27/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets,configmaps,services,apiservices,deployments,statefulsets,daemonsets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "get",
+        "values",
+        "ops-platform",
+        "--kube-context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "--all",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "template",
+        "ops-platform",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/ops-platform-0.1.0.tgz",
+        "--namespace",
+        "ops-pre-sp07-core-r9-20261008",
+        "--values",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/development-update-r13-retry/helm-values-r13.private.json",
+        "--include-crds"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "3505f4de2b5eb70b811b064395289dc27523f85890873cb8367b2f15dc71adf3"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "3505f4de2b5eb70b811b064395289dc27523f85890873cb8367b2f15dc71adf3",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT count(*) FROM investigation.jobs WHERE state IN ('queued','running'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "upgrade",
+        "ops-platform",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/ops-platform-0.1.0.tgz",
+        "--kube-context",
+        "orbstack",
+        "--namespace",
+        "ops-pre-sp07-core-r9-20261008",
+        "--values",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/development-update-r13-retry/helm-values-r13.private.json",
+        "--wait",
+        "--timeout",
+        "5m",
+        "--history-max",
+        "20"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets,configmaps,services,apiservices,deployments,statefulsets,daemonsets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "status",
+        "ops-platform",
+        "--kube-context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

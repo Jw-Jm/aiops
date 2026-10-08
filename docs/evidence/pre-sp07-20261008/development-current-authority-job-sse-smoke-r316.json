@@ -1,0 +1,775 @@
+{
+  "observedAt": "2026-10-08T12:24:57.960239+00:00",
+  "scope": "current authorization formal API Job create/cancel, Ledger/Audit and durable SSE; no model or tool invocation",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "namespaceUID": "8ef6f18e-0621-45d0-877e-4e575cb34603",
+  "SP07Started": false,
+  "directBusinessTableWrites": false,
+  "priorHistoricalJobSmokeExit": 1,
+  "priorHistoricalJobFailure": "current-core-r9-investigation-chain-live-r314.log",
+  "oldAuthorizationJobStepsAndSSEStatuses": [
+    403,
+    403,
+    403
+  ],
+  "currentAuthorityArchiveDigestAndVersionReadStatus": 200,
+  "currentOperatorBindingRevision": 5,
+  "investigatorPodsAbsentBeforeCreate": true,
+  "createdJobId": "01a11b7a-551a-77e9-b8c9-71bd1c60cca0",
+  "newJobState": "cancelled",
+  "modelRequests": 0,
+  "toolCalls": 0,
+  "eventSeq": 2,
+  "persistedAuditAndEventCounts": "2|2",
+  "sseEvents": 2,
+  "sseResumedEvents": 1,
+  "budgetReservedZero": true,
+  "currentAuthorizationJobAndDurableSSEPass": true,
+  "oldJobOrScopeRewritten": false,
+  "investigatorRestoredExactSpecAndReady": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/run-current-core-oidc-operator-login-r9-20261008.py",
+        "core-r9-current-authority-r316"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "606bae143bb0a9c32f231d14f8013649cc437acebe986ee1527d5de247ce2329"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "606bae143bb0a9c32f231d14f8013649cc437acebe986ee1527d5de247ce2329",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT count(*) FROM investigation.jobs WHERE state IN ('queued','running'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "606bae143bb0a9c32f231d14f8013649cc437acebe986ee1527d5de247ce2329",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT incident_id::text FROM investigation.jobs WHERE job_id='01a11974-8d2d-7024-bc30-eb5d9f16bf4c'; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"4db11183-63d6-40c2-b30e-1a48fe8f5c2a\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"541957\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pods",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "606bae143bb0a9c32f231d14f8013649cc437acebe986ee1527d5de247ce2329",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT (SELECT count(*) FROM investigation.events WHERE job_id='01a11b7a-551a-77e9-b8c9-71bd1c60cca0')::text||'|'||(SELECT count(*) FROM audit.records WHERE entity_id='01a11b7a-551a-77e9-b8c9-71bd1c60cca0' AND event_type LIKE 'investigation.%')::text; COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "patch",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"4db11183-63d6-40c2-b30e-1a48fe8f5c2a\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"542846\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 0}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 1}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "rollout",
+        "status",
+        "deployment/ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "--timeout=150s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c",
+      "status": 403,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/steps",
+      "status": 403,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c/events",
+      "status": 403,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/406783e1-27a4-5a21-aa60-1adac508f309",
+      "status": 200,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 200,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11973-c283-73ae-97d8-d66a39b7ba80",
+      "status": 200,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/incidents/01a11973-c283-73ae-97d8-d66a39b7ba80/investigations",
+      "status": 202,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/investigations/01a11b7a-551a-77e9-b8c9-71bd1c60cca0:cancel",
+      "status": 200,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11b7a-551a-77e9-b8c9-71bd1c60cca0",
+      "status": 200,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11b7a-551a-77e9-b8c9-71bd1c60cca0/steps",
+      "status": 200,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11b7a-551a-77e9-b8c9-71bd1c60cca0/events",
+      "status": 200,
+      "hasResumeCursor": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11b7a-551a-77e9-b8c9-71bd1c60cca0/events",
+      "status": 200,
+      "hasResumeCursor": true
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

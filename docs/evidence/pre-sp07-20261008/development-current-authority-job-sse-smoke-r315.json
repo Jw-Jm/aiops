@@ -1,0 +1,105 @@
+{
+  "observedAt": "2026-10-08T12:22:35.446856+00:00",
+  "scope": "current authorization formal API Job create/cancel, Ledger/Audit and durable SSE; no model or tool invocation",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "namespaceUID": "8ef6f18e-0621-45d0-877e-4e575cb34603",
+  "SP07Started": false,
+  "directBusinessTableWrites": false,
+  "priorHistoricalJobSmokeExit": 1,
+  "priorHistoricalJobFailure": "current-core-r9-investigation-chain-live-r314.log",
+  "failureType": "AssertionError",
+  "failureFrames": [
+    {
+      "file": "current-authority-job-sse-smoke-r315.py",
+      "line": 46
+    }
+  ],
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespace",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "pod",
+        "ops-postgresql-0",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "606bae143bb0a9c32f231d14f8013649cc437acebe986ee1527d5de247ce2329"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "606bae143bb0a9c32f231d14f8013649cc437acebe986ee1527d5de247ce2329",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT count(*) FROM investigation.jobs WHERE state IN ('queued','running'); COMMIT;"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "606bae143bb0a9c32f231d14f8013649cc437acebe986ee1527d5de247ce2329",
+        "psql",
+        "-X",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "ops",
+        "-qAt",
+        "-c",
+        "BEGIN READ ONLY; SELECT incident_id::text FROM investigation.jobs WHERE job_id='01a11974-8d2d-7024-bc30-eb5d9f16bf4c'; COMMIT;"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11974-8d2d-7024-bc30-eb5d9f16bf4c",
+      "status": 401,
+      "hasResumeCursor": false
+    }
+  ],
+  "ownedPortForwardStopped": true
+}

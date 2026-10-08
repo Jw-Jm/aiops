@@ -1,0 +1,249 @@
+{
+  "observedAt": "2026-10-08T12:14:35.216098+00:00",
+  "podsBefore": [
+    {
+      "name": "ops-api-5988978559-tqcsc",
+      "uid": "100f9503-e10e-4162-81f8-0185912ee801",
+      "containers": [
+        {
+          "name": "api",
+          "ready": false,
+          "restartCount": 5,
+          "startedAt": null
+        }
+      ]
+    },
+    {
+      "name": "ops-investigator-77744994b8-dgvdz",
+      "uid": "334dd51e-ae9c-4532-997a-1c1e7713a602",
+      "containers": [
+        {
+          "name": "investigator",
+          "ready": false,
+          "restartCount": 12,
+          "startedAt": null
+        }
+      ]
+    },
+    {
+      "name": "ops-keycloak-6dcd55c746-pm9rn",
+      "uid": "4f1d3aa0-4335-45cc-b3b4-4a251a031e28",
+      "containers": [
+        {
+          "name": "keycloak",
+          "ready": true,
+          "restartCount": 4,
+          "startedAt": "2026-10-08T12:12:24Z"
+        }
+      ]
+    },
+    {
+      "name": "ops-openbao-0",
+      "uid": "6dbc747a-d27e-4268-99eb-59cb77f144cf",
+      "containers": [
+        {
+          "name": "openbao",
+          "ready": true,
+          "restartCount": 3,
+          "startedAt": "2026-10-08T12:12:10Z"
+        }
+      ]
+    },
+    {
+      "name": "ops-postgresql-0",
+      "uid": "f2f32c0d-31ae-4472-bc0e-4a831f0b44a0",
+      "containers": [
+        {
+          "name": "postgresql",
+          "ready": true,
+          "restartCount": 3,
+          "startedAt": "2026-10-08T12:12:11Z"
+        }
+      ]
+    },
+    {
+      "name": "ops-seaweedfs-0",
+      "uid": "a37d574b-4ed9-4740-b957-744b845abfe0",
+      "containers": [
+        {
+          "name": "seaweedfs",
+          "ready": true,
+          "restartCount": 3,
+          "startedAt": "2026-10-08T12:12:10Z"
+        }
+      ]
+    },
+    {
+      "name": "ops-victoria-logs-0",
+      "uid": "e33777d3-cbd3-4911-8d42-9dc1ce3aa616",
+      "containers": [
+        {
+          "name": "vlogs",
+          "ready": true,
+          "restartCount": 3,
+          "startedAt": "2026-10-08T12:12:11Z"
+        }
+      ]
+    },
+    {
+      "name": "ops-victoria-metrics-0",
+      "uid": "0e70a3fe-32a4-4ccc-b823-04d571b99fea",
+      "containers": [
+        {
+          "name": "vmsingle",
+          "ready": true,
+          "restartCount": 3,
+          "startedAt": "2026-10-08T12:12:11Z"
+        }
+      ]
+    },
+    {
+      "name": "ops-vmalert-74c5744dd9-jth7d",
+      "uid": "b7088cfb-470a-4ce6-800c-159aa215053a",
+      "containers": [
+        {
+          "name": "vmalert",
+          "ready": true,
+          "restartCount": 3,
+          "startedAt": "2026-10-08T12:12:10Z"
+        }
+      ]
+    },
+    {
+      "name": "ops-worker-d44c5f5f5-dc6vg",
+      "uid": "cf564743-8275-41f8-b202-e5e415710069",
+      "containers": [
+        {
+          "name": "worker",
+          "ready": false,
+          "restartCount": 5,
+          "startedAt": null
+        }
+      ]
+    },
+    {
+      "name": "ops-worker-d44c5f5f5-ljhrt",
+      "uid": "421cd18a-5299-41ee-bc4c-06cdc286b061",
+      "containers": [
+        {
+          "name": "worker",
+          "ready": false,
+          "restartCount": 5,
+          "startedAt": null
+        }
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/opsctl-host",
+        "openbao",
+        "status",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/signed-bundle-r13"
+      ],
+      "exitCode": 0,
+      "status": {
+        "state": "sealed",
+        "initialized": true,
+        "sealed": true,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 0,
+        "version": "2.7.0"
+      }
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/opsctl-host",
+        "openbao",
+        "unseal",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/signed-bundle-r13",
+        "--share-index",
+        "0"
+      ],
+      "exitCode": 0,
+      "status": {
+        "state": "sealed",
+        "initialized": true,
+        "sealed": true,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 1,
+        "version": "2.7.0"
+      }
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/opsctl-host",
+        "openbao",
+        "unseal",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/signed-bundle-r13",
+        "--share-index",
+        "1"
+      ],
+      "exitCode": 0,
+      "status": {
+        "state": "ready",
+        "initialized": true,
+        "sealed": false,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 0,
+        "version": "2.7.0"
+      }
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/opsctl-host",
+        "openbao",
+        "status",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-recovery.json",
+        "--bundle-dir",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/current-core-material-r13/signed-bundle-r13"
+      ],
+      "exitCode": 0,
+      "status": {
+        "state": "ready",
+        "initialized": true,
+        "sealed": false,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 0,
+        "version": "2.7.0"
+      }
+    }
+  ],
+  "exitCode": 0,
+  "sourceReinitialized": false,
+  "sourceKeysRotated": false,
+  "privateRecoveryMaterialPrinted": false,
+  "businessRecoveryNotYetVerified": true,
+  "scope": "restore current dev installation after an additional runtime restart during the paused conversation"
+}
