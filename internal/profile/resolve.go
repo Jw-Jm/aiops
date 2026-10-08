@@ -55,6 +55,9 @@ func Resolve(ctx context.Context, input InputProfile, discovery Discovery) (Reso
 		Model:         input.Model,
 		Installable:   true,
 	}
+	if input.Kubernetes.StorageClass != "" {
+		resolved.Kubernetes.StorageClass = input.Kubernetes.StorageClass
+	}
 	if resolved.Architecture == "" {
 		resolved.Architecture = discovery.Kubernetes.Architecture
 	}

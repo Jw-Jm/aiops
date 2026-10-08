@@ -65,7 +65,11 @@ func Detect(input InputProfile, discovery Discovery) (InputProfile, error) {
 	input.Kind = "detected"
 	input.Context = discovery.Kubernetes.Context
 	input.Architecture = discovery.Kubernetes.Architecture
+	storageClass := input.Kubernetes.StorageClass
 	input.Kubernetes = discovery.Kubernetes
+	if storageClass != "" {
+		input.Kubernetes.StorageClass = storageClass
+	}
 	input.Runtime.ImageImporter = discovery.Runtime.ImageImporter
 	if input.Discovery == nil {
 		input.Discovery = &DiscoveryEvidence{}

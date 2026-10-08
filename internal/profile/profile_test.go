@@ -6,6 +6,23 @@ import (
 	"testing"
 )
 
+func TestOperatorStorageClassSurvivesDetectAndResolve(t *testing.T) {
+	input, discovery := testProfile("external"), testDiscovery()
+	input.Kubernetes.StorageClass = "operator-csi"
+	discovery.Kubernetes.StorageClass = "cluster-default"
+	detected, err := Detect(input, discovery)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resolved, err := Resolve(context.Background(), detected, discovery)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if detected.Kubernetes.StorageClass != "operator-csi" || resolved.Kubernetes.StorageClass != "operator-csi" {
+		t.Fatalf("explicit StorageClass lost: detected=%q resolved=%q", detected.Kubernetes.StorageClass, resolved.Kubernetes.StorageClass)
+	}
+}
+
 func TestDetectRecommendations(t *testing.T) {
 	t.Run("unique compatible instances are external", func(t *testing.T) {
 		input := testProfile("detect")

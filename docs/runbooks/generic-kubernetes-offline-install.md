@@ -35,7 +35,7 @@ opsctl profile resolve --catalog /materials/installer-source/bundle/component-ca
 
 无 `-f` 时，非 OrbStack 目标选择 `kubernetes-containerd.yaml` 模板；这是安装输入起点，模型占位端点必须显式替换。resolve 检查实际 kube-system UID、Server 版本、节点运行时和 StorageClass；`imageImporter` 必须为 `containerd_ctr`。不通过修改 `installable`、candidate 状态或版本锁绕过准入。
 
-所有 bundled Service endpoint 与业务 values 必须使用本次选择的 namespace，来源范围中的 cluster/Pod/Node UID 必须重新发现。StorageClass 来自实际发现或明确选择，安装器会把它写入 PostgreSQL/OpenBao/SeaweedFS 和 Victoria 持久卷模板，不依赖其他环境的默认类。
+所有 bundled Service endpoint 与业务 values 必须使用本次选择的 namespace，来源范围中的 cluster/Pod/Node UID 必须重新发现。操作者可在模板的 `kubernetes.storageClass` 明确选择非默认类；未指定时使用发现的默认类，无默认且未指定则明确失败。resolve 核对该类实际存在及 provisioner，安装器会把它写入 PostgreSQL/OpenBao/SeaweedFS 和 Victoria 持久卷模板，不依赖其他环境的默认类。
 
 ## 2. 在每个节点执行本地导入
 
