@@ -266,7 +266,12 @@ func (d *LocalContainerd) Import(ctx context.Context, image bundle.ImageArtifact
 	if !d.probed {
 		return errors.New("node socket must be probed before import")
 	}
-	args := []string{"images", "import", "--digests", "--platform", image.Architecture, "--snapshotter", d.Snapshotter}
+	// An unnamed OCI descriptor otherwise receives import-YYYY-MM-DD@digest.
+	// CRI normalizes that familiar name to docker.io/library/... but ctr stores
+	// the raw alias, leaving an image record which cannot start a container.
+	// Use the authenticated repository as the base for generated digest names.
+	repository, _, _ := strings.Cut(qualifiedContainerdReference(image.Reference), "@")
+	args := []string{"images", "import", "--digests", "--base-name", repository, "--platform", image.Architecture, "--snapshotter", d.Snapshotter}
 	if d.localFlag {
 		args = append(args, "--local")
 	}
@@ -279,16 +284,7 @@ func (d *LocalContainerd) Verify(ctx context.Context, image bundle.ImageArtifact
 	}
 	// ctr stores familiar Docker Hub names in their fully qualified form.
 	// Resolve only the standard naming alias; the target digest stays exact.
-	reference := image.Reference
-	if strings.HasPrefix(reference, "index.docker.io/") {
-		reference = "docker.io/" + strings.TrimPrefix(reference, "index.docker.io/")
-	}
-	first, _, hasSlash := strings.Cut(reference, "/")
-	if !hasSlash {
-		reference = "docker.io/library/" + reference
-	} else if first != "localhost" && !strings.ContainsAny(first, ".:") {
-		reference = "docker.io/" + reference
-	}
+	reference := qualifiedContainerdReference(image.Reference)
 	raw, err := d.ctr(ctx, "images", "list", "name=="+reference)
 	if err != nil {
 		return err
@@ -311,4 +307,17 @@ func (d *LocalContainerd) Verify(ctx context.Context, image bundle.ImageArtifact
 		return errors.New("imported containerd image is incomplete or not unpacked; refusing pull")
 	}
 	return nil
+}
+
+func qualifiedContainerdReference(reference string) string {
+	if strings.HasPrefix(reference, "index.docker.io/") {
+		reference = "docker.io/" + strings.TrimPrefix(reference, "index.docker.io/")
+	}
+	first, _, hasSlash := strings.Cut(reference, "/")
+	if !hasSlash {
+		reference = "docker.io/library/" + reference
+	} else if first != "localhost" && !strings.ContainsAny(first, ".:") {
+		reference = "docker.io/" + reference
+	}
+	return reference
 }

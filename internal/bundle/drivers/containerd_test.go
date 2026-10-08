@@ -127,6 +127,10 @@ func TestNodeLocalContainerdWitnessAndClosure(t *testing.T) {
 				case strings.Contains(c, "--help"):
 					return []byte("--local --platform"), nil
 				case strings.Contains(c, "images import"):
+					baseName := strings.Split(storedRef, "@")[0]
+					if !strings.Contains(c, "--base-name "+baseName+" ") {
+						return nil, errors.New("unnamed OCI digest creates noncanonical import-date alias unusable by CRI")
+					}
 					return nil, nil
 				case strings.Contains(c, "images list"):
 					if args[len(args)-1] != "name=="+storedRef {
