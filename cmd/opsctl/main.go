@@ -173,23 +173,31 @@ func runProfile(ctx context.Context, args []string, stdout, stderr io.Writer) er
 	contextName := flags.String("context", "", "Kubernetes context for detection")
 	inputPath := flags.String("f", "", "detected or operator-edited Deployment Profile")
 	outputPath := flags.String("o", "", "profile output path")
+	catalogPathFlag := flags.String("catalog", "bundle/component-catalog.yaml", "local authenticated Component Catalog path")
 	if err := flags.Parse(args[1:]); err != nil {
 		return err
 	}
 	if flags.NArg() != 0 || *outputPath == "" {
 		return errors.New("profile operation requires -o <file>")
 	}
-	catalogPath := "bundle/component-catalog.yaml"
+	catalogPath := *catalogPathFlag
 	switch operation {
 	case "detect":
-		if *contextName == "" || *inputPath != "" {
-			return errors.New("usage: opsctl profile detect --context <name> -o <file>")
+		if *contextName == "" {
+			return errors.New("usage: opsctl profile detect --context <name> [-f <template>] -o <file>")
 		}
-		input, err := profile.ReadProfileFile("deploy/profiles/dev-orbstack.yaml")
+		discovery, err := profile.Discover(ctx, *contextName, "", catalogPath)
 		if err != nil {
 			return err
 		}
-		discovery, err := profile.Discover(ctx, *contextName, "", catalogPath)
+		template := *inputPath
+		if template == "" {
+			template = "deploy/profiles/kubernetes-containerd.yaml"
+			if discovery.Kubernetes.Distribution == "orbstack" {
+				template = "deploy/profiles/dev-orbstack.yaml"
+			}
+		}
+		input, err := profile.ReadProfileFile(template)
 		if err != nil {
 			return err
 		}
@@ -231,6 +239,12 @@ func runProfile(ctx context.Context, args []string, stdout, stderr io.Writer) er
 				return err
 			}
 			resolved.Runtime.ImageImporter = driver
+		} else if resolved.Runtime.ImageImporter == "containerd_ctr" {
+			if _, err := (&drivers.PreloadedContainerd{}).Probe(ctx, resolved); err != nil {
+				return err
+			}
+		} else {
+			return errors.New("CAPABILITY_DISABLED: generic Kubernetes requires Ready Linux/containerd nodes")
 		}
 		if err := profile.WriteYAML(*outputPath, resolved); err != nil {
 			return err
@@ -293,6 +307,16 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 	repositoryRoot, err := platformRepositoryRoot()
 	if err != nil {
 		return err
+	}
+	if *recoveryFile != "" && !outsideGitTree(filepath.Dir(*recoveryFile)) {
+		return errors.New("OpenBao recovery material must remain outside every Git checkout")
+	}
+	if *recoveryFile != "" {
+		if _, err := os.Lstat(*recoveryFile); err == nil && !outsideGitTree(*recoveryFile) {
+			return errors.New("OpenBao recovery material must remain outside every Git checkout")
+		} else if err != nil && !os.IsNotExist(err) {
+			return errors.New("OpenBao recovery material path is unavailable")
+		}
 	}
 	if *bundleDirectory == "" {
 		*bundleDirectory = filepath.Join(repositoryRoot, "bundle")
@@ -409,7 +433,23 @@ func platformRepositoryRoot() (string, error) {
 	command := exec.Command("git", "-C", workingDirectory, "rev-parse", "--show-toplevel")
 	output, err := command.Output()
 	if err != nil {
-		return "", errors.New("opsctl openbao must run from the platform Git repository")
+		// A distributed, verified source/material archive deliberately has no
+		// .git directory or Git executable. Keep a concrete exclusion boundary
+		// without introducing Git as an offline runtime dependency.
+		for root := workingDirectory; ; root = filepath.Dir(root) {
+			complete := true
+			for _, name := range []string{"go.mod", "bundle/component-catalog.yaml", "deploy/profiles/kubernetes-containerd.yaml"} {
+				info, statErr := os.Stat(filepath.Join(root, name))
+				complete = complete && statErr == nil && info.Mode().IsRegular()
+			}
+			if complete {
+				return root, nil
+			}
+			if filepath.Dir(root) == root {
+				break
+			}
+		}
+		return "", errors.New("opsctl openbao requires the platform checkout or extracted authenticated installer source/material root")
 	}
 	return strings.TrimSpace(string(output)), nil
 }

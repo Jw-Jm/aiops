@@ -26,6 +26,10 @@ func runOffline(ctx context.Context, args []string, install bool, stdout, stderr
 	stage := flags.String("stage", "", "current initialization phase: dependencies, bootstrap-api or business")
 	tokenPath := flags.String("registration-token-file", "", "repository-external private operator token for formal source binding verification")
 	offline := flags.Bool("offline", false, "require offline installation")
+	nodeName := flags.String("node-name", "", "containerd import-only: explicit local Kubernetes node name")
+	nodeUID := flags.String("node-uid", "", "containerd import-only: independently observed node UID")
+	socket := flags.String("containerd-address", "", "containerd import-only: absolute local Unix socket")
+	snapshotter := flags.String("snapshotter", "", "containerd import-only: explicit CRI snapshotter")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
@@ -118,7 +122,28 @@ func runOffline(ctx context.Context, args []string, install bool, stdout, stderr
 			return err
 		}
 	}
-	runtime := drivers.OrbStackSharedStore{}
+	var runtime bundle.RuntimeImporter
+	switch p.Runtime.ImageImporter {
+	case "orbstack_shared_store":
+		if *nodeName != "" || *nodeUID != "" || *socket != "" || *snapshotter != "" {
+			return errors.New("containerd node options cannot target OrbStack shared store")
+		}
+		runtime = drivers.OrbStackSharedStore{}
+	case "containerd_ctr":
+		if install {
+			if *nodeName != "" || *nodeUID != "" || *socket != "" || *snapshotter != "" {
+				return errors.New("install verifies all preloaded nodes; node socket options are import-only")
+			}
+			runtime = &drivers.PreloadedContainerd{}
+		} else {
+			if *nodeName == "" || *nodeUID == "" || *socket == "" || *snapshotter == "" {
+				return errors.New("containerd import requires --node-name --node-uid --containerd-address --snapshotter; run locally on every node")
+			}
+			runtime = &drivers.LocalContainerd{Address: *socket, NodeName: *nodeName, NodeUID: *nodeUID, Snapshotter: *snapshotter}
+		}
+	default:
+		return errors.New("CAPABILITY_DISABLED: unresolved or unsupported image importer")
+	}
 	if install {
 		if *foundationOnly {
 			report, err = bundle.Install(ctx, manifest, trust, p, runtime, drivers.Run)

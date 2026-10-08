@@ -1,0 +1,70 @@
+# Standard Kubernetes template. Detect actual cluster identity; supply an explicit
+# reachable private model endpoint in operator business values before activation.
+# Every node must be Linux/containerd with the Bundle architecture.
+schemaVersion: 1
+kind: template
+profileId: kubernetes-containerd-core
+environment: development
+architecture: arm64
+context: discover-selected-context
+selectedProfile: core
+kubernetes:
+  distribution: kubernetes
+  version: detect-and-lock
+  context: discover-selected-context
+runtime:
+  publicEgress: deny
+  cpuBudget: 8
+  memoryMiB: 18432
+components:
+  postgresql:
+    mode: bundled
+    endpoint: postgresql://ops-postgresql.ops-system.svc.cluster.local:5432
+  keycloak:
+    mode: bundled
+    endpoint: https://ops-keycloak.ops-system.svc.cluster.local:8443
+  seaweedfs:
+    mode: bundled
+    endpoint: https://ops-seaweedfs-s3.ops-system.svc.cluster.local:8333
+  openbao:
+    mode: detect
+    endpoint: https://ops-openbao.ops-system.svc.cluster.local:8200
+  victoriaMetrics:
+    mode: detect
+    endpoint: https://ops-victoria-metrics.ops-system.svc.cluster.local:8428
+    detectExisting: true
+  victoriaLogs:
+    mode: detect
+    endpoint: https://ops-victoria-logs.ops-system.svc.cluster.local:9428
+    detectExisting: true
+  vmalert:
+    mode: detect
+    detectExisting: true
+    endpoint: http://ops-vmalert.ops-system.svc.cluster.local:8880
+  deepflow:
+    mode: bundled
+    versionCandidate: 7.2.0
+    enabledIn: [deepflow, full]
+  kubevirt:
+    mode: disabled
+    disabledReason: development_deferred
+    endpoint: https://virt-api.kubevirt.svc:443
+    enabledIn: [virtualization, full]
+    compatibility: unverified
+  cdi:
+    mode: disabled
+    disabledReason: development_deferred
+    endpoint: https://cdi-api.cdi.svc:443
+    enabledIn: [virtualization, full]
+    compatibility: unverified
+model:
+  api: openai-compatible
+  endpoint: http://model.internal:11434/v1
+  providerForDevelopment: ollama-0.34.2
+  model: llama3.1:8b-16k
+  bundleWeights: false
+profiles:
+  core: [postgresql, keycloak, seaweedfs, openbao, platform]
+  deepflow: [core, deepflow]
+  virtualization: [core, kubevirt, cdi]
+  full: [core, deepflow, kubevirt, cdi]

@@ -25,6 +25,7 @@ func TestLockedVictoriaChartsRenderForOfflineInstaller(t *testing.T) {
 			image := "docker.io/victoriametrics/" + entry.name + "@sha256:" + entry.digest
 			component := profile.ResolvedComponent{Image: image, Version: entry.version}
 			p := importProfile()
+			p.Kubernetes.StorageClass = "operator-selected-storage"
 			p.Components["victoriaMetrics"] = profile.ResolvedComponent{Endpoint: "http://existing.monitoring.svc.cluster.local:8429"}
 			values, err := victoriaChartValues(entry.name, component, p)
 			if err != nil {
@@ -67,6 +68,9 @@ func TestLockedVictoriaChartsRenderForOfflineInstaller(t *testing.T) {
 			}
 			if !strings.Contains(string(rendered), "automountServiceAccountToken: false") {
 				t.Fatal("token automount was not disabled")
+			}
+			if entry.name != "vmalert" && !strings.Contains(string(rendered), "storageClassName: operator-selected-storage") {
+				t.Fatal("locked upstream Chart ignored resolved StorageClass")
 			}
 		})
 	}

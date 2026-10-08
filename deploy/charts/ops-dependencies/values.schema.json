@@ -3,6 +3,13 @@
   "type": "object",
   "required": ["components"],
   "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "imagePullPolicy": { "const": "Never" },
+        "storageClass": { "type": "string", "maxLength": 253, "pattern": "^$|^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$" }
+      }
+    },
     "components": {
       "type": "object",
       "required": ["postgresql", "keycloak", "seaweedfs", "openbao"],

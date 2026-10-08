@@ -129,7 +129,7 @@ func Discover(ctx context.Context, contextName, kubectlPath, catalogPath string)
 		Architecture:  architectureFromPlatform(version.Platform),
 		Context:       contextName,
 	}
-	if strings.Contains(strings.ToLower(contextName), "orbstack") {
+	if strings.Contains(strings.ToLower(version.GitVersion), "+orb") {
 		result.Kubernetes.Distribution = "orbstack"
 	}
 	if len(nodes) > 0 {
@@ -224,6 +224,18 @@ func Discover(ctx context.Context, contextName, kubectlPath, catalogPath string)
 	completeDigestOnlyCandidateVersions(result.Components, locks)
 	if result.Kubernetes.Distribution == "orbstack" {
 		result.Runtime.ImageImporter = "unverified"
+	} else {
+		result.Runtime.ImageImporter = "unverified"
+		containerd := len(nodes) > 0
+		for _, node := range nodes {
+			info := objectMap(objectMap(node["status"])["nodeInfo"])
+			runtime, _ := info["containerRuntimeVersion"].(string)
+			os, _ := info["operatingSystem"].(string)
+			containerd = containerd && strings.HasPrefix(runtime, "containerd://") && os == "linux" && nodeArchitecture(node) == result.Kubernetes.Architecture
+		}
+		if containerd {
+			result.Runtime.ImageImporter = "containerd_ctr"
+		}
 	}
 	return result, nil
 }

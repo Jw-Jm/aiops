@@ -158,6 +158,9 @@ spec:
           ops.platform.io/component: postgresql
       spec:
         accessModes: ["ReadWriteOnce"]
+        {{- if $.Values.global.storageClass }}
+        storageClassName: {{ $.Values.global.storageClass | quote }}
+        {{- end }}
         resources:
           requests:
             storage: {{ $component.storage | quote }}

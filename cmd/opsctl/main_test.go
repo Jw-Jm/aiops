@@ -23,3 +23,20 @@ func TestProfileResolveRejectsRepositoryTemplate(t *testing.T) {
 		t.Fatalf("resolve unexpectedly wrote output: %s", stdout.String())
 	}
 }
+
+func TestOpenBaoRootAcceptsExtractedOfflineInstallerWithoutGit(t *testing.T) {
+	root := t.TempDir()
+	t.Chdir(root)
+	for _, name := range []string{"go.mod", "bundle/component-catalog.yaml", "deploy/profiles/kubernetes-containerd.yaml"} {
+		if err := os.MkdirAll(filepath.Dir(name), 0700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(name, []byte("offline installer material"), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	actual, err := platformRepositoryRoot()
+	if err != nil || actual != root {
+		t.Fatalf("extracted installer rejected: %s %v", actual, err)
+	}
+}

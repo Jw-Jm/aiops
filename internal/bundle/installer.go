@@ -367,7 +367,7 @@ func planCharts(ctx context.Context, installationNamespace string, v *verifiedPa
 				components[componentName] = map[string]any{"mode": component.Mode, "endpoint": component.Endpoint, "image": component.Image}
 			}
 			values["components"] = components
-			values["global"] = map[string]any{"imagePullPolicy": "Never"}
+			values["global"] = map[string]any{"imagePullPolicy": "Never", "storageClass": p.Kubernetes.StorageClass}
 		case "ops-platform-chart":
 			values["workloadsEnabled"] = true
 			managed := []string{"ops-dependencies"}
@@ -520,7 +520,7 @@ func victoriaChartValues(name string, component profile.ResolvedComponent, p pro
 		}
 	} else {
 		server["mode"] = "statefulSet"
-		server["persistentVolume"] = map[string]any{"enabled": true, "size": "2Gi"}
+		server["persistentVolume"] = map[string]any{"enabled": true, "size": "2Gi", "storageClassName": p.Kubernetes.StorageClass}
 		server["serviceMonitor"] = map[string]any{"enabled": false}
 		server["scrape"] = map[string]any{"enabled": false}
 		if name == "victoria-metrics" {

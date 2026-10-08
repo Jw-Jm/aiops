@@ -28,9 +28,12 @@ type ImageArtifact struct {
 }
 
 type ImportReport struct {
-	BundleID string   `json:"bundleId"`
-	Driver   string   `json:"driver"`
-	Imported []string `json:"imported"`
+	BundleID       string            `json:"bundleId"`
+	Driver         string            `json:"driver"`
+	Imported       []string          `json:"imported"`
+	ImageOperation string            `json:"imageOperation,omitempty"`
+	Verified       []string          `json:"verified,omitempty"`
+	VerifiedNodes  map[string]string `json:"verifiedNodes,omitempty"`
 }
 
 // PlanImport verifies the signed Bundle and every material, then returns the
@@ -79,10 +82,16 @@ func importImages(ctx context.Context, bundleID string, p profile.ResolvedProfil
 	if err != nil {
 		return ImportReport{}, fmt.Errorf("checkpoint=probe-runtime: %w", err)
 	}
-	if driver != "orbstack_shared_store" || p.Runtime.ImageImporter != driver {
+	if (driver != "orbstack_shared_store" && driver != "containerd_ctr") || p.Runtime.ImageImporter != driver {
 		return ImportReport{}, fmt.Errorf("checkpoint=probe-runtime: CAPABILITY_DISABLED: runtime does not match resolved importer %q", p.Runtime.ImageImporter)
 	}
 	report := ImportReport{BundleID: bundleID, Driver: driver, Imported: []string{}}
+	if mode, ok := runtime.(interface{ ImageOperation() string }); ok {
+		report.ImageOperation = mode.ImageOperation()
+	}
+	if nodes, ok := runtime.(interface{ NodeIdentities() map[string]string }); ok {
+		report.VerifiedNodes = nodes.NodeIdentities()
+	}
 	for _, image := range images {
 		if err := runtime.Import(ctx, image); err != nil {
 			return report, fmt.Errorf("checkpoint=import-image material=%s: %w", image.Name, err)
@@ -90,7 +99,11 @@ func importImages(ctx context.Context, bundleID string, p profile.ResolvedProfil
 		if err := runtime.Verify(ctx, image); err != nil {
 			return report, fmt.Errorf("checkpoint=verify-image material=%s: %w", image.Name, err)
 		}
-		report.Imported = append(report.Imported, image.Name)
+		if report.ImageOperation == "verify-preloaded-all-nodes-no-pull" {
+			report.Verified = append(report.Verified, image.Name)
+		} else {
+			report.Imported = append(report.Imported, image.Name)
+		}
 	}
 	return report, nil
 }
@@ -102,13 +115,16 @@ func validateInstallProfile(p profile.ResolvedProfile, architecture string) erro
 	if !p.Installable {
 		return errors.New("candidate components prevent installation")
 	}
-	if p.Environment != "development" || p.Selected != "core" || p.Kubernetes.Distribution != "orbstack" {
-		return errors.New("CAPABILITY_DISABLED: only OrbStack development core is implemented")
+	if p.Selected != "core" || (p.Environment != "development" && p.Environment != "production") {
+		return errors.New("CAPABILITY_DISABLED: only nonvirtual core installation is implemented")
+	}
+	if p.Kubernetes.Distribution == "" || (p.Runtime.ImageImporter != "containerd_ctr" && (p.Kubernetes.Distribution != "orbstack" || p.Runtime.ImageImporter != "orbstack_shared_store")) {
+		return errors.New("CAPABILITY_DISABLED: requires verified containerd_ctr or OrbStack shared store; internal_registry is not implemented")
 	}
 	if p.Runtime.PublicEgress != "deny" {
 		return errors.New("offline profile requires publicEgress deny")
 	}
-	if p.Architecture != "arm64" || architecture != "linux/"+p.Architecture || p.Kubernetes.Architecture != p.Architecture {
+	if (p.Architecture != "arm64" && p.Architecture != "amd64") || architecture != "linux/"+p.Architecture || p.Kubernetes.Architecture != p.Architecture {
 		return errors.New("Bundle, Profile and Kubernetes architectures differ")
 	}
 	for name, component := range p.Components {

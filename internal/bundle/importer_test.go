@@ -77,6 +77,28 @@ func importProfile() profile.ResolvedProfile {
 	}
 }
 
+func TestGenericContainerdCoreProfileAdmission(t *testing.T) {
+	p := importProfile()
+	p.Kubernetes.Distribution = "kubernetes"
+	p.Kubernetes.Context = "isolated-standard-k8s"
+	p.Runtime.ImageImporter = "containerd_ctr"
+	if err := validateInstallProfile(p, "linux/arm64"); err != nil {
+		t.Fatalf("standard Kubernetes containerd core rejected: %v", err)
+	}
+	for _, mutate := range []func(*profile.ResolvedProfile){
+		func(p *profile.ResolvedProfile) { p.Runtime.ImageImporter = "internal_registry" },
+		func(p *profile.ResolvedProfile) { p.Runtime.PublicEgress = "allow" },
+		func(p *profile.ResolvedProfile) { p.Architecture = "amd64" },
+		func(p *profile.ResolvedProfile) { p.Installable = false },
+	} {
+		bad := p
+		mutate(&bad)
+		if validateInstallProfile(bad, "linux/arm64") == nil {
+			t.Fatal("unsupported driver, open egress, mismatched architecture or candidate accepted")
+		}
+	}
+}
+
 func TestPlanFallbackKeepsObservedExternalVersionIndependent(t *testing.T) {
 	archive, digest := ociFixture(t, false, false)
 	dir := t.TempDir()
