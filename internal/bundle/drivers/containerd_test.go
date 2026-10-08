@@ -179,3 +179,33 @@ func TestNodeLocalContainerdWitnessAndClosure(t *testing.T) {
 		})
 	}
 }
+
+func TestContainerdArchitectureMatrixRejectsMixedNodes(t *testing.T) {
+	for _, arch := range []string{"arm64", "amd64"} {
+		t.Run(arch, func(t *testing.T) {
+			p := containerdProfile()
+			p.Architecture = arch
+			image := bundle.ImageArtifact{Reference: "ops.local/api@sha256:" + strings.Repeat("a", 64)}
+			nodes := nodeInventory(image.Reference)
+			for i := range nodes {
+				nodes[i].Status.NodeInfo.Architecture = arch
+			}
+			calls := []string{}
+			d := &PreloadedContainerd{Run: clusterRunner(t, &nodes, &calls)}
+			if _, err := d.Probe(context.Background(), p); err != nil {
+				t.Fatal(err)
+			}
+			if err := d.Verify(context.Background(), image); err != nil {
+				t.Fatal(err)
+			}
+			other := "arm64"
+			if arch == other {
+				other = "amd64"
+			}
+			nodes[1].Status.NodeInfo.Architecture = other
+			if err := d.Verify(context.Background(), image); err == nil {
+				t.Fatal("mixed architecture accepted")
+			}
+		})
+	}
+}

@@ -11,6 +11,8 @@
 
 生产 HA、auto-unseal 与发行版生产资格仍受既有门禁约束。其他 Kubernetes 上的功能安装可采用 development Profile；改变发行版不自动构成生产资格通过。
 
+ARM64 与 x86_64 使用同一安装流程，Kubernetes/Go 中 x86_64 的架构名为 `amd64`。分别交叉构建 Linux 的 opsctl、API、Worker 和 migration 工具，并分别准备当前锁定版本的第三方 OCI manifest、原始许可证/notice、SBOM、依赖闭包和对应源码。HolmesGPT 的 Python/native 依赖也必须按目标架构闭包准入；不能只给 Bundle 改 architecture 或复用 ARM64 的叶子 digest。本轮 ARM64 实装与双架构编译/准入状态分别见证据，尚未准入的 amd64 第三方包和没有真实目标的 amd64 部署继续明确未验证。节点混合架构仍拒绝。
+
 ## 1. 验签并准备当前目标 Profile
 
 安装机与每个节点均用独立渠道取得的公钥验签，不能信任包内自带的公钥：
