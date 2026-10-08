@@ -21,6 +21,8 @@ opsctl bundle verify --manifest /media/core/bundle.lock.json \
   --payload /media/core/payload.tar.zst --key /trust/bundle-trust.pem
 ```
 
+安装器可由独立签名的工具 Bundle 更新，core Bundle 的镜像/Chart 保持其原签名与源码绑定。此时分别验签两包，从工具包取得匹配目标架构的 `opsctl` 与当前安装源材料，并核对二进制在该包认证清单中的 SHA256，再用该版本操作 core 包。本轮精确的 core/工具包配对见验收证据；不得只替换未签名的 CLI 或把工具包验证当成 core 业务验证。工具包不包含业务镜像，不改变已有安装 checkpoint 的 core Bundle 身份。
+
 按已验签文件清单展开物料及 `opsctl-source` 对应的安装源材料。`INSTALLER_SOURCE` 表示该解包目录，包含 Catalog、模板和 forward-only migrations；它不需要 `.git`、Git、Go、Python 包管理器或在线模块仓库。运行 OpenBao 初始化时在该源材料根目录中执行，以维持明确的私有恢复材料排除边界。
 
 从签名材料提供的 Catalog/模板发现真实目标；模板可以先由操作者明确配置实际 namespace、端点和组件模式，不可直接作为 resolved Profile 安装：

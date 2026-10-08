@@ -277,25 +277,37 @@ func (d *LocalContainerd) Verify(ctx context.Context, image bundle.ImageArtifact
 	if !d.probed {
 		return errors.New("node socket must be probed before verification")
 	}
-	raw, err := d.ctr(ctx, "images", "list", "name=="+image.Reference)
+	// ctr stores familiar Docker Hub names in their fully qualified form.
+	// Resolve only the standard naming alias; the target digest stays exact.
+	reference := image.Reference
+	if strings.HasPrefix(reference, "index.docker.io/") {
+		reference = "docker.io/" + strings.TrimPrefix(reference, "index.docker.io/")
+	}
+	first, _, hasSlash := strings.Cut(reference, "/")
+	if !hasSlash {
+		reference = "docker.io/library/" + reference
+	} else if first != "localhost" && !strings.ContainsAny(first, ".:") {
+		reference = "docker.io/" + reference
+	}
+	raw, err := d.ctr(ctx, "images", "list", "name=="+reference)
 	if err != nil {
 		return err
 	}
 	matched := false
 	for _, line := range strings.Split(string(raw), "\n") {
 		f := strings.Fields(line)
-		if len(f) >= 3 && f[0] == image.Reference && f[2] == image.Digest {
+		if len(f) >= 3 && f[0] == reference && f[2] == image.Digest {
 			matched = true
 		}
 	}
 	if !matched {
 		return errors.New("imported containerd reference/target digest differs")
 	}
-	raw, err = d.ctr(ctx, "images", "check", "--quiet", "--snapshotter", d.Snapshotter, "name=="+image.Reference)
+	raw, err = d.ctr(ctx, "images", "check", "--quiet", "--snapshotter", d.Snapshotter, "name=="+reference)
 	if err != nil {
 		return err
 	}
-	if strings.TrimSpace(string(raw)) != image.Reference {
+	if strings.TrimSpace(string(raw)) != reference {
 		return errors.New("imported containerd image is incomplete or not unpacked; refusing pull")
 	}
 	return nil

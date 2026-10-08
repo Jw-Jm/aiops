@@ -93,8 +93,14 @@ func TestNodeLocalContainerdWitnessAndClosure(t *testing.T) {
 	digest := "sha256:" + strings.Repeat("a", 64)
 	ref := "ops.local/api@" + digest
 	id := strings.Repeat("c", 64)
-	for _, scenario := range []string{"valid", "foreign-socket", "wrong-node", "wrong-digest", "missing-layer"} {
+	for _, scenario := range []string{"valid", "docker-hub-normalized", "foreign-socket", "wrong-node", "wrong-digest", "missing-layer"} {
 		t.Run(scenario, func(t *testing.T) {
+			ref := ref
+			storedRef := ref
+			if scenario == "docker-hub-normalized" {
+				ref = "victoriametrics/victoria-logs@" + digest
+				storedRef = "docker.io/" + ref
+			}
 			nodes := nodeInventory(ref)
 			calls := []string{}
 			base := clusterRunner(t, &nodes, &calls)
@@ -123,16 +129,19 @@ func TestNodeLocalContainerdWitnessAndClosure(t *testing.T) {
 				case strings.Contains(c, "images import"):
 					return nil, nil
 				case strings.Contains(c, "images list"):
+					if args[len(args)-1] != "name=="+storedRef {
+						return []byte("REF TYPE DIGEST\n"), nil
+					}
 					target := digest
 					if scenario == "wrong-digest" {
 						target = "sha256:" + strings.Repeat("b", 64)
 					}
-					return []byte("REF TYPE DIGEST\n" + ref + " application/vnd.oci.image.manifest.v1+json " + target + "\n"), nil
+					return []byte("REF TYPE DIGEST\n" + storedRef + " application/vnd.oci.image.manifest.v1+json " + target + "\n"), nil
 				case strings.Contains(c, "images check"):
-					if scenario == "missing-layer" {
+					if scenario == "missing-layer" || args[len(args)-1] != "name=="+storedRef {
 						return nil, nil
 					}
-					return []byte(ref + "\n"), nil
+					return []byte(storedRef + "\n"), nil
 				}
 				return nil, errors.New("unexpected ctr command")
 			}
@@ -155,7 +164,7 @@ func TestNodeLocalContainerdWitnessAndClosure(t *testing.T) {
 			if err = d.Import(ctx, image); err != nil {
 				t.Fatal(err)
 			}
-			if err = d.Verify(ctx, image); (err == nil) != (scenario == "valid") {
+			if err = d.Verify(ctx, image); (err == nil) != (scenario == "valid" || scenario == "docker-hub-normalized") {
 				t.Fatalf("closure accepted incorrectly: %v", err)
 			}
 			for _, c := range calls {
