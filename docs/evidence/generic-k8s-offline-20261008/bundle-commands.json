@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/opsctl-host",
+      "bundle",
+      "build",
+      "--spec",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/build-spec.json",
+      "--output",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle",
+      "--signing-key",
+      "/Users/mssc/.cache/ops-sp06-20261004/bundle-signing.pem"
+    ],
+    "exitCode": 0,
+    "minimumFreeBytes": 11801944064
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/opsctl-host",
+      "bundle",
+      "verify",
+      "--manifest",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle/bundle.lock.json",
+      "--signature",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle/bundle.lock.sig",
+      "--payload",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle/payload.tar.zst",
+      "--key",
+      "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem"
+    ],
+    "exitCode": 0,
+    "minimumFreeBytes": 11958054912
+  }
+]

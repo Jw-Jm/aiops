@@ -1,0 +1,564 @@
+{
+  "startedAt": "2026-10-08T14:08:53.862942+00:00",
+  "target": "standard Kubernetes/containerd",
+  "performance": "USER_WAIVED_NOT_PASS",
+  "modelInference": "USER_WAIVED_NOT_PASS",
+  "SP07Started": false,
+  "directBusinessTableWrites": false,
+  "investigatorAbsentBeforeFaultAndJob": true,
+  "failureType": "AssertionError",
+  "failureFrames": [
+    {
+      "file": "business-smoke.py",
+      "line": 40
+    }
+  ],
+  "investigatorRestoredExactSpec": true,
+  "exitCode": 1,
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/oidc-operator-login.py",
+        "generic-business-smoke"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-generic-core-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-generic-core-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "-n",
+        "ops-generic-core-20261008",
+        "patch",
+        "deployment",
+        "ops-investigator",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"fc8cfaa8-bd6c-496f-ac78-ad63616004b2\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"4723\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-generic-core-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "-n",
+        "ops-generic-core-20261008",
+        "patch",
+        "deployment",
+        "ops-investigator",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"fc8cfaa8-bd6c-496f-ac78-ad63616004b2\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"4952\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 0}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 1}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "-n",
+        "ops-generic-core-20261008",
+        "rollout",
+        "status",
+        "deployment/ops-investigator",
+        "--timeout=150s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-generic-core-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-sessions",
+      "status": 400,
+      "resumeCursorProvided": false
+    }
+  ],
+  "completedAt": "2026-10-08T14:10:09.100345+00:00",
+  "modelAccuracyAcceptance": false
+}

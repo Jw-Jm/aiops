@@ -1,0 +1,98 @@
+{
+  "observedAt": "2026-10-08T12:35:29.002619+00:00",
+  "authorization": "complete generic Kubernetes offline installation, preserve existing development environment; model/performance waived",
+  "baseline": "03bddf12c7b83a06cd766603cbbaeeef3f5d1644",
+  "branch": "main",
+  "remote": "https://github.com/Jw-Jm/aiops",
+  "worktrees": "/Users/mssc/Documents/Code/ops/platform                             03bddf1 [main]\n/Users/mssc/Documents/Code/ops/.worktrees/sp01-red-green            e3c990f [sp01-red-green]\n/Users/mssc/Documents/Code/ops/.worktrees/sp03-platform-foundation  ebe143c [sp03/platform-foundation]\n/Users/mssc/Documents/Code/ops/.worktrees/sp03-review-fixes         a300fa8 [sp03/review-fixes]",
+  "initialUserChanges": [],
+  "scope": [
+    "standard Kubernetes core on Linux containerd",
+    "node-local verified OCI import",
+    "all-node preloaded-image admission",
+    "portable detect/resolve/install/bootstrap",
+    "signed updated materials and necessary independent-target business smoke"
+  ],
+  "excluded": [
+    "KubeVirt/CDI",
+    "PyRCA",
+    "SP07",
+    "production HA/capacity qualification",
+    "Ollama inference acceptance"
+  ],
+  "tasks": [
+    {
+      "id": "G1",
+      "task": "runtime/import admission and failure tests",
+      "status": "FORMAL_IMPORT_PASS_ACTUAL_POD_START_PASS",
+      "contract": "DeploymentProfile/v1, signed Bundle/OCI import contract",
+      "implementationEntry": "internal/bundle/drivers/containerd.go",
+      "completionCondition": "canonical Docker names and explicit repository base prevent unusable CRI aliases; failures/red/green retained; signed Linux R2 importer and actual target Pod passed"
+    },
+    {
+      "id": "G2",
+      "task": "profile/CLI/bootstrap portability and runbook",
+      "status": "FORMAL_PORTABLE_BOOTSTRAP_AND_NONDEFAULT_STORAGE_PASS",
+      "contract": "formal three-stage installer and environment/OpenBao/database bootstrap",
+      "implementationEntry": "cmd/opsctl/main.go; internal/profile; dependency PVC templates",
+      "completionCondition": "Authenticated extracted source without Git used for real initialization; explicit nondefault StorageClass retained and 5 PVCs Bound; all formal initialization/stages completed"
+    },
+    {
+      "id": "G3",
+      "task": "source-bound signed material preparation",
+      "status": "CORE_R2_AND_TOOLS_R2_SIGNED_INDEPENDENTLY_VERIFIED",
+      "contract": "Bundle/v1/source/license/SBOM locks",
+      "implementationEntry": "bundle-receipt.json",
+      "completionCondition": "public signed materials relocated byte-identically to authorized writable external disk; secrets remain host-private"
+    },
+    {
+      "id": "G4",
+      "task": "independent standard Kubernetes necessary live smoke",
+      "status": "ARM64_FORMAL_INSTALL_AND_NECESSARY_BUSINESS_SMOKE_PASS",
+      "contract": "generic target install and necessary business smoke",
+      "implementationEntry": "profile/import/install/bootstrap formal CLIs",
+      "completionCondition": "dependencies/bootstrap-api/business each exit0; empty database, migrations, identity, actual API/Registry, native Finding/Evidence/Incident/archive, revoke/restore, Job/cancel/budget/Audit/SSE exit0; model inference waived"
+    },
+    {
+      "id": "G5",
+      "task": "affected regression and uninvolved read-only final review",
+      "status": "AFFECTED_REGRESSION_AND_FINAL_COMPLETE_LIMITED_SCOPE_INDEPENDENT_REVIEW_PASS",
+      "contract": "functional regression and independent read-only review",
+      "implementationEntry": "affected-checks.json; checks-with-waivers.json",
+      "completionCondition": "final affected regression/source/generated checks exit0; original replay exit0; make check exit2 preserved, no blanket PASS"
+    },
+    {
+      "id": "G6",
+      "task": "commit/push and clean workspace",
+      "status": "COMMIT_PUSH_PENDING_AT_LEDGER_CAPTURE_FINAL_RESULTS_IN_PRIMARY_FINAL_RESPONSE",
+      "contract": "Git delivery",
+      "implementationEntry": "main",
+      "completionCondition": "Five source commits on main; fetch confirmed origin main unchanged; evidence commit/nonforce push and clean/remote equality will be verified and reported in final response"
+    }
+  ],
+  "status": "ARM64_LIMITED_FUNCTIONAL_SCOPE_FINAL_INDEPENDENT_PASS_AMD64_FULL_DELIVERY_PENDING",
+  "updatedAt": "2026-10-09T00:25:40.058355+00:00",
+  "sourceCommit": "36eef430fd55ae5c003b792e20541fc2988fd940",
+  "performance": "USER_WAIVED_NOT_PASS",
+  "modelInference": "USER_WAIVED_NOT_PASS",
+  "requiredInput": null,
+  "architectureScope": {
+    "requested": [
+      "arm64",
+      "amd64"
+    ],
+    "firstPartyLinuxCrossBuilds": "PASS: opsctl/API/Worker/db-migrate both architectures",
+    "runtimeImportGuards": "same implementation, homogeneous nodes required; cross-architecture Bundle rejected",
+    "arm64ThirdPartyBundle": "signed core R2",
+    "amd64ThirdPartyBundle": "NOT_YET_ADMITTED_OR_BUILT: exact per-architecture OCI/dependency/SBOM/source closure required",
+    "amd64LiveDeployment": "UNVERIFIED_NO_NATIVE_TARGET"
+  },
+  "signedDeliveryPair": {
+    "coreBundle": "generic-k8s-core-20261008-r2",
+    "installerToolsBundle": "generic-k8s-installer-20261008-r2",
+    "managementTool": "Ed25519 detached signed manifest, same independently verified source binding"
+  },
+  "scopeLimit": "Generic installer functional acceptance on ARM64; amd64 first-party cross-build/admission guards only, no complete amd64 distribution or live deployment PASS",
+  "testInfrastructureStatus": "Final read-only observation: original development 11/11 Pods Ready after original-material OpenBao unseal and real OIDC/API read smoke; dedicated standard node and model transport exited, restart=no; all protected data retained",
+  "independentReview": "Final complete limited-scope PASS by /root/functional_readonly_review; independent-readonly-review-final.md"
+}

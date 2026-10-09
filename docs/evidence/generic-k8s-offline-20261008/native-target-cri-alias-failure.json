@@ -1,0 +1,182 @@
+{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "creationTimestamp": "2026-10-08T13:48:39Z",
+        "generation": 1,
+        "labels": {
+            "ops.platform.io/owner": "generic-k8s-offline-20261008",
+            "ops.platform.io/purpose": "owned-finite-native-targets",
+            "tenant": "ca8ed927-7b4e-47c4-8345-342b0a5b1fa6"
+        },
+        "name": "generic-readiness-target",
+        "namespace": "ops-generic-targets-20261008",
+        "resourceVersion": "2598",
+        "uid": "57f22e8a-011e-457b-b2d0-bb3fc62d32b3"
+    },
+    "spec": {
+        "activeDeadlineSeconds": 14400,
+        "automountServiceAccountToken": false,
+        "containers": [
+            {
+                "command": [
+                    "/bin/bash",
+                    "-ec",
+                    "printf \"native-readiness-started uid=%s namespace=%s\\n\" \"$POD_UID\" \"$POD_NAMESPACE\"; sleep 14100"
+                ],
+                "env": [
+                    {
+                        "name": "POD_UID",
+                        "valueFrom": {
+                            "fieldRef": {
+                                "apiVersion": "v1",
+                                "fieldPath": "metadata.uid"
+                            }
+                        }
+                    },
+                    {
+                        "name": "POD_NAMESPACE",
+                        "valueFrom": {
+                            "fieldRef": {
+                                "apiVersion": "v1",
+                                "fieldPath": "metadata.namespace"
+                            }
+                        }
+                    }
+                ],
+                "image": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                "imagePullPolicy": "Never",
+                "name": "owned-target",
+                "resources": {
+                    "limits": {
+                        "cpu": "50m",
+                        "memory": "32Mi"
+                    },
+                    "requests": {
+                        "cpu": "10m",
+                        "memory": "16Mi"
+                    }
+                },
+                "securityContext": {
+                    "allowPrivilegeEscalation": false,
+                    "capabilities": {
+                        "drop": [
+                            "ALL"
+                        ]
+                    },
+                    "readOnlyRootFilesystem": true
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+            }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": true,
+        "nodeName": "ops-offline-20261008-control-plane",
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Never",
+        "schedulerName": "default-scheduler",
+        "securityContext": {
+            "runAsGroup": 65532,
+            "runAsNonRoot": true,
+            "runAsUser": 65532,
+            "seccompProfile": {
+                "type": "RuntimeDefault"
+            }
+        },
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 30,
+        "tolerations": [
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            }
+        ]
+    },
+    "status": {
+        "conditions": [
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-08T13:48:40Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-08T13:48:39Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-08T13:48:39Z",
+                "message": "containers with unready status: [owned-target]",
+                "observedGeneration": 1,
+                "reason": "ContainersNotReady",
+                "status": "False",
+                "type": "Ready"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-08T13:48:39Z",
+                "message": "containers with unready status: [owned-target]",
+                "observedGeneration": 1,
+                "reason": "ContainersNotReady",
+                "status": "False",
+                "type": "ContainersReady"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-08T13:48:39Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+            }
+        ],
+        "containerStatuses": [
+            {
+                "image": "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257",
+                "imageID": "",
+                "lastState": {},
+                "name": "owned-target",
+                "ready": false,
+                "restartCount": 0,
+                "started": false,
+                "state": {
+                    "waiting": {
+                        "message": "failed to check if this is a checkpoint image: failed to get image from containerd \"sha256:3300775c2560bfb0d4176741a76e4a8fc3f42a4a6ce93213ac24e22c13fc6993\": image \"docker.io/library/import-2026-10-08@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257\": not found",
+                        "reason": "CreateContainerError"
+                    }
+                }
+            }
+        ],
+        "hostIP": "192.168.165.3",
+        "hostIPs": [
+            {
+                "ip": "192.168.165.3"
+            }
+        ],
+        "observedGeneration": 1,
+        "phase": "Pending",
+        "podIP": "10.244.0.5",
+        "podIPs": [
+            {
+                "ip": "10.244.0.5"
+            }
+        ],
+        "qosClass": "Burstable",
+        "startTime": "2026-10-08T13:48:39Z"
+    }
+}

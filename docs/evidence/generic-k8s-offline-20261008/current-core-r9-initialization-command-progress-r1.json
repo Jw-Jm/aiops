@@ -1,0 +1,87 @@
+[
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+      "openbao",
+      "init",
+      "--profile",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/profile-resolved-r1.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/openbao-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/openbao-recovery.json",
+      "--bundle-dir",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+      "openbao",
+      "unseal",
+      "--profile",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/profile-resolved-r1.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/openbao-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/openbao-recovery.json",
+      "--bundle-dir",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle",
+      "--share-index",
+      "0"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+      "openbao",
+      "unseal",
+      "--profile",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/profile-resolved-r1.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/openbao-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/openbao-recovery.json",
+      "--bundle-dir",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle",
+      "--share-index",
+      "1"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+      "openbao",
+      "configure",
+      "--profile",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/profile-observed-openbao-r1.yaml",
+      "--ca-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/openbao-ca.pem",
+      "--recovery-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/openbao-recovery.json",
+      "--bundle-dir",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle",
+      "--investigation-signing"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+      "bootstrap",
+      "oidc-realm",
+      "--profile",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/profile-resolved-r1.yaml",
+      "--config",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/oidc-input.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/oidc-private.json",
+      "--ca",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/oidc-ca.pem"
+    ],
+    "exitCode": 0
+  }
+]

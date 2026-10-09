@@ -1,0 +1,76 @@
+[
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "kind-ops-offline-20261008",
+      "get",
+      "namespace",
+      "ops-generic-core-20261008",
+      "--ignore-not-found",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-r1/opsctl-host",
+      "bootstrap",
+      "environment",
+      "--config",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/environment.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/dependency-secrets-missing.json"
+    ],
+    "exitCode": 1
+  },
+  {
+    "command": [
+      "kubectl",
+      "get",
+      "namespace",
+      "ops-generic-core-20261008",
+      "--ignore-not-found",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-r1/opsctl-host",
+      "bootstrap",
+      "environment",
+      "--config",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/environment.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/dependency-secrets.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-r1/opsctl-host",
+      "bootstrap",
+      "environment",
+      "--config",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/environment.json",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/dependency-secrets.json"
+    ],
+    "exitCode": 1
+  },
+  {
+    "command": [
+      "kubectl",
+      "get",
+      "secrets",
+      "-n",
+      "ops-generic-core-20261008",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  }
+]

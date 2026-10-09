@@ -1,0 +1,147 @@
+{
+  "clusterUID": "759b7f0b-a930-4db4-86d1-be4dd2b525f6",
+  "tenantId": "ca8ed927-7b4e-47c4-8345-342b0a5b1fa6",
+  "resources": [
+    {
+      "kind": "Namespace",
+      "name": "ops-generic-targets-20261008",
+      "namespace": null,
+      "uid": "135ac8f2-849c-44fe-9e16-73b0d0d192ce"
+    },
+    {
+      "kind": "NetworkPolicy",
+      "name": "owned-targets-default-deny",
+      "namespace": "ops-generic-targets-20261008",
+      "uid": "1014aba5-babe-481c-889c-b49f1fe49fe1"
+    },
+    {
+      "kind": "Pod",
+      "name": "generic-readiness-target",
+      "namespace": "ops-generic-targets-20261008",
+      "uid": "57f22e8a-011e-457b-b2d0-bb3fc62d32b3"
+    }
+  ],
+  "actualPhaseObservedAt": "2026-10-08T13:59:02.491053+00:00",
+  "targetCreationTimestamp": "2026-10-08T13:48:39Z",
+  "targetNode": "ops-offline-20261008-control-plane",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "namespace",
+        "kube-system",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "nodes",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "endpointslices",
+        "-n",
+        "default",
+        "-l",
+        "kubernetes.io/service-name=kubernetes",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "Namespace",
+        "ops-generic-targets-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "NetworkPolicy",
+        "owned-targets-default-deny",
+        "--ignore-not-found",
+        "-o",
+        "json",
+        "-n",
+        "ops-generic-targets-20261008"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "Pod",
+        "generic-readiness-target",
+        "--ignore-not-found",
+        "-o",
+        "json",
+        "-n",
+        "ops-generic-targets-20261008"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "-n",
+        "ops-generic-targets-20261008",
+        "wait",
+        "--for=condition=Ready",
+        "pod/generic-readiness-target",
+        "--timeout=60s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "pod",
+        "generic-readiness-target",
+        "-n",
+        "ops-generic-targets-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "finiteOwnWorkload": true,
+  "performanceBenchmark": false
+}

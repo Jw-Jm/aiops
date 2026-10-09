@@ -1,0 +1,87 @@
+{
+  "observedAt": "2026-10-08T14:03:44.649258+00:00",
+  "namespace": "ops-generic-core-20261008",
+  "postgresPodUID": "18e2298d-72e2-4f65-8028-de4275844695",
+  "serviceUID": "c5e5f50b-4dab-4cb1-9e76-5bfc6ceb3af3",
+  "emptyBeforeMigration": true,
+  "signedMigrationTool": "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a",
+  "migrationCount": 35,
+  "businessSeedUsed": false,
+  "result": {
+    "migrationTable": "goose_db_version",
+    "platformSchema": true,
+    "restrictedLogins": 3,
+    "tenants": 0,
+    "version": 35
+  },
+  "commands": [
+    {
+      "command": [
+        "go",
+        "run",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/database-proof.go"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "<owned-node>",
+        "<private-DSN-env>",
+        "/media/core-material/verified-tools/db-migrate",
+        "-dir",
+        "/media/core-material/verified-tools/migrations",
+        "-to",
+        "1"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+        "bootstrap",
+        "database-logins",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/database-logins.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "<owned-node>",
+        "<private-DSN-env>",
+        "/media/core-material/verified-tools/db-migrate",
+        "-dir",
+        "/media/core-material/verified-tools/migrations",
+        "-to",
+        "0"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "<owned-node>",
+        "<private-DSN-env>",
+        "/media/core-material/verified-tools/db-migrate",
+        "-dir",
+        "/media/core-material/verified-tools/migrations",
+        "-to",
+        "0"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "go",
+        "run",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/database-proof.go"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

@@ -1,0 +1,378 @@
+{
+  "checkedAt": "2026-10-08T14:14:38.950959+00:00",
+  "checks": [
+    {
+      "command": [
+        "kubectl",
+        "-n",
+        "ops-generic-core-20261008",
+        "get",
+        "pods",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "resources": [
+        {
+          "kind": "Pod",
+          "name": "ops-api-596dcb968b-5qn6d",
+          "uid": "ad08ac0c-2498-43a1-ab23-fdd1a90a55d6",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "ops.local/task27/platform-api@sha256:e39896f6ecd1208421bf7f6f5d1501c9155aca95edc2bcd0ed62b70abbc52908"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-investigator-6677fddbcd-qb8rd",
+          "uid": "bb5a30fa-a4f7-4397-8284-e6e674535f40",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "ops.local/task27/holmesgpt@sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-keycloak-587c8754f8-5trpm",
+          "uid": "c759fb12-b8bc-4014-a879-4ad03217f631",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-openbao-0",
+          "uid": "bc8caf45-d0c8-458d-9d14-bd7fb4e128aa",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-postgresql-0",
+          "uid": "18e2298d-72e2-4f65-8028-de4275844695",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-seaweedfs-0",
+          "uid": "fc6a3021-9fd2-440d-90ee-e1848958f30e",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-victoria-logs-0",
+          "uid": "48001f3f-0519-45d1-8ef6-06b8d387a64b",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "victoriametrics/victoria-logs@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-victoria-metrics-0",
+          "uid": "afaded4e-e3d5-4f81-81f8-e4171ef747c4",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-vmalert-748d74c79-tlfzc",
+          "uid": "29b80c7c-edf5-4621-8e61-75bf2530add6",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-worker-687f6fb79d-ssgw7",
+          "uid": "b80dda8d-576e-496a-a61b-f6a218476c21",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "ops.local/task27/platform-worker@sha256:43db93edde71b67bd537043fdbac573d87ad6b0f6359a555578b92a7c0b6517c"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-worker-687f6fb79d-wb2fx",
+          "uid": "13669a53-0131-457c-81bd-79a9cb40554b",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "ops.local/task27/platform-worker@sha256:43db93edde71b67bd537043fdbac573d87ad6b0f6359a555578b92a7c0b6517c"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        }
+      ]
+    },
+    {
+      "command": [
+        "kubectl",
+        "-n",
+        "ops-generic-core-20261008",
+        "get",
+        "pvc",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "resources": [
+        {
+          "kind": "PersistentVolumeClaim",
+          "name": "data-ops-openbao-0",
+          "uid": "5564ffd2-4074-40ae-a43c-7ccbaf712e00",
+          "phase": "Bound",
+          "storageClass": "ops-offline-storage",
+          "volume": "pvc-5564ffd2-4074-40ae-a43c-7ccbaf712e00"
+        },
+        {
+          "kind": "PersistentVolumeClaim",
+          "name": "data-ops-postgresql-0",
+          "uid": "187ba128-ee3f-4c5a-b3c4-4d5bfaf9a8d4",
+          "phase": "Bound",
+          "storageClass": "ops-offline-storage",
+          "volume": "pvc-187ba128-ee3f-4c5a-b3c4-4d5bfaf9a8d4"
+        },
+        {
+          "kind": "PersistentVolumeClaim",
+          "name": "data-ops-seaweedfs-0",
+          "uid": "ad4c35f9-8c23-4c7b-84c5-6691e1feb0d1",
+          "phase": "Bound",
+          "storageClass": "ops-offline-storage",
+          "volume": "pvc-ad4c35f9-8c23-4c7b-84c5-6691e1feb0d1"
+        },
+        {
+          "kind": "PersistentVolumeClaim",
+          "name": "server-volume-ops-victoria-logs-0",
+          "uid": "e131cd97-2998-46d0-9127-dd180e30d484",
+          "phase": "Bound",
+          "storageClass": "ops-offline-storage",
+          "volume": "pvc-e131cd97-2998-46d0-9127-dd180e30d484"
+        },
+        {
+          "kind": "PersistentVolumeClaim",
+          "name": "server-volume-ops-victoria-metrics-0",
+          "uid": "2560f762-9e52-46b5-b792-3104fb903e1d",
+          "phase": "Bound",
+          "storageClass": "ops-offline-storage",
+          "volume": "pvc-2560f762-9e52-46b5-b792-3104fb903e1d"
+        }
+      ]
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "pods",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "resources": [
+        {
+          "kind": "Pod",
+          "name": "ops-api-5988978559-tqcsc",
+          "uid": "100f9503-e10e-4162-81f8-0185912ee801",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "ops.local/task27/platform-api@sha256:cc4d73936cc0eca3442ecfc609a974594a40d80e3c43cb432bf7f7111b8bfcba"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-investigator-77744994b8-hgl6j",
+          "uid": "7b1852c6-b5ba-4235-a06e-70a82f6e6bf0",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "ops.local/task27/holmesgpt@sha256:b2c93e4e2c4f589ca71b09596a99ec3b19b87339352fb8db0f7a59fc926db593"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-keycloak-6dcd55c746-pm9rn",
+          "uid": "4f1d3aa0-4335-45cc-b3b4-4a251a031e28",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "quay.io/keycloak/keycloak@sha256:1f91ac24e8d68b8189d5d53a8381464c1db0fcff479348d5de973a86b63d621c"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-openbao-0",
+          "uid": "6dbc747a-d27e-4268-99eb-59cb77f144cf",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "ghcr.io/openbao/openbao@sha256:4ca9310dd2a50c746d4227f44058088ee0470a8470031ee3f09cc8b1a69dd7f6"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-postgresql-0",
+          "uid": "f2f32c0d-31ae-4472-bc0e-4a831f0b44a0",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "docker.io/library/postgres@sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-seaweedfs-0",
+          "uid": "a37d574b-4ed9-4740-b957-744b845abfe0",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "docker.io/chrislusf/seaweedfs@sha256:d4cf67729aa8777e1a43a5b61d72e5b96179e4b7bac9a221cb14cbc2036cb32e"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-victoria-logs-0",
+          "uid": "e33777d3-cbd3-4911-8d42-9dc1ce3aa616",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "victoriametrics/victoria-logs@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-victoria-metrics-0",
+          "uid": "0e70a3fe-32a4-4ccc-b823-04d571b99fea",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-vmalert-74c5744dd9-jth7d",
+          "uid": "b7088cfb-470a-4ce6-800c-159aa215053a",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "docker.io/victoriametrics/vmalert@sha256:48e01bd36d098b9c8a1537d38235e0194013e38853196b446cb0eb1f17057311"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-worker-d44c5f5f5-dc6vg",
+          "uid": "cf564743-8275-41f8-b202-e5e415710069",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "ops.local/task27/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        },
+        {
+          "kind": "Pod",
+          "name": "ops-worker-d44c5f5f5-ljhrt",
+          "uid": "421cd18a-5299-41ee-bc4c-06cdc286b061",
+          "phase": "Running",
+          "ready": true,
+          "images": [
+            "ops.local/task27/platform-worker@sha256:2f519bbdeb4bbead55143f64e53bea883dec68ce9b08d3e27bf1ae71046a978b"
+          ],
+          "imagePullPolicies": [
+            "Never"
+          ]
+        }
+      ]
+    }
+  ],
+  "newTargetAllReady": true,
+  "explicitNondefaultStorageBound": true,
+  "originalDevelopmentAllReady": true
+}

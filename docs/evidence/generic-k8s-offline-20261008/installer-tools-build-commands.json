@@ -1,0 +1,76 @@
+[
+  {
+    "command": [
+      "go",
+      "build",
+      "-trimpath",
+      "-buildvcs=false",
+      "-ldflags=-s -w",
+      "-mod=readonly",
+      "-o",
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/platform-api-binary",
+      "./cmd/platform-api"
+    ],
+    "exitCode": 0
+  },
+  {
+    "runtime": "platform-api",
+    "unchangedFromSignedCoreR2": true,
+    "sha256": "sha256:db1677e6ce99342203e14cc332b68ebca114388dfccae13fcbbb5403903157dd"
+  },
+  {
+    "command": [
+      "go",
+      "build",
+      "-trimpath",
+      "-buildvcs=false",
+      "-ldflags=-s -w",
+      "-mod=readonly",
+      "-o",
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/platform-worker-binary",
+      "./cmd/platform-worker"
+    ],
+    "exitCode": 0
+  },
+  {
+    "runtime": "platform-worker",
+    "unchangedFromSignedCoreR2": true,
+    "sha256": "sha256:29d4ccc565b2b2f5c3a440bd0e0b7206ad8f623d270df1e1e3eefd2d9f79198d"
+  },
+  {
+    "command": [
+      "go",
+      "build",
+      "-trimpath",
+      "-buildvcs=false",
+      "-ldflags=-s -w",
+      "-mod=readonly",
+      "-o",
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/opsctl-binary",
+      "./cmd/opsctl"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/tmp/ops-task27-tools/syft",
+      "file:/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/opsctl-binary",
+      "-o",
+      "spdx-json=/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/opsctl.spdx.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "go",
+      "build",
+      "-trimpath",
+      "-buildvcs=false",
+      "-mod=readonly",
+      "-o",
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/opsctl-host",
+      "./cmd/opsctl"
+    ],
+    "exitCode": 0
+  }
+]

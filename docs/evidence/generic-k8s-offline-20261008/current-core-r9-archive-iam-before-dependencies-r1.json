@@ -1,0 +1,38 @@
+{
+  "observedAt": "2026-10-08T13:49:32.862297+00:00",
+  "namespaceUID": "c86be7d3-f88a-4f04-af27-d69d7793d6be",
+  "secretUID": "f00dfc58-ee8b-4e3a-8a03-e8f513c21b3f",
+  "beforeResourceVersion": "2639",
+  "afterResourceVersion": "2687",
+  "privateIAMFile": "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/archive-iam-r1.json",
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-r1/opsctl-host",
+        "bootstrap",
+        "archive-iam",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/archive-iam-input-r1.json",
+        "--output",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/archive-iam-r1.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "replace",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "preparedBeforeDependencyPods": true,
+  "oldProtectedObjectsOrIdentityAdopted": false,
+  "fullArchiveRuntimeAcceptance": false
+}

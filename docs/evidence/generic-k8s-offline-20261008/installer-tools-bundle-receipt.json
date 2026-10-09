@@ -1,0 +1,44 @@
+{
+  "bundleId": "generic-k8s-installer-20261008-r2",
+  "payloadDigest": "sha256:d28316e80e6e580cfc3e295ba385b15690f8da26ca1d667fd15bfba91927a26c",
+  "materialCount": 3,
+  "independentTrustSHA256": "sha256:47f3b2279069c4b72c9b1ccb3db05de1e5805677d6922e7b2cc4d2a6f18569a7",
+  "sourceBinding": "installer-tools-source-binding.json",
+  "commands": [
+    {
+      "command": [
+        "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/opsctl-host",
+        "bundle",
+        "build",
+        "--spec",
+        "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/build-spec.json",
+        "--output",
+        "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/signed-bundle",
+        "--signing-key",
+        "/Users/mssc/.cache/ops-sp06-20261004/bundle-signing.pem"
+      ],
+      "exitCode": 0,
+      "minimumFreeBytes": 1899672371200
+    },
+    {
+      "command": [
+        "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/opsctl-host",
+        "bundle",
+        "verify",
+        "--manifest",
+        "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/signed-bundle/bundle.lock.json",
+        "--signature",
+        "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/signed-bundle/bundle.lock.sig",
+        "--payload",
+        "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/signed-bundle/payload.tar.zst",
+        "--key",
+        "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem"
+      ],
+      "exitCode": 0,
+      "minimumFreeBytes": 1899672764416
+    }
+  ],
+  "status": "SIGNED_INDEPENDENTLY_VERIFIED",
+  "runtimeAcceptance": "PENDING",
+  "modelWeightsDistributed": false
+}

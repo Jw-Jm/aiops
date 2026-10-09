@@ -1,0 +1,70 @@
+[
+  {
+    "command": [
+      "go",
+      "run",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/database-proof.go"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "<owned-node>",
+      "<private-DSN-env>",
+      "/media/core-material/verified-tools/db-migrate",
+      "-dir",
+      "/media/core-material/verified-tools/migrations",
+      "-to",
+      "1"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+      "bootstrap",
+      "database-logins",
+      "--secrets-file",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/database-logins.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "<owned-node>",
+      "<private-DSN-env>",
+      "/media/core-material/verified-tools/db-migrate",
+      "-dir",
+      "/media/core-material/verified-tools/migrations",
+      "-to",
+      "0"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "<owned-node>",
+      "<private-DSN-env>",
+      "/media/core-material/verified-tools/db-migrate",
+      "-dir",
+      "/media/core-material/verified-tools/migrations",
+      "-to",
+      "0"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "go",
+      "run",
+      "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/database-proof.go"
+    ],
+    "exitCode": 0
+  }
+]

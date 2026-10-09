@@ -1,0 +1,221 @@
+{
+  "observedAt": "2026-10-09T00:18:26.601009+00:00",
+  "clientFinalizationDate": "2026-10-09",
+  "scope": "existing original development environment restart recovery",
+  "cause": "initialized persistent OpenBao resealed following host/runtime restart",
+  "originalRecoveryFileUsed": true,
+  "OpenBaoReinitialized": false,
+  "keysOrDataReplaced": false,
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+        "openbao",
+        "status",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem"
+      ],
+      "exitCode": 0,
+      "output": {
+        "state": "sealed",
+        "initialized": true,
+        "sealed": true,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 0,
+        "version": "2.7.0"
+      }
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+        "openbao",
+        "unseal",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-recovery.json",
+        "--share-index",
+        "0"
+      ],
+      "exitCode": 0,
+      "output": {
+        "state": "sealed",
+        "initialized": true,
+        "sealed": true,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 1,
+        "version": "2.7.0"
+      }
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+        "openbao",
+        "unseal",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem",
+        "--recovery-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-recovery.json",
+        "--share-index",
+        "1"
+      ],
+      "exitCode": 0,
+      "output": {
+        "state": "ready",
+        "initialized": true,
+        "sealed": false,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 0,
+        "version": "2.7.0"
+      }
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+        "openbao",
+        "status",
+        "--profile",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/profile-resolved-r1.yaml",
+        "--ca-file",
+        "/Users/mssc/.local/state/ops/pre-sp07-20261004/core-current-r9/openbao-ca.pem"
+      ],
+      "exitCode": 0,
+      "output": {
+        "state": "ready",
+        "initialized": true,
+        "sealed": false,
+        "threshold": 2,
+        "shares": 3,
+        "progress": 0,
+        "version": "2.7.0",
+        "detail": "configuration not verified; pass --recovery-file to check drift"
+      }
+    }
+  ],
+  "podsReadyCheck": {
+    "checkedAt": "2026-10-09T00:20:05.436680+00:00",
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "-n",
+      "ops-pre-sp07-core-r9-20261008",
+      "get",
+      "pods",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0,
+    "resources": [
+      {
+        "name": "ops-api-5988978559-tqcsc",
+        "uid": "100f9503-e10e-4162-81f8-0185912ee801",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          10
+        ]
+      },
+      {
+        "name": "ops-investigator-77744994b8-hgl6j",
+        "uid": "7b1852c6-b5ba-4235-a06e-70a82f6e6bf0",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          4
+        ]
+      },
+      {
+        "name": "ops-keycloak-6dcd55c746-pm9rn",
+        "uid": "4f1d3aa0-4335-45cc-b3b4-4a251a031e28",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          5
+        ]
+      },
+      {
+        "name": "ops-openbao-0",
+        "uid": "6dbc747a-d27e-4268-99eb-59cb77f144cf",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          4
+        ]
+      },
+      {
+        "name": "ops-postgresql-0",
+        "uid": "f2f32c0d-31ae-4472-bc0e-4a831f0b44a0",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          4
+        ]
+      },
+      {
+        "name": "ops-seaweedfs-0",
+        "uid": "a37d574b-4ed9-4740-b957-744b845abfe0",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          4
+        ]
+      },
+      {
+        "name": "ops-victoria-logs-0",
+        "uid": "e33777d3-cbd3-4911-8d42-9dc1ce3aa616",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          4
+        ]
+      },
+      {
+        "name": "ops-victoria-metrics-0",
+        "uid": "0e70a3fe-32a4-4ccc-b823-04d571b99fea",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          4
+        ]
+      },
+      {
+        "name": "ops-vmalert-74c5744dd9-jth7d",
+        "uid": "b7088cfb-470a-4ce6-800c-159aa215053a",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          4
+        ]
+      },
+      {
+        "name": "ops-worker-d44c5f5f5-dc6vg",
+        "uid": "cf564743-8275-41f8-b202-e5e415710069",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          10
+        ]
+      },
+      {
+        "name": "ops-worker-d44c5f5f5-ljhrt",
+        "uid": "421cd18a-5299-41ee-bc4c-06cdc286b061",
+        "ready": true,
+        "phase": "Running",
+        "restartCounts": [
+          10
+        ]
+      }
+    ],
+    "all11Ready": true
+  }
+}

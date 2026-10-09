@@ -1,0 +1,109 @@
+{
+  "observedAt": "2026-10-08T14:03:58.928077+00:00",
+  "namespace": "ops-generic-core-20261008",
+  "namespaceUid": "c86be7d3-f88a-4f04-af27-d69d7793d6be",
+  "installationId": "00fa466a-d641-4b18-84a1-092e031b7e7b",
+  "records": [
+    {
+      "name": "ops-platform-runtime",
+      "uid": "b783ef7b-09b4-494d-96fb-72c5dc305615",
+      "keys": [
+        "apiDatabaseURL",
+        "archiveTenantCredentials",
+        "workerDatabaseURL"
+      ],
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "jsonpath={.metadata.uid}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "ops-sp04-api-identity",
+      "uid": "8a2f0980-19eb-4d94-8381-48965a02bc34",
+      "keys": [
+        "ca.pem",
+        "context.key"
+      ],
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "jsonpath={.metadata.uid}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "ops-sp04-worker-identity",
+      "uid": "0be85a67-a0d5-4590-a693-80535a435f37",
+      "keys": [
+        "ca.pem",
+        "context.pub"
+      ],
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "jsonpath={.metadata.uid}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "ops-sp06-investigator-identity",
+      "uid": "2a30b9ec-cc2f-47cc-8c6b-a4baa3ff22f3",
+      "keys": [
+        "ca.pem"
+      ],
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "jsonpath={.metadata.uid}"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "ops-sp06-model-key",
+      "uid": "07345381-d961-4b40-9736-2f1d9a4b4a90",
+      "keys": [
+        "apiKey"
+      ],
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "jsonpath={.metadata.uid}"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "workloadCAReadViaPinnedTLS": true,
+  "workloadCASHA256": "ec3f2de62ece4cd0df4db5d35458bf8f356b9fbebb6b400ae1d57d5d6cc3c417",
+  "contextPublicKeySHA256": "99c165171dde49f31662877389ff2257dc46fd705f7de908daef760f8c7d8b1e",
+  "privateInput": "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/runtime-secret-projections-r1.private.json",
+  "modelCredentialKind": "explicit local Ollama development API slot; Ollama does not authenticate this key; exact network and workload identity remain necessary",
+  "provisioningProcedure": "SP03/SP04 normal Kubernetes credential provisioning; no business table or Registry seed",
+  "fullBusinessAcceptance": false
+}

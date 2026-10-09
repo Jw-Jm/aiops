@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-10-09T00:21:05.322938+00:00",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-api",
+        "53353:8080"
+      ],
+      "processScope": "owned loopback port-forward stopped in finally"
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/source-registrations",
+      "status": 200,
+      "count": 3
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 200,
+      "count": 2
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/406783e1-27a4-5a21-aa60-1adac508f309",
+      "status": 200,
+      "replayState": "archived_verified",
+      "contentDigest": "sha256:adedddb6710f484a3838f613268c61c704bcb2ae33cd5ca4c25aa2528b553d77",
+      "archiveRef": {
+        "backendLogicalId": "pre-sp07-current-archive-ops-pre-sp07-core-r9-20261008",
+        "object": {
+          "tenantId": "12443ef7-3326-4e87-9b0a-a3444bfd16bc",
+          "objectId": "406783e1-27a4-5a21-aa60-1adac508f309",
+          "category": "evidence",
+          "key": "tenants/e4a818ea0b2ea174e2e9c7e89e633d0c3aa5f77d92812723aecab889ee860e84/evidence/406783e1-27a4-5a21-aa60-1adac508f309",
+          "digest": "sha256:bdd78094d721e77e1ece17a26c06972058779324dc3dbaa88c27302a55727b2d",
+          "size": 500,
+          "contentType": "application/vnd.ops.transit-envelope+json",
+          "versionId": "67239160e865885f77f45e0690462a6a",
+          "etag": "\"86791ab83ef5e752fa409d57e923e098\"",
+          "retainUntil": "2027-10-09T02:59:42Z"
+        },
+        "encryptionKeyVersion": "1",
+        "plaintextDigest": "sha256:adedddb6710f484a3838f613268c61c704bcb2ae33cd5ca4c25aa2528b553d77",
+        "ciphertextDigest": "sha256:bdd78094d721e77e1ece17a26c06972058779324dc3dbaa88c27302a55727b2d"
+      }
+    }
+  ],
+  "exitCode": 0,
+  "newModelRequests": 0,
+  "businessWrites": false,
+  "scope": "existing installed development API/database/source permissions and retained new-install Evidence read after original-material OpenBao unseal; not old 27 Evidence recovery"
+}

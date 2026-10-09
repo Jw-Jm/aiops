@@ -1,0 +1,44 @@
+{
+  "bundleId": "generic-k8s-core-20261008-r2",
+  "payloadDigest": "sha256:1c0aa3b0573ec6085b09954a1c088a09e6004085c7261b433c66097c2fd3d310",
+  "materialCount": 32,
+  "independentTrustSHA256": "sha256:47f3b2279069c4b72c9b1ccb3db05de1e5805677d6922e7b2cc4d2a6f18569a7",
+  "sourceBinding": "source-binding.json",
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/opsctl-host",
+        "bundle",
+        "build",
+        "--spec",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/build-spec.json",
+        "--output",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle",
+        "--signing-key",
+        "/Users/mssc/.cache/ops-sp06-20261004/bundle-signing.pem"
+      ],
+      "exitCode": 0,
+      "minimumFreeBytes": 11801944064
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/opsctl-host",
+        "bundle",
+        "verify",
+        "--manifest",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle/bundle.lock.json",
+        "--signature",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle/bundle.lock.sig",
+        "--payload",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/signed-bundle/payload.tar.zst",
+        "--key",
+        "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem"
+      ],
+      "exitCode": 0,
+      "minimumFreeBytes": 11958054912
+    }
+  ],
+  "status": "SIGNED_INDEPENDENTLY_VERIFIED",
+  "runtimeAcceptance": "PENDING",
+  "modelWeightsDistributed": false
+}

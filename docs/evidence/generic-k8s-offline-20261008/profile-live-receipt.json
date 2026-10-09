@@ -1,0 +1,67 @@
+{
+  "observedAt": "2026-10-08T13:23:21.259284+00:00",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "storageclasses",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/opsctl-host",
+        "profile",
+        "detect",
+        "--context",
+        "kind-ops-offline-20261008",
+        "--catalog",
+        "/Users/mssc/Documents/Code/ops/platform/bundle/component-catalog.yaml",
+        "-f",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/operator-template.yaml",
+        "-o",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/profile-detected.yaml"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/opsctl-host",
+        "profile",
+        "resolve",
+        "--catalog",
+        "/Users/mssc/Documents/Code/ops/platform/bundle/component-catalog.yaml",
+        "-f",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/profile-detected.yaml",
+        "-o",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/profile-resolved-r1.yaml"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "selectedNondefaultStorageClass": {
+    "name": "ops-offline-storage",
+    "uid": "3991b260-2864-4206-b886-5a2d64ff2021",
+    "provisioner": "rancher.io/local-path"
+  },
+  "detectionAndResolutionExitCode": 0,
+  "installable": true
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/opsctl-host",
+      "bundle",
+      "build",
+      "--spec",
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/build-spec.json",
+      "--output",
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/signed-bundle",
+      "--signing-key",
+      "/Users/mssc/.cache/ops-sp06-20261004/bundle-signing.pem"
+    ],
+    "exitCode": 0,
+    "minimumFreeBytes": 1899672371200
+  },
+  {
+    "command": [
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/opsctl-host",
+      "bundle",
+      "verify",
+      "--manifest",
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/signed-bundle/bundle.lock.json",
+      "--signature",
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/signed-bundle/bundle.lock.sig",
+      "--payload",
+      "/Volumes/vol/aiops/ops-generic-k8s-offline-20261008/installer-tools-r2/signed-bundle/payload.tar.zst",
+      "--key",
+      "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem"
+    ],
+    "exitCode": 0,
+    "minimumFreeBytes": 1899672764416
+  }
+]

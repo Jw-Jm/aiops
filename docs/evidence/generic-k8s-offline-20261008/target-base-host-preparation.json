@@ -1,0 +1,40 @@
+{
+  "observedAt": "2026-10-08T13:21:21.817812+00:00",
+  "reference": "docker.io/kindest/node@sha256:ce977ae6d65918d0b58a5f8b5e940429c2ce42fa3a5619ec2bbc60b949c0ac95",
+  "arm64Manifest": "sha256:625f4633a546aba1e159ab56e52f9111b1b5044a165cc64ffe46d15d3dd0b0bf",
+  "allBlobHashesVerified": true,
+  "source": "https://github.com/kubernetes-sigs/kind/releases/tag/v0.32.0",
+  "transport": "Docker Hub official digests, Google official pull-through mirror for retried layers",
+  "preparationOnlyOnline": true,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "image",
+        "load",
+        "--platform",
+        "linux/arm64",
+        "--input",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/target-node-material/kind-node.oci.tar"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "image",
+        "inspect",
+        "docker.io/kindest/node@sha256:ce977ae6d65918d0b58a5f8b5e940429c2ce42fa3a5619ec2bbc60b949c0ac95"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "canonicalDockerIOPrefixNormalized": true,
+  "initialLiteralRepoDigestsAssertionExit": 1,
+  "manifestDigestUnchanged": true,
+  "exitCode": 0
+}

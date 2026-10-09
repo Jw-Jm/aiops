@@ -1,0 +1,95 @@
+{
+  "observedAt": "2026-10-08T14:18:32.633935+00:00",
+  "scope": "only this task dedicated test-node and temporary transport stopped; no container/volume/namespace/PVC/object deletion",
+  "operations": [
+    {
+      "kind": "dedicated-standard-k8s-test-node",
+      "containerID": "cdf39b7ab440a39222c8535b1a3b86e2b670bc07c88ff2a74319d795410a15f0",
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "stop",
+        "--time",
+        "30",
+        "cdf39b7ab440a39222c8535b1a3b86e2b670bc07c88ff2a74319d795410a15f0"
+      ],
+      "exitCode": 0,
+      "state": "exited",
+      "mountsRetained": [
+        {
+          "type": "bind",
+          "destination": "/lib/modules",
+          "name": null,
+          "source": "/lib/modules"
+        },
+        {
+          "type": "bind",
+          "destination": "/media/core-material",
+          "name": null,
+          "source": "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2"
+        },
+        {
+          "type": "volume",
+          "destination": "/var",
+          "name": "cbd2a9673ad91c40ee1320e457567bd17cffbca1e2f0aa000de948d98337b677",
+          "source": "/var/lib/docker/volumes/cbd2a9673ad91c40ee1320e457567bd17cffbca1e2f0aa000de948d98337b677/_data"
+        },
+        {
+          "type": "bind",
+          "destination": "/trust/bundle-trust.pem",
+          "name": null,
+          "source": "/Users/mssc/.cache/ops-sp06-20261004/bundle-trust.pem"
+        },
+        {
+          "type": "bind",
+          "destination": "/media/network-prerequisite",
+          "name": null,
+          "source": "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/network-prerequisite"
+        }
+      ]
+    },
+    {
+      "kind": "temporary-real-model-transport",
+      "containerID": "0c33192cade5cb21a43a89e2a6b39ca32854db56725d5e12c5bb709d7387d626",
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "stop",
+        "--time",
+        "30",
+        "0c33192cade5cb21a43a89e2a6b39ca32854db56725d5e12c5bb709d7387d626"
+      ],
+      "exitCode": 0,
+      "state": "exited",
+      "mountsRetained": [
+        {
+          "type": "bind",
+          "destination": "/transport.py",
+          "name": null,
+          "source": "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/model-transport.py"
+        }
+      ]
+    }
+  ],
+  "evidenceRetentionAndTransitKeysPreserved": true,
+  "targetStatus": "FUNCTIONALLY_ACCEPTED_WHEN_READY_NOW_STOPPED_RETAINED",
+  "originalDevelopmentStatus": "11_PODS_READY",
+  "privateRecoveryDirectory": "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation",
+  "restoreRule": "start same retained node container, unseal OpenBao using this installation original recovery file; do not re-init; model transport only needed for explicit later model prerequisite",
+  "commandCheck": {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "-n",
+      "ops-pre-sp07-core-r9-20261008",
+      "get",
+      "pods",
+      "-o",
+      "json"
+    ],
+    "exitCode": 0
+  }
+}

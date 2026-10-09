@@ -1,0 +1,116 @@
+{
+  "observedAt": "2026-10-08T14:03:59.909844+00:00",
+  "formalBusinessSeedUsed": false,
+  "newResidentCollectorAdded": false,
+  "syntheticMetricOrLogUsed": false,
+  "SP07Started": false,
+  "fullCoreAcceptance": false,
+  "qualification": "initially bound actual native Pod UID and collection window, strict TLS, protected source query negative controls",
+  "nativePodUID": "57f22e8a-011e-457b-b2d0-bb3fc62d32b3",
+  "phase": "Running",
+  "actualPhaseObservationAt": "2026-10-08T13:59:02.491053+00:00",
+  "historicalObservation": true,
+  "observationTimestampNotChanged": true,
+  "snapshotSHA256": "sha256:fb4153226587c3812f84a8e284dfaee51174faafb9fd84a698eea986899dabb0",
+  "actualObservationReceipt": "current-core-r9-native-target-preparation-r1.json",
+  "observationReceiptSHA256": "sha256:04cdaff4d58cceabcb3b233a56211692f9e92953cb720c0e6772883f5b6dea54",
+  "checkpointOrBusinessConfigurationChanged": false,
+  "VictoriaLogsActualBoundStartupLogIngested": true,
+  "nativeLogTimestamp": "2026-10-08T13:59:02.367024808Z",
+  "nativeLogSHA256": "sha256:012d4bb56f243b85d2a0ff7d56d22ad9e768eee8635fbc6559844828bbdd8dd5",
+  "formalAdapterScopeProofStillPending": true,
+  "fullScopeQualificationPass": false,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "namespace",
+        "ops-generic-targets-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "pod",
+        "generic-readiness-target",
+        "-n",
+        "ops-generic-targets-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "logs",
+        "generic-readiness-target",
+        "-n",
+        "ops-generic-targets-20261008",
+        "--timestamps=true",
+        "--limit-bytes=4096"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "pod",
+        "generic-readiness-target",
+        "-n",
+        "ops-generic-targets-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "method": "POST",
+      "service": "ops-victoria-metrics",
+      "path": "/api/v1/import",
+      "status": 204,
+      "independentWrongCredential": false,
+      "responseSHA256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "GET",
+      "service": "ops-victoria-metrics",
+      "path": "/api/v1/query?query=1",
+      "status": 401,
+      "independentWrongCredential": true,
+      "responseSHA256": "sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "method": "POST",
+      "service": "ops-victoria-logs",
+      "path": "/insert/jsonline?_stream_fields=tenant,cluster,namespace,uid",
+      "status": 200,
+      "independentWrongCredential": false,
+      "responseSHA256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "GET",
+      "service": "ops-victoria-logs",
+      "path": "/select/logsql/query?query=*&limit=1",
+      "status": 401,
+      "independentWrongCredential": true,
+      "responseSHA256": "sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    }
+  ],
+  "ownedPortForwardsStopped": true
+}

@@ -1,0 +1,779 @@
+{
+  "startedAt": "2026-10-08T14:10:32.767086+00:00",
+  "target": "standard Kubernetes/containerd",
+  "performance": "USER_WAIVED_NOT_PASS",
+  "modelInference": "USER_WAIVED_NOT_PASS",
+  "SP07Started": false,
+  "directBusinessTableWrites": false,
+  "investigatorAbsentBeforeFaultAndJob": true,
+  "faultPodUID": "dbf97baf-a017-43c6-8be0-d267c140915a",
+  "faultResourceCanonicalId": "k8s+v1://ca8ed927-7b4e-47c4-8345-342b0a5b1fa6/759b7f0b-a930-4db4-86d1-be4dd2b525f6/core/Pod/dbf97baf-a017-43c6-8be0-d267c140915a",
+  "findingId": "01a11bda-e739-7d15-a525-22994b1ada59",
+  "incidentId": "01a11bda-e932-7220-9cfd-2f6d63afa7bc",
+  "evidence": {
+    "evidenceId": "45368816-1ad8-5d70-8e33-75cab0cfe5fa",
+    "contentDigest": "sha256:7a86c4777e4a989522155ddecd0fdb2ff7a6cb410dae302695fa99cf73944408",
+    "archiveRef": {
+      "backendLogicalId": "generic-current-archive-ops-generic-core-20261008",
+      "object": {
+        "tenantId": "ca8ed927-7b4e-47c4-8345-342b0a5b1fa6",
+        "objectId": "45368816-1ad8-5d70-8e33-75cab0cfe5fa",
+        "category": "evidence",
+        "key": "tenants/18c40a1811a6c921e5cf06faa169949cc471ca596098cfc1d7442697ee0cf0cb/evidence/45368816-1ad8-5d70-8e33-75cab0cfe5fa",
+        "digest": "sha256:45f59f951f333b97d235a831862c21d8712a24ed9066103a3772274a5d6770fb",
+        "size": 504,
+        "contentType": "application/vnd.ops.transit-envelope+json",
+        "versionId": "67236cb6ec5f1abc59158920c10a29b5",
+        "etag": "\"87de8cf370acfb9f53ddf8bf6a212ee4\"",
+        "retainUntil": "2027-10-09T14:11:34Z"
+      },
+      "encryptionKeyVersion": "1",
+      "plaintextDigest": "sha256:7a86c4777e4a989522155ddecd0fdb2ff7a6cb410dae302695fa99cf73944408",
+      "ciphertextDigest": "sha256:45f59f951f333b97d235a831862c21d8712a24ed9066103a3772274a5d6770fb"
+    },
+    "replayState": "archived_verified"
+  },
+  "roleRevocationAndRestoration": true,
+  "jobId": "01a11bda-efae-7557-b3ec-98ac42ce3226",
+  "jobState": "cancelled",
+  "eventSeq": 2,
+  "modelRequests": 0,
+  "toolCalls": 0,
+  "sseEvents": 2,
+  "resumedEvents": 1,
+  "budgetReservedZero": true,
+  "persistedJobEventAuditProof": {
+    "activeJobs": 0,
+    "auditEvents": 2,
+    "events": 2,
+    "jobState": "cancelled",
+    "readOnlyTransaction": true,
+    "steps": 0
+  },
+  "ownedFaultTargetDeleted": true,
+  "investigatorRestoredExactSpec": true,
+  "exitCode": 0,
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/oidc-operator-login.py",
+        "generic-business-smoke"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-generic-core-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-generic-core-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "-n",
+        "ops-generic-core-20261008",
+        "patch",
+        "deployment",
+        "ops-investigator",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"fc8cfaa8-bd6c-496f-ac78-ad63616004b2\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"4993\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 1}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pods",
+        "-n",
+        "ops-generic-core-20261008",
+        "-l",
+        "ops.platform.io/component=investigator",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "create",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pod",
+        "offline-unschedulable-smoke",
+        "-n",
+        "ops-generic-targets-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pod",
+        "offline-unschedulable-smoke",
+        "-n",
+        "ops-generic-targets-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "pod",
+        "offline-unschedulable-smoke",
+        "-n",
+        "ops-generic-targets-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "-n",
+        "ops-generic-targets-20261008",
+        "delete",
+        "pod",
+        "offline-unschedulable-smoke",
+        "--wait=true",
+        "--timeout=30s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-generic-core-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "-n",
+        "ops-generic-core-20261008",
+        "patch",
+        "deployment",
+        "ops-investigator",
+        "--type=json",
+        "-p",
+        "[{\"op\": \"test\", \"path\": \"/metadata/uid\", \"value\": \"fc8cfaa8-bd6c-496f-ac78-ad63616004b2\"}, {\"op\": \"test\", \"path\": \"/metadata/resourceVersion\", \"value\": \"5159\"}, {\"op\": \"test\", \"path\": \"/spec/replicas\", \"value\": 0}, {\"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 1}]"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "-n",
+        "ops-generic-core-20261008",
+        "rollout",
+        "status",
+        "deployment/ops-investigator",
+        "--timeout=150s"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "deployment",
+        "ops-investigator",
+        "-n",
+        "ops-generic-core-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-sessions",
+      "status": 201,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/findings?clusterUid=759b7f0b-a930-4db4-86d1-be4dd2b525f6&limit=200",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents?clusterUid=759b7f0b-a930-4db4-86d1-be4dd2b525f6&limit=200",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/findings?clusterUid=759b7f0b-a930-4db4-86d1-be4dd2b525f6&limit=200",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents?clusterUid=759b7f0b-a930-4db4-86d1-be4dd2b525f6&limit=200",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/45368816-1ad8-5d70-8e33-75cab0cfe5fa",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/role-bindings/01a11bd6-76c7-74d8-84f2-4993311ea39a/status",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/45368816-1ad8-5d70-8e33-75cab0cfe5fa",
+      "status": 403,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/role-bindings/01a11bd6-76c7-74d8-84f2-4993311ea39a/status",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/role-bindings/01a11bd6-76c7-74d8-84f2-4993311ea39a/status",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evidence/45368816-1ad8-5d70-8e33-75cab0cfe5fa",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/incidents/01a11bda-e932-7220-9cfd-2f6d63afa7bc",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/incidents/01a11bda-e932-7220-9cfd-2f6d63afa7bc/investigations",
+      "status": 202,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/investigations/01a11bda-efae-7557-b3ec-98ac42ce3226:cancel",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11bda-efae-7557-b3ec-98ac42ce3226",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11bda-efae-7557-b3ec-98ac42ce3226/steps",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11bda-efae-7557-b3ec-98ac42ce3226/events",
+      "status": 200,
+      "resumeCursorProvided": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/investigations/01a11bda-efae-7557-b3ec-98ac42ce3226/events",
+      "status": 200,
+      "resumeCursorProvided": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 200,
+      "resumeCursorProvided": false
+    }
+  ],
+  "completedAt": "2026-10-08T14:11:43.414430+00:00",
+  "modelAccuracyAcceptance": false
+}

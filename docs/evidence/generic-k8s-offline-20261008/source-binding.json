@@ -1,0 +1,121 @@
+{
+  "sourceCommit": "ba2191eb8bc3e378800168695ba6f08a82cde5ed",
+  "uncommittedDevelopmentBuild": false,
+  "buildSpecBundleID": "generic-k8s-core-20261008-r2",
+  "goVersion": "go version go1.27.1 darwin/arm64",
+  "target": "linux/arm64 CGO_ENABLED=0",
+  "network": "Go proxy/sumdb off; Docker build network none and pull false; exact current runtime images rebuilt; no image pull",
+  "unchangedAPIWorkerProof": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "build",
+        "--network=none",
+        "--pull=false",
+        "--provenance=false",
+        "--platform=linux/arm64",
+        "--file",
+        "/Users/mssc/Documents/Code/ops/platform/build/images/offline-runtime.Dockerfile",
+        "--tag",
+        "ops.local/generic-k8s-core-20261008-r2/platform-api:1.2.0",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/platform-api-context"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/tmp/ops-task27-tools/syft",
+        "oci-archive:/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/platform-api.tar",
+        "-o",
+        "spdx-json=/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/platform-api.spdx.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-ldflags=-s -w",
+        "-mod=readonly",
+        "-o",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/platform-worker-binary",
+        "./cmd/platform-worker"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "build",
+        "--network=none",
+        "--pull=false",
+        "--provenance=false",
+        "--platform=linux/arm64",
+        "--file",
+        "/Users/mssc/Documents/Code/ops/platform/build/images/offline-sp05-worker.Dockerfile",
+        "--tag",
+        "ops.local/generic-k8s-core-20261008-r2/platform-worker:1.2.0",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/platform-worker-context"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/tmp/ops-task27-tools/syft",
+        "oci-archive:/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/platform-worker.tar",
+        "-o",
+        "spdx-json=/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/platform-worker.spdx.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-ldflags=-s -w",
+        "-mod=readonly",
+        "-o",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/opsctl-binary",
+        "./cmd/opsctl"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/tmp/ops-task27-tools/syft",
+        "file:/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/opsctl-binary",
+        "-o",
+        "spdx-json=/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2/opsctl.spdx.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "package",
+        "deploy/charts/ops-platform",
+        "--destination",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "package",
+        "deploy/charts/ops-dependencies",
+        "--destination",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/core-material-r2"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

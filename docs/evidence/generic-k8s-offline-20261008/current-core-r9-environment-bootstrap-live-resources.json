@@ -1,0 +1,183 @@
+{
+  "observedAt": "2026-10-08T13:48:58.704104+00:00",
+  "namespace": "ops-generic-core-20261008",
+  "secrets": [
+    {
+      "name": "ops-keycloak-auth",
+      "uid": "2e75bae8-1d51-4187-b253-4141a918608e",
+      "keys": [
+        "password",
+        "username"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "00fa466a-d641-4b18-84a1-092e031b7e7b",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-keycloak-database",
+      "uid": "c55fb968-46e7-4af6-8968-becae64523fe",
+      "keys": [
+        "password",
+        "username"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "00fa466a-d641-4b18-84a1-092e031b7e7b",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-keycloak-tls",
+      "uid": "6f063dd9-fad7-4685-aca9-fa87c0d525f4",
+      "keys": [
+        "tls.crt",
+        "tls.key"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "00fa466a-d641-4b18-84a1-092e031b7e7b",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-openbao-bootstrap-tls",
+      "uid": "4a670685-fe8c-4c10-ad7e-a9f9ed93234c",
+      "keys": [
+        "tls.crt",
+        "tls.key"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "00fa466a-d641-4b18-84a1-092e031b7e7b",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-postgresql-auth",
+      "uid": "60528f0a-da10-4520-a9b2-069ae615c5f9",
+      "keys": [
+        "password",
+        "username"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "00fa466a-d641-4b18-84a1-092e031b7e7b",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-seaweedfs-auth",
+      "uid": "414d1a12-ad08-4309-b6ce-a12ddcb409bf",
+      "keys": [
+        "accessKey",
+        "secretKey"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "00fa466a-d641-4b18-84a1-092e031b7e7b",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-seaweedfs-iam",
+      "uid": "f00dfc58-ee8b-4e3a-8a03-e8f513c21b3f",
+      "keys": [
+        "s3.json"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "00fa466a-d641-4b18-84a1-092e031b7e7b",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    },
+    {
+      "name": "ops-seaweedfs-tls",
+      "uid": "1b10c2d2-9096-432b-bbf5-baaeec4ab8b5",
+      "keys": [
+        "tls.crt",
+        "tls.key"
+      ],
+      "labels": {
+        "ops.platform.io/installation-id": "00fa466a-d641-4b18-84a1-092e031b7e7b",
+        "ops.platform.io/managed-by": "opsctl-bootstrap"
+      }
+    }
+  ],
+  "allCommands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kind-ops-offline-20261008",
+        "get",
+        "namespace",
+        "ops-generic-core-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-r1/opsctl-host",
+        "bootstrap",
+        "environment",
+        "--config",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/environment.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/dependency-secrets-missing.json"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "namespace",
+        "ops-generic-core-20261008",
+        "--ignore-not-found",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-r1/opsctl-host",
+        "bootstrap",
+        "environment",
+        "--config",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/environment.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/dependency-secrets.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-r1/opsctl-host",
+        "bootstrap",
+        "environment",
+        "--config",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/environment.json",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/dependency-secrets.json"
+      ],
+      "exitCode": 1
+    },
+    {
+      "command": [
+        "kubectl",
+        "get",
+        "secrets",
+        "-n",
+        "ops-generic-core-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "missingInputRejectedBeforeNamespace": true,
+  "repeatedBootstrapRejected": true,
+  "privateMaterialLocation": "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation",
+  "fullFreshCoreAcceptance": false,
+  "signedBundleInstall": false,
+  "originalResourcesDeleted": false
+}

@@ -1,0 +1,119 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/initialize-database.py"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-08T14:03:41.618371+00:00",
+      "completedAt": "2026-10-08T14:03:44.670435+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/initialize-identities.py"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-08T14:03:44.671092+00:00",
+      "completedAt": "2026-10-08T14:03:57.783055+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/prepare-runtime-projections.py"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-08T14:03:57.784461+00:00",
+      "completedAt": "2026-10-08T14:03:58.940897+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+        "bootstrap",
+        "archive-bucket",
+        "--profile",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/resolved-profile.yaml",
+        "--secrets-file",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/archive-bootstrap-private-r1.json"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-08T14:03:58.941427+00:00",
+      "completedAt": "2026-10-08T14:03:59.363825+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installer-tools-current/opsctl-host",
+        "bootstrap",
+        "graph-leases",
+        "--profile",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/profile-resolved-r1.yaml",
+        "--business-values",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/installation/business-values-r1.json"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-08T14:03:59.364831+00:00",
+      "completedAt": "2026-10-08T14:03:59.857658+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/ingest-native-canary.py"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-08T14:03:59.858182+00:00",
+      "completedAt": "2026-10-08T14:04:00.670925+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/run-stage.py",
+        "bootstrap-api"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-08T14:04:00.671922+00:00",
+      "completedAt": "2026-10-08T14:05:30.700938+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/oidc-first-tenant.py",
+        "generic-r2-first-r1"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-08T14:05:30.701605+00:00",
+      "completedAt": "2026-10-08T14:05:40.336534+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/oidc-first-tenant.py",
+        "generic-r2-first-r2"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-08T14:06:30.737558+00:00",
+      "completedAt": "2026-10-08T14:06:41.946981+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/initialize-formal-api.py"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-08T14:06:41.947564+00:00",
+      "completedAt": "2026-10-08T14:06:42.888447+00:00"
+    },
+    {
+      "command": [
+        "/Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/bin/python",
+        "/Users/mssc/.local/state/ops/generic-k8s-offline-20261008/run-stage.py",
+        "business"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-08T14:06:42.889577+00:00",
+      "completedAt": "2026-10-08T14:08:05.019233+00:00"
+    }
+  ],
+  "noBusinessSeed": true,
+  "scope": "dedicated generic Kubernetes target only"
+}

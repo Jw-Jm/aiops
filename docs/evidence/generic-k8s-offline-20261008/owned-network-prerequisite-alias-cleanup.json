@@ -1,0 +1,26 @@
+{
+  "observedAt": "2026-10-08T14:13:39.545356+00:00",
+  "nodeUID": "a98a0f36-0856-4375-8467-bc8367636d76",
+  "sourceMaterial": "network-prerequisite-material.json",
+  "removedOnlyOwnGeneratedAlias": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "cdf39b7ab440a39222c8535b1a3b86e2b670bc07c88ff2a74319d795410a15f0",
+        "ctr",
+        "-n",
+        "k8s.io",
+        "images",
+        "rm",
+        "import-2026-10-08@sha256:fec5ac13d36a812636d545263fda75e5b729ac9dac624f1f19f1170d3372324b"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "canonicalReferenceAndContentRetained": true,
+  "podOrVolumeDeleted": false,
+  "reason": "same ctr default alias issue applies to task-specific CNI prerequisite import; target stops/restarts will rebuild CRI cache"
+}

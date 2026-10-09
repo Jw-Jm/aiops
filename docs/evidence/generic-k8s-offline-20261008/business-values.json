@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "namespace": "ops-generic-core-20261008",
+  "workloadIdentity": {
+    "enabled": true,
+    "mode": "openbao-kubernetes"
+  },
+  "sp04": {
+    "enabled": true,
+    "graphPort": 8082,
+    "workerReplicas": 2,
+    "apiIdentitySecret": "ops-sp04-api-identity",
+    "workerIdentitySecret": "ops-sp04-worker-identity",
+    "sourceCredentialsSecret": "ops-sp04-source-credentials",
+    "allowedWorkerCIDRs": [
+      "10.244.0.0/24"
+    ],
+    "archiveBackendLogicalID": "generic-current-archive-ops-generic-core-20261008",
+    "clusters": [
+      {
+        "Tenant": "ca8ed927-7b4e-47c4-8345-342b0a5b1fa6",
+        "ClusterUID": "759b7f0b-a930-4db4-86d1-be4dd2b525f6",
+        "SourceID": "989b1213-ffa3-4b0a-943b-f347866b4008",
+        "BackendLogicalID": "generic-current-kubernetes-759b7f0b-a930-4db4-86d1-be4dd2b525f6",
+        "Endpoint": "https://192.168.165.3:6443",
+        "CAFile": "/var/run/secrets/ops-platform/kubernetes/ca.pem",
+        "TokenFile": "/var/run/secrets/ops-platform/kubernetes/token",
+        "LeaseNamespace": "ops-generic-core-20261008",
+        "LeaseName": "ops-graph-pre-sp07-current",
+        "SourceRevision": 1,
+        "QPS": 10,
+        "Burst": 25
+      }
+    ],
+    "sources": [
+      {
+        "Name": "victoriametrics",
+        "Binding": {
+          "Tenant": "ca8ed927-7b4e-47c4-8345-342b0a5b1fa6",
+          "SourceID": "f9a2bab4-9e5f-43c9-84b3-28aab82f5178",
+          "SourceType": "victoriametrics",
+          "Revision": 1,
+          "BackendLogicalID": "generic-current-victoriametrics-ops-generic-core-20261008",
+          "Endpoint": "https://ops-victoria-metrics.ops-generic-core-20261008.svc.cluster.local:8428",
+          "SourceRetentionSeconds": 86400,
+          "ScopeMapping": {
+            "scopes": {
+              "cluster": [
+                "759b7f0b-a930-4db4-86d1-be4dd2b525f6"
+              ],
+              "namespace": [
+                "ops-generic-targets-20261008"
+              ]
+            },
+            "requiredLabels": {
+              "tenant": "ca8ed927-7b4e-47c4-8345-342b0a5b1fa6"
+            }
+          }
+        },
+        "CAFile": "/etc/sp04/sources/victoriametrics-ca.pem",
+        "CredentialFile": "/etc/sp04/sources/victoriametrics-credential",
+        "ScopeProbe": {
+          "resourceCanonicalId": "k8s+v1://ca8ed927-7b4e-47c4-8345-342b0a5b1fa6/759b7f0b-a930-4db4-86d1-be4dd2b525f6/core/Pod/57f22e8a-011e-457b-b2d0-bb3fc62d32b3",
+          "namespace": "ops-generic-targets-20261008",
+          "queryTemplate": "pod-phase/v1",
+          "from": "2026-10-08T13:48:39Z",
+          "to": "2026-10-08T13:59:02.496619+00:00",
+          "limit": 1
+        }
+      },
+      {
+        "Name": "victorialogs",
+        "Binding": {
+          "Tenant": "ca8ed927-7b4e-47c4-8345-342b0a5b1fa6",
+          "SourceID": "b35776ef-afbb-4a00-8dac-212f65bd8fde",
+          "SourceType": "victorialogs",
+          "Revision": 1,
+          "BackendLogicalID": "generic-current-victorialogs-ops-generic-core-20261008",
+          "Endpoint": "https://ops-victoria-logs.ops-generic-core-20261008.svc.cluster.local:9428",
+          "SourceRetentionSeconds": 86400,
+          "ScopeMapping": {
+            "scopes": {
+              "cluster": [
+                "759b7f0b-a930-4db4-86d1-be4dd2b525f6"
+              ],
+              "namespace": [
+                "ops-generic-targets-20261008"
+              ]
+            },
+            "requiredLabels": {
+              "tenant": "ca8ed927-7b4e-47c4-8345-342b0a5b1fa6"
+            }
+          }
+        },
+        "CAFile": "/etc/sp04/sources/victorialogs-ca.pem",
+        "CredentialFile": "/etc/sp04/sources/victorialogs-credential",
+        "ScopeProbe": {
+          "resourceCanonicalId": "k8s+v1://ca8ed927-7b4e-47c4-8345-342b0a5b1fa6/759b7f0b-a930-4db4-86d1-be4dd2b525f6/core/Pod/57f22e8a-011e-457b-b2d0-bb3fc62d32b3",
+          "namespace": "ops-generic-targets-20261008",
+          "queryTemplate": "resource-logs/v1",
+          "from": "2026-10-08T13:48:39Z",
+          "to": "2026-10-08T13:59:02.496619+00:00",
+          "limit": 1
+        }
+      }
+    ],
+    "kubernetesAPI": {
+      "cidrs": [
+        "192.168.165.3/32"
+      ],
+      "port": 6443,
+      "localCollector": true
+    },
+    "leaseNames": [
+      "ops-graph-pre-sp07-current"
+    ]
+  },
+  "sp05": {
+    "enabled": true,
+    "ingestionBindings": [],
+    "analyzer": {
+      "enabled": true,
+      "sha256": "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53"
+    }
+  },
+  "sp06": {
+    "enabled": true,
+    "gatewayPort": 8083,
+    "policyName": "pre-sp07-read-only-current",
+    "identitySecret": "ops-sp06-investigator-identity",
+    "modelKeySecret": "ops-sp06-model-key",
+    "tenants": [
+      "ca8ed927-7b4e-47c4-8345-342b0a5b1fa6"
+    ],
+    "modelNetworkMode": "private",
+    "modelCIDRs": [
+      "192.168.165.2/32"
+    ],
+    "modelPort": 11434,
+    "model": {
+      "base_url": "http://192.168.165.2:11434/v1",
+      "api_key_ref": "secret://model/api-key",
+      "model": "llama3.1:8b-16k",
+      "timeout": 45,
+      "token_budget": 1024
+    },
+    "budget": {
+      "durationSeconds": 600,
+      "toolCalls": 40,
+      "rawQueries": 10,
+      "resultBytes": 41943040,
+      "graphNodes": 8000,
+      "evidenceItems": 4000,
+      "modelRequests": 8,
+      "inputTokens": 32768,
+      "outputTokens": 8192,
+      "modelCostMicros": 0,
+      "allowedDataClasses": [
+        "D0",
+        "D1"
+      ]
+    }
+  }
+}
