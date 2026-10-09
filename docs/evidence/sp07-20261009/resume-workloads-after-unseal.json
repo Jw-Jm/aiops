@@ -1,0 +1,41 @@
+[
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "-n",
+      "ops-pre-sp07-core-r9-20261008",
+      "rollout",
+      "restart",
+      "deployment/ops-api"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "-n",
+      "ops-pre-sp07-core-r9-20261008",
+      "rollout",
+      "restart",
+      "deployment/ops-worker"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "kubectl",
+      "--context",
+      "orbstack",
+      "-n",
+      "ops-pre-sp07-core-r9-20261008",
+      "rollout",
+      "restart",
+      "deployment/ops-investigator"
+    ],
+    "exitCode": 0
+  }
+]

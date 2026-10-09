@@ -1,0 +1,78 @@
+[
+  {
+    "name": "final-affected-r8",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "./internal/action",
+      "./internal/app",
+      "./internal/httpapi",
+      "./internal/investigation",
+      "./internal/auth",
+      "./internal/bundle",
+      "./internal/rca",
+      "./internal/integrations/openbao",
+      "./test/security",
+      "./test/contract"
+    ],
+    "exitCode": 0,
+    "rawLog": "final-affected-r8.log"
+  },
+  {
+    "name": "final-transactions-validator-recovery-r8-targeted",
+    "command": [
+      "go",
+      "test",
+      "./test/integration",
+      "-run",
+      "^(TestSP07CommandTransactionAndClaim|TestSP06ActualCurrentRCARecommendationValidator|TestSP06JobLeaseReplayAndAtomicBudget|TestSP06ConcurrentRecoveryReadsAtomicBudget|TestSP06StandardMCPToolStateReplayAndDenialMatrix)$",
+      "-count=1",
+      "-v"
+    ],
+    "exitCode": 0,
+    "rawLog": "final-transactions-validator-recovery-r8-targeted.log"
+  },
+  {
+    "name": "final-toolchain-r8",
+    "command": [
+      "make",
+      "check-toolchain"
+    ],
+    "exitCode": 0,
+    "rawLog": "final-toolchain-r8.log"
+  },
+  {
+    "name": "final-generated-r8",
+    "command": [
+      "make",
+      "check-generated"
+    ],
+    "exitCode": 0,
+    "rawLog": "final-generated-r8.log"
+  },
+  {
+    "name": "final-runtime-source-r8",
+    "command": [
+      "make",
+      "check-runtime-source"
+    ],
+    "exitCode": 0,
+    "rawLog": "final-runtime-source-r8.log"
+  },
+  {
+    "name": "review-archive-affected-r9",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "./internal/integrations/openbao",
+      "./internal/app",
+      "./internal/action",
+      "./test/security",
+      "./test/contract"
+    ],
+    "exitCode": 0,
+    "rawLog": "review-archive-affected-r9.log"
+  }
+]

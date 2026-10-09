@@ -666,14 +666,24 @@ components:
           - 'null'
         actualCommand:
           type: string
+          minLength: 1
+          maxLength: 65536
         executionProfileId:
           $ref: '#/components/schemas/Identifier'
         riskAcknowledgementId:
           $ref: '#/components/schemas/Identifier'
         shell:
           type: string
+          const: bash
         target:
           $ref: '#/components/schemas/CanonicalID'
+        incidentId:
+          $ref: '#/components/schemas/Identifier'
+        executionProfileVersion:
+          type: integer
+          minimum: 1
+        executionOptions:
+          $ref: '#/components/schemas/CommandExecutionOptions'
       required:
       - actualCommand
       - target
@@ -681,6 +691,9 @@ components:
       - executionProfileId
       - riskAcknowledgementId
       type: object
+      description: Additive v1 fields incidentId, executionProfileVersion and executionOptions may be omitted only to reuse
+        the exact values bound in this subject’s RiskAcknowledgement. Explicit values must match; no server-selected defaults
+        or automatic profile upgrades.
     DiagnosticGraphBuildRequest:
       additionalProperties: false
       properties:
@@ -736,6 +749,7 @@ components:
           - UPSTREAM_COMPATIBILITY_UNVERIFIED
           - OPENBAO_SEALED
           - HOST_NOT_ONBOARDED
+          - CURSOR_EXPIRED
           type: string
         details:
           additionalProperties: true
@@ -901,7 +915,8 @@ components:
       - expectedRevision
       type: object
     SourceDataScopeMapping:
-      description: Declared exact scopes; empty scopes grant no permission. Backend verification is read-only and unavailable until adapter admission.
+      description: Declared exact scopes; empty scopes grant no permission. Backend verification is read-only and unavailable
+        until adapter admission.
       type: object
       additionalProperties: false
       properties:
@@ -1032,7 +1047,8 @@ components:
         dataScopeMapping:
           $ref: '#/components/schemas/SourceDataScopeMapping'
         queryCapability:
-          description: A declaration cannot enable queries. Adapter admission requires a separately versioned verification contract.
+          description: A declaration cannot enable queries. Adapter admission requires a separately versioned verification
+            contract.
           type: object
           readOnly: true
           additionalProperties: false
@@ -1673,7 +1689,8 @@ components:
         additionalProperties:
           $ref: '#/components/schemas/ResourceAttributeValueV2'
         maxProperties: 64
-      description: Bounded JSON-safe resource quantities, including hardware byte capacities. Public v1 common extension limits remain unchanged.
+      description: Bounded JSON-safe resource quantities, including hardware byte capacities. Public v1 common extension limits
+        remain unchanged.
     FindingEnvelopeV2:
       type: object
       additionalProperties: false
@@ -3782,6 +3799,262 @@ components:
           enum:
           - active
           - disabled
+    CommandExecutionOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        timeoutSeconds:
+          type: integer
+          minimum: 1
+          maximum: 900
+          default: 900
+        maxOutputBytes:
+          type: integer
+          minimum: 1
+          maximum: 10485760
+          default: 10485760
+        workingDirectory:
+          type: string
+          maxLength: 0
+        environment:
+          type: object
+          maxProperties: 0
+      required:
+      - timeoutSeconds
+      - maxOutputBytes
+      - workingDirectory
+      - environment
+    CommandRiskAssessmentRequest:
+      additionalProperties: false
+      properties:
+        actionPlanId:
+          type:
+          - string
+          - 'null'
+        actualCommand:
+          type: string
+          minLength: 1
+          maxLength: 65536
+        executionProfileId:
+          $ref: '#/components/schemas/Identifier'
+        shell:
+          type: string
+          const: bash
+        target:
+          $ref: '#/components/schemas/CanonicalID'
+        incidentId:
+          $ref: '#/components/schemas/Identifier'
+        executionProfileVersion:
+          type: integer
+          minimum: 1
+        executionOptions:
+          $ref: '#/components/schemas/CommandExecutionOptions'
+      required:
+      - actualCommand
+      - target
+      - shell
+      - executionProfileId
+      - incidentId
+      - executionProfileVersion
+      - executionOptions
+      type: object
+    CommandRiskAcknowledgementRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        assessmentId:
+          $ref: '#/components/schemas/Identifier'
+        executionRequestDigest:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+      required:
+      - assessmentId
+      - executionRequestDigest
+    ExecutionProfileV2:
+      type: object
+      additionalProperties: false
+      properties:
+        executionProfileId:
+          type: string
+          maxLength: 512
+        clusterUid:
+          type: string
+          maxLength: 512
+        namespace:
+          type: string
+          maxLength: 512
+        name:
+          type: string
+          maxLength: 512
+        networkPolicyRef:
+          type: string
+          maxLength: 512
+        credentialRef:
+          type: string
+          maxLength: 512
+        principal:
+          type: string
+          maxLength: 512
+        hostOnboardingRef:
+          type: string
+          maxLength: 512
+        schemaVersion:
+          const: execution-profile/v2
+          type: string
+        version:
+          type: integer
+          minimum: 1
+        type:
+          enum:
+          - k8s_namespace
+          - k8s_cluster
+          - ssh_user
+          - ssh_root
+          type: string
+        allowedTargets:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: string
+            maxLength: 2048
+        tools:
+          type: array
+          minItems: 1
+          maxItems: 40
+          uniqueItems: true
+          items:
+            type: string
+        toolImageDigest:
+          type: string
+          pattern: ^.+@sha256:[0-9a-f]{64}$
+        timeoutSeconds:
+          type: integer
+          minimum: 1
+          maximum: 900
+        maxOutputBytes:
+          type: integer
+          minimum: 1
+          maximum: 10485760
+        developmentFallback:
+          const: false
+          type: boolean
+      required:
+      - executionProfileId
+      - clusterUid
+      - namespace
+      - name
+      - networkPolicyRef
+      - credentialRef
+      - principal
+      - hostOnboardingRef
+      - schemaVersion
+      - version
+      - type
+      - allowedTargets
+      - tools
+      - toolImageDigest
+      - timeoutSeconds
+      - maxOutputBytes
+      - developmentFallback
+    HostOnboardingV1:
+      type: object
+      additionalProperties: false
+      properties:
+        schemaVersion:
+          const: host-onboarding/v1
+          type: string
+        host:
+          type: object
+          additionalProperties: false
+          properties:
+            Target:
+              type: string
+              maxLength: 16384
+            UID:
+              type: string
+              maxLength: 16384
+            Address:
+              type: string
+              maxLength: 16384
+            KnownHosts:
+              type: string
+              maxLength: 16384
+            UserCAPublicKey:
+              type: string
+              maxLength: 16384
+            Principal:
+              type: string
+              maxLength: 16384
+            Role:
+              type: string
+              maxLength: 16384
+            OnboardingRef:
+              type: string
+              maxLength: 16384
+            Port:
+              type: integer
+              minimum: 1
+              maximum: 65535
+          required:
+          - Target
+          - UID
+          - Address
+          - KnownHosts
+          - UserCAPublicKey
+          - Principal
+          - Role
+          - OnboardingRef
+          - Port
+        clusterUid:
+          type: string
+        reportDigest:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+        observedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+      - schemaVersion
+      - host
+      - clusterUid
+      - reportDigest
+      - observedAt
+      - expiresAt
+    PublishExecutionProfileRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - profile
+      - signerKeyId
+      - signature
+      properties:
+        profile:
+          $ref: '#/components/schemas/ExecutionProfileV2'
+        signerKeyId:
+          $ref: '#/components/schemas/Identifier'
+        signature:
+          type: string
+          format: byte
+    OnboardExecutionHostRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - report
+      - signerKeyId
+      - signature
+      properties:
+        report:
+          $ref: '#/components/schemas/HostOnboardingV1'
+        signerKeyId:
+          $ref: '#/components/schemas/Identifier'
+        signature:
+          type: string
+          format: byte
   securitySchemes:
     BearerAuth:
       bearerFormat: JWT
@@ -4091,7 +4364,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JSONRequest'
+              $ref: '#/components/schemas/PublishExecutionProfileRequest'
         required: true
       responses:
         '201':
@@ -4955,7 +5228,8 @@ paths:
           type: string
           minLength: 1
           maxLength: 512
-        description: Observe this currently authorized cluster through the bounded resource API. Omission reports null for unobserved Graph/source readiness.
+        description: Observe this currently authorized cluster through the bounded resource API. Omission reports null for
+          unobserved Graph/source readiness.
   /api/v1/command-executions:
     post:
       operationId: createCommandExecution
@@ -5030,6 +5304,12 @@ paths:
         schema:
           format: identifier
           type: string
+      - in: header
+        name: Last-Event-ID
+        required: false
+        schema:
+          type: string
+        description: Persisted executionId:eventSeq cursor; expired output yields 410.
       responses:
         '200':
           content:
@@ -5038,6 +5318,12 @@ paths:
                 type: string
           description: Server-sent event stream. Each event uses the referenced envelope.
         default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unified API error.
+        '410':
           content:
             application/json:
               schema:
@@ -5128,7 +5414,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JSONRequest'
+              $ref: '#/components/schemas/CommandRiskAcknowledgementRequest'
         required: true
       responses:
         '200':
@@ -5164,7 +5450,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JSONRequest'
+              $ref: '#/components/schemas/CommandRiskAssessmentRequest'
         required: true
       responses:
         '200':
@@ -5397,7 +5683,8 @@ paths:
     post:
       operationId: ingestFinding
       deprecated: true
-      description: Historical Contract retained. Runtime returns CAPABILITY_DISABLED; explicitly bound SP05 publishers use the additive v2 endpoint.
+      description: Historical Contract retained. Runtime returns CAPABILITY_DISABLED; explicitly bound SP05 publishers use
+        the additive v2 endpoint.
       parameters:
       - description: Stable key for replay-safe write handling.
         in: header
@@ -6299,7 +6586,9 @@ paths:
     patch:
       operationId: setOperatorRoleBindingStatus
       summary: Revoke or restore an operator binding while preserving its exact identity and scopes.
-      description: Platform administrator with current LoA2 step-up. Only operator bindings are accepted; subject, role, tenant and scopes cannot be supplied or changed. The expected revision is mandatory and the existing audited update advances it. This is an administrative authorization operation, with no command execution.
+      description: Platform administrator with current LoA2 step-up. Only operator bindings are accepted; subject, role, tenant
+        and scopes cannot be supplied or changed. The expected revision is mandatory and the existing audited update advances
+        it. This is an administrative authorization operation, with no command execution.
       tags:
       - Admin
       security:
@@ -6338,6 +6627,84 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
+  /api/v1/admin/execution-profiles/{executionProfileId}/versions/{version}:retire:
+    post:
+      operationId: retireExecutionProfile
+      parameters:
+      - in: path
+        name: executionProfileId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - in: path
+        name: version
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      - description: Stable key for replay-safe write handling.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          minLength: 1
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: Retire an immutable execution profile version
+      tags:
+      - ExecutionProfiles
+      x-idempotency: required
+  /api/v1/admin/host-onboardings:
+    post:
+      operationId: onboardExecutionHost
+      parameters:
+      - description: Stable key for replay-safe write handling.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardExecutionHostRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: Register a signed native Host Onboarding admission report
+      tags:
+      - ExecutionProfiles
+      x-idempotency: required
 security:
 - BearerAuth: []
 servers:

@@ -1,0 +1,257 @@
+{
+  "schemaVersion": "sp07-delivery-ledger/v1",
+  "date": "2026-10-09",
+  "baseline": "ba5e1754335178de138052b757fa8a50a814a128",
+  "tasks": [
+    {
+      "task": "7.1",
+      "title": "人工命令、建议与事务绑定",
+      "contract": [
+        "10 Task 7.1",
+        "10 §14.7",
+        "05 §8.2 / §25.4 / §25.5",
+        "07 正式 API",
+        "ADR0003"
+      ],
+      "implementation": [
+        "internal/action/service.go",
+        "internal/action/plan.go",
+        "internal/httpapi/action_handlers.go",
+        "internal/investigation/result.go",
+        "migrations/00036_sp07_command_binding.sql"
+      ],
+      "tests": [
+        "TestSP07CommandTransactionAndClaim",
+        "TestSP06ActualCurrentRCARecommendationValidator"
+      ],
+      "rawEvidence": [
+        "native-gates-r2-result.json",
+        "native-persistence-audit-final.json",
+        "command-transaction-high-expiry-green-r2.log",
+        "sp07-current-validator-authority-green.log",
+        "final-transactions-validator-recovery-r8-targeted.log"
+      ],
+      "status": "PASS_NONVIRTUAL_LIMITED_SCOPE",
+      "completion": "正式 API、真实 Transit、审计与全部单次消费/重放/冲突测试"
+    },
+    {
+      "task": "7.2",
+      "title": "Bash AST 与 OPA",
+      "contract": [
+        "10 Task 7.2",
+        "10 §14.7",
+        "05 §8.2 / §25.4 / §25.5",
+        "07 正式 API",
+        "ADR0003"
+      ],
+      "implementation": [
+        "internal/action/shell_parser.go",
+        "internal/action/service.go",
+        "internal/policy/evaluator.go",
+        "third_party/admission/sp07-runner-license-review.json"
+      ],
+      "tests": [
+        "TestSP07CommandTransactionAndClaim",
+        "TestRiskClassifier",
+        "TestSuggestionMatch"
+      ],
+      "rawEvidence": [
+        "final-affected-r8.log",
+        "native-gates-r2-result.json",
+        "runner-native-tools-r4.log",
+        "runner-source-closure-r4.log"
+      ],
+      "status": "PASS_NONVIRTUAL_LIMITED_SCOPE",
+      "completion": "解析器物料准入、确定性风险与实际 OPA 门禁"
+    },
+    {
+      "task": "7.3",
+      "title": "四类 Profile 与 step-up",
+      "contract": [
+        "10 Task 7.3",
+        "10 §14.7",
+        "05 §8.2 / §25.4 / §25.5",
+        "07 正式 API",
+        "ADR0003"
+      ],
+      "implementation": [
+        "internal/action/profile.go",
+        "internal/action/service.go",
+        "internal/action/runner_protocol.go",
+        "internal/auth/stepup.go",
+        "migrations/00037_sp07_worker_authority.sql"
+      ],
+      "tests": [
+        "TestSP07CommandTransactionAndClaim",
+        "TestExecutionProfilesSP07RejectUnsafeBoundaries"
+      ],
+      "rawEvidence": [
+        "native-correctness-batch.json",
+        "native-gates-r2-result.json",
+        "command-transaction-high-expiry-green-r2.log",
+        "native-retire-v1-r8-corrected-result.json"
+      ],
+      "status": "PASS_NONVIRTUAL_LIMITED_SCOPE",
+      "completion": "四类真实正反例、版本/撤权/绝对与空闲期限及事务 touch"
+    },
+    {
+      "task": "7.4",
+      "title": "Kubernetes Runner",
+      "contract": [
+        "10 Task 7.4",
+        "10 §14.7",
+        "05 §8.2 / §25.4 / §25.5",
+        "07 正式 API",
+        "ADR0003"
+      ],
+      "implementation": [
+        "internal/action/kubernetes_executor.go",
+        "internal/action/kubernetes_transport.go",
+        "internal/action/runner_protocol.go",
+        "internal/app/command_runner.go",
+        "deploy/charts/ops-platform/templates/sp07.yaml"
+      ],
+      "tests": [
+        "TestSP07CommandTransactionAndClaim",
+        "TestKubernetesRunnerPodSpecHasNoCommandOrCredentials",
+        "TestRunnerIdentityBootstrapRetriesOnlyInitialization"
+      ],
+      "rawEvidence": [
+        "native-correctness-batch.json",
+        "native-execute-k8s_namespace-output-cap-result.json",
+        "native-execute-k8s_namespace-job-loss-result.json",
+        "final-affected-r8.log"
+      ],
+      "status": "PASS_NONVIRTUAL_LIMITED_SCOPE",
+      "completion": "真实隔离 Job、短期凭据、无命令泄露、claim/取消/超时/权限/丢失"
+    },
+    {
+      "task": "7.5",
+      "title": "Ansible/OpenBao SSH CA",
+      "contract": [
+        "10 Task 7.5",
+        "10 §14.7",
+        "05 §8.2 / §25.4 / §25.5",
+        "07 正式 API",
+        "ADR0003"
+      ],
+      "implementation": [
+        "internal/action/ansible_executor.go",
+        "internal/action/ssh_certificate.go",
+        "internal/action/host_onboarding.go",
+        "internal/integrations/openbao/ssh.go",
+        "services/runner/ansible-runner/ansible_transport.py"
+      ],
+      "tests": [
+        "TestSP07CommandTransactionAndClaim",
+        "TestSSHCertificateMustMatchPinnedAuthorityKeyPrincipalAndTTL"
+      ],
+      "rawEvidence": [
+        "native-execute-ssh_user-ssh-user-negative-result.json",
+        "native-execute-ssh_root-ssh-root-positive-result.json",
+        "ssh-owned-target-interpreter-fix.json",
+        "final-affected-r8.log",
+        "native-hostkey-negative-restoration.json",
+        "native-hostkey-negative-ssh-probe.log",
+        "native-execute-ssh_user-hostkey-mismatch-result.json"
+      ],
+      "status": "PASS_NONVIRTUAL_LIMITED_SCOPE",
+      "completion": "独立 host key 与 onboarding、短期证书、普通/root/sudo 边界真实 SSH"
+    },
+    {
+      "task": "7.6",
+      "title": "输出、恢复、Post-check",
+      "contract": [
+        "10 Task 7.6",
+        "10 §14.7",
+        "05 §8.2 / §25.4 / §25.5",
+        "07 正式 API",
+        "ADR0003"
+      ],
+      "implementation": [
+        "internal/action/output.go",
+        "internal/action/archive.go",
+        "internal/action/events.go",
+        "internal/action/postcheck.go",
+        "internal/action/reconciler.go",
+        "internal/app/sp07_postcheck.go",
+        "internal/rca/postcheck.go",
+        "internal/integrations/openbao/transit.go",
+        "internal/integrations/openbao/status.go",
+        "internal/app/sp07_worker.go"
+      ],
+      "tests": [
+        "TestSP07CommandTransactionAndClaim",
+        "TestPostCheckIsIndependentOfExitCode"
+      ],
+      "rawEvidence": [
+        "native-sse-r8-result.json",
+        "command-sse-withdrawal-green.log",
+        "native-execute-k8s_namespace-pending-with-plan-r4-result.json",
+        "native-execute-k8s_cluster-actual-pvc-repair-result.json",
+        "native-persistence-audit-final.json",
+        "native-execute-k8s_namespace-noninteractive-eof-r8-result.json",
+        "review-transit-large-response-red.log",
+        "review-transit-large-response-green.log",
+        "review-archive-affected-r9.log",
+        "native-output-archive-r9-progress.json",
+        "native-sse-outputcap-r9-result.json",
+        "native-output-archive-final.json"
+      ],
+      "status": "PASS_NONVIRTUAL_LIMITED_SCOPE",
+      "completion": "输出归档 digest、24h 续传、未知结果不重试、最新授权 Evidence 三态闭环"
+    }
+  ],
+  "waivers": {
+    "tenConcurrentInvestigations": "USER_WAIVED_NOT_PASS",
+    "modelConcurrencyThroughputP95StressCapacity": "USER_WAIVED_NOT_PASS",
+    "machineExpansionForPerformance": "USER_WAIVED_NOT_PASS"
+  },
+  "exclusions": {
+    "kubevirt": "disabled/unverified/deferred",
+    "cdi": "disabled/unverified/deferred",
+    "PyRCA": "disabled/excluded",
+    "SP08": "not_authorized",
+    "SP09": "not_authorized"
+  },
+  "acceptance": {
+    "amd64Deployment": "UNVERIFIED",
+    "modelFunction": "PASS_REAL_SERIAL_OLLAMA_MODEL_AND_STANDARD_MCP",
+    "rcaAccuracy": "NOT_ESTABLISHED",
+    "finalIndependentReview": "PASS_SECOND_ROUND_FULL_TASK_7_1_TO_7_6_NONVIRTUAL_ARM64_CURRENT_DEVELOPMENT",
+    "deployment": "PASS_ARM64_SIGNED_INCREMENTAL_R9_HELM_REVISION_12",
+    "modelActionPlanGeneration": "NO_PLAN_RETURNED_BY_REAL_MODEL; validated proposal persistence tested separately with current Go Validator and actual Transit/Evidence"
+  },
+  "aggregateLimitations": [
+    {
+      "check": "final-affected-units-security-contract-r2",
+      "exitCode": 1,
+      "classification": "unaffected historical Graph20K test timed out at existing Go10m; not rerun as capacity acceptance; not PASS or user waived"
+    },
+    {
+      "check": "final-upstream-replay",
+      "exitCode": 2,
+      "classification": "GraphReplay passed; historical InspectionReplay missing exact locked SDK docker image; external material input gap"
+    },
+    {
+      "check": "final-transactions-validator-recovery-r8",
+      "exitCode": 1,
+      "classification": "broad selector accidentally included separate real model fixture requiring SP06_REAL_CHAIN inputs; required deterministic tests passed; exact targeted rerun separately; native real model already passed"
+    },
+    {
+      "check": "incremental-bundle-r7-build-monitor",
+      "exitCode": 1,
+      "classification": "monitor race after signed artifact creation; builder exit uncaptured; independent verify/import0"
+    },
+    {
+      "check": "incremental-bundle-r8-build-aborted",
+      "exitCode": 1,
+      "classification": "private free-space guard stopped first attempt; exact own staging cleaned, unchanged threshold; signed retry build/verify/import0"
+    },
+    {
+      "check": "native-retire-v1-r8",
+      "exitCode": 1,
+      "classification": "test harness expected403; formal retired profile returns404 NOT_FOUND; initial retire operations200 retained and exact negative request verified404 in corrected rerun0; product unchanged"
+    }
+  ]
+}

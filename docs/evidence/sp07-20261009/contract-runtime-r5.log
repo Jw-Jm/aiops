@@ -1,0 +1,79 @@
+ok  	ops-platform/internal/action	0.774s
+ok  	ops-platform/internal/app	0.910s
+ok  	ops-platform/internal/httpapi	1.383s
+--- FAIL: TestBuildReproducibleAndVerifiable (0.05s)
+    build_test.go:59: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestBuildPayloadLargerThanOneMiBRoundTripsWithinDecoderLimit (0.04s)
+    build_test.go:122: signed payload window must fit the bounded verifier: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestBuildRejectsInvalidInputsWithoutPublishing (0.17s)
+    --- FAIL: TestBuildRejectsInvalidInputsWithoutPublishing/candidate (0.03s)
+        build_test.go:161: candidate must fail admission, got: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestCurrentBusinessUsesAdmittedHolmesMaterialName (0.03s)
+    business_values_test.go:222: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestImportRejectsCandidateProfileBeforeRuntimeProbe (0.03s)
+    importer_test.go:52: candidate profile error = checkpoint=verify-bundle: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestImportRejectsInvalidOCIClosureBeforeRuntimeProbe (0.03s)
+    importer_test.go:63: invalid OCI archive error = checkpoint=verify-bundle: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestImportValidatesEveryLayerBeforeAnyRuntimeCall (0.03s)
+    importer_test.go:221: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestPlanImportReturnsEveryImageWithoutRuntimeSideEffects (0.03s)
+    importer_test.go:232: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestImportVerifiedOCIArchivesWithoutPull (0.03s)
+    importer_test.go:248: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestInstallIncompleteBundleNeverRunsHelmOrRuntime (0.03s)
+    installer_test.go:21: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestMetricsAdmissionBindsMeasuredImageAndNativeSourceScope (0.03s)
+    metrics_admission_test.go:21: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestFirstPartyGoMaterialsCannotBypassSDKSourceAdmission (0.03s)
+    runtime_admission_test.go:19: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestSP06InvestigatorCannotOmitCorrespondingSource (0.03s)
+    runtime_admission_test.go:31: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestRuntimeSourceBindsQualifiedSDKAndTargetArchitecture (0.03s)
+    runtime_admission_test.go:54: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestSP05WorkerCannotOmitAnalyzerCorrespondingSource (0.03s)
+    runtime_admission_test.go:121: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestSP05WorkerSourceAdmissionBindsExactCLIClosure (0.03s)
+    runtime_admission_test.go:133: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestVerifyAcceptsSignedBundleWithExplicitTrustRoot (0.03s)
+    verify_test.go:60: Verify(valid bundle): load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestVerifyAcceptsExactPrereleaseVersionContainingX (0.03s)
+    verify_test.go:72: Verify(exact prerelease version): load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions (0.25s)
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/17.11 (0.03s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/4.47 (0.03s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/v17.11 (0.04s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/4.47-rc.1 (0.03s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/4.47+build.1 (0.03s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/1.2.3 (0.03s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa (0.04s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestVerifyRejectsTamperedPayloadByte (0.05s)
+    verify_test.go:107: Verify(tampered payload) error = load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context, want payload digest rejection
+--- FAIL: TestVerifyRejectsPayloadFileInventoryMismatch (0.04s)
+    verify_test.go:525: Verify(inventory mismatch) error = load embedded component catalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context, want signed inventory rejection
+FAIL
+FAIL	ops-platform/internal/bundle	4.390s
+--- FAIL: TestNativePermissionReferencesRejectDifferentScopeAndMissingEvidence (0.00s)
+    native_license_test.go:35: compiled exact native license registry incomplete: historical=281 investigator=863 metrics=4 total=2058
+--- FAIL: TestVictoriaArtifactsRemainBlockedFromBundleWhileCandidate (0.04s)
+    catalog_test.go:229: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestComponentCatalogCoversApprovedScopeWithoutQualifyingCandidates (0.03s)
+    catalog_test.go:418: LoadCatalog: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+FAIL
+FAIL	ops-platform/internal/supplychain	2.014s
+--- FAIL: TestSP06ReuseLockBindsAdmittedRuntime (0.03s)
+    sp06_reuse_lock_test.go:45: Catalog
+--- FAIL: TestUpstreamReuseLockRejectsUnpinnedOrUnsafeBaselines (0.05s)
+    upstream_reuse_test.go:486: load component catalog evidence: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+--- FAIL: TestVictoriaAddonChartsAndImagesAreDigestLocked (0.03s)
+    helm_render_test.go:296: decode component catalog: yaml: line 27904: mapping values are not allowed in this context
+FAIL
+FAIL	ops-platform/test/contract	19.950s
+ok  	ops-platform/test/security	3.295s
+FAIL

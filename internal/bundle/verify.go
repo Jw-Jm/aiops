@@ -202,7 +202,7 @@ func validateCatalogAdmissionWithCatalog(materials []Material, catalog *supplych
 	for _, material := range materials {
 		selected[material.Name] = true
 	}
-	for _, name := range []string{"platform-api", "platform-worker", "opsctl"} {
+	for _, name := range []string{"platform-api", "platform-worker", "opsctl", "command-runner"} {
 		if !selected[name] {
 			continue
 		}

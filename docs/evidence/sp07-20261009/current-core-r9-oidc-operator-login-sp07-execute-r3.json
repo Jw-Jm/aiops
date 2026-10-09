@@ -1,0 +1,54 @@
+{
+  "observedAt": "2026-10-09T05:33:31.062861+00:00",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-keycloak",
+        "59123:8443"
+      ],
+      "pid": 54453
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "port-forward",
+        "--address",
+        "127.0.0.1",
+        "service/ops-postgresql",
+        "59130:5432"
+      ],
+      "pid": 54455
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-tags",
+        "pre_sp07_live",
+        "./test/integration",
+        "-run",
+        "^TestFormalCurrentInstallationOperatorLogin$",
+        "-count=1",
+        "-v"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "ownedLoopbackProcessesStopped": true,
+  "fullFreshCoreAcceptance": false,
+  "signedBundleInstall": false,
+  "noOriginalResourcesDeleted": true
+}

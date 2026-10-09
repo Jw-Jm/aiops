@@ -89,3 +89,16 @@ sp06:
     outputTokens: 8192
     modelCostMicros: 0
     allowedDataClasses: [D0, D1]
+
+# SP07 only runs one-shot Jobs in the existing platform namespace.
+sp07:
+  enabled: false
+  gatewayPort: 8084
+  policyName: sp07-command
+  tenants: []
+  admittedProfiles: []
+  hosts: []
+  hostReports: []
+  kubernetesCredentials: []
+  kubernetesEndpoint: https://kubernetes.default.svc.cluster.local
+  workloadCABundle: ""

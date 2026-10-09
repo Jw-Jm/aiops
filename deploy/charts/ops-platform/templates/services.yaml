@@ -13,6 +13,9 @@ spec:
   selector:
     ops.platform.io/component: {{ $name }}
   ports:
+    {{ if and $.Values.sp07.enabled (eq $name "api") }}
+    - {name: command-mtls, port: {{ $.Values.sp07.gatewayPort }}, targetPort: command-mtls}
+    {{ end }}
     {{ if and $.Values.sp06.enabled (eq $name "api") }}
     - {name: mcp-mtls, port: {{ $.Values.sp06.gatewayPort }}, targetPort: mcp-mtls}
     {{ end }}

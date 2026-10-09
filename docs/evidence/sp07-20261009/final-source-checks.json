@@ -1,0 +1,48 @@
+[
+  {
+    "command": [
+      "make",
+      "check-toolchain"
+    ],
+    "exitCode": 0,
+    "log": "final-toolchain-r2.log"
+  },
+  {
+    "command": [
+      "make",
+      "check-generated"
+    ],
+    "exitCode": 0,
+    "log": "final-generated-r2.log"
+  },
+  {
+    "command": [
+      "make",
+      "check-runtime-source"
+    ],
+    "exitCode": 0,
+    "log": "final-runtime-source-r2.log"
+  },
+  {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "exitCode": 0,
+    "log": "final-vet-r2.log"
+  },
+  {
+    "command": [
+      "go",
+      "test",
+      "./internal/...",
+      "./cmd/...",
+      "./test/security",
+      "./test/contract",
+      "-count=1"
+    ],
+    "exitCode": 1,
+    "log": "final-affected-units-security-contract-r2.log"
+  }
+]

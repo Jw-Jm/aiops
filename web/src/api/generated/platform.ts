@@ -9,6 +9,8 @@ import type {
   CapabilitiesSuccessV1,
   ClusterRegistrationRequest,
   CommandExecutionRequest,
+  CommandRiskAcknowledgementRequest,
+  CommandRiskAssessmentRequest,
   CreateInvestigationV2,
   CreateStepUpSessionBody,
   CurrentRCASuccessV2,
@@ -58,9 +60,11 @@ import type {
   LegalHoldPageV1,
   LegalHoldRequestV1,
   LegalHoldResultV1,
+  OnboardExecutionHostRequest,
   OperatorRoleBindingStatusUpdateRequest,
   PageEnvelope,
   PolicyBundlePublishRequest,
+  PublishExecutionProfileRequest,
   RCARevisionPageV2,
   RCARevisionSuccessV2,
   RegistryActivationRequest,
@@ -603,7 +607,7 @@ export const getCreateExecutionProfileUrl = () => {
 /**
  * @summary createExecutionProfile
  */
-export const createExecutionProfile = async (jSONRequest: JSONRequest, options?: RequestInit): Promise<createExecutionProfileResponse> => {
+export const createExecutionProfile = async (publishExecutionProfileRequest: PublishExecutionProfileRequest, options?: RequestInit): Promise<createExecutionProfileResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -624,7 +628,7 @@ const res = await fetch(getCreateExecutionProfileUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(jSONRequest)
+    body: JSON.stringify(publishExecutionProfileRequest)
   }
 )
 
@@ -2157,15 +2161,20 @@ export type streamCommandExecutionEventsResponse200 = {
   status: 200
 }
 
+export type streamCommandExecutionEventsResponse410 = {
+  data: ErrorEnvelope
+  status: 410
+}
+
 export type streamCommandExecutionEventsResponseDefault = {
   data: ErrorEnvelope
-  status: Exclude<HTTPStatusCodes, 200>
+  status: Exclude<HTTPStatusCodes, 200 | 410>
 }
 
 export type streamCommandExecutionEventsResponseSuccess = (streamCommandExecutionEventsResponse200) & {
   headers: Headers;
 };
-export type streamCommandExecutionEventsResponseError = (streamCommandExecutionEventsResponseDefault) & {
+export type streamCommandExecutionEventsResponseError = (streamCommandExecutionEventsResponse410 | streamCommandExecutionEventsResponseDefault) & {
   headers: Headers;
 };
 
@@ -2332,7 +2341,7 @@ export const getAcknowledgeCommandRiskUrl = () => {
 /**
  * @summary acknowledgeCommandRisk
  */
-export const acknowledgeCommandRisk = async (jSONRequest: JSONRequest, options?: RequestInit): Promise<acknowledgeCommandRiskResponse> => {
+export const acknowledgeCommandRisk = async (commandRiskAcknowledgementRequest: CommandRiskAcknowledgementRequest, options?: RequestInit): Promise<acknowledgeCommandRiskResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -2353,7 +2362,7 @@ const res = await fetch(getAcknowledgeCommandRiskUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(jSONRequest)
+    body: JSON.stringify(commandRiskAcknowledgementRequest)
   }
 )
 
@@ -2396,7 +2405,7 @@ export const getAssessCommandRiskUrl = () => {
 /**
  * @summary assessCommandRisk
  */
-export const assessCommandRisk = async (jSONRequest: JSONRequest, options?: RequestInit): Promise<assessCommandRiskResponse> => {
+export const assessCommandRisk = async (commandRiskAssessmentRequest: CommandRiskAssessmentRequest, options?: RequestInit): Promise<assessCommandRiskResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -2417,7 +2426,7 @@ const res = await fetch(getAssessCommandRiskUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(jSONRequest)
+    body: JSON.stringify(commandRiskAssessmentRequest)
   }
 )
 
@@ -4045,4 +4054,120 @@ const res = await fetch(getSetOperatorRoleBindingStatusUrl(bindingId),
 
   const data: setOperatorRoleBindingStatusResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as setOperatorRoleBindingStatusResponse
+}
+
+
+
+export type retireExecutionProfileResponse200 = {
+  data: SuccessEnvelope
+  status: 200
+}
+
+export type retireExecutionProfileResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type retireExecutionProfileResponseSuccess = (retireExecutionProfileResponse200) & {
+  headers: Headers;
+};
+export type retireExecutionProfileResponseError = (retireExecutionProfileResponseDefault) & {
+  headers: Headers;
+};
+
+export type retireExecutionProfileResponse = (retireExecutionProfileResponseSuccess | retireExecutionProfileResponseError)
+
+export const getRetireExecutionProfileUrl = (executionProfileId: string,
+    version: number,) => {
+
+
+
+
+  return `/api/v1/admin/execution-profiles/${executionProfileId}/versions/${version}:retire`
+}
+
+/**
+ * @summary Retire an immutable execution profile version
+ */
+export const retireExecutionProfile = async (executionProfileId: string,
+    version: number, options?: RequestInit): Promise<retireExecutionProfileResponse> => {
+
+  const res = await fetch(getRetireExecutionProfileUrl(executionProfileId,version),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: retireExecutionProfileResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as retireExecutionProfileResponse
+}
+
+
+
+export type onboardExecutionHostResponse201 = {
+  data: SuccessEnvelope
+  status: 201
+}
+
+export type onboardExecutionHostResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type onboardExecutionHostResponseSuccess = (onboardExecutionHostResponse201) & {
+  headers: Headers;
+};
+export type onboardExecutionHostResponseError = (onboardExecutionHostResponseDefault) & {
+  headers: Headers;
+};
+
+export type onboardExecutionHostResponse = (onboardExecutionHostResponseSuccess | onboardExecutionHostResponseError)
+
+export const getOnboardExecutionHostUrl = () => {
+
+
+
+
+  return `/api/v1/admin/host-onboardings`
+}
+
+/**
+ * @summary Register a signed native Host Onboarding admission report
+ */
+export const onboardExecutionHost = async (onboardExecutionHostRequest: OnboardExecutionHostRequest, options?: RequestInit): Promise<onboardExecutionHostResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getOnboardExecutionHostUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(onboardExecutionHostRequest)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: onboardExecutionHostResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as onboardExecutionHostResponse
 }

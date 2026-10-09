@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ops.local/schemas/installation-business-values/v1",
-  "title": "Explicit nonvirtual SP03\u2013SP06 operator installation values",
+  "title": "Explicit nonvirtual SP03\u2013SP07 operator installation values",
   "type": "object",
   "properties": {
     "schemaVersion": {
@@ -676,6 +676,386 @@
       "minLength": 1,
       "maxLength": 63,
       "pattern": "^[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?$"
+    },
+    "sp07": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "const": true
+        },
+        "gatewayPort": {
+          "const": 8084
+        },
+        "policyName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tenants": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "admittedProfiles": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "executionProfileId": {
+                "type": "string",
+                "maxLength": 512
+              },
+              "clusterUid": {
+                "type": "string",
+                "maxLength": 512
+              },
+              "namespace": {
+                "type": "string",
+                "maxLength": 512
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 512
+              },
+              "networkPolicyRef": {
+                "type": "string",
+                "maxLength": 512
+              },
+              "credentialRef": {
+                "type": "string",
+                "maxLength": 512
+              },
+              "principal": {
+                "type": "string",
+                "maxLength": 512
+              },
+              "hostOnboardingRef": {
+                "type": "string",
+                "maxLength": 512
+              },
+              "schemaVersion": {
+                "const": "execution-profile/v2"
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "type": {
+                "enum": [
+                  "k8s_namespace",
+                  "k8s_cluster",
+                  "ssh_user",
+                  "ssh_root"
+                ]
+              },
+              "allowedTargets": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 100,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 2048
+                }
+              },
+              "tools": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 40,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "toolImageDigest": {
+                "type": "string",
+                "pattern": "^.+@sha256:[0-9a-f]{64}$"
+              },
+              "timeoutSeconds": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 900
+              },
+              "maxOutputBytes": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10485760
+              },
+              "developmentFallback": {
+                "const": false
+              }
+            },
+            "required": [
+              "executionProfileId",
+              "clusterUid",
+              "namespace",
+              "name",
+              "networkPolicyRef",
+              "credentialRef",
+              "principal",
+              "hostOnboardingRef",
+              "schemaVersion",
+              "version",
+              "type",
+              "allowedTargets",
+              "tools",
+              "toolImageDigest",
+              "timeoutSeconds",
+              "maxOutputBytes",
+              "developmentFallback"
+            ]
+          }
+        },
+        "hosts": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "Target": {
+                "type": "string",
+                "maxLength": 16384
+              },
+              "UID": {
+                "type": "string",
+                "maxLength": 16384
+              },
+              "Address": {
+                "type": "string",
+                "maxLength": 16384
+              },
+              "KnownHosts": {
+                "type": "string",
+                "maxLength": 16384
+              },
+              "UserCAPublicKey": {
+                "type": "string",
+                "maxLength": 16384
+              },
+              "Principal": {
+                "type": "string",
+                "maxLength": 16384
+              },
+              "Role": {
+                "type": "string",
+                "maxLength": 16384
+              },
+              "OnboardingRef": {
+                "type": "string",
+                "maxLength": 16384
+              },
+              "Port": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 65535
+              }
+            },
+            "required": [
+              "Target",
+              "UID",
+              "Address",
+              "KnownHosts",
+              "UserCAPublicKey",
+              "Principal",
+              "Role",
+              "OnboardingRef",
+              "Port"
+            ]
+          }
+        },
+        "hostReports": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "schemaVersion": {
+                "const": "host-onboarding/v1"
+              },
+              "host": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "Target": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "UID": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "Address": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "KnownHosts": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "UserCAPublicKey": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "Principal": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "Role": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "OnboardingRef": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "Port": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535
+                  }
+                },
+                "required": [
+                  "Target",
+                  "UID",
+                  "Address",
+                  "KnownHosts",
+                  "UserCAPublicKey",
+                  "Principal",
+                  "Role",
+                  "OnboardingRef",
+                  "Port"
+                ]
+              },
+              "clusterUid": {
+                "type": "string"
+              },
+              "reportDigest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "observedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "host",
+              "clusterUid",
+              "reportDigest",
+              "observedAt",
+              "expiresAt"
+            ]
+          }
+        },
+        "workloadCABundle": {
+          "type": "string",
+          "minLength": 100,
+          "maxLength": 65536
+        },
+        "kubernetesEndpoint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kubernetesCredentials": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "namespace": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "clusterScoped": {
+                "type": "boolean"
+              },
+              "rules": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 100,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "apiGroups": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "resources": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "verbs": {
+                      "type": "array",
+                      "items": {
+                        "enum": [
+                          "get",
+                          "list",
+                          "watch",
+                          "create",
+                          "update",
+                          "patch",
+                          "delete"
+                        ]
+                      }
+                    },
+                    "resourceNames": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "apiGroups",
+                    "resources",
+                    "verbs"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "namespace",
+              "name",
+              "clusterScoped",
+              "rules"
+            ]
+          }
+        }
+      },
+      "required": [
+        "enabled",
+        "gatewayPort",
+        "policyName",
+        "tenants",
+        "admittedProfiles",
+        "hosts",
+        "hostReports",
+        "workloadCABundle",
+        "kubernetesEndpoint",
+        "kubernetesCredentials"
+      ]
     }
   },
   "required": [

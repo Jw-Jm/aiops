@@ -1,0 +1,62 @@
+#0 building with "orbstack" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.09kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 189B done
+#3 DONE 0.0s
+
+#4 [ 1/11] FROM docker.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+#4 resolve docker.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 46.80MB 0.1s done
+#5 DONE 0.1s
+
+#6 [ 2/11] COPY debian/packages/ /opt/material/debs/
+#6 CACHED
+
+#7 [ 3/11] RUN dpkg -i /opt/material/debs/*.deb && rm -rf /opt/material/debs
+#7 CACHED
+
+#8 [ 4/11] COPY wheels/ /opt/material/wheels/
+#8 CACHED
+
+#9 [ 5/11] COPY requirements.lock /opt/material/requirements.lock
+#9 CACHED
+
+#10 [ 6/11] RUN python3 -m pip install --no-index --find-links=/opt/material/wheels --require-hashes -r /opt/material/requirements.lock && rm -rf /opt/material
+#10 CACHED
+
+#11 [ 7/11] COPY kubectl /usr/local/bin/kubectl
+#11 CACHED
+
+#12 [ 8/11] COPY command-runner /ops-command-runner
+#12 DONE 0.2s
+
+#13 [ 9/11] COPY ansible_transport.py /opt/ops/ansible_transport.py
+#13 DONE 0.1s
+
+#14 [10/11] RUN chmod 0555 /ops-command-runner /usr/local/bin/kubectl /opt/ops/ansible_transport.py && printf 'opsrunner:x:65532:65532:SP07 one-shot runner:/tmp:/bin/bash\n' >> /etc/passwd && printf 'opsrunner:x:65532:\n' >> /etc/group
+#14 DONE 0.1s
+
+#15 [11/11] WORKDIR /tmp
+#15 DONE 0.1s
+
+#16 exporting to oci image format
+#16 exporting layers
+#16 exporting layers 2.0s done
+#16 exporting manifest sha256:15ab0baf157d103f8333f6b19a7b48bf36b90c82881d33f385aef4f9976ecb94
+#16 exporting manifest sha256:15ab0baf157d103f8333f6b19a7b48bf36b90c82881d33f385aef4f9976ecb94 0.0s done
+#16 exporting config sha256:a64d0ff48c125ea1403b6af4969c4cd1b8dcb5e7b10b76a294e6c7f7bcba84d2 0.0s done
+#16 sending tarball
+#16 sending tarball 1.0s done
+#16 DONE 3.1s
+
+View build details: docker-desktop://dashboard/build/orbstack/orbstack/nosnh1w9s85doqsvyuw77xi0v

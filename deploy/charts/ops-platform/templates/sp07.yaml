@@ -1,0 +1,133 @@
+{{- if .Values.sp07.enabled }}
+{{- if not (and .Values.sp06.enabled .Values.sp04.enabled .Values.sp05.enabled (eq .Values.workloadIdentity.mode "openbao-kubernetes")) }}{{ fail "SP07 requires SP04–SP06 and native projected PKI" }}{{- end }}
+{{- if not (and .Values.sp07.tenants .Values.sp07.admittedProfiles .Values.sp04.kubernetesAPI.cidrs) }}{{ fail "SP07 requires explicit tenants, admitted profiles and exact Kubernetes API endpoints" }}{{- end }}
+{{- if not .Values.networkPolicyOnly }}
+{{- $config := dict "schemaVersion" "sp07-runtime/v1" "namespace" .Release.Namespace "listenAddress" (printf ":%d" (int .Values.sp07.gatewayPort)) "apiEndpoint" (printf "https://ops-api.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.sp07.gatewayPort)) "workloadCAFile" "/etc/sp04/identity/ca.pem" "policyName" .Values.sp07.policyName "kubernetesEndpoint" .Values.sp07.kubernetesEndpoint "kubernetesCAFile" "/var/run/secrets/ops-platform/execution/ca.pem" "kubernetesTokenFile" "/var/run/secrets/ops-platform/execution/token" "trustConfigMap" "ops-command-runner-trust" "tenants" .Values.sp07.tenants "admittedProfiles" .Values.sp07.admittedProfiles "hosts" .Values.sp07.hosts "hostReports" .Values.sp07.hostReports }}
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: ops-sp07-runtime}
+data:
+  runtime.json: {{ $config | toJson | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: ops-command-runner-trust}
+data:
+  runner.json: {{ dict "Namespace" .Release.Namespace "OpenBaoAddress" (.Values.runtime.openbaoAddress | default (printf "https://ops-openbao.%s.svc.cluster.local:8200" .Release.Namespace)) "OpenBaoServerName" (printf "ops-openbao.%s.svc.cluster.local" .Release.Namespace) | toJson | quote }}
+  openbao-ca.pem: {{ .Values.runtime.openbaoCABundle | quote }}
+  workload-ca.pem: {{ required "SP07 pinned public workload CA required" .Values.sp07.workloadCABundle | quote }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: ops-sp07-job-controller}
+rules:
+  - apiGroups: [batch]
+    resources: [jobs]
+    verbs: [create, get, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: ops-sp07-job-controller}
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: ops-sp07-job-controller}
+subjects: [{kind: ServiceAccount, name: ops-worker, namespace: {{ .Release.Namespace }}}]
+{{- range .Values.sp07.kubernetesCredentials }}
+{{- if not (and .namespace .name .rules) }}{{ fail "Execution credential requires fixed namespace, name and RBAC rules" }}{{- end }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: {{ .name }}, namespace: {{ .namespace }}}
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: {{ if .clusterScoped }}ClusterRole{{ else }}Role{{ end }}
+metadata:
+  name: {{ printf "ops-sp07-target-%s-%s" .namespace .name }}
+  {{ if not .clusterScoped }}namespace: {{ .namespace }}{{ end }}
+rules: {{ .rules | toJson }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: {{ if .clusterScoped }}ClusterRoleBinding{{ else }}RoleBinding{{ end }}
+metadata:
+  name: {{ printf "ops-sp07-target-%s-%s" .namespace .name }}
+  {{ if not .clusterScoped }}namespace: {{ .namespace }}{{ end }}
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: {{ if .clusterScoped }}ClusterRole{{ else }}Role{{ end }}, name: {{ printf "ops-sp07-target-%s-%s" .namespace .name }}}
+subjects: [{kind: ServiceAccount, name: {{ .name }}, namespace: {{ .namespace }}}]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: {{ printf "ops-sp07-token-%s" .name }}, namespace: {{ .namespace }}}
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [{{ .name }}]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: {{ printf "ops-sp07-token-%s" .name }}, namespace: {{ .namespace }}}
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: {{ printf "ops-sp07-token-%s" .name }}}
+subjects: [{kind: ServiceAccount, name: ops-api, namespace: {{ $.Release.Namespace }}}]
+{{- end }}
+{{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: ops-sp07-runner-default-deny}
+spec:
+  podSelector: {matchLabels: {app.kubernetes.io/name: ops-command-runner}}
+  policyTypes: [Ingress, Egress]
+{{- range .Values.sp07.admittedProfiles }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: {{ .networkPolicyRef }}}
+spec:
+  podSelector: {matchLabels: {app.kubernetes.io/name: ops-command-runner, ops.platform/network-profile: {{ .networkPolicyRef }}}}
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to: [{podSelector: {matchLabels: {ops.platform.io/component: api}}}]
+      ports: [{protocol: TCP, port: {{ $.Values.sp07.gatewayPort }}}]
+    - to: [{podSelector: {matchLabels: {ops.platform.io/component: openbao}}}]
+      ports: [{protocol: TCP, port: 8200}]
+    - to:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}
+          podSelector: {matchLabels: {k8s-app: kube-dns}}
+      ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]
+    {{- if has .type (list "k8s_namespace" "k8s_cluster") }}
+    {{- range $.Values.sp04.kubernetesAPI.cidrs }}
+    - to: [{ipBlock: {cidr: {{ . | quote }}}}]
+      ports: [{protocol: TCP, port: {{ $.Values.sp04.kubernetesAPI.port }}}]
+    {{- end }}
+    {{- else }}
+    {{- $profile := . }}
+    {{- range $.Values.sp07.hosts }}
+    {{- if and (eq .Principal $profile.principal) (eq .OnboardingRef $profile.hostOnboardingRef) (has .Target $profile.allowedTargets) }}
+    - to: [{ipBlock: {cidr: {{ printf "%s/32" .Address | quote }}}}]
+      ports: [{protocol: TCP, port: {{ .Port }}}]
+    {{- end }}
+    {{- end }}
+    {{- end }}
+{{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: ops-sp07-api-runner-ingress}
+spec:
+  podSelector: {matchLabels: {ops.platform.io/component: api}}
+  policyTypes: [Ingress]
+  ingress:
+    - from: [{podSelector: {matchLabels: {app.kubernetes.io/name: ops-command-runner}}}]
+      ports: [{protocol: TCP, port: {{ .Values.sp07.gatewayPort }}}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: ops-sp07-api-kubernetes-egress}
+spec:
+  podSelector: {matchLabels: {ops.platform.io/component: api}}
+  policyTypes: [Egress]
+  egress:
+    {{- range .Values.sp04.kubernetesAPI.cidrs }}
+    - to: [{ipBlock: {cidr: {{ . | quote }}}}]
+      ports: [{protocol: TCP, port: {{ $.Values.sp04.kubernetesAPI.port }}}]
+    {{- end }}
+{{- end }}

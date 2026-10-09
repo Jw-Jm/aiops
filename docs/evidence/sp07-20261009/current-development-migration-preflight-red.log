@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/mssc/.local/state/ops/sp07-20261009/migrate-current.py", line 14, in <module>
+    before=read(query);assert before['version']==35 and before['activeInvestigations']==0
+           ^^^^^^^^^^^
+  File "/Users/mssc/.local/state/ops/sp07-20261009/migrate-current.py", line 12, in read
+    c=subprocess.run(['docker','exec',cid,'psql','-X','-U','ops_bootstrap','-d','ops','-qAt','-v','ON_ERROR_STOP=1','-c',sql],capture_output=True,timeout=30);(e/'current-development-migration-preflight.log').write_bytes(c.stderr);assert c.returncode==0;return json.loads(c.stdout)
+                                                                                                                                                                                                                                             ^^^^^^^^^^^^^^^
+AssertionError

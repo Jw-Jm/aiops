@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"ops-platform/internal/action"
+	"ops-platform/internal/audit"
 	"ops-platform/internal/contract"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/finding"
@@ -205,6 +207,31 @@ func (r Repository) Complete(ctx context.Context, l Lease, b []byte) error {
 			// to resource inventory; this check grants no execution authority.
 			if tx.QueryRow(ctx, `SELECT namespace FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, j.TenantID, a.Target).Scan(&ns) != nil || !j.Scope.Allows(a.Target, ns) {
 				return ErrDenied
+			}
+		}
+		for index, proposal := range p.ActionPlans {
+			// Model identifiers are advisory identifiers in the frozen contract.
+			// Mint the platform business UUID only after all Go Validator checks;
+			// never let a model select or overwrite a durable recommendation row.
+			var plan map[string]any
+			if json.Unmarshal(proposal, &plan) != nil {
+				return ErrInvalid
+			}
+			extensions, _ := plan["extensions"].(map[string]any)
+			if extensions == nil {
+				extensions = map[string]any{}
+			}
+			extensions["modelProposalActionPlanId"] = plan["actionPlanId"]
+			id := uuid.Must(uuid.NewV7())
+			plan["actionPlanId"], plan["extensions"] = id.String(), extensions
+			plan["generatedBy"] = map[string]any{"type": "agent", "name": "holmesgpt"}
+			plan["createdAt"] = time.Now().UTC().Format(time.RFC3339Nano)
+			p.ActionPlans[index] = raw(plan)
+			if err := action.PersistPlanTx(ctx, tx, j.TenantID, j.IncidentID, p.ActionPlans[index]); err != nil {
+				return err
+			}
+			if _, err := audit.Append(ctx, tx, audit.Entry{TenantID: j.TenantID, RecordID: uuid.Must(uuid.NewV7()), EntityKind: "action_plan", EntityID: id, Subject: j.Subject, EventType: "action_plan.suggested", Payload: map[string]any{"investigationId": j.JobID, "suggestionDigest": action.Digest([]byte(plan["suggestedCommand"].(string))), "executionAuthorityGranted": false}}); err != nil {
+				return err
 			}
 		}
 		state := "succeeded"

@@ -12,6 +12,11 @@ import (
 var transitNamePattern = regexp.MustCompile(`^[a-z][a-z0-9-]{0,127}$`)
 var transitValuePattern = regexp.MustCompile(`^vault:v([1-9][0-9]*):[A-Za-z0-9+/=]+$`)
 
+// The existing 20 MiB plaintext bound needs base64 expansion plus a bounded
+// response envelope. Only encrypt/decrypt use this transport limit; ordinary
+// OpenBao responses retain 1 MiB. This does not raise the execution output cap.
+const transitResponseLimit = ((20<<20)+2)/3*4 + (1 << 20)
+
 type TransitCiphertext struct {
 	Ciphertext string `json:"ciphertext"`
 	KeyVersion string `json:"keyVersion"`
@@ -34,7 +39,7 @@ func (c *Client) TransitEncrypt(ctx context.Context, key string, plain, aad []by
 	}
 	var out dataResponse
 	input := map[string]string{"plaintext": base64.StdEncoding.EncodeToString(plain), "associated_data": base64.StdEncoding.EncodeToString(aad)}
-	if err := c.request(ctx, http.MethodPost, "/v1/transit/encrypt/"+key, input, &out); err != nil {
+	if err := c.requestWithTokenLimit(ctx, http.MethodPost, "/v1/transit/encrypt/"+key, input, &out, c.token, transitResponseLimit); err != nil {
 		return TransitCiphertext{}, errors.New("TRANSIT_ENCRYPT_UNAVAILABLE")
 	}
 	ciphertext, _ := out.Data["ciphertext"].(string)
@@ -45,19 +50,19 @@ func (c *Client) TransitEncrypt(ctx context.Context, key string, plain, aad []by
 	return TransitCiphertext{ciphertext, version}, nil
 }
 func (c *Client) TransitDecrypt(ctx context.Context, key, ciphertext string, aad []byte) ([]byte, error) {
-	if !transitNamePattern.MatchString(key) {
+	if !transitNamePattern.MatchString(key) || len(ciphertext) > transitResponseLimit {
 		return nil, errors.New("invalid Transit key")
 	}
 	if _, err := TransitVersion(ciphertext); err != nil {
 		return nil, err
 	}
 	var out dataResponse
-	if err := c.request(ctx, http.MethodPost, "/v1/transit/decrypt/"+key, map[string]string{"ciphertext": ciphertext, "associated_data": base64.StdEncoding.EncodeToString(aad)}, &out); err != nil {
+	if err := c.requestWithTokenLimit(ctx, http.MethodPost, "/v1/transit/decrypt/"+key, map[string]string{"ciphertext": ciphertext, "associated_data": base64.StdEncoding.EncodeToString(aad)}, &out, c.token, transitResponseLimit); err != nil {
 		return nil, errors.New("TRANSIT_DECRYPT_UNAVAILABLE")
 	}
 	encoded, _ := out.Data["plaintext"].(string)
 	plain, err := base64.StdEncoding.DecodeString(encoded)
-	if err != nil {
+	if err != nil || len(plain) > 20<<20 {
 		return nil, errors.New("invalid Transit plaintext response")
 	}
 	return plain, nil

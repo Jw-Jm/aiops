@@ -1,0 +1,162 @@
+[
+  {
+    "operation": "high-assess-without-session",
+    "method": "POST",
+    "path": "/api/v1/commands:risk-assess",
+    "status": 200,
+    "responseSHA256": "sha256:00f63188f24c2484d5d517775a743e39b92dfa09286f0dbb6e83b4851ad73ab7",
+    "error": null
+  },
+  {
+    "operation": "high-ack-without-session",
+    "method": "POST",
+    "path": "/api/v1/commands:risk-acknowledge",
+    "status": 403,
+    "responseSHA256": "sha256:7c991ac3f9e57995c753226b369e86c562a2ea9be669089e3d1016e7ce137968",
+    "error": "STEP_UP_REQUIRED"
+  },
+  {
+    "operation": "stepup",
+    "method": "POST",
+    "path": "/api/v1/auth/step-up-sessions",
+    "status": 201,
+    "responseSHA256": "sha256:00768d16c5786c2d9380fa8cf2b098c5b96af075882054ce91b645692c708287",
+    "error": null
+  },
+  {
+    "operation": "execution-without-ack",
+    "method": "POST",
+    "path": "/api/v1/command-executions",
+    "status": 409,
+    "responseSHA256": "sha256:f8c8d21ace4eb465d791131fcbde539d6d4a648726aada4c415c1605092d4dea",
+    "error": "RISK_ACK_COMMAND_MISMATCH"
+  },
+  {
+    "operation": "foreign-target",
+    "method": "POST",
+    "path": "/api/v1/commands:risk-assess",
+    "status": 403,
+    "responseSHA256": "sha256:0e61fad4e8286fcd63a2ceadbd145b0306c7a665a0890a653cd86194a04fa515",
+    "error": "FORBIDDEN"
+  },
+  {
+    "operation": "assess",
+    "method": "POST",
+    "path": "/api/v1/commands:risk-assess",
+    "status": 200,
+    "responseSHA256": "sha256:d8bd68941a2e776db640197fb16de00c2e799578cd4d6a725ad236aa04d8d7dc",
+    "error": null
+  },
+  {
+    "operation": "wrong-digest",
+    "method": "POST",
+    "path": "/api/v1/commands:risk-acknowledge",
+    "status": 409,
+    "responseSHA256": "sha256:83538aa3379333833ebe31bca74e9a2098d4d851de2d67eeb4acb899066513b5",
+    "error": "RISK_ACK_COMMAND_MISMATCH"
+  },
+  {
+    "operation": "ack",
+    "method": "POST",
+    "path": "/api/v1/commands:risk-acknowledge",
+    "status": 200,
+    "responseSHA256": "sha256:3734d2d76d24db2271b87d5f19911eed97bf3fb886c315c81796a036d873698f",
+    "error": null
+  },
+  {
+    "operation": "changed-raw-command",
+    "method": "POST",
+    "path": "/api/v1/command-executions",
+    "status": 409,
+    "responseSHA256": "sha256:a9dbba0677297306d0c9ed65092b699cd5f02c00a71728c426a86e71b7c81e81",
+    "error": "RISK_ACK_COMMAND_MISMATCH"
+  },
+  {
+    "operation": "execution",
+    "method": "POST",
+    "path": "/api/v1/command-executions",
+    "status": 202,
+    "responseSHA256": "sha256:ca248fe8e51aa48700051cdd57a5610ad60061d865805e02dfad6c301abc39e0",
+    "error": null
+  },
+  {
+    "operation": "execution-replay",
+    "method": "POST",
+    "path": "/api/v1/command-executions",
+    "status": 202,
+    "responseSHA256": "sha256:62001084f58fd8ec5d352b7fd18ed325dba3461135891db1516f429f8fa9f5a1",
+    "error": null
+  },
+  {
+    "operation": "ack-consumed",
+    "method": "POST",
+    "path": "/api/v1/command-executions",
+    "status": 409,
+    "responseSHA256": "sha256:75ce6610ddd20b0244deca668b2210c9c0522bb1cb5f8a9d03bbcec30b89b937",
+    "error": "RISK_ACK_COMMAND_MISMATCH"
+  },
+  {
+    "operation": "other-assess",
+    "method": "POST",
+    "path": "/api/v1/commands:risk-assess",
+    "status": 200,
+    "responseSHA256": "sha256:273d4672c6cd4541aa399643271a7d8e528b78fea81bd087779ae5bfec742fe9",
+    "error": null
+  },
+  {
+    "operation": "other-ack",
+    "method": "POST",
+    "path": "/api/v1/commands:risk-acknowledge",
+    "status": 200,
+    "responseSHA256": "sha256:595b54cac6f57d283e16563dc9d7b597f2aa1a4271c8f5b9b8b8fcfa3a22a953",
+    "error": null
+  },
+  {
+    "operation": "same-key-other-ack",
+    "method": "POST",
+    "path": "/api/v1/command-executions",
+    "status": 409,
+    "responseSHA256": "sha256:a83a72f8a2710abde4fea00da9ed5472d8efe5aaf2f8d6aee57cc9491add5afd",
+    "error": "CONFLICT"
+  },
+  {
+    "operation": "bindings",
+    "method": "GET",
+    "path": "/api/v1/admin/role-bindings",
+    "status": 200,
+    "responseSHA256": "sha256:d26f5606ab7000ab1479ebac7005536826fe1900427282a20b27108021f526ee",
+    "error": null
+  },
+  {
+    "operation": "disable0",
+    "method": "PATCH",
+    "path": "/api/v1/admin/role-bindings/01a1196d-837c-7a73-98ea-15f78d8b433f/status",
+    "status": 200,
+    "responseSHA256": "sha256:82e313a800745710276649d64d9937948eb2e12b5995c02474bd333258df720b",
+    "error": null
+  },
+  {
+    "operation": "admin-no-operator-assess",
+    "method": "POST",
+    "path": "/api/v1/commands:risk-assess",
+    "status": 403,
+    "responseSHA256": "sha256:2a4f5bbc3b30cc557aa33906475fdd7a72107aed51e6b4037b0ba8c5a78df138",
+    "error": "FORBIDDEN"
+  },
+  {
+    "operation": "revoked-replay",
+    "method": "POST",
+    "path": "/api/v1/command-executions",
+    "status": 403,
+    "responseSHA256": "sha256:04ff81ef472498cd42024483c817abfc9935f104ad206132a855f5bc0ff52e03",
+    "error": "FORBIDDEN"
+  },
+  {
+    "operation": "restore0",
+    "method": "PATCH",
+    "path": "/api/v1/admin/role-bindings/01a1196d-837c-7a73-98ea-15f78d8b433f/status",
+    "status": 200,
+    "responseSHA256": "sha256:79f572166a5b66b3e1aae0d96edc483323b1198014ee83f020cfc4f47493dec1",
+    "error": null
+  }
+]

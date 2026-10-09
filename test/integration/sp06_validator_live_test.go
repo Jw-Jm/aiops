@@ -304,6 +304,10 @@ func sp06GoldenInvestigationValidator(t *testing.T, ctx context.Context, db *sql
 	if err = validator.Complete(ctx, l, encoded); err != nil {
 		t.Fatal("valid recommendation rejected: ", err)
 	}
+	var recommendations, executions, confirmations int
+	if err = db.QueryRowContext(ctx, `SELECT (SELECT count(*) FROM action.plans WHERE tenant_id=$1),(SELECT count(*) FROM action.executions WHERE tenant_id=$1),(SELECT count(*) FROM action.risk_acknowledgements WHERE tenant_id=$1)`, job.TenantID).Scan(&recommendations, &executions, &confirmations); err != nil || recommendations != 1 || executions != 0 || confirmations != 0 {
+		t.Fatalf("validated suggestion granted execution authority: plans=%d executions=%d confirmations=%d err=%v", recommendations, executions, confirmations, err)
+	}
 	final, err := repo.Get(ctx, job.TenantID, job.JobID)
 	if err != nil || final.State != "succeeded" {
 		t.Fatalf("final advisory result: %s %v", final.State, err)

@@ -246,6 +246,9 @@ func (t tokenTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	copy.Header.Set("Authorization", "Bearer "+strings.TrimSpace(string(raw)))
 	return t.base.RoundTrip(copy)
 }
+
+var nativeClusterRateBudgets sync.Map
+
 func clusterClient(c SP04Cluster) (*kubernetes.Client, error) {
 	raw, err := os.ReadFile(c.CAFile)
 	if err != nil {
@@ -266,7 +269,19 @@ func clusterClient(c SP04Cluster) (*kubernetes.Client, error) {
 	if qps > 10 || burst > 25 {
 		return nil, errors.New("SP04 two-worker cluster budget requires QPS<=10 and burst<=25 per worker")
 	}
-	return kubernetes.NewClient(c.Endpoint, &http.Client{Transport: tokenTransport{transport, c.TokenFile}, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}, qps, burst)
+	client, err := kubernetes.NewClient(c.Endpoint, &http.Client{Transport: tokenTransport{transport, c.TokenFile}, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}, qps, burst)
+	if err != nil {
+		return nil, err
+	}
+	budget, err := kubernetes.NewRateBudget(qps, burst)
+	if err != nil {
+		return nil, err
+	}
+	shared, _ := nativeClusterRateBudgets.LoadOrStore(c.ClusterUID, budget)
+	if err = client.ShareRateBudget(shared.(*kubernetes.RateBudget)); err != nil {
+		return nil, err
+	}
+	return client, nil
 }
 func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.ArchiveService, runtime *observability.Runtime) (func(), error) {
 	c, err := loadSP04()
@@ -298,7 +313,6 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 	runContext, cancel := context.WithCancel(ctx)
 	var group sync.WaitGroup
 	handlers := map[string]graph.InternalHandler{}
-	clusterBudgets := map[string]*kubernetes.RateBudget{}
 	initialized := false
 	defer func() {
 		if !initialized {
@@ -323,22 +337,7 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 			cancel()
 			return nil, err
 		}
-		budget := clusterBudgets[cluster.ClusterUID]
-		if budget == nil {
-			qps := cluster.QPS
-			if qps == 0 {
-				qps = 10
-			}
-			burst := cluster.Burst
-			if burst == 0 {
-				burst = 25
-			}
-			budget, _ = kubernetes.NewRateBudget(qps, burst)
-			clusterBudgets[cluster.ClusterUID] = budget
-		}
-		if err := client.ShareRateBudget(budget); err != nil {
-			return nil, err
-		}
+
 		sourceRepo := evidence.Repository{Pool: pool}
 		initialBinding, err := sourceRepo.RegisteredBinding(ctx, evidence.Binding{Tenant: cluster.Tenant, SourceID: cluster.SourceID, Revision: cluster.SourceRevision, SourceType: "kubernetes", BackendLogicalID: cluster.BackendLogicalID})
 		if err != nil {

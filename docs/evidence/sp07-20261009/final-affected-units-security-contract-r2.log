@@ -1,0 +1,102 @@
+ok  	ops-platform/internal/action	0.983s
+ok  	ops-platform/internal/app	1.658s
+ok  	ops-platform/internal/archive	1.334s
+ok  	ops-platform/internal/audit	1.444s
+ok  	ops-platform/internal/auth	1.553s
+ok  	ops-platform/internal/bootstrap	1.705s
+ok  	ops-platform/internal/bundle	60.502s
+ok  	ops-platform/internal/bundle/drivers	2.584s
+ok  	ops-platform/internal/configregistry	3.036s
+?   	ops-platform/internal/contract	[no test files]
+ok  	ops-platform/internal/crypto	3.427s
+?   	ops-platform/internal/datascope	[no test files]
+ok  	ops-platform/internal/evidence	4.072s
+ok  	ops-platform/internal/finding	4.437s
+panic: test timed out after 10m0s
+	running tests:
+		TestUpstreamConformanceAnd20KPlatformGeneration (9m57s)
+
+goroutine 134 [running]:
+testing.(*M).startAlarm.func1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2959 +0x2c4
+created by time.goFunc
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/time/sleep.go:182 +0x38
+
+goroutine 1 [chan receive, 9 minutes]:
+testing.(*T).Run(0x354e6a37dd48, {0x10538ded7?, 0x354e6a7dfa88?}, 0x105df3610)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2266 +0x3cc
+testing.runTests.func1(0x354e6a37dd48)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2742 +0x38
+testing.tRunner(0x354e6a37dd48, 0x354e6a7dfbb8)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2193 +0xc4
+testing.runTests({0x105365ed2, 0xc}, {0x105375964, 0x1b}, 0x354e6a6b0840, {0x1060aa788, 0x1d, 0x1d}, {0x354e6a7dfc58?, 0x354e6a6830c0?, ...})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2740 +0x400
+testing.(*M).Run(0x354e6a7057c0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2600 +0x578
+main.main()
+	_testmain.go:102 +0x80
+
+goroutine 146 [runnable]:
+k8s.io/apimachinery/pkg/apis/meta/v1/unstructured.(*Unstructured).GetOwnerReferences(0x354e74c5a248?)
+	/Users/mssc/go/pkg/mod/k8s.io/apimachinery@v0.35.2/pkg/apis/meta/v1/unstructured/unstructured.go:183 +0x234
+github.com/aalpar/ariadne.resolveOwnerRefs(0x354e74d65380, {0x105ded250, 0x354e6e5bec80})
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/structural.go:307 +0x300
+github.com/aalpar/ariadne.(*structuralResolver).Resolve(0x1060e48e0?, 0x354e74d65380, {0x105ded250, 0x354e6e5bec80})
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/structural.go:270 +0x4c
+github.com/aalpar/ariadne.(*Graph).Load(0x354e6a6b51f0, {0x354e7394e000, 0x4e19, 0x5c00})
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/graph.go:385 +0x75c
+ops-platform/internal/graph.(*Graph).Replace(0x354e6a8b6000, {0x105dec5f8, 0x1060e48e0}, 0x1, {0x0, {{0x105415a40, 0x0}, {0x10535d3d5, 0x2}, {0x10536ff0a, ...}}, ...})
+	/Users/mssc/Documents/Code/ops/platform/internal/graph/ariadne_adapter.go:292 +0x1684
+ops-platform/internal/graph.TestUpstreamConformanceAnd20KPlatformGeneration(0x354e6adac6c8)
+	/Users/mssc/Documents/Code/ops/platform/internal/graph/upstream_conformance_test.go:119 +0x10b0
+testing.tRunner(0x354e6adac6c8, 0x105df3610)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2193 +0xc4
+created by testing.(*T).Run in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2258 +0x3b8
+FAIL	ops-platform/internal/graph	604.417s
+ok  	ops-platform/internal/httpapi	4.940s
+ok  	ops-platform/internal/incident	4.240s
+ok  	ops-platform/internal/inspection/hardware	4.225s
+ok  	ops-platform/internal/inspection/kubernetes	4.457s
+ok  	ops-platform/internal/inspection/npd	4.339s
+?   	ops-platform/internal/integrations	[no test files]
+ok  	ops-platform/internal/integrations/deepflow	4.537s
+ok  	ops-platform/internal/integrations/k8sgpt	3.973s
+ok  	ops-platform/internal/integrations/keycloak	3.453s
+ok  	ops-platform/internal/integrations/kubernetes	24.496s
+ok  	ops-platform/internal/integrations/openbao	3.886s
+ok  	ops-platform/internal/integrations/redfish	4.416s
+ok  	ops-platform/internal/integrations/s3	8.635s
+?   	ops-platform/internal/integrations/victorialogs	[no test files]
+?   	ops-platform/internal/integrations/victorialogs/adapter	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics/adapter	[no test files]
+?   	ops-platform/internal/integrations/vmalert	[no test files]
+ok  	ops-platform/internal/investigation	3.848s
+?   	ops-platform/internal/investigation/mcp	[no test files]
+ok  	ops-platform/internal/investigation/tools	4.386s
+ok  	ops-platform/internal/observability	3.497s
+ok  	ops-platform/internal/persistence	2.843s
+?   	ops-platform/internal/persistence/dbgen	[no test files]
+ok  	ops-platform/internal/policy	2.882s
+ok  	ops-platform/internal/profile	4.974s
+ok  	ops-platform/internal/rca	2.942s
+ok  	ops-platform/internal/resource	2.785s
+?   	ops-platform/internal/resourcestore	[no test files]
+ok  	ops-platform/internal/source	0.615s
+ok  	ops-platform/internal/supplychain	4.452s
+?   	ops-platform/internal/tenant	[no test files]
+?   	ops-platform/internal/upstream/corootcheck	[no test files]
+?   	ops-platform/internal/upstream/keepmodel	[no test files]
+?   	ops-platform/internal/upstream/metal3	[no test files]
+?   	ops-platform/internal/upstream/ontology/api	[no test files]
+?   	ops-platform/internal/upstream/ontology/model	[no test files]
+?   	ops-platform/internal/upstream/ontology/service/diagnostic	[no test files]
+?   	ops-platform/cmd/command-runner	[no test files]
+ok  	ops-platform/cmd/db-migrate	0.814s
+ok  	ops-platform/cmd/opsctl	39.828s
+?   	ops-platform/cmd/platform-api	[no test files]
+?   	ops-platform/cmd/platform-worker	[no test files]
+ok  	ops-platform/test/security	1.540s
+ok  	ops-platform/test/contract	122.847s
+FAIL

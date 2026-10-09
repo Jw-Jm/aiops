@@ -205,6 +205,10 @@ func (c *Client) request(ctx context.Context, method, path string, input any, ou
 }
 
 func (c *Client) requestWithToken(ctx context.Context, method, path string, input any, output any, token string) error {
+	return c.requestWithTokenLimit(ctx, method, path, input, output, token, 1<<20)
+}
+
+func (c *Client) requestWithTokenLimit(ctx context.Context, method, path string, input any, output any, token string, responseLimit int64) error {
 	var body io.Reader
 	if input != nil {
 		encoded, err := json.Marshal(input)
@@ -249,8 +253,11 @@ func (c *Client) requestWithToken(ctx context.Context, method, path string, inpu
 		_, err := io.Copy(io.Discard, io.LimitReader(response.Body, 1<<20))
 		return err
 	}
-	decoder := json.NewDecoder(io.LimitReader(response.Body, 1<<20))
-	if err := decoder.Decode(output); err != nil {
+	raw, err := io.ReadAll(io.LimitReader(response.Body, responseLimit+1))
+	if err != nil || int64(len(raw)) > responseLimit {
+		return fmt.Errorf("OpenBao response exceeds bounded read from %s", path)
+	}
+	if err := json.Unmarshal(raw, output); err != nil {
 		return fmt.Errorf("decode OpenBao response from %s: %w", path, err)
 	}
 	return nil

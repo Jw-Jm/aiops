@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/host-onboarding/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "host-onboarding/v1"
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Target": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "UID": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "Address": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "KnownHosts": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "UserCAPublicKey": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "Principal": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "Role": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "OnboardingRef": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "Port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        }
+      },
+      "required": [
+        "Target",
+        "UID",
+        "Address",
+        "KnownHosts",
+        "UserCAPublicKey",
+        "Principal",
+        "Role",
+        "OnboardingRef",
+        "Port"
+      ]
+    },
+    "clusterUid": {
+      "type": "string"
+    },
+    "reportDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "host",
+    "clusterUid",
+    "reportDigest",
+    "observedAt",
+    "expiresAt"
+  ]
+}

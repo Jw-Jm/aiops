@@ -1,0 +1,103 @@
+{
+  "observedAt": "2026-10-09T07:12:04.314956+00:00",
+  "containerId": "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+  "onlyOwnedIsolatedTarget": true,
+  "hostKeyMismatchObserved": true,
+  "strictKnownHostsProbeExit": 255,
+  "productAPINativeAnsibleExit": 1,
+  "remoteCommandMarkerAbsent": true,
+  "originalHostPrivateKeyBytesRestored": true,
+  "originalHostPublicKeyBytesRestored": true,
+  "originalPublicHostKeySHA256": "0d0ac1d14848b35e89f5a9d31e7d9f475da4248e4be664d6585d1e50e6abf4b9",
+  "independentRestoredKeyscanMatches": true,
+  "currentHostOnboardingAndProfileUnchanged": true,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "test",
+        "!",
+        "-e",
+        "/tmp/sp07-hostkey-must-not-run-20261009"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keygen",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-f",
+        "/Users/mssc/.local/state/ops/sp07-20261009/ssh-admission/hostkey-negative/alternate-hostkey"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "kill",
+        "--signal=HUP",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keyscan",
+        "-T",
+        "2",
+        "-p",
+        "2222",
+        "-t",
+        "ed25519",
+        "192.168.117.2"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "UserKnownHostsFile=/Users/mssc/.local/state/ops/sp07-20261009/ssh-admission/known_hosts",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=5",
+        "-p",
+        "2222",
+        "opsordinary@192.168.117.2",
+        "true"
+      ],
+      "exitCode": 255
+    },
+    {
+      "command": [
+        "docker",
+        "kill",
+        "--signal=HUP",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "ssh-keyscan",
+        "-T",
+        "2",
+        "-p",
+        "2222",
+        "-t",
+        "ed25519",
+        "192.168.117.2"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

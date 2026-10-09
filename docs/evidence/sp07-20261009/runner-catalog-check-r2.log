@@ -1,0 +1,73 @@
+--- FAIL: TestNativePermissionReferencesRejectDifferentScopeAndMissingEvidence (0.00s)
+    native_license_test.go:35: compiled exact native license registry incomplete: historical=281 investigator=863 metrics=4 total=2058
+--- FAIL: TestVictoriaArtifactsRemainBlockedFromBundleWhileCandidate (0.45s)
+    catalog_test.go:243: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestComponentCatalogCoversApprovedScopeWithoutQualifyingCandidates (0.17s)
+    catalog_test.go:418: LoadCatalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+FAIL
+FAIL	ops-platform/internal/supplychain	0.927s
+--- FAIL: TestBuildReproducibleAndVerifiable (0.13s)
+    build_test.go:59: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestBuildPayloadLargerThanOneMiBRoundTripsWithinDecoderLimit (0.11s)
+    build_test.go:122: signed payload window must fit the bounded verifier: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestBuildRejectsInvalidInputsWithoutPublishing (0.55s)
+    --- FAIL: TestBuildRejectsInvalidInputsWithoutPublishing/candidate (0.12s)
+        build_test.go:161: candidate must fail admission, got: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestCurrentBusinessUsesAdmittedHolmesMaterialName (0.11s)
+    business_values_test.go:222: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestImportRejectsCandidateProfileBeforeRuntimeProbe (0.11s)
+    importer_test.go:52: candidate profile error = checkpoint=verify-bundle: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestImportRejectsInvalidOCIClosureBeforeRuntimeProbe (0.11s)
+    importer_test.go:63: invalid OCI archive error = checkpoint=verify-bundle: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestImportValidatesEveryLayerBeforeAnyRuntimeCall (0.10s)
+    importer_test.go:221: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestPlanImportReturnsEveryImageWithoutRuntimeSideEffects (0.10s)
+    importer_test.go:232: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestImportVerifiedOCIArchivesWithoutPull (0.11s)
+    importer_test.go:248: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestInstallIncompleteBundleNeverRunsHelmOrRuntime (0.11s)
+    installer_test.go:21: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestMetricsAdmissionBindsMeasuredImageAndNativeSourceScope (0.11s)
+    metrics_admission_test.go:21: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestFirstPartyGoMaterialsCannotBypassSDKSourceAdmission (0.11s)
+    runtime_admission_test.go:19: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestSP06InvestigatorCannotOmitCorrespondingSource (0.11s)
+    runtime_admission_test.go:31: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestRuntimeSourceBindsQualifiedSDKAndTargetArchitecture (0.12s)
+    runtime_admission_test.go:54: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestSP05WorkerCannotOmitAnalyzerCorrespondingSource (0.11s)
+    runtime_admission_test.go:121: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestSP05WorkerSourceAdmissionBindsExactCLIClosure (0.10s)
+    runtime_admission_test.go:133: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestVerifyAcceptsSignedBundleWithExplicitTrustRoot (0.11s)
+    verify_test.go:60: Verify(valid bundle): load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestVerifyAcceptsExactPrereleaseVersionContainingX (0.10s)
+    verify_test.go:72: Verify(exact prerelease version): load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions (0.83s)
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/17.11 (0.11s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/4.47 (0.11s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/v17.11 (0.11s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/4.47-rc.1 (0.11s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/4.47+build.1 (0.15s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/1.2.3 (0.14s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+    --- FAIL: TestBundleAcceptsExactUpstreamReleaseVersions/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa (0.11s)
+        verify_test.go:84: Go verifier rejected exact version: load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestVerifyRejectsTamperedPayloadByte (0.12s)
+    verify_test.go:107: Verify(tampered payload) error = load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted, want payload digest rejection
+--- FAIL: TestVerifyRejectsPayloadFileInventoryMismatch (0.11s)
+    verify_test.go:525: Verify(inventory mismatch) error = load embedded component catalog: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted, want signed inventory rejection
+FAIL
+FAIL	ops-platform/internal/bundle	5.237s
+--- FAIL: TestUpstreamReuseLockRejectsUnpinnedOrUnsafeBaselines (0.17s)
+    upstream_reuse_test.go:486: load component catalog evidence: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+--- FAIL: TestVictoriaAddonChartsAndImagesAreDigestLocked (0.16s)
+    helm_render_test.go:296: specialized license ADR "docs/adr/0033-sp07-runner-material-distribution.md" must be Accepted
+FAIL
+FAIL	ops-platform/test/contract	17.273s
+FAIL

@@ -28,6 +28,10 @@ var investigatorLicenseRegistry []byte
 //go:embed licenses/pre-sp07-metrics-reviewed.json
 var metricsLicenseRegistry []byte
 
+// SP07 is scoped to the exact one-shot Runner image/source/notice identities.
+//go:embed licenses/sp07-runner-reviewed.json
+var commandRunnerLicenseRegistry []byte
+
 type nativeLicenseScope struct {
 	ID                              string `json:"id"`
 	Component                       string `json:"component"`
@@ -52,7 +56,7 @@ func loadNativeLicenseScopes() map[string]nativeLicenseScope {
 		Licenses      []nativeLicenseScope `json:"licenses"`
 	}
 	result := make(map[string]nativeLicenseScope)
-	for _, inventory := range [][]byte{nativeLicenseRegistry, investigatorLicenseRegistry, metricsLicenseRegistry} {
+	for _, inventory := range [][]byte{nativeLicenseRegistry, investigatorLicenseRegistry, metricsLicenseRegistry, commandRunnerLicenseRegistry} {
 		if err := json.Unmarshal(inventory, &document); err != nil || document.SchemaVersion != 1 {
 			return nil // A malformed compiled registry rejects every native reference.
 		}

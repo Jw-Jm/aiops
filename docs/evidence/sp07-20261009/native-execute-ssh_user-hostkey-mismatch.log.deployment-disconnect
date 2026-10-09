@@ -1,0 +1,28 @@
+stepup 201 None
+assess 200 None
+ack 200 None
+execute 202 None
+executionId 01a11f82-44c5-7b21-88d4-81e8e325dce8
+poll0 200 None
+poll1 200 None
+poll2 200 None
+poll3 200 None
+poll4 200 None
+poll5 200 None
+poll6 200 None
+poll7 200 None
+Traceback (most recent call last):
+  File "/Users/mssc/.local/state/ops/sp07-20261009/native-api.py", line 86, in <module>
+    result=call('poll'+str(i),'GET','/api/v1/command-executions/'+eid)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.local/state/ops/sp07-20261009/native-api.py", line 9, in call
+    key=key or str(uuid.uuid4());c=http.client.HTTPConnection('127.0.0.1',port,timeout=35);headers={'Authorization':'Bearer '+(old/'fresh-loa2.token').read_text().strip(),'Content-Type':'application/json','Idempotency-Key':key};c.request(method,path,json.dumps(body) if body is not None else None,headers);rsp=c.getresponse();raw=rsp.read(4*1024*1024);c.close();(run/(name+'.response.private.json')).write_bytes(raw);j=json.loads(raw);rec={'operation':name,'method':method,'path':path,'status':rsp.status,'responseSHA256':'sha256:'+hashlib.sha256(raw).hexdigest(),'error':j.get('error',{}).get('code',j.get('code'))};records.append(rec);(e/('native-'+mode+'-'+tag+'-progress.json')).write_text(json.dumps(records,indent=2)+'\n');print(name,rsp.status,rec['error'],flush=True);assert rsp.status==expected,str(rec);return j.get('data',j)
+                                                                                                                                                                                                                                                                                                                      ^^^^^^^^^^^^^^^
+  File "/Users/mssc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py", line 1478, in getresponse
+    response.begin()
+  File "/Users/mssc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py", line 343, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "/Users/mssc/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py", line 312, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response

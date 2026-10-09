@@ -1,0 +1,84 @@
+{
+  "observedAt": "2026-10-09T01:52:47.985368+00:00",
+  "containerId": "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+  "address": "192.168.117.2",
+  "port": 2222,
+  "hostKeyIndependentComparison": true,
+  "hostKeyFingerprint": "0d0ac1d14848b35e89f5a9d31e7d9f475da4248e4be664d6585d1e50e6abf4b9",
+  "trustedUserCA": "native OpenBao SSH CA public key only",
+  "ordinaryNoSudo": true,
+  "sudoPasswordRequired": true,
+  "rootDistinctPrincipal": true,
+  "oldServerProjectionBackupOutsideRepository": true,
+  "instanceUid": "afd76534-e387-5d56-b13a-f2cd7874edf9",
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "sshd",
+        "-t",
+        "-f",
+        "/readiness/sshd_config"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "id",
+        "opsordinary"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "id",
+        "opssudo"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "fb6811638f175ec5cd553c3c1681e57acd61264d8815d9992b63f93602955a8c",
+        "visudo",
+        "-c"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "actualAnsibleExecution": "PENDING",
+  "exitCode": 0
+}

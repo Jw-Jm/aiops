@@ -1,0 +1,126 @@
+{
+  "observedAt": "2026-10-09T02:00:36.058400+00:00",
+  "bundleId": "sp07-nonvirtual-20261009-r1",
+  "payloadDigest": "sha256:60a2fe8a9ee884fcb14e73c9dac6e560f33fcf7fd6a4b18218a3ae115cf7ff84",
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "helmRevision": 5,
+  "images": [
+    {
+      "component": "api",
+      "podUID": "fb0dd455-167a-4e87-b0fb-8c29311d21fb",
+      "image": "ops.local/sp07/platform-api@sha256:2e94060c844c51363b70fef4e1d63e59d79618bb7165dafeb1aec3679702db6f",
+      "runtimeImageID": "docker-pullable://ops.local/sp07/platform-api@sha256:2e94060c844c51363b70fef4e1d63e59d79618bb7165dafeb1aec3679702db6f",
+      "ready": true
+    },
+    {
+      "component": "worker",
+      "podUID": "95512227-d0cf-4c09-b883-339e5846cfc5",
+      "image": "ops.local/sp07/platform-worker@sha256:84c8613a71ffc723dc0fd56358041f97b640c768a521c296e8ec06b15762a952",
+      "runtimeImageID": "docker-pullable://ops.local/sp07/platform-worker@sha256:84c8613a71ffc723dc0fd56358041f97b640c768a521c296e8ec06b15762a952",
+      "ready": true
+    },
+    {
+      "component": "worker",
+      "podUID": "18ab97af-c1b3-4155-bb18-ef73fdf2cbed",
+      "image": "ops.local/sp07/platform-worker@sha256:84c8613a71ffc723dc0fd56358041f97b640c768a521c296e8ec06b15762a952",
+      "runtimeImageID": "docker-pullable://ops.local/sp07/platform-worker@sha256:84c8613a71ffc723dc0fd56358041f97b640c768a521c296e8ec06b15762a952",
+      "ready": true
+    }
+  ],
+  "protectedObjectsUnchanged": 489,
+  "otherControllerSpecsUnchanged": true,
+  "noColdInstall": true,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets,configmaps,services,apiservices,deployments,statefulsets,daemonsets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "get",
+        "values",
+        "ops-platform",
+        "--kube-context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "--all",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "upgrade",
+        "ops-platform",
+        "/Users/mssc/.local/state/ops/sp07-20261009/platform-material/ops-platform-0.1.0.tgz",
+        "--kube-context",
+        "orbstack",
+        "--namespace",
+        "ops-pre-sp07-core-r9-20261008",
+        "--values",
+        "/Users/mssc/.local/state/ops/sp07-20261009/deployment/helm-values-sp07.private.json",
+        "--wait",
+        "--timeout",
+        "5m",
+        "--history-max",
+        "20"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets,configmaps,services,apiservices,deployments,statefulsets,daemonsets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "status",
+        "ops-platform",
+        "--kube-context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "pods",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "exitCode": 0
+}

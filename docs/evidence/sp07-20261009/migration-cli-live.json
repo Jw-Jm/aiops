@@ -1,0 +1,152 @@
+{
+  "observedAt": "2026-10-09T02:11:58.347036+00:00",
+  "binaryDigest": "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a",
+  "architecture": "linux/arm64",
+  "database": "sp07_cli_2b47940c5f",
+  "retained": true,
+  "migrationRole": "migration_role",
+  "forwardBaseline": 35,
+  "forwardTarget": 36,
+  "actualVersion": 36,
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "inspect",
+        "ops-sp07-postgres-20261009"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "ops-sp07-postgres-20261009",
+        "psql",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "postgres",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "CREATE DATABASE sp07_cli_2b47940c5f"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "cp",
+        "/Users/mssc/.local/state/ops/sp07-20261009/db-migrate-offline-arm64",
+        "ops-sp07-postgres-20261009:/tmp/sp07-db-migrate"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "cp",
+        "/Users/mssc/Documents/Code/ops/platform/migrations",
+        "ops-sp07-postgres-20261009:/tmp/sp07-migrations"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "--env",
+        "SP03_MIGRATION_DATABASE_URL",
+        "ops-sp07-postgres-20261009",
+        "/tmp/sp07-db-migrate",
+        "--dir",
+        "/tmp/sp07-migrations",
+        "--to",
+        "1"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "-i",
+        "ops-sp07-postgres-20261009",
+        "psql",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "sp07_cli_2b47940c5f",
+        "-v",
+        "ON_ERROR_STOP=1"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "--env",
+        "SP03_MIGRATION_DATABASE_URL",
+        "ops-sp07-postgres-20261009",
+        "/tmp/sp07-db-migrate",
+        "--dir",
+        "/tmp/sp07-migrations",
+        "--to",
+        "35"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "--env",
+        "SP03_MIGRATION_DATABASE_URL",
+        "ops-sp07-postgres-20261009",
+        "/tmp/sp07-db-migrate",
+        "--dir",
+        "/tmp/sp07-migrations",
+        "--to",
+        "36"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "ops-sp07-postgres-20261009",
+        "psql",
+        "-U",
+        "ops_bootstrap",
+        "-d",
+        "sp07_cli_2b47940c5f",
+        "-At",
+        "-c",
+        "SELECT max(version_id) FROM public.goose_db_version WHERE is_applied;"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "exitCode": 0
+}

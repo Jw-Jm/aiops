@@ -8,22 +8,112 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type ActionAssessment struct {
+	TenantID      pgtype.UUID        `json:"tenant_id"`
+	AssessmentID  pgtype.UUID        `json:"assessment_id"`
+	Subject       string             `json:"subject"`
+	Binding       []byte             `json:"binding"`
+	RequestDigest string             `json:"request_digest"`
+	Risk          []byte             `json:"risk"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	ExpiresAt     pgtype.Timestamptz `json:"expires_at"`
+}
+
+type ActionAttempt struct {
+	TenantID            pgtype.UUID        `json:"tenant_id"`
+	ExecutionID         pgtype.UUID        `json:"execution_id"`
+	AttemptNo           int32              `json:"attempt_no"`
+	DispatchTokenDigest string             `json:"dispatch_token_digest"`
+	CreatedAt           pgtype.Timestamptz `json:"created_at"`
+}
+
+type ActionEvent struct {
+	TenantID    pgtype.UUID        `json:"tenant_id"`
+	ExecutionID pgtype.UUID        `json:"execution_id"`
+	EventSeq    int64              `json:"event_seq"`
+	EventType   string             `json:"event_type"`
+	Payload     []byte             `json:"payload"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+}
+
 type ActionExecution struct {
-	TenantID                  pgtype.UUID        `json:"tenant_id"`
-	ExecutionID               pgtype.UUID        `json:"execution_id"`
-	Subject                   string             `json:"subject"`
-	TargetCanonicalID         string             `json:"target_canonical_id"`
-	Shell                     string             `json:"shell"`
-	CommandDigest             string             `json:"command_digest"`
-	RiskAcknowledgementID     pgtype.UUID        `json:"risk_acknowledgement_id"`
-	ExecutionProfileVersionID pgtype.UUID        `json:"execution_profile_version_id"`
-	IdempotencyKeyDigest      string             `json:"idempotency_key_digest"`
-	State                     string             `json:"state"`
-	CommandArchiveRef         pgtype.Text        `json:"command_archive_ref"`
-	OutputArchiveRef          pgtype.Text        `json:"output_archive_ref"`
-	ExitCode                  pgtype.Int4        `json:"exit_code"`
-	CreatedAt                 pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt                 pgtype.Timestamptz `json:"updated_at"`
+	TenantID                     pgtype.UUID        `json:"tenant_id"`
+	ExecutionID                  pgtype.UUID        `json:"execution_id"`
+	Subject                      string             `json:"subject"`
+	TargetCanonicalID            string             `json:"target_canonical_id"`
+	Shell                        string             `json:"shell"`
+	CommandDigest                string             `json:"command_digest"`
+	RiskAcknowledgementID        pgtype.UUID        `json:"risk_acknowledgement_id"`
+	ExecutionProfileVersionID    pgtype.UUID        `json:"execution_profile_version_id"`
+	IdempotencyKeyDigest         string             `json:"idempotency_key_digest"`
+	State                        string             `json:"state"`
+	CommandArchiveRef            pgtype.Text        `json:"command_archive_ref"`
+	OutputArchiveRef             pgtype.Text        `json:"output_archive_ref"`
+	ExitCode                     pgtype.Int4        `json:"exit_code"`
+	CreatedAt                    pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt                    pgtype.Timestamptz `json:"updated_at"`
+	Binding                      []byte             `json:"binding"`
+	RequestDigest                pgtype.Text        `json:"request_digest"`
+	CommandEnvelope              []byte             `json:"command_envelope"`
+	SuggestionMatch              pgtype.Text        `json:"suggestion_match"`
+	ComparatorVersion            pgtype.Text        `json:"comparator_version"`
+	PolicyDecisionID             pgtype.Text        `json:"policy_decision_id"`
+	ActorContext                 []byte             `json:"actor_context"`
+	DispatchTokenDigest          pgtype.Text        `json:"dispatch_token_digest"`
+	ClaimedAt                    pgtype.Timestamptz `json:"claimed_at"`
+	DispatchDeadline             pgtype.Timestamptz `json:"dispatch_deadline"`
+	RunnerRef                    pgtype.Text        `json:"runner_ref"`
+	EventSeq                     int64              `json:"event_seq"`
+	OutputSeq                    int64              `json:"output_seq"`
+	OutputBytes                  int64              `json:"output_bytes"`
+	OutputTruncated              bool               `json:"output_truncated"`
+	CompletedAt                  pgtype.Timestamptz `json:"completed_at"`
+	OutputDigest                 pgtype.Text        `json:"output_digest"`
+	ArchivedAt                   pgtype.Timestamptz `json:"archived_at"`
+	PostCheckedAt                pgtype.Timestamptz `json:"post_checked_at"`
+	PostCheck                    string             `json:"post_check"`
+	RunnerTerminationRequestedAt pgtype.Timestamptz `json:"runner_termination_requested_at"`
+	OutputPreviews               []byte             `json:"output_previews"`
+	CancellationRequestedAt      pgtype.Timestamptz `json:"cancellation_requested_at"`
+}
+
+type ActionHostOnboarding struct {
+	TenantID     pgtype.UUID        `json:"tenant_id"`
+	Target       string             `json:"target"`
+	Principal    string             `json:"principal"`
+	ReportDigest string             `json:"report_digest"`
+	Report       []byte             `json:"report"`
+	ExpiresAt    pgtype.Timestamptz `json:"expires_at"`
+	CreatedBy    string             `json:"created_by"`
+}
+
+type ActionOutputArchive struct {
+	TenantID        pgtype.UUID        `json:"tenant_id"`
+	ExecutionID     pgtype.UUID        `json:"execution_id"`
+	Envelope        []byte             `json:"envelope"`
+	PlaintextDigest string             `json:"plaintext_digest"`
+	ObjectRef       []byte             `json:"object_ref"`
+	RetainUntil     pgtype.Timestamptz `json:"retain_until"`
+	VerifiedAt      pgtype.Timestamptz `json:"verified_at"`
+}
+
+type ActionOutputChunk struct {
+	TenantID    pgtype.UUID        `json:"tenant_id"`
+	ExecutionID pgtype.UUID        `json:"execution_id"`
+	Seq         int64              `json:"seq"`
+	Stream      string             `json:"stream"`
+	Bytes       []byte             `json:"bytes"`
+	ObservedAt  pgtype.Timestamptz `json:"observed_at"`
+}
+
+type ActionPlan struct {
+	TenantID     pgtype.UUID        `json:"tenant_id"`
+	ActionPlanID pgtype.UUID        `json:"action_plan_id"`
+	IncidentID   pgtype.UUID        `json:"incident_id"`
+	Content      []byte             `json:"content"`
+	Revision     int64              `json:"revision"`
+	State        string             `json:"state"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
 }
 
 type ActionRiskAcknowledgement struct {
@@ -39,6 +129,9 @@ type ActionRiskAcknowledgement struct {
 	ConfirmedAt       pgtype.Timestamptz `json:"confirmed_at"`
 	ExpiresAt         pgtype.Timestamptz `json:"expires_at"`
 	ConsumedAt        pgtype.Timestamptz `json:"consumed_at"`
+	AssessmentID      pgtype.UUID        `json:"assessment_id"`
+	Binding           []byte             `json:"binding"`
+	RequestDigest     pgtype.Text        `json:"request_digest"`
 }
 
 type AuditRecord struct {

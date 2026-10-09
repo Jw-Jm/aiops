@@ -1,0 +1,113 @@
+{
+  "namespace": "ops-pre-sp07-targets-r9-20261008",
+  "namespaceUID": "f46dabc1-1ae5-4201-8730-d5e9be19f01e",
+  "pvcName": "sp07-owned-pending-20261009",
+  "pvcUID": "c719faeb-470c-481a-ad56-3f858f9ccc83",
+  "pvcTarget": "k8s+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/core/PersistentVolumeClaim/c719faeb-470c-481a-ad56-3f858f9ccc83",
+  "hostTarget": "hardware+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/redfish/System/afd76534-e387-5d56-b13a-f2cd7874edf9",
+  "profiles": [
+    {
+      "schemaVersion": "execution-profile/v2",
+      "executionProfileId": "082be277-e844-4da5-88db-5279bacba67b",
+      "version": 1,
+      "name": "sp07-k8s-namespace",
+      "type": "k8s_namespace",
+      "allowedTargets": [
+        "k8s+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/core/PersistentVolumeClaim/c719faeb-470c-481a-ad56-3f858f9ccc83"
+      ],
+      "clusterUid": "607d16b7-8684-491b-bca8-be31264b371e",
+      "namespace": "ops-pre-sp07-targets-r9-20261008",
+      "toolImageDigest": "ops.local/sp07/command-runner@sha256:5ebe2e9407f53b89a327358373a73466e2b453dc8ce0152972f0b811d557606c",
+      "tools": [
+        "bash",
+        "kubectl"
+      ],
+      "networkPolicyRef": "ops-sp07-k8s-namespace",
+      "credentialRef": "serviceaccount:/ops-pre-sp07-targets-r9-20261008/sp07-k8s-namespace",
+      "timeoutSeconds": 900,
+      "maxOutputBytes": 10485760,
+      "principal": "",
+      "hostOnboardingRef": "",
+      "developmentFallback": false
+    },
+    {
+      "schemaVersion": "execution-profile/v2",
+      "executionProfileId": "20c68755-56f7-4e56-89ad-9111a1a2fd55",
+      "version": 1,
+      "name": "sp07-k8s-cluster",
+      "type": "k8s_cluster",
+      "allowedTargets": [
+        "k8s+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/core/PersistentVolumeClaim/c719faeb-470c-481a-ad56-3f858f9ccc83"
+      ],
+      "clusterUid": "607d16b7-8684-491b-bca8-be31264b371e",
+      "namespace": "",
+      "toolImageDigest": "ops.local/sp07/command-runner@sha256:5ebe2e9407f53b89a327358373a73466e2b453dc8ce0152972f0b811d557606c",
+      "tools": [
+        "bash",
+        "kubectl"
+      ],
+      "networkPolicyRef": "ops-sp07-k8s-cluster",
+      "credentialRef": "serviceaccount:/ops-pre-sp07-targets-r9-20261008/sp07-k8s-cluster",
+      "timeoutSeconds": 900,
+      "maxOutputBytes": 10485760,
+      "principal": "",
+      "hostOnboardingRef": "",
+      "developmentFallback": false
+    },
+    {
+      "schemaVersion": "execution-profile/v2",
+      "executionProfileId": "4d5b08e3-ca53-4136-b7f4-b4ec3d05de2a",
+      "version": 1,
+      "name": "sp07-ssh-user",
+      "type": "ssh_user",
+      "allowedTargets": [
+        "hardware+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/redfish/System/afd76534-e387-5d56-b13a-f2cd7874edf9"
+      ],
+      "clusterUid": "607d16b7-8684-491b-bca8-be31264b371e",
+      "namespace": "",
+      "toolImageDigest": "ops.local/sp07/command-runner@sha256:5ebe2e9407f53b89a327358373a73466e2b453dc8ce0152972f0b811d557606c",
+      "tools": [
+        "bash",
+        "ansible",
+        "ssh"
+      ],
+      "networkPolicyRef": "ops-sp07-ssh-user",
+      "credentialRef": "ops-sp07-user",
+      "timeoutSeconds": 900,
+      "maxOutputBytes": 10485760,
+      "principal": "opsordinary",
+      "hostOnboardingRef": "sha256:2933ce5ec689af04a9a8665295e8dca15036604047be34b3b7b8a0931fe47f29",
+      "developmentFallback": false
+    },
+    {
+      "schemaVersion": "execution-profile/v2",
+      "executionProfileId": "2c63f040-7d71-439e-8ecc-a00b43f4514e",
+      "version": 1,
+      "name": "sp07-ssh-root",
+      "type": "ssh_root",
+      "allowedTargets": [
+        "hardware+v1://12443ef7-3326-4e87-9b0a-a3444bfd16bc/607d16b7-8684-491b-bca8-be31264b371e/redfish/System/afd76534-e387-5d56-b13a-f2cd7874edf9"
+      ],
+      "clusterUid": "607d16b7-8684-491b-bca8-be31264b371e",
+      "namespace": "",
+      "toolImageDigest": "ops.local/sp07/command-runner@sha256:5ebe2e9407f53b89a327358373a73466e2b453dc8ce0152972f0b811d557606c",
+      "tools": [
+        "bash",
+        "ansible",
+        "ssh"
+      ],
+      "networkPolicyRef": "ops-sp07-ssh-root",
+      "credentialRef": "ops-sp07-root",
+      "timeoutSeconds": 900,
+      "maxOutputBytes": 10485760,
+      "principal": "root",
+      "hostOnboardingRef": "sha256:a1cf08cd4b040f86492b20bac21f7f20754f24c9818e5f6e06c116fa066a1670",
+      "developmentFallback": false
+    }
+  ],
+  "fixedRBACResources": [
+    "sp07-owned-pending-20261009"
+  ],
+  "thirdPartyControllersUnchanged": true,
+  "privateValuesOutsideRepository": true
+}

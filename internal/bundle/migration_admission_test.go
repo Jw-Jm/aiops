@@ -7,8 +7,8 @@ import (
 )
 
 func migrationMaterials() []Material {
-	return []Material{{Name: "db-migrate", Kind: "binary", Version: "1.0.0", Architecture: "linux/arm64", Digest: "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a"},
-		{Name: "db-migrate-source", Kind: "source", Version: "1.0.0", Architecture: "linux/arm64", Digest: "sha256:7eae032b1b99f0aec4b0ddbc6398e304fabeb68c176cf502c8c0f83bbc8d7639"}}
+	return []Material{{Name: "db-migrate", Kind: "binary", Version: "1.1.0", Architecture: "linux/arm64", Digest: "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a"},
+		{Name: "db-migrate-source", Kind: "source", Version: "1.1.0", Architecture: "linux/arm64", Digest: "sha256:b9b0d7dd1c827cb8a6401a6dcf2fefe6e9938dab6812ad7e2a4a72f25f001844"}}
 }
 
 func TestOfflineMigrationToolRequiresSeparateExactSourceAdmission(t *testing.T) {
@@ -24,7 +24,7 @@ func TestOfflineMigrationToolRequiresSeparateExactSourceAdmission(t *testing.T) 
 		func(m []Material) []Material { m[1].Digest = "sha256:" + string(make([]byte, 64)); return m },
 		func(m []Material) []Material { m[0].Architecture = "linux/amd64"; return m },
 		func(m []Material) []Material { m[0].Kind = "container-image"; return m },
-		func(m []Material) []Material { m[1].Version = "1.1.0"; return m },
+		func(m []Material) []Material { m[1].Version = "2.0.0"; return m },
 	} {
 		if err := validateCatalogAdmissionWithCatalog(alter(migrationMaterials()), catalog); err == nil {
 			t.Fatal("migration material bypassed independent closure admission")

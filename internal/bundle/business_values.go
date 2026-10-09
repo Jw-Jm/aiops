@@ -68,6 +68,39 @@ func ReadBusinessValues(r io.Reader) (BusinessValues, error) {
 	if json.Unmarshal(encoded, &document) != nil {
 		return BusinessValues{}, errors.New("business values invalid")
 	}
+	if sp07 := object(document, "sp07"); sp07 != nil {
+		tenants := stringSet(object(document, "sp06")["tenants"])
+		for _, tenant := range sp07["tenants"].([]any) {
+			if !tenants[tenant.(string)] {
+				return BusinessValues{}, errors.New("SP07 tenant not in installed identity scope")
+			}
+		}
+		if textValue(sp07, "kubernetesEndpoint") != "https://kubernetes.default.svc.cluster.local" {
+			return BusinessValues{}, errors.New("SP07 requires the installed cluster API service")
+		}
+		networks := map[string]bool{}
+		for _, raw := range sp07["admittedProfiles"].([]any) {
+			p := raw.(map[string]any)
+			network := textValue(p, "networkPolicyRef")
+			if networks[network] {
+				return BusinessValues{}, errors.New("SP07 requires one immutable network policy per Profile")
+			}
+			networks[network] = true
+			for _, target := range p["allowedTargets"].([]any) {
+				id, err := resource.ParseCanonicalID(target.(string))
+				if err != nil || id.Scope != textValue(p, "clusterUid") || !tenants[id.Tenant] {
+					return BusinessValues{}, errors.New("SP07 target outside installed tenant/cluster scope")
+				}
+			}
+		}
+		for _, raw := range sp07["hosts"].([]any) {
+			h := raw.(map[string]any)
+			ip := net.ParseIP(textValue(h, "Address"))
+			if ip == nil || !ip.IsPrivate() || ip.To4() == nil {
+				return BusinessValues{}, errors.New("SP07 SSH requires exact isolated private IPv4 target")
+			}
+		}
+	}
 	if err := validateBusinessNetwork(document); err != nil {
 		return BusinessValues{}, err
 	}
@@ -297,6 +330,19 @@ func applyBusinessValues(values map[string]any, b BusinessValues, images map[str
 	}
 	if images["holmesgpt"] == "" {
 		return errors.New("authenticated locked holmesgpt OCI material is required")
+	}
+	if sp07 := object(b.values, "sp07"); sp07 != nil {
+		image := images["command-runner"]
+		if image == "" {
+			return errors.New("SP07 requires an authenticated command-runner material")
+		}
+		for _, raw := range sp07["admittedProfiles"].([]any) {
+			if textValue(raw.(map[string]any), "toolImageDigest") != image {
+				return errors.New("SP07 Profile image differs from authenticated Runner material")
+			}
+		}
+		values["sp07"] = sp07
+		object(values, "components")["command-runner"] = map[string]any{"enabled": true, "image": image}
 	}
 	for _, name := range []string{"sp04", "sp05", "sp06"} {
 		values[name] = b.values[name]

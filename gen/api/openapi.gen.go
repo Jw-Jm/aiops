@@ -18,6 +18,36 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for CommandExecutionRequestShell.
+const (
+	CommandExecutionRequestShellBash CommandExecutionRequestShell = "bash"
+)
+
+// Valid indicates whether the value is a known member of the CommandExecutionRequestShell enum.
+func (e CommandExecutionRequestShell) Valid() bool {
+	switch e {
+	case CommandExecutionRequestShellBash:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CommandRiskAssessmentRequestShell.
+const (
+	CommandRiskAssessmentRequestShellBash CommandRiskAssessmentRequestShell = "bash"
+)
+
+// Valid indicates whether the value is a known member of the CommandRiskAssessmentRequestShell enum.
+func (e CommandRiskAssessmentRequestShell) Valid() bool {
+	switch e {
+	case CommandRiskAssessmentRequestShellBash:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CurrentRCAV2SchemaVersion.
 const (
 	CurrentRcav2 CurrentRCAV2SchemaVersion = "current-rca/v2"
@@ -90,6 +120,7 @@ const (
 	ErrorEnvelopeCodeCAPABILITYDISABLED              ErrorEnvelopeCode = "CAPABILITY_DISABLED"
 	ErrorEnvelopeCodeCOMMANDPOLICYDENIED             ErrorEnvelopeCode = "COMMAND_POLICY_DENIED"
 	ErrorEnvelopeCodeCONFLICT                        ErrorEnvelopeCode = "CONFLICT"
+	ErrorEnvelopeCodeCURSOREXPIRED                   ErrorEnvelopeCode = "CURSOR_EXPIRED"
 	ErrorEnvelopeCodeEXECUTIONPROFILEDENIED          ErrorEnvelopeCode = "EXECUTION_PROFILE_DENIED"
 	ErrorEnvelopeCodeEXECUTIONUNKNOWN                ErrorEnvelopeCode = "EXECUTION_UNKNOWN"
 	ErrorEnvelopeCodeFORBIDDEN                       ErrorEnvelopeCode = "FORBIDDEN"
@@ -135,6 +166,8 @@ func (e ErrorEnvelopeCode) Valid() bool {
 	case ErrorEnvelopeCodeCOMMANDPOLICYDENIED:
 		return true
 	case ErrorEnvelopeCodeCONFLICT:
+		return true
+	case ErrorEnvelopeCodeCURSOREXPIRED:
 		return true
 	case ErrorEnvelopeCodeEXECUTIONPROFILEDENIED:
 		return true
@@ -195,6 +228,60 @@ func (e ErrorEnvelopeCode) Valid() bool {
 	}
 }
 
+// Defines values for ExecutionProfileV2DevelopmentFallback.
+const (
+	False ExecutionProfileV2DevelopmentFallback = false
+)
+
+// Valid indicates whether the value is a known member of the ExecutionProfileV2DevelopmentFallback enum.
+func (e ExecutionProfileV2DevelopmentFallback) Valid() bool {
+	switch e {
+	case False:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ExecutionProfileV2SchemaVersion.
+const (
+	ExecutionProfilev2 ExecutionProfileV2SchemaVersion = "execution-profile/v2"
+)
+
+// Valid indicates whether the value is a known member of the ExecutionProfileV2SchemaVersion enum.
+func (e ExecutionProfileV2SchemaVersion) Valid() bool {
+	switch e {
+	case ExecutionProfilev2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ExecutionProfileV2Type.
+const (
+	K8sCluster   ExecutionProfileV2Type = "k8s_cluster"
+	K8sNamespace ExecutionProfileV2Type = "k8s_namespace"
+	SshRoot      ExecutionProfileV2Type = "ssh_root"
+	SshUser      ExecutionProfileV2Type = "ssh_user"
+)
+
+// Valid indicates whether the value is a known member of the ExecutionProfileV2Type enum.
+func (e ExecutionProfileV2Type) Valid() bool {
+	switch e {
+	case K8sCluster:
+		return true
+	case K8sNamespace:
+		return true
+	case SshRoot:
+		return true
+	case SshUser:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for FindingIngestionSuccessV2DataDisposition.
 const (
 	FindingIngestionSuccessV2DataDispositionAccepted  FindingIngestionSuccessV2DataDisposition = "accepted"
@@ -243,6 +330,21 @@ const (
 func (e FindingV2SchemaVersion) Valid() bool {
 	switch e {
 	case FindingV2SchemaVersionFindingEnvelopev2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for HostOnboardingV1SchemaVersion.
+const (
+	HostOnboardingv1 HostOnboardingV1SchemaVersion = "host-onboarding/v1"
+)
+
+// Valid indicates whether the value is a known member of the HostOnboardingV1SchemaVersion enum.
+func (e HostOnboardingV1SchemaVersion) Valid() bool {
+	switch e {
+	case HostOnboardingv1:
 		return true
 	default:
 		return false
@@ -1372,17 +1474,54 @@ type CommandExecutionEvent struct {
 	Payload     interface{} `json:"payload"`
 }
 
-// CommandExecutionRequest defines model for CommandExecutionRequest.
+// CommandExecutionOptions defines model for CommandExecutionOptions.
+type CommandExecutionOptions struct {
+	Environment      map[string]interface{} `json:"environment"`
+	MaxOutputBytes   int                    `json:"maxOutputBytes"`
+	TimeoutSeconds   int                    `json:"timeoutSeconds"`
+	WorkingDirectory string                 `json:"workingDirectory"`
+}
+
+// CommandExecutionRequest Additive v1 fields incidentId, executionProfileVersion and executionOptions may be omitted only to reuse the exact values bound in this subject’s RiskAcknowledgement. Explicit values must match; no server-selected defaults or automatic profile upgrades.
 type CommandExecutionRequest struct {
-	ActionPlanId          *string    `json:"actionPlanId,omitempty"`
-	ActualCommand         string     `json:"actualCommand"`
-	ExecutionProfileId    Identifier `json:"executionProfileId"`
-	RiskAcknowledgementId Identifier `json:"riskAcknowledgementId"`
-	Shell                 string     `json:"shell"`
+	ActionPlanId            *string                      `json:"actionPlanId,omitempty"`
+	ActualCommand           string                       `json:"actualCommand"`
+	ExecutionOptions        *CommandExecutionOptions     `json:"executionOptions,omitempty"`
+	ExecutionProfileId      Identifier                   `json:"executionProfileId"`
+	ExecutionProfileVersion *int                         `json:"executionProfileVersion,omitempty"`
+	IncidentId              *Identifier                  `json:"incidentId,omitempty"`
+	RiskAcknowledgementId   Identifier                   `json:"riskAcknowledgementId"`
+	Shell                   CommandExecutionRequestShell `json:"shell"`
 
 	// Target RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
 	Target CanonicalID `json:"target"`
 }
+
+// CommandExecutionRequestShell defines model for CommandExecutionRequest.Shell.
+type CommandExecutionRequestShell string
+
+// CommandRiskAcknowledgementRequest defines model for CommandRiskAcknowledgementRequest.
+type CommandRiskAcknowledgementRequest struct {
+	AssessmentId           Identifier `json:"assessmentId"`
+	ExecutionRequestDigest string     `json:"executionRequestDigest"`
+}
+
+// CommandRiskAssessmentRequest defines model for CommandRiskAssessmentRequest.
+type CommandRiskAssessmentRequest struct {
+	ActionPlanId            *string                           `json:"actionPlanId,omitempty"`
+	ActualCommand           string                            `json:"actualCommand"`
+	ExecutionOptions        CommandExecutionOptions           `json:"executionOptions"`
+	ExecutionProfileId      Identifier                        `json:"executionProfileId"`
+	ExecutionProfileVersion int                               `json:"executionProfileVersion"`
+	IncidentId              Identifier                        `json:"incidentId"`
+	Shell                   CommandRiskAssessmentRequestShell `json:"shell"`
+
+	// Target RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
+	Target CanonicalID `json:"target"`
+}
+
+// CommandRiskAssessmentRequestShell defines model for CommandRiskAssessmentRequest.Shell.
+type CommandRiskAssessmentRequestShell string
 
 // CreateInvestigationV2 defines model for CreateInvestigationV2.
 type CreateInvestigationV2 struct {
@@ -1615,6 +1754,36 @@ type EvidenceV2_FactSlice struct {
 	union json.RawMessage
 }
 
+// ExecutionProfileV2 defines model for ExecutionProfileV2.
+type ExecutionProfileV2 struct {
+	AllowedTargets      []string                              `json:"allowedTargets"`
+	ClusterUid          string                                `json:"clusterUid"`
+	CredentialRef       string                                `json:"credentialRef"`
+	DevelopmentFallback ExecutionProfileV2DevelopmentFallback `json:"developmentFallback"`
+	ExecutionProfileId  string                                `json:"executionProfileId"`
+	HostOnboardingRef   string                                `json:"hostOnboardingRef"`
+	MaxOutputBytes      int                                   `json:"maxOutputBytes"`
+	Name                string                                `json:"name"`
+	Namespace           string                                `json:"namespace"`
+	NetworkPolicyRef    string                                `json:"networkPolicyRef"`
+	Principal           string                                `json:"principal"`
+	SchemaVersion       ExecutionProfileV2SchemaVersion       `json:"schemaVersion"`
+	TimeoutSeconds      int                                   `json:"timeoutSeconds"`
+	ToolImageDigest     string                                `json:"toolImageDigest"`
+	Tools               []string                              `json:"tools"`
+	Type                ExecutionProfileV2Type                `json:"type"`
+	Version             int                                   `json:"version"`
+}
+
+// ExecutionProfileV2DevelopmentFallback defines model for ExecutionProfileV2.DevelopmentFallback.
+type ExecutionProfileV2DevelopmentFallback bool
+
+// ExecutionProfileV2SchemaVersion defines model for ExecutionProfileV2.SchemaVersion.
+type ExecutionProfileV2SchemaVersion string
+
+// ExecutionProfileV2Type defines model for ExecutionProfileV2.Type.
+type ExecutionProfileV2Type string
+
 // FindingEnvelope Finding ingestion payload validated against finding-envelope/v1.
 type FindingEnvelope map[string]interface{}
 
@@ -1743,6 +1912,29 @@ type GraphSourceAuthorityV2 struct {
 	ScopeDigest          string             `json:"scopeDigest"`
 	SourceRegistrationId openapi_types.UUID `json:"sourceRegistrationId"`
 }
+
+// HostOnboardingV1 defines model for HostOnboardingV1.
+type HostOnboardingV1 struct {
+	ClusterUid string    `json:"clusterUid"`
+	ExpiresAt  time.Time `json:"expiresAt"`
+	Host       struct {
+		Address         string `json:"Address"`
+		KnownHosts      string `json:"KnownHosts"`
+		OnboardingRef   string `json:"OnboardingRef"`
+		Port            int    `json:"Port"`
+		Principal       string `json:"Principal"`
+		Role            string `json:"Role"`
+		Target          string `json:"Target"`
+		UID             string `json:"UID"`
+		UserCAPublicKey string `json:"UserCAPublicKey"`
+	} `json:"host"`
+	ObservedAt    time.Time                     `json:"observedAt"`
+	ReportDigest  string                        `json:"reportDigest"`
+	SchemaVersion HostOnboardingV1SchemaVersion `json:"schemaVersion"`
+}
+
+// HostOnboardingV1SchemaVersion defines model for HostOnboardingV1.SchemaVersion.
+type HostOnboardingV1SchemaVersion string
 
 // Identifier defines model for Identifier.
 type Identifier = string
@@ -2083,6 +2275,13 @@ type LegalHoldV1 struct {
 	Hold       bool               `json:"hold"`
 }
 
+// OnboardExecutionHostRequest defines model for OnboardExecutionHostRequest.
+type OnboardExecutionHostRequest struct {
+	Report      HostOnboardingV1 `json:"report"`
+	Signature   []byte           `json:"signature"`
+	SignerKeyId Identifier       `json:"signerKeyId"`
+}
+
 // OperatorRoleBindingStatusUpdateRequest defines model for OperatorRoleBindingStatusUpdateRequest.
 type OperatorRoleBindingStatusUpdateRequest struct {
 	ExpectedRevision int64                                        `json:"expectedRevision"`
@@ -2178,6 +2377,13 @@ type PolicyBundlePublishRequest struct {
 	ExpectedRevision int64      `json:"expectedRevision"`
 	Signature        []byte     `json:"signature"`
 	SignerKeyId      string     `json:"signerKeyId"`
+}
+
+// PublishExecutionProfileRequest defines model for PublishExecutionProfileRequest.
+type PublishExecutionProfileRequest struct {
+	Profile     ExecutionProfileV2 `json:"profile"`
+	Signature   []byte             `json:"signature"`
+	SignerKeyId Identifier         `json:"signerKeyId"`
 }
 
 // RCACandidateV2 defines model for RCACandidateV2.
@@ -2787,6 +2993,18 @@ type CreateExecutionProfileParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
+// RetireExecutionProfileParams defines parameters for RetireExecutionProfile.
+type RetireExecutionProfileParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// OnboardExecutionHostParams defines parameters for OnboardExecutionHost.
+type OnboardExecutionHostParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
 // GetLegalHoldsParams defines parameters for GetLegalHolds.
 type GetLegalHoldsParams struct {
 	// Cursor Opaque cursor for keyset pagination.
@@ -2967,6 +3185,12 @@ type GetCapabilitiesdefaultJSONResponseBody struct {
 type CreateCommandExecutionParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// StreamCommandExecutionEventsParams defines parameters for StreamCommandExecutionEvents.
+type StreamCommandExecutionEventsParams struct {
+	// LastEventID Persisted executionId:eventSeq cursor; expired output yields 410.
+	LastEventID *string `json:"Last-Event-ID,omitempty"`
 }
 
 // CancelCommandExecutionParams defines parameters for CancelCommandExecution.
@@ -3303,7 +3527,10 @@ type DismissActionPlanJSONRequestBody = JSONRequest
 type CreateClusterJSONRequestBody = ClusterRegistrationRequest
 
 // CreateExecutionProfileJSONRequestBody defines body for CreateExecutionProfile for application/json ContentType.
-type CreateExecutionProfileJSONRequestBody = JSONRequest
+type CreateExecutionProfileJSONRequestBody = PublishExecutionProfileRequest
+
+// OnboardExecutionHostJSONRequestBody defines body for OnboardExecutionHost for application/json ContentType.
+type OnboardExecutionHostJSONRequestBody = OnboardExecutionHostRequest
 
 // CreateLegalHoldJSONRequestBody defines body for CreateLegalHold for application/json ContentType.
 type CreateLegalHoldJSONRequestBody = LegalHoldRequestV1
@@ -3354,10 +3581,10 @@ type CreateStepUpSessionJSONRequestBody = CreateStepUpSessionJSONBody
 type CreateCommandExecutionJSONRequestBody = CommandExecutionRequest
 
 // AcknowledgeCommandRiskJSONRequestBody defines body for AcknowledgeCommandRisk for application/json ContentType.
-type AcknowledgeCommandRiskJSONRequestBody = JSONRequest
+type AcknowledgeCommandRiskJSONRequestBody = CommandRiskAcknowledgementRequest
 
 // AssessCommandRiskJSONRequestBody defines body for AssessCommandRisk for application/json ContentType.
-type AssessCommandRiskJSONRequestBody = JSONRequest
+type AssessCommandRiskJSONRequestBody = CommandRiskAssessmentRequest
 
 // BuildDiagnosticGraphJSONRequestBody defines body for BuildDiagnosticGraph for application/json ContentType.
 type BuildDiagnosticGraphJSONRequestBody = DiagnosticGraphBuildRequest
@@ -6040,6 +6267,12 @@ type ServerInterface interface {
 	// CreateExecutionProfile createExecutionProfile
 	// (POST /api/v1/admin/execution-profiles)
 	CreateExecutionProfile(w http.ResponseWriter, r *http.Request, params CreateExecutionProfileParams)
+	// RetireExecutionProfile Retire an immutable execution profile version
+	// (POST /api/v1/admin/execution-profiles/{executionProfileId}/versions/{version}:retire)
+	RetireExecutionProfile(w http.ResponseWriter, r *http.Request, executionProfileId string, version int, params RetireExecutionProfileParams)
+	// OnboardExecutionHost Register a signed native Host Onboarding admission report
+	// (POST /api/v1/admin/host-onboardings)
+	OnboardExecutionHost(w http.ResponseWriter, r *http.Request, params OnboardExecutionHostParams)
 	// GetLegalHolds getLegalHolds
 	// (GET /api/v1/admin/legal-holds)
 	GetLegalHolds(w http.ResponseWriter, r *http.Request, params GetLegalHoldsParams)
@@ -6123,7 +6356,7 @@ type ServerInterface interface {
 	GetCommandExecution(w http.ResponseWriter, r *http.Request, executionId string)
 	// StreamCommandExecutionEvents streamCommandExecutionEvents
 	// (GET /api/v1/command-executions/{executionId}/events)
-	StreamCommandExecutionEvents(w http.ResponseWriter, r *http.Request, executionId string)
+	StreamCommandExecutionEvents(w http.ResponseWriter, r *http.Request, executionId string, params StreamCommandExecutionEventsParams)
 	// GetCommandPostCheck getCommandPostCheck
 	// (GET /api/v1/command-executions/{executionId}/post-check)
 	GetCommandPostCheck(w http.ResponseWriter, r *http.Request, executionId string)
@@ -6270,6 +6503,18 @@ func (_ Unimplemented) GetExecutionProfiles(w http.ResponseWriter, r *http.Reque
 // CreateExecutionProfile createExecutionProfile
 // (POST /api/v1/admin/execution-profiles)
 func (_ Unimplemented) CreateExecutionProfile(w http.ResponseWriter, r *http.Request, params CreateExecutionProfileParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RetireExecutionProfile Retire an immutable execution profile version
+// (POST /api/v1/admin/execution-profiles/{executionProfileId}/versions/{version}:retire)
+func (_ Unimplemented) RetireExecutionProfile(w http.ResponseWriter, r *http.Request, executionProfileId string, version int, params RetireExecutionProfileParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OnboardExecutionHost Register a signed native Host Onboarding admission report
+// (POST /api/v1/admin/host-onboardings)
+func (_ Unimplemented) OnboardExecutionHost(w http.ResponseWriter, r *http.Request, params OnboardExecutionHostParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -6437,7 +6682,7 @@ func (_ Unimplemented) GetCommandExecution(w http.ResponseWriter, r *http.Reques
 
 // StreamCommandExecutionEvents streamCommandExecutionEvents
 // (GET /api/v1/command-executions/{executionId}/events)
-func (_ Unimplemented) StreamCommandExecutionEvents(w http.ResponseWriter, r *http.Request, executionId string) {
+func (_ Unimplemented) StreamCommandExecutionEvents(w http.ResponseWriter, r *http.Request, executionId string, params StreamCommandExecutionEventsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -6990,6 +7235,114 @@ func (siw *ServerInterfaceWrapper) CreateExecutionProfile(w http.ResponseWriter,
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateExecutionProfile(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RetireExecutionProfile operation middleware
+func (siw *ServerInterfaceWrapper) RetireExecutionProfile(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "executionProfileId" -------------
+	var executionProfileId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "executionProfileId", chi.URLParam(r, "executionProfileId"), &executionProfileId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "executionProfileId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "version" -------------
+	var version int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "version", chi.URLParam(r, "version"), &version, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "version", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RetireExecutionProfileParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RetireExecutionProfile(w, r, executionProfileId, version, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OnboardExecutionHost operation middleware
+func (siw *ServerInterfaceWrapper) OnboardExecutionHost(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OnboardExecutionHostParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OnboardExecutionHost(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -8341,8 +8694,32 @@ func (siw *ServerInterfaceWrapper) StreamCommandExecutionEvents(w http.ResponseW
 		return
 	}
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params StreamCommandExecutionEventsParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Last-Event-ID" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Last-Event-ID")]; found {
+		var LastEventID string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Last-Event-ID", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Last-Event-ID", valueList[0], &LastEventID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Last-Event-ID", Err: err})
+			return
+		}
+
+		params.LastEventID = &LastEventID
+
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.StreamCommandExecutionEvents(w, r, executionId)
+		siw.Handler.StreamCommandExecutionEvents(w, r, executionId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -10337,6 +10714,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Patch(options.BaseURL+"/api/v1/admin/role-bindings/{bindingId}/status", wrapper.SetOperatorRoleBindingStatus)
 	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/execution-profiles/{executionProfileId}/versions/{version}:retire", wrapper.RetireExecutionProfile)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/host-onboardings", wrapper.OnboardExecutionHost)
+	})
 
 	return r
 }
@@ -10649,6 +11032,87 @@ type CreateExecutionProfiledefaultJSONResponse struct {
 }
 
 func (response CreateExecutionProfiledefaultJSONResponse) VisitCreateExecutionProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetireExecutionProfileRequestObject struct {
+	ExecutionProfileId string `json:"executionProfileId"`
+	Version            int    `json:"version"`
+	Params             RetireExecutionProfileParams
+}
+
+type RetireExecutionProfileResponseObject interface {
+	VisitRetireExecutionProfileResponse(w http.ResponseWriter) error
+}
+
+type RetireExecutionProfile200JSONResponse SuccessEnvelope
+
+func (response RetireExecutionProfile200JSONResponse) VisitRetireExecutionProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetireExecutionProfiledefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response RetireExecutionProfiledefaultJSONResponse) VisitRetireExecutionProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OnboardExecutionHostRequestObject struct {
+	Params OnboardExecutionHostParams
+	Body   *OnboardExecutionHostJSONRequestBody
+}
+
+type OnboardExecutionHostResponseObject interface {
+	VisitOnboardExecutionHostResponse(w http.ResponseWriter) error
+}
+
+type OnboardExecutionHost201JSONResponse SuccessEnvelope
+
+func (response OnboardExecutionHost201JSONResponse) VisitOnboardExecutionHostResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OnboardExecutionHostdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response OnboardExecutionHostdefaultJSONResponse) VisitOnboardExecutionHostResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -11738,6 +12202,7 @@ func (response GetCommandExecutiondefaultJSONResponse) VisitGetCommandExecutionR
 
 type StreamCommandExecutionEventsRequestObject struct {
 	ExecutionId string `json:"executionId"`
+	Params      StreamCommandExecutionEventsParams
 }
 
 type StreamCommandExecutionEventsResponseObject interface {
@@ -11785,6 +12250,20 @@ func (response StreamCommandExecutionEvents200TexteventStreamResponse) VisitStre
 			return err
 		}
 	}
+}
+
+type StreamCommandExecutionEvents410JSONResponse ErrorEnvelope
+
+func (response StreamCommandExecutionEvents410JSONResponse) VisitStreamCommandExecutionEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(410)
+	_, err := buf.WriteTo(w)
+	return err
 }
 
 type StreamCommandExecutionEventsdefaultJSONResponse struct {
@@ -13088,6 +13567,12 @@ type StrictServerInterface interface {
 	// CreateExecutionProfile createExecutionProfile
 	// (POST /api/v1/admin/execution-profiles)
 	CreateExecutionProfile(ctx context.Context, request CreateExecutionProfileRequestObject) (CreateExecutionProfileResponseObject, error)
+	// RetireExecutionProfile Retire an immutable execution profile version
+	// (POST /api/v1/admin/execution-profiles/{executionProfileId}/versions/{version}:retire)
+	RetireExecutionProfile(ctx context.Context, request RetireExecutionProfileRequestObject) (RetireExecutionProfileResponseObject, error)
+	// OnboardExecutionHost Register a signed native Host Onboarding admission report
+	// (POST /api/v1/admin/host-onboardings)
+	OnboardExecutionHost(ctx context.Context, request OnboardExecutionHostRequestObject) (OnboardExecutionHostResponseObject, error)
 	// GetLegalHolds getLegalHolds
 	// (GET /api/v1/admin/legal-holds)
 	GetLegalHolds(ctx context.Context, request GetLegalHoldsRequestObject) (GetLegalHoldsResponseObject, error)
@@ -13546,6 +14031,67 @@ func (sh *strictHandler) CreateExecutionProfile(w http.ResponseWriter, r *http.R
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CreateExecutionProfileResponseObject); ok {
 		if err := validResponse.VisitCreateExecutionProfileResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RetireExecutionProfile operation middleware
+func (sh *strictHandler) RetireExecutionProfile(w http.ResponseWriter, r *http.Request, executionProfileId string, version int, params RetireExecutionProfileParams) {
+	var request RetireExecutionProfileRequestObject
+
+	request.ExecutionProfileId = executionProfileId
+	request.Version = version
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RetireExecutionProfile(ctx, request.(RetireExecutionProfileRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RetireExecutionProfile")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RetireExecutionProfileResponseObject); ok {
+		if err := validResponse.VisitRetireExecutionProfileResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OnboardExecutionHost operation middleware
+func (sh *strictHandler) OnboardExecutionHost(w http.ResponseWriter, r *http.Request, params OnboardExecutionHostParams) {
+	var request OnboardExecutionHostRequestObject
+
+	request.Params = params
+
+	var body OnboardExecutionHostJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OnboardExecutionHost(ctx, request.(OnboardExecutionHostRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OnboardExecutionHost")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OnboardExecutionHostResponseObject); ok {
+		if err := validResponse.VisitOnboardExecutionHostResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -14375,10 +14921,11 @@ func (sh *strictHandler) GetCommandExecution(w http.ResponseWriter, r *http.Requ
 }
 
 // StreamCommandExecutionEvents operation middleware
-func (sh *strictHandler) StreamCommandExecutionEvents(w http.ResponseWriter, r *http.Request, executionId string) {
+func (sh *strictHandler) StreamCommandExecutionEvents(w http.ResponseWriter, r *http.Request, executionId string, params StreamCommandExecutionEventsParams) {
 	var request StreamCommandExecutionEventsRequestObject
 
 	request.ExecutionId = executionId
+	request.Params = params
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.StreamCommandExecutionEvents(ctx, request.(StreamCommandExecutionEventsRequestObject))

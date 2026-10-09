@@ -5,14 +5,26 @@
  * OpenAPI spec version: 1.4.0
  */
 import type { CanonicalID } from './canonicalID';
+import type { CommandExecutionOptions } from './commandExecutionOptions';
 import type { Identifier } from './identifier';
 
+/**
+ * Additive v1 fields incidentId, executionProfileVersion and executionOptions may be omitted only to reuse the exact values bound in this subject’s RiskAcknowledgement. Explicit values must match; no server-selected defaults or automatic profile upgrades.
+ */
 export interface CommandExecutionRequest {
   /** @nullable */
   actionPlanId?: string | null;
+  /**
+     * @minLength 1
+     * @maxLength 65536
+     */
   actualCommand: string;
   executionProfileId: Identifier;
   riskAcknowledgementId: Identifier;
-  shell: string;
+  shell: 'bash';
   target: CanonicalID;
+  incidentId?: Identifier;
+  /** @minimum 1 */
+  executionProfileVersion?: number;
+  executionOptions?: CommandExecutionOptions;
 }

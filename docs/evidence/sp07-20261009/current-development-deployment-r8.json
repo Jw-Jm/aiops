@@ -1,0 +1,173 @@
+{
+  "observedAt": "2026-10-09T07:00:13.215833+00:00",
+  "bundleId": "sp07-nonvirtual-20261009-r8",
+  "payloadDigest": "sha256:56519307fdc71d3f09c57306e5685b82c7f2e5647ea0fd86c3d1e5e10a41903e",
+  "reusedMaterialBundle": "sp07-nonvirtual-20261009-r6",
+  "reusedUnchangedSignedMaterials": [
+    {
+      "architecture": "linux/arm64",
+      "digest": "sha256:400c91a9940376cee628c06ed47d036de5d77bbf4376fce11a1da5dc4819e222",
+      "installAfter": [],
+      "kind": "container-image",
+      "licenseRef": "licenses/command-runner.txt",
+      "name": "command-runner",
+      "payloadRef": "oci/command-runner.oci.tar",
+      "sbomRef": "sbom/command-runner.spdx.json",
+      "version": "2.4.3"
+    },
+    {
+      "architecture": "linux/arm64",
+      "digest": "sha256:76f79aed06a502f45db013c57830ffe1908e5841bd895206923ddd2c08c04fce",
+      "installAfter": [],
+      "kind": "source",
+      "licenseRef": "licenses/command-runner-source.txt",
+      "name": "command-runner-source",
+      "payloadRef": "sources/command-runner-source.tar",
+      "sbomRef": "sbom/command-runner-source.spdx.json",
+      "version": "2.4.3"
+    },
+    {
+      "architecture": "linux/arm64",
+      "digest": "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a",
+      "installAfter": [],
+      "kind": "binary",
+      "licenseRef": "licenses/db-migrate.txt",
+      "name": "db-migrate",
+      "payloadRef": "binaries/db-migrate-offline-arm64",
+      "sbomRef": "sbom/db-migrate.spdx.json",
+      "version": "1.1.0"
+    },
+    {
+      "architecture": "linux/arm64",
+      "digest": "sha256:b9b0d7dd1c827cb8a6401a6dcf2fefe6e9938dab6812ad7e2a4a72f25f001844",
+      "installAfter": [],
+      "kind": "source",
+      "licenseRef": "licenses/db-migrate-source.txt",
+      "name": "db-migrate-source",
+      "payloadRef": "sources/db-migrate-source.tar",
+      "sbomRef": "sbom/db-migrate-source.spdx.json",
+      "version": "1.1.0"
+    }
+  ],
+  "namespace": "ops-pre-sp07-core-r9-20261008",
+  "helmRevision": 11,
+  "images": [
+    {
+      "component": "api",
+      "podUID": "6a28f2e8-d0e0-4978-a1a6-bce5e39dcb03",
+      "image": "ops.local/sp07/platform-api@sha256:d7c29bd722ecb46a7476d4eef8537f42ef6770e36d8321371d3de3fc2e3a3291",
+      "runtimeImageID": "docker-pullable://ops.local/sp07/platform-api@sha256:d7c29bd722ecb46a7476d4eef8537f42ef6770e36d8321371d3de3fc2e3a3291",
+      "ready": true
+    },
+    {
+      "component": "worker",
+      "podUID": "35574b11-d67d-4de4-ac47-c75ed22b69cd",
+      "image": "ops.local/sp07/platform-worker@sha256:28a23a5b9153b52c8cdf9b7c7473f4593324436c0765adf092b52631d5e4f011",
+      "runtimeImageID": "docker-pullable://ops.local/sp07/platform-worker@sha256:28a23a5b9153b52c8cdf9b7c7473f4593324436c0765adf092b52631d5e4f011",
+      "ready": true
+    },
+    {
+      "component": "worker",
+      "podUID": "d23b6425-aafb-410a-9d12-fb3fa9a0250c",
+      "image": "ops.local/sp07/platform-worker@sha256:28a23a5b9153b52c8cdf9b7c7473f4593324436c0765adf092b52631d5e4f011",
+      "runtimeImageID": "docker-pullable://ops.local/sp07/platform-worker@sha256:28a23a5b9153b52c8cdf9b7c7473f4593324436c0765adf092b52631d5e4f011",
+      "ready": true
+    }
+  ],
+  "protectedObjectsUnchanged": 493,
+  "otherControllerSpecsUnchanged": true,
+  "noColdInstall": true,
+  "commands": [
+    {
+      "command": [
+        "helm",
+        "get",
+        "values",
+        "ops-platform",
+        "--kube-context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "--all",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets,configmaps,services,apiservices,deployments,statefulsets,daemonsets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "upgrade",
+        "ops-platform",
+        "/Users/mssc/.local/state/ops/sp07-20261009/platform-material/ops-platform-0.1.0.tgz",
+        "--kube-context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "--values",
+        "/Users/mssc/.local/state/ops/sp07-20261009/deployment/helm-values-sp07-r8.private.json",
+        "--wait",
+        "--timeout",
+        "5m",
+        "--history-max",
+        "20"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "get",
+        "namespaces,pvc,pv,secrets,configmaps,services,apiservices,deployments,statefulsets,daemonsets",
+        "-A",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "helm",
+        "status",
+        "ops-platform",
+        "--kube-context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "orbstack",
+        "-n",
+        "ops-pre-sp07-core-r9-20261008",
+        "get",
+        "pods",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "exitCode": 0
+}

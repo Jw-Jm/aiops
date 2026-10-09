@@ -23,6 +23,7 @@ import (
 )
 
 type SP04Handlers struct {
+	Action          *ActionHandlers
 	Investigation   *InvestigationHandlers
 	SP05            *SP05Handlers
 	Pool            persistence.TxBeginner

@@ -25,7 +25,7 @@ spec:
     metadata:
       {{ if has $name (list "api" "worker") }}
       annotations:
-        checksum/runtime-config: {{ dict "namespace" $.Release.Namespace "runtime" $.Values.runtime "identity" $.Values.workloadIdentity "sp04" $.Values.sp04 "sp05" $.Values.sp05 "sp06" $.Values.sp06 | toJson | sha256sum | quote }}
+        checksum/runtime-config: {{ dict "namespace" $.Release.Namespace "runtime" $.Values.runtime "identity" $.Values.workloadIdentity "sp04" $.Values.sp04 "sp05" $.Values.sp05 "sp06" $.Values.sp06 "sp07" $.Values.sp07 | toJson | sha256sum | quote }}
       {{ end }}
       labels:
         ops.platform.io/release: {{ $.Release.Name | quote }}
@@ -45,6 +45,9 @@ spec:
           image: {{ $image | quote }}
           imagePullPolicy: {{ $component.imagePullPolicy | default $.Values.global.imagePullPolicy | quote }}
           ports:
+            {{ if and $.Values.sp07.enabled (eq $name "api") }}
+            - {name: command-mtls, containerPort: {{ $.Values.sp07.gatewayPort }}}
+            {{ end }}
             {{ if and $.Values.sp06.enabled (eq $name "api") }}
             - {name: mcp-mtls, containerPort: {{ $.Values.sp06.gatewayPort }}, protocol: TCP}
             {{ end }}
@@ -62,6 +65,9 @@ spec:
               protocol: TCP
             {{ end }}
           env:
+            {{ if and $.Values.sp07.enabled (has $name (list "api" "worker")) }}
+            - {name: SP07_RUNTIME_FILE, value: /etc/sp07/runtime/runtime.json}
+            {{ end }}
             {{ if and $.Values.sp06.enabled (has $name (list "api" "worker")) }}
             - {name: SP06_RUNTIME_FILE, value: {{ printf "/etc/sp06/runtime/%s.json" $name | quote }}}
             - {name: OPENBAO_PROJECTED_TOKEN_FILE, value: /var/run/secrets/ops-platform/openbao/token}
@@ -133,6 +139,10 @@ spec:
             capabilities:
               drop: ["ALL"]
           volumeMounts:
+            {{ if and $.Values.sp07.enabled (has $name (list "api" "worker")) }}
+            - {name: sp07-runtime, mountPath: /etc/sp07/runtime, readOnly: true}
+            - {name: sp07-kubernetes, mountPath: /var/run/secrets/ops-platform/execution, readOnly: true}
+            {{ end }}
             {{ if and $.Values.sp06.enabled (has $name (list "api" "worker")) }}
             - {name: sp06-runtime, mountPath: /etc/sp06/runtime, readOnly: true}
             {{ end }}
@@ -166,6 +176,16 @@ spec:
               mountPath: /tmp
 {{ include "ops-platform.workloadIdentityMount" (dict "enabled" $.Values.workloadIdentity.enabled "name" $name) | indent 12 }}
       volumes:
+        {{ if and $.Values.sp07.enabled (has $name (list "api" "worker")) }}
+        - name: sp07-runtime
+          configMap: {name: ops-sp07-runtime}
+        - name: sp07-kubernetes
+          projected:
+            defaultMode: 0440
+            sources:
+              - serviceAccountToken: {path: token, expirationSeconds: 900}
+              - configMap: {name: kube-root-ca.crt, items: [{key: ca.crt, path: ca.pem}]}
+        {{ end }}
         {{ if and $.Values.sp06.enabled (has $name (list "api" "worker")) }}
         - name: sp06-runtime
           configMap: {name: ops-sp06-runtime}

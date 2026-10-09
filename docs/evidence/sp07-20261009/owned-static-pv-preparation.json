@@ -1,0 +1,56 @@
+{
+  "command": [
+    "kubectl",
+    "--context",
+    "orbstack",
+    "create",
+    "-f",
+    "-",
+    "-o",
+    "json"
+  ],
+  "exitCode": 0,
+  "created": {
+    "apiVersion": "v1",
+    "kind": "PersistentVolume",
+    "metadata": {
+      "creationTimestamp": "2026-10-09T06:11:03Z",
+      "finalizers": [
+        "kubernetes.io/pv-protection"
+      ],
+      "labels": {
+        "ops.platform.io/owner": "sp07-20261009",
+        "ops.platform.io/purpose": "finite-native-command-acceptance"
+      },
+      "name": "sp07-owned-static-pv-20261009",
+      "resourceVersion": "568457",
+      "uid": "13dd7c39-7af4-4484-89fc-77e73111e5b6"
+    },
+    "spec": {
+      "accessModes": [
+        "ReadWriteOnce"
+      ],
+      "capacity": {
+        "storage": "1Mi"
+      },
+      "claimRef": {
+        "name": "sp07-owned-reservation-20261009",
+        "namespace": "ops-pre-sp07-targets-r9-20261008"
+      },
+      "hostPath": {
+        "path": "/var/lib/sp07-owned-unused-20261009",
+        "type": "DirectoryOrCreate"
+      },
+      "persistentVolumeReclaimPolicy": "Retain",
+      "storageClassName": "sp07-owned-no-provisioner-20261009",
+      "volumeMode": "Filesystem"
+    },
+    "status": {
+      "lastPhaseTransitionTime": "2026-10-09T06:11:03Z",
+      "phase": "Pending"
+    }
+  },
+  "mountedByPod": false,
+  "hostFilesystemWrites": false,
+  "reservationPreventsRepairUntilControlledCommand": true
+}

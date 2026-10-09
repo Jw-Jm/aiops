@@ -1,0 +1,13 @@
+stepup 201 None
+retire-k8s_namespace 200 None
+retire-k8s_cluster 200 None
+retire-ssh_user 200 None
+retire-ssh_root 200 None
+retired-version-denied 404 NOT_FOUND
+Traceback (most recent call last):
+  File "/Users/mssc/.local/state/ops/sp07-20261009/native-api.py", line 57, in <module>
+    call('retired-version-denied','POST','/api/v1/commands:risk-assess',request,403)
+  File "/Users/mssc/.local/state/ops/sp07-20261009/native-api.py", line 9, in call
+    key=key or str(uuid.uuid4());c=http.client.HTTPConnection('127.0.0.1',port,timeout=35);headers={'Authorization':'Bearer '+(old/'fresh-loa2.token').read_text().strip(),'Content-Type':'application/json','Idempotency-Key':key};c.request(method,path,json.dumps(body) if body is not None else None,headers);rsp=c.getresponse();raw=rsp.read(4*1024*1024);c.close();(run/(name+'.response.private.json')).write_bytes(raw);j=json.loads(raw);rec={'operation':name,'method':method,'path':path,'status':rsp.status,'responseSHA256':'sha256:'+hashlib.sha256(raw).hexdigest(),'error':j.get('error',{}).get('code',j.get('code'))};records.append(rec);(e/('native-'+mode+'-'+tag+'-progress.json')).write_text(json.dumps(records,indent=2)+'\n');print(name,rsp.status,rec['error'],flush=True);assert rsp.status==expected,str(rec);return j.get('data',j)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'operation': 'retired-version-denied', 'method': 'POST', 'path': '/api/v1/commands:risk-assess', 'status': 404, 'responseSHA256': 'sha256:ee66b80a4aa4a0bd55cb818be9ab1a8563cee8493d512b064f9142341b6d157c', 'error': 'NOT_FOUND'}

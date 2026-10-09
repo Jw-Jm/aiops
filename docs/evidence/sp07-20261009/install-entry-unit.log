@@ -1,0 +1,16 @@
+--- FAIL: TestImportValidatesEveryLayerBeforeAnyRuntimeCall (12.71s)
+    importer_test.go:224: missing layer error = checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestPlanImportReturnsEveryImageWithoutRuntimeSideEffects (0.25s)
+    importer_test.go:235: checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestImportVerifiedOCIArchivesWithoutPull (0.27s)
+    importer_test.go:252: checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestInstallIncompleteBundleNeverRunsHelmOrRuntime (0.25s)
+    installer_test.go:27: incomplete install error = checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+FAIL
+FAIL	ops-platform/internal/bundle	18.137s
+--- FAIL: TestBundleBuildCLIAndIndependentVerify (13.51s)
+    build_bundle_test.go:103: source material opa-sdk-source differs from the reviewed corresponding-source lock
+FAIL
+FAIL	ops-platform/cmd/opsctl	14.370s
+ok  	ops-platform/internal/action	(cached)
+FAIL

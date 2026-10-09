@@ -265,7 +265,7 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 		return errors.New("usage: opsctl openbao status|init|unseal|configure --profile <resolved>")
 	}
 	operation := args[0]
-	if operation != "status" && operation != "init" && operation != "unseal" && operation != "configure" {
+	if operation != "status" && operation != "init" && operation != "unseal" && operation != "configure" && operation != "configure-commands" {
 		return errors.New("usage: opsctl openbao status|init|unseal|configure --profile <resolved>")
 	}
 	flags := flag.NewFlagSet("opsctl openbao "+operation, flag.ContinueOnError)
@@ -275,6 +275,7 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 	recoveryFile := flags.String("recovery-file", "", "0600 recovery file outside the repository and Bundle")
 	bundleDirectory := flags.String("bundle-dir", "", "Bundle directory to exclude from recovery file paths")
 	shareIndex := flags.Int("share-index", -1, "zero-based Shamir share index for unseal")
+	executionSSHUser := flags.String("command-ssh-user", "", "explicit SP07 ordinary SSH principal; configure exact short-lived execution roles")
 	investigationSigning := flags.Bool("investigation-signing", false, "configure the nonexportable SP06 Context signing key during configure")
 	if err := flags.Parse(args[1:]); err != nil {
 		return err
@@ -381,6 +382,11 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 			return err
 		}
 		return writeOpenBaoStatus(stdout, status)
+	case "configure-commands":
+		if *executionSSHUser == "" {
+			return errors.New("configure-commands requires --command-ssh-user")
+		}
+		return client.ConfigureCommandExecutionSSH(ctx, *executionSSHUser)
 	case "configure":
 		if err := client.Configure(ctx); err != nil {
 			return err
