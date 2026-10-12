@@ -21,9 +21,23 @@ func validateList(q Query) error {
 	if !slices.Contains([]string{"", "canonicalId", "name", "kind", "namespace", "health", "updatedAt"}, q.Sort) || !slices.Contains([]string{"", "asc", "desc"}, q.Order) || !slices.Contains([]string{"", "normal", "abnormal", "unknown", "degraded"}, q.Health) {
 		return errors.New("INVALID_ARGUMENT")
 	}
+	if len(q.CanonicalIDs) > 50 {
+		return errors.New("INVALID_ARGUMENT")
+	}
+	seen := map[string]bool{}
+	for _, value := range q.CanonicalIDs {
+		id, err := resource.ParseCanonicalID(value)
+		if err != nil || seen[value] {
+			return errors.New("INVALID_ARGUMENT")
+		}
+		seen[value] = true
+		if id.Tenant != q.Scope.Tenant || id.Scope != q.Scope.Cluster {
+			return ErrScope
+		}
+	}
 	if q.Label != "" {
 		parts := strings.SplitN(q.Label, "=", 2)
-		if len(parts) != 2 || parts[0] == "" || parts[1] == "" || len(q.Label) > 384 {
+		if len(parts) != 2 || parts[0] == "" || len(q.Label) > 384 {
 			return errors.New("INVALID_ARGUMENT")
 		}
 	}
@@ -66,12 +80,16 @@ func entityHealth(e resource.Entity) string {
 	return "unknown"
 }
 func listMatches(q Query, e resource.Entity) bool {
+	if len(q.CanonicalIDs) > 0 && !slices.Contains(q.CanonicalIDs, e.CanonicalID) {
+		return false
+	}
 	if q.Kind != "" && q.Kind != e.Kind || q.Namespace != "" && q.Namespace != e.Namespace || q.Name != "" && q.Name != e.Name || q.Health != "" && q.Health != entityHealth(e) {
 		return false
 	}
 	if q.Label != "" {
 		pair := strings.SplitN(q.Label, "=", 2)
-		if e.Labels[pair[0]] != pair[1] {
+		actual, exists := e.Labels[pair[0]]
+		if !exists || actual != pair[1] {
 			return false
 		}
 	}

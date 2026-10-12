@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { RegistryDraftCreateRequestContent } from './registryDraftCreateRequestContent';
-import type { RegistryDraftCreateRequestKind } from './registryDraftCreateRequestKind';
+import type { RegistryDraftCreateRequestContent } from './registryDraftCreateRequestContent.ts';
+import type { RegistryDraftCreateRequestKind } from './registryDraftCreateRequestKind.ts';
 
 export interface RegistryDraftCreateRequest {
   content: RegistryDraftCreateRequestContent;

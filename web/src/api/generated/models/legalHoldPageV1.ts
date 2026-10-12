@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { LegalHoldPageV1DataItem } from './legalHoldPageV1DataItem';
-import type { LegalHoldPageV1Meta } from './legalHoldPageV1Meta';
-import type { LegalHoldPageV1SchemaVersion } from './legalHoldPageV1SchemaVersion';
+import type { LegalHoldPageV1DataItem } from './legalHoldPageV1DataItem.ts';
+import type { LegalHoldPageV1Meta } from './legalHoldPageV1Meta.ts';
+import type { LegalHoldPageV1SchemaVersion } from './legalHoldPageV1SchemaVersion.ts';
 
 export interface LegalHoldPageV1 {
   schemaVersion: LegalHoldPageV1SchemaVersion;

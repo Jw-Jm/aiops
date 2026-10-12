@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CanonicalID } from './canonicalID';
-import type { CommandExecutionOptions } from './commandExecutionOptions';
-import type { Identifier } from './identifier';
+import type { CanonicalID } from './canonicalID.ts';
+import type { CommandExecutionOptions } from './commandExecutionOptions.ts';
+import type { Identifier } from './identifier.ts';
 
 /**
  * Additive v1 fields incidentId, executionProfileVersion and executionOptions may be omitted only to reuse the exact values bound in this subject’s RiskAcknowledgement. Explicit values must match; no server-selected defaults or automatic profile upgrades.

@@ -16,8 +16,9 @@ type SP05Config struct {
 }
 
 type SP05AnalyzerConfig struct {
-	Enabled bool
-	SHA256  string
+	Enabled      bool
+	SHA256       string
+	Architecture string
 }
 
 func persistenceSourceContext(ctx context.Context, pool persistence.TxBeginner, b *source.BoundSourceContext) error {

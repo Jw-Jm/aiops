@@ -60,6 +60,7 @@ components:
         direction: {type: string, enum: [in, out, both]}
         queryKind: {type: string, enum: [entity, neighbors, dependencies, impact, diagnostic, list]}
         canonicalId: {type: string}
+        canonicalIds: {type: array, maxItems: 50, uniqueItems: true, items: {type: string, maxLength: 4096}}
         expectedOwnerEpoch: {type: integer, format: int64, minimum: 1}
         maxDepth: {type: integer, minimum: 1, maximum: 2}
         maxNodes: {type: integer, minimum: 1, maximum: 200}

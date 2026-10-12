@@ -1,0 +1,32 @@
+
+Running 1 test using 1 worker
+
+[1/1] tests/e2e/degraded_readability.spec.ts:2:1 › real archive degradation is explicit and deterministic Incident records remain readable
+  1) tests/e2e/degraded_readability.spec.ts:2:1 › real archive degradation is explicit and deterministic Incident records remain readable 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog').getByText('数据来源暂不可用', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('dialog').getByText('数据来源暂不可用', { exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog').getByText('数据来源暂不可用', { exact: true })
+
+
+      18 |   await expect(
+      19 |     dialog.getByText("数据来源暂不可用", { exact: true }),
+    > 20 |   ).toBeVisible();
+         |     ^
+      21 |   await expect(dialog.getByText(/来源未能完成此次查询/)).toBeVisible();
+      22 |   await expect(dialog.getByText(/请求 ID：/)).toBeVisible();
+      23 |   await page.screenshot({
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/degraded_readability.spec.ts:20:5
+
+    Error Context: ../../../../ops-sp08-20261011/build/degraded-browser-r1/degraded_readability-real--dcd04-ent-records-remain-readable/error-context.md
+
+
+  1 failed
+    tests/e2e/degraded_readability.spec.ts:2:1 › real archive degradation is explicit and deterministic Incident records remain readable 

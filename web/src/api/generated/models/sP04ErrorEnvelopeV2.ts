@@ -4,10 +4,10 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { Identifier } from './identifier';
-import type { SP04ErrorEnvelopeV2Code } from './sP04ErrorEnvelopeV2Code';
-import type { SP04ErrorEnvelopeV2Details } from './sP04ErrorEnvelopeV2Details';
-import type { SP04ErrorEnvelopeV2SchemaVersion } from './sP04ErrorEnvelopeV2SchemaVersion';
+import type { Identifier } from './identifier.ts';
+import type { SP04ErrorEnvelopeV2Code } from './sP04ErrorEnvelopeV2Code.ts';
+import type { SP04ErrorEnvelopeV2Details } from './sP04ErrorEnvelopeV2Details.ts';
+import type { SP04ErrorEnvelopeV2SchemaVersion } from './sP04ErrorEnvelopeV2SchemaVersion.ts';
 
 export interface SP04ErrorEnvelopeV2 {
   code: SP04ErrorEnvelopeV2Code;

@@ -1,0 +1,450 @@
+{
+  "target": "192.168.0.63",
+  "authorizedScope": "all developed nonvirtual SP01-SP07; KubeVirt/CDI remain deferred",
+  "sourceCommit": "b78156e30f8c71dfdcdcfeb273844f08e78859fc",
+  "model": "ACTUAL_QWEN_INVESTIGATION_SUCCEEDED_UNRESOLVED_NOT_ACCURACY_QUALIFICATION",
+  "storage": {
+    "class": "ops-amd64-local",
+    "provisioner": "kubernetes.io/no-provisioner",
+    "volumes": 5,
+    "capacityPerPV": "10Gi",
+    "reclaimPolicy": "Retain",
+    "root": "/srv/ops-platform-amd64-20261009"
+  },
+  "binaries": [
+    {
+      "name": "platform-api",
+      "architecture": "linux/amd64",
+      "sha256": "de38cc89975e32cab4a1da1b4e35aac1fbfc6b8b135f16647ad9653bc0a5f808",
+      "status": "CROSS_BUILD_PASS_NOT_LIVE_BUSINESS_ACCEPTANCE"
+    },
+    {
+      "name": "platform-worker",
+      "architecture": "linux/amd64",
+      "sha256": "7c7157f02feb2f6a20d99125844e0485224230a9d56bb8e1ba116a134420e883",
+      "status": "CROSS_BUILD_PASS_NOT_LIVE_BUSINESS_ACCEPTANCE"
+    },
+    {
+      "name": "command-runner",
+      "architecture": "linux/amd64",
+      "sha256": "e376aab571b030b7fc9c8cc2d1c97ab4f7a0f432be5699393fb7149d4c173a7e",
+      "status": "CROSS_BUILD_PASS_NOT_LIVE_BUSINESS_ACCEPTANCE"
+    },
+    {
+      "name": "db-migrate",
+      "architecture": "linux/amd64",
+      "sha256": "06a7c428737a5e582b8258cd900f5b8c110670af3cc1101d7038b082913a76c6",
+      "status": "CROSS_BUILD_PASS_NOT_LIVE_BUSINESS_ACCEPTANCE"
+    },
+    {
+      "name": "k8sgpt",
+      "architecture": "linux/amd64",
+      "sha256": "e96d2162d3891f1c20b3f94048692549f0f256d7a4d64ca12669a537151be3d4",
+      "status": "CROSS_BUILD_PASS_NOT_LIVE_BUSINESS_ACCEPTANCE"
+    },
+    {
+      "name": "opsctl",
+      "architecture": "linux/amd64",
+      "sha256": "13c3c611f7b7e312cb01a7218257a33985fe14b9465699e321052b335811b3a6",
+      "status": "BUILD_PASS_NATIVE_PROFILE_COMMAND_EXECUTED_REJECTED_ARCHITECTURE_ADMISSION"
+    }
+  ],
+  "deploymentAcceptance": "PASS_FOR_RECORDED_LIVE_TESTS; hardware target pending; final repeat uses verified warm cache",
+  "status": "DEPLOYED_NONVIRTUAL_SCOPE_FINAL_REINSTALL_VERIFIED",
+  "nativePoC": {
+    "victoriaMetrics": {
+      "versionCommandExitCode": 0,
+      "offlineQueryExitCode": 0,
+      "network": "none",
+      "readOnlyRoot": true,
+      "query": "up",
+      "result": "success; empty vector",
+      "scope": "native component PoC only, not full platform acceptance"
+    },
+    "postgresql": {
+      "architecture": "linux/amd64",
+      "reference": "docker.io/library/postgres@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3",
+      "nativeDigest": "sha256:3cec7eb015ba8adb28139fa5c83b8489cdf0e666e53dfdf20f598ae0cc8739e3",
+      "scope": "native PostgreSQL PoC; new distribution still requires complete admission; not platform database bootstrap",
+      "network": "none",
+      "readOnlyRootFilesystem": true,
+      "sqlPassed": true,
+      "sqlOutput": "1\n17.11 (Debian 17.11-1.pgdg13+2)\n",
+      "exitCode": 0
+    },
+    "victoriaLogs": {
+      "architecture": "linux/amd64",
+      "reference": "docker.io/victoriametrics/victoria-logs@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e",
+      "nativeDigest": "sha256:8f2140dca110705916751b9cdf57c2309555b6f1cf2707be1ee1a774c8c1e1f9",
+      "scope": "native isolated ingestion/query PoC; not release installation or source adapter acceptance",
+      "network": "none",
+      "readOnlyRootFilesystem": true,
+      "ingestionPassed": true,
+      "queryPassed": true,
+      "ingestionResponse": "\n",
+      "queryOutput": "{\"_msg\":\"amd64-native-ingest-query\",\"_stream\":\"{cluster=\\\"isolated-poc\\\",namespace=\\\"isolated-poc\\\",tenant=\\\"amd64-poc\\\",uid=\\\"8641524832d2bceb3f3ac34d744c76263dc7974baab7b2f65ea9b4083b86cdd5\\\"}\",\"_stream_id\":\"0000000000000000d743cbd77b6c44e7f40ca5e993bb53c0\",\"_time\":\"2026-10-09T10:41:00.713339Z\",\"cluster\":\"isolated-poc\",\"namespace\":\"isolated-poc\",\"tenant\":\"amd64-poc\",\"uid\":\"8641524832d2bceb3f3ac34d744c76263dc7974baab7b2f65ea9b4083b86cdd5\"}\n\n",
+      "queryError": "",
+      "queryExitCode": 0,
+      "queryRows": [
+        {
+          "_msg": "amd64-native-ingest-query",
+          "_stream": "{cluster=\"isolated-poc\",namespace=\"isolated-poc\",tenant=\"amd64-poc\",uid=\"8641524832d2bceb3f3ac34d744c76263dc7974baab7b2f65ea9b4083b86cdd5\"}",
+          "_stream_id": "0000000000000000d743cbd77b6c44e7f40ca5e993bb53c0",
+          "_time": "2026-10-09T10:41:00.713339Z",
+          "cluster": "isolated-poc",
+          "namespace": "isolated-poc",
+          "tenant": "amd64-poc",
+          "uid": "8641524832d2bceb3f3ac34d744c76263dc7974baab7b2f65ea9b4083b86cdd5"
+        }
+      ],
+      "exitCode": 0
+    },
+    "openbao": {
+      "architecture": "linux/amd64",
+      "reference": "ghcr.io/openbao/openbao@sha256:71156a1c6623a5fa3f5e61b0c6a8ead0faf0df29a778339188443551995d1315",
+      "nativeDigest": "sha256:6d575d906d70d40b9d789149c8dc09897291c5a1707d4d0ba8a459eaaa94c8c4",
+      "scope": "isolated single-node Raft initialization/unseal/KV PoC; loopback plaintext only inside network=none; not installed TLS/PKI/HA/bootstrap acceptance",
+      "network": "none",
+      "readOnlyRootFilesystem": true,
+      "passed": true,
+      "initialized": true,
+      "unsealed": true,
+      "kvWriteReadDeletePassed": true,
+      "exitCode": 0
+    },
+    "k8sgptPodOnly": {
+      "architecture": "linux/amd64",
+      "binarySHA256": "sha256:e96d2162d3891f1c20b3f94048692549f0f256d7a4d64ca12669a537151be3d4",
+      "scope": "native source-built CLI Pod-only real cluster PoC; not full fixed Analyzer/cgroup/network admission",
+      "namespaceUID": "312db48f-fe10-49a7-bd65-cb23285baacb",
+      "passed": true,
+      "explain": false,
+      "secretRBAC": false,
+      "podUID": "285bfc3e-3cab-4b35-ba2b-e4bd50b4b2b3",
+      "fixtureCondition": [
+        {
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-10-09T10:50:13Z",
+          "message": "0/1 nodes are available: 1 Insufficient cpu. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+          "observedGeneration": 1,
+          "reason": "Unschedulable",
+          "status": "False",
+          "type": "PodScheduled"
+        }
+      ],
+      "exitCode": 0,
+      "stderr": "",
+      "output": {
+        "provider": "",
+        "errors": null,
+        "status": "ProblemDetected",
+        "problems": 1,
+        "results": [
+          {
+            "kind": "Pod",
+            "name": "ops-amd64-analyzer-probe/intentional-unschedulable",
+            "error": [
+              {
+                "Text": "0/1 nodes are available: 1 Insufficient cpu. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+                "KubernetesDoc": "",
+                "Sensitive": []
+              }
+            ],
+            "details": "",
+            "parentObject": ""
+          }
+        ]
+      },
+      "fixtureNamespaceDeleted": true
+    },
+    "runnerRuntime": {
+      "architecture": "x86_64",
+      "python": "3.12.14",
+      "openssl": "OpenSSL 4.0.3 29 Sep 2026",
+      "packages": {
+        "ansible-runner": "2.4.3",
+        "ansible-core": "2.21.5",
+        "cryptography": "50.0.2",
+        "cffi": "2.1.1",
+        "PyYAML": "6.0.3"
+      },
+      "kubectl": {
+        "clientVersion": {
+          "major": "1",
+          "minor": "35",
+          "gitVersion": "v1.35.6",
+          "gitCommit": "fc0e7a6ca50f7ce368f9a5516e1716b473ed3a26",
+          "gitTreeState": "clean",
+          "buildDate": "2026-06-11T18:07:55Z",
+          "goVersion": "go1.25.11",
+          "compiler": "gc",
+          "platform": "linux/amd64"
+        },
+        "kustomizeVersion": "v5.7.1"
+      },
+      "ansibleVersion": "ansible [core 2.21.5]\n  config file = None\n  configured module search path = ['/tmp/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']\n  ansible python module location = /usr/local/lib/python3.12/site-packages/ansible\n  ansible collection location = /tmp/.ansible/collections:/usr/share/ansible/collections\n  executable location = /usr/local/bin/ansible\n  python version = 3.12.14 (main, Sep 19 2026, 01:04:57) [GCC 14.2.0] (/usr/local/bin/python3)\n  jinja version = 3.1.6\n  pyyaml version = 6.0.3 (with libyaml v0.2.5)\n",
+      "runnerCLI": "2.4.3\n",
+      "scope": "native isolated offline version/import checks; not command execution lifecycle or platform business acceptance",
+      "network": "none",
+      "readOnlyRootFilesystem": true,
+      "passed": true
+    },
+    "runnerRuntimeR2": {
+      "architecture": "x86_64",
+      "python": "3.12.14",
+      "openssl": "OpenSSL 4.0.3 29 Sep 2026",
+      "packages": {
+        "ansible-runner": "2.4.3",
+        "ansible-core": "2.21.5",
+        "cryptography": "50.0.2",
+        "cffi": "2.1.1",
+        "PyYAML": "6.0.3"
+      },
+      "kubectl": {
+        "clientVersion": {
+          "major": "1",
+          "minor": "35",
+          "gitVersion": "v1.35.6",
+          "gitCommit": "fc0e7a6ca50f7ce368f9a5516e1716b473ed3a26",
+          "gitTreeState": "clean",
+          "buildDate": "2026-06-11T18:07:55Z",
+          "goVersion": "go1.25.11",
+          "compiler": "gc",
+          "platform": "linux/amd64"
+        },
+        "kustomizeVersion": "v5.7.1"
+      },
+      "ansibleVersion": "ansible [core 2.21.5]\n  config file = None\n  configured module search path = ['/tmp/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']\n  ansible python module location = /usr/local/lib/python3.12/site-packages/ansible\n  ansible collection location = /tmp/.ansible/collections:/usr/share/ansible/collections\n  executable location = /usr/local/bin/ansible\n  python version = 3.12.14 (main, Sep 19 2026, 01:04:57) [GCC 14.2.0] (/usr/local/bin/python3)\n  jinja version = 3.1.6\n  pyyaml version = 6.0.3 (with libyaml v0.2.5)\n",
+      "runnerCLI": "2.4.3\n",
+      "imageID": "sha256:c6f746d1112e14253c64da2fa1ff23091cd490907c66dc22f4f851e2466e391c",
+      "cffiProof": {
+        "nativeCall": true,
+        "nativeCallback": true,
+        "libffiSourceVersion": "3.4.8-2"
+      },
+      "scope": "native isolated offline version/import checks; not command execution lifecycle or platform business acceptance",
+      "network": "none",
+      "readOnlyRootFilesystem": true,
+      "passed": true
+    }
+  },
+  "remaining": [
+    "Hardware target acceptance pending by user decision: no BMC",
+    "KubeVirt/CDI development and runtime acceptance remain deferred"
+  ],
+  "postgresqlMaterialDifference": {
+    "originalLeafAbsentFromCurrentPublisherIndex": true,
+    "separateCurrentDistributionPinnedForReview": true,
+    "originalCatalogUnchanged": true
+  },
+  "formalEnvironmentBootstrap": {
+    "exitCode": 0,
+    "receipt": "environment-bootstrap-receipt.json",
+    "applicationWorkloadsStarted": false,
+    "secretValuesRecordedInRepository": false
+  },
+  "runnerPythonWheels": {
+    "packages": 14,
+    "status": "PUBLISHER_HASH_VERIFIED_AMD64_WHEELS_NATIVE_SOURCE_AND_RUNTIME_GATES_PENDING"
+  },
+  "networkPrerequisite": {
+    "controller": "kube-router v2.11.1 policy-only",
+    "controllerReady": true,
+    "publicPositiveThenPolicyNegative": "146.56.39.233:443",
+    "dnsPositive": true,
+    "status": "PASS_LIMITED_PROBE_NOT_CORE_INSTALL",
+    "originalPublicControlFailureRetained": true
+  },
+  "modelDeferredInstallerGap": {
+    "endpointConfigured": false,
+    "placeholderUsed": false,
+    "implementationCompleteForInitialPendingInstallation": true,
+    "modelActivationAfterConfigurationChangeImplemented": false,
+    "modelAvailabilityVerified": true,
+    "tests": {
+      "bundleOpsctlContract": {
+        "command": "GOPROXY=off GOSUMDB=off go test ./internal/bundle ./cmd/opsctl ./internal/contract",
+        "exitCode": 0
+      },
+      "threeStageHelmRendering": {
+        "test": "TestPendingModelChartKeepsSP07WithoutInvestigatorOrModelEgress",
+        "exitCode": 0
+      }
+    },
+    "nativeTool": {
+      "remotePath": "/opt/ops-amd64-validation-20261009/opsctl-model-pending",
+      "sha256": "sha256:0fca34bf451b58da07983eb5eca9c90cb2baf44238eb8d22de86de70e9ce696c",
+      "architecture": "linux/amd64",
+      "signedQualifiedBundleMember": false
+    },
+    "scope": "Pending initial mode supported; user supplied real endpoint before application installation, ready initial configuration will be used."
+  },
+  "modelEndpoint": {
+    "baseURL": "http://192.168.0.63:11434/v1",
+    "model": "qwen2.5:1.5b",
+    "version": "0.40.1",
+    "textProtocolPassed": true,
+    "toolCallProtocolPassed": true,
+    "releaseNetworkPolicyVerified": false,
+    "actualInvestigationPassed": true,
+    "boundedNativeHolmesProviderProof": {
+      "passed": true,
+      "architecture": "x86_64",
+      "python": "3.12.14",
+      "holmesgpt": "0.42.0",
+      "mcp": "1.28.1",
+      "openssl": "OpenSSL 4.0.3 29 Sep 2026",
+      "model": "qwen2.5:1.5b",
+      "contextCap": 16384,
+      "text": "amd64-holmes-ready",
+      "toolCall": {
+        "name": "deployment_probe",
+        "arguments": {
+          "status": "ready"
+        }
+      },
+      "apiAuthentication": "Ollama endpoint has no authentication; mounted compatibility value only",
+      "scope": "native real Holmes DefaultLLM protocol proof; no platform investigation or real tool execution"
+    },
+    "preparationNamespaceNetworkPolicyPositiveNegativePassed": true,
+    "boundedNativeHolmesProviderProofR2": {
+      "passed": true,
+      "architecture": "x86_64",
+      "python": "3.12.14",
+      "holmesgpt": "0.42.0",
+      "mcp": "1.28.1",
+      "openssl": "OpenSSL 4.0.3 29 Sep 2026",
+      "model": "qwen2.5:1.5b",
+      "contextCap": 16384,
+      "text": "amd64-holmes-ready",
+      "toolCall": {
+        "name": "deployment_probe",
+        "arguments": {
+          "status": "ready"
+        }
+      },
+      "apiAuthentication": "Ollama endpoint has no authentication; mounted compatibility value only",
+      "scope": "native real Holmes DefaultLLM protocol proof; no platform investigation or real tool execution",
+      "imageID": "sha256:21398ea235536418646d39860ef7f2b85813553d33d4656a7956ec539b38f6c0"
+    }
+  },
+  "migrationToolAMD64": {
+    "sourceArchiveSHA256": "sha256:0bbf28cf1f2105c44eae6090cfe2deeecfa2688efcf35a2e1a9d8a90476c9be1",
+    "binarySHA256": "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8",
+    "offlineSourceBuildPassed": true,
+    "native37MigrationsPassed": true,
+    "idempotentRerunPassed": true,
+    "scope": "independent CLI admission, not platform database bootstrap"
+  },
+  "runnerPythonBase": {
+    "name": "runner-python-base",
+    "version": "3.12.14-slim",
+    "reference": "docker.io/library/python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+    "existingAdmissionArchitecture": [
+      "linux/arm64"
+    ],
+    "originalAdmissionReference": "docker.io/library/python@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+    "architecture": "linux/amd64",
+    "nativeDigest": "sha256:44ff437bba879d4941b710a369a8f19266aea34b29002807f0c487fabc9eec9b",
+    "archiveSHA256": "sha256:3f3b1d106e474ebd93ba6142c22ef42fa0bafe2885d7ccbe3aeff0351faca146",
+    "size": 43284480,
+    "status": "FETCHED_EXACT_OCI_NOT_ADMITTED",
+    "remoteStagedVerified": true,
+    "remotePath": "/opt/ops-amd64-validation-20261009/materials/runner-python-base.oci.tar"
+  },
+  "runnerSystemPackages": {
+    "architecture": "linux/amd64",
+    "finalPackages": 116,
+    "sourcePackages": 84,
+    "sourceIdentityPairsMatchOriginal": true,
+    "sourceArchiveDigestsVerified": true,
+    "copyrightFiles": 116,
+    "changedCopyrightFiles": [],
+    "scope": "source/notice integrity only; runner material admission not yet complete"
+  },
+  "nativePolicyTests": {
+    "passed": true,
+    "tests": 12,
+    "scope": "native policy unit tests; not live platform authorization acceptance"
+  },
+  "runtimeOfflineRebuild": {
+    "architecture": "linux/amd64",
+    "sourceArchiveSHA256": "sha256:08c9f10db716ed15558d3cb3d123c77746bc46d49d38729cb2a184fbb27b169c",
+    "goVersion": "go1.27.1",
+    "modules": 99,
+    "GOPROXY": "off",
+    "GOSUMDB": "off",
+    "GOMODCACHEInitiallyEmpty": true,
+    "GoBuildCacheInitiallyEmpty": false,
+    "localReplacementsOnly": true,
+    "binaries": [
+      {
+        "name": "command-runner",
+        "sha256": "sha256:26886d18cf27d1f0849555603cfa399e82f8af929fcbc5cdd8b76556bc915321"
+      },
+      {
+        "name": "opsctl",
+        "sha256": "sha256:22046679881bd1be35184c282c1d000a7d371dac710fb8651b0ea9ba491bd8d3"
+      },
+      {
+        "name": "platform-api",
+        "sha256": "sha256:599f70ff94c7bdd023b9f184f7f97b5c0e8945b12b6bbba8bb34ba9ced66c1ba"
+      },
+      {
+        "name": "platform-worker",
+        "sha256": "sha256:88a789dfef47aed18bd9bc036143b706b8aa565a9f3796dfd4495da7b6f1db4d"
+      }
+    ],
+    "scope": "target-specific authenticated source offline compilation; not platform business acceptance"
+  },
+  "qualifiedAMD64Source": {
+    "opaSDK": "sha256:f9530a88b9da0d640c4fe5b40def0805ae79ea958ea6f460cf78a0402937b33d",
+    "migrationTool": true
+  },
+  "qualifiedAMD64ComponentMaterials": [
+    "victoria-metrics",
+    "victoria-logs"
+  ],
+  "latestProgress20261011": {
+    "namespace": "ops-amd64-final-20261010",
+    "runtimeBundle": "amd64-sp01-sp07-20261010-r12",
+    "r9BusinessReady": true,
+    "r9KubernetesNamespaceExecution": "passed after archive-bucket initialization",
+    "r9KubernetesClusterExecution": "passed; temporary role binding disabled",
+    "r9ActualModelInvestigation": "failed; preserve failure",
+    "r11Bundle": "amd64-sp01-sp07-20261010-r11",
+    "r11PayloadDigest": "sha256:03e3630200c39c91470091b0bd4fdd8379216fecc4fa715b37baaf6e985da059",
+    "r11IndependentSignatureAnd97FileVerification": true,
+    "r11OfflineImport": "passed; two changed references absent before import, shared layers warm",
+    "r11FullPlatformModelInvestigation": "failed: ordinary assistant tool JSON, no standard tool_calls",
+    "currentReleaseCleanReinstall": "passed: same namespace/PVC/PV/configuration and retained business IDs; new formal R11 stage receipts",
+    "hardwareTargetAcceptance": "pending by user decision; no BMC",
+    "virtualization": "deferred",
+    "retainedDataIdentities": "tenant/source/incident/execution IDs exactly matched after dependency restoration",
+    "r11BusinessReady": true,
+    "r11KubernetesExecutions": "namespace and cluster passed; temporary role binding disabled",
+    "r11SSE": "actual stdout/stderr, exact cursor suffix, retained R9 output and foreign cursor rejection passed",
+    "r12Fixes": "empty Kubernetes label values in Entity contract; explicit trusted initial model task and final-output phase; graph/resource/contract tests and 8 native Python tests passed; publication in progress",
+    "r12Bundle": "amd64-sp01-sp07-20261010-r12",
+    "r12PayloadDigest": "sha256:4b71f903bff4f345298444ecd8716a0289168f8c0fd638454512c6da03d178c8",
+    "r12IndependentSignatureAnd97FileVerification": true,
+    "r12OfflineImport": "passed; three changed references absent before import, shared blobs warm",
+    "r12Deployment": "Final uniform dependencies/API/business reinstallation passed; 11 Pods Ready",
+    "r12RetainedDataIdentities": "Tenant/source/incident/execution IDs exactly match pre-cleanup R11 snapshot",
+    "r12OperatorLogin": "Real HTTPS PKCE and OTP/LoA2 passed",
+    "r12FullResources": "200; actual Node empty labels preserved; fresh/nonpartial/no degradation",
+    "r12KubernetesExecutions": "Namespace and cluster passed; temporary cluster operator binding disabled",
+    "r12SSE": "Actual output, retained R9 replay, exact suffix and foreign cursor rejection passed",
+    "r12ActualModelOriginal": "Failed second request: actual server context 4096 < 4728; original ledger preserved",
+    "r12ActualModelContext16k": "New real Incident succeeded; standard semantic tool and two model steps succeeded; Go validated unresolved result persisted",
+    "r12FinalReinstall": "Passed same namespace/PVC/PV configurations and retained business identities with fresh formal stage receipts",
+    "developmentWorkflow": "Remote working copy first; synchronize local source; one final qualified deployment verification after functional success",
+    "r12FinalModel": "Succeeded; 1 semantic tool step and 2 model steps; Go-validated unresolved result persisted; not accuracy qualification",
+    "r12FinalExecutions": "Namespace and cluster succeeded; exit 0; postcheck not_resolved; temporary binding confirmed disabled",
+    "r12FinalSSE": "R9, initial R12 and final R12 actual outputs/replay/exact suffix/foreign cursor rejection passed",
+    "finalAcceptanceReceipt": "final-reinstallation-acceptance-r12-result.json",
+    "startupObservation": "API and one Worker each restarted once for transient database unavailability; recovered and Ready",
+    "frontend": "No runnable application in repository",
+    "finalColdCache": "Not repeated; verified existing cache"
+  }
+}

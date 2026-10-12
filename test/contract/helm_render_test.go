@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -760,17 +761,87 @@ func assertDockerfilesPinnedAndNonRoot(t *testing.T) {
 			t.Errorf("read %s Dockerfile: %v", name, err)
 			continue
 		}
-		for _, line := range strings.Split(string(contents), "\n") {
-			line = strings.TrimSpace(line)
-			if strings.HasPrefix(line, "FROM ") {
-				fields := strings.Fields(line)
-				if len(fields) < 2 || !immutableImage.MatchString(fields[1]) {
-					t.Errorf("%s base image is not immutable name@sha256:digest: %q", name, line)
-				}
+		if err := validateDockerfileRuntime(string(contents)); err != nil {
+			t.Errorf("%s Dockerfile: %v", name, err)
+		}
+
+	}
+}
+
+// scratch is an immutable empty filesystem, not a remote image. Each copied
+// external material must still originate in a digest-locked stage/image, and
+// the final stage must explicitly retain its non-root numeric identity.
+func validateDockerfileRuntime(contents string) error {
+	stages := map[string]bool{}
+	stageIndex := -1
+	qualified, copiedQualified := false, false
+	finalUser := ""
+	for _, line := range strings.Split(contents, "\n") {
+		fields := strings.Fields(strings.TrimSpace(line))
+		if len(fields) == 0 || strings.HasPrefix(fields[0], "#") {
+			continue
+		}
+		switch strings.ToUpper(fields[0]) {
+		case "FROM":
+			if len(fields) < 2 {
+				return errors.New("invalid FROM")
 			}
+			image := fields[1]
+			if image != "scratch" && !immutableImage.MatchString(image) && !stages[image] {
+				return fmt.Errorf("external FROM is not digest pinned: %s", image)
+			}
+			qualified = immutableImage.MatchString(image) || stages[image]
+			copiedQualified = false
+			stageIndex++
+			stages[strconv.Itoa(stageIndex)] = qualified
+			if len(fields) == 4 && strings.EqualFold(fields[2], "AS") {
+				stages[fields[3]] = qualified
+			}
+			finalUser = ""
+		case "COPY":
+			for _, arg := range fields[1:] {
+				if !strings.HasPrefix(arg, "--from=") {
+					continue
+				}
+				source := strings.TrimPrefix(arg, "--from=")
+				if !stages[source] && !immutableImage.MatchString(source) {
+					return fmt.Errorf("COPY source is not a locked stage/image: %s", source)
+				}
+				copiedQualified = true
+			}
+		case "USER":
+			if len(fields) != 2 {
+				return errors.New("invalid USER")
+			}
+			finalUser = fields[1]
 		}
-		if !regexp.MustCompile(`(?m)^USER (1000:1000|10001:10001|65532:65532)$`).Match(contents) {
-			t.Errorf("%s Dockerfile does not set a non-root numeric user", name)
-		}
+	}
+	if stageIndex < 0 || (!qualified && !copiedQualified) {
+		return errors.New("runtime has no locked material source")
+	}
+	if !regexp.MustCompile("^(101:101|1000:1000|10001:10001|65532:65532)$").MatchString(finalUser) {
+		return errors.New("final stage must explicitly use a permitted non-root numeric UID/GID")
+	}
+	return nil
+}
+
+func TestDockerfileRuntimeRejectsUnpinnedSourcesAndFinalRoot(t *testing.T) {
+	pinned := "registry.example.invalid/runtime@sha256:" + strings.Repeat("a", 64)
+	for name, source := range map[string]string{
+		"scratch-without-qualified-source": "FROM scratch\nUSER 101:101",
+		"mutable-base":                     "FROM registry.example.invalid/runtime:latest\nUSER 101:101",
+		"mutable-external-copy":            "FROM " + pinned + " AS base\nFROM scratch\nCOPY --from=registry.example.invalid/other:latest /bin /bin\nUSER 101:101",
+		"root-after-nonroot":               "FROM " + pinned + "\nUSER 101:101\nUSER 0",
+		"missing-final-user":               "FROM " + pinned + " AS base\nUSER 101:101\nFROM scratch\nCOPY --from=base /bin /bin",
+	} {
+		t.Run(name, func(t *testing.T) {
+			if validateDockerfileRuntime(source) == nil {
+				t.Fatal("unsafe runtime accepted")
+			}
+		})
+	}
+	valid := "FROM " + pinned + " AS base\nFROM scratch\nCOPY --from=base /bin /bin\nUSER 101:101"
+	if err := validateDockerfileRuntime(valid); err != nil {
+		t.Fatal(err)
 	}
 }

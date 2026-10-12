@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CanonicalID } from './canonicalID';
-import type { EvidenceQueryBudget } from './evidenceQueryBudget';
-import type { EvidenceQueryTimeRange } from './evidenceQueryTimeRange';
+import type { CanonicalID } from './canonicalID.ts';
+import type { EvidenceQueryBudget } from './evidenceQueryBudget.ts';
+import type { EvidenceQueryTimeRange } from './evidenceQueryTimeRange.ts';
 
 export interface EvidenceQueryRequest {
   sourceRegistrationId?: string;

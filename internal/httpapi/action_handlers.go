@@ -278,7 +278,15 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				fail(err)
 				return
 			}
-			writeJSON(w, 200, map[string]any{"data": map[string]any{"executionId": id, "verdict": out.PostCheck}, "requestId": a.RequestID})
+			status := "pending"
+			if out.PostCheckedAt != nil {
+				status = "completed"
+			} else if out.State == "cancelled" {
+				status = "not_applicable"
+			} else if out.State == "execution_unknown" {
+				status = "execution_unknown"
+			}
+			writeJSON(w, 200, map[string]any{"data": map[string]any{"executionId": id, "verdict": out.PostCheck, "status": status, "checkedAt": out.PostCheckedAt}, "requestId": a.RequestID})
 			return
 		}
 		if len(parts) == 5 && parts[4] == "events" && r.Method == "GET" {

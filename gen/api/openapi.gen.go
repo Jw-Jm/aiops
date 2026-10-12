@@ -18,6 +18,24 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for AuthSessionV1Roles.
+const (
+	Operator      AuthSessionV1Roles = "operator"
+	PlatformAdmin AuthSessionV1Roles = "platform_admin"
+)
+
+// Valid indicates whether the value is a known member of the AuthSessionV1Roles enum.
+func (e AuthSessionV1Roles) Valid() bool {
+	switch e {
+	case Operator:
+		return true
+	case PlatformAdmin:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CommandExecutionRequestShell.
 const (
 	CommandExecutionRequestShellBash CommandExecutionRequestShell = "bash"
@@ -993,6 +1011,27 @@ func (e RegistryActivationRequestScopeType) Valid() bool {
 	}
 }
 
+// Defines values for RegistryDraftKind.
+const (
+	RegistryDraftKindPolicy RegistryDraftKind = "policy"
+	RegistryDraftKindRecipe RegistryDraftKind = "recipe"
+	RegistryDraftKindTool   RegistryDraftKind = "tool"
+)
+
+// Valid indicates whether the value is a known member of the RegistryDraftKind enum.
+func (e RegistryDraftKind) Valid() bool {
+	switch e {
+	case RegistryDraftKindPolicy:
+		return true
+	case RegistryDraftKindRecipe:
+		return true
+	case RegistryDraftKindTool:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for RegistryDraftCreateRequestKind.
 const (
 	RegistryDraftCreateRequestKindPolicy RegistryDraftCreateRequestKind = "policy"
@@ -1441,6 +1480,38 @@ type ActionPlanV2 struct {
 	SuggestedCommand              SP06CommonCommandText   `json:"suggestedCommand"`
 	TargetCanonicalId             SP06CommonCanonicalId   `json:"targetCanonicalId"`
 	TenantId                      SP06CommonTenantId      `json:"tenantId"`
+}
+
+// AuthSessionSuccessV1 defines model for AuthSessionSuccessV1.
+type AuthSessionSuccessV1 struct {
+	Data      AuthSessionV1 `json:"data"`
+	RequestId string        `json:"requestId"`
+}
+
+// AuthSessionV1 defines model for AuthSessionV1.
+type AuthSessionV1 struct {
+	Acr                string                `json:"acr"`
+	AuthorizedClusters []AuthorizedClusterV1 `json:"authorizedClusters"`
+	ClusterScopes      []openapi_types.UUID  `json:"clusterScopes"`
+	NamespaceScopes    []struct {
+		ClusterId openapi_types.UUID `json:"clusterId"`
+		Namespace string             `json:"namespace"`
+	} `json:"namespaceScopes"`
+	Roles          []AuthSessionV1Roles `json:"roles"`
+	Subject        string               `json:"subject"`
+	TenantId       openapi_types.UUID   `json:"tenantId"`
+	TenantIds      []openapi_types.UUID `json:"tenantIds"`
+	TokenExpiresAt time.Time            `json:"tokenExpiresAt"`
+}
+
+// AuthSessionV1Roles defines model for AuthSessionV1.Roles.
+type AuthSessionV1Roles string
+
+// AuthorizedClusterV1 defines model for AuthorizedClusterV1.
+type AuthorizedClusterV1 struct {
+	ClusterId   openapi_types.UUID `json:"clusterId"`
+	ClusterUid  string             `json:"clusterUid"`
+	DisplayName string             `json:"displayName"`
 }
 
 // CanonicalID RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
@@ -2132,6 +2203,15 @@ type InvestigationJobV2 struct {
 	TriggerRevision      int                    `json:"triggerRevision"`
 }
 
+// InvestigationPageV2 defines model for InvestigationPageV2.
+type InvestigationPageV2 struct {
+	Data []InvestigationJobV2 `json:"data"`
+	Meta struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta"`
+	RequestId string `json:"requestId"`
+}
+
 // InvestigationResultV1 defines model for InvestigationResultV1.
 type InvestigationResultV1 struct {
 	ActionPlans      []ActionPlanV2 `json:"actionPlans"`
@@ -2165,12 +2245,29 @@ type InvestigationScopeV1 struct {
 
 // InvestigationStepV2 defines model for InvestigationStepV2.
 type InvestigationStepV2 struct {
-	ArgsDigest string             `json:"argsDigest"`
-	ErrorCode  *string            `json:"errorCode,omitempty"`
-	Result     interface{}        `json:"result,omitempty"`
-	State      interface{}        `json:"state"`
-	StepId     openapi_types.UUID `json:"stepId"`
-	ToolName   string             `json:"toolName"`
+	ArgsDigest string `json:"argsDigest"`
+
+	// ArgsSummary Bounded safe scope and budget projection; raw queries and model prompts are omitted. Historical steps may have an empty summary.
+	ArgsSummary *map[string]InvestigationStepV2_ArgsSummary_AdditionalProperties `json:"argsSummary,omitempty"`
+	ErrorCode   *string                                                          `json:"errorCode,omitempty"`
+	Result      interface{}                                                      `json:"result,omitempty"`
+	State       interface{}                                                      `json:"state"`
+	StepId      openapi_types.UUID                                               `json:"stepId"`
+	ToolName    string                                                           `json:"toolName"`
+}
+
+// InvestigationStepV2ArgsSummary0 defines model for InvestigationStepV2.ArgsSummary.0.
+type InvestigationStepV2ArgsSummary0 = string
+
+// InvestigationStepV2ArgsSummary1 defines model for InvestigationStepV2.ArgsSummary.1.
+type InvestigationStepV2ArgsSummary1 = float32
+
+// InvestigationStepV2ArgsSummary2 defines model for InvestigationStepV2.ArgsSummary.2.
+type InvestigationStepV2ArgsSummary2 = bool
+
+// InvestigationStepV2_ArgsSummary_AdditionalProperties defines model for InvestigationStepV2.argsSummary.AdditionalProperties.
+type InvestigationStepV2_ArgsSummary_AdditionalProperties struct {
+	union json.RawMessage
 }
 
 // InvestigationStepsSuccessV2 defines model for InvestigationStepsSuccessV2.
@@ -2507,6 +2604,23 @@ type RegistryActivationRequestKind string
 // RegistryActivationRequestScopeType defines model for RegistryActivationRequest.ScopeType.
 type RegistryActivationRequestScopeType string
 
+// RegistryDraft defines model for RegistryDraft.
+type RegistryDraft struct {
+	Content     map[string]interface{} `json:"content"`
+	CreatedAt   time.Time              `json:"createdAt"`
+	DraftId     Identifier             `json:"draftId"`
+	Kind        RegistryDraftKind      `json:"kind"`
+	LogicalName string                 `json:"logicalName"`
+	Revision    int                    `json:"revision"`
+	Status      string                 `json:"status"`
+	TenantId    Identifier             `json:"tenantId"`
+	UpdatedAt   time.Time              `json:"updatedAt"`
+	UpdatedBy   string                 `json:"updatedBy"`
+}
+
+// RegistryDraftKind defines model for RegistryDraft.Kind.
+type RegistryDraftKind string
+
 // RegistryDraftCreateRequest defines model for RegistryDraftCreateRequest.
 type RegistryDraftCreateRequest struct {
 	Content     map[string]interface{}         `json:"content"`
@@ -2516,6 +2630,12 @@ type RegistryDraftCreateRequest struct {
 
 // RegistryDraftCreateRequestKind defines model for RegistryDraftCreateRequest.Kind.
 type RegistryDraftCreateRequestKind string
+
+// RegistryDraftEnvelope defines model for RegistryDraftEnvelope.
+type RegistryDraftEnvelope struct {
+	Data      RegistryDraft `json:"data"`
+	RequestId Identifier    `json:"requestId"`
+}
 
 // RegistryDraftUpdateRequest defines model for RegistryDraftUpdateRequest.
 type RegistryDraftUpdateRequest struct {
@@ -2634,8 +2754,9 @@ type ResourceGraphV2 struct {
 		Source     string     `json:"source"`
 		Timestamp  *time.Time `json:"timestamp,omitempty"`
 	} `json:"rankedEvidence"`
-	SchemaVersion interface{} `json:"schemaVersion"`
-	Warnings      []string    `json:"warnings"`
+	SchemaVersion interface{}        `json:"schemaVersion"`
+	Summary       *ResourceSummaryV1 `json:"summary,omitempty"`
+	Warnings      []string           `json:"warnings"`
 }
 
 // ResourcePageV2 defines model for ResourcePageV2.
@@ -2665,6 +2786,13 @@ type ResourceRelationV2 struct {
 	Ttl       int         `json:"ttl"`
 	ValidFrom time.Time   `json:"validFrom"`
 	ValidTo   *time.Time  `json:"validTo,omitempty"`
+}
+
+// ResourceSummaryV1 defines model for ResourceSummaryV1.
+type ResourceSummaryV1 struct {
+	ByHealth map[string]int `json:"byHealth"`
+	ByKind   map[string]int `json:"byKind"`
+	Total    int            `json:"total"`
 }
 
 // SP04ErrorEnvelopeV2 defines model for SP04ErrorEnvelopeV2.
@@ -3149,6 +3277,8 @@ type GetToolsParams struct {
 
 // GetAuditRecordsParams defines parameters for GetAuditRecords.
 type GetAuditRecordsParams struct {
+	// VerifyChain Explicit bounded signed archive verification for the returned page; never inferred from record digest validity.
+	VerifyChain  *bool      `form:"verifyChain,omitempty" json:"verifyChain,omitempty"`
 	Subject      *string    `form:"subject,omitempty" json:"subject,omitempty"`
 	Operation    *string    `form:"operation,omitempty" json:"operation,omitempty"`
 	IncidentId   *string    `form:"incidentId,omitempty" json:"incidentId,omitempty"`
@@ -3316,6 +3446,17 @@ type GetIncidentEvidencedefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
+// GetIncidentInvestigationsParams defines parameters for GetIncidentInvestigations.
+type GetIncidentInvestigationsParams struct {
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// GetIncidentInvestigationsdefaultJSONResponseBody defines parameters for GetIncidentInvestigations.
+type GetIncidentInvestigationsdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // CreateInvestigationParams defines parameters for CreateInvestigation.
 type CreateInvestigationParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
@@ -3438,14 +3579,21 @@ type CancelInvestigationdefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
+// GetOverviewParams defines parameters for GetOverview.
+type GetOverviewParams struct {
+	ClusterUid *string `form:"clusterUid,omitempty" json:"clusterUid,omitempty"`
+}
+
 // GetResourcesParams defines parameters for GetResources.
 type GetResourcesParams struct {
-	Kind       *string `form:"kind,omitempty" json:"kind,omitempty"`
-	ClusterUid *string `form:"clusterUid,omitempty" json:"clusterUid,omitempty"`
-	Namespace  *string `form:"namespace,omitempty" json:"namespace,omitempty"`
-	Name       *string `form:"name,omitempty" json:"name,omitempty"`
-	Health     *string `form:"health,omitempty" json:"health,omitempty"`
-	Label      *string `form:"label,omitempty" json:"label,omitempty"`
+	// CanonicalIds Resolve at most 50 exact resource identifiers within current authorization; this filter does not expand scope.
+	CanonicalIds *[]CanonicalID `form:"canonicalIds,omitempty" json:"canonicalIds,omitempty"`
+	Kind         *string        `form:"kind,omitempty" json:"kind,omitempty"`
+	ClusterUid   *string        `form:"clusterUid,omitempty" json:"clusterUid,omitempty"`
+	Namespace    *string        `form:"namespace,omitempty" json:"namespace,omitempty"`
+	Name         *string        `form:"name,omitempty" json:"name,omitempty"`
+	Health       *string        `form:"health,omitempty" json:"health,omitempty"`
+	Label        *string        `form:"label,omitempty" json:"label,omitempty"`
 
 	// Cursor Opaque cursor for keyset pagination.
 	Cursor *string                  `form:"cursor,omitempty" json:"cursor,omitempty"`
@@ -3803,6 +3951,94 @@ func (t EvidenceV2_FactSlice) MarshalJSON() ([]byte, error) {
 }
 
 func (t *EvidenceV2_FactSlice) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsInvestigationStepV2ArgsSummary0 returns the union data inside the InvestigationStepV2_ArgsSummary_AdditionalProperties as a InvestigationStepV2ArgsSummary0
+func (t InvestigationStepV2_ArgsSummary_AdditionalProperties) AsInvestigationStepV2ArgsSummary0() (InvestigationStepV2ArgsSummary0, error) {
+	var body InvestigationStepV2ArgsSummary0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromInvestigationStepV2ArgsSummary0 overwrites any union data inside the InvestigationStepV2_ArgsSummary_AdditionalProperties as the provided InvestigationStepV2ArgsSummary0
+func (t *InvestigationStepV2_ArgsSummary_AdditionalProperties) FromInvestigationStepV2ArgsSummary0(v InvestigationStepV2ArgsSummary0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeInvestigationStepV2ArgsSummary0 performs a merge with any union data inside the InvestigationStepV2_ArgsSummary_AdditionalProperties, using the provided InvestigationStepV2ArgsSummary0
+func (t *InvestigationStepV2_ArgsSummary_AdditionalProperties) MergeInvestigationStepV2ArgsSummary0(v InvestigationStepV2ArgsSummary0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsInvestigationStepV2ArgsSummary1 returns the union data inside the InvestigationStepV2_ArgsSummary_AdditionalProperties as a InvestigationStepV2ArgsSummary1
+func (t InvestigationStepV2_ArgsSummary_AdditionalProperties) AsInvestigationStepV2ArgsSummary1() (InvestigationStepV2ArgsSummary1, error) {
+	var body InvestigationStepV2ArgsSummary1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromInvestigationStepV2ArgsSummary1 overwrites any union data inside the InvestigationStepV2_ArgsSummary_AdditionalProperties as the provided InvestigationStepV2ArgsSummary1
+func (t *InvestigationStepV2_ArgsSummary_AdditionalProperties) FromInvestigationStepV2ArgsSummary1(v InvestigationStepV2ArgsSummary1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeInvestigationStepV2ArgsSummary1 performs a merge with any union data inside the InvestigationStepV2_ArgsSummary_AdditionalProperties, using the provided InvestigationStepV2ArgsSummary1
+func (t *InvestigationStepV2_ArgsSummary_AdditionalProperties) MergeInvestigationStepV2ArgsSummary1(v InvestigationStepV2ArgsSummary1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsInvestigationStepV2ArgsSummary2 returns the union data inside the InvestigationStepV2_ArgsSummary_AdditionalProperties as a InvestigationStepV2ArgsSummary2
+func (t InvestigationStepV2_ArgsSummary_AdditionalProperties) AsInvestigationStepV2ArgsSummary2() (InvestigationStepV2ArgsSummary2, error) {
+	var body InvestigationStepV2ArgsSummary2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromInvestigationStepV2ArgsSummary2 overwrites any union data inside the InvestigationStepV2_ArgsSummary_AdditionalProperties as the provided InvestigationStepV2ArgsSummary2
+func (t *InvestigationStepV2_ArgsSummary_AdditionalProperties) FromInvestigationStepV2ArgsSummary2(v InvestigationStepV2ArgsSummary2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeInvestigationStepV2ArgsSummary2 performs a merge with any union data inside the InvestigationStepV2_ArgsSummary_AdditionalProperties, using the provided InvestigationStepV2ArgsSummary2
+func (t *InvestigationStepV2_ArgsSummary_AdditionalProperties) MergeInvestigationStepV2ArgsSummary2(v InvestigationStepV2ArgsSummary2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t InvestigationStepV2_ArgsSummary_AdditionalProperties) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *InvestigationStepV2_ArgsSummary_AdditionalProperties) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -5125,6 +5361,68 @@ func (t *GetIncidentEvidencedefaultJSONResponseBody) UnmarshalJSON(b []byte) err
 	return err
 }
 
+// AsErrorEnvelope returns the union data inside the GetIncidentInvestigationsdefaultJSONResponseBody as a ErrorEnvelope
+func (t GetIncidentInvestigationsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the GetIncidentInvestigationsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *GetIncidentInvestigationsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the GetIncidentInvestigationsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *GetIncidentInvestigationsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the GetIncidentInvestigationsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t GetIncidentInvestigationsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the GetIncidentInvestigationsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentInvestigationsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the GetIncidentInvestigationsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *GetIncidentInvestigationsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetIncidentInvestigationsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetIncidentInvestigationsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsErrorEnvelope returns the union data inside the CreateInvestigationdefaultJSONResponseBody as a ErrorEnvelope
 func (t CreateInvestigationdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
 	var body ErrorEnvelope
@@ -6294,6 +6592,9 @@ type ServerInterface interface {
 	// CreateRegistryDraft createRegistryDraft
 	// (POST /api/v1/admin/registry-drafts)
 	CreateRegistryDraft(w http.ResponseWriter, r *http.Request, params CreateRegistryDraftParams)
+	// GetRegistryDraft Read current authorized draft for revision conflict recovery
+	// (GET /api/v1/admin/registry-drafts/{draftId})
+	GetRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier)
 	// UpdateRegistryDraft updateRegistryDraft
 	// (PATCH /api/v1/admin/registry-drafts/{draftId})
 	UpdateRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier, params UpdateRegistryDraftParams)
@@ -6342,6 +6643,9 @@ type ServerInterface interface {
 	// GetAuditRecord getAuditRecord
 	// (GET /api/v1/audit-records/{auditId})
 	GetAuditRecord(w http.ResponseWriter, r *http.Request, auditId string)
+	// GetAuthSession Current verified identity and active platform grants; roles do not inherit.
+	// (GET /api/v1/auth/session)
+	GetAuthSession(w http.ResponseWriter, r *http.Request)
 	// CreateStepUpSession Persist a fresh verified Keycloak step-up identity.
 	// (POST /api/v1/auth/step-up-sessions)
 	CreateStepUpSession(w http.ResponseWriter, r *http.Request, params CreateStepUpSessionParams)
@@ -6398,6 +6702,9 @@ type ServerInterface interface {
 	// GetIncidentEvidence getIncidentEvidence
 	// (GET /api/v1/incidents/{incidentId}/evidence)
 	GetIncidentEvidence(w http.ResponseWriter, r *http.Request, incidentId string, params GetIncidentEvidenceParams)
+	// GetIncidentInvestigations List currently authorized investigations requested by this subject
+	// (GET /api/v1/incidents/{incidentId}/investigations)
+	GetIncidentInvestigations(w http.ResponseWriter, r *http.Request, incidentId openapi_types.UUID, params GetIncidentInvestigationsParams)
 	// CreateInvestigation createInvestigation
 	// (POST /api/v1/incidents/{incidentId}/investigations)
 	CreateInvestigation(w http.ResponseWriter, r *http.Request, incidentId string, params CreateInvestigationParams)
@@ -6436,7 +6743,7 @@ type ServerInterface interface {
 	CancelInvestigation(w http.ResponseWriter, r *http.Request, jobId string, params CancelInvestigationParams)
 	// GetOverview getOverview
 	// (GET /api/v1/overview)
-	GetOverview(w http.ResponseWriter, r *http.Request)
+	GetOverview(w http.ResponseWriter, r *http.Request, params GetOverviewParams)
 	// GetResources getResources
 	// (GET /api/v1/resources)
 	GetResources(w http.ResponseWriter, r *http.Request, params GetResourcesParams)
@@ -6560,6 +6867,12 @@ func (_ Unimplemented) CreateRegistryDraft(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// GetRegistryDraft Read current authorized draft for revision conflict recovery
+// (GET /api/v1/admin/registry-drafts/{draftId})
+func (_ Unimplemented) GetRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // UpdateRegistryDraft updateRegistryDraft
 // (PATCH /api/v1/admin/registry-drafts/{draftId})
 func (_ Unimplemented) UpdateRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier, params UpdateRegistryDraftParams) {
@@ -6653,6 +6966,12 @@ func (_ Unimplemented) GetAuditRecords(w http.ResponseWriter, r *http.Request, p
 // GetAuditRecord getAuditRecord
 // (GET /api/v1/audit-records/{auditId})
 func (_ Unimplemented) GetAuditRecord(w http.ResponseWriter, r *http.Request, auditId string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetAuthSession Current verified identity and active platform grants; roles do not inherit.
+// (GET /api/v1/auth/session)
+func (_ Unimplemented) GetAuthSession(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -6766,6 +7085,12 @@ func (_ Unimplemented) GetIncidentEvidence(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// GetIncidentInvestigations List currently authorized investigations requested by this subject
+// (GET /api/v1/incidents/{incidentId}/investigations)
+func (_ Unimplemented) GetIncidentInvestigations(w http.ResponseWriter, r *http.Request, incidentId openapi_types.UUID, params GetIncidentInvestigationsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // CreateInvestigation createInvestigation
 // (POST /api/v1/incidents/{incidentId}/investigations)
 func (_ Unimplemented) CreateInvestigation(w http.ResponseWriter, r *http.Request, incidentId string, params CreateInvestigationParams) {
@@ -6840,7 +7165,7 @@ func (_ Unimplemented) CancelInvestigation(w http.ResponseWriter, r *http.Reques
 
 // GetOverview getOverview
 // (GET /api/v1/overview)
-func (_ Unimplemented) GetOverview(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetOverview(w http.ResponseWriter, r *http.Request, params GetOverviewParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -7670,6 +7995,32 @@ func (siw *ServerInterfaceWrapper) CreateRegistryDraft(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
+// GetRegistryDraft operation middleware
+func (siw *ServerInterfaceWrapper) GetRegistryDraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "draftId" -------------
+	var draftId Identifier
+
+	err = runtime.BindStyledParameterWithOptions("simple", "draftId", chi.URLParam(r, "draftId"), &draftId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "draftId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetRegistryDraft(w, r, draftId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // UpdateRegistryDraft operation middleware
 func (siw *ServerInterfaceWrapper) UpdateRegistryDraft(w http.ResponseWriter, r *http.Request) {
 
@@ -8376,6 +8727,19 @@ func (siw *ServerInterfaceWrapper) GetAuditRecords(w http.ResponseWriter, r *htt
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetAuditRecordsParams
 
+	// ------------- Optional query parameter "verifyChain" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "verifyChain", r.URL.Query(), &params.VerifyChain, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "verifyChain"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "verifyChain", Err: err})
+		}
+		return
+	}
+
 	// ------------- Optional query parameter "subject" -------------
 
 	err = runtime.BindQueryParameterWithOptions("form", true, false, "subject", r.URL.Query(), &params.Subject, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
@@ -8521,6 +8885,20 @@ func (siw *ServerInterfaceWrapper) GetAuditRecord(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAuditRecord(w, r, auditId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAuthSession operation middleware
+func (siw *ServerInterfaceWrapper) GetAuthSession(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAuthSession(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -9454,6 +9832,61 @@ func (siw *ServerInterfaceWrapper) GetIncidentEvidence(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
+// GetIncidentInvestigations operation middleware
+func (siw *ServerInterfaceWrapper) GetIncidentInvestigations(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "incidentId" -------------
+	var incidentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "incidentId", chi.URLParam(r, "incidentId"), &incidentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "incidentId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetIncidentInvestigationsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetIncidentInvestigations(w, r, incidentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // CreateInvestigation operation middleware
 func (siw *ServerInterfaceWrapper) CreateInvestigation(w http.ResponseWriter, r *http.Request) {
 
@@ -10030,8 +10463,27 @@ func (siw *ServerInterfaceWrapper) CancelInvestigation(w http.ResponseWriter, r 
 // GetOverview operation middleware
 func (siw *ServerInterfaceWrapper) GetOverview(w http.ResponseWriter, r *http.Request) {
 
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetOverviewParams
+
+	// ------------- Optional query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetOverview(w, r)
+		siw.Handler.GetOverview(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -10049,6 +10501,19 @@ func (siw *ServerInterfaceWrapper) GetResources(w http.ResponseWriter, r *http.R
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetResourcesParams
+
+	// ------------- Optional query parameter "canonicalIds" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "canonicalIds", r.URL.Query(), &params.CanonicalIds, runtime.BindQueryParameterOptions{Type: "array", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "canonicalIds"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "canonicalIds", Err: err})
+		}
+		return
+	}
 
 	// ------------- Optional query parameter "kind" -------------
 
@@ -10514,6 +10979,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/auth/session", wrapper.GetAuthSession)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/auth/step-up-sessions", wrapper.CreateStepUpSession)
 	})
 	r.Group(func(r chi.Router) {
@@ -10557,6 +11025,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/admin/registry-drafts", wrapper.CreateRegistryDraft)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/admin/registry-drafts/{draftId}", wrapper.GetRegistryDraft)
 	})
 	r.Group(func(r chi.Router) {
 		r.Patch(options.BaseURL+"/api/v1/admin/registry-drafts/{draftId}", wrapper.UpdateRegistryDraft)
@@ -10659,6 +11130,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/incidents/{incidentId}/evidence", wrapper.GetIncidentEvidence)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/incidents/{incidentId}/investigations", wrapper.GetIncidentInvestigations)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/incidents/{incidentId}/investigations", wrapper.CreateInvestigation)
@@ -11401,6 +11875,45 @@ func (response CreateRegistryDraftdefaultJSONResponse) VisitCreateRegistryDraftR
 	return err
 }
 
+type GetRegistryDraftRequestObject struct {
+	DraftId Identifier `json:"draftId"`
+}
+
+type GetRegistryDraftResponseObject interface {
+	VisitGetRegistryDraftResponse(w http.ResponseWriter) error
+}
+
+type GetRegistryDraft200JSONResponse RegistryDraftEnvelope
+
+func (response GetRegistryDraft200JSONResponse) VisitGetRegistryDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetRegistryDraftdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetRegistryDraftdefaultJSONResponse) VisitGetRegistryDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type UpdateRegistryDraftRequestObject struct {
 	DraftId Identifier `json:"draftId"`
 	Params  UpdateRegistryDraftParams
@@ -12031,6 +12544,44 @@ type GetAuditRecorddefaultJSONResponse struct {
 }
 
 func (response GetAuditRecorddefaultJSONResponse) VisitGetAuditRecordResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetAuthSessionRequestObject struct {
+}
+
+type GetAuthSessionResponseObject interface {
+	VisitGetAuthSessionResponse(w http.ResponseWriter) error
+}
+
+type GetAuthSession200JSONResponse AuthSessionSuccessV1
+
+func (response GetAuthSession200JSONResponse) VisitGetAuthSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetAuthSessiondefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetAuthSessiondefaultJSONResponse) VisitGetAuthSessionResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -12797,6 +13348,46 @@ func (response GetIncidentEvidencedefaultJSONResponse) VisitGetIncidentEvidenceR
 	return err
 }
 
+type GetIncidentInvestigationsRequestObject struct {
+	IncidentId openapi_types.UUID `json:"incidentId"`
+	Params     GetIncidentInvestigationsParams
+}
+
+type GetIncidentInvestigationsResponseObject interface {
+	VisitGetIncidentInvestigationsResponse(w http.ResponseWriter) error
+}
+
+type GetIncidentInvestigations200JSONResponse InvestigationPageV2
+
+func (response GetIncidentInvestigations200JSONResponse) VisitGetIncidentInvestigationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetIncidentInvestigationsdefaultJSONResponse struct {
+	Body       GetIncidentInvestigationsdefaultJSONResponseBody
+	StatusCode int
+}
+
+func (response GetIncidentInvestigationsdefaultJSONResponse) VisitGetIncidentInvestigationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type CreateInvestigationRequestObject struct {
 	IncidentId string `json:"incidentId"`
 	Params     CreateInvestigationParams
@@ -13308,6 +13899,7 @@ func (response CancelInvestigationdefaultJSONResponse) VisitCancelInvestigationR
 }
 
 type GetOverviewRequestObject struct {
+	Params GetOverviewParams
 }
 
 type GetOverviewResponseObject interface {
@@ -13594,6 +14186,9 @@ type StrictServerInterface interface {
 	// CreateRegistryDraft createRegistryDraft
 	// (POST /api/v1/admin/registry-drafts)
 	CreateRegistryDraft(ctx context.Context, request CreateRegistryDraftRequestObject) (CreateRegistryDraftResponseObject, error)
+	// GetRegistryDraft Read current authorized draft for revision conflict recovery
+	// (GET /api/v1/admin/registry-drafts/{draftId})
+	GetRegistryDraft(ctx context.Context, request GetRegistryDraftRequestObject) (GetRegistryDraftResponseObject, error)
 	// UpdateRegistryDraft updateRegistryDraft
 	// (PATCH /api/v1/admin/registry-drafts/{draftId})
 	UpdateRegistryDraft(ctx context.Context, request UpdateRegistryDraftRequestObject) (UpdateRegistryDraftResponseObject, error)
@@ -13642,6 +14237,9 @@ type StrictServerInterface interface {
 	// GetAuditRecord getAuditRecord
 	// (GET /api/v1/audit-records/{auditId})
 	GetAuditRecord(ctx context.Context, request GetAuditRecordRequestObject) (GetAuditRecordResponseObject, error)
+	// GetAuthSession Current verified identity and active platform grants; roles do not inherit.
+	// (GET /api/v1/auth/session)
+	GetAuthSession(ctx context.Context, request GetAuthSessionRequestObject) (GetAuthSessionResponseObject, error)
 	// CreateStepUpSession Persist a fresh verified Keycloak step-up identity.
 	// (POST /api/v1/auth/step-up-sessions)
 	CreateStepUpSession(ctx context.Context, request CreateStepUpSessionRequestObject) (CreateStepUpSessionResponseObject, error)
@@ -13698,6 +14296,9 @@ type StrictServerInterface interface {
 	// GetIncidentEvidence getIncidentEvidence
 	// (GET /api/v1/incidents/{incidentId}/evidence)
 	GetIncidentEvidence(ctx context.Context, request GetIncidentEvidenceRequestObject) (GetIncidentEvidenceResponseObject, error)
+	// GetIncidentInvestigations List currently authorized investigations requested by this subject
+	// (GET /api/v1/incidents/{incidentId}/investigations)
+	GetIncidentInvestigations(ctx context.Context, request GetIncidentInvestigationsRequestObject) (GetIncidentInvestigationsResponseObject, error)
 	// CreateInvestigation createInvestigation
 	// (POST /api/v1/incidents/{incidentId}/investigations)
 	CreateInvestigation(ctx context.Context, request CreateInvestigationRequestObject) (CreateInvestigationResponseObject, error)
@@ -14309,6 +14910,32 @@ func (sh *strictHandler) CreateRegistryDraft(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// GetRegistryDraft operation middleware
+func (sh *strictHandler) GetRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier) {
+	var request GetRegistryDraftRequestObject
+
+	request.DraftId = draftId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetRegistryDraft(ctx, request.(GetRegistryDraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetRegistryDraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetRegistryDraftResponseObject); ok {
+		if err := validResponse.VisitGetRegistryDraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // UpdateRegistryDraft operation middleware
 func (sh *strictHandler) UpdateRegistryDraft(w http.ResponseWriter, r *http.Request, draftId Identifier, params UpdateRegistryDraftParams) {
 	var request UpdateRegistryDraftRequestObject
@@ -14795,6 +15422,30 @@ func (sh *strictHandler) GetAuditRecord(w http.ResponseWriter, r *http.Request, 
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetAuditRecordResponseObject); ok {
 		if err := validResponse.VisitGetAuditRecordResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetAuthSession operation middleware
+func (sh *strictHandler) GetAuthSession(w http.ResponseWriter, r *http.Request) {
+	var request GetAuthSessionRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetAuthSession(ctx, request.(GetAuthSessionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetAuthSession")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetAuthSessionResponseObject); ok {
+		if err := validResponse.VisitGetAuthSessionResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -15322,6 +15973,33 @@ func (sh *strictHandler) GetIncidentEvidence(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// GetIncidentInvestigations operation middleware
+func (sh *strictHandler) GetIncidentInvestigations(w http.ResponseWriter, r *http.Request, incidentId openapi_types.UUID, params GetIncidentInvestigationsParams) {
+	var request GetIncidentInvestigationsRequestObject
+
+	request.IncidentId = incidentId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetIncidentInvestigations(ctx, request.(GetIncidentInvestigationsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetIncidentInvestigations")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetIncidentInvestigationsResponseObject); ok {
+		if err := validResponse.VisitGetIncidentInvestigationsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // CreateInvestigation operation middleware
 func (sh *strictHandler) CreateInvestigation(w http.ResponseWriter, r *http.Request, incidentId string, params CreateInvestigationParams) {
 	var request CreateInvestigationRequestObject
@@ -15678,8 +16356,10 @@ func (sh *strictHandler) CancelInvestigation(w http.ResponseWriter, r *http.Requ
 }
 
 // GetOverview operation middleware
-func (sh *strictHandler) GetOverview(w http.ResponseWriter, r *http.Request) {
+func (sh *strictHandler) GetOverview(w http.ResponseWriter, r *http.Request, params GetOverviewParams) {
 	var request GetOverviewRequestObject
+
+	request.Params = params
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetOverview(ctx, request.(GetOverviewRequestObject))

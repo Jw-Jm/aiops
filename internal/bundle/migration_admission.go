@@ -25,14 +25,31 @@ func validateMigrationMaterialAdmission(materials []Material) error {
 	if err != nil {
 		return errors.New("embedded migration admission unavailable")
 	}
-	raw, err := fs.ReadFile(evidence, "third_party/admission/migration-tool-source.json")
+	architecture := ""
+	if source != nil {
+		architecture = source.Architecture
+	} else {
+		architecture = binary.Architecture
+	}
+	if binary != nil && binary.Architecture != architecture {
+		return errors.New("migration source and binary architectures differ")
+	}
+	path := "third_party/admission/migration-tool-source.json"
+	switch architecture {
+	case "linux/arm64":
+	case "linux/amd64":
+		path = "third_party/admission/migration-tool-source-amd64.json"
+	default:
+		return errors.New("migration architecture has no independent admission")
+	}
+	raw, err := fs.ReadFile(evidence, path)
 	var admission struct {
 		SchemaVersion                            int `json:"schemaVersion"`
 		Name, Version, Architecture, Kind, State string
 		BinarySHA256                             string `json:"binarySHA256"`
 		SourceBundleSHA256                       string `json:"sourceBundleSHA256"`
 	}
-	if err != nil || json.Unmarshal(raw, &admission) != nil || admission.SchemaVersion != 1 || admission.Name != "db-migrate" || admission.Kind != "binary" || admission.State != "qualified" || !isSHA256(admission.BinarySHA256) || !isSHA256(admission.SourceBundleSHA256) {
+	if err != nil || json.Unmarshal(raw, &admission) != nil || admission.SchemaVersion != 1 || admission.Name != "db-migrate" || admission.Architecture != architecture || admission.Kind != "binary" || admission.State != "qualified" || !isSHA256(admission.BinarySHA256) || !isSHA256(admission.SourceBundleSHA256) {
 		return errors.New("migration tool lacks qualified exact source/binary admission")
 	}
 	if source == nil || source.Kind != "source" || source.Version != admission.Version || source.Architecture != admission.Architecture || source.Digest != admission.SourceBundleSHA256 {

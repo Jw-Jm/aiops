@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { IncidentSummaryV2SchemaVersion } from './incidentSummaryV2SchemaVersion';
-import type { IncidentSummaryV2Severity } from './incidentSummaryV2Severity';
-import type { IncidentSummaryV2State } from './incidentSummaryV2State';
+import type { IncidentSummaryV2SchemaVersion } from './incidentSummaryV2SchemaVersion.ts';
+import type { IncidentSummaryV2Severity } from './incidentSummaryV2Severity.ts';
+import type { IncidentSummaryV2State } from './incidentSummaryV2State.ts';
 
 export interface IncidentSummaryV2 {
   schemaVersion: IncidentSummaryV2SchemaVersion;

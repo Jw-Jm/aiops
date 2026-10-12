@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { EvidenceSuccessV2Meta } from './evidenceSuccessV2Meta';
-import type { EvidenceV2 } from './evidenceV2';
-import type { Identifier } from './identifier';
+import type { EvidenceSuccessV2Meta } from './evidenceSuccessV2Meta.ts';
+import type { EvidenceV2 } from './evidenceV2.ts';
+import type { Identifier } from './identifier.ts';
 
 export interface EvidenceSuccessV2 {
   requestId: Identifier;

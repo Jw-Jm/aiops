@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { Identifier } from './identifier';
+import type { Identifier } from './identifier.ts';
 
 export interface CommandRiskAcknowledgementRequest {
   assessmentId: Identifier;

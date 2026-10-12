@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -102,5 +103,32 @@ func TestOwnedRendererRefusesCacheFallbackToRegistry(t *testing.T) {
 	input := "kind: Deployment\nmetadata: {name: fixture}\nspec: {template: {metadata: {}, spec: {containers: [{image: " + tagged + ", imagePullPolicy: IfNotPresent}]}}}\n"
 	if out, err := RenderOwnedChart(strings.NewReader(input), "vmalert", "vmalert", image, "v1.116.0"); err == nil || len(out) != 0 {
 		t.Fatalf("cache fallback accepted: output=%q error=%v", out, err)
+	}
+}
+
+func TestPlatformOwnershipRendererPreservesContentAndRejectsForeignOwner(t *testing.T) {
+	raw := "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: ops-sp07-runner-default-deny\nspec:\n  podSelector:\n    matchLabels:\n      app: runner\n  policyTypes: [Ingress, Egress]\n"
+	out, err := RenderOwnedChart(strings.NewReader(raw), "ops-platform", "platform", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var before, after map[string]any
+	if yaml.Unmarshal([]byte(raw), &before) != nil || yaml.Unmarshal(out, &after) != nil {
+		t.Fatal("invalid YAML")
+	}
+	if !reflect.DeepEqual(before["spec"], after["spec"]) {
+		t.Fatal("ownership renderer changed policy")
+	}
+	m := after["metadata"].(map[string]any)
+	if m["labels"].(map[string]any)["ops.platform.io/release"] != "ops-platform" {
+		t.Fatal("missing owner")
+	}
+	m["labels"].(map[string]any)["ops.platform.io/release"] = "foreign"
+	tampered, _ := yaml.Marshal(after)
+	if _, err := RenderOwnedChart(bytes.NewReader(tampered), "ops-platform", "platform", "", ""); err == nil {
+		t.Fatal("foreign owner accepted")
+	}
+	if _, err := RenderOwnedChart(strings.NewReader(raw), "ops-platform", "platform", "unexpected", ""); err == nil {
+		t.Fatal("image rewrite accepted")
 	}
 }

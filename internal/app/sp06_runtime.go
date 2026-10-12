@@ -278,7 +278,7 @@ func StartSP06Worker(ctx context.Context, pool *pgxpool.Pool) (func(), error) {
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
-			return nil, errors.New("INVESTIGATOR_UNAVAILABLE")
+			return nil, investigation.DecodeInvestigatorFailure(resp.Body)
 		}
 		var out struct {
 			Data json.RawMessage `json:"data"`

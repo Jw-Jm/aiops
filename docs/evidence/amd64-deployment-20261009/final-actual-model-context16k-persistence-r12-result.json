@@ -1,0 +1,41 @@
+{
+  "observedAt": "2026-10-11T04:04:05.680278+00:00",
+  "actualModel": "qwen2.5:1.5b",
+  "contextLength": 16384,
+  "actualRunnerLog": [
+    "Oct 11 11:35:54 mssc ollama[1750869]: srv    load_model: initializing, n_slots = 1, n_ctx_slot = 16384, kv_unified = 'false'",
+    "Oct 11 11:35:54 mssc ollama[1750869]: slot   operator(): id  0 | task 0 | new prompt, n_ctx_slot = 16384, n_keep = 4, task.n_tokens = 3211",
+    "Oct 11 11:36:18 mssc ollama[1750869]: slot   operator(): id  0 | task 65 | new prompt, n_ctx_slot = 16384, n_keep = 4, task.n_tokens = 4872"
+  ],
+  "configurationSHA256": "sha256:787a94b19300e455a68691cc55087f92a420456a47e69d70fba24d2fc7333fc7",
+  "jobId": "01a12907-fa84-772e-9fec-d2027e9c1274",
+  "jobState": "succeeded",
+  "finalResultPersisted": true,
+  "resultSchema": "investigation-result/v1",
+  "status": "unresolved",
+  "partial": false,
+  "evidenceRefs": [
+    "3cd4b51c-b483-5737-8dfa-bb259709a5a6"
+  ],
+  "summarySHA256": "sha256:cc2b0aea99be5243a87e4d30eeab6248c83c5e51348553ada20073d043953bea",
+  "candidateCount": 0,
+  "actionPlanCount": 0,
+  "steps": [
+    {
+      "toolName": "model",
+      "state": "succeeded"
+    },
+    {
+      "toolName": "get_incident_context",
+      "state": "succeeded"
+    },
+    {
+      "toolName": "model",
+      "state": "succeeded"
+    }
+  ],
+  "goFinalValidatorBypassed": false,
+  "failedLedgerRewritten": false,
+  "deterministicRCAMutated": false,
+  "assertionsPassed": true
+}

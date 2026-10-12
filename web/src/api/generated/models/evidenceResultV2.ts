@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { EvidenceResultV2Freshness } from './evidenceResultV2Freshness';
-import type { EvidenceResultV2SchemaVersion } from './evidenceResultV2SchemaVersion';
-import type { EvidenceV2 } from './evidenceV2';
+import type { EvidenceResultV2Freshness } from './evidenceResultV2Freshness.ts';
+import type { EvidenceResultV2SchemaVersion } from './evidenceResultV2SchemaVersion.ts';
+import type { EvidenceV2 } from './evidenceV2.ts';
 
 export interface EvidenceResultV2 {
   schemaVersion: EvidenceResultV2SchemaVersion;

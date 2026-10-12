@@ -4,19 +4,19 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { ActionPlanV2GeneratedBy } from './actionPlanV2GeneratedBy';
-import type { ActionPlanV2SchemaVersion } from './actionPlanV2SchemaVersion';
-import type { ActionPlanV2Shell } from './actionPlanV2Shell';
-import type { ActionPlanV2State } from './actionPlanV2State';
-import type { SP06CommonCanonicalId } from './sP06CommonCanonicalId';
-import type { SP06CommonCommandText } from './sP06CommonCommandText';
-import type { SP06CommonDataClass } from './sP06CommonDataClass';
-import type { SP06CommonExtensions } from './sP06CommonExtensions';
-import type { SP06CommonIdentifier } from './sP06CommonIdentifier';
-import type { SP06CommonOperationRisk } from './sP06CommonOperationRisk';
-import type { SP06CommonTenantId } from './sP06CommonTenantId';
-import type { SP06CommonText } from './sP06CommonText';
-import type { SP06CommonTimestamp } from './sP06CommonTimestamp';
+import type { ActionPlanV2GeneratedBy } from './actionPlanV2GeneratedBy.ts';
+import type { ActionPlanV2SchemaVersion } from './actionPlanV2SchemaVersion.ts';
+import type { ActionPlanV2Shell } from './actionPlanV2Shell.ts';
+import type { ActionPlanV2State } from './actionPlanV2State.ts';
+import type { SP06CommonCanonicalId } from './sP06CommonCanonicalId.ts';
+import type { SP06CommonCommandText } from './sP06CommonCommandText.ts';
+import type { SP06CommonDataClass } from './sP06CommonDataClass.ts';
+import type { SP06CommonExtensions } from './sP06CommonExtensions.ts';
+import type { SP06CommonIdentifier } from './sP06CommonIdentifier.ts';
+import type { SP06CommonOperationRisk } from './sP06CommonOperationRisk.ts';
+import type { SP06CommonTenantId } from './sP06CommonTenantId.ts';
+import type { SP06CommonText } from './sP06CommonText.ts';
+import type { SP06CommonTimestamp } from './sP06CommonTimestamp.ts';
 
 export interface ActionPlanV2 {
   schemaVersion: ActionPlanV2SchemaVersion;

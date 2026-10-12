@@ -346,7 +346,47 @@ func (service *Service) ListVersions(ctx context.Context, request auth.RequestCo
 		}
 		var err error
 		result, err = listVersions(ctx, tx, request.TenantID, kind)
-		return err
+		if err != nil {
+			return err
+		}
+		for i := range result {
+			v := &result[i]
+			message, digest, e := SigningPayload(v.TenantID, v.Kind, v.LogicalName, v.Content)
+			v.DigestVerified = e == nil && digest == v.Digest
+			v.SignatureVerified = v.DigestVerified && service.verifier.Verify(ctx, v.SignerKeyID, message, v.Signature) == nil
+			v.ReferenceCountScope = "current-registry-activations; historical runtime references retained separately"
+			rows, e := tx.Query(ctx, `SELECT activation_id,revision,scope_type,cluster_id,namespace,activated_by,activated_at FROM platform.registry_activations WHERE tenant_id=$1 AND version_id=$2 ORDER BY activation_id`, request.TenantID, v.VersionID)
+			if e != nil {
+				return e
+			}
+			for rows.Next() {
+				var a Activation
+				var cluster *uuid.UUID
+				var ns *string
+				a.TenantID = request.TenantID
+				a.VersionID = v.VersionID
+				a.Kind = v.Kind
+				a.LogicalName = v.LogicalName
+				if e = rows.Scan(&a.ActivationID, &a.Revision, &a.Scope.Type, &cluster, &ns, &a.ActivatedBy, &a.ActivatedAt); e != nil {
+					rows.Close()
+					return e
+				}
+				if cluster != nil {
+					a.Scope.ClusterID = *cluster
+				}
+				if ns != nil {
+					a.Scope.Namespace = *ns
+				}
+				v.Activations = append(v.Activations, a)
+			}
+			e = rows.Err()
+			rows.Close()
+			if e != nil {
+				return e
+			}
+			v.ReferenceCount = len(v.Activations)
+		}
+		return authorizeAdmin(ctx, tx, request)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("list registry versions: %w", err)
@@ -473,4 +513,28 @@ func mapRegistryWriteError(err error) error {
 		}
 	}
 	return fmt.Errorf("write configuration registry: %w", err)
+}
+
+// ReadDraft resolves the current persisted content for conflict recovery.
+// It uses the actor's tenant and rechecks the active administrator grant.
+func (service *Service) ReadDraft(ctx context.Context, actor auth.RequestContext, ref DraftRef) (Draft, error) {
+	if ref.TenantID == uuid.Nil || ref.DraftID == uuid.Nil {
+		return Draft{}, ErrInvalidInput
+	}
+	if ref.TenantID != actor.TenantID {
+		return Draft{}, ErrNotFound
+	}
+	if actor.Subject == "" || !auth.HasRole(auth.WithRequestContext(ctx, actor), auth.PlatformAdmin) {
+		return Draft{}, ErrUnauthorized
+	}
+	var result Draft
+	err := persistence.WithTenantTx(ctx, service.pool, actor.TenantID, func(tx pgx.Tx) error {
+		if err := authorizeAdmin(ctx, tx, actor); err != nil {
+			return err
+		}
+		var err error
+		result, err = loadDraft(ctx, tx, actor.TenantID, ref.DraftID, false)
+		return err
+	})
+	return result, err
 }

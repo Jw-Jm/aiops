@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { PlatformCapabilitiesV1 } from './platformCapabilitiesV1';
+import type { PlatformCapabilitiesV1 } from './platformCapabilitiesV1.ts';
 
 export interface CapabilitiesSuccessV1 {
   requestId: string;

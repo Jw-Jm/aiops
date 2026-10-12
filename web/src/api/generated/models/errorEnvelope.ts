@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { ErrorEnvelopeCode } from './errorEnvelopeCode';
-import type { ErrorEnvelopeDetails } from './errorEnvelopeDetails';
-import type { Identifier } from './identifier';
+import type { ErrorEnvelopeCode } from './errorEnvelopeCode.ts';
+import type { ErrorEnvelopeDetails } from './errorEnvelopeDetails.ts';
+import type { Identifier } from './identifier.ts';
 
 export interface ErrorEnvelope {
   code: ErrorEnvelopeCode;

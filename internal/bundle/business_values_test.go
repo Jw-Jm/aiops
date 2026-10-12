@@ -237,3 +237,95 @@ func TestCurrentBusinessUsesAdmittedHolmesMaterialName(t *testing.T) {
 		t.Fatal("invented material alias accepted")
 	}
 }
+
+func pendingModelDocument() map[string]any {
+	d := validBusinessDocument()
+	sp06 := object(d, "sp06")
+	sp06["modelState"] = "pending"
+	for _, key := range []string{"model", "modelCIDRs", "modelPort", "modelKeySecret", "modelNetworkMode"} {
+		delete(sp06, key)
+	}
+	return d
+}
+
+func TestPendingModelKeepsOtherServicesAndNoModelConfiguration(t *testing.T) {
+	b := readBusinessTest(t, pendingModelDocument())
+	if !b.ModelPending() || len(b.Tenants()) != 1 {
+		t.Fatal("pending model lost installation identity scope")
+	}
+	values := map[string]any{"components": map[string]any{"api": map[string]any{"image": "signed-api"}, "worker": map[string]any{"image": "signed-worker"}}}
+	if err := applyBusinessValues(values, b, map[string]string{"holmesgpt": "signed-investigator"}); err != nil {
+		t.Fatal(err)
+	}
+	if object(object(values, "components"), "investigator")["enabled"] != false {
+		t.Fatal("pending investigator activated")
+	}
+	sp06 := object(values, "sp06")
+	for _, key := range []string{"model", "modelKeySecret", "modelPort", "modelNetworkMode"} {
+		if sp06[key] != nil {
+			t.Fatalf("inherited model value %s", key)
+		}
+	}
+	if len(sp06["modelCIDRs"].([]string)) != 0 {
+		t.Fatal("model egress remains")
+	}
+	if object(values, "sp04")["enabled"] != true || object(values, "sp05")["enabled"] != true {
+		t.Fatal("independent services were disabled")
+	}
+	calls := 0
+	run := func(_ context.Context, _ string, args ...string) ([]byte, error) {
+		calls++
+		if strings.Contains(strings.Join(args, " "), "model") {
+			t.Fatal("pending model credential requested")
+		}
+		return []byte("present"), nil
+	}
+	if err := preflightBusinessSecrets(context.Background(), importProfile(), b, run); err != nil {
+		t.Fatal(err)
+	}
+	if calls == 0 {
+		t.Fatal("non-model credential checks skipped")
+	}
+	calls = 0
+	if err := verifyCurrentModel(context.Background(), importProfile(), b, nil, run); err == nil || calls != 0 {
+		t.Fatal("pending model counted as verified or probed")
+	}
+}
+
+func TestPendingModelCannotHideConfiguredOrIncompleteModel(t *testing.T) {
+	for _, key := range []string{"model", "modelCIDRs", "modelPort", "modelKeySecret", "modelNetworkMode"} {
+		t.Run(key, func(t *testing.T) {
+			d := pendingModelDocument()
+			object(d, "sp06")[key] = object(validBusinessDocument(), "sp06")[key]
+			if key == "modelNetworkMode" {
+				object(d, "sp06")[key] = "orbstack-host"
+			}
+			raw, _ := json.Marshal(d)
+			if _, err := ReadBusinessValues(bytes.NewReader(raw)); err == nil {
+				t.Fatal("pending model accepted configured model field")
+			}
+		})
+	}
+	d := pendingModelDocument()
+	delete(object(d, "sp06"), "modelState")
+	raw, _ := json.Marshal(d)
+	if _, err := ReadBusinessValues(bytes.NewReader(raw)); err == nil {
+		t.Fatal("missing model silently deferred")
+	}
+}
+
+func TestBusinessValuesAdmitExplicitQwenWithoutExpandingEgressOrBudget(t *testing.T) {
+	d := validBusinessDocument()
+	object(object(d, "sp06"), "model")["model"] = "qwen2.5:1.5b"
+	b := readBusinessTest(t, d)
+	if b.ModelPending() {
+		t.Fatal("configured Qwen was deferred")
+	}
+	for _, name := range []string{"qwen2.5:latest", "qwen2.5:7b"} {
+		object(object(d, "sp06"), "model")["model"] = name
+		raw, _ := json.Marshal(d)
+		if _, err := ReadBusinessValues(bytes.NewReader(raw)); err == nil {
+			t.Fatal("unreviewed model admitted")
+		}
+	}
+}

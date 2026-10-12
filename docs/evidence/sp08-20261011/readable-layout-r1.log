@@ -1,0 +1,39 @@
+
+Running 2 tests using 1 worker
+
+[1/2] tests/e2e/degraded_readability.spec.ts:2:1 › real archive degradation is explicit and deterministic Incident records remain readable
+tests/e2e/degraded_readability.spec.ts:2:1 › real archive degradation is explicit and deterministic Incident records remain readable
+Actual degraded evidence response: GRAPH_NOT_READY
+
+[2/2] tests/e2e/layout_readability.spec.ts:2:1 › real desktop and narrow window layouts keep primary controls accessible
+  1) tests/e2e/layout_readability.spec.ts:2:1 › real desktop and narrow window layouts keep primary controls accessible 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('link', { name: '跳到主要内容', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('link', { name: '跳到主要内容', exact: true }) with timeout 5000ms
+      - waiting for getByRole('link', { name: '跳到主要内容', exact: true })
+        12 × locator resolved to <a href="#main" class="skip-link">跳到主要内容</a>
+           - unexpected value "inactive"
+
+
+      16 |   await page.goto(config.baseURL+"/overview");
+      17 |   await page.keyboard.press("Tab");
+    > 18 |   await expect(page.getByRole("link",{name:"跳到主要内容",exact:true})).toBeFocused();
+         |                                                                   ^
+      19 |   if(config.modelJobId) {
+      20 |     await page.goto(config.baseURL+"/incidents/"+config.incidentId+"?tab=investigation&jobId="+config.modelJobId);
+      21 |     await expect(page.getByRole("heading",{name:"调查额度",exact:true})).toBeVisible();
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/layout_readability.spec.ts:18:67
+
+    Error Context: ../../../../ops-sp08-20261011/build/readable-layout-r1/layout_readability-real-de-058fa-primary-controls-accessible/error-context.md
+
+
+  1 failed
+    tests/e2e/layout_readability.spec.ts:2:1 › real desktop and narrow window layouts keep primary controls accessible 
+  1 passed (21.6s)

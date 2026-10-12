@@ -23,6 +23,7 @@ func runOffline(ctx context.Context, args []string, install bool, stdout, stderr
 	keyPath := flags.String("key", "", "independently trusted public key outside Bundle")
 	businessPath := flags.String("business-values", "", "explicit installation-business-values/v1 operator input for SP04–SP06")
 	foundationOnly := flags.Bool("foundation-only", false, "explicit historical foundation deployment; does not deliver SP04–SP06")
+	initializeCommands := flags.Bool("initialize-commands", false, "explicit first SP07 initialization during business activation after native PKI/SSH bootstrap")
 	stage := flags.String("stage", "", "current initialization phase: dependencies, bootstrap-api or business")
 	tokenPath := flags.String("registration-token-file", "", "repository-external private operator token for formal source binding verification")
 	offline := flags.Bool("offline", false, "require offline installation")
@@ -35,6 +36,9 @@ func runOffline(ctx context.Context, args []string, install bool, stdout, stderr
 	}
 	if flags.NArg() != 0 || *bundlePath == "" || *keyPath == "" || *selected == "" {
 		return errors.New("requires --profile, --bundle, --key")
+	}
+	if *initializeCommands && (!install || *foundationOnly || *stage != "business") {
+		return errors.New("--initialize-commands requires current --stage business")
 	}
 	var business bundle.BusinessValues
 	if install {
@@ -114,6 +118,12 @@ func runOffline(ctx context.Context, args []string, install bool, stdout, stderr
 	}
 	if closeErr != nil {
 		return closeErr
+	}
+	if *initializeCommands {
+		business, err = business.InitializeCommands()
+		if err != nil {
+			return err
+		}
 	}
 	var report bundle.ImportReport
 	if install && !*foundationOnly && *stage == "business" {

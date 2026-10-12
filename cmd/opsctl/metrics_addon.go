@@ -72,7 +72,11 @@ func runMetricsAddon(ctx context.Context, args []string, stdout, stderr io.Write
 	if closeErr != nil {
 		return closeErr
 	}
-	report, err := bundle.InstallMetricsAddon(ctx, m, trust, p, drivers.OrbStackSharedStore{}, drivers.Run, c)
+	runtime, err := metricsAddonRuntime(p.Runtime.ImageImporter)
+	if err != nil {
+		return err
+	}
+	report, err := bundle.InstallMetricsAddon(ctx, m, trust, p, runtime, drivers.Run, c)
 	if err != nil {
 		return err
 	}
@@ -161,4 +165,15 @@ func runBootstrapMetricsTrust(ctx context.Context, args []string, stdout, stderr
 		return outErr
 	}
 	return err
+}
+
+func metricsAddonRuntime(importer string) (bundle.RuntimeImporter, error) {
+	switch importer {
+	case "orbstack_shared_store":
+		return drivers.OrbStackSharedStore{}, nil
+	case "containerd_ctr":
+		return &drivers.PreloadedContainerd{}, nil
+	default:
+		return nil, errors.New("CAPABILITY_DISABLED: unresolved or unsupported image importer")
+	}
 }

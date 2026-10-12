@@ -95,61 +95,85 @@ func TestMetricsAddonIndependentTrustAndScope(t *testing.T) {
 	}
 }
 func TestMetricsAddonAuthenticChartHasBoundedResourcesAndPolicyPhase(t *testing.T) {
+	for _, architecture := range []string{"linux/arm64", "linux/amd64"} {
+		t.Run(architecture, func(t *testing.T) {
+			c, _, _ := metricsTestIdentity(t)
+			c.Architecture = architecture
+			values, err := yaml.Marshal(c.chartValues())
+			if err != nil {
+				t.Fatal(err)
+			}
+			file := filepath.Join(t.TempDir(), "values.yaml")
+			if err := os.WriteFile(file, values, 0600); err != nil {
+				t.Fatal(err)
+			}
+			render := func(policy bool) []byte {
+				args := []string{"template", MetricsAddonRelease, "../../deploy/charts/ops-metrics-server", "--namespace", c.Namespace, "--values", file}
+				if policy {
+					args = append(args, "--set", "networkPolicyOnly=true")
+				}
+				raw, err := exec.Command("helm", args...).CombinedOutput()
+				if err != nil {
+					t.Fatalf("actual locked Helm render: %v: %s", err, raw)
+				}
+				return raw
+			}
+			raw := render(false)
+			var calls int
+			readAbsent := func(_ context.Context, program string, args ...string) ([]byte, error) {
+				if program != "kubectl" {
+					t.Fatal("validation attempted mutation")
+				}
+				if len(args) < 5 || args[2] != "get" {
+					t.Fatal("validation attempted non-read operation")
+				}
+				calls++
+				return nil, nil
+			}
+			p := profile.ResolvedProfile{Kubernetes: profile.KubernetesDiscovery{Context: "test"}}
+			if err := validateMetricsChart(context.Background(), raw, c, p, readAbsent); err != nil {
+				t.Fatal(err)
+			}
+			if calls != 9 {
+				t.Fatal("fixed resource ownership preflight incomplete")
+			}
+			if err := validateMetricsPolicy(render(true), c); err != nil {
+				t.Fatal(err)
+			}
+			for _, change := range []struct{ from, to string }{{"kubernetes.io/os: linux", "kubernetes.io/os: windows"}, {"kubernetes.io/arch: " + strings.TrimPrefix(architecture, "linux/"), "kubernetes.io/arch: unsupported"}, {"verbs: [get]", "verbs: [get, create]"}, {"namespace: kube-system", "namespace: default"}, {"imagePullPolicy: Never", "imagePullPolicy: Always"}, {"--kubelet-use-node-status-port", "--kubelet-insecure-tls"}, {"kind: APIService", "kind: CustomResourceDefinition"}, {"192.168.1.1/32", "0.0.0.0/0"}, {"secretName: metrics-tls", "secretName: unrelated-db-root"}, {"runAsUser: 1000", "runAsUser: 0"}, {"group: metrics.k8s.io", "group: other.example"}} {
+				bad := bytes.Replace(raw, []byte(change.from), []byte(change.to), 1)
+				if bytes.Equal(bad, raw) {
+					t.Fatalf("attack fixture did not modify authentic chart: %s", change.from)
+				}
+				if err := validateMetricsChart(context.Background(), bad, c, p, readAbsent); err == nil {
+					t.Fatalf("tampered Metrics chart accepted: %s", change.to)
+				}
+			}
+			existing := func(context.Context, string, ...string) ([]byte, error) {
+				return []byte(`{"metadata":{"uid":"shared"}}`), nil
+			}
+			if err := validateMetricsChart(context.Background(), raw, c, p, existing); err == nil {
+				t.Fatal("existing global/namespaced resource adopted")
+			}
+		})
+	}
+}
+
+func TestMetricsAddonFiniteArchitectureImage(t *testing.T) {
 	c, _, _ := metricsTestIdentity(t)
-	values, err := yaml.Marshal(c.chartValues())
-	if err != nil {
+	if c.image() != metricsAddonImage {
+		t.Fatal("legacy ARM lock changed")
+	}
+	c.Architecture = "linux/amd64"
+	raw, _ := json.Marshal(c)
+	if _, err := ReadMetricsAddonValues(bytes.NewReader(raw)); err != nil {
 		t.Fatal(err)
 	}
-	file := filepath.Join(t.TempDir(), "values.yaml")
-	if err := os.WriteFile(file, values, 0600); err != nil {
-		t.Fatal(err)
+	if c.image() != metricsAddonImageAMD64 || c.chartValues()["image"] != metricsAddonImageAMD64 {
+		t.Fatal("AMD chart did not select qualified publisher index")
 	}
-	render := func(policy bool) []byte {
-		args := []string{"template", MetricsAddonRelease, "../../deploy/charts/ops-metrics-server", "--namespace", c.Namespace, "--values", file}
-		if policy {
-			args = append(args, "--set", "networkPolicyOnly=true")
-		}
-		raw, err := exec.Command("helm", args...).CombinedOutput()
-		if err != nil {
-			t.Fatalf("actual locked Helm render: %v: %s", err, raw)
-		}
-		return raw
-	}
-	raw := render(false)
-	var calls int
-	readAbsent := func(_ context.Context, program string, args ...string) ([]byte, error) {
-		if program != "kubectl" {
-			t.Fatal("validation attempted mutation")
-		}
-		if len(args) < 5 || args[2] != "get" {
-			t.Fatal("validation attempted non-read operation")
-		}
-		calls++
-		return nil, nil
-	}
-	p := profile.ResolvedProfile{Kubernetes: profile.KubernetesDiscovery{Context: "test"}}
-	if err := validateMetricsChart(context.Background(), raw, c, p, readAbsent); err != nil {
-		t.Fatal(err)
-	}
-	if calls != 9 {
-		t.Fatal("fixed resource ownership preflight incomplete")
-	}
-	if err := validateMetricsPolicy(render(true), c); err != nil {
-		t.Fatal(err)
-	}
-	for _, change := range []struct{ from, to string }{{"verbs: [get]", "verbs: [get, create]"}, {"namespace: kube-system", "namespace: default"}, {"imagePullPolicy: Never", "imagePullPolicy: Always"}, {"--kubelet-use-node-status-port", "--kubelet-insecure-tls"}, {"kind: APIService", "kind: CustomResourceDefinition"}, {"192.168.1.1/32", "0.0.0.0/0"}, {"secretName: metrics-tls", "secretName: unrelated-db-root"}, {"runAsUser: 1000", "runAsUser: 0"}, {"group: metrics.k8s.io", "group: other.example"}} {
-		bad := bytes.Replace(raw, []byte(change.from), []byte(change.to), 1)
-		if bytes.Equal(bad, raw) {
-			t.Fatalf("attack fixture did not modify authentic chart: %s", change.from)
-		}
-		if err := validateMetricsChart(context.Background(), bad, c, p, readAbsent); err == nil {
-			t.Fatalf("tampered Metrics chart accepted: %s", change.to)
-		}
-	}
-	existing := func(context.Context, string, ...string) ([]byte, error) {
-		return []byte(`{"metadata":{"uid":"shared"}}`), nil
-	}
-	if err := validateMetricsChart(context.Background(), raw, c, p, existing); err == nil {
-		t.Fatal("existing global/namespaced resource adopted")
+	c.Architecture = "linux/riscv64"
+	if c.Validate() == nil {
+		t.Fatal("unsupported architecture accepted")
 	}
 }

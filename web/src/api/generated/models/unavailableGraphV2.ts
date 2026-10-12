@@ -4,14 +4,14 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { ResourceEntityV2 } from './resourceEntityV2';
-import type { ResourceRelationV2 } from './resourceRelationV2';
-import type { UnavailableGraphV2Budgets } from './unavailableGraphV2Budgets';
-import type { UnavailableGraphV2ConflictsItem } from './unavailableGraphV2ConflictsItem';
-import type { UnavailableGraphV2Freshness } from './unavailableGraphV2Freshness';
-import type { UnavailableGraphV2GraphRevision } from './unavailableGraphV2GraphRevision';
-import type { UnavailableGraphV2RankedEvidenceItem } from './unavailableGraphV2RankedEvidenceItem';
-import type { UnavailableGraphV2SchemaVersion } from './unavailableGraphV2SchemaVersion';
+import type { ResourceEntityV2 } from './resourceEntityV2.ts';
+import type { ResourceRelationV2 } from './resourceRelationV2.ts';
+import type { UnavailableGraphV2Budgets } from './unavailableGraphV2Budgets.ts';
+import type { UnavailableGraphV2ConflictsItem } from './unavailableGraphV2ConflictsItem.ts';
+import type { UnavailableGraphV2Freshness } from './unavailableGraphV2Freshness.ts';
+import type { UnavailableGraphV2GraphRevision } from './unavailableGraphV2GraphRevision.ts';
+import type { UnavailableGraphV2RankedEvidenceItem } from './unavailableGraphV2RankedEvidenceItem.ts';
+import type { UnavailableGraphV2SchemaVersion } from './unavailableGraphV2SchemaVersion.ts';
 
 export interface UnavailableGraphV2 {
   schemaVersion: UnavailableGraphV2SchemaVersion;

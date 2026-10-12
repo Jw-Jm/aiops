@@ -28,6 +28,25 @@
     "errorCode": {
       "type": "string",
       "maxLength": 128
+    },
+    "argsSummary": {
+      "type": "object",
+      "description": "Bounded safe scope and budget projection; raw queries and model prompts are omitted. Historical steps may have an empty summary.",
+      "maxProperties": 16,
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "string",
+            "maxLength": 1024
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          }
+        ]
+      }
     }
   },
   "required": [

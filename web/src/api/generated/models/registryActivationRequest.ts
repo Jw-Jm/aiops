@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { Identifier } from './identifier';
-import type { RegistryActivationRequestKind } from './registryActivationRequestKind';
-import type { RegistryActivationRequestScopeType } from './registryActivationRequestScopeType';
+import type { Identifier } from './identifier.ts';
+import type { RegistryActivationRequestKind } from './registryActivationRequestKind.ts';
+import type { RegistryActivationRequestScopeType } from './registryActivationRequestScopeType.ts';
 
 export interface RegistryActivationRequest {
   clusterId?: Identifier | null;

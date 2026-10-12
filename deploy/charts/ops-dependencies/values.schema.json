@@ -1,37 +1,99 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["components"],
+  "required": [
+    "components"
+  ],
   "properties": {
     "global": {
       "type": "object",
       "properties": {
-        "imagePullPolicy": { "const": "Never" },
-        "storageClass": { "type": "string", "maxLength": 253, "pattern": "^$|^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$" }
+        "imagePullPolicy": {
+          "const": "Never"
+        },
+        "storageClass": {
+          "type": "string",
+          "maxLength": 253,
+          "pattern": "^$|^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
+        }
       }
     },
     "components": {
       "type": "object",
-      "required": ["postgresql", "keycloak", "seaweedfs", "openbao"],
+      "required": [
+        "postgresql",
+        "keycloak",
+        "seaweedfs",
+        "openbao"
+      ],
       "properties": {
-        "postgresql": { "$ref": "#/definitions/component" },
-        "keycloak": { "$ref": "#/definitions/component" },
-        "seaweedfs": { "$ref": "#/definitions/component" },
-        "openbao": { "$ref": "#/definitions/component" }
+        "postgresql": {
+          "$ref": "#/definitions/component"
+        },
+        "keycloak": {
+          "$ref": "#/definitions/component"
+        },
+        "seaweedfs": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/component"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "volumeMax": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 64
+                }
+              }
+            }
+          ]
+        },
+        "openbao": {
+          "$ref": "#/definitions/component"
+        }
       }
     }
   },
   "definitions": {
     "component": {
       "type": "object",
-      "required": ["mode", "image"],
+      "required": [
+        "mode",
+        "image"
+      ],
       "properties": {
-        "mode": { "enum": ["external", "bundled"] },
-        "image": { "type": "string", "pattern": "^[^\\s@]+@sha256:[a-f0-9]{64}$" },
-        "endpoint": { "type": "string", "minLength": 1 },
-        "iamSecretName": { "type": "string", "minLength": 1, "maxLength": 253, "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$" },
-        "tlsSecretName": { "type": "string", "minLength": 1, "maxLength": 253, "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$" },
-        "storage": { "type": "string", "pattern": "^[1-9][0-9]*(Mi|Gi)$" }
+        "mode": {
+          "enum": [
+            "external",
+            "bundled"
+          ]
+        },
+        "image": {
+          "type": "string",
+          "pattern": "^[^\\s@]+@sha256:[a-f0-9]{64}$"
+        },
+        "endpoint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "iamSecretName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 253,
+          "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
+        },
+        "tlsSecretName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 253,
+          "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
+        },
+        "storage": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*(Mi|Gi)$"
+        }
       }
     }
   }

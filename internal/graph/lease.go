@@ -152,7 +152,15 @@ func (l *Lease) Confirm(ctx context.Context, expected int64) error {
 	if l.Client == nil || l.Graph == nil || expected != l.epoch || !l.observed {
 		return ErrNotReady
 	}
-	failure := func() error { l.Graph.InvalidateOwner(); return ErrNotReady }
+	failure := func() error {
+		// A cancelled caller proves nothing about native Lease ownership. Fail
+		// this read closed; the independent renewal loop and owner deadline
+		// continue to fence other requests. Actual Lease failures still revoke.
+		if ctx.Err() == nil {
+			l.Graph.InvalidateOwner()
+		}
+		return ErrNotReady
+	}
 	path := "/apis/coordination.k8s.io/v1/namespaces/" + url.PathEscape(l.Namespace) + "/leases/" + url.PathEscape(l.Name)
 	response, err := l.Client.Do(ctx, "GET", path, nil)
 	if err != nil {
@@ -160,7 +168,8 @@ func (l *Lease) Confirm(ctx context.Context, expected int64) error {
 	}
 	defer response.Body.Close()
 	if response.StatusCode != 200 {
-		return failure()
+		l.Graph.InvalidateOwner()
+		return ErrNotReady
 	}
 	var lease LeaseDocument
 	if json.NewDecoder(io.LimitReader(response.Body, 64<<10)).Decode(&lease) != nil {
@@ -169,7 +178,11 @@ func (l *Lease) Confirm(ctx context.Context, expected int64) error {
 	epoch, err := strconv.ParseInt(lease.Metadata.Annotations["ops.platform/owner-epoch"], 10, 64)
 	now := time.Now()
 	if err != nil || epoch != expected || lease.Metadata.UID != l.leaseUID || lease.Spec.HolderIdentity != l.Graph.instance || lease.Spec.LeaseDurationSeconds != 15 || !now.Before(lease.Spec.RenewTime.Add(8*time.Second)) {
-		return failure()
+		l.Graph.InvalidateOwner()
+		return ErrNotReady
+	}
+	if ctx.Err() != nil {
+		return ErrNotReady
 	}
 	return nil
 }

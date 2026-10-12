@@ -1,0 +1,13 @@
+{
+  "name": "keycloak",
+  "architecture": "linux/amd64",
+  "passed": true,
+  "oidcDiscoveryPassed": true,
+  "jwksPassed": true,
+  "postgresqlBackendPassed": true,
+  "managementReadinessPassed": true,
+  "initBuildMatchesChart": true,
+  "network": "isolated PostgreSQL container network namespace; no external network",
+  "readOnlyRootFilesystem": true,
+  "scope": "native chart-style prepare/build, PostgreSQL backend startup, OIDC/JWKS/readiness; not platform tenant identity or TLS bootstrap"
+}

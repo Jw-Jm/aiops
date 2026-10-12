@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { ResourceGraphV2 } from './resourceGraphV2';
-import type { UnavailableGraphV2 } from './unavailableGraphV2';
+import type { ResourceGraphV2 } from './resourceGraphV2.ts';
+import type { UnavailableGraphV2 } from './unavailableGraphV2.ts';
 
 export type DiagnosticGraphSnapshotV2 = ResourceGraphV2 | UnavailableGraphV2;

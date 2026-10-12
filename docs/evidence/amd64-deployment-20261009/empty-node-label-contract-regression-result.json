@@ -1,0 +1,15 @@
+{
+  "fix": "Allow legitimate empty Kubernetes label values without dropping presence labels",
+  "schemaFile": "api/schemas/resource-entity-v2.schema.json",
+  "test": "TestPublishedNodeWithEmptyKubernetesLabelValuesMatchesContract",
+  "redFailure": "Node control-plane and exclude-from-external-load-balancers labels rejected with minLength got 0 want 1",
+  "greenPackages": [
+    "internal/graph",
+    "internal/resource",
+    "test/contract"
+  ],
+  "passed": true,
+  "nativeNodeEmptyLabelsObserved": true,
+  "r12Deployed": true,
+  "liveVerificationReceipt": "final-empty-node-label-live-r12-result.json"
+}

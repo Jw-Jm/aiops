@@ -50,3 +50,10 @@ func TestOIDCBootstrapHasFormalCLIEntry(t *testing.T) {
 		t.Fatalf("OIDC initialization is not exposed by the formal CLI: %v", err)
 	}
 }
+
+func TestCommandInitializationRequiresBusinessStageBeforeEnvironmentAccess(t *testing.T) {
+	err := run(context.Background(), []string{"install", "--profile", "core", "--resolved", "missing", "--bundle", "missing", "--key", "missing", "--business-values", "missing", "--stage", "dependencies", "--initialize-commands", "--offline"}, &bytes.Buffer{}, &bytes.Buffer{})
+	if err == nil || !strings.Contains(err.Error(), "--initialize-commands requires current --stage business") {
+		t.Fatal("initialization reached environment before stage validation", err)
+	}
+}

@@ -56,6 +56,17 @@ func Verify(ctx context.Context, manifest Manifest, trustRoot TrustRoot) (Verifi
 }
 
 func prepare(ctx context.Context, manifest Manifest, trustRoot TrustRoot) (*verifiedPayload, error) {
+	return preparePayload(ctx, manifest, trustRoot, true)
+}
+
+// Cleanup authenticates the originally installed artifact, including every
+// payload file. A later catalog revision cannot prevent removal of a retired
+// runtime. This path never imports images, renders charts or installs workloads.
+func prepareCleanupArtifact(ctx context.Context, manifest Manifest, trustRoot TrustRoot) (*verifiedPayload, error) {
+	return preparePayload(ctx, manifest, trustRoot, false)
+}
+
+func preparePayload(ctx context.Context, manifest Manifest, trustRoot TrustRoot, runtimeAdmission bool) (*verifiedPayload, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -104,12 +115,15 @@ func prepare(ctx context.Context, manifest Manifest, trustRoot TrustRoot) (*veri
 	if err := verifier.VerifySignature(bytes.NewReader(manifest.Signature), bytes.NewReader(manifest.CanonicalJSON)); err != nil {
 		return nil, fmt.Errorf("verify detached manifest signature: %w", err)
 	}
-	catalog, err := loadEmbeddedCatalog()
-	if err != nil {
-		return nil, err
-	}
-	if err := validateCatalogAdmissionWithCatalog(manifest.Materials, catalog); err != nil {
-		return nil, err
+	var catalog *supplychain.Catalog
+	if runtimeAdmission {
+		catalog, err = loadEmbeddedCatalog(manifest.Architecture)
+		if err != nil {
+			return nil, err
+		}
+		if err := validateCatalogAdmissionWithCatalog(manifest.Materials, catalog); err != nil {
+			return nil, err
+		}
 	}
 
 	if filepath.Base(manifest.PayloadPath) != "payload.tar.zst" {
@@ -173,12 +187,20 @@ func prepare(ctx context.Context, manifest Manifest, trustRoot TrustRoot) (*veri
 	}}, nil
 }
 
-func loadEmbeddedCatalog() (*supplychain.Catalog, error) {
+func loadEmbeddedCatalog(architectures ...string) (*supplychain.Catalog, error) {
+	architecture := "linux/arm64"
+	if len(architectures) > 0 {
+		architecture = architectures[0]
+	}
+	raw, err := componentcatalog.ComponentCatalogForArchitecture(architecture)
+	if err != nil {
+		return nil, err
+	}
 	evidence, err := componentcatalog.ComponentEvidence()
 	if err != nil {
 		return nil, fmt.Errorf("load embedded component evidence: %w", err)
 	}
-	catalog, err := supplychain.LoadCatalogWithEvidence(bytes.NewReader(componentcatalog.ComponentCatalog()), evidence)
+	catalog, err := supplychain.LoadCatalogWithEvidence(bytes.NewReader(raw), evidence)
 	if err != nil {
 		return nil, fmt.Errorf("load embedded component catalog: %w", err)
 	}

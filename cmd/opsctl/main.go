@@ -33,6 +33,9 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
+	if len(args) > 0 && args[0] == "cleanup" {
+		return runCurrentCleanup(ctx, args[1:], stdout, stderr)
+	}
 	if len(args) >= 2 && args[0] == "bootstrap" && args[1] == "graph-leases" {
 		return runBootstrapGraphLeases(ctx, args[2:], stdout, stderr)
 	}

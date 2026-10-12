@@ -1,0 +1,476 @@
+{
+  "job": {
+    "schemaVersion": "investigation-job/v2",
+    "tenantId": "480ffc39-941f-4d14-b731-0676dcc24d42",
+    "jobId": "01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+    "incidentId": "01a12492-067d-769b-8189-95e58053e2e5",
+    "subject": "9efc120e-de03-489d-a3b9-e4ec2bfaaf37",
+    "triggerRevision": 3,
+    "triggerKind": "manual",
+    "policyVersion": "01a1245e-ec08-79fe-8f79-eec8f1449c95",
+    "scope": {
+      "tenantId": "480ffc39-941f-4d14-b731-0676dcc24d42",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaces": [
+        "ops-amd64-validation-targets-20261010"
+      ],
+      "resources": [],
+      "clusterScoped": true,
+      "authorizationRevision": "sha256:4b3ad62dafa58d1af10ec22d02e874bba92cd8ae0fd64608a5308f7502f17b13"
+    },
+    "effectiveScopeDigest": "sha256:d56c29fd6ae15a635ef7e56be6875dcd741cc9ba4c09e416ca89618816441aa9",
+    "toolCatalogDigest": "sha256:fd73e660c6f7916d8c940f83e6440c8b6d203f27db0815a46cb00eacfdc39a20",
+    "state": "failed",
+    "budget": {
+      "toolCalls": 40,
+      "rawQueries": 10,
+      "resultBytes": 41943040,
+      "graphNodes": 8000,
+      "evidenceItems": 4000,
+      "modelRequests": 8,
+      "inputTokens": 32768,
+      "outputTokens": 8192,
+      "modelCostMicros": 0,
+      "durationSeconds": 600,
+      "allowedDataClasses": [
+        "D0",
+        "D1"
+      ]
+    },
+    "budgetReserved": {
+      "toolCalls": 0,
+      "rawQueries": 0,
+      "resultBytes": 0,
+      "graphNodes": 0,
+      "evidenceItems": 0,
+      "modelRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "modelCostMicros": 0
+    },
+    "budgetConsumed": {
+      "toolCalls": 0,
+      "rawQueries": 0,
+      "resultBytes": 65538,
+      "graphNodes": 0,
+      "evidenceItems": 0,
+      "modelRequests": 1,
+      "inputTokens": 3130,
+      "outputTokens": 55,
+      "modelCostMicros": 0
+    },
+    "expiresAt": "2026-10-10T07:07:00.791506Z",
+    "eventSeq": 6,
+    "nextCallSeq": 0,
+    "errorCode": "INVESTIGATOR_FAILURE"
+  },
+  "rca": {
+    "currentDegradedSources": [],
+    "currentEligible": true,
+    "currentGraphRevision": {
+      "ownerEpoch": 1,
+      "graphGeneration": 6
+    },
+    "revision": {
+      "schemaVersion": "rca-revision/v2",
+      "tenantId": "480ffc39-941f-4d14-b731-0676dcc24d42",
+      "incidentId": "01a12492-067d-769b-8189-95e58053e2e5",
+      "revision": 8,
+      "baseIncidentRevision": 3,
+      "inputDigest": "sha256:c9a12ffb99675d5d77a26258ca41b44284d7793564d5045e83f9347c3d985e97",
+      "actor": "deterministic-worker",
+      "source": "deterministic",
+      "superseded": false,
+      "inputManifest": {
+        "schemaVersion": "rca-input/v2",
+        "findingRevisions": [
+          {
+            "findingId": "01a12492-04b1-7b2d-a647-ba7cd8c23709",
+            "aggregateRevision": 2,
+            "occurrenceId": "01a12492-04a3-7806-9e30-a15529606cd0",
+            "sourceFingerprint": "sha256:bb2c1af61a19414b1699bc04dd310a3b4926352f5acc26bc5a33b16644240ab0",
+            "sourceRegistrationId": "01a1245e-ebc0-7424-b891-dd5b584ad590",
+            "sourceRevision": 1,
+            "resourceCanonicalId": "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/d0d451b8-599b-4a84-ae0b-8351321b69fd",
+            "namespace": "ops-amd64-validation-targets-20261010",
+            "lifecycleState": "firing",
+            "digest": "sha256:76987e715eee045cfa86159023c9b871e67dfe42074d7c87aa45e570ea28582c",
+            "observedAt": "2026-10-10T06:48:31.129939231Z"
+          }
+        ],
+        "graphSources": [
+          {
+            "sourceRegistrationId": "01a1245e-ebc0-7424-b891-dd5b584ad590",
+            "revision": 1,
+            "scopeDigest": "sha256:a221d7e384b648b24bdf17f0111d623966f9581dded867d345822a991cb4e455"
+          }
+        ],
+        "resourceCanonicalId": "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/d0d451b8-599b-4a84-ae0b-8351321b69fd",
+        "evidence": [],
+        "graph": {
+          "directlyAffected": [],
+          "indirectlyAffected": [],
+          "dependencyOnly": [
+            "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/storage.k8s.io/StorageClass/a5402ad9-3ec3-4d41-8aec-28827363fecc"
+          ],
+          "schemaVersion": "resource-graph/v2",
+          "graphRevision": {
+            "ownerEpoch": 1,
+            "graphGeneration": 6
+          },
+          "ownerInstance": "de08dbfa-a467-41a0-b712-aec8cb3475e8",
+          "collectedAt": "2026-10-10T06:55:48.125260886Z",
+          "freshness": "fresh",
+          "partial": false,
+          "warnings": [],
+          "degradedSources": [],
+          "nodes": [
+            {
+              "canonicalId": "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/d0d451b8-599b-4a84-ae0b-8351321b69fd",
+              "kind": "PersistentVolumeClaim",
+              "name": "sp07-owned-pending-20261010",
+              "updatedAt": "2026-10-10T06:48:29.022064435Z",
+              "tenantId": "480ffc39-941f-4d14-b731-0676dcc24d42",
+              "domain": "k8s",
+              "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+              "apiGroup": "core",
+              "stableId": "d0d451b8-599b-4a84-ae0b-8351321b69fd",
+              "namespace": "ops-amd64-validation-targets-20261010",
+              "labels": {
+                "ops.platform.io/owner": "amd64-validation-20261010",
+                "ops.platform.io/purpose": "finite-native-command-acceptance",
+                "tenant": "480ffc39-941f-4d14-b731-0676dcc24d42"
+              },
+              "attributes": {
+                "status": {
+                  "phase": "Pending"
+                }
+              },
+              "sourceRefs": [
+                "01a1245e-ebc0-7424-b891-dd5b584ad590"
+              ],
+              "firstObservedAt": "2026-10-10T06:48:29.022064435Z",
+              "lastObservedAt": "2026-10-10T06:48:29.022064435Z"
+            },
+            {
+              "canonicalId": "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/storage.k8s.io/StorageClass/a5402ad9-3ec3-4d41-8aec-28827363fecc",
+              "kind": "StorageClass",
+              "name": "ops-sp07-owned-no-provisioner-20261010",
+              "updatedAt": "2026-10-10T06:48:29.222803798Z",
+              "tenantId": "480ffc39-941f-4d14-b731-0676dcc24d42",
+              "domain": "k8s",
+              "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+              "apiGroup": "storage.k8s.io",
+              "stableId": "a5402ad9-3ec3-4d41-8aec-28827363fecc",
+              "namespace": null,
+              "labels": {
+                "ops.platform.io/owner": "amd64-validation-20261010",
+                "ops.platform.io/purpose": "finite-native-command-acceptance",
+                "tenant": "480ffc39-941f-4d14-b731-0676dcc24d42"
+              },
+              "attributes": {},
+              "sourceRefs": [
+                "01a1245e-ebc0-7424-b891-dd5b584ad590"
+              ],
+              "firstObservedAt": "2026-10-10T06:48:29.222803798Z",
+              "lastObservedAt": "2026-10-10T06:48:29.222803798Z"
+            }
+          ],
+          "edges": [
+            {
+              "from": "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/d0d451b8-599b-4a84-ae0b-8351321b69fd",
+              "to": "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/storage.k8s.io/StorageClass/a5402ad9-3ec3-4d41-8aec-28827363fecc",
+              "kind": "uses_storage_class",
+              "provenance": {
+                "sourceRegistrationId": "01a1245e-ebc0-7424-b891-dd5b584ad590",
+                "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                "sourceValues": null,
+                "observedAt": "2026-10-10T06:48:29.022064435Z"
+              },
+              "confidence": 1,
+              "observedAt": "2026-10-10T06:48:29.022064435Z",
+              "validFrom": "2026-10-10T06:48:29.022064435Z",
+              "ttl": 0
+            }
+          ],
+          "budgets": {
+            "maxDepth": 2,
+            "storageMaxDepth": 2,
+            "maxNodes": 200,
+            "maxEdges": 400,
+            "nodeCount": 2,
+            "edgeCount": 1,
+            "truncated": false
+          },
+          "rankedEvidence": [],
+          "conflicts": null
+        },
+        "from": "2026-10-10T06:50:48.11876687Z",
+        "to": "2026-10-10T06:55:48.11876687Z",
+        "evaluatedAt": "2026-10-10T06:55:48.11876687Z"
+      },
+      "result": {
+        "schemaVersion": "rca-evaluation/v2",
+        "status": "unresolved",
+        "partial": true,
+        "candidates": [],
+        "evidenceBundle": {
+          "supporting": [],
+          "contradicting": [],
+          "missing": [
+            "pvc-pending",
+            "csi-error",
+            "storage-path"
+          ],
+          "degradedSources": [],
+          "ranked": [],
+          "conflicts": []
+        },
+        "recipeVersion": "v1",
+        "recipeDigest": "sha256:962374d5f8fb8181c8bd52ae856610cfad591fe0fdc298dd56f70aa69e1d24d9",
+        "impact": {
+          "directlyAffected": [],
+          "indirectlyAffected": [],
+          "dependencyOnly": [
+            "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/storage.k8s.io/StorageClass/a5402ad9-3ec3-4d41-8aec-28827363fecc"
+          ],
+          "schemaVersion": "resource-graph/v2",
+          "graphRevision": {
+            "ownerEpoch": 1,
+            "graphGeneration": 6
+          },
+          "ownerInstance": "de08dbfa-a467-41a0-b712-aec8cb3475e8",
+          "collectedAt": "2026-10-10T06:55:48.125260886Z",
+          "freshness": "fresh",
+          "partial": false,
+          "warnings": [],
+          "degradedSources": [],
+          "nodes": [
+            {
+              "canonicalId": "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/d0d451b8-599b-4a84-ae0b-8351321b69fd",
+              "kind": "PersistentVolumeClaim",
+              "name": "sp07-owned-pending-20261010",
+              "updatedAt": "2026-10-10T06:48:29.022064435Z",
+              "tenantId": "480ffc39-941f-4d14-b731-0676dcc24d42",
+              "domain": "k8s",
+              "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+              "apiGroup": "core",
+              "stableId": "d0d451b8-599b-4a84-ae0b-8351321b69fd",
+              "namespace": "ops-amd64-validation-targets-20261010",
+              "labels": {
+                "ops.platform.io/owner": "amd64-validation-20261010",
+                "ops.platform.io/purpose": "finite-native-command-acceptance",
+                "tenant": "480ffc39-941f-4d14-b731-0676dcc24d42"
+              },
+              "attributes": {
+                "status": {
+                  "phase": "Pending"
+                }
+              },
+              "sourceRefs": [
+                "01a1245e-ebc0-7424-b891-dd5b584ad590"
+              ],
+              "firstObservedAt": "2026-10-10T06:48:29.022064435Z",
+              "lastObservedAt": "2026-10-10T06:48:29.022064435Z"
+            },
+            {
+              "canonicalId": "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/storage.k8s.io/StorageClass/a5402ad9-3ec3-4d41-8aec-28827363fecc",
+              "kind": "StorageClass",
+              "name": "ops-sp07-owned-no-provisioner-20261010",
+              "updatedAt": "2026-10-10T06:48:29.222803798Z",
+              "tenantId": "480ffc39-941f-4d14-b731-0676dcc24d42",
+              "domain": "k8s",
+              "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+              "apiGroup": "storage.k8s.io",
+              "stableId": "a5402ad9-3ec3-4d41-8aec-28827363fecc",
+              "namespace": null,
+              "labels": {
+                "ops.platform.io/owner": "amd64-validation-20261010",
+                "ops.platform.io/purpose": "finite-native-command-acceptance",
+                "tenant": "480ffc39-941f-4d14-b731-0676dcc24d42"
+              },
+              "attributes": {},
+              "sourceRefs": [
+                "01a1245e-ebc0-7424-b891-dd5b584ad590"
+              ],
+              "firstObservedAt": "2026-10-10T06:48:29.222803798Z",
+              "lastObservedAt": "2026-10-10T06:48:29.222803798Z"
+            }
+          ],
+          "edges": [
+            {
+              "from": "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/d0d451b8-599b-4a84-ae0b-8351321b69fd",
+              "to": "k8s+v1://480ffc39-941f-4d14-b731-0676dcc24d42/79014400-9453-4cb4-9678-0fae47981d79/storage.k8s.io/StorageClass/a5402ad9-3ec3-4d41-8aec-28827363fecc",
+              "kind": "uses_storage_class",
+              "provenance": {
+                "sourceRegistrationId": "01a1245e-ebc0-7424-b891-dd5b584ad590",
+                "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                "sourceValues": null,
+                "observedAt": "2026-10-10T06:48:29.022064435Z"
+              },
+              "confidence": 1,
+              "observedAt": "2026-10-10T06:48:29.022064435Z",
+              "validFrom": "2026-10-10T06:48:29.022064435Z",
+              "ttl": 0
+            }
+          ],
+          "budgets": {
+            "maxDepth": 2,
+            "storageMaxDepth": 2,
+            "maxNodes": 200,
+            "maxEdges": 400,
+            "nodeCount": 2,
+            "edgeCount": 1,
+            "truncated": false
+          },
+          "rankedEvidence": [],
+          "conflicts": null
+        },
+        "graphPlan": "single-query/v1"
+      },
+      "createdAt": "2026-10-10T06:55:48.129757606Z"
+    },
+    "schemaVersion": "current-rca/v2",
+    "semantics": "frozen-revision-with-current-reference-authorization"
+  },
+  "commands": [
+    {
+      "operation": "actual-model-create",
+      "method": "POST",
+      "path": "/api/v1/incidents/01a12492-067d-769b-8189-95e58053e2e5/investigations",
+      "status": 202,
+      "responseSHA256": "sha256:e186746ed4bb44618cd6155e27ca98c3e1e5a5c83b70822c452517aed44fd663",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-0",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:d5161b40b00a77f3e8e02fc09241aaeb345eebcb48329bcab05f55f8335bc0a9",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-1",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:eae97ffb97612ceca5153f303ad4ce6254da13ad37d0340f18a890f623f49337",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-2",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:782bd07c9820d19bb23c3d1fcf08c9792f739369789a404a074702015eddb897",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-3",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:e5f6f59e75be39b2a00819f66d45b9b9348ee3ac2c42e6629b480d51e6515c91",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-4",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:41d209d43bbd168d12f2f5feaf8a140e5821369e6adab6150026f2bb88b92c94",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-5",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:00380292188dd25307cd223ce38dd5f17491473844eb0a3496b59bbcf6bc0a1f",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-6",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:ae3073b049149291b982a57ca19fd5c2ae5980947625fb1afc45691a5fab0356",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-7",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:c82b8f7f2c72a2200278dd2b886c0681fb3019f807fb6c6d601a2bf2a108364d",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-8",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:c63e84a357123865e55a2b935a03fa91e32b55c9773d58ffdf70202380d7ecff",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-9",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:ed13c52fed7d701448588234a3ad855f5bcefd272cee4d412494c882655d9e71",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-10",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:b521e58199e947350384e9b5f60f7ed5fc1891af56e6b01b82f1a8b66e3a97ba",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-11",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:23b4eb3bc298c684eb804ffff603c709f2146ec96b6f6e592fa18e517519454a",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-12",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:e3d792d4dd8cdcf5f755d01d0037a8b1d0e1be898b8d0428bea016bf97d25575",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-13",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:01d625b82db0753a0833a0268c6d79eef7c2f973b7414d69b4024405d9470d1c",
+      "error": null
+    },
+    {
+      "operation": "actual-model-poll-14",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12499-c976-7f40-a0cc-f0c2fdc98f52",
+      "status": 200,
+      "responseSHA256": "sha256:797890140fc7c26ab372ff3f5c055586adb72820b8b0c8cd904cf25c00fa6db3",
+      "error": null
+    },
+    {
+      "operation": "actual-model-rca",
+      "method": "GET",
+      "path": "/api/v1/incidents/01a12492-067d-769b-8189-95e58053e2e5/rca",
+      "status": 200,
+      "responseSHA256": "sha256:a33eaef8cc759d54518ba64d7f9c084ffae38b235b76b1fc48fab96a872afca8",
+      "error": null
+    }
+  ],
+  "actualModel": "Ollama qwen2.5:1.5b",
+  "seededBusinessRows": false
+}

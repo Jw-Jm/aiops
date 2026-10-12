@@ -4,10 +4,10 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { RCAEvaluationV2 } from './rCAEvaluationV2';
-import type { RCAInputV2 } from './rCAInputV2';
-import type { RCARevisionV2SchemaVersion } from './rCARevisionV2SchemaVersion';
-import type { RCARevisionV2Source } from './rCARevisionV2Source';
+import type { RCAEvaluationV2 } from './rCAEvaluationV2.ts';
+import type { RCAInputV2 } from './rCAInputV2.ts';
+import type { RCARevisionV2SchemaVersion } from './rCARevisionV2SchemaVersion.ts';
+import type { RCARevisionV2Source } from './rCARevisionV2Source.ts';
 
 export interface RCARevisionV2 {
   schemaVersion: RCARevisionV2SchemaVersion;

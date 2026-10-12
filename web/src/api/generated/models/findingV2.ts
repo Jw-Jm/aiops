@@ -4,10 +4,10 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { FindingV2LifecycleState } from './findingV2LifecycleState';
-import type { FindingV2Payload } from './findingV2Payload';
-import type { FindingV2SchemaVersion } from './findingV2SchemaVersion';
-import type { FindingV2Severity } from './findingV2Severity';
+import type { FindingV2LifecycleState } from './findingV2LifecycleState.ts';
+import type { FindingV2Payload } from './findingV2Payload.ts';
+import type { FindingV2SchemaVersion } from './findingV2SchemaVersion.ts';
+import type { FindingV2Severity } from './findingV2Severity.ts';
 
 export interface FindingV2 {
   /**

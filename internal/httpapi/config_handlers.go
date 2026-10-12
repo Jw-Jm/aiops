@@ -35,6 +35,7 @@ func NewConfigAdminRouter(service *configregistry.Service, pool persistence.TxBe
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get("/api/v1/admin/policy-bundles", handlers.getPolicyBundles)
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get("/api/v1/admin/recipes", handlers.getRecipes)
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get("/api/v1/admin/tools", handlers.getTools)
+	router.With(auth.RequireRole(auth.PlatformAdmin)).Get(registryDraftsPath+"/{draftId}", handlers.getDraft)
 	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "create-registry-draft"), requireTenantAdminStepUp).Post(registryDraftsPath, handlers.createDraft)
 	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "update-registry-draft"), requireTenantAdminStepUp).Patch(registryDraftsPath+"/{draftId}", handlers.updateDraft)
 	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "publish-registry-draft"), requireTenantAdminStepUp).Post(registryDraftsPath+"/{draftId}:publish", handlers.publishDraft)
@@ -327,4 +328,24 @@ func writeConfigError(w http.ResponseWriter, status int, code, message string, r
 		requestID = uuid.Must(uuid.NewV7()).String()
 	}
 	writeJSON(w, status, api.ErrorEnvelope{Code: api.ErrorEnvelopeCode(code), Message: message, RequestId: requestID, Retryable: retryable})
+}
+
+func (h ConfigAdminHandlers) getDraft(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+	actor, ok := auth.RequestContextFromContext(r.Context())
+	if !ok {
+		writeConfigError(w, 401, "UNAUTHENTICATED", "verified session required", false, "")
+		return
+	}
+	id, err := uuid.Parse(chi.URLParam(r, "draftId"))
+	if err != nil {
+		writeConfigError(w, 400, "INVALID_ARGUMENT", "draft identifier invalid", false, actor.RequestID)
+		return
+	}
+	draft, err := h.service.ReadDraft(r.Context(), actor, configregistry.DraftRef{TenantID: actor.TenantID, DraftID: id})
+	if err != nil {
+		writeConfigServiceError(w, err, actor.RequestID)
+		return
+	}
+	writeJSON(w, 200, api.SuccessEnvelope{Data: draft, RequestId: actor.RequestID})
 }

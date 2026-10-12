@@ -121,7 +121,7 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 	}
 	tokenPath := os.Getenv("OPENBAO_PROJECTED_TOKEN_FILE")
 	evidenceArchive := &evidence.ArchiveService{Pool: pool, Store: store, Protector: protector}
-	stopSP04, err := StartSP04Worker(ctx, pool, evidenceArchive, runtime)
+	stopSP04, err := StartSP04Worker(ctx, pool, evidenceArchive, runtime, service)
 	if err != nil {
 		return err
 	}

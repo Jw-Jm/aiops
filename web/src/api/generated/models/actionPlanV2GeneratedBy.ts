@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { SP06CommonExtensions } from './sP06CommonExtensions';
-import type { SP06CommonIdentifier } from './sP06CommonIdentifier';
-import type { SP06CommonShortText } from './sP06CommonShortText';
+import type { SP06CommonExtensions } from './sP06CommonExtensions.ts';
+import type { SP06CommonIdentifier } from './sP06CommonIdentifier.ts';
+import type { SP06CommonShortText } from './sP06CommonShortText.ts';
 
 export type ActionPlanV2GeneratedBy = {
   type: SP06CommonShortText;

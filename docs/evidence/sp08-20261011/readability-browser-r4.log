@@ -1,0 +1,36 @@
+
+Running 3 tests using 1 worker
+
+[1/3] tests/e2e/live.spec.ts:2:1 › live OIDC refresh, resource/finding navigation, scoped capabilities and ledger restoration
+  1) tests/e2e/live.spec.ts:2:1 › live OIDC refresh, resource/finding navigation, scoped capabilities and ledger restoration 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog').getByText('实际观测内容', { exact: true })
+    Expected: visible
+    Error: strict mode violation: getByRole('dialog').getByText('实际观测内容', { exact: true }) resolved to 2 elements:
+        1) <h4>实际观测内容</h4> aka getByRole('heading', { name: '实际观测内容' })
+        2) <span>实际观测内容</span> aka locator('span').filter({ hasText: '实际观测内容' })
+
+    Call log:
+      - Expect "toBeVisible" getByRole('dialog').getByText('实际观测内容', { exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog').getByText('实际观测内容', { exact: true })
+
+
+      57 |       await expect(
+      58 |         page.getByRole("dialog").getByText("实际观测内容", { exact: true }),
+    > 59 |       ).toBeVisible();
+         |         ^
+      60 |       await expect(page.locator(".ant-skeleton")).toHaveCount(0);
+      61 |       await page.screenshot({
+      62 |         path: config.screenshotDirectory + "/operator-evidence-detail.png",
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/live.spec.ts:59:9
+
+    Error Context: ../../../../ops-sp08-20261011/build/readability-browser-r4/live-live-OIDC-refresh-res-963cb-ties-and-ledger-restoration/error-context.md
+
+
+[2/3] tests/e2e/live.spec.ts:103:1 › live namespace command: blank input, review invalidation, confirmation, output and durable post-check
+[3/3] tests/e2e/live.spec.ts:141:1 › live cluster command requires fresh password and OTP, memory restoration and explicit strong session
+  1 failed
+    tests/e2e/live.spec.ts:2:1 › live OIDC refresh, resource/finding navigation, scoped capabilities and ledger restoration 
+  2 passed (1.2m)

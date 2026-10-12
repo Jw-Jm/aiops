@@ -4,14 +4,14 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CanonicalID } from './canonicalID';
-import type { EvidenceV2ArchiveRef } from './evidenceV2ArchiveRef';
-import type { EvidenceV2DataClass } from './evidenceV2DataClass';
-import type { EvidenceV2EffectiveScope } from './evidenceV2EffectiveScope';
-import type { EvidenceV2FactSlice } from './evidenceV2FactSlice';
-import type { EvidenceV2ReplayState } from './evidenceV2ReplayState';
-import type { EvidenceV2SchemaVersion } from './evidenceV2SchemaVersion';
-import type { EvidenceV2Type } from './evidenceV2Type';
+import type { CanonicalID } from './canonicalID.ts';
+import type { EvidenceV2ArchiveRef } from './evidenceV2ArchiveRef.ts';
+import type { EvidenceV2DataClass } from './evidenceV2DataClass.ts';
+import type { EvidenceV2EffectiveScope } from './evidenceV2EffectiveScope.ts';
+import type { EvidenceV2FactSlice } from './evidenceV2FactSlice.ts';
+import type { EvidenceV2ReplayState } from './evidenceV2ReplayState.ts';
+import type { EvidenceV2SchemaVersion } from './evidenceV2SchemaVersion.ts';
+import type { EvidenceV2Type } from './evidenceV2Type.ts';
 
 export interface EvidenceV2 {
   schemaVersion: EvidenceV2SchemaVersion;

@@ -31,3 +31,25 @@ func TestOfflineMigrationToolRequiresSeparateExactSourceAdmission(t *testing.T) 
 		}
 	}
 }
+
+func TestAMD64MigrationRequiresIndependentlyRebuiltAndTestedPair(t *testing.T) {
+	materials := []Material{{Name: "db-migrate", Kind: "binary", Version: "1.1.0", Architecture: "linux/amd64", Digest: "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8"}, {Name: "db-migrate-source", Kind: "source", Version: "1.1.0", Architecture: "linux/amd64", Digest: "sha256:0bbf28cf1f2105c44eae6090cfe2deeecfa2688efcf35a2e1a9d8a90476c9be1"}}
+	if err := validateMigrationMaterialAdmission(materials); err != nil {
+		t.Fatal(err)
+	}
+	for _, alter := range []func([]Material){
+		func(m []Material) { m[0].Digest = migrationMaterials()[0].Digest },
+		func(m []Material) { m[1].Digest = migrationMaterials()[1].Digest },
+		func(m []Material) { m[1].Architecture = "linux/arm64" },
+		func(m []Material) {
+			m[0].Architecture = "linux/amd64-unreviewed"
+			m[1].Architecture = m[0].Architecture
+		},
+	} {
+		copy := append([]Material(nil), materials...)
+		alter(copy)
+		if err := validateMigrationMaterialAdmission(copy); err == nil {
+			t.Fatal("migration architecture or source/binary identity bypassed admission")
+		}
+	}
+}

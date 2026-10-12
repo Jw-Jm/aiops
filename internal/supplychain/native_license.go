@@ -16,11 +16,21 @@ import (
 //go:embed licenses/native-core-reviewed.json
 var nativeLicenseRegistry []byte
 
+// Independently reviewed native distributions do not alter historical scopes.
+//
+//go:embed licenses/native-core-amd64-reviewed.json
+var nativeAMD64LicenseRegistry []byte
+
 // SP06 records are also a finite, independently compiled reviewed inventory.
 // An input Catalog cannot create or broaden these identities.
 //
 //go:embed licenses/sp06-investigator-reviewed.json
 var investigatorLicenseRegistry []byte
+
+// Native investigator scopes are tied to the independently built amd64 image.
+//
+//go:embed licenses/sp06-investigator-amd64-reviewed.json
+var investigatorAMD64LicenseRegistry []byte
 
 // These four publisher notice scopes belong only to the measured Metrics
 // distribution. A Catalog entry cannot create additional permission scopes.
@@ -28,9 +38,20 @@ var investigatorLicenseRegistry []byte
 //go:embed licenses/pre-sp07-metrics-reviewed.json
 var metricsLicenseRegistry []byte
 
+// The native official Metrics image has independent immutable parent scopes.
+//
+//go:embed licenses/pre-sp07-metrics-amd64-reviewed.json
+var metricsAMD64LicenseRegistry []byte
+
 // SP07 is scoped to the exact one-shot Runner image/source/notice identities.
+//
 //go:embed licenses/sp07-runner-reviewed.json
 var commandRunnerLicenseRegistry []byte
+
+// The native amd64 distribution retains its own exact image and source scopes.
+//
+//go:embed licenses/sp07-runner-amd64-reviewed.json
+var commandRunnerAMD64LicenseRegistry []byte
 
 type nativeLicenseScope struct {
 	ID                              string `json:"id"`
@@ -56,7 +77,7 @@ func loadNativeLicenseScopes() map[string]nativeLicenseScope {
 		Licenses      []nativeLicenseScope `json:"licenses"`
 	}
 	result := make(map[string]nativeLicenseScope)
-	for _, inventory := range [][]byte{nativeLicenseRegistry, investigatorLicenseRegistry, metricsLicenseRegistry, commandRunnerLicenseRegistry} {
+	for _, inventory := range [][]byte{nativeLicenseRegistry, nativeAMD64LicenseRegistry, investigatorLicenseRegistry, investigatorAMD64LicenseRegistry, metricsLicenseRegistry, metricsAMD64LicenseRegistry, commandRunnerLicenseRegistry, commandRunnerAMD64LicenseRegistry} {
 		if err := json.Unmarshal(inventory, &document); err != nil || document.SchemaVersion != 1 {
 			return nil // A malformed compiled registry rejects every native reference.
 		}

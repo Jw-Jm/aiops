@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { IncidentTimelineV2Payload } from './incidentTimelineV2Payload';
+import type { IncidentTimelineV2Payload } from './incidentTimelineV2Payload.ts';
 
 export interface IncidentTimelineV2 {
   timelineId: string;

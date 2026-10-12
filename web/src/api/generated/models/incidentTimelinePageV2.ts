@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { IncidentTimelinePageV2Meta } from './incidentTimelinePageV2Meta';
-import type { IncidentTimelineV2 } from './incidentTimelineV2';
+import type { IncidentTimelinePageV2Meta } from './incidentTimelinePageV2Meta.ts';
+import type { IncidentTimelineV2 } from './incidentTimelineV2.ts';
 
 export interface IncidentTimelinePageV2 {
   data: IncidentTimelineV2[];

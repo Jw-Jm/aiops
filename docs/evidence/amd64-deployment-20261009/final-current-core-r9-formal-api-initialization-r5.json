@@ -1,0 +1,606 @@
+{
+  "observedAt": "2026-10-11T00:38:39.511251+00:00",
+  "namespace": "ops-amd64-final-20261010",
+  "actualInstalledAPI": true,
+  "actualOIDCStepUp": true,
+  "noBusinessTableSeed": true,
+  "cluster": {
+    "actualVersions": {
+      "kubernetes": "v1.36.3"
+    },
+    "apiEndpointRef": "openbao://amd64/current/kubernetes",
+    "capabilities": {
+      "cdi": false,
+      "kubernetes": true,
+      "kubevirt": false,
+      "metrics": true
+    },
+    "clusterId": "01a12865-be8a-7b94-bbe4-4735e46fccc6",
+    "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+    "createdAt": "2026-10-11T00:38:38.987065Z",
+    "displayName": "Dedicated standard Kubernetes/containerd cluster",
+    "distribution": "kubernetes",
+    "revision": 1,
+    "status": "active",
+    "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+    "updatedAt": "2026-10-11T00:38:38.987065Z"
+  },
+  "sources": [
+    {
+      "allowedSchemas": [
+        "finding-envelope/v2"
+      ],
+      "authRef": "openbao://amd64/current/kubernetes",
+      "backendLogicalId": "amd64-current-kubernetes-79014400-9453-4cb4-9678-0fae47981d79",
+      "clusterId": "01a12865-be8a-7b94-bbe4-4735e46fccc6",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "createdAt": "2026-10-11T00:38:39.00246Z",
+      "credentialRevision": 1,
+      "dataScopeMapping": {
+        "scopes": {
+          "cluster": [
+            "79014400-9453-4cb4-9678-0fae47981d79"
+          ],
+          "namespace": [
+            "ops-amd64-final-targets-20261010"
+          ]
+        }
+      },
+      "instanceKey": "amd64-current-kubernetes-ops-amd64-final-20261010",
+      "queryCapability": {
+        "reason": "adapter_scope_verification_pending",
+        "state": "disabled",
+        "verification": "unverified"
+      },
+      "revision": 1,
+      "sourceId": "01a12865-be9a-72cc-a3e9-72c29c491a8f",
+      "sourceType": "kubernetes",
+      "status": "active",
+      "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+      "updatedAt": "2026-10-11T00:38:39.00246Z"
+    },
+    {
+      "allowedSchemas": [
+        "finding-envelope/v2"
+      ],
+      "authRef": "openbao://amd64/current/victoriametrics",
+      "backendLogicalId": "amd64-current-victoriametrics-ops-amd64-final-20261010",
+      "clusterId": "01a12865-be8a-7b94-bbe4-4735e46fccc6",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "createdAt": "2026-10-11T00:38:39.023448Z",
+      "credentialRevision": 1,
+      "dataScopeMapping": {
+        "scopes": {
+          "cluster": [
+            "79014400-9453-4cb4-9678-0fae47981d79"
+          ],
+          "namespace": [
+            "ops-amd64-final-targets-20261010"
+          ]
+        },
+        "requiredLabels": {
+          "tenant": "126aad70-bb1c-4e08-907b-70f092dc58b1"
+        }
+      },
+      "instanceKey": "amd64-current-victoriametrics-ops-amd64-final-20261010",
+      "queryCapability": {
+        "reason": "adapter_scope_verification_pending",
+        "state": "disabled",
+        "verification": "unverified"
+      },
+      "revision": 1,
+      "sourceId": "01a12865-beaf-754c-857e-7b72dbaf7c61",
+      "sourceType": "victoriametrics",
+      "status": "active",
+      "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+      "updatedAt": "2026-10-11T00:38:39.023448Z"
+    },
+    {
+      "allowedSchemas": [
+        "finding-envelope/v2"
+      ],
+      "authRef": "openbao://amd64/current/victorialogs",
+      "backendLogicalId": "amd64-current-victorialogs-ops-amd64-final-20261010",
+      "clusterId": "01a12865-be8a-7b94-bbe4-4735e46fccc6",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "createdAt": "2026-10-11T00:38:39.043316Z",
+      "credentialRevision": 1,
+      "dataScopeMapping": {
+        "scopes": {
+          "cluster": [
+            "79014400-9453-4cb4-9678-0fae47981d79"
+          ],
+          "namespace": [
+            "ops-amd64-final-targets-20261010"
+          ]
+        },
+        "requiredLabels": {
+          "tenant": "126aad70-bb1c-4e08-907b-70f092dc58b1"
+        }
+      },
+      "instanceKey": "amd64-current-victorialogs-ops-amd64-final-20261010",
+      "queryCapability": {
+        "reason": "adapter_scope_verification_pending",
+        "state": "disabled",
+        "verification": "unverified"
+      },
+      "revision": 1,
+      "sourceId": "01a12865-bec3-73b6-8d6b-3c15bb41cce1",
+      "sourceType": "victorialogs",
+      "status": "active",
+      "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+      "updatedAt": "2026-10-11T00:38:39.043316Z"
+    }
+  ],
+  "roleBinding": {
+    "bindingId": "01a12865-bed8-70d3-abde-0ef170c64578",
+    "clusterScopes": [
+      "01a12865-be8a-7b94-bbe4-4735e46fccc6"
+    ],
+    "createdAt": "2026-10-11T00:38:39.064193Z",
+    "namespaceScopes": [
+      {
+        "clusterId": "01a12865-be8a-7b94-bbe4-4735e46fccc6",
+        "namespace": "ops-amd64-final-targets-20261010"
+      }
+    ],
+    "revision": 1,
+    "role": "operator",
+    "status": "active",
+    "subject": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+    "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+    "updatedAt": "2026-10-11T00:38:39.064193Z"
+  },
+  "signedPublications": [
+    {
+      "kind": "policy",
+      "logicalName": "amd64-read-only-current",
+      "digest": "sha256:64fdf6c9fafeb945c6d2f235346f606cabfc942ecc99cbd89dc35cd52c2304bf",
+      "versionId": "01a12865-befc-710a-8c49-da79e2f43fc5",
+      "activation": {
+        "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+        "activationId": "01a12865-bf0d-71ef-aee1-2b998c412cf3",
+        "kind": "policy",
+        "logicalName": "amd64-read-only-current",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a12865-befc-710a-8c49-da79e2f43fc5",
+        "revision": 1,
+        "activatedBy": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+        "activatedAt": "2026-10-11T00:38:39.117244Z"
+      }
+    },
+    {
+      "kind": "recipe",
+      "logicalName": "pvc-csi-failure",
+      "digest": "sha256:094d7926216600d90b606fed587cc086336b14e8f8991786b199539649472b74",
+      "versionId": "01a12865-bf2e-748d-9121-d3b972e0b3e6",
+      "activation": {
+        "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+        "activationId": "01a12865-bf41-76e8-b1a3-d6a0a0723fe8",
+        "kind": "recipe",
+        "logicalName": "pvc-csi-failure",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a12865-bf2e-748d-9121-d3b972e0b3e6",
+        "revision": 1,
+        "activatedBy": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+        "activatedAt": "2026-10-11T00:38:39.169506Z"
+      }
+    },
+    {
+      "kind": "recipe",
+      "logicalName": "node-failure",
+      "digest": "sha256:b4409be25fca5383745dfe2cb293a1c66d49ca4fffcba7bb1b872f46a2ff3071",
+      "versionId": "01a12865-bf59-7cbc-9ff6-e33d11f5537d",
+      "activation": {
+        "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+        "activationId": "01a12865-bf72-7250-9b16-95854482fbf8",
+        "kind": "recipe",
+        "logicalName": "node-failure",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a12865-bf59-7cbc-9ff6-e33d11f5537d",
+        "revision": 1,
+        "activatedBy": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+        "activatedAt": "2026-10-11T00:38:39.218206Z"
+      }
+    },
+    {
+      "kind": "recipe",
+      "logicalName": "node-failure",
+      "digest": "sha256:8673849b34ea0ca6894666db6cc3eae7cc5c29b742334e87b2216d1c14ab58be",
+      "versionId": "01a12865-bf89-7c84-99bf-5b13a24c9225",
+      "activation": {
+        "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+        "activationId": "01a12865-bf72-7250-9b16-95854482fbf8",
+        "kind": "recipe",
+        "logicalName": "node-failure",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a12865-bf89-7c84-99bf-5b13a24c9225",
+        "revision": 2,
+        "activatedBy": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+        "activatedAt": "2026-10-11T00:38:39.262796Z"
+      }
+    },
+    {
+      "kind": "tool",
+      "logicalName": "get_incident_context",
+      "digest": "sha256:d8d241e8063f20bd2096090b762f4ecec050cad80aeb0ca7db76e173f74ce8b8",
+      "versionId": "01a12865-bfc0-7460-a4f9-d1405e429ce0",
+      "activation": {
+        "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+        "activationId": "01a12865-bfd3-781b-a27f-912b69bd11c3",
+        "kind": "tool",
+        "logicalName": "get_incident_context",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a12865-bfc0-7460-a4f9-d1405e429ce0",
+        "revision": 1,
+        "activatedBy": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+        "activatedAt": "2026-10-11T00:38:39.315587Z"
+      }
+    },
+    {
+      "kind": "tool",
+      "logicalName": "get_resource_context",
+      "digest": "sha256:68a12ba9fc892445a24d194831a04f304d998968fdc1f090c6560b31b50bb239",
+      "versionId": "01a12865-bfeb-7e63-addb-7540e55ca6b7",
+      "activation": {
+        "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+        "activationId": "01a12865-bfff-79ec-bc25-2b308dbcaaed",
+        "kind": "tool",
+        "logicalName": "get_resource_context",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a12865-bfeb-7e63-addb-7540e55ca6b7",
+        "revision": 1,
+        "activatedBy": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+        "activatedAt": "2026-10-11T00:38:39.359706Z"
+      }
+    },
+    {
+      "kind": "tool",
+      "logicalName": "query_kubernetes",
+      "digest": "sha256:7fc38ad922532df5523d7453c093ff1e4e60d57b0f7eb94b0394e260f2f8f595",
+      "versionId": "01a12865-c018-74a2-abcd-abcb665bceae",
+      "activation": {
+        "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+        "activationId": "01a12865-c02c-70b5-a62a-8112ddaa698f",
+        "kind": "tool",
+        "logicalName": "query_kubernetes",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a12865-c018-74a2-abcd-abcb665bceae",
+        "revision": 1,
+        "activatedBy": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+        "activatedAt": "2026-10-11T00:38:39.404108Z"
+      }
+    },
+    {
+      "kind": "tool",
+      "logicalName": "query_metrics",
+      "digest": "sha256:20705abc2515fcf441889575a2676c16597ddf03b7bef3373fca02e45728e3f6",
+      "versionId": "01a12865-c04d-77b6-aec1-5daeb69fc287",
+      "activation": {
+        "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+        "activationId": "01a12865-c061-7ecf-b78c-d3f0e76fcf80",
+        "kind": "tool",
+        "logicalName": "query_metrics",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a12865-c04d-77b6-aec1-5daeb69fc287",
+        "revision": 1,
+        "activatedBy": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+        "activatedAt": "2026-10-11T00:38:39.458009Z"
+      }
+    },
+    {
+      "kind": "tool",
+      "logicalName": "query_logs",
+      "digest": "sha256:139f1df203f927cca880632e243b7261f4647560720c9e12692b52061bb63af3",
+      "versionId": "01a12865-c079-766a-b96b-f5d6d39b6eff",
+      "activation": {
+        "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+        "activationId": "01a12865-c08e-736e-9186-f00f67891f2d",
+        "kind": "tool",
+        "logicalName": "query_logs",
+        "scope": {
+          "type": "tenant",
+          "clusterId": "00000000-0000-0000-0000-000000000000"
+        },
+        "versionId": "01a12865-c079-766a-b96b-f5d6d39b6eff",
+        "revision": 1,
+        "activatedBy": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+        "activatedAt": "2026-10-11T00:38:39.502263Z"
+      }
+    }
+  ],
+  "commands": [
+    {
+      "operation": "actual-step-up-current-login-r5",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-sessions",
+      "status": 201,
+      "responseSHA256": "sha256:1172ed92e347c69833d8acbc77837cc57afe248a55ce24dd531f9f68aa762c17",
+      "errorCode": null
+    },
+    {
+      "operation": "current-cluster",
+      "method": "POST",
+      "path": "/api/v1/admin/clusters",
+      "status": 201,
+      "responseSHA256": "sha256:6a249fb6c89b2c01fe33ea550a951ca38f02d2f5d8b2837a1a0bf753350c5850",
+      "errorCode": null
+    },
+    {
+      "operation": "current-source-kubernetes",
+      "method": "POST",
+      "path": "/api/v1/admin/source-registrations",
+      "status": 201,
+      "responseSHA256": "sha256:7f0c2c4cee288a42211658e20f9ebfa8ae967bfe2d7bf25c6eeb57fc111bec09",
+      "errorCode": null
+    },
+    {
+      "operation": "current-source-victoriametrics",
+      "method": "POST",
+      "path": "/api/v1/admin/source-registrations",
+      "status": 201,
+      "responseSHA256": "sha256:1ef8306e19cc26f5d05ab4cbe2a18fe3fb0b795ad131a50dc49ea3904ed83510",
+      "errorCode": null
+    },
+    {
+      "operation": "current-source-victorialogs",
+      "method": "POST",
+      "path": "/api/v1/admin/source-registrations",
+      "status": 201,
+      "responseSHA256": "sha256:5c809c6b41216f652129477325b7daa793418496d7724da0f773750ee7ca0ed3",
+      "errorCode": null
+    },
+    {
+      "operation": "current-operator-scope-explicit-cluster-r3",
+      "method": "POST",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 201,
+      "responseSHA256": "sha256:3e03ac1676e148d557d48b5c6520fe873dd6333fa8a3d8192e7e9cd3ae773b0e",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-amd64-read-only-current",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:e83a90e1c072171832051053d07415340d1b6e3f5fa78fb37fca90dff307c0bb",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-amd64-read-only-current",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a12865-bee4-76a2-b111-24eef6ff254f:publish",
+      "status": 201,
+      "responseSHA256": "sha256:74f5ad9e313c3871a49dc45bd2b568e87a00931f0faaba49249ce7340e8e2156",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-amd64-read-only-current",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:5a24e56985f793a2ca22a6e4d4eabfa3d9fd44d1274fd11d3a8053cc40a046da",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-pvc-csi-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:d674d252ba95835d6373cdf7925d0b7359a11db118355adb119ce3741c4d9f59",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-pvc-csi-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a12865-bf20-7dc8-9e84-6c7d870aec0c:publish",
+      "status": 201,
+      "responseSHA256": "sha256:ae1c57d12e7d69c7f17b265a6a9014ffc869506a1153e527049fbedf59364395",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-pvc-csi-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:c9867c68b82e7b7b1a41fe7ef3305e2376d0ebd37f7706323f8debed6dceb140",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-node-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:93319d84063985e99c02ca55517f68049a5222d21241b83e8ed7b0a7003bd753",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-node-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a12865-bf4c-79c2-a695-d5034310ae76:publish",
+      "status": 201,
+      "responseSHA256": "sha256:29d82b250af48c34a59dfff392322ce694c0bbacb7b0efbcff2a168b5f3abbd3",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-node-failure",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:5cf93639e076c4f1f0cb654011453613607a30a460d52977a00c029b17e9777d",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-node-failure-v2",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:3bf7253d26239b245a5554e1ca2583b584ea5003f53cc4f6ab9dde95d730b445",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-node-failure-v2",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a12865-bf7d-76e4-a16a-e8cbe2bd3cf3:publish",
+      "status": 201,
+      "responseSHA256": "sha256:ff90eb049ca3987ad148c27137b361932c2eb3c6a145d9f964a6280fdac6dd91",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-node-failure-v2",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:d49856159cb7d27fcfc9b2ab4d2d5851393bd89f36e4fb6daf67f61d1cdb6738",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-get_incident_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:551ef990539932a7d8b2b31aef50f46b267c04cee6fadd4cf2e5964b8ea5f3fc",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-get_incident_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a12865-bfaa-76d9-b8bf-350b25b1a5dd:publish",
+      "status": 201,
+      "responseSHA256": "sha256:8362e25f6cf3c95285ff24621191689e2ba645276e0b2f5350fe04787df2c2e7",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-get_incident_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:351571ed07995730bc54037cb85198d938f1596c8eac4815128944fea024d561",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-get_resource_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:61205374fe74fe561e74de7d5671032163a9739190f893d41fc504c1e58abea6",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-get_resource_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a12865-bfdf-70e5-a733-8cc6dd26b3e2:publish",
+      "status": 201,
+      "responseSHA256": "sha256:3e407833bb0eb0f70172d8a3967b2ebac54a7c568589a8cb11687f2a44780bc3",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-get_resource_context",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:36c038539ffebd5a2ac100f5ce0d7af2a6fd738f5640cffe6696ac32094facbf",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-query_kubernetes",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:0b74b3712456304b6237343c78b748d60dfc9abf1e6fe4f61a830474a892dbdd",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-query_kubernetes",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a12865-c00c-7783-b5ce-fd7d8f026fe3:publish",
+      "status": 201,
+      "responseSHA256": "sha256:2ef5ddfc17a4c13248f7a3e0cae4ecd790e6b79b68a1d0614464623d90124108",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-query_kubernetes",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:b0fd3b3a94e95f035511200df5896cf5ecd29f27dabaad9cd2b3d9328bff93e9",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-query_metrics",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:d5cf61612aec6f04a15b4f85f4ca0ee1fa97d2c2ccd75f67bbf19bea5a13da2f",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-query_metrics",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a12865-c039-721f-b9cf-b6a1df29718d:publish",
+      "status": 201,
+      "responseSHA256": "sha256:c7a0c1c33aed27b3917382e512d823f8b1703b85379c97b350f2b5c5a963cb39",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-query_metrics",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:caba4c6137afba2d6a28110f7aaa0210bae23cf0dcff61abbfa65c99a000c521",
+      "errorCode": null
+    },
+    {
+      "operation": "draft-query_logs",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "responseSHA256": "sha256:da9ff061cecda3818c7e54dc3b7b3fd3a7af2c09238a3e3529a0bd23db1b2f0a",
+      "errorCode": null
+    },
+    {
+      "operation": "publish-query_logs",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a12865-c06d-7846-9a4f-c6a314219aa2:publish",
+      "status": 201,
+      "responseSHA256": "sha256:bc1021e2627e2ddbdf41b2eade1e28547b61f71bbcd1f79019303cd8d440fa86",
+      "errorCode": null
+    },
+    {
+      "operation": "activate-query_logs",
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "responseSHA256": "sha256:56d3eb03c0e5f562fb2fa0d37195be9236537ff403567e60df1c99adb95ec18e",
+      "errorCode": null
+    }
+  ],
+  "sourceCapabilitiesStillRequireNativeScopeVerification": true,
+  "fullBusinessAcceptance": false,
+  "deferredVirtualization": true,
+  "physicalDIMMUnverifiedNotActivated": true
+}

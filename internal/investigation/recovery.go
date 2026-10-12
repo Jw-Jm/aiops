@@ -92,13 +92,13 @@ func (r Repository) ReadSteps(ctx context.Context, tenant, id uuid.UUID, subject
 }
 func readSteps(ctx context.Context, tx pgx.Tx, j Job) ([]Step, error) {
 	out := []Step{}
-	rows, err := tx.Query(ctx, `SELECT step_id,tool_name,args_digest,state,result,error_code FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 ORDER BY started_at,step_id LIMIT 128`, j.TenantID, j.JobID)
+	rows, err := tx.Query(ctx, `SELECT step_id,tool_name,args_digest,state,result,error_code,args_summary FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 ORDER BY started_at,step_id LIMIT 128`, j.TenantID, j.JobID)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var s Step
-		if err = rows.Scan(&s.StepID, &s.Name, &s.ArgsDigest, &s.State, &s.Result, &s.ErrorCode); err != nil {
+		if err = rows.Scan(&s.StepID, &s.Name, &s.ArgsDigest, &s.State, &s.Result, &s.ErrorCode, &s.ArgsSummary); err != nil {
 			rows.Close()
 			return nil, err
 		}

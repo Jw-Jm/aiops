@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { OperatorRoleBindingStatusUpdateRequestStatus } from './operatorRoleBindingStatusUpdateRequestStatus';
+import type { OperatorRoleBindingStatusUpdateRequestStatus } from './operatorRoleBindingStatusUpdateRequestStatus.ts';
 
 export interface OperatorRoleBindingStatusUpdateRequest {
   /** @minimum 1 */

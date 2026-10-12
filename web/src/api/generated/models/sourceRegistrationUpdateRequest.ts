@@ -4,10 +4,10 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { Identifier } from './identifier';
-import type { SourceDataScopeMapping } from './sourceDataScopeMapping';
-import type { SourceRegistrationUpdateRequestAllowedSchemasItem } from './sourceRegistrationUpdateRequestAllowedSchemasItem';
-import type { SourceRegistrationUpdateRequestStatus } from './sourceRegistrationUpdateRequestStatus';
+import type { Identifier } from './identifier.ts';
+import type { SourceDataScopeMapping } from './sourceDataScopeMapping.ts';
+import type { SourceRegistrationUpdateRequestAllowedSchemasItem } from './sourceRegistrationUpdateRequestAllowedSchemasItem.ts';
+import type { SourceRegistrationUpdateRequestStatus } from './sourceRegistrationUpdateRequestStatus.ts';
 
 export type SourceRegistrationUpdateRequest = (unknown & ({
   /**

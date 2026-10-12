@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { PlatformCapabilitiesV1CdiStatus } from './platformCapabilitiesV1CdiStatus';
+import type { PlatformCapabilitiesV1CdiStatus } from './platformCapabilitiesV1CdiStatus.ts';
 
 export type PlatformCapabilitiesV1Cdi = {
   status: PlatformCapabilitiesV1CdiStatus;

@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { ResourceRelationV2ProvenanceSourceValues } from './resourceRelationV2ProvenanceSourceValues';
+import type { ResourceRelationV2ProvenanceSourceValues } from './resourceRelationV2ProvenanceSourceValues.ts';
 
 export type ResourceRelationV2Provenance = {
   sourceRegistrationId: string;

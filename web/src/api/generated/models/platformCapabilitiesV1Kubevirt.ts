@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { PlatformCapabilitiesV1KubevirtStatus } from './platformCapabilitiesV1KubevirtStatus';
+import type { PlatformCapabilitiesV1KubevirtStatus } from './platformCapabilitiesV1KubevirtStatus.ts';
 
 export type PlatformCapabilitiesV1Kubevirt = {
   status: PlatformCapabilitiesV1KubevirtStatus;

@@ -98,6 +98,7 @@ type Execution struct {
 	ExitCode          *int            `json:"exitCode"`
 	OutputBytes       int64           `json:"outputBytes"`
 	Truncated         bool            `json:"outputTruncated"`
+	PostCheckedAt     *time.Time      `json:"postCheckedAt"`
 	PostCheck         string          `json:"postCheck"`
 	CreatedAt         time.Time       `json:"createdAt"`
 }
@@ -105,5 +106,5 @@ type Execution struct {
 // Public maps the internal durable record to the frozen CommandExecution v1
 // contract. Versioned confirmation/recovery fields use its extension point.
 func (e Execution) Public() map[string]any {
-	return map[string]any{"schemaVersion": "command-execution/v1", "executionId": e.ID, "tenantId": e.Binding.TenantID, "incidentId": e.Binding.IncidentID, "actionPlanId": e.Binding.ActionPlanID, "iteration": e.Iteration, "subject": e.Binding.Subject, "executionProfileId": e.Binding.ProfileID, "shell": e.Binding.Shell, "suggestedCommandDigest": e.SuggestedDigest, "actualCommandDigest": e.Binding.CommandDigest, "suggestionMatch": e.SuggestionMatch, "suggestionMatchVersion": e.ComparatorVersion, "acknowledgementId": e.AckID, "policyDecisionId": e.PolicyID, "state": e.State, "exitCode": e.ExitCode, "startedAt": e.StartedAt, "completedAt": e.CompletedAt, "stdoutObjectRef": e.ArchiveRef, "stderrObjectRef": e.ArchiveRef, "outputDigest": e.OutputDigest, "outputTruncated": e.Truncated, "extensions": map[string]any{"executionRequestDigest": e.RequestDigest, "binding": e.Binding, "outputBytes": e.OutputBytes, "postCheck": e.PostCheck, "createdAt": e.CreatedAt, "outputFormat": "ordered-mixed-stream/v1", "outputPreviews": e.OutputPreviews, "outputComplete": e.State == "succeeded" || e.State == "failed"}}
+	return map[string]any{"schemaVersion": "command-execution/v1", "executionId": e.ID, "tenantId": e.Binding.TenantID, "incidentId": e.Binding.IncidentID, "actionPlanId": e.Binding.ActionPlanID, "iteration": e.Iteration, "subject": e.Binding.Subject, "executionProfileId": e.Binding.ProfileID, "shell": e.Binding.Shell, "suggestedCommandDigest": e.SuggestedDigest, "actualCommandDigest": e.Binding.CommandDigest, "suggestionMatch": e.SuggestionMatch, "suggestionMatchVersion": e.ComparatorVersion, "acknowledgementId": e.AckID, "policyDecisionId": e.PolicyID, "state": e.State, "exitCode": e.ExitCode, "startedAt": e.StartedAt, "completedAt": e.CompletedAt, "stdoutObjectRef": e.ArchiveRef, "stderrObjectRef": e.ArchiveRef, "outputDigest": e.OutputDigest, "outputTruncated": e.Truncated, "extensions": map[string]any{"executionRequestDigest": e.RequestDigest, "binding": e.Binding, "outputBytes": e.OutputBytes, "postCheck": e.PostCheck, "postCheckedAt": e.PostCheckedAt, "createdAt": e.CreatedAt, "outputFormat": "ordered-mixed-stream/v1", "outputPreviews": e.OutputPreviews, "outputComplete": e.State == "succeeded" || e.State == "failed"}}
 }

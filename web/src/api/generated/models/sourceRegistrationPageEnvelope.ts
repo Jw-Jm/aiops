@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { Identifier } from './identifier';
-import type { SourceRegistration } from './sourceRegistration';
-import type { SourceRegistrationPageEnvelopeMeta } from './sourceRegistrationPageEnvelopeMeta';
+import type { Identifier } from './identifier.ts';
+import type { SourceRegistration } from './sourceRegistration.ts';
+import type { SourceRegistrationPageEnvelopeMeta } from './sourceRegistrationPageEnvelopeMeta.ts';
 
 export interface SourceRegistrationPageEnvelope {
   data: SourceRegistration[];

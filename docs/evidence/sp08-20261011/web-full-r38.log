@@ -1,0 +1,81 @@
+$ node --experimental-strip-types --test ./test/*.test.mjs && vitest run
+✔ typed SSE reader yields a decoded envelope before the stream closes (38.576058ms)
+✔ typed SSE fetch client requests and parses text/event-stream (17.769815ms)
+✔ typed SSE envelope decoder rejects incomplete event data (0.484892ms)
+✔ investigation fetch SSE resumes with Bearer and durable cursor, suppresses duplicate event sequences (1.379785ms)
+✔ investigation SSE fails closed on missing Bearer, sequence gaps and 410 (1.267569ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 109.519342
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.3 [39m[90m/data/ops-amd64-final-20261010/working-runtime/platform/web[39m
+
+ [32m✓[39m tests/step_evidence.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 705[2mms[22m[39m
+   [33m[2m✓[22m[39m locates only declared evidence and shows safe input summary, not a fabricated historical input[33m 704[2mms[22m[39m
+ [32m✓[39m tests/time_scope_filters.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 677[2mms[22m[39m
+   [33m[2m✓[22m[39m restores Finding observed time filters from URL and preserves them on cursor pagination[33m 513[2mms[22m[39m
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+[90mstderr[2m | tests/graph_version.test.tsx[2m > [22m[2mobserves versions in list mode, rejects stale nodes and resets the baseline for another scope
+[22m[39mWarning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+
+ [32m✓[39m tests/graph_version.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 770[2mms[22m[39m
+   [33m[2m✓[22m[39m observes versions in list mode, rejects stale nodes and resets the baseline for another scope[33m 769[2mms[22m[39m
+ [32m✓[39m tests/command_authorization.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1709[2mms[22m[39m
+   [33m[2m✓[22m[39m uses selected immutable profile version and rejects risk response after permission change[33m 644[2mms[22m[39m
+   [33m[2m✓[22m[39m does not restore acknowledgement from a delayed response after revocation[33m 610[2mms[22m[39m
+   [33m[2m✓[22m[39m loads later profile pages and retains the selected immutable version when returning to the first page[33m 455[2mms[22m[39m
+ [32m✓[39m tests/readability.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 686[2mms[22m[39m
+ [32m✓[39m tests/overview_resources.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 636[2mms[22m[39m
+   [33m[2m✓[22m[39m renders partial source, long real fields and cursor pagination[33m 526[2mms[22m[39m
+ [32m✓[39m tests/investigation_stream.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 568[2mms[22m[39m
+ [32m✓[39m tests/registry_recovery.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 569[2mms[22m[39m
+   [33m[2m✓[22m[39m rereads a conflicting draft without overwriting local edits and binds an explicitly merged update to the loaded revision[33m 568[2mms[22m[39m
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mkeeps a valid OIDC identity distinct from absent grants and can recover fresh authorization
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mrefreshes the current authenticated identity immediately after an API denial, then returns to login on expiry
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mignores a delayed 200 authorization response after expiry
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mignores a delayed 403 authorization response after expiry
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mrechecks a forbidden notification received during a stale successful refresh
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mdoes not let an old delayed 401 expire a newly accepted identity
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+ [32m✓[39m tests/auth_recovery.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 449[2mms[22m[39m
+ [32m✓[39m tests/postcheck.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 364[2mms[22m[39m
+   [33m[2m✓[22m[39m distinguishes pending checks from final verdicts and stops polling final results[33m 363[2mms[22m[39m
+ [32m✓[39m tests/admin_audit.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 223[2mms[22m[39m
+ [32m✓[39m tests/data_boundary.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 210[2mms[22m[39m
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ [32m✓[39m tests/manual_command_flow.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 155[2mms[22m[39m
+ [32m✓[39m tests/investigation.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m tests/auth.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 130[2mms[22m[39m
+ [32m✓[39m tests/client_generation.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/incident_workspace.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/graph_view.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m18 passed[39m[22m[90m (18)[39m
+[2m      Tests [22m [1m[32m62 passed[39m[22m[90m (62)[39m
+[2m   Start at [22m 10:07:04
+[2m   Duration [22m 17.40s[2m (import 43%, environment 25%, tests 25%, setup 5%, transform 1%)[22m
+
+[2mEnvironment [22m [33mjsdom was created 18 times[39m[2m · 8.02s total, 25% of tracked time[22m
+[2m            [22m [2mcreate it once per worker with [22m[33mpool: 'vmThreads'[39m[2m (keeps per-file isolation) or [22m[33misolate: false[39m[2m (shares it across files)[22m
+[2m            [22m [2mlearn more: https://vitest.dev/guide/improving-performance#test-environments[22m
+

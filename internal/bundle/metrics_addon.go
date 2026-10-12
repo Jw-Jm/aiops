@@ -27,9 +27,19 @@ const MetricsAddonRelease = "ops-metrics-server"
 const metricsAddonName = MetricsAddonRelease + "-metrics"
 const metricsAddonImage = "registry.k8s.io/metrics-server/metrics-server@sha256:8f49cf1b0688bb0eae18437882dbf6de2c7a2baac71b1492bc4eca25439a1bf2"
 
+const metricsAddonImageAMD64 = "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2"
+
+func (c MetricsAddonValues) image() string {
+	if c.Architecture == "linux/amd64" {
+		return metricsAddonImageAMD64
+	}
+	return metricsAddonImage
+}
+
 // Separate install input; no additions to the frozen Deployment Profile/v1.
 // The CA is public. Its private key and serving identity stay outside bundles.
 type MetricsAddonValues struct {
+	Architecture       string   `json:"architecture,omitempty"`
 	SchemaVersion      int      `json:"schemaVersion"`
 	Namespace          string   `json:"namespace"`
 	ServingTLSSecret   string   `json:"servingTLSSecret"`
@@ -57,6 +67,9 @@ func ReadMetricsAddonValues(r io.Reader) (MetricsAddonValues, error) {
 	return c, c.Validate()
 }
 func (c MetricsAddonValues) Validate() error {
+	if c.Architecture != "" && c.Architecture != "linux/arm64" && c.Architecture != "linux/amd64" {
+		return errors.New("unsupported Metrics architecture")
+	}
 	if c.SchemaVersion != 1 || !releaseNamePattern.MatchString(c.Namespace) || len(c.Namespace) > 63 || strings.HasPrefix(c.Namespace, "kube-") || c.Namespace == "default" || !releaseNamePattern.MatchString(c.ServingTLSSecret) || !releaseNamePattern.MatchString(c.KubeletCAConfigMap) || c.APIServerPort < 1 || c.APIServerPort > 65535 {
 		return errors.New("explicit Metrics addon namespace, trust references and API port required")
 	}
@@ -105,7 +118,7 @@ func metricsCA(raw string) (*x509.CertPool, error) {
 	return pool, nil
 }
 func (c MetricsAddonValues) chartValues() map[string]any {
-	return map[string]any{"image": metricsAddonImage, "servingTLSSecret": c.ServingTLSSecret, "servingCA": c.ServingCA, "kubeletCAConfigMap": c.KubeletCAConfigMap, "nodeCIDRs": c.NodeCIDRs, "apiServerCIDRs": c.APIServerCIDRs, "apiServerPort": c.APIServerPort, "networkPolicyOnly": false}
+	return map[string]any{"image": c.image(), "servingTLSSecret": c.ServingTLSSecret, "servingCA": c.ServingCA, "kubeletCAConfigMap": c.KubeletCAConfigMap, "nodeCIDRs": c.NodeCIDRs, "apiServerCIDRs": c.APIServerCIDRs, "apiServerPort": c.APIServerPort, "networkPolicyOnly": false}
 }
 
 func metricsNamespace(ctx context.Context, p profile.ResolvedProfile, c MetricsAddonValues, run CommandRunner) (namespaceIdentity, error) {
@@ -314,8 +327,15 @@ func InstallMetricsAddon(ctx context.Context, m Manifest, trust TrustRoot, p pro
 	if err := validateInstallProfile(p, m.Architecture); err != nil {
 		return ImportReport{}, err
 	}
+	architecture := c.Architecture
+	if architecture == "" {
+		architecture = "linux/arm64"
+	}
+	if architecture != m.Architecture {
+		return ImportReport{}, errors.New("Metrics input architecture differs from authenticated Bundle")
+	}
 	component := p.Components["metrics-server"]
-	if component.Mode != "bundled" || component.AdmissionState != "qualified" || component.Image != metricsAddonImage || component.Version != "v0.8.0" {
+	if component.Mode != "bundled" || component.AdmissionState != "qualified" || component.Image != c.image() || component.Version != "v0.8.0" {
 		return ImportReport{}, errors.New("explicit qualified bundled Metrics Profile component required")
 	}
 	var image ImageArtifact
@@ -327,7 +347,7 @@ func InstallMetricsAddon(ctx context.Context, m Manifest, trust TrustRoot, p pro
 			if err != nil || digest != component.Digest {
 				return ImportReport{}, errors.New("Metrics OCI differs from resolved lock")
 			}
-			image = ImageArtifact{Name: material.Name, Path: path, Reference: metricsAddonImage, Digest: digest, Architecture: m.Architecture}
+			image = ImageArtifact{Name: material.Name, Path: path, Reference: c.image(), Digest: digest, Architecture: m.Architecture}
 		}
 		if material.Name == "ops-metrics-server-chart" && material.Kind == "chart" {
 			chart = filepath.Join(v.path, filepath.FromSlash(material.PayloadRef))
@@ -449,12 +469,19 @@ func validateMetricsChart(ctx context.Context, raw []byte, c MetricsAddonValues,
 		if kind == "Deployment" {
 			pod := object(object(obj, "spec"), "template")
 			spec := object(pod, "spec")
+			architecture := "arm64"
+			if c.Architecture == "linux/amd64" {
+				architecture = "amd64"
+			}
+			if jsonDigest(spec["nodeSelector"]) != jsonDigest(map[string]any{"kubernetes.io/os": "linux", "kubernetes.io/arch": architecture}) {
+				return errors.New("Metrics node selector differs from authenticated architecture")
+			}
 			containers, ok := spec["containers"].([]any)
 			if !ok || len(containers) != 1 {
 				return errors.New("Metrics requires single upstream container")
 			}
 			container := containers[0].(map[string]any)
-			if textValue(container, "image") != metricsAddonImage || textValue(container, "imagePullPolicy") != "Never" || spec["hostNetwork"] == true || spec["hostPID"] == true || spec["initContainers"] != nil {
+			if textValue(container, "image") != c.image() || textValue(container, "imagePullPolicy") != "Never" || spec["hostNetwork"] == true || spec["hostPID"] == true || spec["initContainers"] != nil {
 				return errors.New("Metrics workload outside offline boundary")
 			}
 			args, _ := container["args"].([]any)

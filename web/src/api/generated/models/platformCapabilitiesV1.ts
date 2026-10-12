@@ -4,11 +4,11 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { PlatformCapabilitiesV1Cdi } from './platformCapabilitiesV1Cdi';
-import type { PlatformCapabilitiesV1CommandExecution } from './platformCapabilitiesV1CommandExecution';
-import type { PlatformCapabilitiesV1Investigation } from './platformCapabilitiesV1Investigation';
-import type { PlatformCapabilitiesV1Kubevirt } from './platformCapabilitiesV1Kubevirt';
-import type { PlatformCapabilitiesV1Pyrca } from './platformCapabilitiesV1Pyrca';
+import type { PlatformCapabilitiesV1Cdi } from './platformCapabilitiesV1Cdi.ts';
+import type { PlatformCapabilitiesV1CommandExecution } from './platformCapabilitiesV1CommandExecution.ts';
+import type { PlatformCapabilitiesV1Investigation } from './platformCapabilitiesV1Investigation.ts';
+import type { PlatformCapabilitiesV1Kubevirt } from './platformCapabilitiesV1Kubevirt.ts';
+import type { PlatformCapabilitiesV1Pyrca } from './platformCapabilitiesV1Pyrca.ts';
 
 export interface PlatformCapabilitiesV1 {
   schemaVersion: 'platform-capabilities/v1';

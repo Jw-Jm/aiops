@@ -14,6 +14,9 @@ import (
 // verifyCurrentModel proves DNS and the configured model from the target
 // investigator network boundary. This is a fixed install check, never a Tool.
 func verifyCurrentModel(ctx context.Context, p profile.ResolvedProfile, b BusinessValues, images []ImageArtifact, run CommandRunner) (result error) {
+	if b.ModelPending() {
+		return errors.New("model is pending; availability has not been verified")
+	}
 	sp06 := object(b.values, "sp06")
 	if textValue(sp06, "modelNetworkMode") == "orbstack-host" && p.Kubernetes.Distribution != "orbstack" {
 		return errors.New("native model bridge requires an OrbStack target")

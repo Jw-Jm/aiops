@@ -23,3 +23,14 @@ func TestOfficialUpstreamNoLLMOutputShape(t *testing.T) {
 		t.Fatalf("locked output rejected: %v", err)
 	}
 }
+
+func TestLockedBinaryArchitectureIdentitiesAreFinite(t *testing.T) {
+	if LockedBinaryForArchitecture("arm64") != LockedBinarySHA256 || LockedBinaryForArchitecture("amd64") != LockedBinarySHA256AMD64 || LockedBinarySHA256 == LockedBinarySHA256AMD64 {
+		t.Fatal("native binary identity selection drifted")
+	}
+	for _, target := range []string{"", "386", "aarch64", "linux/amd64", "riscv64"} {
+		if LockedBinaryForArchitecture(target) != "" {
+			t.Fatalf("unsupported target inherited executable permission: %s", target)
+		}
+	}
+}

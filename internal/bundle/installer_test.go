@@ -1,6 +1,7 @@
 package bundle
 
 import (
+	"bytes"
 	"context"
 	"strings"
 	"testing"
@@ -232,5 +233,36 @@ func TestCleanupReleaseAcceptsOwnedMonitoringResourcesAndRejectsForeignOnes(t *t
 				}
 			})
 		}
+	}
+}
+
+func TestCommandCredentialNamespacesAreExactAndNeverAdopted(t *testing.T) {
+	b := BusinessValues{values: map[string]any{"sp07": map[string]any{"enabled": true, "kubernetesCredentials": []any{map[string]any{"namespace": "target", "name": "runner", "clusterScoped": false}}}}}
+	scopes := commandCredentialScopes(&b)
+	manifest := []byte("apiVersion: v1\nkind: ServiceAccount\nmetadata:\n  name: runner\n  namespace: target\n  labels: {ops.platform.io/release: ops-platform}\nautomountServiceAccountToken: false\n")
+	looked := false
+	run := func(_ context.Context, _ string, args ...string) ([]byte, error) {
+		if !strings.Contains(strings.Join(args, " "), "-n target") {
+			t.Fatalf("wrong lookup namespace: %v", args)
+		}
+		looked = true
+		return nil, nil
+	}
+	p := importProfile()
+	if err := validateRenderedChartStageScoped(context.Background(), "ops-system", manifest, nil, p, "ops-platform", run, false, nil, scopes); err != nil || !looked {
+		t.Fatalf("explicit credential rejected: %v", err)
+	}
+	wrong := bytes.ReplaceAll(manifest, []byte("namespace: target"), []byte("namespace: foreign"))
+	if err := validateRenderedChartStageScoped(context.Background(), "ops-system", wrong, nil, p, "ops-platform", run, false, nil, scopes); err == nil {
+		t.Fatal("foreign namespace accepted")
+	}
+	existing := func(context.Context, string, ...string) ([]byte, error) {
+		return []byte(`{"metadata":{"uid":"foreign"}}`), nil
+	}
+	if err := validateRenderedChartStageScoped(context.Background(), "ops-system", manifest, nil, p, "ops-platform", existing, false, nil, scopes); err == nil {
+		t.Fatal("existing credential adopted")
+	}
+	if err := validateRenderedChartStage(context.Background(), "ops-system", manifest, nil, p, "ops-platform", run, false); err == nil {
+		t.Fatal("implicit cross namespace accepted")
 	}
 }

@@ -27,7 +27,14 @@ type BusinessValues struct {
 	values               map[string]any
 	installStage         string
 	registrationVerified bool
+	initializeCommands   bool
 	bootstrapResources   map[string]string
+}
+
+// ModelPending keeps the model-dependent investigator inactive while the other
+// nonvirtual services are installed with their explicit tenant and policy scope.
+func (b BusinessValues) ModelPending() bool {
+	return textValue(object(b.values, "sp06"), "modelState") == "pending"
 }
 
 func (b BusinessValues) Namespace() string { return textValue(b.values, "namespace") }
@@ -176,7 +183,11 @@ func validateBusinessNetwork(document map[string]any) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	identities := map[string]bool{}
-	for _, identity := range []string{textValue(sp04, "apiIdentitySecret"), textValue(sp04, "workerIdentitySecret"), textValue(sp06, "identitySecret"), textValue(sp06, "modelKeySecret"), textValue(sp04, "sourceCredentialsSecret")} {
+	identityNames := []string{textValue(sp04, "apiIdentitySecret"), textValue(sp04, "workerIdentitySecret"), textValue(sp06, "identitySecret"), textValue(sp04, "sourceCredentialsSecret")}
+	if textValue(sp06, "modelState") != "pending" {
+		identityNames = append(identityNames, textValue(sp06, "modelKeySecret"))
+	}
+	for _, identity := range identityNames {
 		if identities[identity] {
 			return errors.New("workload identities, model and source credentials require separate Secret objects")
 		}
@@ -279,6 +290,9 @@ func validateBusinessNetwork(document map[string]any) error {
 			return errors.New("ingestion binding requires an explicit admitted tenant/source")
 		}
 	}
+	if textValue(sp06, "modelState") == "pending" {
+		return nil
+	}
 	model := object(sp06, "model")
 	endpoint := textValue(model, "base_url")
 	if textValue(sp06, "modelNetworkMode") == "orbstack-host" {
@@ -347,9 +361,22 @@ func applyBusinessValues(values map[string]any, b BusinessValues, images map[str
 	for _, name := range []string{"sp04", "sp05", "sp06"} {
 		values[name] = b.values[name]
 	}
+	// Explicitly clear Helm defaults in pending mode. No loopback placeholder,
+	// inherited model credential or model egress may survive the values merge.
+	if b.ModelPending() {
+		pending := map[string]any{}
+		for k, v := range object(b.values, "sp06") {
+			pending[k] = v
+		}
+		for _, k := range []string{"model", "modelKeySecret", "modelPort", "modelNetworkMode"} {
+			pending[k] = nil
+		}
+		pending["modelCIDRs"] = []string{}
+		values["sp06"] = pending
+	}
 	values["workloadIdentity"] = b.values["workloadIdentity"]
 	components := object(values, "components")
-	components["investigator"] = map[string]any{"enabled": true, "image": images["holmesgpt"]}
+	components["investigator"] = map[string]any{"enabled": !b.ModelPending(), "image": images["holmesgpt"]}
 	return nil
 }
 func preflightBusinessSecrets(ctx context.Context, p profile.ResolvedProfile, b BusinessValues, run CommandRunner) error {
@@ -361,7 +388,9 @@ func preflightBusinessSecrets(ctx context.Context, p profile.ResolvedProfile, b 
 		textValue(sp04, "apiIdentitySecret"):    {"ca.pem", "context.key"},
 		textValue(sp04, "workerIdentitySecret"): {"ca.pem", "context.pub"},
 		textValue(sp06, "identitySecret"):       {"ca.pem"},
-		textValue(sp06, "modelKeySecret"):       {"apiKey"},
+	}
+	if !b.ModelPending() {
+		required[textValue(sp06, "modelKeySecret")] = []string{"apiKey"}
 	}
 	for _, x := range sp04["sources"].([]any) {
 		s := x.(map[string]any)
@@ -390,4 +419,14 @@ func preflightBusinessSecrets(ctx context.Context, p profile.ResolvedProfile, b 
 		}
 	}
 	return nil
+}
+
+// InitializeCommands permits the explicit first SP07 activation after native
+// PKI/SSH bootstrap, while the earlier SP04–06 configuration remains bound.
+func (b BusinessValues) InitializeCommands() (BusinessValues, error) {
+	if object(b.values, "sp07") == nil {
+		return BusinessValues{}, errors.New("command initialization requires explicit validated SP07 inputs")
+	}
+	b.initializeCommands = true
+	return b, nil
 }

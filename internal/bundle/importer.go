@@ -28,6 +28,7 @@ type ImageArtifact struct {
 }
 
 type ImportReport struct {
+	ModelStatus    string            `json:"modelStatus,omitempty"`
 	BundleID       string            `json:"bundleId"`
 	Driver         string            `json:"driver"`
 	Imported       []string          `json:"imported"`

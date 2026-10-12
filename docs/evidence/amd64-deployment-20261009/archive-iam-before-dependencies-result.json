@@ -1,0 +1,38 @@
+{
+  "observedAt": "2026-10-10T03:17:01.448938+00:00",
+  "namespaceUID": "ffc14cbc-647e-431c-8376-4e3e0a69b4ad",
+  "secretUID": "cb30adf1-001a-4189-86a2-0033371a13f1",
+  "beforeResourceVersion": "54535",
+  "afterResourceVersion": "100467",
+  "privateIAMFile": "/opt/ops-amd64-validation-20261009/private/archive-iam-r1.json",
+  "commands": [
+    {
+      "command": [
+        "/opt/ops-amd64-validation-20261009/opsctl-final",
+        "bootstrap",
+        "archive-iam",
+        "--secrets-file",
+        "/opt/ops-amd64-validation-20261009/private/archive-iam-input-r1.json",
+        "--output",
+        "/opt/ops-amd64-validation-20261009/private/archive-iam-r1.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "kubectl",
+        "--context",
+        "kubernetes-admin@kubernetes",
+        "replace",
+        "-f",
+        "-",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "preparedBeforeDependencyPods": true,
+  "oldProtectedObjectsOrIdentityAdopted": false,
+  "fullArchiveRuntimeAcceptance": false
+}

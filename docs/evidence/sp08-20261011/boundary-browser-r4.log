@@ -1,0 +1,39 @@
+
+Running 3 tests using 1 worker
+
+[1/3] tests/e2e/boundary_fixtures.spec.ts:9:1 › fixture cyclic graph, isolated node, Unicode identifiers and keyboard navigation
+tests/e2e/boundary_fixtures.spec.ts:9:1 › fixture cyclic graph, isolated node, Unicode identifiers and keyboard navigation
+Fixture graph overflow inspection { width: 1440, scroll: 1425, offenders: [] }
+
+Fixture graph overflow inspection {
+  width: 390,
+  scroll: 1137,
+  offenders: [
+    { tag: 'DIV', class: '', left: 32, right: 1137 },
+    { tag: 'CANVAS', class: '', left: 32, right: 1137 },
+    { tag: 'CANVAS', class: '', left: 32, right: 1137 },
+    { tag: 'CANVAS', class: '', left: 32, right: 1137 },
+    { tag: 'TABLE', class: '', left: 31, right: 631 },
+    { tag: 'THEAD', class: 'ant-table-thead', left: 31, right: 631 },
+    { tag: 'TR', class: '', left: 31, right: 631 },
+    { tag: 'TH', class: 'ant-table-cell', left: 31, right: 484.015625 },
+    {
+      tag: 'TH',
+      class: 'ant-table-cell',
+      left: 484.015625,
+      right: 551.640625
+    },
+    {
+      tag: 'TH',
+      class: 'ant-table-cell',
+      left: 551.640625,
+      right: 631
+    },
+    { tag: 'TBODY', class: 'ant-table-tbody', left: 31, right: 631 },
+    { tag: 'TR', class: 'ant-table-measure-row', left: 31, right: 631 }
+  ]
+}
+
+[2/3] tests/e2e/boundary_fixtures.spec.ts:107:1 › fixture command SSE cursor expiry, duplicates, bounded output and uncertain execution
+[3/3] tests/e2e/boundary_fixtures.spec.ts:219:1 › fixture command suggestion match labels preserve all four backend outcomes
+  3 passed (12.1s)

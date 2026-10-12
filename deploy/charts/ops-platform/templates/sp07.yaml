@@ -5,13 +5,13 @@
 {{- $config := dict "schemaVersion" "sp07-runtime/v1" "namespace" .Release.Namespace "listenAddress" (printf ":%d" (int .Values.sp07.gatewayPort)) "apiEndpoint" (printf "https://ops-api.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.sp07.gatewayPort)) "workloadCAFile" "/etc/sp04/identity/ca.pem" "policyName" .Values.sp07.policyName "kubernetesEndpoint" .Values.sp07.kubernetesEndpoint "kubernetesCAFile" "/var/run/secrets/ops-platform/execution/ca.pem" "kubernetesTokenFile" "/var/run/secrets/ops-platform/execution/token" "trustConfigMap" "ops-command-runner-trust" "tenants" .Values.sp07.tenants "admittedProfiles" .Values.sp07.admittedProfiles "hosts" .Values.sp07.hosts "hostReports" .Values.sp07.hostReports }}
 apiVersion: v1
 kind: ConfigMap
-metadata: {name: ops-sp07-runtime}
+metadata: {name: ops-sp07-runtime, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 data:
   runtime.json: {{ $config | toJson | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap
-metadata: {name: ops-command-runner-trust}
+metadata: {name: ops-command-runner-trust, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 data:
   runner.json: {{ dict "Namespace" .Release.Namespace "OpenBaoAddress" (.Values.runtime.openbaoAddress | default (printf "https://ops-openbao.%s.svc.cluster.local:8200" .Release.Namespace)) "OpenBaoServerName" (printf "ops-openbao.%s.svc.cluster.local" .Release.Namespace) | toJson | quote }}
   openbao-ca.pem: {{ .Values.runtime.openbaoCABundle | quote }}
@@ -19,7 +19,7 @@ data:
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
-metadata: {name: ops-sp07-job-controller}
+metadata: {name: ops-sp07-job-controller, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 rules:
   - apiGroups: [batch]
     resources: [jobs]
@@ -27,7 +27,7 @@ rules:
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
-metadata: {name: ops-sp07-job-controller}
+metadata: {name: ops-sp07-job-controller, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: ops-sp07-job-controller}
 subjects: [{kind: ServiceAccount, name: ops-worker, namespace: {{ .Release.Namespace }}}]
 {{- range .Values.sp07.kubernetesCredentials }}
@@ -35,12 +35,13 @@ subjects: [{kind: ServiceAccount, name: ops-worker, namespace: {{ .Release.Names
 ---
 apiVersion: v1
 kind: ServiceAccount
-metadata: {name: {{ .name }}, namespace: {{ .namespace }}}
+metadata: {name: {{ .name }}, namespace: {{ .namespace }}, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 automountServiceAccountToken: false
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: {{ if .clusterScoped }}ClusterRole{{ else }}Role{{ end }}
 metadata:
+  labels: {ops.platform.io/release: {{ $.Release.Name }}}
   name: {{ printf "ops-sp07-target-%s-%s" .namespace .name }}
   {{ if not .clusterScoped }}namespace: {{ .namespace }}{{ end }}
 rules: {{ .rules | toJson }}
@@ -48,6 +49,7 @@ rules: {{ .rules | toJson }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: {{ if .clusterScoped }}ClusterRoleBinding{{ else }}RoleBinding{{ end }}
 metadata:
+  labels: {ops.platform.io/release: {{ $.Release.Name }}}
   name: {{ printf "ops-sp07-target-%s-%s" .namespace .name }}
   {{ if not .clusterScoped }}namespace: {{ .namespace }}{{ end }}
 roleRef: {apiGroup: rbac.authorization.k8s.io, kind: {{ if .clusterScoped }}ClusterRole{{ else }}Role{{ end }}, name: {{ printf "ops-sp07-target-%s-%s" .namespace .name }}}
@@ -55,7 +57,7 @@ subjects: [{kind: ServiceAccount, name: {{ .name }}, namespace: {{ .namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
-metadata: {name: {{ printf "ops-sp07-token-%s" .name }}, namespace: {{ .namespace }}}
+metadata: {name: {{ printf "ops-sp07-token-%s" .name }}, namespace: {{ .namespace }}, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 rules:
   - apiGroups: [""]
     resources: [serviceaccounts/token]
@@ -64,7 +66,7 @@ rules:
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
-metadata: {name: {{ printf "ops-sp07-token-%s" .name }}, namespace: {{ .namespace }}}
+metadata: {name: {{ printf "ops-sp07-token-%s" .name }}, namespace: {{ .namespace }}, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: {{ printf "ops-sp07-token-%s" .name }}}
 subjects: [{kind: ServiceAccount, name: ops-api, namespace: {{ $.Release.Namespace }}}]
 {{- end }}
@@ -72,7 +74,7 @@ subjects: [{kind: ServiceAccount, name: ops-api, namespace: {{ $.Release.Namespa
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
-metadata: {name: ops-sp07-runner-default-deny}
+metadata: {name: ops-sp07-runner-default-deny, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 spec:
   podSelector: {matchLabels: {app.kubernetes.io/name: ops-command-runner}}
   policyTypes: [Ingress, Egress]
@@ -80,7 +82,7 @@ spec:
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
-metadata: {name: {{ .networkPolicyRef }}}
+metadata: {name: {{ .networkPolicyRef }}, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 spec:
   podSelector: {matchLabels: {app.kubernetes.io/name: ops-command-runner, ops.platform/network-profile: {{ .networkPolicyRef }}}}
   policyTypes: [Ingress, Egress]
@@ -111,7 +113,7 @@ spec:
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
-metadata: {name: ops-sp07-api-runner-ingress}
+metadata: {name: ops-sp07-api-runner-ingress, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 spec:
   podSelector: {matchLabels: {ops.platform.io/component: api}}
   policyTypes: [Ingress]
@@ -121,7 +123,7 @@ spec:
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
-metadata: {name: ops-sp07-api-kubernetes-egress}
+metadata: {name: ops-sp07-api-kubernetes-egress, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
 spec:
   podSelector: {matchLabels: {ops.platform.io/component: api}}
   policyTypes: [Egress]

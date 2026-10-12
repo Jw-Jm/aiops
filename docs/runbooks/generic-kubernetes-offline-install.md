@@ -82,7 +82,7 @@ opsctl install --profile core --resolved /secure/resolved.yaml \
 
 1. OpenBao `init → unseal → configure --investigation-signing`；保存原始恢复材料，在安装 Profile 的独立观测副本上 configure，安装用 Profile 不变。
 2. bootstrap 身份完成数据库角色初始迁移，正式 `bootstrap database-logins` 创建独立 migration/API/Worker LOGIN，受限 migration 身份完成其余 forward-only 迁移。
-3. 正式 `bootstrap archive-iam/archive-bucket` 建立四职责凭据、TLS、版本化 COMPLIANCE 365 天归档；正式 `bootstrap oidc-realm` 配置实际 HTTPS 身份和真实 OTP/LoA-2。
+3. 正式 `bootstrap archive-iam/archive-bucket` 建立四职责凭据、TLS、版本化 COMPLIANCE 365 天归档；正式 `bootstrap oidc-realm` 配置实际 HTTPS 身份和真实 OTP/LoA-2。必须在业务激活前完成实际 `archive-bucket` 初始化，IAM 文件生成不能替代归档桶创建。
 4. 注册实际 workload identity、公共 CA、Context 签名和 source credentials 的最小 Secret 投影，通过 `bootstrap graph-leases` 创建本次 Graph Lease。
 5. `install --stage bootstrap-api` 启动初始化 API；通过正式 `bootstrap first-tenant` 及 API/Registry 发布激活 Tenant、Cluster、Source、RoleBinding、签名 Policy/Recipe/Tool，并取得实际来源 scope 证明。
 6. 新鲜 LoA-2 bearer 与正式 source IDs 输入 `install --stage business --registration-token-file ... --offline`，启动两个 Worker 和锁定 investigator。调查网络只允许确切内网模型及标准 MCP；禁止 investigator 直连数据库/事实源。
@@ -95,4 +95,20 @@ opsctl install --profile core --resolved /secure/resolved.yaml \
 
 新节点、节点重建、runtime/snapshotter 更换或缓存清理后，先按新 UID 重新执行本地导入并复核，禁止把旧 UID 的证明自动绑定新节点。OpenBao 重启 sealed 时使用该安装原恢复材料解封，不能重新 init。保留、Legal Hold、历史 Transit key 与原对象版本约束继续有效。
 
-安装器不创建 SP-07 CommandExecution/Runner，也不部署 DeepFlow、KubeVirt/CDI 或 PyRCA。后续 addon 及生产门禁分别按其授权和准入完成。
+SP07 的首次启动在原生 OpenBao PKI/SSH 初始化和 Host Onboarding 完成后进行。在原 SP04–06 的已注册业务配置上添加完整 `sp07`，于 `--stage business` 明确提供 `--initialize-commands`。安装器仍核对同一 Bundle、Profile、namespace UID、已记录资源 UID 与原 SP04–06 配置，并将完整的新输入 digest 写入独立的 `ops-command-initialization-checkpoint`；后续改变该 intent 或接管其他来源的 checkpoint 均被拒绝。不带该选项时，原有完整配置绑定保持严格。此入口只负责首次启动，不是已运行 SP07 的升级入口。实际 CommandExecution/Runner Job 生命周期需要另行验证。
+
+安装器不部署尚未准入的 DeepFlow、KubeVirt/CDI 或 PyRCA。生产门禁分别按其授权和准入完成。
+
+### 模型接口延后配置
+
+当模型服务器尚未就绪时，可显式设置 `sp06.modelState: pending`，保留 SP06 的 tenant、gateway、policy、identity 与 budget 配置，且省略 `model`、`modelCIDRs`、`modelPort`、`modelKeySecret` 和 `modelNetworkMode`。没有 `modelState: pending` 的配置仍必须提供完整模型输入；该状态不放宽其余来源、租户、身份和 Bundle 准入。
+
+此状态下，三个安装阶段仍可渲染，API/Worker 的 SP06 gateway 配置及 SP07 保留；调查器 Deployment 和模型运行配置不会生成，模型出口为空，也不查询模型密钥。安装报告标记 `modelStatus: PENDING_NOT_CONFIGURED_NOT_VERIFIED`，不运行模型连通性探针，不代表 SP06 实际调查验收通过。安装值会显式清空 Chart 的模型默认值，不能填入环回或其他占位地址。
+
+依赖/API 引导回执仍绑定原始安装配置。模型就绪后的配置变化不得绕过此绑定；后续模型激活需独立处理配置变更、策略更新与真实模型验证，不能直接复用待配置状态的旧回执来宣称调查器已验收。
+
+## 当前独立 namespace 的 release 干净重装
+
+使用已签名、独立验签的安装器执行 `opsctl cleanup --profile <原冻结 resolved> --business-values <已注册并激活的 business values> --bundle <当前已安装 Bundle> --key <独立信任公钥>`，默认只读输出计划。确认调查和命令已终止后，在同一命令加 `--apply` 执行本次安装的固定 release 清理；不接受任意 release 或 namespace 参数。清理验证原 Bundle 的签名、完整 payload 和逐文件摘要，以及 namespace UID、installation ID、阶段回执绑定、实际 Helm 归属、明确配置的 SP07 外部 namespace 凭据范围与 PVC/PV Retain 绑定。清理旧发行物的认证不赋予其当前运行准入；导入及安装仍要求当前合格目录。
+
+清理顺序先平台消费者，再当前 bundled 依赖，保留外部 Metrics、namespace、bootstrap/运行凭据、Graph Lease、数据库内容和受保护归档。只有本次三个阶段回执使用 UID/resourceVersion 前置条件删除；不修改回执摘要以迁就新的 Bundle。同一 namespace 重新执行新签名包的 `dependencies`、`bootstrap-api`、`business` 阶段，复用保留的真实数据库、身份、归档及正式来源配置，不重复空库迁移断言、首租户创建、OpenBao init 或归档桶创建。SP07 业务阶段仍需明确 `--initialize-commands`、新鲜实际注册令牌及原冻结业务范围。记录重装前后 PVC/PV、namespace、Graph Lease 和数据身份，复测图、调查、归档及执行；仅新 namespace 首装不能代替同一 release 的干净重装。

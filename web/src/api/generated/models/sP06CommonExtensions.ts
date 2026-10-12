@@ -4,6 +4,6 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { SP06CommonExtensionValue } from './sP06CommonExtensionValue';
+import type { SP06CommonExtensionValue } from './sP06CommonExtensionValue.ts';
 
 export interface SP06CommonExtensions {[key: string]: SP06CommonExtensionValue | null}

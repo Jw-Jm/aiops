@@ -1,0 +1,379 @@
+{
+  "config": {
+    "argv": [
+      "/data/ops-sp08-20261011/toolchain/node-v24.21.0-linux-x64/bin/node",
+      "/data/ops-amd64-final-20261010/working-runtime/platform/web/node_modules/.pnpm/@playwright+test@1.64.0/node_modules/@playwright/test/cli.js",
+      "test",
+      "layout_readability.spec.ts",
+      "boundary_fixtures.spec.ts",
+      "admin_recovery.spec.ts"
+    ],
+    "configFile": "/data/ops-amd64-final-20261010/working-runtime/platform/web/playwright.config.ts",
+    "rootDir": "/data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/data/ops-sp08-20261011/build/closeout-browser-r1",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/data/ops-sp08-20261011/build/closeout-browser-r1",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "",
+        "testDir": "/data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e",
+        "snapshotDir": "/data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 180000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "line",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/data/ops-sp08-20261011/build/closeout-browser-r1.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "admin_recovery.spec.ts",
+      "file": "admin_recovery.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "actual administrator draft conflict is recoverable without losing local edits",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2801,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "Actual isolated QA draft: 01a12ddd-e8a5-70d3-8a9a-1430c8d0a196 revision1→conflict→read2→merged3; not published or activated\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-12T02:07:58.216Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3adf3023cd634676ed99-5e9eff058322f5b2aee6",
+          "file": "admin_recovery.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "actual administration pages remain readable in desktop and narrow windows",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3005,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-12T02:08:01.048Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3adf3023cd634676ed99-1069892352aa81e49eae",
+          "file": "admin_recovery.spec.ts",
+          "line": 137,
+          "column": 1
+        },
+        {
+          "title": "actual source editing starts from the loaded status without changing the source",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1150,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-12T02:08:04.064Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3adf3023cd634676ed99-5403489a252db7e0d857",
+          "file": "admin_recovery.spec.ts",
+          "line": 176,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "boundary_fixtures.spec.ts",
+      "file": "boundary_fixtures.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "fixture cyclic graph, isolated node, Unicode identifiers and keyboard navigation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1664,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "Fixture graph overflow inspection { width: \u001b[33m1440\u001b[39m, scroll: \u001b[33m1425\u001b[39m, offenders: [] }\n"
+                    },
+                    {
+                      "text": "Fixture graph overflow inspection {\n  width: \u001b[33m390\u001b[39m,\n  scroll: \u001b[33m375\u001b[39m,\n  offenders: [\n    { tag: \u001b[32m'DIV'\u001b[39m, class: \u001b[32m''\u001b[39m, left: \u001b[33m32\u001b[39m, right: \u001b[33m1137\u001b[39m },\n    { tag: \u001b[32m'CANVAS'\u001b[39m, class: \u001b[32m''\u001b[39m, left: \u001b[33m32\u001b[39m, right: \u001b[33m1137\u001b[39m },\n    { tag: \u001b[32m'CANVAS'\u001b[39m, class: \u001b[32m''\u001b[39m, left: \u001b[33m32\u001b[39m, right: \u001b[33m1137\u001b[39m },\n    { tag: \u001b[32m'CANVAS'\u001b[39m, class: \u001b[32m''\u001b[39m, left: \u001b[33m32\u001b[39m, right: \u001b[33m1137\u001b[39m },\n    { tag: \u001b[32m'TABLE'\u001b[39m, class: \u001b[32m''\u001b[39m, left: \u001b[33m31\u001b[39m, right: \u001b[33m631\u001b[39m },\n    { tag: \u001b[32m'THEAD'\u001b[39m, class: \u001b[32m'ant-table-thead'\u001b[39m, left: \u001b[33m31\u001b[39m, right: \u001b[33m631\u001b[39m },\n    { tag: \u001b[32m'TR'\u001b[39m, class: \u001b[32m''\u001b[39m, left: \u001b[33m31\u001b[39m, right: \u001b[33m631\u001b[39m },\n    { tag: \u001b[32m'TH'\u001b[39m, class: \u001b[32m'ant-table-cell'\u001b[39m, left: \u001b[33m31\u001b[39m, right: \u001b[33m484.015625\u001b[39m },\n    {\n      tag: \u001b[32m'TH'\u001b[39m,\n      class: \u001b[32m'ant-table-cell'\u001b[39m,\n      left: \u001b[33m484.015625\u001b[39m,\n      right: \u001b[33m551.640625\u001b[39m\n    },\n    {\n      tag: \u001b[32m'TH'\u001b[39m,\n      class: \u001b[32m'ant-table-cell'\u001b[39m,\n      left: \u001b[33m551.640625\u001b[39m,\n      right: \u001b[33m631\u001b[39m\n    },\n    { tag: \u001b[32m'TBODY'\u001b[39m, class: \u001b[32m'ant-table-tbody'\u001b[39m, left: \u001b[33m31\u001b[39m, right: \u001b[33m631\u001b[39m },\n    { tag: \u001b[32m'TR'\u001b[39m, class: \u001b[32m'ant-table-measure-row'\u001b[39m, left: \u001b[33m31\u001b[39m, right: \u001b[33m631\u001b[39m }\n  ]\n}\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-12T02:08:05.228Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fff90fca7cd67612f3da-9caf8d21da746f56794d",
+          "file": "boundary_fixtures.spec.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "fixture command SSE cursor expiry, duplicates, bounded output and uncertain execution",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3164,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-12T02:08:06.900Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fff90fca7cd67612f3da-fc45fe3d2f4e5c36b2bf",
+          "file": "boundary_fixtures.spec.ts",
+          "line": 124,
+          "column": 1
+        },
+        {
+          "title": "fixture command suggestion match labels preserve all four backend outcomes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4549,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-12T02:08:10.072Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fff90fca7cd67612f3da-3c817c25f3f1be181db0",
+          "file": "boundary_fixtures.spec.ts",
+          "line": 238,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "layout_readability.spec.ts",
+      "file": "layout_readability.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "real desktop and narrow window layouts keep primary controls accessible",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13644,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-12T02:08:14.638Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8fc6a473544096c9d945-e71ebfe058bf926e3954",
+          "file": "layout_readability.spec.ts",
+          "line": 2,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-12T02:07:57.357Z",
+    "duration": 30969.158000000003,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

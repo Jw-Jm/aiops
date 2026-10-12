@@ -119,7 +119,7 @@ func Build(ctx context.Context, spec BuildSpec, inputDirectory, outputDirectory,
 	if err := validateManifestContract(preliminary); err != nil {
 		return BuildReport{}, err
 	}
-	catalog, err := loadEmbeddedCatalog()
+	catalog, err := loadEmbeddedCatalog(manifest.Architecture)
 	if err != nil {
 		return BuildReport{}, err
 	}

@@ -1,0 +1,32 @@
+
+Running 1 test using 1 worker
+
+[1/1] tests/e2e/model_unavailable.spec.ts:2:1 › actual model outage explains the failure while deterministic diagnosis and evidence remain available
+  1) tests/e2e/model_unavailable.spec.ts:2:1 › actual model outage explains the failure while deterministic diagnosis and evidence remain available 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('模型暂不可用；仍可查看故障、证据和规则诊断结果。').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('模型暂不可用；仍可查看故障、证据和规则诊断结果。').first() with timeout 5000ms
+      - waiting for getByText('模型暂不可用；仍可查看故障、证据和规则诊断结果。').first()
+
+
+       9 |   const job = (await response.json()).data;
+      10 |   await expect(page.getByText("调查已结束，结果来自持久记录", { exact: true })).toBeVisible({ timeout: 120000 });
+    > 11 |   await expect(page.getByText("模型暂不可用；仍可查看故障、证据和规则诊断结果。").first()).toBeVisible();
+         |                                                                    ^
+      12 |   await page.screenshot({ path: config.screenshotDirectory + "/operator-model-unavailable-readable.png", animations: "disabled" });
+      13 |   await page.getByRole("tab", { name: "规则诊断", exact: true }).click();
+      14 |   await expect(page.getByRole("heading", { name: "规则诊断", exact: true })).toBeVisible();
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/model_unavailable.spec.ts:11:68
+
+    Error Context: ../../../../ops-sp08-20261011/build/model-outage-r1/model_unavailable-actual-m-29018-d-evidence-remain-available/error-context.md
+
+
+  1 failed
+    tests/e2e/model_unavailable.spec.ts:2:1 › actual model outage explains the failure while deterministic diagnosis and evidence remain available 

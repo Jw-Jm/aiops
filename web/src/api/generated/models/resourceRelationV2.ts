@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CanonicalID } from './canonicalID';
-import type { ResourceRelationV2Provenance } from './resourceRelationV2Provenance';
+import type { CanonicalID } from './canonicalID.ts';
+import type { ResourceRelationV2Provenance } from './resourceRelationV2Provenance.ts';
 
 export interface ResourceRelationV2 {
   from: CanonicalID;

@@ -4,10 +4,10 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { ActionPlanV2 } from './actionPlanV2';
-import type { InvestigationResultV1CandidateUpdatesItem } from './investigationResultV1CandidateUpdatesItem';
-import type { InvestigationResultV1SchemaVersion } from './investigationResultV1SchemaVersion';
-import type { InvestigationResultV1Status } from './investigationResultV1Status';
+import type { ActionPlanV2 } from './actionPlanV2.ts';
+import type { InvestigationResultV1CandidateUpdatesItem } from './investigationResultV1CandidateUpdatesItem.ts';
+import type { InvestigationResultV1SchemaVersion } from './investigationResultV1SchemaVersion.ts';
+import type { InvestigationResultV1Status } from './investigationResultV1Status.ts';
 
 export interface InvestigationResultV1 {
   schemaVersion: InvestigationResultV1SchemaVersion;

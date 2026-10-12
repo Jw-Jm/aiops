@@ -1,0 +1,275 @@
+{
+  "status": "stage closeout at user request; formal release and overall acceptance pending",
+  "trigger": "用户反馈整个页面可读性和易用性低，普通运维人员难以使用",
+  "development": "remote-first; incremental preview https://192.168.0.63:18443; temporary images",
+  "verified": {
+    "componentFullRun": "r38: 62 component/boundary tests + 5 Node SSE Contract PASS; TypeScript strict/Vite build r38 PASS",
+    "newObservationPresentation": "5 readability tests passed; r12",
+    "boundedResourceAndLeaseRegression": "5 targeted Go tests passed; r3",
+    "liveBrowserBusiness": "r9: 10 real browser tests PASS after archive recovery; real OIDC/roles/revocation, Evidence, namespace and cluster commands with actual post-check, audit cursor detail, responsive/keyboard",
+    "minimalNginxPoC": "r2 config + CA-verified HTTPS startup; r7 real OIDC/API/execution-SSE/output checks passed; complete formal image license/digest receipt remains required",
+    "realRoleIsolation": "real operator/platform_admin/no_grant isolation and immediate revocation PASS; role-browser-r4 and degraded-browser-r2",
+    "authRaceRegression": "6 AuthProvider tests PASS; delayed200/403/401 and queued forbidden; independent readonly source review closed reported findings",
+    "responsiveAndKeyboard": "1440x900,1280x800,390x844 primary pages have no whole-page horizontal overflow; real keyboard skip-link and persisted investigation budget PASS; readable-layout-r2/r3",
+    "auditReadable": "real risk assessment/ack/execution/post-check records + browser SHA256 PASS; real second cursor page details preserve cursor on open/close PASS; readable-layout-r3",
+    "investigationResume": "r1: current revision11 actual model job succeeded; model/context/model succeeded; Bearer + Last-Event-ID manual reconnect, retained completed events, reload persisted restoration PASS. r22 six transport lifecycle regressions PASS; independent readonly module review PASS",
+    "adminDraftRecovery": "r2: actual MFA admin isolated unpublished draft revision1→concurrent2→409→GET2 preserving edits→explicit merge→PATCH3→GET3 PASS; 1440/390 admin pages PASS",
+    "signedArchive": "audit-bounded-r2: actual historical command ±1s range signed archive bytes/digests/Merkle/Transit signatures/predecessor coverage verified; broad ranges remain honestly partial when >200 budget",
+    "modelUnavailable": "actual connection outage r4 generated MODEL_UNAVAILABLE and Chinese explanation; all ConfigMap data restored exactly. r6 reopens this persisted actual failure and browses deterministic RCA and actual Evidence PASS; r6 does not claim a fresh model call.",
+    "closeoutBrowser": "r1: 7 PASS: real admin3/layout1 plus clearly separated fixture3",
+    "closeoutSourceReview": "independent readonly sp08_module_review: previous four source findings closed; no new stage commit blocker; not full R12 reacceptance",
+    "inputSummary": "isolated actual PostgreSQL migrations1..38 + safe summary write/read PASS r3; prior port-forward and JSON spacing assertion failures retained",
+    "currentFixBrowser": "r3 actual timezone URL/API parameters, persisted historical input absence and step Evidence Drawer PASS",
+    "latestBackendRegression": "closeout-live-r1 7 PASS on API6/worker7: OIDC, incident, actual two Kubernetes commands, OTP step-up, role isolation and pending-confirmation revocation"
+  },
+  "latestBrowser": "r9 healthy full business 10PASS; actual current-model reconnect/persistence r1 1PASS. r8 storage failures preserved; not final SP08 acceptance.",
+  "issues": [
+    {
+      "id": "UX-001",
+      "phenomenon": "主导航与区域沿用英文协议名，缺少操作入口",
+      "impact": "普通运维难以找到故障处理路径",
+      "fix": "中文任务导航和四个下一步入口",
+      "retest": "r3真实浏览器通过；后续证据交互复验待完成",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "UX-002",
+      "phenomenon": "UUID与结构化内部记录占主层",
+      "impact": "资源名称和故障事实难辨认",
+      "fix": "主层真实名称、异常现象，内部标识可展开；最多50个相关ID名称查询",
+      "retest": "超过首50资源的授权查询回归通过；真实资源名称截图确认",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "UX-003",
+      "phenomenon": "证据点击后详情在长列表末尾，观测原始字段难读",
+      "impact": "证据内容难发现",
+      "fix": "Drawer直接打开，实际观测逐类型呈现并解释已知资源阶段/原因",
+      "retest": "r5实际打开详情；中文关闭按钮测试定位修复待重跑",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "DATA-001",
+      "phenomenon": "观测数组中的string/0/false/null被空对象吞掉",
+      "impact": "合法事实丢失",
+      "fix": "按类型递归、有界呈现，未知事实字段可见，保留脱敏",
+      "retest": "标量、嵌套数组、空值、未知字段与敏感字段回归通过；独立源码复核通过",
+      "status": "closed-source-and-regression"
+    },
+    {
+      "id": "DATA-002",
+      "phenomenon": "合法空标签key=被拒绝，直接放开会把缺失标签误认空值",
+      "impact": "资源筛选不符合正式数据边界",
+      "fix": "允许空值，比较时必须key存在",
+      "retest": "空值、缺失、非空、非法格式回归通过；独立源码复核通过",
+      "status": "closed-source-and-regression"
+    },
+    {
+      "id": "DATA-003",
+      "phenomenon": "总览资源查询失败与降级提示被结构化折叠",
+      "impact": "未知统计容易被误当完整事实",
+      "fix": "未知计数明确显示未知；部分结果、降级来源和观测失败主层警告",
+      "retest": "总览未知计数及降级提示组件回归通过；最终浏览器故障态验证待完成",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "GRAPH-008",
+      "phenomenon": "取消读请求使独立图Owner失效，第一版修复存在已确认失权时取消竞态",
+      "impact": "读请求影响其他读；真实失权应仍然阻断",
+      "fix": "区分无法观测和已确认失权；成功返回前检查取消",
+      "retest": "响应读取后取消/真实holder变化、普通取消、后续读5个相关用例通过；worker r5增量部署通过",
+      "status": "closed-source-and-regression"
+    },
+    {
+      "id": "QA-001",
+      "phenomenon": "证据测试用Close而实际中文按钮关闭；stdout检查选到隐藏的原始JSON",
+      "impact": "真实UI功能与测试定位不一致",
+      "fix": "使用具体中文关闭按钮及只读文本输出区域，保持输出断言",
+      "retest": "r7全部3条实际业务路径通过，中文关闭与指定只读stdout区域均正确，原始失败记录保留",
+      "status": "closed-browser-regression"
+    },
+    {
+      "id": "BUILD-001",
+      "phenomenon": "最小Nginx闭包PoC缺少fastcgi/uwsgi/scgi临时目录配置",
+      "impact": "候选运行退出",
+      "fix": "全部临时目录指向受控/tmp；原预览已恢复",
+      "retest": "修复候选已构建；实际TLS/OIDC/API/SSE PoC待完成",
+      "status": "fixed-runtime-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "UX-004",
+      "phenomenon": "外层和xterm内层复用terminal CSS，ResizeObserver适配使终端持续增高；实际summary位于约90269px",
+      "impact": "普通运维难以到达输出与后检查，按钮点击因布局持续变化失败",
+      "fix": "外层独立execution-terminal样式，固定320px高度和360px上限，不给xterm内层添加外层padding",
+      "retest": "r7两类真实命令均断言终端高度200~360px，实际stdout和后检查可见；浏览器全流程3项通过",
+      "status": "closed-browser-regression"
+    },
+    {
+      "id": "AUTH-001",
+      "phenomenon": "未授权身份被误当OIDC登录失败，回调停留",
+      "impact": "无角色账号无法理解授权状态",
+      "fix": "保留有效OIDC身份，明确显示无可用授权并可重新检查",
+      "retest": "真实no_grant账号PASS；授权恢复单测PASS",
+      "status": "closed-browser-and-regression"
+    },
+    {
+      "id": "AUTH-002",
+      "phenomenon": "forbidden监听闭包引用初始空user",
+      "impact": "撤权不能立即刷新界面",
+      "fix": "当前refreshRef与补查队列",
+      "retest": "真实禁用QA角色后本人确认403即撤权；deferred通知回归与独立只读审核PASS",
+      "status": "closed-browser-and-regression"
+    },
+    {
+      "id": "AUTH-003",
+      "phenomenon": "旧200/403响应可恢复过期身份；旧401会清除新身份",
+      "impact": "页面显示失效或丢失新会话",
+      "fix": "世代失效保护、旧401清凭据谓词、初始恢复保护",
+      "retest": "6AuthProvider回归PASS；独立只读审核已报问题关闭",
+      "status": "closed-source-and-regression"
+    },
+    {
+      "id": "AUDIT-UI-001",
+      "phenomenon": "英文事件与UUID主层、详情在长页底部；打开详情删除cursor",
+      "impact": "难追查操作并丢失列表位置",
+      "fix": "中文事件/筛选/实体、ID折叠、Drawer、详情保持cursor",
+      "retest": "真实第二页打开/关闭详情保留cursor PASS；摘要独立SHA256校验PASS",
+      "status": "closed-browser-regression"
+    },
+    {
+      "id": "INVESTIGATION-UI-001",
+      "phenomenon": "预算为原始对象、已结束任务仍有无效重连、历史版本缺乏提醒",
+      "impact": "难区分额度与当前故障结论",
+      "fix": "中文已用/预留/上限表，历史版本告警，已结束任务显示持久记录",
+      "retest": "真实历史调查和预算展开、最新截图复验PASS",
+      "status": "closed-browser-regression"
+    },
+    {
+      "id": "CAPABILITY-UI-001",
+      "phenomenon": "重复英文功能卡片与内部原因代码",
+      "impact": "难识别可用范围和延期",
+      "fix": "统一中文功能表与真实原因解释",
+      "retest": "真实能力页面与多分辨率截图PASS；延期未启用如实保留",
+      "status": "closed-browser-regression"
+    },
+    {
+      "id": "ENV-ARCHIVE-001",
+      "phenomenon": "SeaweedFS12/12槽位满、11通用卷128MiB满，元数据写失败",
+      "impact": "证据读取/后检查超时，full browser r8三项失败",
+      "fix": "用户于2026-10-12额外授权仅测试环境volume.max12→24，Helmrev2；其余12对象不变",
+      "retest": "User explicitly authorized test-only slots12→24; only StatefulSet argument changed; 5PVC UID/name/capacity unchanged; r9 full actual business10PASS.",
+      "status": "closed"
+    },
+    {
+      "id": "AUDIT-RUNTIME-001",
+      "phenomenon": "API审计校验没有配置Worker验证路由",
+      "impact": "签名归档链校验暂不可用",
+      "fix": "独立namespace Worker service白名单，保留原GraphPodCIDR规则及mTLS/签名上下文",
+      "retest": "APIdevr4 exact namespaced HTTPS worker route; r9 actual signed archive verification responds partial budget >200 rather than unconfigured. Narrow signed range proof remains separate acceptance work.",
+      "status": "closed"
+    },
+    {
+      "id": "READABILITY-GRAPH-002",
+      "phenomenon": "GRAPH_NOT_READY也代表路由或服务异常，原提示误断言采集同步未完成",
+      "impact": "运维被引导等待而忽略服务故障",
+      "fix": "资源查询暂不可用，中性列出尚未就绪或服务异常并给重试/管理员路径",
+      "retest": "targetedr21 PASS; independent readonly source review closed",
+      "status": "closed"
+    },
+    {
+      "id": "READABILITY-CAPABILITY-002",
+      "phenomenon": "最近调查失败原因直接展示BUDGET_EXHAUSTED等内部代码",
+      "impact": "普通运维无法理解失败含义",
+      "fix": "已知失败原因中文，原值title/展开保留，未知原因明确回退",
+      "retest": "targetedr21 PASS; independent readonly review closed",
+      "status": "closed"
+    },
+    {
+      "id": "SSE-RESUME-002",
+      "phenomenon": "手动重连丢cursor/ring，结束清事件；撤权/直接403/410保留无效状态",
+      "impact": "重复重放、误显示撤权数据或无法恢复",
+      "fix": "同job保留游标/100事件，换job或撤权清理，403刷新身份，410从持久账本恢复；cleanup abort",
+      "retest": "6 hook lifecycle tests r22 PASS; real model resume r1 PASS for reconnect/ended retention/reload; independent readonly module PASS; final browser r22 pending",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "ADMIN-CONFLICT-002",
+      "phenomenon": "草稿发生并发冲突后缺少保留本地内容的重新读取及合并路径",
+      "impact": "可能丢失修改或反复使用旧修订号",
+      "fix": "兼容新增 generated GET draft；本地编辑不覆盖，明确采用或手动合并后使用已读修订号；按钮稳定 aria-label，合并后清除旧409",
+      "retest": "unit recovery PASS; actual admin-browser-r2 2PASS; isolated draft not published/activated",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "ACTION-PROFILES-002",
+      "phenomenon": "只显示首页执行配置，后续版本不可选择",
+      "impact": "正式配置列表增长后无法使用正确版本",
+      "fix": "cursor受控50分页，保留当前选择的精确版本对象",
+      "retest": "3 regression tests PASS; readonly review closed",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "ACTION-SSE-002",
+      "phenomenon": "执行 SSE 410 和撤权未完全清除旧输出",
+      "impact": "旧输出或游标可能混入恢复视图",
+      "fix": "410清游标/序号/解码器/输出并读取持久记录；401/403清权限输出；卸载 abort；续传清旧断线提示",
+      "retest": "source review closed; boundary browser retest pending",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "GRAPH-VERSION-002",
+      "phenomenon": "列表模式未记录版本、不同查询共用基线",
+      "impact": "可显示过期图谱或错误拒绝新范围",
+      "fix": "独立 effect记录 scope+epoch+generation；旧版本不展示；新scope独立基线",
+      "retest": "graph_version r3 1PASS; readonly review closed",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "RCA-DIFF-002",
+      "phenomenon": "比较忽略 EvidenceBundle 与来源降级变化",
+      "impact": "证据改变可能被误认为没有差异",
+      "fix": "比较证据包和degradedSources前后值，中文字段",
+      "retest": "2 RCA diff tests PASS; readonly review closed",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "SOURCE-EDIT-002",
+      "phenomenon": "选择来源时新状态总是默认停用",
+      "impact": "保存时可能误停用当前来源",
+      "fix": "从已读取来源 status 初始化编辑状态及revision",
+      "retest": "readonly review closed; actual read-state assertion pending",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    },
+    {
+      "id": "MODEL-ERROR-002",
+      "phenomenon": "模型连接失败被聚合为通用调查异常",
+      "impact": "运维无法区分模型不可用与业务失败",
+      "fix": "静态类别 RPC 白名单；LiteLLM原生cause/context类型最多8层，循环保护；保留保守预算结算",
+      "retest": "Go whitelist tests PASS; admitted runtime 2 cause unittests PASS; actual outage r4 category verified + persisted browse r6 PASS",
+      "status": "fixed-final-retest-pending",
+      "stageStatus": "closed for current repair scope; relevant actual r9/closeout-r1/r3 and independent readonly review receipts retained; formal release verification remains pending"
+    }
+  ],
+  "remaining": "最终完整业务与断线/模型故障/不确定执行状态验收、依赖闭包门禁、独立整体复审、正式集中构建和统一部署尚未完成；容量调整授权及回执见ADR0035。",
+  "deferred": "KubeVirt/CDI/VM disabled/unverified；无BMC硬件真实验收未完成；功能成功不等于根因准确率通过",
+  "stageStop": "User 2026-10-12: complete current repair/retest then stop web development, sync and submit GitHub; ADR0036",
+  "remainingGates": [
+    "formal generated reproducibility check interrupted, NOT PASS",
+    "final dependency/license admission",
+    "formal release build and unified deployment",
+    "formal release end-to-end acceptance",
+    "RCA accuracy acceptance"
+  ]
+}

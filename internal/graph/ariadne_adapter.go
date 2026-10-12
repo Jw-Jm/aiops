@@ -59,6 +59,7 @@ func (s Scope) Allows(id, ns string) bool {
 }
 
 type Query struct {
+	CanonicalIDs       []string  `json:"canonicalIds,omitempty"`
 	Direction          string    `json:"direction,omitempty"`
 	Name               string    `json:"name,omitempty"`
 	Health             string    `json:"health,omitempty"`
@@ -78,7 +79,13 @@ type Query struct {
 	Kind               string    `json:"kind,omitempty"`
 	Namespace          string    `json:"namespace,omitempty"`
 }
+type ResourceSummary struct {
+	Total    int            `json:"total"`
+	ByKind   map[string]int `json:"byKind"`
+	ByHealth map[string]int `json:"byHealth"`
+}
 type Result struct {
+	Summary            *ResourceSummary         `json:"summary,omitempty"`
 	DirectlyAffected   []string                 `json:"directlyAffected"`
 	IndirectlyAffected []string                 `json:"indirectlyAffected"`
 	DependencyOnly     []string                 `json:"dependencyOnly"`
@@ -397,6 +404,12 @@ func (g *Graph) queryLocked(ctx context.Context, q Query) (Result, error) {
 			if listMatches(q, entity) {
 				candidates = append(candidates, entity)
 			}
+		}
+		out.Summary = &ResourceSummary{Total: len(candidates), ByKind: map[string]int{}, ByHealth: map[string]int{}}
+		for _, entity := range candidates {
+			out.Summary.ByKind[entity.Kind]++
+			health := entityHealth(entity)
+			out.Summary.ByHealth[health]++
 		}
 		sort.Slice(candidates, func(i, j int) bool {
 			left, right := listKey(q, candidates[i]), listKey(q, candidates[j])

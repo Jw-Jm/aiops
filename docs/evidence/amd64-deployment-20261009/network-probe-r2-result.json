@@ -1,0 +1,19 @@
+{
+  "namespaceUID": "0006ca01-6dce-4d2d-8e8a-e42f5ac9c63e",
+  "image": "docker.io/cloudnativelabs/kube-router@sha256:64da9a538d29e13780e256ce3897a52932a68657793bef009063bbeb2762146a",
+  "status": "PASS",
+  "baseline": {
+    "phase": "Succeeded",
+    "uid": "14d33117-b83d-4418-84db-87ad83092f1d",
+    "log": "Server:\t\t10.96.0.10\nAddress:\t10.96.0.10:53\n\n\nName:\tkubernetes.default.svc.cluster.local\nAddress: 10.96.0.1\n\nPUBLIC_ALLOWED_146.56.39.233\n",
+    "exitCode": 0
+  },
+  "policyProbe": {
+    "phase": "Succeeded",
+    "uid": "e3c24e27-a481-499c-a0ec-f32b6d74df47",
+    "log": "Server:\t\t10.96.0.10\nAddress:\t10.96.0.10:53\n\n\nName:\tkubernetes.default.svc.cluster.local\nAddress: 10.96.0.1\n\nbash: connect: Connection refused\nbash: line 1: /dev/tcp/146.56.39.233/443: Connection refused\nPUBLIC_DENIED_146.56.39.233\nDNS_OK_PUBLIC_DENIED\n",
+    "exitCode": 0
+  },
+  "scope": "DNS positive plus the recorded DNS-resolved dockerproxy.net IPv4 TCP endpoint 146.56.39.233:443; not core install acceptance or IPv6/production qualification",
+  "ownedProbeNamespaceRemoved": true
+}

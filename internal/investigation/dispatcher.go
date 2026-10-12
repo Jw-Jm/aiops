@@ -74,6 +74,10 @@ func (d Dispatcher) RunOne(ctx context.Context, tenant uuid.UUID, owner string) 
 	}
 	if callErr != nil {
 		code := "INVESTIGATOR_FAILURE"
+		var failure ModelFailure
+		if errors.As(callErr, &failure) {
+			code = failure.Code
+		}
 		if errors.Is(callErr, ErrBudget) {
 			code = "BUDGET_EXHAUSTED"
 		}

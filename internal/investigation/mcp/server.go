@@ -121,7 +121,7 @@ func (g Gateway) Handler() (http.Handler, error) {
 			if d.RawQuery {
 				reserve.RawQueries = 1
 			}
-			c := investigation.Call{StepID: meta.StepID, ContextID: v.Claims.ContextID, Seq: meta.Seq, JTI: meta.JTI, Name: d.Name, ArgsDigest: investigation.ArgumentsDigest(r.Params.Arguments), Reserve: reserve, Claims: &v.Claims}
+			c := investigation.Call{Arguments: r.Params.Arguments, StepID: meta.StepID, ContextID: v.Claims.ContextID, Seq: meta.Seq, JTI: meta.JTI, Name: d.Name, ArgsDigest: investigation.ArgumentsDigest(r.Params.Arguments), Reserve: reserve, Claims: &v.Claims}
 			if _, err := g.Repository.BeginCall(ctx, v.Lease, c); err != nil {
 				return deny(err)
 			}

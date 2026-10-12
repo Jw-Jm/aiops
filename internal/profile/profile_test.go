@@ -305,3 +305,32 @@ func TestResolveExplicitNamespaceDoesNotAdoptOtherInstallations(t *testing.T) {
 		t.Fatal("bundled target overwrote existing selected service")
 	}
 }
+
+func TestNativeDiscoveryOmitsUnsupportedLocksButResolveStillRejectsThem(t *testing.T) {
+	locks, err := loadComponentLocks("../../bundle/component-catalog-amd64.yaml", "amd64")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := locks["victoriaMetrics"]; !ok {
+		t.Fatal("qualified native Victoria lock missing")
+	}
+	for _, name := range []string{"kubevirt", "cdi"} {
+		if _, ok := locks[name]; ok {
+			t.Fatalf("unsupported native lock exposed: %s", name)
+		}
+	}
+	if _, ok := locks["postgresql"]; !ok {
+		t.Fatal("qualified PostgreSQL native variant lock missing")
+	}
+	delete(locks, "postgresql") // Fault injection: no historical ARM fallback.
+	input := testProfile("bundled")
+	input.Architecture = "amd64"
+	input.Components = map[string]ComponentInput{"postgresql": {Mode: "bundled", Endpoint: "postgresql://ops-postgresql.ops-system.svc.cluster.local:5432"}}
+	discovery := testDiscovery()
+	discovery.Kubernetes.Architecture = "amd64"
+	discovery.Components = map[string][]ComponentCandidate{}
+	discovery.Locks = locks
+	if _, err := Resolve(context.Background(), input, discovery); err == nil || !strings.Contains(err.Error(), "amd64 version/digest lock is missing") {
+		t.Fatalf("missing native bundled lock was accepted or obscured: %v", err)
+	}
+}

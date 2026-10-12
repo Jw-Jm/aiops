@@ -11,6 +11,8 @@ import (
 	"os"
 	"path"
 	"strings"
+
+	"github.com/google/go-containerregistry/pkg/name"
 )
 
 type ociDescriptor struct {
@@ -174,5 +176,40 @@ func validateOCIArchive(file, architecture string) (string, string, error) {
 	if root.Platform.OS != "" && root.Platform.OS+"/"+root.Platform.Architecture != architecture {
 		return "", "", errors.New("OCI descriptor architecture differs from Bundle")
 	}
-	return root.Digest, root.Annotations["org.opencontainers.image.ref.name"], nil
+	reference, err := ociImmutableReference(root)
+	if err != nil {
+		return "", "", err
+	}
+	return root.Digest, reference, nil
+}
+
+// containerd exports a digest-only OCI ref.name alongside its complete image
+// name. Both annotations remain authenticated Bundle bytes; never guess a repo.
+func ociImmutableReference(root ociDescriptor) (string, error) {
+	ref := root.Annotations["org.opencontainers.image.ref.name"]
+	exported := root.Annotations["io.containerd.image.name"]
+	valid := func(raw string) bool {
+		digest, err := name.NewDigest(raw)
+		return err == nil && digest.DigestStr() == root.Digest && strings.HasSuffix(raw, "@"+root.Digest) && !strings.HasPrefix(raw, "@")
+	}
+	if ref == "" || ref == "@"+root.Digest {
+		if !valid(exported) {
+			return "", errors.New("OCI digest-only reference requires a complete matching containerd image name")
+		}
+		return exported, nil
+	}
+	if !valid(ref) {
+		return "", errors.New("OCI image reference must name its exact repository and root digest")
+	}
+	if exported != "" {
+		if !valid(exported) {
+			return "", errors.New("OCI containerd image annotation differs from root digest")
+		}
+		first, _ := name.NewDigest(ref)
+		second, _ := name.NewDigest(exported)
+		if first.Name() != second.Name() {
+			return "", errors.New("OCI image name annotations conflict")
+		}
+	}
+	return ref, nil
 }

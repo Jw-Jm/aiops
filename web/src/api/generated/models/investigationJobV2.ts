@@ -4,13 +4,13 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { InvestigationBudgetV1 } from './investigationBudgetV1';
-import type { InvestigationJobV2SchemaVersion } from './investigationJobV2SchemaVersion';
-import type { InvestigationJobV2State } from './investigationJobV2State';
-import type { InvestigationJobV2TriggerKind } from './investigationJobV2TriggerKind';
-import type { InvestigationResultV1 } from './investigationResultV1';
-import type { InvestigationScopeV1 } from './investigationScopeV1';
-import type { InvestigationUsageV1 } from './investigationUsageV1';
+import type { InvestigationBudgetV1 } from './investigationBudgetV1.ts';
+import type { InvestigationJobV2SchemaVersion } from './investigationJobV2SchemaVersion.ts';
+import type { InvestigationJobV2State } from './investigationJobV2State.ts';
+import type { InvestigationJobV2TriggerKind } from './investigationJobV2TriggerKind.ts';
+import type { InvestigationResultV1 } from './investigationResultV1.ts';
+import type { InvestigationScopeV1 } from './investigationScopeV1.ts';
+import type { InvestigationUsageV1 } from './investigationUsageV1.ts';
 
 export interface InvestigationJobV2 {
   schemaVersion: InvestigationJobV2SchemaVersion;

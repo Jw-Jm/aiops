@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { EvidenceConflictV2 } from './evidenceConflictV2';
-import type { RankedEvidenceV2 } from './rankedEvidenceV2';
+import type { EvidenceConflictV2 } from './evidenceConflictV2.ts';
+import type { RankedEvidenceV2 } from './rankedEvidenceV2.ts';
 
 export interface EvidenceBundleV2 {
   supporting: string[];

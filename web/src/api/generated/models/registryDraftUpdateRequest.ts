@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { RegistryDraftUpdateRequestContent } from './registryDraftUpdateRequestContent';
+import type { RegistryDraftUpdateRequestContent } from './registryDraftUpdateRequestContent.ts';
 
 export interface RegistryDraftUpdateRequest {
   content: RegistryDraftUpdateRequestContent;

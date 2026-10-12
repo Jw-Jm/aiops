@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { Identifier } from './identifier';
-import type { ResourceGraphSuccessV2Meta } from './resourceGraphSuccessV2Meta';
-import type { ResourceGraphV2 } from './resourceGraphV2';
+import type { Identifier } from './identifier.ts';
+import type { ResourceGraphSuccessV2Meta } from './resourceGraphSuccessV2Meta.ts';
+import type { ResourceGraphV2 } from './resourceGraphV2.ts';
 
 export interface ResourceGraphSuccessV2 {
   requestId: Identifier;

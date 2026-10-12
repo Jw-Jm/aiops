@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { InvestigationBudgetV1AllowedDataClassesItem } from './investigationBudgetV1AllowedDataClassesItem';
+import type { InvestigationBudgetV1AllowedDataClassesItem } from './investigationBudgetV1AllowedDataClassesItem.ts';
 
 export interface InvestigationBudgetV1 {
   /** @minimum 0 */

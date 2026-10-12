@@ -140,3 +140,30 @@ func TestOCIValidatesLayerClosureAndArchitecture(t *testing.T) {
 		})
 	}
 }
+
+func TestOCIImmutableContainerdExportReference(t *testing.T) {
+	digest := "sha256:" + strings.Repeat("a", 64)
+	full := "ops.local/amd64/command-runner@" + digest
+	for _, test := range []struct {
+		name, ref, exported string
+		allowed             bool
+	}{
+		{"complete", full, "", true},
+		{"containerd-digest-only", "@" + digest, full, true},
+		{"containerd-complete-only", "", full, true},
+		{"digest-without-repository", "@" + digest, "", false},
+		{"wrong-digest", "@" + digest, "ops.local/runner@sha256:" + strings.Repeat("b", 64), false},
+		{"conflicting-repository", full, "ops.local/other@" + digest, false},
+		{"matching-annotations", full, full, true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			ref, err := ociImmutableReference(ociDescriptor{Digest: digest, Annotations: map[string]string{"org.opencontainers.image.ref.name": test.ref, "io.containerd.image.name": test.exported}})
+			if (err == nil) != test.allowed {
+				t.Fatalf("allowed=%v err=%v", test.allowed, err)
+			}
+			if test.allowed && ref != full {
+				t.Fatalf("incorrect immutable reference: %s", ref)
+			}
+		})
+	}
+}

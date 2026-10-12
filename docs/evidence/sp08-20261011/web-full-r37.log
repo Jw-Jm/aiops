@@ -1,0 +1,1053 @@
+$ node --experimental-strip-types --test ./test/*.test.mjs && vitest run
+✔ typed SSE reader yields a decoded envelope before the stream closes (34.409902ms)
+✔ typed SSE fetch client requests and parses text/event-stream (18.613077ms)
+✔ typed SSE envelope decoder rejects incomplete event data (0.47043ms)
+✔ investigation fetch SSE resumes with Bearer and durable cursor, suppresses duplicate event sequences (1.374403ms)
+✔ investigation SSE fails closed on missing Bearer, sequence gaps and 410 (1.273648ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 218.452552
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.3 [39m[90m/data/ops-amd64-final-20261010/working-runtime/platform/web[39m
+
+ [31m❯[39m tests/step_evidence.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 501[2mms[22m[39m
+[31m   [31m×[31m locates only declared evidence and shows safe input summary, not a fabricated historical input[39m[33m 500[2mms[22m[39m
+ [31m❯[39m tests/time_scope_filters.test.tsx [2m([22m[2m3 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 570[2mms[22m[39m
+[31m   [31m×[31m restores Finding observed time filters from URL and preserves them on cursor pagination[39m[33m 409[2mms[22m[39m
+[31m   [31m×[31m restores Incident opened time filters from URL and preserves them on cursor pagination[39m[32m 136[2mms[22m[39m
+   [32m✓[39m distinguishes absent cluster scope from empty authorized data[32m 24[2mms[22m[39m
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ [32m✓[39m tests/data_boundary.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 202[2mms[22m[39m
+ [32m✓[39m tests/command_authorization.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1652[2mms[22m[39m
+   [33m[2m✓[22m[39m uses selected immutable profile version and rejects risk response after permission change[33m 609[2mms[22m[39m
+   [33m[2m✓[22m[39m does not restore acknowledgement from a delayed response after revocation[33m 587[2mms[22m[39m
+   [33m[2m✓[22m[39m loads later profile pages and retains the selected immutable version when returning to the first page[33m 455[2mms[22m[39m
+[90mstderr[2m | tests/graph_version.test.tsx[2m > [22m[2mobserves versions in list mode, rejects stale nodes and resets the baseline for another scope
+[22m[39mWarning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+
+ [32m✓[39m tests/graph_version.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 763[2mms[22m[39m
+   [33m[2m✓[22m[39m observes versions in list mode, rejects stale nodes and resets the baseline for another scope[33m 762[2mms[22m[39m
+ [32m✓[39m tests/readability.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 739[2mms[22m[39m
+ [32m✓[39m tests/overview_resources.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 631[2mms[22m[39m
+   [33m[2m✓[22m[39m renders partial source, long real fields and cursor pagination[33m 516[2mms[22m[39m
+ [32m✓[39m tests/investigation_stream.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 564[2mms[22m[39m
+ [32m✓[39m tests/registry_recovery.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 584[2mms[22m[39m
+   [33m[2m✓[22m[39m rereads a conflicting draft without overwriting local edits and binds an explicitly merged update to the loaded revision[33m 583[2mms[22m[39m
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mkeeps a valid OIDC identity distinct from absent grants and can recover fresh authorization
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mrefreshes the current authenticated identity immediately after an API denial, then returns to login on expiry
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mignores a delayed 200 authorization response after expiry
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mignores a delayed 403 authorization response after expiry
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mrechecks a forbidden notification received during a stale successful refresh
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mdoes not let an old delayed 401 expire a newly accepted identity
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+ [32m✓[39m tests/auth_recovery.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 433[2mms[22m[39m
+ [32m✓[39m tests/postcheck.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 369[2mms[22m[39m
+   [33m[2m✓[22m[39m distinguishes pending checks from final verdicts and stops polling final results[33m 368[2mms[22m[39m
+ [32m✓[39m tests/admin_audit.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 223[2mms[22m[39m
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ [32m✓[39m tests/manual_command_flow.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 151[2mms[22m[39m
+ [32m✓[39m tests/auth.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 135[2mms[22m[39m
+ [32m✓[39m tests/investigation.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m tests/client_generation.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/incident_workspace.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/graph_view.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/step_evidence.test.tsx[2m > [22mlocates only declared evidence and shows safe input summary, not a fabricated historical input
+[31m[1mError[22m: [2mexpect([22m[31melement[31m[2m).toBeVisible()[22m
+
+Received element is not visible:
+  [31m<div
+  class="ant-typography full-text css-dev-only-do-not-override-oc1rc0 css-var-root"
+/>[31m[39m
+[36m [2m❯[22m tests/step_evidence.test.tsx:[2m38:49[22m[39m
+    [90m 36|[39m   fireEvent.click(screen.getAllByRole("button", { name: "Expand row" }…
+    [90m 37|[39m   expect(screen.getByText("输入范围和预算")).toBeVisible();
+    [90m 38|[39m   expect(screen.getByText("fixture-canonical")).toBeVisible();
+    [90m   |[39m                                                 [31m^[39m
+    [90m 39|[39m   fireEvent.click(screen.getAllByRole("button", { name: "Expand row" }…
+    [90m 40|[39m   expect(
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/time_scope_filters.test.tsx[2m > [22mrestores Finding observed time filters from URL and preserves them on cursor pagination
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "button" and name "下一页"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"page-heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "故障告警":
+  [36m<h1 />[39m
+
+  Name "":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ant-skeleton-title"[39m
+    [33mstyle[39m=[32m"width: 38%;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "集群范围":
+  [36m<input[39m
+    [33maria-autocomplete[39m=[32m"list"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33maria-label[39m=[32m"集群范围"[39m
+    [33mautocomplete[39m=[32m"new-password"[39m
+    [33mclass[39m=[32m"ant-select-input"[39m
+    [33mid[39m=[32m"cluster-filter"[39m
+    [33mrole[39m=[32m"combobox"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "处理状态":
+  [36m<input[39m
+    [33maria-autocomplete[39m=[32m"list"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33mautocomplete[39m=[32m"new-password"[39m
+    [33mclass[39m=[32m"ant-select-input"[39m
+    [33mid[39m=[32m"finding-state"[39m
+    [33mreadonly[39m=[32m""[39m
+    [33mrole[39m=[32m"combobox"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "严重程度":
+  [36m<input[39m
+    [33maria-autocomplete[39m=[32m"list"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33mautocomplete[39m=[32m"new-password"[39m
+    [33mclass[39m=[32m"ant-select-input"[39m
+    [33mid[39m=[32m"finding-severity"[39m
+    [33mreadonly[39m=[32m""[39m
+    [33mrole[39m=[32m"combobox"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "down":
+  [36m<span[39m
+    [33maria-label[39m=[32m"down"[39m
+    [33mclass[39m=[32m"anticon anticon-down"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  Name "down":
+  [36m<span[39m
+    [33maria-label[39m=[32m"down"[39m
+    [33mclass[39m=[32m"anticon anticon-down"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  Name "down":
+  [36m<span[39m
+    [33maria-label[39m=[32m"down"[39m
+    [33mclass[39m=[32m"anticon anticon-down"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "来源系统":
+  [36m<input[39m
+    [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+    [33mid[39m=[32m"finding-sourceSystem"[39m
+    [33mplaceholder[39m=[32m"可选：来源名称"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "资源完整标识":
+  [36m<input[39m
+    [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+    [33mid[39m=[32m"finding-resourceCanonicalId"[39m
+    [33mplaceholder[39m=[32m"可选：完整资源标识"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"ant-skeleton-paragraph"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li[39m
+    [33mstyle[39m=[32m"width: 61%;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"page-heading"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m故障告警[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m查看检测到的异常，展开告警可检查证据和来源。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"section"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"filters"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"cluster-filter"[39m
+          [36m>[39m
+            [0m集群范围[0m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-select ant-select-outlined css-var-root ant-select-css-var css-dev-only-do-not-override-oc1rc0 ant-select-single ant-select-show-arrow ant-select-show-search"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-content ant-select-content-has-value"[39m
+              [33mtitle[39m=[32m"fixture-cluster"[39m
+            [36m>[39m
+              [0mfixture-cluster[0m
+              [36m<input[39m
+                [33maria-autocomplete[39m=[32m"list"[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-haspopup[39m=[32m"listbox"[39m
+                [33maria-label[39m=[32m"集群范围"[39m
+                [33mautocomplete[39m=[32m"new-password"[39m
+                [33mclass[39m=[32m"ant-select-input"[39m
+                [33mid[39m=[32m"cluster-filter"[39m
+                [33mrole[39m=[32m"combobox"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-suffix"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"down"[39m
+                [33mclass[39m=[32m"anticon anticon-down"[39m
+                [33mrole[39m=[32m"img"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mdata-icon[39m=[32m"down"[39m
+                  [33mfill[39m=[32m"currentColor"[39m
+                  [33mfocusable[39m=[32m"false"[39m
+                  [33mheight[39m=[32m"1em"[39m
+                  [33mviewBox[39m=[32m"64 64 896 896"[39m
+                  [33mwidth[39m=[32m"1em"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-state"[39m
+          [36m>[39m
+            [0m处理状态[0m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-select ant-select-outlined css-var-root ant-select-css-var css-dev-only-do-not-override-oc1rc0 ant-select-single ant-select-show-arrow"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-content"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-placeholder"[39m
+              [36m>[39m
+                [0m全部[0m
+              [36m</div>[39m
+              [36m<input[39m
+                [33maria-autocomplete[39m=[32m"list"[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-haspopup[39m=[32m"listbox"[39m
+                [33mautocomplete[39m=[32m"new-password"[39m
+                [33mclass[39m=[32m"ant-select-input"[39m
+                [33mid[39m=[32m"finding-state"[39m
+                [33mreadonly[39m=[32m""[39m
+                [33mrole[39m=[32m"combobox"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-suffix"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"down"[39m
+                [33mclass[39m=[32m"anticon anticon-down"[39m
+                [33mrole[39m=[32m"img"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mdata-icon[39m=[32m"down"[39m
+                  [33mfill[39m=[32m"currentColor"[39m
+                  [33mfocusable[39m=[32m"false"[39m
+                  [33mheight[39m=[32m"1em"[39m
+                  [33mviewBox[39m=[32m"64 64 896 896"[39m
+                  [33mwidth[39m=[32m"1em"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-severity"[39m
+          [36m>[39m
+            [0m严重程度[0m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-select ant-select-outlined css-var-root ant-select-css-var css-dev-only-do-not-override-oc1rc0 ant-select-single ant-select-show-arrow"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-content"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-placeholder"[39m
+              [36m>[39m
+                [0m全部[0m
+              [36m</div>[39m
+              [36m<input[39m
+                [33maria-autocomplete[39m=[32m"list"[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-haspopup[39m=[32m"listbox"[39m
+                [33mautocomplete[39m=[32m"new-password"[39m
+                [33mclass[39m=[32m"ant-select-input"[39m
+                [33mid[39m=[32m"finding-severity"[39m
+                [33mreadonly[39m=[32m""[39m
+                [33mrole[39m=[32m"combobox"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-suffix"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"down"[39m
+                [33mclass[39m=[32m"anticon anticon-down"[39m
+                [33mrole[39m=[32m"img"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mdata-icon[39m=[32m"down"[39m
+                  [33mfill[39m=[32m"currentColor"[39m
+                  [33mfocusable[39m=[32m"false"[39m
+                  [33mheight[39m=[32m"1em"[39m
+                  [33mviewBox[39m=[32m"64 64 896 896"[39m
+                  [33mwidth[39m=[32m"1em"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-sourceSystem"[39m
+          [36m>[39m
+            [0m来源系统[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+            [33mid[39m=[32m"finding-sourceSystem"[39m
+            [33mplaceholder[39m=[32m"可选：来源名称"[39m
+            [33mtype[39m=[32m"text"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-resourceCanonicalId"[39m
+          [36m>[39m
+            [0m资源完整标识[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+            [33mid[39m=[32m"finding-resourceCanonicalId"[39m
+            [33mplaceholder[39m=[32m"可选：完整资源标识"[39m
+            [33mtype[39m=[32m"text"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-observedFrom"[39m
+          [36m>[39m
+            [0m告警观测时间[0m
+            [0m ·[0m
+            [0m [0m
+            [0m起[0m
+            [0m（UTC+08:00）[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+            [33mid[39m=[32m"finding-observedFrom"[39m
+            [33mstep[39m=[32m"1"[39m
+            [33mtype[39m=[32m"datetime-local"[39m
+            [33mvalue[39m=[32m"2026-10-12T08:00:00"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-observedTo"[39m
+          [36m>[39m
+            [0m告警观测时间[0m
+            [0m ·[0m
+            [0m [0m
+            [0m止[0m
+            [0m（UTC+08:00）[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+            [33mid[39m=[32m"finding-observedTo"[39m
+            [33mstep[39m=[32m"1"[39m
+            [33mtype[39m=[32m"datetime-local"[39m
+            [33mvalue[39m=[32m"2026-10-12T09:00:00"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-skeleton ant-skeleton-active css-dev-only-do-not-override-oc1rc0 css-var-root"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-skeleton-section"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ant-skeleton-title"[39m
+            [33mstyle[39m=[32m"width: 38%;"[39m
+          [36m/>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"ant-skeleton-paragraph"[39m
+          [36m>[39m
+            [36m<li />[39m
+            [36m<li />[39m
+            [36m<li />[39m
+            [36m<li[39m
+              [33mstyle[39m=[32m"width: 61%;"[39m
+            [36m/>[39m
+          [36m</ul>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/time_scope_filters.test.tsx:[2m79:28[22m[39m
+    [90m 77|[39m       ),
+    [90m 78|[39m     ).toHaveValue("2026-10-12T08:00");
+    [90m 79|[39m     fireEvent.click(screen.getByRole("button", { name: "下一页" }));
+    [90m   |[39m                            [31m^[39m
+    [90m 80|[39m     await waitFor(() =>
+    [90m 81|[39m       expect(method).toHaveBeenCalledWith(
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/time_scope_filters.test.tsx[2m > [22mrestores Incident opened time filters from URL and preserves them on cursor pagination
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "button" and name "下一页"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"page-heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "故障处理":
+  [36m<h1 />[39m
+
+  Name "":
+  [36m<h3[39m
+    [33mclass[39m=[32m"ant-skeleton-title"[39m
+    [33mstyle[39m=[32m"width: 38%;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "集群范围":
+  [36m<input[39m
+    [33maria-autocomplete[39m=[32m"list"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33maria-label[39m=[32m"集群范围"[39m
+    [33mautocomplete[39m=[32m"new-password"[39m
+    [33mclass[39m=[32m"ant-select-input"[39m
+    [33mid[39m=[32m"cluster-filter"[39m
+    [33mrole[39m=[32m"combobox"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "处理状态":
+  [36m<input[39m
+    [33maria-autocomplete[39m=[32m"list"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33mautocomplete[39m=[32m"new-password"[39m
+    [33mclass[39m=[32m"ant-select-input"[39m
+    [33mid[39m=[32m"finding-state"[39m
+    [33mreadonly[39m=[32m""[39m
+    [33mrole[39m=[32m"combobox"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "严重程度":
+  [36m<input[39m
+    [33maria-autocomplete[39m=[32m"list"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33mautocomplete[39m=[32m"new-password"[39m
+    [33mclass[39m=[32m"ant-select-input"[39m
+    [33mid[39m=[32m"finding-severity"[39m
+    [33mreadonly[39m=[32m""[39m
+    [33mrole[39m=[32m"combobox"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "根因分析状态":
+  [36m<input[39m
+    [33maria-autocomplete[39m=[32m"list"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33mautocomplete[39m=[32m"new-password"[39m
+    [33mclass[39m=[32m"ant-select-input"[39m
+    [33mid[39m=[32m"finding-rcaStatus"[39m
+    [33mreadonly[39m=[32m""[39m
+    [33mrole[39m=[32m"combobox"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "down":
+  [36m<span[39m
+    [33maria-label[39m=[32m"down"[39m
+    [33mclass[39m=[32m"anticon anticon-down"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  Name "down":
+  [36m<span[39m
+    [33maria-label[39m=[32m"down"[39m
+    [33mclass[39m=[32m"anticon anticon-down"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  Name "down":
+  [36m<span[39m
+    [33maria-label[39m=[32m"down"[39m
+    [33mclass[39m=[32m"anticon anticon-down"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  Name "down":
+  [36m<span[39m
+    [33maria-label[39m=[32m"down"[39m
+    [33mclass[39m=[32m"anticon anticon-down"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "资源完整标识":
+  [36m<input[39m
+    [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+    [33mid[39m=[32m"finding-resourceCanonicalId"[39m
+    [33mplaceholder[39m=[32m"可选：完整资源标识"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"ant-skeleton-paragraph"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li[39m
+    [33mstyle[39m=[32m"width: 61%;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"page-heading"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m故障处理[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m选择故障，查看影响资源、确认原因并跟进处置。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"section"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"filters"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"cluster-filter"[39m
+          [36m>[39m
+            [0m集群范围[0m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-select ant-select-outlined css-var-root ant-select-css-var css-dev-only-do-not-override-oc1rc0 ant-select-single ant-select-show-arrow ant-select-show-search"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-content ant-select-content-has-value"[39m
+              [33mtitle[39m=[32m"fixture-cluster"[39m
+            [36m>[39m
+              [0mfixture-cluster[0m
+              [36m<input[39m
+                [33maria-autocomplete[39m=[32m"list"[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-haspopup[39m=[32m"listbox"[39m
+                [33maria-label[39m=[32m"集群范围"[39m
+                [33mautocomplete[39m=[32m"new-password"[39m
+                [33mclass[39m=[32m"ant-select-input"[39m
+                [33mid[39m=[32m"cluster-filter"[39m
+                [33mrole[39m=[32m"combobox"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-suffix"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"down"[39m
+                [33mclass[39m=[32m"anticon anticon-down"[39m
+                [33mrole[39m=[32m"img"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mdata-icon[39m=[32m"down"[39m
+                  [33mfill[39m=[32m"currentColor"[39m
+                  [33mfocusable[39m=[32m"false"[39m
+                  [33mheight[39m=[32m"1em"[39m
+                  [33mviewBox[39m=[32m"64 64 896 896"[39m
+                  [33mwidth[39m=[32m"1em"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-state"[39m
+          [36m>[39m
+            [0m处理状态[0m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-select ant-select-outlined css-var-root ant-select-css-var css-dev-only-do-not-override-oc1rc0 ant-select-single ant-select-show-arrow"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-content"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-placeholder"[39m
+              [36m>[39m
+                [0m全部[0m
+              [36m</div>[39m
+              [36m<input[39m
+                [33maria-autocomplete[39m=[32m"list"[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-haspopup[39m=[32m"listbox"[39m
+                [33mautocomplete[39m=[32m"new-password"[39m
+                [33mclass[39m=[32m"ant-select-input"[39m
+                [33mid[39m=[32m"finding-state"[39m
+                [33mreadonly[39m=[32m""[39m
+                [33mrole[39m=[32m"combobox"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-suffix"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"down"[39m
+                [33mclass[39m=[32m"anticon anticon-down"[39m
+                [33mrole[39m=[32m"img"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mdata-icon[39m=[32m"down"[39m
+                  [33mfill[39m=[32m"currentColor"[39m
+                  [33mfocusable[39m=[32m"false"[39m
+                  [33mheight[39m=[32m"1em"[39m
+                  [33mviewBox[39m=[32m"64 64 896 896"[39m
+                  [33mwidth[39m=[32m"1em"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-severity"[39m
+          [36m>[39m
+            [0m严重程度[0m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-select ant-select-outlined css-var-root ant-select-css-var css-dev-only-do-not-override-oc1rc0 ant-select-single ant-select-show-arrow"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-content"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-placeholder"[39m
+              [36m>[39m
+                [0m全部[0m
+              [36m</div>[39m
+              [36m<input[39m
+                [33maria-autocomplete[39m=[32m"list"[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-haspopup[39m=[32m"listbox"[39m
+                [33mautocomplete[39m=[32m"new-password"[39m
+                [33mclass[39m=[32m"ant-select-input"[39m
+                [33mid[39m=[32m"finding-severity"[39m
+                [33mreadonly[39m=[32m""[39m
+                [33mrole[39m=[32m"combobox"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-suffix"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"down"[39m
+                [33mclass[39m=[32m"anticon anticon-down"[39m
+                [33mrole[39m=[32m"img"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mdata-icon[39m=[32m"down"[39m
+                  [33mfill[39m=[32m"currentColor"[39m
+                  [33mfocusable[39m=[32m"false"[39m
+                  [33mheight[39m=[32m"1em"[39m
+                  [33mviewBox[39m=[32m"64 64 896 896"[39m
+                  [33mwidth[39m=[32m"1em"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-rcaStatus"[39m
+          [36m>[39m
+            [0m根因分析状态[0m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-select ant-select-outlined css-var-root ant-select-css-var css-dev-only-do-not-override-oc1rc0 ant-select-single ant-select-show-arrow"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-content"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-placeholder"[39m
+              [36m>[39m
+                [0m全部[0m
+              [36m</div>[39m
+              [36m<input[39m
+                [33maria-autocomplete[39m=[32m"list"[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-haspopup[39m=[32m"listbox"[39m
+                [33mautocomplete[39m=[32m"new-password"[39m
+                [33mclass[39m=[32m"ant-select-input"[39m
+                [33mid[39m=[32m"finding-rcaStatus"[39m
+                [33mreadonly[39m=[32m""[39m
+                [33mrole[39m=[32m"combobox"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select-suffix"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"down"[39m
+                [33mclass[39m=[32m"anticon anticon-down"[39m
+                [33mrole[39m=[32m"img"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mdata-icon[39m=[32m"down"[39m
+                  [33mfill[39m=[32m"currentColor"[39m
+                  [33mfocusable[39m=[32m"false"[39m
+                  [33mheight[39m=[32m"1em"[39m
+                  [33mviewBox[39m=[32m"64 64 896 896"[39m
+                  [33mwidth[39m=[32m"1em"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-resourceCanonicalId"[39m
+          [36m>[39m
+            [0m资源完整标识[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+            [33mid[39m=[32m"finding-resourceCanonicalId"[39m
+            [33mplaceholder[39m=[32m"可选：完整资源标识"[39m
+            [33mtype[39m=[32m"text"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-openedFrom"[39m
+          [36m>[39m
+            [0m故障开始时间[0m
+            [0m ·[0m
+            [0m [0m
+            [0m起[0m
+            [0m（UTC+08:00）[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+            [33mid[39m=[32m"finding-openedFrom"[39m
+            [33mstep[39m=[32m"1"[39m
+            [33mtype[39m=[32m"datetime-local"[39m
+            [33mvalue[39m=[32m"2026-10-12T08:00:00"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"filter"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"finding-openedTo"[39m
+          [36m>[39m
+            [0m故障开始时间[0m
+            [0m ·[0m
+            [0m [0m
+            [0m止[0m
+            [0m（UTC+08:00）[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+            [33mid[39m=[32m"finding-openedTo"[39m
+            [33mstep[39m=[32m"1"[39m
+            [33mtype[39m=[32m"datetime-local"[39m
+            [33mvalue[39m=[32m"2026-10-12T09:00:00"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-skeleton ant-skeleton-active css-dev-only-do-not-override-oc1rc0 css-var-root"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-skeleton-section"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ant-skeleton-title"[39m
+            [33mstyle[39m=[32m"width: 38%;"[39m
+          [36m/>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"ant-skeleton-paragraph"[39m
+          [36m>[39m
+            [36m<li />[39m
+            [36m<li />[39m
+            [36m<li />[39m
+            [36m<li[39m
+              [33mstyle[39m=[32m"width: 61%;"[39m
+            [36m/>[39m
+          [36m</ul>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/time_scope_filters.test.tsx:[2m79:28[22m[39m
+    [90m 77|[39m       ),
+    [90m 78|[39m     ).toHaveValue("2026-10-12T08:00");
+    [90m 79|[39m     fireEvent.click(screen.getByRole("button", { name: "下一页" }));
+    [90m   |[39m                            [31m^[39m
+    [90m 80|[39m     await waitFor(() =>
+    [90m 81|[39m       expect(method).toHaveBeenCalledWith(
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m16 passed[39m[22m[90m (18)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m59 passed[39m[22m[90m (62)[39m
+[2m   Start at [22m 10:05:08
+[2m   Duration [22m 18.06s[2m (import 41%, environment 24%, tests 22%, transform 7%, setup 5%)[22m
+
+[2m     Import [22m [33m74 modules were evaluated 193 times[39m[2m · 13.95s total, 41% of tracked time[22m
+[2m            [22m [2m~3.11s faster with [22m[33misolate: false[39m[2m — shared modules are evaluated once per worker instead of once per file[22m
+[2m            [22m [2mlearn more: https://vitest.dev/guide/improving-performance#test-isolation[22m
+
+[ELIFECYCLE] Test failed. See above for more details.

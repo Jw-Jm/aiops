@@ -4,6 +4,6 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { ResourceAttributeValueV2 } from './resourceAttributeValueV2';
+import type { ResourceAttributeValueV2 } from './resourceAttributeValueV2.ts';
 
 export type ResourceEntityV2Attributes = {[key: string]: ResourceAttributeValueV2 | null};

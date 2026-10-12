@@ -4,9 +4,15 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { GetResourcesOrder } from './getResourcesOrder';
+import type { CanonicalID } from './canonicalID.ts';
+import type { GetResourcesOrder } from './getResourcesOrder.ts';
 
 export type GetResourcesParams = {
+/**
+ * Resolve at most 50 exact resource identifiers within current authorization; this filter does not expand scope.
+ * @maxItems 50
+ */
+canonicalIds?: CanonicalID[];
 kind?: string;
 clusterUid?: string;
 namespace?: string;

@@ -6,13 +6,17 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"net/http"
+	"net/http/httptest"
 	"ops-platform/internal/action"
 	"ops-platform/internal/auth"
 	"ops-platform/internal/contract"
 	platformcrypto "ops-platform/internal/crypto"
 	"ops-platform/internal/finding"
+	"ops-platform/internal/httpapi"
 	"ops-platform/internal/incident"
 	"ops-platform/internal/policy"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -38,6 +42,26 @@ func (p *sp07Protector) Open(_ context.Context, t, id uuid.UUID, e platformcrypt
 }
 
 type sp07Policy struct{ version string }
+
+type sp07WithdrawWriter struct {
+	*httptest.ResponseRecorder
+	onFirst  func()
+	events   int
+	deadline time.Time
+}
+
+func (w *sp07WithdrawWriter) Write(b []byte) (int, error) {
+	n, err := w.ResponseRecorder.Write(b)
+	if strings.Contains(string(b), "data: ") {
+		w.events++
+		if w.events == 1 {
+			w.onFirst()
+		}
+	}
+	return n, err
+}
+func (w *sp07WithdrawWriter) SetWriteDeadline(d time.Time) error { w.deadline = d; return nil }
+func (w *sp07WithdrawWriter) WriteString(s string) (int, error)  { return w.Write([]byte(s)) }
 
 func (p sp07Policy) Evaluate(_ context.Context, in policy.PolicyInput) (policy.PolicyDecision, error) {
 	return policy.PolicyDecision{Allow: in.RiskAcknowledged && (!in.ClusterLevel || in.StepUpVerified), Risk: policy.RiskHigh, PolicyVersion: p.version, DecisionID: action.Digest([]byte("test-policy"))}, nil
@@ -95,6 +119,13 @@ func TestSP07CommandTransactionAndClaim(t *testing.T) {
 	ack, err := service.AcknowledgeRisk(ctx, actor, assessment.ID, assessment.RequestDigest, "ack-1")
 	if err != nil {
 		t.Fatal("ack", err)
+	}
+	otherAssessment, err := service.AssessRisk(ctx, actor, req, "same-binding-new-assessment")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = service.AcknowledgeRisk(ctx, actor, otherAssessment.ID, otherAssessment.RequestDigest, "ack-1"); err == nil {
+		t.Fatal("changed assessment reused acknowledgement idempotency key")
 	}
 	changed := req
 	changed.ActualCommand += " "
@@ -168,6 +199,51 @@ func TestSP07CommandTransactionAndClaim(t *testing.T) {
 	got, err := service.Get(ctx, actor, e.ID)
 	if err != nil || got.State != "succeeded" || got.PostCheck != "inconclusive" {
 		t.Fatalf("exit success implies remediation %+v %v", got, err)
+	}
+	streamCtx, stopStream := context.WithTimeout(ctx, 2*time.Second)
+	writer := &sp07WithdrawWriter{ResponseRecorder: httptest.NewRecorder(), onFirst: func() {
+		if _, err := db.ExecContext(ctx, `UPDATE platform.role_bindings SET status='disabled' WHERE tenant_id=$1 AND subject=$2`, actor.TenantID, actor.Subject); err != nil {
+			t.Fatal(err)
+		}
+	}}
+	streamRequest := httptest.NewRequest(http.MethodGet, "/api/v1/command-executions/"+e.ID.String()+"/events", nil).WithContext(auth.WithRequestContext(streamCtx, actor))
+	(&httpapi.ActionHandlers{Service: service}).ServeHTTP(writer, streamRequest)
+	stopStream()
+	if writer.events != 1 {
+		t.Errorf("SSE disclosed %d events after first-event withdrawal; want one", writer.events)
+	}
+	if writer.deadline.IsZero() || writer.deadline.After(actor.TokenExpiresAt) {
+		t.Error("SSE write was not bounded by verified token expiry")
+	}
+	if _, err := db.ExecContext(ctx, `UPDATE platform.role_bindings SET status='active' WHERE tenant_id=$1 AND subject=$2`, actor.TenantID, actor.Subject); err != nil {
+		t.Fatal(err)
+	}
+	// Retention clock fault: old terminal data remains until archive verification.
+	if _, err = db.ExecContext(ctx, `UPDATE action.executions SET completed_at=clock_timestamp()-interval '25 hours',archived_at=clock_timestamp()-interval '25 hours' WHERE execution_id=$1`, e.ID); err != nil {
+		t.Fatal(err)
+	}
+	cleanup := action.OutputArchive{Service: workerService}
+	if err = cleanup.Cleanup(ctx, b.TenantID); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = service.Events(ctx, actor, e.ID, 0); err != nil {
+		t.Fatal("unverified archive deleted output", err)
+	}
+	// This marker simulates a verified archive only to test cleanup eligibility;
+	// native ciphertext/digest verification is separately exercised in deployment.
+	if _, err = db.ExecContext(ctx, `INSERT INTO action.output_archives(tenant_id,execution_id,retain_until,plaintext_digest,object_ref,verified_at) VALUES($1,$2,clock_timestamp()+interval '365 days',$3,'{"retention-fixture":true}',clock_timestamp())`, b.TenantID, e.ID, action.Digest([]byte("fixture"))); err != nil {
+		t.Fatal(err)
+	}
+	if err = cleanup.Cleanup(ctx, b.TenantID); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = service.Events(ctx, actor, e.ID, 0); !errors.Is(err, action.ErrCursorExpired) {
+		t.Fatalf("expired output cursor: %v", err)
+	}
+	expiredCursor := httptest.NewRecorder()
+	(&httpapi.ActionHandlers{Service: service}).ServeHTTP(expiredCursor, httptest.NewRequest(http.MethodGet, "/api/v1/command-executions/"+e.ID.String()+"/events", nil).WithContext(auth.WithRequestContext(ctx, actor)))
+	if expiredCursor.Code != 410 {
+		t.Fatalf("formal expired output cursor status=%d", expiredCursor.Code)
 	}
 
 	// Two competing requests consume one acknowledgement only once.
@@ -246,12 +322,78 @@ func TestSP07CommandTransactionAndClaim(t *testing.T) {
 	if err = service.Finish(ctx, b.TenantID, uncertain.ID, dispatch.Token, 0, 1, false); err != nil {
 		t.Fatal(err)
 	}
+	var beforeEvents, afterEvents int64
+	if err = db.QueryRowContext(ctx, `SELECT event_seq FROM action.executions WHERE execution_id=$1`, uncertain.ID).Scan(&beforeEvents); err != nil {
+		t.Fatal(err)
+	}
+	if err = service.Finish(ctx, b.TenantID, uncertain.ID, dispatch.Token, 0, 1, false); err != nil {
+		t.Fatal(err)
+	}
+	if err = db.QueryRowContext(ctx, `SELECT event_seq FROM action.executions WHERE execution_id=$1`, uncertain.ID).Scan(&afterEvents); err != nil || beforeEvents != afterEvents {
+		t.Fatalf("unknown completion replay changed events: %v", err)
+	}
 	result, err := service.Get(ctx, actor, uncertain.ID)
 	if err != nil || result.State != "execution_unknown" || result.CompletedAt == nil || result.OutputBytes != int64(len(partial.Bytes)) {
 		t.Fatalf("late callback changed uncertainty: %+v %v", result, err)
 	}
 	if _, err = service.BeginDispatch(ctx, b.TenantID, uncertain.ID); !errors.Is(err, action.ErrConflict) {
 		t.Fatalf("uncertain command redispatched: %v", err)
+	}
+	// Database-time faults exercise the real high-privilege transaction guards
+	// through both least-privilege roles; they do not emulate Keycloak acceptance.
+	highProfile := profile
+	highProfile.ID, highProfile.Name, highProfile.Type, highProfile.Namespace = uuid.New(), "test-cluster", "k8s_cluster", ""
+	if _, err = db.ExecContext(ctx, `INSERT INTO platform.execution_profile_versions(tenant_id,profile_version_id,logical_name,version_number,content,digest,signature,signer_key_id,status,published_by) VALUES($1,$2,'test-cluster',1,$3,$4,'x','test','published','test')`, b.TenantID, uuid.New(), action.Canonical(highProfile), action.Digest(action.Canonical(highProfile))); err != nil {
+		t.Fatal(err)
+	}
+	actor.KeycloakSID, actor.ACR, actor.AuthTime = "owned-session", auth.StepUpACRLevel2, time.Now().UTC().Truncate(time.Second)
+	highRequest := req
+	highRequest.ProfileID = highProfile.ID
+	highAssessment, err := service.AssessRisk(ctx, actor, highRequest, "high-risk")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = service.AcknowledgeRisk(ctx, actor, highAssessment.ID, highAssessment.RequestDigest, "high-no-session"); !errors.Is(err, auth.ErrStepUpInvalid) {
+		t.Fatalf("missing high session: %v", err)
+	}
+	if _, err = db.ExecContext(ctx, `INSERT INTO platform.step_up_sessions(tenant_id,session_id,subject,keycloak_sid,acr,auth_time,created_at,last_used_at) VALUES($1,$2,$3,$4,$5,$6,$6,$6)`, actor.TenantID, uuid.New(), actor.Subject, actor.KeycloakSID, actor.ACR, actor.AuthTime); err != nil {
+		t.Fatal(err)
+	}
+	for _, fault := range []string{"absolute", "idle", "revoked"} {
+		statement := `UPDATE platform.step_up_sessions SET created_at=clock_timestamp()-interval '61 minutes' WHERE tenant_id=$1 AND subject=$2`
+		if fault == "idle" {
+			statement = `UPDATE platform.step_up_sessions SET last_used_at=clock_timestamp()-interval '61 minutes' WHERE tenant_id=$1 AND subject=$2`
+		}
+		if fault == "revoked" {
+			statement = `UPDATE platform.step_up_sessions SET revoked_at=clock_timestamp() WHERE tenant_id=$1 AND subject=$2`
+		}
+		if _, err = db.ExecContext(ctx, statement, actor.TenantID, actor.Subject); err != nil {
+			t.Fatal(err)
+		}
+		if _, err = service.AcknowledgeRisk(ctx, actor, highAssessment.ID, highAssessment.RequestDigest, "high-"+fault); !errors.Is(err, auth.ErrStepUpInvalid) {
+			t.Fatalf("%s: %v", fault, err)
+		}
+		if _, err = db.ExecContext(ctx, `UPDATE platform.step_up_sessions SET created_at=$3,last_used_at=$3,revoked_at=NULL WHERE tenant_id=$1 AND subject=$2`, actor.TenantID, actor.Subject, actor.AuthTime); err != nil {
+			t.Fatal(err)
+		}
+	}
+	highAck, err := service.AcknowledgeRisk(ctx, actor, highAssessment.ID, highAssessment.RequestDigest, "high-ack")
+	if err != nil {
+		t.Fatal(err)
+	}
+	highExecution, err := service.PrepareCommandExecution(ctx, actor, highRequest, highAck.ID, "high-prepare")
+	if err != nil {
+		t.Fatal(err)
+	}
+	highDispatch, err := workerService.BeginDispatch(ctx, b.TenantID, highExecution.ID)
+	if err != nil {
+		t.Fatal("high worker dispatch/touch", err)
+	}
+	if _, err = service.Claim(ctx, b.TenantID, highExecution.ID, highDispatch.Token); err != nil {
+		t.Fatal("high claim/touch", err)
+	}
+	if err = service.MarkUnknown(ctx, b.TenantID, highExecution.ID, "owned_callback_fault"); err != nil {
+		t.Fatal(err)
 	}
 	if _, err = db.ExecContext(ctx, `UPDATE platform.role_bindings SET status='disabled' WHERE tenant_id=$1 AND subject=$2`, actor.TenantID, actor.Subject); err != nil {
 		t.Fatal(err)

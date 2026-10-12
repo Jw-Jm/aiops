@@ -343,6 +343,7 @@ func replayError(err error) error {
 }
 func (r Repository) BeginCall(ctx context.Context, l Lease, c Call) (Step, error) {
 	var step Step
+	summary := SafeInputSummary(c.Name, c.Arguments)
 	if c.StepID == uuid.Nil || c.ContextID == uuid.Nil || c.Name == "" || c.ArgsDigest == "" || (c.Seq == nil) == (c.JTI == "") || len(c.JTI) > 128 || !c.Reserve.Within(DefaultBudget().Usage) || (c.Model && (c.Reserve.ModelRequests != 1 || c.Reserve.ToolCalls != 0)) || (!c.Model && (c.Reserve.ToolCalls != 1 || c.Reserve.ModelRequests != 0)) {
 		return step, ErrInvalid
 	}
@@ -414,7 +415,7 @@ func (r Repository) BeginCall(ctx context.Context, l Lease, c Call) (Step, error
 			admissionError = ErrBudget
 			return exhaustBudgetTx(ctx, tx, j)
 		}
-		if _, err = tx.Exec(ctx, `INSERT INTO investigation.steps(tenant_id,job_id,step_id,tool_name,args_digest,state,lease_token,lease_generation) VALUES($1,$2,$3,$4,$5,'running',$6,$7) ON CONFLICT(tenant_id,job_id,step_id) DO UPDATE SET state='running',lease_token=EXCLUDED.lease_token,lease_generation=EXCLUDED.lease_generation,retry_count=investigation.steps.retry_count+1,started_at=clock_timestamp(),completed_at=NULL,error_code=''`, l.TenantID, l.JobID, c.StepID, c.Name, c.ArgsDigest, l.Token, l.Generation); err != nil {
+		if _, err = tx.Exec(ctx, `INSERT INTO investigation.steps(tenant_id,job_id,step_id,tool_name,args_digest,state,lease_token,lease_generation,args_summary) VALUES($1,$2,$3,$4,$5,'running',$6,$7,$8) ON CONFLICT(tenant_id,job_id,step_id) DO UPDATE SET state='running',lease_token=EXCLUDED.lease_token,lease_generation=EXCLUDED.lease_generation,retry_count=investigation.steps.retry_count+1,started_at=clock_timestamp(),completed_at=NULL,error_code='',args_summary=EXCLUDED.args_summary`, l.TenantID, l.JobID, c.StepID, c.Name, c.ArgsDigest, l.Token, l.Generation, summary); err != nil {
 			return err
 		}
 		if _, err = tx.Exec(ctx, `INSERT INTO investigation.replay_ledger(tenant_id,context_id,nonce_kind,nonce_value,job_id,step_id,args_digest) VALUES($1,$2,$3,$4,$5,$6,$7)`, l.TenantID, c.ContextID, kind, value, l.JobID, c.StepID, c.ArgsDigest); err != nil {
@@ -430,7 +431,7 @@ func (r Repository) BeginCall(ctx context.Context, l Lease, c Call) (Step, error
 		if _, err = tx.Exec(ctx, `UPDATE investigation.jobs SET budget_reserved=$3,next_call_seq=$4 WHERE tenant_id=$1 AND job_id=$2`, l.TenantID, l.JobID, raw(j.Reserved.Add(c.Reserve)), next); err != nil {
 			return err
 		}
-		step = Step{StepID: c.StepID, Name: c.Name, ArgsDigest: c.ArgsDigest, State: "running"}
+		step = Step{ArgsSummary: summary, StepID: c.StepID, Name: c.Name, ArgsDigest: c.ArgsDigest, State: "running"}
 		return event(ctx, tx, j, "step_started", map[string]any{"stepId": c.StepID, "toolName": c.Name, "argsDigest": c.ArgsDigest, "leaseGeneration": l.Generation})
 	})
 	if err == nil && admissionError != nil {

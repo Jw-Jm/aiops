@@ -13,8 +13,8 @@ runtime = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(runtime)
 
 
-def prepare(out):
-    lock, _ = runtime.prepare(out,
+def prepare(out, architecture="arm64"):
+    lock, _ = runtime.prepare(out, architecture=architecture,
         review_path=Path("third_party/admission/migration-tool-go-license-review.json"),
         entrypoints=("./cmd/db-migrate",), admission_paths=())
     archive_path = out / "runtime-go-source.tar"
@@ -40,7 +40,7 @@ def prepare(out):
     lines.append(")")
     contents["go.mod"] = ("\n".join(lines) + "\n").encode()
     lock["offlineBuildGoModSHA256"] = runtime.digest(contents["go.mod"])
-    lock["buildInstructions"] = "At archive root, use locked go1.27.1 with GOOS=linux GOARCH=arm64 CGO_ENABLED=0 GOPROXY=off GOSUMDB=off and empty module cache: go build -mod=mod -trimpath -buildvcs=false -o db-migrate ./cmd/db-migrate. Use packaged migrations; bootstrap version 1, provision distinct LOGINs, then migrate forward as migration_role."
+    lock["buildInstructions"] = "At archive root, use locked go1.27.1 with GOOS=linux GOARCH="+architecture+" CGO_ENABLED=0 GOPROXY=off GOSUMDB=off and empty module cache: go build -mod=mod -trimpath -buildvcs=false -o db-migrate ./cmd/db-migrate. Use packaged migrations; bootstrap version 1, provision distinct LOGINs, then migrate forward as migration_role."
     contents["BUILDING.txt"] = (lock["buildInstructions"] + "\n").encode()
     raw = (json.dumps(lock, indent=2) + "\n").encode()
     contents["runtime-go.lock.json"] = raw
@@ -53,10 +53,11 @@ def prepare(out):
     return lock, runtime.digest(archive_path.read_bytes())
 
 
-def check(out):
-    lock, source_digest = prepare(out)
-    admission = json.loads(Path("bundle/evidence/third_party/admission/migration-tool-source.json").read_text())
-    expected = json.loads(Path("bundle/evidence/third_party/admission/migration-tool-go.lock.json").read_text())
+def check(out, architecture="arm64"):
+    lock, source_digest = prepare(out, architecture=architecture)
+    suffix = "-amd64" if architecture == "amd64" else ""
+    admission = json.loads(Path("bundle/evidence/third_party/admission/migration-tool-source"+suffix+".json").read_text())
+    expected = json.loads(Path("bundle/evidence/third_party/admission/migration-tool-go"+suffix+".lock.json").read_text())
     if lock != expected or source_digest != admission["sourceBundleSHA256"]:
         raise ValueError("migration source/notice closure has drifted; renew admission evidence")
     if runtime.digest(Path("cmd/db-migrate/main.go").read_bytes()) != admission["firstPartySourceSHA256"]:
@@ -68,12 +69,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--architecture", choices=("arm64", "amd64"), default="arm64")
     args = parser.parse_args()
     if args.check:
         with tempfile.TemporaryDirectory(prefix="ops-migration-source-check-") as directory:
-            lock, source_digest = check(Path(directory))
+            lock, source_digest = check(Path(directory), architecture=args.architecture)
     elif args.out:
-        lock, source_digest = prepare(args.out)
+        lock, source_digest = prepare(args.out, architecture=args.architecture)
     else:
         parser.error("--out or --check is required")
     print(json.dumps({"modules": len(lock["modules"]),
