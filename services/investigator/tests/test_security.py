@@ -7,7 +7,7 @@ def test_untrusted_evidence_cannot_become_system_policy():
     bound = messages({"jobId":"safe","incidentId":"i"},[{"annotation":attack}])
     assert attack not in bound[0]["content"]
     assert "secret123" not in json.dumps(bound)
-    assert "untrusted_evidence" in bound[2]["content"]
+    assert "untrusted_evidence" in bound[-1]["content"]
 
 def test_nested_secret_redaction():
     value = sanitize({"api_key":"secret", "nested":[{"log":"Bearer opaque-token token=abc"}]})

@@ -1,0 +1,44 @@
+
+Running 6 tests using 1 worker
+
+[1/6] tests/e2e/audit_readability.spec.ts:2:1 › real Incident audit distinguishes human confirmation, execution and post-check, and independently verifies exported digests
+tests/e2e/audit_readability.spec.ts:2:1 › real Incident audit distinguishes human confirmation, execution and post-check, and independently verifies exported digests
+Signed archive chain status: unavailable Reason: archive verifier is not configured
+
+[2/6] tests/e2e/degraded_readability.spec.ts:2:1 › real archive degradation is explicit and deterministic Incident records remain readable
+tests/e2e/degraded_readability.spec.ts:2:1 › real archive degradation is explicit and deterministic Incident records remain readable
+Actual degraded evidence response: GRAPH_NOT_READY
+
+  1) tests/e2e/degraded_readability.spec.ts:2:1 › real archive degradation is explicit and deterministic Incident records remain readable 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('规则诊断', { exact: true }).first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('规则诊断', { exact: true }).first() with timeout 5000ms
+      - waiting for getByText('规则诊断', { exact: true }).first()
+
+
+      34 |   await expect(
+      35 |     page.getByText("规则诊断", { exact: true }).first(),
+    > 36 |   ).toBeVisible();
+         |     ^
+      37 |   await page.goto(config.baseURL + "/capabilities");
+      38 |   await expect(
+      39 |     page.getByRole("heading", { name: "能力与来源", exact: true }),
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/degraded_readability.spec.ts:36:5
+
+    Error Context: ../../../../ops-sp08-20261011/build/degraded-browser-r2/degraded_readability-real--dcd04-ent-records-remain-readable/error-context.md
+
+
+[3/6] tests/e2e/role_isolation.spec.ts:70:3 › real OIDC role isolation: operator
+[4/6] tests/e2e/role_isolation.spec.ts:70:3 › real OIDC role isolation: platform_admin
+[5/6] tests/e2e/role_isolation.spec.ts:70:3 › real OIDC role isolation: no_grant
+[6/6] tests/e2e/role_isolation.spec.ts:142:1 › real grant revocation invalidates a pending human risk confirmation
+  1 failed
+    tests/e2e/degraded_readability.spec.ts:2:1 › real archive degradation is explicit and deterministic Incident records remain readable 
+  5 passed (19.5s)

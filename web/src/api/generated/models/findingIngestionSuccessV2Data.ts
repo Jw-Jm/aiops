@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { FindingIngestionSuccessV2DataDisposition } from './findingIngestionSuccessV2DataDisposition';
-import type { FindingV2 } from './findingV2';
+import type { FindingIngestionSuccessV2DataDisposition } from './findingIngestionSuccessV2DataDisposition.ts';
+import type { FindingV2 } from './findingV2.ts';
 
 export type FindingIngestionSuccessV2Data = {
   finding: FindingV2;

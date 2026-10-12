@@ -1,0 +1,12 @@
+$ playwright test live.spec.ts role_isolation.spec.ts
+
+Running 7 tests using 1 worker
+
+[1/7] tests/e2e/live.spec.ts:2:1 › live OIDC refresh, resource/finding navigation, scoped capabilities and ledger restoration
+[2/7] tests/e2e/live.spec.ts:105:1 › live namespace command: blank input, review invalidation, confirmation, output and durable post-check
+[3/7] tests/e2e/live.spec.ts:155:1 › live cluster command requires fresh password and OTP, memory restoration and explicit strong session
+[4/7] tests/e2e/role_isolation.spec.ts:70:3 › real OIDC role isolation: operator
+[5/7] tests/e2e/role_isolation.spec.ts:70:3 › real OIDC role isolation: platform_admin
+[6/7] tests/e2e/role_isolation.spec.ts:70:3 › real OIDC role isolation: no_grant
+[7/7] tests/e2e/role_isolation.spec.ts:142:1 › real grant revocation invalidates a pending human risk confirmation
+  7 passed (1.8m)

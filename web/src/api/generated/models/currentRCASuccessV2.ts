@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CurrentRCASuccessV2Meta } from './currentRCASuccessV2Meta';
-import type { CurrentRCAV2 } from './currentRCAV2';
+import type { CurrentRCASuccessV2Meta } from './currentRCASuccessV2Meta.ts';
+import type { CurrentRCAV2 } from './currentRCAV2.ts';
 
 export interface CurrentRCASuccessV2 {
   data: CurrentRCAV2;

@@ -26,6 +26,22 @@ var ErrDisabled = errors.New("K8SGPT_UNVERIFIED")
 // source and licensed closure. Runtime configuration cannot admit another CLI.
 const LockedBinarySHA256 = "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53"
 
+// Native target identities are finite; configuration cannot extend this list.
+const LockedBinarySHA256AMD64 = "e6ce7073f35889bc678443034169d4a64e94106442a5775fe3f59ca4ae6b66a4"
+
+func LockedBinaryForArchitecture(architecture string) string {
+	switch architecture {
+	case "arm64":
+		return LockedBinarySHA256
+	case "amd64":
+		return LockedBinarySHA256AMD64
+	default:
+		return ""
+	}
+}
+
+func NativeLockedBinarySHA256() string { return LockedBinaryForArchitecture(runtime.GOARCH) }
+
 type AnalyzerError struct {
 	Text          string `json:"Text"`
 	KubernetesDoc string `json:"KubernetesDoc,omitempty"`

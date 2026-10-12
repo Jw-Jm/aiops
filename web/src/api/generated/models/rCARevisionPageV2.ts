@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { RCARevisionPageV2Meta } from './rCARevisionPageV2Meta';
-import type { RCARevisionV2 } from './rCARevisionV2';
+import type { RCARevisionPageV2Meta } from './rCARevisionPageV2Meta.ts';
+import type { RCARevisionV2 } from './rCARevisionV2.ts';
 
 export interface RCARevisionPageV2 {
   data: RCARevisionV2[];

@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { ClusterRegistrationRequestActualVersions } from './clusterRegistrationRequestActualVersions';
-import type { ClusterRegistrationRequestCapabilities } from './clusterRegistrationRequestCapabilities';
+import type { ClusterRegistrationRequestActualVersions } from './clusterRegistrationRequestActualVersions.ts';
+import type { ClusterRegistrationRequestCapabilities } from './clusterRegistrationRequestCapabilities.ts';
 
 export interface ClusterRegistrationRequest {
   /**

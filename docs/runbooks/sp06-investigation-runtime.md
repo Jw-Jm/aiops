@@ -57,12 +57,37 @@ including cached tool results. Roles or sources withdrawn during SSE/tool/model
 work invalidate subsequent exposure or commit.
 
 The Model Contract has exactly `base_url`, `api_key_ref`, `model`, `timeout` and
-`token_budget`. This admission is for Ollama `llama3.1:8b-16k`; the mounted Secret
+`token_budget`. This admission is for Ollama `llama3.1:8b-16k` and `qwen2.5:1.5b`, with a 16384-token context bound; the mounted Secret
 reference is `secret://model/api-key`. Other model/context/cost profiles require
 new admission. Timeout is 1–120 seconds; output reservation is at most 8192 tokens.
 The approved local endpoint uses a nonempty local credential even when Ollama
 has no server authentication. Probe the actual endpoint/model before enabling
 dispatch; protocol compatibility is not RCA accuracy qualification.
+
+The provider's local `max_context_size` bound does not configure the external
+Ollama server. Configure the server's actual context to 16384 before investigation;
+checking the model's advertised maximum alone is insufficient. In the amd64
+installation, a real second request of 4728 tokens failed because the loaded
+runner had only 4096 tokens, even though the model advertised 32768.
+
+For a dedicated Linux systemd Ollama service, use the checked-in configuration:
+
+```sh
+sudo install -D -m 0644 deploy/model-runtime/ollama/ops-platform-context.conf /etc/systemd/system/ollama.service.d/90-ops-platform-context.conf
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+ollama ps
+```
+
+Inspect existing service/model overrides before applying this configuration.
+After a real request loads the model, verify that `ollama ps` reports `CONTEXT`
+16384. Keep model weights, endpoint and credentials under the environment owner's
+configuration; this drop-in supplies only the admitted context requirement.
+Official references: [context length](https://docs.ollama.com/context-length) and
+[Linux service configuration](https://docs.ollama.com/faq#setting-environment-variables-on-linux).
+Retain failed Jobs and budgets; a new observation must use a new actual Incident
+or another authorized trigger identity, rather than rewriting failed ledger state.
+
 
 The default Job limit is 600 seconds and 40 tools, plus explicit raw-query,
 result-byte, graph/evidence and model/token limits in Chart values. Profile/Policy

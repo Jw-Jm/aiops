@@ -6,6 +6,10 @@
  */
 
 export type GetAuditRecordsParams = {
+/**
+ * Explicit bounded signed archive verification for the returned page; never inferred from record digest validity.
+ */
+verifyChain?: boolean;
 subject?: string;
 operation?: string;
 incidentId?: string;

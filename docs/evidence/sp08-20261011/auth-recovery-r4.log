@@ -1,0 +1,29 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.3 [39m[90m/data/ops-amd64-final-20261010/working-runtime/platform/web[39m
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mkeeps a valid OIDC identity distinct from absent grants and can recover fresh authorization
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mrefreshes the current authenticated identity immediately after an API denial, then returns to login on expiry
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mignores a delayed 200 authorization response after expiry
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mignores a delayed 403 authorization response after expiry
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mrechecks a forbidden notification received during a stale successful refresh
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+[90mstderr[2m | tests/auth_recovery.test.tsx[2m > [22m[2mdoes not let an old delayed 401 expire a newly accepted identity
+[22m[39mWarning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+ [32m✓[39m tests/auth_recovery.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 416[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m   Start at [22m 08:33:10
+[2m   Duration [22m 3.02s[2m (environment 39%, import 37%, tests 14%, setup 7%, transform 3%)[22m
+
+tests/auth_recovery.test.tsx(280,9): error TS2322: Type '"UNAUTHORIZED"' is not assignable to type 'ErrorEnvelopeCode'.

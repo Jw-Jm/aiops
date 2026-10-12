@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { SourceRegistrationQueryCapabilityReason } from './sourceRegistrationQueryCapabilityReason';
-import type { SourceRegistrationQueryCapabilityState } from './sourceRegistrationQueryCapabilityState';
-import type { SourceRegistrationQueryCapabilityVerification } from './sourceRegistrationQueryCapabilityVerification';
+import type { SourceRegistrationQueryCapabilityReason } from './sourceRegistrationQueryCapabilityReason.ts';
+import type { SourceRegistrationQueryCapabilityState } from './sourceRegistrationQueryCapabilityState.ts';
+import type { SourceRegistrationQueryCapabilityVerification } from './sourceRegistrationQueryCapabilityVerification.ts';
 
 /**
  * A declaration cannot enable queries. Adapter admission requires a separately versioned verification contract.

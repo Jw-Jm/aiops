@@ -14,9 +14,10 @@ class ModelContract(BaseModel):
     @field_validator("model")
     @classmethod
     def admitted_model(cls,value):
-        # SP06 admits only the verified 16k self-hosted Ollama protocol model.
-        # Other context sizes or charging profiles need their own admission.
-        if value != "llama3.1:8b-16k":
+        # Both verified self-hosted protocol models use the same conservative
+        # 16k context and zero charging profile. Model weights stay external.
+        # Other models or charging profiles need independent admission.
+        if value not in ("llama3.1:8b-16k", "qwen2.5:1.5b"):
             raise ValueError("model context/cost profile has not been admitted")
         return value
 

@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { Identifier } from './identifier';
-import type { PageEnvelopeMeta } from './pageEnvelopeMeta';
+import type { Identifier } from './identifier.ts';
+import type { PageEnvelopeMeta } from './pageEnvelopeMeta.ts';
 
 export interface PageEnvelope {
   data: unknown[];

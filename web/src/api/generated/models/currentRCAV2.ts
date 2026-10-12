@@ -4,10 +4,10 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CurrentRCAV2CurrentGraphRevision } from './currentRCAV2CurrentGraphRevision';
-import type { CurrentRCAV2SchemaVersion } from './currentRCAV2SchemaVersion';
-import type { CurrentRCAV2Semantics } from './currentRCAV2Semantics';
-import type { RCARevisionV2 } from './rCARevisionV2';
+import type { CurrentRCAV2CurrentGraphRevision } from './currentRCAV2CurrentGraphRevision.ts';
+import type { CurrentRCAV2SchemaVersion } from './currentRCAV2SchemaVersion.ts';
+import type { CurrentRCAV2Semantics } from './currentRCAV2Semantics.ts';
+import type { RCARevisionV2 } from './rCARevisionV2.ts';
 
 export interface CurrentRCAV2 {
   schemaVersion: CurrentRCAV2SchemaVersion;

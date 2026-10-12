@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { EvidenceV2ArchiveRefObject } from './evidenceV2ArchiveRefObject';
+import type { EvidenceV2ArchiveRefObject } from './evidenceV2ArchiveRefObject.ts';
 
 export type EvidenceV2ArchiveRef = {
   /** @minLength 1 */

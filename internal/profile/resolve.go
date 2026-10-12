@@ -115,7 +115,7 @@ func Resolve(ctx context.Context, input InputProfile, discovery Discovery) (Reso
 			}
 			lock, ok := discovery.Locks[name]
 			if !ok {
-				return ResolvedProfile{}, profileConflict(name, "an exact arm64 version/digest lock is missing from the Component Catalog")
+				return ResolvedProfile{}, profileConflict(name, fmt.Sprintf("an exact %s version/digest lock is missing from the Component Catalog", discovery.Kubernetes.Architecture))
 			}
 			if component.Version != "" && component.Version != lock.Version || component.Digest != "" && component.Digest != lock.Digest {
 				return ResolvedProfile{}, profileConflict(name, "profile lock does not match the Component Catalog")

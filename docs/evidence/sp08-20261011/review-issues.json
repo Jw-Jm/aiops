@@ -1,0 +1,110 @@
+{
+  "status": "in_progress",
+  "independentReview": "sp08_module_review; read-only; 8.1–8.6; initial NOT PASS",
+  "issues": [
+    {
+      "id": "UI-001",
+      "phenomenon": "短窗口导航与页脚重叠",
+      "impact": "菜单可能被遮挡",
+      "fix": "导航容器改为可滚动 flex，页脚参与布局",
+      "retest": "1440x900 实际截图通过，窄窗口待复测",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "UI-002",
+      "phenomenon": "详情短字段被提前折叠",
+      "impact": "关键信息不可读",
+      "fix": "短字段直接呈现，长字段可展开和复制",
+      "retest": "实际截图通过",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "AUTH-001",
+      "phenomenon": "代理修改 discovery issuer",
+      "impact": "PKCE身份校验失败",
+      "fix": "只改写HTML，保留原 issuer 并显式改写允许的端点",
+      "retest": "真实登录成功",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "AUTH-002",
+      "phenomenon": "现有 Cookie 检查顺序阻止静默恢复",
+      "impact": "页面刷新要求重复登录",
+      "fix": "为新客户端复制独立 LoA 流程并将 Cookie置首",
+      "retest": "真实重开页面恢复成功，step-up待验证",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "CAP-001",
+      "phenomenon": "能力接口保留 SP07-not-authorized 常量",
+      "impact": "误报命令功能 disabled",
+      "fix": "依据实际 Action handler 配置报告 unverified 并说明授权要求",
+      "retest": "代码修复，增量部署待验证",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "SSE-001",
+      "phenomenon": "执行事件UUID前缀及 Base64 不符合调查流假设",
+      "impact": "输出无法正确显示",
+      "fix": "独立执行序号验证及分流 UTF8 解码",
+      "retest": "单元通过，真实命令待验证",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "HISTORY-001",
+      "phenomenon": "调查历史错误依赖 Timeline jobId",
+      "impact": "持久记录难以发现",
+      "fix": "新增受当前授权校验的调查列表与分页入口",
+      "retest": "源码完成，生成客户端及部署待验证",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "AUDIT-001",
+      "phenomenon": "已声明审计API未实现",
+      "impact": "工作台审计区域404",
+      "fix": "补齐tenant/admin范围读、签名游标与逐记录摘要校验",
+      "retest": "源码完成，部署待验证",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "IR-001",
+      "phenomenon": "执行配置同ID多版本选择值重复",
+      "impact": "选择v2可能提交v1",
+      "fix": "复合选择键，正式请求拆分ID与版本",
+      "retest": "回归待运行",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "IR-002",
+      "phenomenon": "后检查读取status而Contract返回verdict，初始inconclusive无完成标记",
+      "impact": "显示unknown或提前停止",
+      "fix": "追加真实post_checked_at/status，区分pending与最终verdict",
+      "retest": "回归待运行",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "IR-003",
+      "phenomenon": "授权变化不清风险确认或停止流",
+      "impact": "界面保留过期授权状态",
+      "fix": "监听authorizationChanged清确认、step-up并取消流",
+      "retest": "回归待运行",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "IR-004",
+      "phenomenon": "每次重连保留abort监听器",
+      "impact": "长时间连接累积资源",
+      "fix": "统一可取消等待并释放两条路径的监听器",
+      "retest": "20轮释放回归待运行",
+      "status": "fixed-awaiting-complete-retest"
+    },
+    {
+      "id": "IR-005",
+      "phenomenon": "图谱缺少关系视觉类别和路径高亮",
+      "impact": "Task8.4不完整",
+      "fix": "显式/推断/动态/未知类别加文字说明，用户选择路径高亮",
+      "retest": "回归及浏览器待验证",
+      "status": "fixed-awaiting-complete-retest"
+    }
+  ]
+}

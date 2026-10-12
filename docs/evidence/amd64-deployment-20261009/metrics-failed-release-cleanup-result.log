@@ -1,0 +1,63 @@
+release "ops-metrics-server" uninstalled
+{
+  "status": "OWNED_FAILED_METRICS_RELEASE_REMOVED",
+  "namespaceUID": "ffc14cbc-647e-431c-8376-4e3e0a69b4ad",
+  "installationID": "4f62b5d6-1244-42ce-85c6-3150a7837915",
+  "resources": [
+    {
+      "kind": "NetworkPolicy",
+      "name": "ops-metrics-server-metrics",
+      "namespace": "ops-amd64-core-20261009",
+      "uid": "6afb99d7-6271-406c-8038-0d70f403b9b4"
+    },
+    {
+      "kind": "ServiceAccount",
+      "name": "ops-metrics-server-metrics",
+      "namespace": "ops-amd64-core-20261009",
+      "uid": "4b823d5f-5896-4d31-81ff-a4044e980cf4"
+    },
+    {
+      "kind": "ClusterRole",
+      "name": "ops-metrics-server-metrics",
+      "namespace": "",
+      "uid": "f1b74785-df72-44a1-ac3a-7242aa79a155"
+    },
+    {
+      "kind": "ClusterRoleBinding",
+      "name": "ops-metrics-server-metrics",
+      "namespace": "",
+      "uid": "cceba628-e4f4-445b-8b1a-18b4575394fd"
+    },
+    {
+      "kind": "ClusterRoleBinding",
+      "name": "ops-metrics-server-metrics-auth-delegator",
+      "namespace": "",
+      "uid": "ef1aa771-b35d-499e-811a-1af7c76d29c5"
+    },
+    {
+      "kind": "RoleBinding",
+      "name": "ops-metrics-server-metrics-auth-reader",
+      "namespace": "kube-system",
+      "uid": "855b6666-b7f0-475a-9598-8f7a79c1d849"
+    },
+    {
+      "kind": "Service",
+      "name": "ops-metrics-server-metrics",
+      "namespace": "ops-amd64-core-20261009",
+      "uid": "4a688eef-a277-4578-a1b8-54b63b66407d"
+    },
+    {
+      "kind": "Deployment",
+      "name": "ops-metrics-server-metrics",
+      "namespace": "ops-amd64-core-20261009",
+      "uid": "3d2eccac-fbb3-4bf1-97e9-99b4b5f09bcb"
+    },
+    {
+      "kind": "APIService",
+      "name": "v1beta1.metrics.k8s.io",
+      "namespace": "",
+      "uid": "26170f3e-870a-448c-9aff-0e1716d35922"
+    }
+  ],
+  "bootstrapTrustAndStoragePreserved": true
+}

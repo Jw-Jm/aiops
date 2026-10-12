@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"log/slog"
@@ -186,5 +187,105 @@ func TestLeaseWireUsesNativeMicroTimeWithNanosecondClock(t *testing.T) {
 	}
 	if native.Spec.RenewTime == nil || native.Spec.AcquireTime == nil || native.Spec.RenewTime.Nanosecond() != 896794000 {
 		t.Fatal("Lease timestamp did not preserve native microsecond precision")
+	}
+}
+
+func TestCancelledLeaseConfirmationDoesNotInvalidateOtherReaders(t *testing.T) {
+	doc := LeaseDocument{APIVersion: "coordination.k8s.io/v1", Kind: "Lease"}
+	doc.Metadata.UID = "native"
+	doc.Metadata.Annotations = map[string]string{"ops.platform/owner-epoch": "1"}
+	doc.Spec.HolderIdentity = "instance"
+	doc.Spec.LeaseDurationSeconds = 15
+	doc.Spec.RenewTime = metav1.NewMicroTime(time.Now())
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { json.NewEncoder(w).Encode(doc) }))
+	defer server.Close()
+	client, err := kubernetes.NewClient(server.URL, server.Client(), 20, 50)
+	if err != nil {
+		t.Fatal(err)
+	}
+	g := New("tenant-a", "cluster-a", "instance", nil)
+	g.SetOwner(1, time.Now().Add(8*time.Second))
+	lease := &Lease{Client: client, Graph: g, Namespace: "owned", Name: "graph", leaseUID: "native", epoch: 1, observed: true}
+	g.mu.RLock()
+	deadline := g.deadline
+	g.mu.RUnlock()
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if err = lease.Confirm(ctx, 1); err == nil {
+		t.Fatal("cancelled read accepted")
+	}
+	g.mu.RLock()
+	after := g.deadline
+	g.mu.RUnlock()
+	if !after.Equal(deadline) {
+		t.Fatal("caller cancellation invalidated independent native ownership")
+	}
+	if err = lease.Confirm(context.Background(), 1); err != nil {
+		t.Fatalf("next reader failed valid native Lease: %v", err)
+	}
+	doc.Spec.HolderIdentity = "other"
+	if err = lease.Confirm(context.Background(), 1); err == nil {
+		t.Fatal("actual owner change accepted")
+	}
+	g.mu.RLock()
+	after = g.deadline
+	g.mu.RUnlock()
+	if !after.IsZero() {
+		t.Fatal("actual owner change failed to invalidate")
+	}
+}
+
+type cancelLeaseRead struct {
+	io.Reader
+	cancel context.CancelFunc
+}
+
+func (r cancelLeaseRead) Read(b []byte) (int, error) {
+	n, err := r.Reader.Read(b)
+	r.cancel()
+	return n, err
+}
+func (r cancelLeaseRead) Close() error { return nil }
+
+type leaseResponseTransport struct {
+	payload []byte
+	cancel  context.CancelFunc
+}
+
+func (t leaseResponseTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	return &http.Response{StatusCode: 200, Header: http.Header{}, Body: cancelLeaseRead{bytes.NewReader(t.payload), t.cancel}}, nil
+}
+func TestLeaseResponseCancellationStillFencesKnownOwnershipChange(t *testing.T) {
+	for _, changed := range []bool{false, true} {
+		t.Run(strconv.FormatBool(changed), func(t *testing.T) {
+			doc := LeaseDocument{APIVersion: "coordination.k8s.io/v1", Kind: "Lease"}
+			doc.Metadata.UID = "native"
+			doc.Metadata.Annotations = map[string]string{"ops.platform/owner-epoch": "1"}
+			doc.Spec.HolderIdentity = "instance"
+			if changed {
+				doc.Spec.HolderIdentity = "other"
+			}
+			doc.Spec.LeaseDurationSeconds = 15
+			doc.Spec.RenewTime = metav1.NewMicroTime(time.Now())
+			payload, _ := json.Marshal(doc)
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			client, err := kubernetes.NewClient("http://lease.test", &http.Client{Transport: leaseResponseTransport{payload, cancel}}, 20, 50)
+			if err != nil {
+				t.Fatal(err)
+			}
+			g := New("tenant-a", "cluster-a", "instance", nil)
+			g.SetOwner(1, time.Now().Add(8*time.Second))
+			lease := &Lease{Client: client, Graph: g, Namespace: "owned", Name: "graph", leaseUID: "native", epoch: 1, observed: true}
+			if lease.Confirm(ctx, 1) == nil {
+				t.Fatal("cancelled response accepted")
+			}
+			g.mu.RLock()
+			deadline := g.deadline
+			g.mu.RUnlock()
+			if changed != deadline.IsZero() {
+				t.Fatalf("known ownership change=%v revoked=%v", changed, deadline.IsZero())
+			}
+		})
 	}
 }

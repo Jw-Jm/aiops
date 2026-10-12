@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { SourceDataScopeMappingRequiredLabels } from './sourceDataScopeMappingRequiredLabels';
-import type { SourceDataScopeMappingScopes } from './sourceDataScopeMappingScopes';
+import type { SourceDataScopeMappingRequiredLabels } from './sourceDataScopeMappingRequiredLabels.ts';
+import type { SourceDataScopeMappingScopes } from './sourceDataScopeMappingScopes.ts';
 
 /**
  * Declared exact scopes; empty scopes grant no permission. Backend verification is read-only and unavailable until adapter admission.

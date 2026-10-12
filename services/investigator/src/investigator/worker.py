@@ -80,7 +80,9 @@ def serve(config):
                 if isinstance(error, ModelCallError):
                     print("investigator-model-failure", error.kind, error.provider_failure_kind or "", file=sys.stderr)
                 for frame in traceback.extract_tb(error.__traceback__):print("investigator-failure",type(error).__name__,frame.filename,frame.lineno,file=sys.stderr)
-                self.respond(503,{"errorCode":"INVESTIGATION_FAILED"})
+                # Static ModelCallError categories carry no provider response or credentials.
+                code=error.kind if isinstance(error, ModelCallError) else "INVESTIGATION_FAILED"
+                self.respond(503,{"errorCode":code})
             finally:
                 if job_api is not None:job_api.close()
                 if bridge is not None:bridge.close()

@@ -24,6 +24,9 @@ var componentImages = map[string]string{
 func loadComponentLocks(catalogPath, architecture string) (map[string]ComponentLock, error) {
 	if catalogPath == "" {
 		catalogPath = "bundle/component-catalog.yaml"
+		if architecture == "amd64" {
+			catalogPath = "bundle/component-catalog-amd64.yaml"
+		}
 	}
 	contents, err := os.ReadFile(catalogPath)
 	if err != nil {
@@ -68,7 +71,10 @@ func loadComponentLocks(catalogPath, architecture string) (map[string]ComponentL
 			return nil, fmt.Errorf("Component Catalog lock for %q has inexact version or invalid digest", component.Name)
 		}
 		if !architectureIncludes(component.Architectures, "linux/"+architecture) {
-			return nil, fmt.Errorf("Component Catalog lock for %q does not include linux/%s", component.Name, architecture)
+			// Discovery may include disabled or deferred components. Only target
+			// locks are exposed; Resolve still rejects any bundled component
+			// whose exact lock is missing.
+			continue
 		}
 		locks[profileName] = ComponentLock{
 			Version:   component.Version,

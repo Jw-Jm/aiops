@@ -1,0 +1,5 @@
+# Native amd64 Victoria material admission
+
+VictoriaMetrics v1.116.0 and VictoriaLogs v1.52.0 retain their exact qualified publisher multiarchitecture index and corresponding-source identities. Each selected manifest, config architecture, layer checksum and retained OCI archive checksum was verified independently. The measured amd64 package inventory introduces no additional source dependency beyond the retained qualified source closure; original source archive inventory and all original notice digests were checked.
+
+VictoriaMetrics native isolated query and VictoriaLogs native isolated stream ingestion plus exact stream query passed on 192.168.0.63. Probe root filesystems were read-only and networking was disabled. Evidence is retained under docs/evidence/amd64-deployment-20261009: victoria-metrics-native-query.log, victoria-logs-native-poc-result.json, and the respective shared-source-integrity and dependency-parity records. This is component material admission; platform source adapters and business acceptance are verified after installation.

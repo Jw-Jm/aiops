@@ -4,7 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { InvestigationStepV2State } from './investigationStepV2State';
+import type { InvestigationStepV2ArgsSummary } from './investigationStepV2ArgsSummary.ts';
+import type { InvestigationStepV2State } from './investigationStepV2State.ts';
 
 export interface InvestigationStepV2 {
   stepId: string;
@@ -15,6 +16,8 @@ export interface InvestigationStepV2 {
   toolName: string;
   /** @pattern ^sha256:[a-f0-9]{64}$ */
   argsDigest: string;
+  /** Bounded safe scope and budget projection; raw queries and model prompts are omitted. Historical steps may have an empty summary. */
+  argsSummary?: InvestigationStepV2ArgsSummary;
   state: InvestigationStepV2State;
   result?: unknown;
   /** @maxLength 128 */

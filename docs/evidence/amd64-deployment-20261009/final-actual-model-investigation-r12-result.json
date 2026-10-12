@@ -1,0 +1,419 @@
+{
+  "job": {
+    "schemaVersion": "investigation-job/v2",
+    "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+    "jobId": "01a12902-8bfd-73ce-b452-d2bcb174529b",
+    "incidentId": "01a1286a-a242-7e20-8f24-e7ecefa44414",
+    "subject": "dc3073c1-74d7-4e3d-aef5-2cf527acd4dd",
+    "triggerRevision": 4,
+    "triggerKind": "manual",
+    "policyVersion": "01a12865-befc-710a-8c49-da79e2f43fc5",
+    "scope": {
+      "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaces": [
+        "ops-amd64-final-targets-20261010"
+      ],
+      "resources": [],
+      "clusterScoped": true,
+      "authorizationRevision": "sha256:be98f45bf2faad2f1609a1c29c57cedf149d7b77136a0a91c8298cd5f4cfd782"
+    },
+    "effectiveScopeDigest": "sha256:a1ef63d8198cc23bf4bba5b4a83af1802142fd4fa122da666442c3e1334c88ae",
+    "toolCatalogDigest": "sha256:fd73e660c6f7916d8c940f83e6440c8b6d203f27db0815a46cb00eacfdc39a20",
+    "state": "failed",
+    "budget": {
+      "toolCalls": 40,
+      "rawQueries": 10,
+      "resultBytes": 41943040,
+      "graphNodes": 8000,
+      "evidenceItems": 4000,
+      "modelRequests": 8,
+      "inputTokens": 32768,
+      "outputTokens": 8192,
+      "modelCostMicros": 0,
+      "durationSeconds": 600,
+      "allowedDataClasses": [
+        "D0",
+        "D1"
+      ]
+    },
+    "budgetReserved": {
+      "toolCalls": 0,
+      "rawQueries": 0,
+      "resultBytes": 0,
+      "graphNodes": 0,
+      "evidenceItems": 0,
+      "modelRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "modelCostMicros": 0
+    },
+    "budgetConsumed": {
+      "toolCalls": 1,
+      "rawQueries": 0,
+      "resultBytes": 138020,
+      "graphNodes": 0,
+      "evidenceItems": 1,
+      "modelRequests": 2,
+      "inputTokens": 19593,
+      "outputTokens": 1085,
+      "modelCostMicros": 0
+    },
+    "expiresAt": "2026-10-11T03:39:55.221219Z",
+    "eventSeq": 11,
+    "nextCallSeq": 0,
+    "errorCode": "INVESTIGATOR_FAILURE"
+  },
+  "rca": {
+    "currentDegradedSources": [
+      "current-runtime-unverified",
+      "current-graph-revision-changed"
+    ],
+    "currentEligible": false,
+    "revision": {
+      "schemaVersion": "rca-revision/v2",
+      "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+      "incidentId": "01a1286a-a242-7e20-8f24-e7ecefa44414",
+      "revision": 81,
+      "baseIncidentRevision": 4,
+      "inputDigest": "sha256:f7d4783d63014a9440272f4fb2305f2f96325cfac5d1bd3a4e58f00f4f6deaac",
+      "actor": "deterministic-worker",
+      "source": "deterministic",
+      "superseded": false,
+      "inputManifest": {
+        "schemaVersion": "rca-input/v2",
+        "findingRevisions": [
+          {
+            "findingId": "01a1286a-9dad-74ae-a247-8644e58e67e3",
+            "aggregateRevision": 3,
+            "occurrenceId": "01a1286a-9d46-73bc-8d7a-7fc3ef535586",
+            "sourceFingerprint": "sha256:905c55c1bef4c71809c4dd1c8f1a63e39f7796e3fed49c3d2a1a83755f67ea5f",
+            "sourceRegistrationId": "01a12865-be9a-72cc-a3e9-72c29c491a8f",
+            "sourceRevision": 1,
+            "resourceCanonicalId": "k8s+v1://126aad70-bb1c-4e08-907b-70f092dc58b1/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/2e6dcb3c-e0e6-473a-9a4d-8a7706a04f1f",
+            "namespace": "ops-amd64-final-targets-20261010",
+            "lifecycleState": "firing",
+            "digest": "sha256:b99b8036beb6a3dd11fc14d965fbc099a5c4274abfcc3723654693a9c6babe7e",
+            "observedAt": "2026-10-11T03:28:52.382599794Z"
+          }
+        ],
+        "graphSources": [],
+        "resourceCanonicalId": "k8s+v1://126aad70-bb1c-4e08-907b-70f092dc58b1/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/2e6dcb3c-e0e6-473a-9a4d-8a7706a04f1f",
+        "evidence": [
+          {
+            "sourceScopeDigest": "sha256:eb727bce8df40d8684e3c5a73a443587e05dfc8ce6371567085f62806056ae8a",
+            "schemaVersion": "evidence/v2",
+            "evidenceId": "ea790c5a-6262-55a5-b376-d68558f76511",
+            "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+            "resourceCanonicalId": "k8s+v1://126aad70-bb1c-4e08-907b-70f092dc58b1/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/2e6dcb3c-e0e6-473a-9a4d-8a7706a04f1f",
+            "type": "resource_state",
+            "dataClass": "D0",
+            "sourceRegistrationId": "01a12865-be9a-72cc-a3e9-72c29c491a8f",
+            "sourceRevision": 1,
+            "sourceSystem": "kubernetes",
+            "backendLogicalId": "amd64-current-kubernetes-79014400-9453-4cb4-9678-0fae47981d79",
+            "queryTemplateVersion": "sp05-signal/v1",
+            "queryHash": "sha256:6c7944a2d0de0eef51041ef3066559b174fa4c0a2145b039c6ea26702fcac71e",
+            "effectiveScope": {
+              "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+              "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+              "namespaces": [
+                "ops-amd64-final-targets-20261010"
+              ],
+              "resources": [],
+              "clusterScoped": false,
+              "authorizationRevision": "collector/01a12865-be9a-72cc-a3e9-72c29c491a8f/1"
+            },
+            "evaluatedAt": "2026-10-11T03:28:52.382599794Z",
+            "observedFrom": "2026-10-11T03:28:52.382599794Z",
+            "observedTo": "2026-10-11T03:28:52.382599794Z",
+            "sourceRetentionUntil": "2026-10-11T03:28:52.382599794Z",
+            "timeReliable": true,
+            "replayState": "archived_verified",
+            "contentDigest": "sha256:1ea25af408f6c71240f9c1a7c0034ba85e8892ed0b5664cde184997866baa018",
+            "derivationEvidenceRefs": [],
+            "independenceGroup": "01a12865-be9a-72cc-a3e9-72c29c491a8f/2e6dcb3c-e0e6-473a-9a4d-8a7706a04f1f",
+            "archiveRef": {
+              "backendLogicalId": "amd64-current-archive-ops-amd64-final-20261010",
+              "object": {
+                "tenantId": "126aad70-bb1c-4e08-907b-70f092dc58b1",
+                "objectId": "ea790c5a-6262-55a5-b376-d68558f76511",
+                "category": "evidence",
+                "key": "tenants/82fced7733ae2073a8e56780e870e0047f598fe1d4df503f477b95256eea541d/evidence/ea790c5a-6262-55a5-b376-d68558f76511",
+                "digest": "sha256:44eedc958f2b75436fb533619cb7e21a56474ae25d7f2bac8c41e088a6b31836",
+                "size": 544,
+                "contentType": "application/vnd.ops.transit-envelope+json",
+                "versionId": "6722a40890d7fb3a85e04a13be8cc53e",
+                "etag": "\"5d383ac6feb3d8de2efbc4c2a7307cea\"",
+                "retainUntil": "2027-10-12T03:29:06Z"
+              },
+              "encryptionKeyVersion": "1",
+              "plaintextDigest": "sha256:1ea25af408f6c71240f9c1a7c0034ba85e8892ed0b5664cde184997866baa018",
+              "ciphertextDigest": "sha256:44eedc958f2b75436fb533619cb7e21a56474ae25d7f2bac8c41e088a6b31836"
+            }
+          }
+        ],
+        "graph": {
+          "directlyAffected": [],
+          "indirectlyAffected": [],
+          "dependencyOnly": [],
+          "schemaVersion": "rca-graph-unavailable/v2",
+          "graphRevision": {
+            "ownerEpoch": 0,
+            "graphGeneration": 0
+          },
+          "ownerInstance": "",
+          "collectedAt": "0001-01-01T00:00:00Z",
+          "freshness": "unavailable",
+          "partial": true,
+          "warnings": null,
+          "degradedSources": [
+            "graph"
+          ],
+          "nodes": [],
+          "edges": [],
+          "budgets": {
+            "maxDepth": 0,
+            "storageMaxDepth": 0,
+            "maxNodes": 0,
+            "maxEdges": 0,
+            "nodeCount": 0,
+            "edgeCount": 0,
+            "truncated": false
+          },
+          "rankedEvidence": null,
+          "conflicts": null
+        },
+        "from": "2026-10-11T03:24:58.094458838Z",
+        "to": "2026-10-11T03:29:58.094458838Z",
+        "evaluatedAt": "2026-10-11T03:29:58.094458838Z"
+      },
+      "result": {
+        "schemaVersion": "rca-evaluation/v2",
+        "status": "unresolved",
+        "partial": true,
+        "candidates": [
+          {
+            "candidateKey": "sha256:308590bbacfbb04181b3a4df3c0b96f7410737210f4823d89ddb6c900fc21287",
+            "candidateType": "csi_provisioner_failure",
+            "resourceCanonicalId": "k8s+v1://126aad70-bb1c-4e08-907b-70f092dc58b1/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/2e6dcb3c-e0e6-473a-9a4d-8a7706a04f1f",
+            "source": "deterministic",
+            "evidenceRefs": [
+              "ea790c5a-6262-55a5-b376-d68558f76511"
+            ],
+            "score": 90,
+            "provenance": [
+              "pvc-csi-failure/v1",
+              "ontology/346236312685a2e2e824c46b9ecdb3e8e8a10c76"
+            ]
+          }
+        ],
+        "evidenceBundle": {
+          "supporting": [
+            "ea790c5a-6262-55a5-b376-d68558f76511"
+          ],
+          "contradicting": [],
+          "missing": [
+            "csi-error",
+            "storage-path"
+          ],
+          "degradedSources": [
+            "graph"
+          ],
+          "ranked": [
+            {
+              "rank": 1,
+              "source": "event",
+              "nodeId": "ea790c5a-6262-55a5-b376-d68558f76511",
+              "kind": "Event",
+              "severity": "warning",
+              "reason": "FailureEvidence",
+              "message": "csi_provisioner_failure",
+              "confidence": "observed",
+              "score": 90,
+              "timestamp": "2026-10-11T03:28:52.382599794Z"
+            }
+          ],
+          "conflicts": []
+        },
+        "recipeVersion": "v1",
+        "recipeDigest": "sha256:962374d5f8fb8181c8bd52ae856610cfad591fe0fdc298dd56f70aa69e1d24d9",
+        "impact": {
+          "directlyAffected": [],
+          "indirectlyAffected": [],
+          "dependencyOnly": [],
+          "schemaVersion": "rca-graph-unavailable/v2",
+          "graphRevision": {
+            "ownerEpoch": 0,
+            "graphGeneration": 0
+          },
+          "ownerInstance": "",
+          "collectedAt": "0001-01-01T00:00:00Z",
+          "freshness": "unavailable",
+          "partial": true,
+          "warnings": null,
+          "degradedSources": [
+            "graph"
+          ],
+          "nodes": [],
+          "edges": [],
+          "budgets": {
+            "maxDepth": 0,
+            "storageMaxDepth": 0,
+            "maxNodes": 0,
+            "maxEdges": 0,
+            "nodeCount": 0,
+            "edgeCount": 0,
+            "truncated": false
+          },
+          "rankedEvidence": null,
+          "conflicts": null
+        },
+        "graphPlan": "single-query/v1"
+      },
+      "createdAt": "2026-10-11T03:29:58.125737548Z"
+    },
+    "schemaVersion": "current-rca/v2",
+    "semantics": "frozen-revision-with-current-reference-authorization"
+  },
+  "commands": [
+    {
+      "operation": "r12-actual-model-create",
+      "method": "POST",
+      "path": "/api/v1/incidents/01a1286a-a242-7e20-8f24-e7ecefa44414/investigations",
+      "status": 202,
+      "responseSHA256": "sha256:8fb9b34be78ef4b85d39ea3dceba54b0ccf29cdd9adbfc8d6f8abfc5a975e069",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-0",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:f6e5bf34f337d23d16c9926b4ac5f4e19a1b0c61ee88d4218639c98195fd4e3a",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-1",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:20bf78bb4e505bb17050e34dc477835f565a85caebdbeb14341185d03a91b0f4",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-2",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:bd9cb03c365aafc4b72eb70b7cc1b10ca3d95c725fc070770ad0ab1ec0667cbd",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-3",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:50ecf3195eae64e3a26397e35211b92134894da05c0e83f817082aa4288b56b4",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-4",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:5cf8b1b8a301517abdda14d6a84c3e961c1252faec9399a1ab2ce950fc5952c2",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-5",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:faf7370349a2977f256087f5528728b65d33a27af766cb158a7cf7e8e063b01e",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-6",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:fd0dd5f757accd00651d3f30d20007b217df4341d5f52d33e863871f2b2ecda6",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-7",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:5da53f18dbfb58c5bd6c733d8b774cf158740a000c384303b2af1f8f8de3d974",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-8",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:d20436754be3716704ff7cec291ab94193ac2be0a1702a89dc70917ed2e1b10b",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-9",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:2d03839f268bed1423fdfb6fafeb9294535bebb07d45b8fa26483f30b9119b45",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-10",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:a46488aa93224b4aaac5781ff421c9960fa6750e4dfb72d74c500c3c26dc9812",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-11",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:0d5eaaebc117416029fe94ca274076bd4218cf038acd01ba2a249368a334f4e6",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-12",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:fcc053ccdabc4038503893d86499e88a2aed070ce6b0c95d45f523f4d798fd87",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-13",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:498047a6893f1e3c9d88f14a1eb9b16e85a262e30e83027a9a18f8bdec1f83f0",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-poll-14",
+      "method": "GET",
+      "path": "/api/v1/investigations/01a12902-8bfd-73ce-b452-d2bcb174529b",
+      "status": 200,
+      "responseSHA256": "sha256:58ce38c59ec31599fdbfb35246db23db4a91731a55fc8f23a3f020bf50caeaea",
+      "error": null
+    },
+    {
+      "operation": "r12-actual-model-rca",
+      "method": "GET",
+      "path": "/api/v1/incidents/01a1286a-a242-7e20-8f24-e7ecefa44414/rca",
+      "status": 200,
+      "responseSHA256": "sha256:04734ee91160fa59c1be2642334689e6f64d10bb59fb5a6bcdf4b6fea61dbeca",
+      "error": null
+    }
+  ],
+  "actualModel": "Ollama qwen2.5:1.5b",
+  "seededBusinessRows": false
+}

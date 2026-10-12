@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { HostOnboardingV1Host } from './hostOnboardingV1Host';
+import type { HostOnboardingV1Host } from './hostOnboardingV1Host.ts';
 
 export interface HostOnboardingV1 {
   schemaVersion: 'host-onboarding/v1';

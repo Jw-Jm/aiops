@@ -4,17 +4,19 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CanonicalID } from './canonicalID';
-import type { ResourceEntityV2 } from './resourceEntityV2';
-import type { ResourceGraphV2Budgets } from './resourceGraphV2Budgets';
-import type { ResourceGraphV2ConflictsItem } from './resourceGraphV2ConflictsItem';
-import type { ResourceGraphV2Freshness } from './resourceGraphV2Freshness';
-import type { ResourceGraphV2GraphRevision } from './resourceGraphV2GraphRevision';
-import type { ResourceGraphV2RankedEvidenceItem } from './resourceGraphV2RankedEvidenceItem';
-import type { ResourceGraphV2SchemaVersion } from './resourceGraphV2SchemaVersion';
-import type { ResourceRelationV2 } from './resourceRelationV2';
+import type { CanonicalID } from './canonicalID.ts';
+import type { ResourceEntityV2 } from './resourceEntityV2.ts';
+import type { ResourceGraphV2Budgets } from './resourceGraphV2Budgets.ts';
+import type { ResourceGraphV2ConflictsItem } from './resourceGraphV2ConflictsItem.ts';
+import type { ResourceGraphV2Freshness } from './resourceGraphV2Freshness.ts';
+import type { ResourceGraphV2GraphRevision } from './resourceGraphV2GraphRevision.ts';
+import type { ResourceGraphV2RankedEvidenceItem } from './resourceGraphV2RankedEvidenceItem.ts';
+import type { ResourceGraphV2SchemaVersion } from './resourceGraphV2SchemaVersion.ts';
+import type { ResourceRelationV2 } from './resourceRelationV2.ts';
+import type { ResourceSummaryV1 } from './resourceSummaryV1.ts';
 
 export interface ResourceGraphV2 {
+  summary?: ResourceSummaryV1;
   schemaVersion: ResourceGraphV2SchemaVersion;
   graphRevision: ResourceGraphV2GraphRevision;
   /** @minLength 1 */

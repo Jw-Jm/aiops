@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { ExecutionProfileV2Type } from './executionProfileV2Type';
+import type { ExecutionProfileV2Type } from './executionProfileV2Type.ts';
 
 export interface ExecutionProfileV2 {
   /** @maxLength 512 */

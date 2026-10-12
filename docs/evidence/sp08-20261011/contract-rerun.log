@@ -1,0 +1,42 @@
+--- FAIL: TestInspectionNonVirtualReplayEntryPoint (0.22s)
+    inspection_replay_test.go:52: missing upstream source was not rejected: exit status 1 Traceback (most recent call last):
+          File "/data/ops-amd64-final-20261010/working-runtime/platform/test/fixtures/upstream-inspection/replay-nonvirtual.py", line 227, in <module>
+            main()
+            ~~~~^^
+          File "/data/ops-amd64-final-20261010/working-runtime/platform/test/fixtures/upstream-inspection/replay-nonvirtual.py", line 70, in main
+            raise RuntimeError(f"expected Python 3.12.14, got {sys.version.split()[0]}")
+        RuntimeError: expected Python 3.12.14, got 3.14.4
+--- FAIL: TestK8sGPTBufLicenseProvenance (0.01s)
+    k8sgpt_license_test.go:120: open ../../artifacts/test-reports/task-2.9-k8sgpt-cli-offline-run.log: no such file or directory
+--- FAIL: TestUpstreamReuseLockRejectsUnpinnedOrUnsafeBaselines (35.42s)
+    upstream_reuse_test.go:417: k8sgpt-analyzer offline replay log: open ../../artifacts/test-reports/task-2.9-0341-composite-final-replay/k8sgpt-analyzer.log: no such file or directory
+    upstream_reuse_test.go:421: k8sgpt-analyzer replay is not bound to its selected source commit and successful execution
+    upstream_reuse_test.go:437: k8sgpt-analyzer supporting log: open ../../artifacts/test-reports/task-2.9-k8sgpt-0341-module-integrity-final.log: no such file or directory
+    upstream_reuse_test.go:417: node-problem-detector-rules offline replay log: open ../../artifacts/test-reports/task-2.9-0341-composite-final-replay/node-problem-detector-rules.log: no such file or directory
+    upstream_reuse_test.go:421: node-problem-detector-rules replay is not bound to its selected source commit and successful execution
+    upstream_reuse_test.go:437: node-problem-detector-rules supporting log: open ../../artifacts/test-reports/task-2.9-npd-offline-run.log: no such file or directory
+    upstream_reuse_test.go:437: node-problem-detector-rules supporting log: open ../../artifacts/test-reports/task-2.9-dependency-closure-offline.log: no such file or directory
+    upstream_reuse_test.go:417: coroot-community-check offline replay log: open ../../artifacts/test-reports/task-2.9-0341-composite-final-replay/coroot-community-check.log: no such file or directory
+    upstream_reuse_test.go:421: coroot-community-check replay is not bound to its selected source commit and successful execution
+    upstream_reuse_test.go:437: coroot-community-check supporting log: open ../../artifacts/test-reports/task-2.9-coroot-offline-run.log: no such file or directory
+    upstream_reuse_test.go:437: coroot-community-check supporting log: open ../../artifacts/test-reports/task-2.9-dependency-closure-offline.log: no such file or directory
+    upstream_reuse_test.go:417: keep-community-model offline replay log: open ../../artifacts/test-reports/task-2.9-0341-composite-final-replay/keep-community-model.log: no such file or directory
+    upstream_reuse_test.go:421: keep-community-model replay is not bound to its selected source commit and successful execution
+    upstream_reuse_test.go:437: keep-community-model supporting log: open ../../artifacts/test-reports/task-2.9-keep-model-syntax-offline-run.log: no such file or directory
+    upstream_reuse_test.go:437: keep-community-model supporting log: open ../../artifacts/test-reports/task-2.9-dependency-closure-offline.log: no such file or directory
+    upstream_reuse_test.go:417: metal3-bmo-model offline replay log: open ../../artifacts/test-reports/task-2.9-0341-composite-final-replay/metal3-bmo-model.log: no such file or directory
+    upstream_reuse_test.go:421: metal3-bmo-model replay is not bound to its selected source commit and successful execution
+    upstream_reuse_test.go:437: metal3-bmo-model supporting log: open ../../artifacts/test-reports/task-2.9-dependency-closure-offline.log: no such file or directory
+    upstream_reuse_test.go:417: gofish-redfish offline replay log: open ../../artifacts/test-reports/task-2.9-0341-composite-final-replay/gofish-redfish.log: no such file or directory
+    upstream_reuse_test.go:421: gofish-redfish replay is not bound to its selected source commit and successful execution
+    upstream_reuse_test.go:437: gofish-redfish supporting log: open ../../artifacts/test-reports/task-2.9-dependency-closure-offline.log: no such file or directory
+    upstream_reuse_test.go:417: ipmi-exporter offline replay log: open ../../artifacts/test-reports/task-2.9-0341-composite-final-replay/ipmi-exporter.log: no such file or directory
+    upstream_reuse_test.go:421: ipmi-exporter replay is not bound to its selected source commit and successful execution
+    upstream_reuse_test.go:437: ipmi-exporter supporting log: open ../../artifacts/test-reports/task-2.9-dependency-closure-offline.log: no such file or directory
+    upstream_reuse_test.go:417: smartctl-exporter offline replay log: open ../../artifacts/test-reports/task-2.9-0341-composite-final-replay/smartctl-exporter.log: no such file or directory
+    upstream_reuse_test.go:421: smartctl-exporter replay is not bound to its selected source commit and successful execution
+    upstream_reuse_test.go:437: smartctl-exporter supporting log: open ../../artifacts/test-reports/task-2.9-smartctl-offline-run.log: no such file or directory
+    upstream_reuse_test.go:437: smartctl-exporter supporting log: open ../../artifacts/test-reports/task-2.9-dependency-closure-offline.log: no such file or directory
+FAIL
+FAIL	ops-platform/test/contract	76.833s
+FAIL

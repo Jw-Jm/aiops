@@ -1,0 +1,18 @@
+{
+  "command": "GOTOOLCHAIN=local go1.27.1 test ./internal/bundle ./cmd/opsctl -count=1",
+  "platform": "local source regression; amd64 executable independently rebuilt offline",
+  "result": "passed",
+  "packageSeconds": {
+    "internal/bundle": 25.334,
+    "cmd/opsctl": 18.624
+  },
+  "coverage": [
+    "explicit SP07 base Lease binding",
+    "platform ownership label only normalization; policy unchanged",
+    "foreign release rejected",
+    "exact configured credential namespaces",
+    "foreign namespace rejected",
+    "existing credential adoption rejected"
+  ],
+  "liveBusinessAcceptance": "pending"
+}

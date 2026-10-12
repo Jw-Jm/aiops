@@ -1,0 +1,97 @@
+
+Running 8 tests using 1 worker
+
+[1/8] tests/e2e/audit_readability.spec.ts:2:1 › real Incident audit distinguishes human confirmation, execution and post-check, and independently verifies exported digests
+tests/e2e/audit_readability.spec.ts:2:1 › real Incident audit distinguishes human confirmation, execution and post-check, and independently verifies exported digests
+Signed archive chain status: unavailable Reason: archive verifier is not configured
+
+[2/8] tests/e2e/live.spec.ts:2:1 › live OIDC refresh, resource/finding navigation, scoped capabilities and ledger restoration
+  1) tests/e2e/live.spec.ts:2:1 › live OIDC refresh, resource/finding navigation, scoped capabilities and ledger restoration 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog').getByRole('heading', { name: '实际观测内容', exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('dialog').getByRole('heading', { name: '实际观测内容', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog').getByRole('heading', { name: '实际观测内容', exact: true })
+
+
+      59 |           .getByRole("dialog")
+      60 |           .getByRole("heading", { name: "实际观测内容", exact: true }),
+    > 61 |       ).toBeVisible();
+         |         ^
+      62 |       await expect(page.locator(".ant-skeleton")).toHaveCount(0);
+      63 |       await page.screenshot({
+      64 |         path: config.screenshotDirectory + "/operator-evidence-detail.png",
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/live.spec.ts:61:9
+
+    Error Context: ../../../../ops-sp08-20261011/build/readability-browser-r8/live-live-OIDC-refresh-res-963cb-ties-and-ledger-restoration/error-context.md
+
+
+[3/8] tests/e2e/live.spec.ts:105:1 › live namespace command: blank input, review invalidation, confirmation, output and durable post-check
+  2) tests/e2e/live.spec.ts:105:1 › live namespace command: blank input, review invalidation, confirmation, output and durable post-check 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('检查完成', { exact: true }).first()
+    Expected: visible
+    Timeout: 60000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('检查完成', { exact: true }).first() with timeout 60000ms
+      - waiting for getByText('检查完成', { exact: true }).first()
+
+
+      130 |   });
+      131 |   await expect(page.getByText("不适用", { exact: true }).first()).toBeVisible();
+    > 132 |   await expect(page.getByText("检查完成", { exact: true }).first()).toBeVisible(
+          |                                                                 ^
+      133 |     { timeout: 60000 },
+      134 |   );
+      135 |   const terminalBounds = await page
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/live.spec.ts:132:65
+
+    Error Context: ../../../../ops-sp08-20261011/build/readability-browser-r8/live-live-namespace-comman-d7fc8-tput-and-durable-post-check/error-context.md
+
+
+[4/8] tests/e2e/live.spec.ts:155:1 › live cluster command requires fresh password and OTP, memory restoration and explicit strong session
+  3) tests/e2e/live.spec.ts:155:1 › live cluster command requires fresh password and OTP, memory restoration and explicit strong session 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('检查完成', { exact: true }).first()
+    Expected: visible
+    Timeout: 60000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('检查完成', { exact: true }).first() with timeout 60000ms
+      - waiting for getByText('检查完成', { exact: true }).first()
+
+
+      190 |     timeout: 60000,
+      191 |   });
+    > 192 |   await expect(page.getByText("检查完成", { exact: true }).first()).toBeVisible(
+          |                                                                 ^
+      193 |     { timeout: 60000 },
+      194 |   );
+      195 |   const terminalBounds = await page
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/live.spec.ts:192:65
+
+    Error Context: ../../../../ops-sp08-20261011/build/readability-browser-r8/live-live-cluster-command--47ca5-and-explicit-strong-session/error-context.md
+
+
+[5/8] tests/e2e/role_isolation.spec.ts:70:3 › real OIDC role isolation: operator
+[6/8] tests/e2e/role_isolation.spec.ts:70:3 › real OIDC role isolation: platform_admin
+[7/8] tests/e2e/role_isolation.spec.ts:70:3 › real OIDC role isolation: no_grant
+[8/8] tests/e2e/role_isolation.spec.ts:142:1 › real grant revocation invalidates a pending human risk confirmation
+  3 failed
+    tests/e2e/live.spec.ts:2:1 › live OIDC refresh, resource/finding navigation, scoped capabilities and ledger restoration 
+    tests/e2e/live.spec.ts:105:1 › live namespace command: blank input, review invalidation, confirmation, output and durable post-check 
+    tests/e2e/live.spec.ts:155:1 › live cluster command requires fresh password and OTP, memory restoration and explicit strong session 
+  5 passed (2.6m)

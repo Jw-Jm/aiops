@@ -118,6 +118,12 @@ type PublicationSignature struct {
 }
 
 type PublishedVersion struct {
+	Activations         []Activation `json:"activations,omitempty"`
+	ReferenceCount      int          `json:"referenceCount"`
+	ReferenceCountScope string       `json:"referenceCountScope"`
+	SignatureVerified   bool         `json:"signatureVerified"`
+	DigestVerified      bool         `json:"digestVerified"`
+
 	TenantID      uuid.UUID       `json:"tenantId"`
 	VersionID     uuid.UUID       `json:"versionId"`
 	DraftID       uuid.UUID       `json:"draftId"`

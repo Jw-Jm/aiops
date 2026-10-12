@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { RCACandidateV2Source } from './rCACandidateV2Source';
+import type { RCACandidateV2Source } from './rCACandidateV2Source.ts';
 
 export interface RCACandidateV2 {
   /** @pattern ^sha256:[0-9a-f]{64}$ */

@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CanonicalID } from './canonicalID';
-import type { CommandExecutionOptions } from './commandExecutionOptions';
-import type { Identifier } from './identifier';
+import type { CanonicalID } from './canonicalID.ts';
+import type { CommandExecutionOptions } from './commandExecutionOptions.ts';
+import type { Identifier } from './identifier.ts';
 
 export interface CommandRiskAssessmentRequest {
   /** @nullable */

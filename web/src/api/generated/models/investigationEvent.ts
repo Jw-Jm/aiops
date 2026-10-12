@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { Identifier } from './identifier';
-import type { InvestigationEventEventType } from './investigationEventEventType';
+import type { Identifier } from './identifier.ts';
+import type { InvestigationEventEventType } from './investigationEventEventType.ts';
 
 export interface InvestigationEvent {
   eventId: string;

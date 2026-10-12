@@ -168,6 +168,7 @@ func Discover(ctx context.Context, contextName, kubectlPath, catalogPath string)
 	result.Kubernetes.KubeVirt = "unverified"
 	result.Components = discoverComponents(ctx, resources, reader)
 	enrichVictoriaCandidates(ctx, reader, result.Components)
+	enrichMetricsCandidates(ctx, reader, result.Components)
 	crdSet := make(map[string]bool, len(result.Kubernetes.CRDs))
 	for _, name := range result.Kubernetes.CRDs {
 		crdSet[name] = true
@@ -279,7 +280,7 @@ func completeDigestOnlyCandidateVersions(components map[string][]ComponentCandid
 			if !missingVersion {
 				continue
 			}
-			if capability := map[string]string{"victoriaMetrics": "metrics", "victoriaLogs": "logs", "vmalert": "alertRules"}[name]; capability != "" {
+			if capability := map[string]string{"victoriaMetrics": "metrics", "victoriaLogs": "logs", "vmalert": "alertRules", "metrics-server": "resourceMetrics"}[name]; capability != "" {
 				available := false
 				for _, evidence := range remainingEvidence {
 					available = available || evidence == "read-only capability "+capability+"=available"
@@ -459,6 +460,8 @@ func componentForService(service map[string]any) string {
 	name, _ := metadata["name"].(string)
 	identity := strings.ToLower(name + " " + labelsToText(objectMap(metadata["labels"])))
 	switch {
+	case strings.Contains(identity, "metrics-server") && hasPort(service, 443):
+		return "metrics-server"
 	case strings.Contains(identity, "vmalert"):
 		return "vmalert"
 	case strings.Contains(identity, "victoria-logs") || strings.Contains(identity, "victorialogs") || strings.Contains(identity, "vlogs"):
@@ -536,11 +539,11 @@ func serviceCandidate(service map[string]any, component string, resources []map[
 
 func servicePort(service map[string]any, component string) (int, string) {
 	ports, _ := objectMap(service["spec"])["ports"].([]any)
-	preferred := map[string][]int{"victoriaMetrics": {8428, 8429}, "victoriaLogs": {9428}, "vmalert": {8880}, "postgresql": {5432}, "keycloak": {8443, 8080}, "seaweedfs": {8333}, "openbao": {8200}}
+	preferred := map[string][]int{"victoriaMetrics": {8428, 8429}, "victoriaLogs": {9428}, "vmalert": {8880}, "postgresql": {5432}, "keycloak": {8443, 8080}, "seaweedfs": {8333}, "openbao": {8200}, "metrics-server": {443}}
 	for _, rawPort := range ports {
 		if number, ok := asInt(objectMap(rawPort)["port"]); ok && containsInt(preferred[component], number) {
 			protocol := "http"
-			if component == "openbao" || (component == "keycloak" && number == 8443) || objectMap(rawPort)["appProtocol"] == "https" {
+			if component == "openbao" || component == "metrics-server" || (component == "keycloak" && number == 8443) || objectMap(rawPort)["appProtocol"] == "https" {
 				protocol = "https"
 			}
 			return number, protocol
@@ -578,6 +581,8 @@ func componentEndpoint(component, service, namespace string, port int, protocol 
 func imageMatchesComponent(image, component string) bool {
 	value := strings.ToLower(image)
 	switch component {
+	case "metrics-server":
+		return strings.Contains(value, "metrics-server/metrics-server")
 	case "victoriaMetrics":
 		return strings.Contains(value, "victoriametrics/victoria-metrics") && !strings.Contains(value, "vmagent")
 	case "victoriaLogs":

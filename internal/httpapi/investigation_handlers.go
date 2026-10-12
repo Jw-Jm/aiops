@@ -77,6 +77,10 @@ func (h *InvestigationHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 	path := strings.Trim(r.URL.Path, "/")
 	parts := strings.Split(path, "/")
+	if len(parts) == 5 && parts[2] == "incidents" && parts[4] == "investigations" && r.Method == "GET" {
+		h.history(w, r, actor, parts[3])
+		return
+	}
 	if len(parts) == 5 && parts[2] == "incidents" && parts[4] == "investigations" && r.Method == "POST" {
 		id, err := uuid.Parse(parts[3])
 		if err != nil {

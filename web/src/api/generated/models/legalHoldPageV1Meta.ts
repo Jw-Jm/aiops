@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { LegalHoldPageV1MetaFreshness } from './legalHoldPageV1MetaFreshness';
+import type { LegalHoldPageV1MetaFreshness } from './legalHoldPageV1MetaFreshness.ts';
 
 export type LegalHoldPageV1Meta = {
   nextCursor: string;

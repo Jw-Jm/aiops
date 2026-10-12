@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CanonicalID } from './canonicalID';
-import type { GetResourceNeighborsDirection } from './getResourceNeighborsDirection';
+import type { CanonicalID } from './canonicalID.ts';
+import type { GetResourceNeighborsDirection } from './getResourceNeighborsDirection.ts';
 
 export type GetResourceNeighborsParams = {
 /**

@@ -1,0 +1,153 @@
+{
+  "config": {
+    "argv": [
+      "/data/ops-sp08-20261011/toolchain/node-v24.21.0-linux-x64/bin/node",
+      "/data/ops-amd64-final-20261010/working-runtime/platform/web/node_modules/.pnpm/@playwright+test@1.64.0/node_modules/@playwright/test/cli.js",
+      "test",
+      "tests/e2e/model_unavailable.spec.ts"
+    ],
+    "configFile": "/data/ops-amd64-final-20261010/working-runtime/platform/web/playwright.config.ts",
+    "rootDir": "/data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/data/ops-sp08-20261011/build/model-outage-r6",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/data/ops-sp08-20261011/build/model-outage-r6",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "",
+        "testDir": "/data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e",
+        "snapshotDir": "/data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 180000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "line",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/data/ops-sp08-20261011/build/model-outage-r6.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "model_unavailable.spec.ts",
+      "file": "model_unavailable.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "actual model outage explains the failure while deterministic diagnosis and evidence remain available",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4323,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "Reopening persisted actual outage job; no new model-call claim\n"
+                    },
+                    {
+                      "text": "Actual model connectivity outage job: 01a12dc0-d49f-7e8c-8e16-a8196f023a74 deterministic RCA and Evidence remain available\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-12T01:38:39.474Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3db0df75e3f3926f2ac9-7b06a6195f3bc80a6483",
+          "file": "model_unavailable.spec.ts",
+          "line": 2,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-12T01:38:39.057Z",
+    "duration": 4792.895,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

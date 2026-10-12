@@ -1,0 +1,224 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "storage.k8s.io/v1",
+      "kind": "StorageClass",
+      "metadata": {
+        "name": "ops-amd64-local",
+        "labels": {
+          "ops.platform.io/preparation": "amd64-20261009"
+        }
+      },
+      "provisioner": "kubernetes.io/no-provisioner",
+      "reclaimPolicy": "Retain",
+      "volumeBindingMode": "WaitForFirstConsumer"
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "ops-amd64-local-1",
+        "labels": {
+          "ops.platform.io/preparation": "amd64-20261009"
+        }
+      },
+      "spec": {
+        "capacity": {
+          "storage": "10Gi"
+        },
+        "volumeMode": "Filesystem",
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "ops-amd64-local",
+        "local": {
+          "path": "/srv/ops-platform-amd64-20261009/volume-1"
+        },
+        "nodeAffinity": {
+          "required": {
+            "nodeSelectorTerms": [
+              {
+                "matchExpressions": [
+                  {
+                    "key": "kubernetes.io/hostname",
+                    "operator": "In",
+                    "values": [
+                      "mssc"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "ops-amd64-local-2",
+        "labels": {
+          "ops.platform.io/preparation": "amd64-20261009"
+        }
+      },
+      "spec": {
+        "capacity": {
+          "storage": "10Gi"
+        },
+        "volumeMode": "Filesystem",
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "ops-amd64-local",
+        "local": {
+          "path": "/srv/ops-platform-amd64-20261009/volume-2"
+        },
+        "nodeAffinity": {
+          "required": {
+            "nodeSelectorTerms": [
+              {
+                "matchExpressions": [
+                  {
+                    "key": "kubernetes.io/hostname",
+                    "operator": "In",
+                    "values": [
+                      "mssc"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "ops-amd64-local-3",
+        "labels": {
+          "ops.platform.io/preparation": "amd64-20261009"
+        }
+      },
+      "spec": {
+        "capacity": {
+          "storage": "10Gi"
+        },
+        "volumeMode": "Filesystem",
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "ops-amd64-local",
+        "local": {
+          "path": "/srv/ops-platform-amd64-20261009/volume-3"
+        },
+        "nodeAffinity": {
+          "required": {
+            "nodeSelectorTerms": [
+              {
+                "matchExpressions": [
+                  {
+                    "key": "kubernetes.io/hostname",
+                    "operator": "In",
+                    "values": [
+                      "mssc"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "ops-amd64-local-4",
+        "labels": {
+          "ops.platform.io/preparation": "amd64-20261009"
+        }
+      },
+      "spec": {
+        "capacity": {
+          "storage": "10Gi"
+        },
+        "volumeMode": "Filesystem",
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "ops-amd64-local",
+        "local": {
+          "path": "/srv/ops-platform-amd64-20261009/volume-4"
+        },
+        "nodeAffinity": {
+          "required": {
+            "nodeSelectorTerms": [
+              {
+                "matchExpressions": [
+                  {
+                    "key": "kubernetes.io/hostname",
+                    "operator": "In",
+                    "values": [
+                      "mssc"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "ops-amd64-local-5",
+        "labels": {
+          "ops.platform.io/preparation": "amd64-20261009"
+        }
+      },
+      "spec": {
+        "capacity": {
+          "storage": "10Gi"
+        },
+        "volumeMode": "Filesystem",
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "ops-amd64-local",
+        "local": {
+          "path": "/srv/ops-platform-amd64-20261009/volume-5"
+        },
+        "nodeAffinity": {
+          "required": {
+            "nodeSelectorTerms": [
+              {
+                "matchExpressions": [
+                  {
+                    "key": "kubernetes.io/hostname",
+                    "operator": "In",
+                    "values": [
+                      "mssc"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

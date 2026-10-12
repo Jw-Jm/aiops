@@ -7,6 +7,12 @@
 
 export type GetPolicyBundlesParams = {
 /**
+ * Exact policy logical name; optional compatible filter for bounded impact previews.
+ * @minLength 1
+ * @maxLength 200
+ */
+logicalName?: string;
+/**
  * Opaque cursor for keyset pagination.
  */
 cursor?: string;

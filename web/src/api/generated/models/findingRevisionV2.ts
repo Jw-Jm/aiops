@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { FindingRevisionV2LifecycleState } from './findingRevisionV2LifecycleState';
+import type { FindingRevisionV2LifecycleState } from './findingRevisionV2LifecycleState.ts';
 
 export interface FindingRevisionV2 {
   findingId: string;

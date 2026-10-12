@@ -82,7 +82,7 @@ func loadSP04() (*SP04Config, error) {
 		return nil, errors.New("SP04 runtime configuration has trailing payload")
 	}
 	if c.SP05 != nil {
-		if c.SP05.Analyzer.Enabled && (!c.SP05.Enabled || c.SP05.Analyzer.SHA256 != k8sgpt.LockedBinarySHA256) {
+		if c.SP05.Analyzer.Enabled && (!c.SP05.Enabled || c.SP05.Analyzer.SHA256 != k8sgpt.NativeLockedBinarySHA256() || (c.SP05.Analyzer.Architecture != "" && c.SP05.Analyzer.SHA256 != k8sgpt.LockedBinaryForArchitecture(c.SP05.Analyzer.Architecture))) {
 			return nil, errors.New("SP05 Analyzer requires an enabled phase and admitted binary SHA256")
 		}
 		seen := map[string]bool{}
@@ -207,6 +207,15 @@ func (c *SP04Config) endpointAllowed(raw string) bool {
 	}
 	return false
 }
+
+// Audit verification targets the configured namespace's Worker service.
+// Graph ownership routes retain their separate Pod CIDR allowlist.
+func (c *SP04Config) auditEndpointAllowed(raw string) bool {
+	u, err := url.Parse(raw)
+	return err == nil && u.Scheme == "https" && u.User == nil &&
+		u.Host == "ops-worker."+c.Namespace+".svc.cluster.local:8082" &&
+		u.Path == "" && u.RawQuery == "" && u.Fragment == ""
+}
 func NewSP04API(ctx context.Context, pool *pgxpool.Pool) (*httpapi.SP04Handlers, error) {
 	h := &httpapi.SP04Handlers{Pool: pool, SP05: &httpapi.SP05Handlers{Pool: pool}}
 	c, err := loadSP04()
@@ -228,6 +237,8 @@ func NewSP04API(ctx context.Context, pool *pgxpool.Pool) (*httpapi.SP04Handlers,
 	h.SigningKey = key
 	h.Client = &http.Client{Transport: &http.Transport{TLSClientConfig: config}, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
 	h.EndpointAllowed = c.endpointAllowed
+	h.AuditEndpoint = "https://ops-worker." + c.Namespace + ".svc.cluster.local:8082"
+	h.AuditEndpointAllowed = c.auditEndpointAllowed
 	return h, nil
 }
 
@@ -283,7 +294,7 @@ func clusterClient(c SP04Cluster) (*kubernetes.Client, error) {
 	}
 	return client, nil
 }
-func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.ArchiveService, runtime *observability.Runtime) (func(), error) {
+func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.ArchiveService, runtime *observability.Runtime, auditVerifier ...AuditRangeVerifier) (func(), error) {
 	c, err := loadSP04()
 	if err != nil {
 		return nil, err
@@ -566,6 +577,14 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 		return nil, err
 	}
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/internal/v1/audit:verify" {
+			var verifier AuditRangeVerifier
+			if len(auditVerifier) > 0 {
+				verifier = auditVerifier[0]
+			}
+			serveWorkerAudit(w, r, trust, key, pool, c.Namespace, verifier)
+			return
+		}
 		if r.URL.Path == "/internal/v1/evidence:query" || r.URL.Path == "/internal/v1/evidence:read" {
 			serveWorkerEvidence(w, r, trust, key, pool, adapters, archive, handlers, runtime.Metrics)
 			return

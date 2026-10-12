@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { Identifier } from './identifier';
-import type { ResourceEntityV2 } from './resourceEntityV2';
-import type { ResourcePageV2Meta } from './resourcePageV2Meta';
+import type { Identifier } from './identifier.ts';
+import type { ResourceEntityV2 } from './resourceEntityV2.ts';
+import type { ResourcePageV2Meta } from './resourcePageV2Meta.ts';
 
 export interface ResourcePageV2 {
   requestId: Identifier;

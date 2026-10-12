@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { HostOnboardingV1 } from './hostOnboardingV1';
-import type { Identifier } from './identifier';
+import type { HostOnboardingV1 } from './hostOnboardingV1.ts';
+import type { Identifier } from './identifier.ts';
 
 export interface OnboardExecutionHostRequest {
   report: HostOnboardingV1;

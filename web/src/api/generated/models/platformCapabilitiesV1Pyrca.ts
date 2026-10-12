@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { PlatformCapabilitiesV1PyrcaStatus } from './platformCapabilitiesV1PyrcaStatus';
+import type { PlatformCapabilitiesV1PyrcaStatus } from './platformCapabilitiesV1PyrcaStatus.ts';
 
 export type PlatformCapabilitiesV1Pyrca = {
   status: PlatformCapabilitiesV1PyrcaStatus;

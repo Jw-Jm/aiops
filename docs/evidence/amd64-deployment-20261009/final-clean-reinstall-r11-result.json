@@ -1,0 +1,146 @@
+{
+  "observedAt": "2026-10-11T02:08:37.113360+00:00",
+  "assertionsPassed": true,
+  "namespace": "ops-amd64-final-20261010",
+  "namespaceUid": "9a747a70-9b81-4474-ba4a-5d80caf6ac40",
+  "installationId": "6750ea18-e92f-48d4-b231-f8aab3adc3fe",
+  "protectedStorage": [
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "data-ops-openbao-0",
+      "uid": "779f71da-8b37-4b01-b642-3907a9496fa0",
+      "configurationUnchanged": true
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "data-ops-postgresql-0",
+      "uid": "a8a99d7e-43bb-4281-ab5c-d8076876f696",
+      "configurationUnchanged": true
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "data-ops-seaweedfs-0",
+      "uid": "d5840a74-305c-4b4e-b709-57ed7cf4622f",
+      "configurationUnchanged": true
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "server-volume-ops-victoria-logs-0",
+      "uid": "3daf5e89-9744-49a5-a8c7-504aa7ace269",
+      "configurationUnchanged": true
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "server-volume-ops-victoria-metrics-0",
+      "uid": "387ab54e-6ae2-4bcb-9673-b33dbe969fd9",
+      "configurationUnchanged": true
+    },
+    {
+      "kind": "PersistentVolume",
+      "name": "ops-amd64-final-volume-1",
+      "uid": "85966d2a-0bc0-438a-bd20-6866a1b7d66c",
+      "configurationUnchanged": true
+    },
+    {
+      "kind": "PersistentVolume",
+      "name": "ops-amd64-final-volume-2",
+      "uid": "d5a9b024-b304-4097-ab3e-ba63bb2ed234",
+      "configurationUnchanged": true
+    },
+    {
+      "kind": "PersistentVolume",
+      "name": "ops-amd64-final-volume-3",
+      "uid": "fc86c2b5-af84-4674-bfcc-056a010152cb",
+      "configurationUnchanged": true
+    },
+    {
+      "kind": "PersistentVolume",
+      "name": "ops-amd64-final-volume-5",
+      "uid": "4c363355-fa6c-4872-87e9-33ea0742829c",
+      "configurationUnchanged": true
+    },
+    {
+      "kind": "PersistentVolume",
+      "name": "ops-amd64-final-volume-4",
+      "uid": "ce3dea16-253b-4c30-9a50-9731b0a687c5",
+      "configurationUnchanged": true
+    }
+  ],
+  "newStageCheckpoints": [
+    {
+      "name": "ops-installation-checkpoint",
+      "uid": "a822cdae-010b-4dd0-af73-df2ddeb5c432",
+      "bundleId": "amd64-sp01-sp07-20261010-r11",
+      "stage": "dependencies-ready"
+    },
+    {
+      "name": "ops-api-bootstrap-checkpoint",
+      "uid": "018478f3-e090-47e9-84b2-dccaefddcb3f",
+      "bundleId": "amd64-sp01-sp07-20261010-r11",
+      "stage": "bootstrap-api-ready"
+    },
+    {
+      "name": "ops-command-initialization-checkpoint",
+      "uid": "fd1cd6e8-867c-48a8-87f4-0b0c10d95d1c",
+      "bundleId": "amd64-sp01-sp07-20261010-r11",
+      "stage": "command-initialization"
+    }
+  ],
+  "runtimePods": [
+    {
+      "name": "ops-api-779bd94446-9ffq4",
+      "uid": "fb147b03-bac7-4fe3-a888-cb00bdc965a7",
+      "ready": true,
+      "containers": [
+        {
+          "name": "api",
+          "image": "sha256:fe19b726a90e4f48d1f8c055406ab09281e8f77c400151299ff0792ea469fb37",
+          "imageID": "ops.local/amd64-20261010-r11/platform-api@sha256:27f970814aaeb762d800f0d912d605cb9249c66a3f05c642652c97473a253165",
+          "restartCount": 1
+        }
+      ]
+    },
+    {
+      "name": "ops-investigator-68fb47c7bd-75655",
+      "uid": "19419b1b-2ef3-46d6-a387-683e8da55b5c",
+      "ready": true,
+      "containers": [
+        {
+          "name": "investigator",
+          "image": "sha256:4e2657ff3c786d55bb89fee5019c604121ce59cc1179289c4149e9de477f03b4",
+          "imageID": "ops.local/amd64-20261010-r11/investigator@sha256:1dd696bd59df4be468dc298fda9124cc08cbfce615f0dd53a065890bee264c93",
+          "restartCount": 0
+        }
+      ]
+    },
+    {
+      "name": "ops-worker-5b58f699d-smzx7",
+      "uid": "9dc17d8c-eef7-4be8-ad09-02432496fe2c",
+      "ready": true,
+      "containers": [
+        {
+          "name": "worker",
+          "image": "sha256:d8f59c5d74ac05e44ec7e2feb6da2beb1fcfb9c7442ca9a956889a8f85cbd5fd",
+          "imageID": "ops.local/amd64-20261009/platform-worker@sha256:8df5d0da69e8692167ca26a60eee71c4549af4acdfbaa1afe130a930f484cdb0",
+          "restartCount": 1
+        }
+      ]
+    },
+    {
+      "name": "ops-worker-5b58f699d-tktjd",
+      "uid": "302fae41-23ed-4353-8cbe-50d0ea4fa3ff",
+      "ready": true,
+      "containers": [
+        {
+          "name": "worker",
+          "image": "sha256:d8f59c5d74ac05e44ec7e2feb6da2beb1fcfb9c7442ca9a956889a8f85cbd5fd",
+          "imageID": "ops.local/amd64-20261009/platform-worker@sha256:8df5d0da69e8692167ca26a60eee71c4549af4acdfbaa1afe130a930f484cdb0",
+          "restartCount": 0
+        }
+      ]
+    }
+  ],
+  "dataIdentityReceipt": "post-reinstall-data-identities-r11.json",
+  "oldInstanceTouched": false,
+  "virtualizationEnabled": false
+}

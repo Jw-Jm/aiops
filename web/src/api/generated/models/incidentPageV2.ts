@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { IncidentPageV2Meta } from './incidentPageV2Meta';
-import type { IncidentSummaryV2 } from './incidentSummaryV2';
+import type { IncidentPageV2Meta } from './incidentPageV2Meta.ts';
+import type { IncidentSummaryV2 } from './incidentSummaryV2.ts';
 
 export interface IncidentPageV2 {
   data: IncidentSummaryV2[];

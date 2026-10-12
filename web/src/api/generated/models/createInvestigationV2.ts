@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CreateInvestigationV2TriggerKind } from './createInvestigationV2TriggerKind';
+import type { CreateInvestigationV2TriggerKind } from './createInvestigationV2TriggerKind.ts';
 
 export interface CreateInvestigationV2 {
   /** @minimum 1 */

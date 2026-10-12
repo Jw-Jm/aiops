@@ -128,7 +128,7 @@ func preflightCurrentGraphLeases(ctx context.Context, p profile.ResolvedProfile,
 		} `json:"metadata"`
 	}
 	var receipt GraphLeaseBootstrapReceipt
-	if err != nil || len(raw) > 1<<20 || json.Unmarshal(raw, &cm) != nil || json.Unmarshal([]byte(cm.Data["receipt.json"]), &receipt) != nil || cm.Metadata.Labels["ops.platform.io/installation-id"] != identity.InstallationID || receipt.NamespaceUID != identity.UID || receipt.InstallationID != identity.InstallationID || receipt.ProfileDigest != jsonDigest(p) || receipt.BusinessDigest != registeredBusinessInstallationDigest(b) || len(receipt.Bindings) != len(expected) {
+	if err != nil || len(raw) > 1<<20 || json.Unmarshal(raw, &cm) != nil || json.Unmarshal([]byte(cm.Data["receipt.json"]), &receipt) != nil || cm.Metadata.Labels["ops.platform.io/installation-id"] != identity.InstallationID || receipt.NamespaceUID != identity.UID || receipt.InstallationID != identity.InstallationID || receipt.ProfileDigest != jsonDigest(p) || receipt.BusinessDigest != apiBootstrapBusinessDigest(b) || len(receipt.Bindings) != len(expected) {
 		return errors.New("formal Graph Lease checkpoint identity/scope differs or is unavailable")
 	}
 	for i, binding := range receipt.Bindings {

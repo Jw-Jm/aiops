@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { PlatformCapabilitiesV1CommandExecutionStatus } from './platformCapabilitiesV1CommandExecutionStatus';
+import type { PlatformCapabilitiesV1CommandExecutionStatus } from './platformCapabilitiesV1CommandExecutionStatus.ts';
 
 export type PlatformCapabilitiesV1CommandExecution = {
   status: PlatformCapabilitiesV1CommandExecutionStatus;

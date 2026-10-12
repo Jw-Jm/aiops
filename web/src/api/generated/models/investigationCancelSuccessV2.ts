@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { InvestigationCancelSuccessV2Data } from './investigationCancelSuccessV2Data';
+import type { InvestigationCancelSuccessV2Data } from './investigationCancelSuccessV2Data.ts';
 
 export interface InvestigationCancelSuccessV2 {
   data: InvestigationCancelSuccessV2Data;

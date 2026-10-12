@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { IncidentTransitionV2State } from './incidentTransitionV2State';
+import type { IncidentTransitionV2State } from './incidentTransitionV2State.ts';
 
 export interface IncidentTransitionV2 {
   /** @minimum 1 */

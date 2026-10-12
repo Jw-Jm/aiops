@@ -116,6 +116,7 @@ func (e GraphResultSchemaVersion) Valid() bool {
 type GraphQuery struct {
 	AfterCanonicalId   *string              `json:"afterCanonicalId,omitempty"`
 	CanonicalId        string               `json:"canonicalId"`
+	CanonicalIds       *[]string            `json:"canonicalIds,omitempty"`
 	CursorRevision     *GraphRevision       `json:"cursorRevision,omitempty"`
 	Direction          *GraphQueryDirection `json:"direction,omitempty"`
 	ExpectedOwnerEpoch int64                `json:"expectedOwnerEpoch"`

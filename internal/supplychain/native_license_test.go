@@ -9,16 +9,30 @@ import (
 )
 
 func TestNativePermissionReferencesRejectDifferentScopeAndMissingEvidence(t *testing.T) {
-	var historical, investigator, debian, cargo, embedded, rustLibrary, metrics, commandRunner int
+	var historical, investigator, debian, cargo, embedded, rustLibrary, metrics, commandRunner, commandRunnerAMD64, nativeAMD64, investigatorAMD64, metricsAMD64 int
 	for _, scope := range nativeLicenses {
+		if strings.HasPrefix(scope.ID, "LicenseRef-SP06-AMD64-Native-") {
+			investigatorAMD64++
+		}
+		if strings.HasPrefix(scope.ID, "LicenseRef-Task27-AMD64-Native-") {
+			nativeAMD64++
+		}
 		if scope.Component == "command-runner" && strings.HasPrefix(scope.ID, "LicenseRef-SP07-Runner-") {
-			commandRunner++
+			if strings.HasPrefix(scope.NoticePath, "third_party/licenses/command-runner-amd64/") {
+				commandRunnerAMD64++
+			} else {
+				commandRunner++
+			}
 		}
 		if strings.HasPrefix(scope.ID, "LicenseRef-Task27-Native-") {
 			historical++
 		}
 		if scope.Component == "metrics-server" && strings.HasPrefix(scope.ID, "LicenseRef-PreSP07-Metrics-") {
-			metrics++
+			if strings.HasPrefix(scope.ID, "LicenseRef-PreSP07-Metrics-AMD64-") {
+				metricsAMD64++
+			} else {
+				metrics++
+			}
 		}
 		if scope.Component == "holmesgpt" && strings.HasPrefix(scope.ID, "LicenseRef-SP06-Native-") {
 			investigator++
@@ -34,7 +48,7 @@ func TestNativePermissionReferencesRejectDifferentScopeAndMissingEvidence(t *tes
 			}
 		}
 	}
-	if historical != 281 || debian != 87 || cargo != 767 || embedded != 8 || rustLibrary != 1 || metrics != 4 || investigator != debian+cargo+embedded+rustLibrary || commandRunner != 910 || len(nativeLicenses) != historical+investigator+metrics+commandRunner {
+	if historical != 281 || debian != 87 || cargo != 767 || embedded != 8 || rustLibrary != 1 || metrics != 4 || metricsAMD64 != 4 || investigator != debian+cargo+embedded+rustLibrary || commandRunner != 910 || commandRunnerAMD64 != 910 || nativeAMD64 != 260 || investigatorAMD64 != 863 || len(nativeLicenses) != historical+investigator+metrics+commandRunner+commandRunnerAMD64+nativeAMD64+investigatorAMD64+metricsAMD64 {
 		t.Fatalf("compiled exact native license registry incomplete: historical=%d investigator=%d metrics=%d total=%d", historical, investigator, metrics, len(nativeLicenses))
 	}
 	var scope nativeLicenseScope

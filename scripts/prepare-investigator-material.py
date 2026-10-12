@@ -13,6 +13,7 @@ def canonical(name): return name.lower().replace('_','-').replace('.','-')
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out',type=pathlib.Path,required=True)
+    p.add_argument('--architecture',choices=['arm64','amd64'],default='arm64')
     a=p.parse_args();root=pathlib.Path(__file__).resolve().parents[1]
     out=a.out.resolve();out.mkdir(parents=True,exist_ok=True)
     source=out/'sources';source.mkdir(exist_ok=True)
@@ -22,6 +23,10 @@ def main():
     if any('pyrca' in x for x in packages):raise ValueError('PyRCA is disabled and cannot be distributed')
     wheels=[]
     for file in sorted((out/'wheels').glob('*.whl')):
+        from packaging.utils import parse_wheel_filename
+        tags=parse_wheel_filename(file.name)[3]
+        machine='x86_64' if a.architecture=='amd64' else 'aarch64'
+        if not any(t.platform=='any' or t.platform.endswith('_'+machine) for t in tags):raise ValueError('wheel target architecture mismatch: '+file.name)
         with zipfile.ZipFile(file) as archive:
             metadata_path=next(x for x in archive.namelist() if x.endswith('.dist-info/METADATA'))
             m=email.message_from_bytes(archive.read(metadata_path));name=canonical(m['Name'])
@@ -32,6 +37,7 @@ def main():
             rebuilt=None
             if original is None:
                 review_name={'tiktoken':'sp06-tiktoken-rebuilt-wheel.json','google-crc32c':'sp06-crc32c-rebuilt-wheel.json','clickhouse-sqlalchemy':'sp06-python-rebuilt-wheel.json'}.get(name)
+                if name=='cffi' and a.architecture=='amd64':review_name='sp06-cffi-amd64-rebuilt-wheel.json'
                 if review_name is None:raise ValueError('unrecognized rebuilt package: '+name)
                 review_path=root/'third_party/admission'/review_name
                 review=json.loads(review_path.read_text())
@@ -42,6 +48,9 @@ def main():
                     native_lock=json.loads((out/'native/source.lock.json').read_text())
                     crc=next(x for x in native_lock['materials'] if x['name']=='crc32c')
                     if review['comparison']!='offline-rebuild-payload' or sha((out/'native/source.lock.json').read_bytes())!=review['nativeSourceLockSHA256'] or crc['version']!=review['nativeCommit'] or crc['sourceSHA256']!=review['nativeSourceSHA256'] or sha((root/'scripts/build-investigator-crc32c.sh').read_bytes())!=review['scriptSHA256']:raise ValueError('CRC rebuild requires exact native source/build locks')
+                if name=='cffi':
+                    proof=json.loads((root/review['runtimeProof']).read_text())
+                    if review['architecture']!='linux/'+a.architecture or review['comparison']!='offline-rebuild-payload' or review['buildNetwork']!='none' or review['state']!='qualified' or not review['unchangedCodeAndNotices'] or sha((root/'build/images/cffi-amd64/Dockerfile').read_bytes())!=review['scriptSHA256'] or not proof['passed'] or not proof['cffiProof']['nativeCall'] or not proof['cffiProof']['nativeCallback'] or proof['cffiProof']['libffiSourceVersion']!=review['libffi']:raise ValueError('CFFI rebuild requires exact source/build and native function/callback proof')
                 rebuilt={'source':pkg['sdist'],'buildBackend':review.get('buildBackend','setuptools==84.0.0'),'python':'3.12.14','pip':'25.0.1','unmodifiedPublisherSource':True,'reviewSHA256':sha(review_path.read_bytes())}
             entries=[]
             for member in archive.namelist():
@@ -57,7 +66,7 @@ def main():
     # excluding pytest/dev tools. Check every runtime requirement is materialized.
     from packaging.requirements import Requirement
     from packaging.markers import default_environment
-    target=default_environment();target.update(sys_platform="linux",platform_system="Linux",platform_machine="aarch64",python_version="3.12",python_full_version="3.12.14")
+    target=default_environment();target.update(sys_platform="linux",platform_system="Linux",platform_machine="x86_64" if a.architecture=="amd64" else "aarch64",python_version="3.12",python_full_version="3.12.14")
     requirements=[]
     for line in (out/'requirements.txt').read_text().splitlines():
         if line and not line.startswith((' ','#','-')):
@@ -144,7 +153,7 @@ def main():
             if sha((out/notice['path']).read_bytes())!=notice['sha256']:raise ValueError('embedded native notice changed')
     for material in json.loads((base/'build-tools.lock.json').read_text())['materials']:
         if sha((out/material['path']).read_bytes())!=material['sha256']:raise ValueError('build tool source changed')
-    manifest={'schemaVersion':'investigator-runtime-lock/v1','state':'prepared-awaiting-offline-and-runtime-gates','architecture':'linux/arm64','python':'3.12.14','holmesgpt':'0.42.0','holmesCommit':'bfd33247f154484bc2f734a0da709da133c6a434','mcpPython':'1.28.1','mcpGo':'v1.1.0','mcpProtocol':'2025-06-18','uvLockSHA256':sha((root/'services/investigator/uv.lock').read_bytes()),'pyrca':'disabled-excluded','virtualization':'disabled-unverified-deferred','wheels':wheels,'sources':sources,'baseImage':base_lock['baseImage'],'baseSourceLockSHA256':sha((base/'source.lock.json').read_bytes()),'basePythonSourceLockSHA256':sha((base/'python-source.lock.json').read_bytes()),'wrapperLicense':'GPL-3.0-or-later'}
+    manifest={'schemaVersion':'investigator-runtime-lock/v1','state':'prepared-awaiting-offline-and-runtime-gates','architecture':'linux/'+a.architecture,'python':'3.12.14','holmesgpt':'0.42.0','holmesCommit':'bfd33247f154484bc2f734a0da709da133c6a434','mcpPython':'1.28.1','mcpGo':'v1.1.0','mcpProtocol':'2025-06-18','uvLockSHA256':sha((root/'services/investigator/uv.lock').read_bytes()),'pyrca':'disabled-excluded','virtualization':'disabled-unverified-deferred','wheels':wheels,'sources':sources,'baseImage':base_lock['baseImage'],'baseSourceLockSHA256':sha((base/'source.lock.json').read_bytes()),'basePythonSourceLockSHA256':sha((base/'python-source.lock.json').read_bytes()),'wrapperLicense':'GPL-3.0-or-later'}
     manifest.update(cargoSourceLockSHA256=sha((out/'rust/source.lock.json').read_bytes()),cargoDeclaredSourceCount=len(rust_lock['packages']),nativeSourceLockSHA256=sha((out/'native/source.lock.json').read_bytes()),rustToolchainLockSHA256=sha((out/'rust/toolchain/toolchain.lock.json').read_bytes()))
     # The image and corresponding source must use the same current wrapper,
     # including when an operator prepares a second build after fixing code.
@@ -156,7 +165,7 @@ def main():
     # Install requirements authenticate prepared rebuilds as well as original wheels.
     (out/'offline-requirements.txt').write_text(''.join(x['name']+'=='+x['version']+' --hash='+x['sha256']+'\n' for x in wheels))
     sbom={'bomFormat':'CycloneDX','specVersion':'1.5','version':1,'components':[{'type':'library','name':x['name'],'version':x['version'],'purl':'pkg:pypi/'+x['name']+'@'+x['version'],'hashes':[{'alg':'SHA-256','content':x['sha256'].split(':')[1]}]} for x in wheels]}
-    sbom['components'] += [{'type':'library','name':x['binary'],'version':x['version'],'purl':'pkg:deb/debian/'+x['binary']+'@'+x['version']+'?arch=arm64&distro=debian-13'} for x in base_lock['packages']]
+    sbom['components'] += [{'type':'library','name':x['binary'],'version':x['version'],'purl':'pkg:deb/debian/'+x['binary']+'@'+x['version']+'?arch='+a.architecture+'&distro=debian-13'} for x in base_lock['packages']]
     sbom['components'] += [{'type':'library','name':x['name'],'version':x['version'],'hashes':[{'alg':'SHA-256','content':x['sha256'].split(':')[1]}]} for x in python_lock['sources'] if not x.get('buildOnly')]
     sbom['components'] += [{'type':'application','name':'ops-investigator','version':'0.1.0','licenses':[{'license':{'id':'GPL-3.0-or-later'}}]}]
     # Explicitly distinguish declared source superset from measured linkage.
@@ -175,6 +184,9 @@ def main():
         archive.add(root/'scripts/prepare-investigator-native-source.py',arcname='build/prepare-investigator-native-source.py')
         for name in ('sp06-python-rebuilt-wheel.json','sp06-tiktoken-rebuilt-wheel.json','sp06-crc32c-rebuilt-wheel.json'):
             archive.add(root/'third_party/admission'/name,arcname='build/admission/'+name)
+        if a.architecture=='amd64':
+            archive.add(root/'third_party/admission/sp06-cffi-amd64-rebuilt-wheel.json',arcname='build/admission/sp06-cffi-amd64-rebuilt-wheel.json')
+            archive.add(root/'build/images/cffi-amd64/Dockerfile',arcname='build/cffi-amd64.Dockerfile')
         archive.add(root/'build/images/investigator/Dockerfile',arcname='build/Dockerfile')
         archive.add(root/'services/investigator',arcname='platform-wrapper',filter=lambda m:None if any(x in m.name.split('/') for x in ('.venv','__pycache__','.pytest_cache')) else m)
         archive.add(out/'runtime.lock.json',arcname='runtime.lock.json')

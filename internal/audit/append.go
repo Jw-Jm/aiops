@@ -135,3 +135,14 @@ func rawTextField(name string) bool {
 	}
 	return strings.Contains(name, "command") || strings.Contains(name, "prompt")
 }
+
+// RecordProof verifies the persisted digest without relaxing legacy compatibility.
+// The canonical bytes are safe to export only after tenant/admin authorization.
+func RecordProof(entry Entry, digest []byte) ([]byte, bool, error) {
+	row := recordRow{Entry: entry, Digest: digest}
+	if err := digestCanonicalRow(&row); err != nil {
+		return nil, false, err
+	}
+	sum := sha256.Sum256(row.Canonical)
+	return row.Canonical, bytes.Equal(sum[:], digest), nil
+}

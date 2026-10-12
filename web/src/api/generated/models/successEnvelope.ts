@@ -4,8 +4,8 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { Identifier } from './identifier';
-import type { SuccessEnvelopeMeta } from './successEnvelopeMeta';
+import type { Identifier } from './identifier.ts';
+import type { SuccessEnvelopeMeta } from './successEnvelopeMeta.ts';
 
 export interface SuccessEnvelope {
   data: unknown;

@@ -4,11 +4,11 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { DiagnosticGraphSnapshotV2 } from './diagnosticGraphSnapshotV2';
-import type { EvidenceBundleV2 } from './evidenceBundleV2';
-import type { RCACandidateV2 } from './rCACandidateV2';
-import type { RCAEvaluationV2SchemaVersion } from './rCAEvaluationV2SchemaVersion';
-import type { RCAEvaluationV2Status } from './rCAEvaluationV2Status';
+import type { DiagnosticGraphSnapshotV2 } from './diagnosticGraphSnapshotV2.ts';
+import type { EvidenceBundleV2 } from './evidenceBundleV2.ts';
+import type { RCACandidateV2 } from './rCACandidateV2.ts';
+import type { RCAEvaluationV2SchemaVersion } from './rCAEvaluationV2SchemaVersion.ts';
+import type { RCAEvaluationV2Status } from './rCAEvaluationV2Status.ts';
 
 export interface RCAEvaluationV2 {
   schemaVersion: RCAEvaluationV2SchemaVersion;

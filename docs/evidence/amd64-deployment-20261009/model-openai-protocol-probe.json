@@ -1,0 +1,111 @@
+{
+  "endpoint": "http://192.168.0.63:11434/v1",
+  "model": "qwen2.5:1.5b",
+  "scope": "host/LAN OpenAI protocol probe only; not investigator network-policy or full investigation acceptance",
+  "version": {
+    "version": "0.40.1"
+  },
+  "tags": {
+    "models": [
+      {
+        "name": "qwen2.5:1.5b",
+        "model": "qwen2.5:1.5b",
+        "modified_at": "2026-10-09T19:13:13.750228436+08:00",
+        "size": 1117320851,
+        "digest": "2304751c9569070cb5bd3ef97e4f7dd5f769cee5ed635fbd6775ceb62de6b7e6",
+        "details": {
+          "parent_model": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+          "format": "gguf",
+          "family": "qwen2",
+          "families": [
+            "qwen2"
+          ],
+          "parameter_size": "1.8B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 32768,
+          "embedding_length": 1536,
+          "runner": "llamacpp"
+        },
+        "capabilities": [
+          "tools",
+          "completion"
+        ]
+      }
+    ]
+  },
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "qwen2.5:1.5b",
+        "object": "model",
+        "created": 1791544393,
+        "owned_by": "library"
+      }
+    ]
+  },
+  "chatResponse": {
+    "id": "chatcmpl-624",
+    "object": "chat.completion",
+    "created": 1791544618,
+    "model": "qwen2.5:1.5b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "amd64-ready"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 37,
+      "prompt_tokens_details": {
+        "cached_tokens": 24
+      },
+      "completion_tokens": 5,
+      "total_tokens": 42
+    }
+  },
+  "chatElapsedSeconds": 0.338,
+  "chatPassed": true,
+  "toolResponse": {
+    "id": "chatcmpl-633",
+    "object": "chat.completion",
+    "created": 1791544620,
+    "model": "qwen2.5:1.5b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "",
+          "tool_calls": [
+            {
+              "id": "ULoSi3lV8sqx27Lp9gYFKliYjMIqplvE",
+              "index": 0,
+              "type": "function",
+              "function": {
+                "name": "deployment_probe",
+                "arguments": "{\"status\":\"ready\"}"
+              }
+            }
+          ]
+        },
+        "finish_reason": "tool_calls"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 181,
+      "prompt_tokens_details": {
+        "cached_tokens": 18
+      },
+      "completion_tokens": 20,
+      "total_tokens": 201
+    }
+  },
+  "toolPassed": true
+}

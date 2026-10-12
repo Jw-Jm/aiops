@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { InvestigationJobV2 } from './investigationJobV2';
+import type { InvestigationJobV2 } from './investigationJobV2.ts';
 
 export interface InvestigationSuccessV2 {
   data: InvestigationJobV2;

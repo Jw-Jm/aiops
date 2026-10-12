@@ -4,12 +4,12 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { DiagnosticRecipeV2Budget } from './diagnosticRecipeV2Budget';
-import type { DiagnosticRecipeV2CandidateType } from './diagnosticRecipeV2CandidateType';
-import type { DiagnosticRecipeV2GraphPlan } from './diagnosticRecipeV2GraphPlan';
-import type { DiagnosticRecipeV2RequiredEvidenceItem } from './diagnosticRecipeV2RequiredEvidenceItem';
-import type { DiagnosticRecipeV2ToolAllowlistItem } from './diagnosticRecipeV2ToolAllowlistItem';
-import type { DiagnosticRecipeV2Version } from './diagnosticRecipeV2Version';
+import type { DiagnosticRecipeV2Budget } from './diagnosticRecipeV2Budget.ts';
+import type { DiagnosticRecipeV2CandidateType } from './diagnosticRecipeV2CandidateType.ts';
+import type { DiagnosticRecipeV2GraphPlan } from './diagnosticRecipeV2GraphPlan.ts';
+import type { DiagnosticRecipeV2RequiredEvidenceItem } from './diagnosticRecipeV2RequiredEvidenceItem.ts';
+import type { DiagnosticRecipeV2ToolAllowlistItem } from './diagnosticRecipeV2ToolAllowlistItem.ts';
+import type { DiagnosticRecipeV2Version } from './diagnosticRecipeV2Version.ts';
 
 export interface DiagnosticRecipeV2 {
   schemaVersion: 'recipe-registry/v2';

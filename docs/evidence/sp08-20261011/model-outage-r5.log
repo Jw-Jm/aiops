@@ -1,0 +1,35 @@
+
+Running 1 test using 1 worker
+
+[1/1] tests/e2e/model_unavailable.spec.ts:2:1 › actual model outage explains the failure while deterministic diagnosis and evidence remain available
+tests/e2e/model_unavailable.spec.ts:2:1 › actual model outage explains the failure while deterministic diagnosis and evidence remain available
+Reopening persisted actual outage job; no new model-call claim
+
+  1) tests/e2e/model_unavailable.spec.ts:2:1 › actual model outage explains the failure while deterministic diagnosis and evidence remain available 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: /证据/ }).first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: /证据/ }).first() with timeout 5000ms
+      - waiting for getByRole('button', { name: /证据/ }).first()
+
+
+      43 |   await expect(
+      44 |     page.getByRole("button", { name: /证据/ }).first(),
+    > 45 |   ).toBeVisible();
+         |     ^
+      46 |   await page.getByRole("button", { name: /证据/ }).first().click();
+      47 |   await expect(page.getByRole("dialog", { name: "证据详情" })).toBeVisible();
+      48 |   await expect(
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/model_unavailable.spec.ts:45:5
+
+    Error Context: ../../../../ops-sp08-20261011/build/model-outage-r5/model_unavailable-actual-m-29018-d-evidence-remain-available/error-context.md
+
+
+  1 failed
+    tests/e2e/model_unavailable.spec.ts:2:1 › actual model outage explains the failure while deterministic diagnosis and evidence remain available 

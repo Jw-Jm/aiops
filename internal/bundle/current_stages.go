@@ -230,7 +230,7 @@ func verifyCurrentAPIBootstrapReceipt(ctx context.Context, m Manifest, p profile
 	if err != nil || len(raw) > 1<<20 || json.Unmarshal(raw, &cm) != nil || json.Unmarshal([]byte(cm.Data["receipt.json"]), &receipt) != nil || cm.Metadata.Labels["ops.platform.io/installation-id"] != identity.InstallationID {
 		return errors.New("formal API bootstrap checkpoint required")
 	}
-	if receipt.Stage != "bootstrap-api-ready" || receipt.BundleID != m.BundleID || receipt.PayloadDigest != m.Payload.Digest || receipt.ProfileDigest != jsonDigest(p) || receipt.NamespaceUID != identity.UID || receipt.InstallationID != identity.InstallationID || receipt.RegisteredBusinessDigest == "" || receipt.RegisteredBusinessDigest != registeredBusinessInstallationDigest(*b) {
+	if receipt.Stage != "bootstrap-api-ready" || receipt.BundleID != m.BundleID || receipt.PayloadDigest != m.Payload.Digest || receipt.ProfileDigest != jsonDigest(p) || receipt.NamespaceUID != identity.UID || receipt.InstallationID != identity.InstallationID || receipt.RegisteredBusinessDigest == "" || receipt.RegisteredBusinessDigest != apiBootstrapBusinessDigest(*b) {
 		return errors.New("API bootstrap Bundle/Profile/business scope/namespace binding differs")
 	}
 	if len(receipt.Resources) == 0 {
@@ -329,4 +329,50 @@ func businessInstallationDigest(b BusinessValues) string {
 		delete(probe, "to")
 	}
 	return jsonDigest(snapshot)
+}
+
+func apiBootstrapBusinessDigest(b BusinessValues) string {
+	if !b.initializeCommands {
+		return registeredBusinessInstallationDigest(b)
+	}
+	raw, _ := json.Marshal(b.values)
+	var base map[string]any
+	if json.Unmarshal(raw, &base) != nil || object(base, "sp07") == nil {
+		return ""
+	}
+	delete(base, "sp07")
+	return registeredBusinessInstallationDigest(BusinessValues{values: base})
+}
+
+func recordCommandInitialization(ctx context.Context, m Manifest, p profile.ResolvedProfile, b BusinessValues, run CommandRunner) error {
+	if !b.initializeCommands || b.installStage != "business" || !b.registrationVerified || object(b.values, "sp07") == nil {
+		return errors.New("verified explicit first command initialization required")
+	}
+	identity, err := currentNamespaceIdentity(ctx, p, b, run)
+	if err != nil {
+		return err
+	}
+	name := "ops-command-initialization-checkpoint"
+	expected := map[string]any{"stage": "command-initialization", "bundleId": m.BundleID, "payloadDigest": m.Payload.Digest, "profileDigest": jsonDigest(p), "businessDigest": registeredBusinessInstallationDigest(b), "namespaceUid": identity.UID, "installationId": identity.InstallationID}
+	raw, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", b.Namespace(), "get", "configmap", name, "--ignore-not-found", "-o", "json")
+	if err != nil {
+		return errors.New("command initialization checkpoint discovery failed")
+	}
+	if len(bytes.TrimSpace(raw)) != 0 {
+		var existing map[string]any
+		if json.Unmarshal(raw, &existing) != nil || textValue(object(object(existing, "metadata"), "labels"), "ops.platform.io/installation-id") != identity.InstallationID || textValue(object(object(existing, "metadata"), "labels"), "ops.platform.io/managed-by") != "opsctl-bootstrap" || textValue(object(existing, "metadata"), "uid") == "" {
+			return errors.New("command initialization checkpoint ownership differs")
+		}
+		var receipt map[string]any
+		if json.Unmarshal([]byte(textValue(object(existing, "data"), "receipt.json")), &receipt) != nil || jsonDigest(receipt) != jsonDigest(expected) {
+			return errors.New("command initialization intent changed; refusing overwrite")
+		}
+		return nil
+	}
+	receipt, _ := json.Marshal(expected)
+	if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", b.Namespace(), "create", "configmap", name, "--from-literal=receipt.json="+string(receipt)); err != nil {
+		return err
+	}
+	_, err = run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", b.Namespace(), "label", "configmap", name, "ops.platform.io/managed-by=opsctl-bootstrap", "ops.platform.io/installation-id="+identity.InstallationID)
+	return err
 }

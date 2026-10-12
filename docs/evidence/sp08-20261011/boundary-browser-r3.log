@@ -1,0 +1,27 @@
+
+Running 2 tests using 1 worker
+
+[1/2] tests/e2e/boundary_fixtures.spec.ts:9:1 › fixture cyclic graph, isolated node, Unicode identifiers and keyboard navigation
+  1) tests/e2e/boundary_fixtures.spec.ts:9:1 › fixture cyclic graph, isolated node, Unicode identifiers and keyboard navigation 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+       95 |         () => document.documentElement.scrollWidth <= innerWidth + 1,
+       96 |       ),
+    >  97 |     ).toBe(true);
+          |       ^
+       98 |     await page.screenshot({
+       99 |       path:
+      100 |         config.screenshotDirectory + "/fixture-cyclic-graph-" + width + ".png",
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/boundary_fixtures.spec.ts:97:7
+
+    Error Context: ../../../../ops-sp08-20261011/build/boundary-browser-r3/boundary_fixtures-fixture--80097-ers-and-keyboard-navigation/error-context.md
+
+
+[2/2] tests/e2e/boundary_fixtures.spec.ts:106:1 › fixture command SSE cursor expiry, duplicates, bounded output and uncertain execution
+  1 failed
+    tests/e2e/boundary_fixtures.spec.ts:9:1 › fixture cyclic graph, isolated node, Unicode identifiers and keyboard navigation 
+  1 passed (5.9s)

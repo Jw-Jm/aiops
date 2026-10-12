@@ -4,10 +4,10 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { LegalHoldResultV1Data } from './legalHoldResultV1Data';
-import type { LegalHoldResultV1Meta } from './legalHoldResultV1Meta';
-import type { LegalHoldResultV1ProtectionSync } from './legalHoldResultV1ProtectionSync';
-import type { LegalHoldResultV1SchemaVersion } from './legalHoldResultV1SchemaVersion';
+import type { LegalHoldResultV1Data } from './legalHoldResultV1Data.ts';
+import type { LegalHoldResultV1Meta } from './legalHoldResultV1Meta.ts';
+import type { LegalHoldResultV1ProtectionSync } from './legalHoldResultV1ProtectionSync.ts';
+import type { LegalHoldResultV1SchemaVersion } from './legalHoldResultV1SchemaVersion.ts';
 
 export interface LegalHoldResultV1 {
   schemaVersion: LegalHoldResultV1SchemaVersion;

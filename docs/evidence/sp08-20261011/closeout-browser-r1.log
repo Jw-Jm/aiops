@@ -1,0 +1,47 @@
+$ playwright test layout_readability.spec.ts boundary_fixtures.spec.ts admin_recovery.spec.ts
+
+Running 7 tests using 1 worker
+
+[1/7] tests/e2e/admin_recovery.spec.ts:5:1 › actual administrator draft conflict is recoverable without losing local edits
+tests/e2e/admin_recovery.spec.ts:5:1 › actual administrator draft conflict is recoverable without losing local edits
+Actual isolated QA draft: 01a12ddd-e8a5-70d3-8a9a-1430c8d0a196 revision1→conflict→read2→merged3; not published or activated
+
+[2/7] tests/e2e/admin_recovery.spec.ts:137:1 › actual administration pages remain readable in desktop and narrow windows
+[3/7] tests/e2e/admin_recovery.spec.ts:176:1 › actual source editing starts from the loaded status without changing the source
+[4/7] tests/e2e/boundary_fixtures.spec.ts:9:1 › fixture cyclic graph, isolated node, Unicode identifiers and keyboard navigation
+tests/e2e/boundary_fixtures.spec.ts:9:1 › fixture cyclic graph, isolated node, Unicode identifiers and keyboard navigation
+Fixture graph overflow inspection { width: 1440, scroll: 1425, offenders: [] }
+
+Fixture graph overflow inspection {
+  width: 390,
+  scroll: 375,
+  offenders: [
+    { tag: 'DIV', class: '', left: 32, right: 1137 },
+    { tag: 'CANVAS', class: '', left: 32, right: 1137 },
+    { tag: 'CANVAS', class: '', left: 32, right: 1137 },
+    { tag: 'CANVAS', class: '', left: 32, right: 1137 },
+    { tag: 'TABLE', class: '', left: 31, right: 631 },
+    { tag: 'THEAD', class: 'ant-table-thead', left: 31, right: 631 },
+    { tag: 'TR', class: '', left: 31, right: 631 },
+    { tag: 'TH', class: 'ant-table-cell', left: 31, right: 484.015625 },
+    {
+      tag: 'TH',
+      class: 'ant-table-cell',
+      left: 484.015625,
+      right: 551.640625
+    },
+    {
+      tag: 'TH',
+      class: 'ant-table-cell',
+      left: 551.640625,
+      right: 631
+    },
+    { tag: 'TBODY', class: 'ant-table-tbody', left: 31, right: 631 },
+    { tag: 'TR', class: 'ant-table-measure-row', left: 31, right: 631 }
+  ]
+}
+
+[5/7] tests/e2e/boundary_fixtures.spec.ts:124:1 › fixture command SSE cursor expiry, duplicates, bounded output and uncertain execution
+[6/7] tests/e2e/boundary_fixtures.spec.ts:238:1 › fixture command suggestion match labels preserve all four backend outcomes
+[7/7] tests/e2e/layout_readability.spec.ts:2:1 › real desktop and narrow window layouts keep primary controls accessible
+  7 passed (31.0s)

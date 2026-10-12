@@ -4,11 +4,11 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CanonicalID } from './canonicalID';
-import type { Identifier } from './identifier';
-import type { ResourceEntityV2Attributes } from './resourceEntityV2Attributes';
-import type { ResourceEntityV2Extensions } from './resourceEntityV2Extensions';
-import type { ResourceEntityV2Labels } from './resourceEntityV2Labels';
+import type { CanonicalID } from './canonicalID.ts';
+import type { Identifier } from './identifier.ts';
+import type { ResourceEntityV2Attributes } from './resourceEntityV2Attributes.ts';
+import type { ResourceEntityV2Extensions } from './resourceEntityV2Extensions.ts';
+import type { ResourceEntityV2Labels } from './resourceEntityV2Labels.ts';
 
 export interface ResourceEntityV2 {
   canonicalId: CanonicalID;

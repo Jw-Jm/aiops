@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-11T04:15:38.655751+00:00",
+  "nativePodUID": "ede79b45-999f-4036-b0f9-f3410e4fb7fe",
+  "namespace": "ops-amd64-final-targets-20261010",
+  "actualPodPhase": "Running",
+  "nativeLogTimestamp": "2026-10-11T12:15:35.260919304+08:00",
+  "nativeLogSHA256": "sha256:e4c0806d07784035bbebabfb2ecc4b1dac50c40d6ab24c89278266ea9c7d44a2",
+  "strictTLS": true,
+  "wrongCredentialRejected": true,
+  "onlyProbeTimeWindowRefreshed": true,
+  "businessSeedUsed": false,
+  "syntheticMetricOrLogUsed": false,
+  "formalSourceScopeProof": "PENDING",
+  "commands": [
+    {
+      "service": "ops-victoria-metrics",
+      "path": "/api/v1/import",
+      "status": 204,
+      "wrongCredential": false,
+      "responseSHA256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "service": "ops-victoria-metrics",
+      "path": "/api/v1/query?query=1",
+      "status": 401,
+      "wrongCredential": true,
+      "responseSHA256": "sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "service": "ops-victoria-logs",
+      "path": "/insert/jsonline?_stream_fields=tenant,cluster,namespace,uid",
+      "status": 200,
+      "wrongCredential": false,
+      "responseSHA256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "service": "ops-victoria-logs",
+      "path": "/select/logsql/query?query=*&limit=1",
+      "status": 401,
+      "wrongCredential": true,
+      "responseSHA256": "sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    }
+  ]
+}

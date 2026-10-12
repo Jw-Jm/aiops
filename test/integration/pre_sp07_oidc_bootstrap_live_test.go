@@ -257,7 +257,7 @@ func TestFormalCurrentInstallationFirstTenant(t *testing.T) {
 	}
 	defer conn.Close(ctx)
 	var version, tenantCount int
-	if conn.QueryRow(ctx, `SELECT (SELECT max(version_id) FROM public.goose_db_version WHERE is_applied),(SELECT count(*) FROM platform.tenants)`).Scan(&version, &tenantCount) != nil || version != 35 || tenantCount != 0 {
+	if conn.QueryRow(ctx, `SELECT (SELECT max(version_id) FROM public.goose_db_version WHERE is_applied),(SELECT count(*) FROM platform.tenants)`).Scan(&version, &tenantCount) != nil || version != formalFirstTenantMigrationVersion(t) || tenantCount != 0 {
 		t.Fatal("actual migrated empty business database required")
 	}
 	first := bootstrap.FirstTenant{TenantID: input.TenantID, Slug: "pre-sp07-current", DisplayName: "Current nonvirtual readiness", AdminSubject: tokens.Subject}
@@ -403,4 +403,19 @@ func TestFormalHTTPSOIDCAndFirstTenantBootstrap(t *testing.T) {
 		t.Fatal("atomic bootstrap/default operating scope differs")
 	}
 	t.Log("actual HTTPS discovery, frozen realm, PKCE, nonce, OTP enrollment, LoA-2, tenant claims, formal forward migrations and opsctl first-tenant atomic Audit verified; initialized database retained")
+}
+
+// Preserve the historical SP06 gate while requiring an explicit full-SP07
+// migration target for the separately verified 37-migration native deployment.
+func formalFirstTenantMigrationVersion(t *testing.T) int {
+	t.Helper()
+	switch os.Getenv("PRE_SP07_OIDC_EXPECTED_MIGRATION_VERSION") {
+	case "", "35":
+		return 35
+	case "37":
+		return 37
+	default:
+		t.Fatal("unsupported explicit first-tenant migration target")
+		return 0
+	}
 }

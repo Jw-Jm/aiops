@@ -3,8 +3,10 @@ import json,hashlib,shutil,re,tarfile,argparse
 from pathlib import Path
 
 
-def verify_image_oci(path, expected):
-    """Bind admission to the exact arm64 manifest, not a Docker config ID."""
+def verify_image_oci(path, expected, architecture="arm64"):
+    """Bind admission to the exact native manifest, not a Docker config ID."""
+    if architecture not in ("arm64", "amd64"):
+        raise ValueError('unsupported reviewed image architecture')
     with tarfile.open(path) as archive:
         members = {}
         for member in archive:
@@ -44,8 +46,8 @@ def verify_image_oci(path, expected):
         if manifest.get('schemaVersion') != 2 or 'manifests' in manifest:
             raise ValueError('selected native image manifest required')
         config = read_json(verify_blob(manifest['config']))
-        if config.get('os') != 'linux' or config.get('architecture') != 'arm64':
-            raise ValueError('exact linux/arm64 image required')
+        if config.get('os') != 'linux' or config.get('architecture') != architecture:
+            raise ValueError('exact linux/'+architecture+' image required')
         if not manifest['layers']:
             raise ValueError('image layers required')
         for layer in manifest['layers']:
@@ -54,19 +56,23 @@ def verify_image_oci(path, expected):
 
 parser=argparse.ArgumentParser(description="Bind the exact reviewed investigator source/image/license inventory")
 parser.add_argument("--image-digest",required=True)
-parser.add_argument("--image-oci",type=Path,required=True,help="One selected arm64 OCI manifest and its exact local closure")
+parser.add_argument("--image-oci",type=Path,required=True,help="One selected native OCI manifest and its exact local closure")
 parser.add_argument("--verify-image-only",action="store_true",help="Read-only identity verification before material admission")
 parser.add_argument("--debian-source-index",type=Path,required=True)
 parser.add_argument("--material-root",type=Path,default=Path('artifacts/sp06-investigator'),help="Prepared exact source/image inputs; use a separate directory to preserve prior signed material")
+parser.add_argument("--architecture",choices=["arm64","amd64"],default="arm64")
+parser.add_argument("--poc-report",default="docs/poc/sp06-holmesgpt-runtime.md")
 args=parser.parse_args()
-verify_image_oci(args.image_oci, args.image_digest)
+suffix="-amd64" if args.architecture=="amd64" else ""
+verify_image_oci(args.image_oci, args.image_digest, architecture=args.architecture)
 if args.verify_image_only:
-    print('Exact arm64 OCI manifest/config/layer identity verified; no admission files changed')
+    print('Exact native OCI manifest/config/layer identity verified; no admission files changed')
     raise SystemExit(0)
 import yaml
 root=Path.cwd(); out=args.material_root.resolve();image=args.image_digest
 sha=lambda p:'sha256:'+hashlib.sha256(Path(p).read_bytes()).hexdigest()
 lock=json.loads((out/'runtime.lock.json').read_text());base=json.loads((out/'base/source.lock.json').read_text());bundle=sha(out/'python-runtime-source.tar')
+assert lock['architecture']=='linux/'+args.architecture, 'runtime lock must match native image target'
 adr='docs/adr/0027-sp06-investigator-license-distribution.md';adrsha=sha(adr)
 rows={x['name']:x for x in lock['sources']}; notices=[]; deps=[]; reviews=[]; native=[]
 known={'events':'BSD-3-Clause','fastuuid':'BSD-3-Clause','jinja2':'BSD-3-Clause','jsonpatch':'BSD-3-Clause','jsonpointer':'BSD-3-Clause','prometrix':'MIT','holmesgpt':'Apache-2.0','prompt-toolkit':'BSD-3-Clause','pyasn1-modules':'BSD-2-Clause','python-dateutil':'Apache-2.0 AND BSD-3-Clause','text-unidecode':'Artistic-1.0 OR GPL-2.0-or-later','bashlex':'GPL-3.0-or-later','scramp':'MIT-0'}
@@ -89,7 +95,7 @@ for p in lock['wheels']:
  original=rows[p['name']]
  deps.append(dict(name=p['name'],version=p['version'],source=original['url'],digest=p['sha256'],license=lic,sourceType='archive',sourceArchiveSHA256=original['sha256']))
  for n in p['notices']:
-  target=root/'third_party/licenses/investigator'/n['path'];target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(out/n['path'],target)
+  target=root/('third_party/licenses/investigator'+suffix)/n['path'];target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(out/n['path'],target)
   assert sha(target)==n['sha256'];notices.append(dict(path=str(target.relative_to(root)),license=lic,digest=n['sha256']))
  reviews.append(dict(name=p['name'],version=p['version'],license=lic,publisherLicenseExpression=p['licenseExpression'],publisherLicenseMetadata=p['licenseMetadata'],originalNotices=p['notices'],source=original))
 # Exact Debian source paragraph identity: authenticated, retained signed indexes.
@@ -111,8 +117,8 @@ for p in base['packages']:
  if not path.exists():
   # Some binary packages share source package documentation via symlinks.
   raise ValueError('missing binary copyright '+p['binary'])
- target=root/'third_party/licenses/investigator/base'/p['binary'].replace(':','_')/'copyright';target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(path,target)
- noticehash=sha(target);identifier='LicenseRef-SP06-Native-'+hashlib.sha256((p['binary']+'@'+p['version']+image+noticehash).encode()).hexdigest()
+ target=root/('third_party/licenses/investigator'+suffix)/'base'/p['binary'].replace(':','_')/'copyright';target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(path,target)
+ noticehash=sha(target);identifier='LicenseRef-SP06-'+('AMD64-' if args.architecture=='amd64' else '')+'Native-'+hashlib.sha256((p['binary']+'@'+p['version']+image+noticehash).encode()).hexdigest()
  notices.append(dict(path=str(target.relative_to(root)),license=identifier,digest=noticehash))
  deps.append(dict(name='debian/'+p['binary'],version=p['version'],source=source,digest=sourcehash,license=identifier,sourceType='archive',sourceArchiveSHA256=sourcehash))
  native.append(dict(id=identifier,component='holmesgpt',componentVersion='0.42.0',imageDigest=image,dependencyName='debian/'+p['binary'],version=p['version'],source=source,sourceArchiveSHA256=sourcehash,correspondingSourceBundleSHA256=bundle,noticePath=str(target.relative_to(root)),noticeDigest=noticehash,adr=adr,adrDigest=adrsha))
@@ -126,8 +132,8 @@ for p in rust['packages']:
  for n in p['notices']:
   assert sha(out/n['path'])==n['sha256']
   aggregate+=b'\n\nOriginal publisher member: '+n['path'].encode()+b'\n'+(out/n['path']).read_bytes()
- target=root/'third_party/licenses/investigator/rust'/(p['name']+'-'+p['version'])/'publisher-notices.txt';target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(aggregate)
- noticehash=sha(target);identifier='LicenseRef-SP06-Native-'+hashlib.sha256((p['name']+'@'+p['version']+image+noticehash).encode()).hexdigest()
+ target=root/('third_party/licenses/investigator'+suffix)/'rust'/(p['name']+'-'+p['version'])/'publisher-notices.txt';target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(aggregate)
+ noticehash=sha(target);identifier='LicenseRef-SP06-'+('AMD64-' if args.architecture=='amd64' else '')+'Native-'+hashlib.sha256((p['name']+'@'+p['version']+image+noticehash).encode()).hexdigest()
  notices.append(dict(path=str(target.relative_to(root)),license=identifier,digest=noticehash))
  deps.append(dict(name='cargo/'+p['name'],version=p['version'],source=p['sourceURL'],digest=p['sourceSHA256'],license=identifier,sourceType='archive',sourceArchiveSHA256=p['sourceSHA256']))
  native.append(dict(id=identifier,component='holmesgpt',componentVersion='0.42.0',imageDigest=image,dependencyName='cargo/'+p['name'],version=p['version'],source=p['sourceURL'],sourceArchiveSHA256=p['sourceSHA256'],correspondingSourceBundleSHA256=bundle,noticePath=str(target.relative_to(root)),noticeDigest=noticehash,adr=adr,adrDigest=adrsha))
@@ -137,15 +143,15 @@ for p in json.loads((out/'native/source.lock.json').read_text())['materials']:
  for n in p['notices']:
   assert sha(out/n['path'])==n['sha256']
   aggregate+=b'\nOriginal publisher member: '+n['path'].encode()+b'\n'+(out/n['path']).read_bytes()
- target=root/'third_party/licenses/investigator/native'/(p['name']+'-'+p['version'])/'publisher-notices.txt';target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(aggregate)
- noticehash=sha(target);identifier='LicenseRef-SP06-Native-'+hashlib.sha256(('embedded/'+p['name']+'@'+p['version']+image+noticehash).encode()).hexdigest()
+ target=root/('third_party/licenses/investigator'+suffix)/'native'/(p['name']+'-'+p['version'])/'publisher-notices.txt';target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(aggregate)
+ noticehash=sha(target);identifier='LicenseRef-SP06-'+('AMD64-' if args.architecture=='amd64' else '')+'Native-'+hashlib.sha256(('embedded/'+p['name']+'@'+p['version']+image+noticehash).encode()).hexdigest()
  notices.append(dict(path=str(target.relative_to(root)),license=identifier,digest=noticehash))
  deps.append(dict(name='embedded/'+p['name'],version=p['version'],source=p['sourceURL'],digest=p['sourceSHA256'],license=identifier,sourceType='archive',sourceArchiveSHA256=p['sourceSHA256']))
  native.append(dict(id=identifier,component='holmesgpt',componentVersion='0.42.0',imageDigest=image,dependencyName='embedded/'+p['name'],version=p['version'],source=p['sourceURL'],sourceArchiveSHA256=p['sourceSHA256'],correspondingSourceBundleSHA256=bundle,noticePath=str(target.relative_to(root)),noticeDigest=noticehash,adr=adr,adrDigest=adrsha))
 # Full original compiler/library publisher notices accompany the build inputs.
 for p in sorted((out/'rust/toolchain/notices').rglob('*')):
  if p.is_file():
-  target=root/'third_party/licenses/investigator'/p.relative_to(out);target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,target)
+  target=root/('third_party/licenses/investigator'+suffix)/p.relative_to(out);target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,target)
 # The standard-library source used by the platform native rebuild is admitted
 # under its actual publisher COPYRIGHT-library notice, not a guessed expression.
 p=next(p for p in json.loads((out/'rust/toolchain/toolchain.lock.json').read_text())['components'] if p['name']=='rust-src')
@@ -154,8 +160,8 @@ with tarfile.open(out/p['path']) as archive:
  names=[m for m in archive.getmembers() if m.isfile() and (m.name.endswith('/COPYRIGHT-library.html') or m.name.endswith('/LICENSE-APACHE') or m.name.endswith('/LICENSE-MIT'))]
  if not names: raise ValueError('Rust library publisher notice absent')
  aggregate=b''.join(m.name.encode()+b'\n'+archive.extractfile(m).read()+b'\n' for m in names)
-target=root/'third_party/licenses/investigator/rust/standard-library-publisher-notices.txt';target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(aggregate)
-noticehash=sha(target);identifier='LicenseRef-SP06-Native-'+hashlib.sha256(('rust-std@'+p['version']+image+noticehash).encode()).hexdigest()
+target=root/('third_party/licenses/investigator'+suffix)/'rust/standard-library-publisher-notices.txt';target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(aggregate)
+noticehash=sha(target);identifier='LicenseRef-SP06-'+('AMD64-' if args.architecture=='amd64' else '')+'Native-'+hashlib.sha256(('rust-std@'+p['version']+image+noticehash).encode()).hexdigest()
 notices.append(dict(path=str(target.relative_to(root)),license=identifier,digest=noticehash))
 deps.append(dict(name='rust/standard-library',version=p['version'],source=p['url'],digest=p['sha256'],license=identifier,sourceType='archive',sourceArchiveSHA256=p['sha256']))
 native.append(dict(id=identifier,component='holmesgpt',componentVersion='0.42.0',imageDigest=image,dependencyName='rust/standard-library',version=p['version'],source=p['url'],sourceArchiveSHA256=p['sha256'],correspondingSourceBundleSHA256=bundle,noticePath=str(target.relative_to(root)),noticeDigest=noticehash,adr=adr,adrDigest=adrsha))
@@ -166,29 +172,31 @@ for p in json.loads((out/'base/python-source.lock.json').read_text())['sources']
  lic='PSF-2.0' if p['name']=='cpython' else 'MIT'
  deps.append(dict(name=p['name'],version=p['version'],source=p['url'],digest=p['sha256'],license=lic,sourceType='archive',sourceArchiveSHA256=p['sha256']))
 for p,lic in [('services/investigator/LICENSE','GPL-3.0-or-later'),('services/investigator/NOTICE','GPL-3.0-or-later')]:notices.append(dict(path=p,license=lic,digest=sha(p)))
-Path('internal/supplychain/licenses/sp06-investigator-reviewed.json').write_text(json.dumps(dict(schemaVersion=1,licenses=native),indent=2)+'\n')
-Path('third_party/admission/sp06-investigator-license-review.json').write_text(json.dumps(dict(schemaVersion=1,imageDigest=image,correspondingSourceBundleSHA256=bundle,pythonPackages=reviews,debianPackages=base['packages'],cargoDeclaredSourceSuperset=rust,nativePublisherNotices=native,wrapperLicense='GPL-3.0-or-later',pyrca='excluded',sourceClosure='complete publisher artifacts and original notices; exact signed Debian source indexes'),indent=2)+'\n')
+Path('internal/supplychain/licenses/sp06-investigator'+suffix+'-reviewed.json').write_text(json.dumps(dict(schemaVersion=1,licenses=native),indent=2)+'\n')
+Path('third_party/admission/sp06-investigator-license-review'+suffix+'.json').write_text(json.dumps(dict(schemaVersion=1,imageDigest=image,correspondingSourceBundleSHA256=bundle,pythonPackages=reviews,debianPackages=base['packages'],cargoDeclaredSourceSuperset=rust,nativePublisherNotices=native,wrapperLicense='GPL-3.0-or-later',pyrca='excluded',sourceClosure='complete publisher artifacts and original notices; exact signed Debian source indexes'),indent=2)+'\n')
 source=rows['holmesgpt']
 conformance='test/fixtures/sp06/real-chain.go.fixture'
 shutil.copyfile(root/'test/integration/sp06_real_chain_test.go', root/conformance)
 old_embedded=root/'bundle/evidence/test/integration/sp06_real_chain_test.go'
 if old_embedded.exists():old_embedded.unlink()
-section=dict(name='holmesgpt',state='qualified',version='0.42.0',source='https://github.com/HolmesGPT/holmesgpt',commit=lock['holmesCommit'],digest=image,license='Apache-2.0',specialLicenseADR=adr,fileLicenses=notices,sourceSnapshot=True,sourceArchiveSHA256=source['sha256'],correspondingSourceBundleSHA256=bundle,architectures=['linux/arm64'],usage='Exact unmodified Holmes runtime plus GPL platform wrapper; platform MCP only; suggestions only',reuseMode='process-isolated',linkageMode='python-official-extension-points',importedPaths=['holmes/core/llm.py','holmes/core/tool_calling_llm.py','holmes/core/tools.py','holmes/core/tools_utils/tool_executor.py'],dependencyClosure=deps,dependencyClosureVerified=True,patches=[],forkPolicy='not-applicable',owner='SP06 investigator',pocReport='docs/poc/sp06-holmesgpt-runtime.md',conformanceFixtures=[conformance,'services/investigator/tests/test_security.py'],exitPlan='Disable SP06 dispatch; preserve immutable Jobs/Steps/audit; replace adapter through versioned contracts',requiredFor1_0=True,officialSupportSources=['https://github.com/HolmesGPT/holmesgpt/tree/'+lock['holmesCommit'],'https://modelcontextprotocol.io/specification/2025-06-18/basic/transports'])
+section=dict(name='holmesgpt',state='qualified',version='0.42.0',source='https://github.com/HolmesGPT/holmesgpt',commit=lock['holmesCommit'],digest=image,license='Apache-2.0',specialLicenseADR=adr,fileLicenses=notices,sourceSnapshot=True,sourceArchiveSHA256=source['sha256'],correspondingSourceBundleSHA256=bundle,architectures=['linux/'+args.architecture],usage='Exact unmodified Holmes runtime plus GPL platform wrapper; platform MCP only; suggestions only',reuseMode='process-isolated',linkageMode='python-official-extension-points',importedPaths=['holmes/core/llm.py','holmes/core/tool_calling_llm.py','holmes/core/tools.py','holmes/core/tools_utils/tool_executor.py'],dependencyClosure=deps,dependencyClosureVerified=True,patches=[],forkPolicy='not-applicable',owner='SP06 investigator',pocReport=args.poc_report,conformanceFixtures=[conformance,'services/investigator/tests/test_security.py'],exitPlan='Disable SP06 dispatch; preserve immutable Jobs/Steps/audit; replace adapter through versioned contracts',requiredFor1_0=True,officialSupportSources=['https://github.com/HolmesGPT/holmesgpt/tree/'+lock['holmesCommit'],'https://modelcontextprotocol.io/specification/2025-06-18/basic/transports'])
 # Preserve all existing catalog entries/text; only replace the Holmes candidate section.
-catalog=Path('bundle/component-catalog.yaml');text=catalog.read_text();begin=text.index('  - name: holmesgpt\n');end=text.index('  - name: k8sgpt\n',begin)
+catalog=Path('bundle/component-catalog'+suffix+'.yaml');text=catalog.read_text();begin=text.index('  - name: holmesgpt\n');end=text.index('  - name: k8sgpt\n',begin)
 new=yaml.safe_dump([section],sort_keys=False,width=150)
 new=''.join('  '+line+'\n' for line in new.splitlines());catalog.write_text(text[:begin]+new+text[end:])
-for p in [adr,'docs/poc/sp06-holmesgpt-runtime.md']+[x['path'] for x in notices]+section['conformanceFixtures']:
+for p in [adr,args.poc_report]+[x['path'] for x in notices]+section['conformanceFixtures']:
  origin=root/p
  if not origin.exists():print('pending embedded evidence',p);continue
  target=root/'bundle/evidence'/p;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(origin,target)
 print('exact admission inventory',len(deps),'dependencies',len(notices),'notices',len(native),'native bindings')
-source_manifest=Path('third_party/admission/sp06-holmesgpt-source.json')
-record=json.loads(source_manifest.read_text());record.update(state='qualified',runtimeAdmission='exact reuse/distribution admission; full SP06 final gates and independent review separate',imageDigest=image,correspondingSourceBundleSHA256=bundle,dependencyClosureLock=str((out/'runtime.lock.json').relative_to(root)) if out.is_relative_to(root) else str(out/'runtime.lock.json'),licenseReview='third_party/admission/sp06-investigator-license-review.json')
+source_manifest=Path('third_party/admission/sp06-holmesgpt-source'+suffix+'.json')
+if not source_manifest.exists():shutil.copyfile('third_party/admission/sp06-holmesgpt-source.json',source_manifest)
+record=json.loads(source_manifest.read_text());record.update(state='qualified',runtimeAdmission='exact reuse/distribution admission; full SP06 final gates and independent review separate',imageDigest=image,correspondingSourceBundleSHA256=bundle,dependencyClosureLock=str((out/'runtime.lock.json').relative_to(root)) if out.is_relative_to(root) else str(out/'runtime.lock.json'),licenseReview='third_party/admission/sp06-investigator-license-review'+suffix+'.json',architecture='linux/'+args.architecture)
 source_manifest.write_text(json.dumps(record,indent=2)+'\n')
 
 # Keep the public runtime reuse lock bound to this exact admitted material.
-reuse_path=Path('docs/poc/holmes-investigator-reuse-lock.yaml')
+reuse_path=Path('docs/poc/holmes-investigator-reuse-lock'+suffix+'.yaml')
+if not reuse_path.exists():shutil.copyfile('docs/poc/holmes-investigator-reuse-lock.yaml',reuse_path)
 reuse=yaml.safe_load(reuse_path.read_text())
 reuse.update(imageDigest=image, correspondingSourceBundleSHA256=bundle)
 reuse_path.write_text(yaml.safe_dump(reuse,sort_keys=False,width=100))

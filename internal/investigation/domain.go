@@ -152,6 +152,7 @@ type Lease struct {
 	Generation int64     `json:"leaseGeneration"`
 }
 type Call struct {
+	Arguments  json.RawMessage
 	Claims     *InvocationClaims
 	StepID     uuid.UUID
 	ContextID  uuid.UUID
@@ -163,10 +164,11 @@ type Call struct {
 	Model      bool
 }
 type Step struct {
-	StepID     uuid.UUID       `json:"stepId"`
-	Name       string          `json:"toolName"`
-	ArgsDigest string          `json:"argsDigest"`
-	State      string          `json:"state"`
-	Result     json.RawMessage `json:"result,omitempty"`
-	ErrorCode  string          `json:"errorCode,omitempty"`
+	ArgsSummary json.RawMessage `json:"argsSummary,omitempty"`
+	StepID      uuid.UUID       `json:"stepId"`
+	Name        string          `json:"toolName"`
+	ArgsDigest  string          `json:"argsDigest"`
+	State       string          `json:"state"`
+	Result      json.RawMessage `json:"result,omitempty"`
+	ErrorCode   string          `json:"errorCode,omitempty"`
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare the exact selected Linux/arm64 Go source and notice closure offline.
+"""Prepare the exact selected Linux/arm64 or Linux/amd64 Go source and notice closure offline.
 
 License choices are reviewed inputs, not inferred from scanner keywords. Changed
 notices, unreviewed modules or selected bytes differing from the authenticated Go
@@ -32,16 +32,20 @@ def digest(value):
     return "sha256:" + hashlib.sha256(value).hexdigest()
 
 
-def run(*args):
+def run_for_target(*args, architecture="arm64"):
     return subprocess.check_output(args, env={**os.environ, "GOOS": "linux",
-        "GOARCH": "arm64", "CGO_ENABLED": "0", "GOPROXY": "off",
+        "GOARCH": architecture, "CGO_ENABLED": "0", "GOPROXY": "off",
         "GOSUMDB": "off", "GOTOOLCHAIN": "local"}, text=True)
 
 
-def prepare(out, *, review_path=Path("third_party/admission/platform-runtime-go-license-review.json"),
+def prepare(out, *, architecture="arm64", review_path=Path("third_party/admission/platform-runtime-go-license-review.json"),
         entrypoints=("./cmd/platform-api", "./cmd/platform-worker", "./cmd/opsctl"),
         admission_paths=(Path("third_party/admission/sp04-selected-runtime.json"),
             Path("third_party/admission/sp05-selected-runtime.json"))):
+    if architecture not in ("arm64", "amd64"):
+        raise ValueError("only reviewed Linux arm64/amd64 source targets are supported")
+    def run(*args):
+        return run_for_target(*args, architecture=architecture)
     review = json.loads(review_path.read_text())
     reviewed = {m["path"]: m for m in review["modules"]}
     packages = list(objects(run("go", "list", "-mod=readonly", "-deps", "-json",
@@ -163,11 +167,11 @@ def prepare(out, *, review_path=Path("third_party/admission/platform-runtime-go-
     admitted_selected = {item["path"] for item in selected_lock if item["path"].endswith(".go")}
     if actual_selected != admitted_selected:
         raise ValueError("in-tree upstream compiled source differs from the reviewed selected-file closure")
-    lock = {"schemaVersion": 1, "architecture": "linux/arm64", "cgoEnabled": False,
+    lock = {"schemaVersion": 1, "architecture": "linux/"+architecture, "cgoEnabled": False,
         "goVersion": compiler, "licenseReviewSHA256": digest(review_path.read_bytes()),
         "modules": locked_modules, "standardLibraryFiles": std_lock,
         "selectedUpstreamFiles": selected_lock, "selectedUpstreamAdmissions":admission_digests,
-        "buildInstructions": "Use go1.27.1, GOOS=linux GOARCH=arm64 CGO_ENABLED=0. Replace all locked modules with their selected local module directories before offline compilation. Only this target is qualified."}
+        "buildInstructions": "Use go1.27.1, GOOS=linux GOARCH="+architecture+" CGO_ENABLED=0. Replace all locked modules with their selected local module directories before offline compilation. "+("Only this target is qualified." if architecture == "arm64" else "Prepared target-specific source; independent admission and native runtime proof are still required.")}
     raw = (json.dumps(lock, indent=2)+"\n").encode()
     contents["runtime-go.lock.json"] = raw
     out.mkdir(parents=True, exist_ok=True)
@@ -181,12 +185,14 @@ def prepare(out, *, review_path=Path("third_party/admission/platform-runtime-go-
     return lock, digest((out/"runtime-go-source.tar").read_bytes())
 
 
-def check_current(out):
-    lock, source_digest = prepare(out)
-    expected = json.loads(Path("bundle/evidence/third_party/admission/platform-runtime-go.lock.json").read_text())
+def check_current(out, architecture="arm64"):
+    suffix = "-amd64" if architecture == "amd64" else ""
+    review = Path("third_party/admission/platform-runtime-go-license-review"+suffix+".json")
+    lock, source_digest = prepare(out, architecture=architecture, review_path=review)
+    expected = json.loads(Path("bundle/evidence/third_party/admission/platform-runtime-go"+suffix+".lock.json").read_text())
     if lock != expected:
         raise ValueError("selected runtime source, module or license closure has drifted; renew qualification evidence")
-    catalog = Path("bundle/component-catalog.yaml").read_text()
+    catalog = Path("bundle/component-catalog"+suffix+".yaml").read_text()
     entry = re.split(r"(?m)^  - name:", catalog.split("  - name: opa-sdk\n", 1)[1], maxsplit=1)[0]
     if "    correspondingSourceBundleSHA256: "+source_digest+"\n" not in entry:
         raise ValueError("runtime source archive differs from the qualified Catalog lock")
@@ -197,12 +203,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--architecture", choices=("arm64", "amd64"), default="arm64")
     args = parser.parse_args()
     if args.check:
         with tempfile.TemporaryDirectory(prefix="ops-runtime-source-check-") as directory:
-            lock, source_digest = check_current(Path(directory))
+            lock, source_digest = check_current(Path(directory), architecture=args.architecture)
     elif args.out:
-        lock, source_digest = prepare(args.out)
+        lock, source_digest = prepare(args.out, architecture=args.architecture,
+            review_path=Path("third_party/admission/platform-runtime-go-license-review"+("-amd64" if args.architecture == "amd64" else "")+".json"))
     else:
         parser.error("--out or --check is required")
     print(json.dumps({"modules": len(lock["modules"]), "selectedModuleFiles": sum(len(m["files"]) for m in lock["modules"]),

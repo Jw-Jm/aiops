@@ -23,13 +23,15 @@ import (
 )
 
 type SP04Handlers struct {
-	Action          *ActionHandlers
-	Investigation   *InvestigationHandlers
-	SP05            *SP05Handlers
-	Pool            persistence.TxBeginner
-	Client          *http.Client
-	SigningKey      ed25519.PrivateKey
-	EndpointAllowed func(string) bool
+	AuditEndpoint        string
+	AuditEndpointAllowed func(string) bool
+	Action               *ActionHandlers
+	Investigation        *InvestigationHandlers
+	SP05                 *SP05Handlers
+	Pool                 persistence.TxBeginner
+	Client               *http.Client
+	SigningKey           ed25519.PrivateKey
+	EndpointAllowed      func(string) bool
 }
 
 func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +71,7 @@ func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "/api/v1/resources":
 		q.QueryKind = "list"
+		q.CanonicalIDs = r.URL.Query()["canonicalIds"]
 		q.Kind = r.URL.Query().Get("kind")
 		q.Namespace = r.URL.Query().Get("namespace")
 		q.Name = r.URL.Query().Get("name")
@@ -122,6 +125,23 @@ func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	q.Scope = scope
+	if len(q.CanonicalIDs) > 50 {
+		fail(400, "INVALID_ARGUMENT")
+		return
+	}
+	seen := map[string]bool{}
+	for _, value := range q.CanonicalIDs {
+		id, parseErr := resource.ParseCanonicalID(value)
+		if parseErr != nil || seen[value] {
+			fail(400, "INVALID_ARGUMENT")
+			return
+		}
+		seen[value] = true
+		if id.Tenant != scope.Tenant || id.Scope != scope.Cluster {
+			fail(403, "FORBIDDEN")
+			return
+		}
+	}
 	if r.Method == "POST" {
 		if _, err := h.bindSP04Request(r.Context(), request, "diagnostic-graph", r.Header.Get("Idempotency-Key"), graph.ScopeDigest(q)); err != nil {
 			code := "INVALID_ARGUMENT"
@@ -201,7 +221,7 @@ func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		next, _ = encodeCursor(h.SigningKey, bound)
 	}
 	if q.QueryKind == "list" {
-		writeJSON(w, 200, map[string]any{"requestId": request.RequestID, "data": result.Nodes, "meta": map[string]any{"nextCursor": next, "schemaVersion": result.SchemaVersion, "graphRevision": result.GraphRevision, "freshness": result.Freshness, "partial": result.Partial, "degradedSources": result.DegradedSources, "warnings": result.Warnings}})
+		writeJSON(w, 200, map[string]any{"requestId": request.RequestID, "data": result.Nodes, "meta": map[string]any{"summary": result.Summary, "collectedAt": result.CollectedAt, "nextCursor": next, "schemaVersion": result.SchemaVersion, "graphRevision": result.GraphRevision, "freshness": result.Freshness, "partial": result.Partial, "degradedSources": result.DegradedSources, "warnings": result.Warnings}})
 		return
 	}
 	writeJSON(w, 200, map[string]any{"requestId": request.RequestID, "data": result, "meta": map[string]any{"nextCursor": next}})

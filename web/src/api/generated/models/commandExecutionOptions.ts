@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CommandExecutionOptionsEnvironment } from './commandExecutionOptionsEnvironment';
+import type { CommandExecutionOptionsEnvironment } from './commandExecutionOptionsEnvironment.ts';
 
 export interface CommandExecutionOptions {
   /**

@@ -57,6 +57,7 @@ sp05:
   enabled: false
   ingestionBindings: []
   analyzer:
+    architecture: arm64
     enabled: true
     # Filled from the admitted locked-source Worker build, never a mutable tag.
     sha256: "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53"
@@ -102,3 +103,24 @@ sp07:
   kubernetesCredentials: []
   kubernetesEndpoint: https://kubernetes.default.svc.cluster.local
   workloadCABundle: ""
+
+# SP-08 nonvirtual Web. Runtime endpoints and credentials are external configuration.
+sp08:
+  enabled: false
+  publicOrigin: ""
+  tlsSecretName: ""
+  oidcCAConfigMapName: ""
+  oidc:
+    authority: ""
+    clientId: ""
+    proxyHost: ""
+  apiHost: ""
+  service:
+    type: ClusterIP
+    port: 8443
+    nodePort: null
+  ingressCIDRs: []
+  release:
+    version: ""
+    digest: ""
+    signature: ""

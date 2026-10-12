@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { FindingEnvelopeV2LifecycleState } from './findingEnvelopeV2LifecycleState';
-import type { FindingEnvelopeV2Payload } from './findingEnvelopeV2Payload';
-import type { FindingEnvelopeV2Severity } from './findingEnvelopeV2Severity';
+import type { FindingEnvelopeV2LifecycleState } from './findingEnvelopeV2LifecycleState.ts';
+import type { FindingEnvelopeV2Payload } from './findingEnvelopeV2Payload.ts';
+import type { FindingEnvelopeV2Severity } from './findingEnvelopeV2Severity.ts';
 
 export interface FindingEnvelopeV2 {
   /**

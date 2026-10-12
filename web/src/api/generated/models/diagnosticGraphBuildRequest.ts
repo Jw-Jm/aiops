@@ -4,9 +4,9 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { CanonicalID } from './canonicalID';
-import type { DiagnosticGraphBuildRequestRecipe } from './diagnosticGraphBuildRequestRecipe';
-import type { GraphBudget } from './graphBudget';
+import type { CanonicalID } from './canonicalID.ts';
+import type { DiagnosticGraphBuildRequestRecipe } from './diagnosticGraphBuildRequestRecipe.ts';
+import type { GraphBudget } from './graphBudget.ts';
 
 export interface DiagnosticGraphBuildRequest {
   entryCanonicalId: CanonicalID;

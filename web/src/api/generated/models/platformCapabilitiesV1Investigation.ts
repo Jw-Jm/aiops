@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { PlatformCapabilitiesV1InvestigationStatus } from './platformCapabilitiesV1InvestigationStatus';
+import type { PlatformCapabilitiesV1InvestigationStatus } from './platformCapabilitiesV1InvestigationStatus.ts';
 
 export type PlatformCapabilitiesV1Investigation = {
   enabled: boolean;

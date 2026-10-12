@@ -1,6 +1,6 @@
 {{- if not .Values.networkPolicyOnly }}
 {{- range $name, $component := .Values.components }}
-{{- if or $component.enabled (and $.Values.sp06.enabled (eq $name "investigator")) }}
+{{- if and (not (and (eq $name "web") $.Values.sp08.enabled)) (or $component.enabled (and $.Values.sp06.enabled (eq $name "investigator"))) }}
 apiVersion: v1
 kind: Service
 metadata:

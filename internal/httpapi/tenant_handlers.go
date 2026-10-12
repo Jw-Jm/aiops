@@ -212,7 +212,7 @@ func decodeTenantBody(r *http.Request) (map[string]any, error) {
 }
 
 func parseRoleBindingInput(body map[string]any) (tenant.CreateRoleBindingInput, error) {
-	input := tenant.CreateRoleBindingInput{Subject: stringValue(body["subject"]), Role: auth.Role(stringValue(body["role"]))}
+	input := tenant.CreateRoleBindingInput{Subject: stringValue(body["subject"]), Role: auth.Role(stringValue(body["role"])), ClusterScopes: []uuid.UUID{}, NamespaceScopes: []auth.NamespaceScope{}}
 	if value, present := body["clusterScopes"]; present {
 		raw, ok := value.([]any)
 		if !ok {

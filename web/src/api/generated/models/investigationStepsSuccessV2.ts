@@ -4,7 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
-import type { InvestigationStepV2 } from './investigationStepV2';
+import type { InvestigationStepV2 } from './investigationStepV2.ts';
 
 export interface InvestigationStepsSuccessV2 {
   /** @maxItems 128 */

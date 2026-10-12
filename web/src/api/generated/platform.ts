@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.4.0
  */
 import type {
+  AuthSessionSuccessV1,
   CancelInvestigationBody,
   CapabilitiesSuccessV1,
   ClusterRegistrationRequest,
@@ -30,9 +31,11 @@ import type {
   GetExecutionProfilesParams,
   GetFindingsParams,
   GetIncidentEvidenceParams,
+  GetIncidentInvestigationsParams,
   GetIncidentTimelineParams,
   GetIncidentsParams,
   GetLegalHoldsParams,
+  GetOverviewParams,
   GetPolicyBundlesParams,
   GetRCARevisionsParams,
   GetRecipesParams,
@@ -54,6 +57,7 @@ import type {
   IncidentTransitionRequest,
   IncidentTransitionV2,
   InvestigationCancelSuccessV2,
+  InvestigationPageV2,
   InvestigationStepsSuccessV2,
   InvestigationSuccessV2,
   JSONRequest,
@@ -69,6 +73,7 @@ import type {
   RCARevisionSuccessV2,
   RegistryActivationRequest,
   RegistryDraftCreateRequest,
+  RegistryDraftEnvelope,
   RegistryDraftUpdateRequest,
   RegistryPublishRequest,
   RegistryVersionRetireRequest,
@@ -90,6 +95,56 @@ export type HTTPStatusCode3xx = 300 | 301 | 302 | 303 | 304 | 305 | 307 | 308;
 export type HTTPStatusCode4xx = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 419 | 420 | 421 | 422 | 423 | 424 | 426 | 428 | 429 | 431 | 451;
 export type HTTPStatusCode5xx = 500 | 501 | 502 | 503 | 504 | 505 | 507 | 511;
 export type HTTPStatusCodes = HTTPStatusCode1xx | HTTPStatusCode2xx | HTTPStatusCode3xx | HTTPStatusCode4xx | HTTPStatusCode5xx;
+
+export type getAuthSessionResponse200 = {
+  data: AuthSessionSuccessV1
+  status: 200
+}
+
+export type getAuthSessionResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getAuthSessionResponseSuccess = (getAuthSessionResponse200) & {
+  headers: Headers;
+};
+export type getAuthSessionResponseError = (getAuthSessionResponseDefault) & {
+  headers: Headers;
+};
+
+export type getAuthSessionResponse = (getAuthSessionResponseSuccess | getAuthSessionResponseError)
+
+export const getGetAuthSessionUrl = () => {
+
+
+
+
+  return `/api/v1/auth/session`
+}
+
+/**
+ * @summary Current verified identity and active platform grants; roles do not inherit.
+ */
+export const getAuthSession = async ( options?: RequestInit): Promise<getAuthSessionResponse> => {
+
+  const res = await fetch(getGetAuthSessionUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAuthSessionResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getAuthSessionResponse
+}
+
+
 
 export type createStepUpSessionResponse201 = {
   data: SuccessEnvelope
@@ -1000,6 +1055,56 @@ const res = await fetch(getCreateRegistryDraftUrl(),
 
   const data: createRegistryDraftResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as createRegistryDraftResponse
+}
+
+
+
+export type getRegistryDraftResponse200 = {
+  data: RegistryDraftEnvelope
+  status: 200
+}
+
+export type getRegistryDraftResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getRegistryDraftResponseSuccess = (getRegistryDraftResponse200) & {
+  headers: Headers;
+};
+export type getRegistryDraftResponseError = (getRegistryDraftResponseDefault) & {
+  headers: Headers;
+};
+
+export type getRegistryDraftResponse = (getRegistryDraftResponseSuccess | getRegistryDraftResponseError)
+
+export const getGetRegistryDraftUrl = (draftId: Identifier,) => {
+
+
+
+
+  return `/api/v1/admin/registry-drafts/${draftId}`
+}
+
+/**
+ * @summary Read current authorized draft for revision conflict recovery
+ */
+export const getRegistryDraft = async (draftId: Identifier, options?: RequestInit): Promise<getRegistryDraftResponse> => {
+
+  const res = await fetch(getGetRegistryDraftUrl(draftId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getRegistryDraftResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getRegistryDraftResponse
 }
 
 
@@ -3020,6 +3125,65 @@ export const getIncidentEvidence = async (incidentId: string,
 
 
 
+export type getIncidentInvestigationsResponse200 = {
+  data: InvestigationPageV2
+  status: 200
+}
+
+export type getIncidentInvestigationsResponseDefault = {
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getIncidentInvestigationsResponseSuccess = (getIncidentInvestigationsResponse200) & {
+  headers: Headers;
+};
+export type getIncidentInvestigationsResponseError = (getIncidentInvestigationsResponseDefault) & {
+  headers: Headers;
+};
+
+export type getIncidentInvestigationsResponse = (getIncidentInvestigationsResponseSuccess | getIncidentInvestigationsResponseError)
+
+export const getGetIncidentInvestigationsUrl = (incidentId: string,
+    params?: GetIncidentInvestigationsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/incidents/${incidentId}/investigations?${stringifiedParams}` : `/api/v1/incidents/${incidentId}/investigations`
+}
+
+/**
+ * @summary List currently authorized investigations requested by this subject
+ */
+export const getIncidentInvestigations = async (incidentId: string,
+    params?: GetIncidentInvestigationsParams, options?: RequestInit): Promise<getIncidentInvestigationsResponse> => {
+
+  const res = await fetch(getGetIncidentInvestigationsUrl(incidentId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getIncidentInvestigationsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getIncidentInvestigationsResponse
+}
+
+
+
 export type createInvestigationResponse202 = {
   data: InvestigationSuccessV2
   status: 202
@@ -3733,20 +3897,27 @@ export type getOverviewResponseError = (getOverviewResponseDefault) & {
 
 export type getOverviewResponse = (getOverviewResponseSuccess | getOverviewResponseError)
 
-export const getGetOverviewUrl = () => {
+export const getGetOverviewUrl = (params?: GetOverviewParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/v1/overview`
+  return stringifiedParams.length > 0 ? `/api/v1/overview?${stringifiedParams}` : `/api/v1/overview`
 }
 
 /**
  * @summary getOverview
  */
-export const getOverview = async ( options?: RequestInit): Promise<getOverviewResponse> => {
+export const getOverview = async (params?: GetOverviewParams, options?: RequestInit): Promise<getOverviewResponse> => {
 
-  const res = await fetch(getGetOverviewUrl(),
+  const res = await fetch(getGetOverviewUrl(params),
   {
     ...options,
     method: 'GET'
@@ -3787,6 +3958,14 @@ export const getGetResourcesUrl = (params?: GetResourcesParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["canonicalIds"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) => {
+        normalizedParams.append(key, v === null ? 'null' : String(v));
+      });
+      return;
+    }
 
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : String(value))

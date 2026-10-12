@@ -478,14 +478,51 @@
               "const": true
             },
             "sha256": {
-              "const": "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53"
+              "enum": [
+                "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53",
+                "e6ce7073f35889bc678443034169d4a64e94106442a5775fe3f59ca4ae6b66a4"
+              ]
+            },
+            "architecture": {
+              "enum": [
+                "arm64",
+                "amd64"
+              ]
             }
           },
           "required": [
             "enabled",
             "sha256"
           ],
-          "additionalProperties": false
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "architecture": {
+                    "const": "amd64"
+                  }
+                },
+                "required": [
+                  "architecture"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "sha256": {
+                    "const": "e6ce7073f35889bc678443034169d4a64e94106442a5775fe3f59ca4ae6b66a4"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "sha256": {
+                    "const": "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53"
+                  }
+                }
+              }
+            }
+          ]
         }
       },
       "required": [
@@ -496,164 +533,273 @@
       "additionalProperties": false
     },
     "sp06": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "const": true
-        },
-        "gatewayPort": {
-          "const": 8083
-        },
-        "policyName": {
-          "type": "string",
-          "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
-        },
-        "identitySecret": {
-          "type": "string",
-          "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
-        },
-        "modelKeySecret": {
-          "type": "string",
-          "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
-        },
-        "tenants": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "minItems": 1,
-          "maxItems": 20,
-          "uniqueItems": true
-        },
-        "modelCIDRs": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 4,
-            "maxLength": 50
-          },
-          "minItems": 1,
-          "maxItems": 20,
-          "uniqueItems": true
-        },
-        "modelPort": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 65535
-        },
-        "model": {
+      "oneOf": [
+        {
           "type": "object",
           "properties": {
-            "base_url": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 1024
+            "enabled": {
+              "type": "boolean",
+              "const": true
             },
-            "api_key_ref": {
-              "const": "secret://model/api-key"
+            "gatewayPort": {
+              "const": 8083
+            },
+            "policyName": {
+              "type": "string",
+              "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+            },
+            "identitySecret": {
+              "type": "string",
+              "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+            },
+            "modelKeySecret": {
+              "type": "string",
+              "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+            },
+            "tenants": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "minItems": 1,
+              "maxItems": 20,
+              "uniqueItems": true
+            },
+            "modelCIDRs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 50
+              },
+              "minItems": 1,
+              "maxItems": 20,
+              "uniqueItems": true
+            },
+            "modelPort": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
             },
             "model": {
-              "const": "llama3.1:8b-16k"
-            },
-            "timeout": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 120
-            },
-            "token_budget": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 8192
-            }
-          },
-          "required": [
-            "base_url",
-            "api_key_ref",
-            "model",
-            "timeout",
-            "token_budget"
-          ],
-          "additionalProperties": false
-        },
-        "budget": {
-          "allOf": [
-            {
-              "$ref": "https://ops.local/schemas/investigation-budget/v1"
-            },
-            {
+              "type": "object",
               "properties": {
-                "toolCalls": {
+                "base_url": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "api_key_ref": {
+                  "const": "secret://model/api-key"
+                },
+                "model": {
+                  "enum": [
+                    "llama3.1:8b-16k",
+                    "qwen2.5:1.5b"
+                  ]
+                },
+                "timeout": {
                   "type": "integer",
                   "minimum": 1,
-                  "maximum": 40
+                  "maximum": 120
                 },
-                "rawQueries": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 10
-                },
-                "resultBytes": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 41943040
-                },
-                "graphNodes": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 8000
-                },
-                "evidenceItems": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 4000
-                },
-                "modelRequests": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 8
-                },
-                "inputTokens": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 32768
-                },
-                "outputTokens": {
+                "token_budget": {
                   "type": "integer",
                   "minimum": 1,
                   "maximum": 8192
-                },
-                "modelCostMicros": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 0
                 }
-              }
+              },
+              "required": [
+                "base_url",
+                "api_key_ref",
+                "model",
+                "timeout",
+                "token_budget"
+              ],
+              "additionalProperties": false
+            },
+            "budget": {
+              "allOf": [
+                {
+                  "$ref": "https://ops.local/schemas/investigation-budget/v1"
+                },
+                {
+                  "properties": {
+                    "toolCalls": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 40
+                    },
+                    "rawQueries": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10
+                    },
+                    "resultBytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 41943040
+                    },
+                    "graphNodes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 8000
+                    },
+                    "evidenceItems": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 4000
+                    },
+                    "modelRequests": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 8
+                    },
+                    "inputTokens": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 32768
+                    },
+                    "outputTokens": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 8192
+                    },
+                    "modelCostMicros": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 0
+                    }
+                  }
+                }
+              ]
+            },
+            "modelNetworkMode": {
+              "type": "string",
+              "enum": [
+                "private",
+                "orbstack-host"
+              ]
+            },
+            "modelState": {
+              "const": "ready"
             }
-          ]
+          },
+          "required": [
+            "enabled",
+            "gatewayPort",
+            "policyName",
+            "identitySecret",
+            "modelKeySecret",
+            "tenants",
+            "modelCIDRs",
+            "modelPort",
+            "model",
+            "budget"
+          ],
+          "additionalProperties": false
         },
-        "modelNetworkMode": {
-          "type": "string",
-          "enum": [
-            "private",
-            "orbstack-host"
-          ]
+        {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "const": true
+            },
+            "gatewayPort": {
+              "const": 8083
+            },
+            "policyName": {
+              "type": "string",
+              "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+            },
+            "identitySecret": {
+              "type": "string",
+              "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$"
+            },
+            "tenants": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "minItems": 1,
+              "maxItems": 20,
+              "uniqueItems": true
+            },
+            "budget": {
+              "allOf": [
+                {
+                  "$ref": "https://ops.local/schemas/investigation-budget/v1"
+                },
+                {
+                  "properties": {
+                    "toolCalls": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 40
+                    },
+                    "rawQueries": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10
+                    },
+                    "resultBytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 41943040
+                    },
+                    "graphNodes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 8000
+                    },
+                    "evidenceItems": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 4000
+                    },
+                    "modelRequests": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 8
+                    },
+                    "inputTokens": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 32768
+                    },
+                    "outputTokens": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 8192
+                    },
+                    "modelCostMicros": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 0
+                    }
+                  }
+                }
+              ]
+            },
+            "modelState": {
+              "const": "pending"
+            }
+          },
+          "required": [
+            "enabled",
+            "gatewayPort",
+            "policyName",
+            "identitySecret",
+            "tenants",
+            "budget",
+            "modelState"
+          ],
+          "additionalProperties": false
         }
-      },
-      "required": [
-        "enabled",
-        "gatewayPort",
-        "policyName",
-        "identitySecret",
-        "modelKeySecret",
-        "tenants",
-        "modelCIDRs",
-        "modelPort",
-        "model",
-        "budget"
-      ],
-      "additionalProperties": false
+      ]
     },
     "workloadIdentity": {
       "type": "object",

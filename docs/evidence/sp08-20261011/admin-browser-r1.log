@@ -1,0 +1,40 @@
+
+Running 2 tests using 1 worker
+
+[1/2] tests/e2e/admin_recovery.spec.ts:5:1 › actual administrator draft conflict is recoverable without losing local edits
+  1) tests/e2e/admin_recovery.spec.ts:5:1 › actual administrator draft conflict is recoverable without losing local edits 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: page.waitForResponse: Target page, context or browser has been closed
+
+      102 |     })
+      103 |     .click();
+    > 104 |   const update = page.waitForResponse(
+          |                       ^
+      105 |     (r) =>
+      106 |       r.request().method() === "PATCH" &&
+      107 |       new URL(r.url()).pathname.endsWith("/registry-drafts/" + draft.draftId),
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/admin_recovery.spec.ts:104:23
+
+    Error: locator.click: Target page, context or browser has been closed
+    Call log:
+      - waiting for getByRole('button', { name: '按修订号更新草稿', exact: true })
+
+
+      109 |   await page
+      110 |     .getByRole("button", { name: "按修订号更新草稿", exact: true })
+    > 111 |     .click();
+          |      ^
+      112 |   const saved = await update;
+      113 |   expect(saved.status()).toBe(200);
+      114 |   expect((await saved.json()).data.revision).toBe(3);
+        at /data/ops-amd64-final-20261010/working-runtime/platform/web/tests/e2e/admin_recovery.spec.ts:111:6
+
+    Error Context: ../../../../ops-sp08-20261011/build/admin-browser-r1/admin_recovery-actual-admi-ef40f--without-losing-local-edits/error-context.md
+
+
+[2/2] tests/e2e/admin_recovery.spec.ts:137:1 › actual administration pages remain readable in desktop and narrow windows
+  1 failed
+    tests/e2e/admin_recovery.spec.ts:5:1 › actual administrator draft conflict is recoverable without losing local edits 
+  1 passed (3.1m)

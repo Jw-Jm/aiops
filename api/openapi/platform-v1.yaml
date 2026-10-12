@@ -1,9 +1,51 @@
 components:
   schemas:
+    AuthorizedClusterV1:
+      type: object
+      required: [clusterId, clusterUid, displayName]
+      properties:
+        clusterId: {type: string, format: uuid}
+        clusterUid: {type: string}
+        displayName: {type: string}
+    ResourceSummaryV1:
+      type: object
+      required: [total, byKind, byHealth]
+      properties:
+        total: {type: integer, minimum: 0}
+        byKind: {type: object, additionalProperties: {type: integer, minimum: 0}}
+        byHealth: {type: object, additionalProperties: {type: integer, minimum: 0}}
+    AuthSessionV1:
+      type: object
+      additionalProperties: false
+      required: [subject, tenantId, tenantIds, roles, clusterScopes, namespaceScopes, tokenExpiresAt, acr, authorizedClusters]
+      properties:
+        authorizedClusters: {type: array, items: {$ref: "#/components/schemas/AuthorizedClusterV1"}}
+        subject: {type: string}
+        tenantId: {type: string, format: uuid}
+        tenantIds: {type: array, items: {type: string, format: uuid}}
+        roles: {type: array, items: {type: string, enum: [operator, platform_admin]}}
+        clusterScopes: {type: array, items: {type: string, format: uuid}}
+        namespaceScopes:
+          type: array
+          items:
+            type: object
+            required: [clusterId, namespace]
+            properties:
+              clusterId: {type: string, format: uuid}
+              namespace: {type: string}
+        tokenExpiresAt: {type: string, format: date-time}
+        acr: {type: string}
+    AuthSessionSuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/AuthSessionV1'}
+        requestId: {type: string}
     ResourceGraphV2:
       type: object
       additionalProperties: false
       properties:
+        summary: {$ref: "#/components/schemas/ResourceSummaryV1"}
         schemaVersion:
           enum:
           - resource-graph/v2
@@ -1290,6 +1332,45 @@ components:
       - scopeType
       - expectedRevision
       type: object
+    RegistryDraft:
+      type: object
+      additionalProperties: false
+      required: [tenantId, draftId, kind, logicalName, revision, content, status, updatedBy, createdAt, updatedAt]
+      properties:
+        tenantId:
+          $ref: '#/components/schemas/Identifier'
+        draftId:
+          $ref: '#/components/schemas/Identifier'
+        kind:
+          type: string
+          enum: [policy, recipe, tool]
+        logicalName:
+          type: string
+        revision:
+          type: integer
+          minimum: 1
+        content:
+          type: object
+          additionalProperties: true
+        status:
+          type: string
+        updatedBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    RegistryDraftEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, requestId]
+      properties:
+        data:
+          $ref: '#/components/schemas/RegistryDraft'
+        requestId:
+          $ref: '#/components/schemas/Identifier'
     RegistryDraftCreateRequest:
       additionalProperties: false
       properties:
@@ -3335,6 +3416,16 @@ components:
         argsDigest:
           type: string
           pattern: ^sha256:[a-f0-9]{64}$
+        argsSummary:
+          type: object
+          description: Bounded safe scope and budget projection; raw queries and model prompts are omitted. Historical steps may have an empty summary.
+          maxProperties: 16
+          additionalProperties:
+            oneOf:
+            - type: string
+              maxLength: 1024
+            - type: number
+            - type: boolean
         state:
           enum:
           - running
@@ -3412,6 +3503,16 @@ components:
       - actionPlans
       - partial
       - degradedSources
+    InvestigationPageV2:
+      type: object
+      required: [data, meta, requestId]
+      properties:
+        data: {type: array, items: {$ref: '#/components/schemas/InvestigationJobV2'}}
+        meta:
+          type: object
+          properties:
+            nextCursor: {type: string, nullable: true}
+        requestId: {type: string}
     InvestigationSuccessV2:
       type: object
       properties:
@@ -4066,6 +4167,22 @@ info:
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 openapi: 3.1.0
 paths:
+  /api/v1/auth/session:
+    get:
+      operationId: getAuthSession
+      summary: Current verified identity and active platform grants; roles do not inherit.
+      tags: [Authentication]
+      responses:
+        '200':
+          description: Authenticated tenant session. Never cached.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AuthSessionSuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
   /api/v1/auth/step-up-sessions:
     post:
       operationId: createStepUpSession
@@ -4460,6 +4577,13 @@ paths:
     get:
       operationId: getPolicyBundles
       parameters:
+      - in: query
+        name: logicalName
+        description: Exact policy logical name; optional compatible filter for bounded impact previews.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
       - description: Opaque cursor for keyset pagination.
         in: query
         name: cursor
@@ -4593,6 +4717,32 @@ paths:
       - Admin
       x-idempotency: required
   /api/v1/admin/registry-drafts/{draftId}:
+    get:
+      operationId: getRegistryDraft
+      summary: Read current authorized draft for revision conflict recovery
+      tags:
+      - Admin
+      parameters:
+      - in: path
+        name: draftId
+        required: true
+        schema:
+          $ref: '#/components/schemas/Identifier'
+      responses:
+        '200':
+          description: Current persisted draft.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistryDraftEnvelope'
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      security:
+      - BearerAuth: []
     patch:
       operationId: updateRegistryDraft
       parameters:
@@ -5111,6 +5261,11 @@ paths:
     get:
       operationId: getAuditRecords
       parameters:
+      - in: query
+        name: verifyChain
+        description: Explicit bounded signed archive verification for the returned page; never inferred from record digest validity.
+        schema:
+          type: boolean
       - in: query
         name: subject
         schema:
@@ -5897,6 +6052,29 @@ paths:
       tags:
       - Evidence
   /api/v1/incidents/{incidentId}/investigations:
+    get:
+      operationId: getIncidentInvestigations
+      summary: List currently authorized investigations requested by this subject
+      tags: [Investigation]
+      security: [{BearerAuth: []}]
+      parameters:
+      - {in: path, name: incidentId, required: true, schema: {type: string, format: uuid}}
+      - {in: query, name: cursor, schema: {type: string}}
+      - {in: query, name: limit, schema: {type: integer, minimum: 1, maximum: 50}}
+      responses:
+        '200':
+          description: Authorized persistent investigation history
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InvestigationPageV2'}
+        default:
+          description: Unified API error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - {$ref: '#/components/schemas/ErrorEnvelope'}
+                - {$ref: '#/components/schemas/SP04ErrorEnvelopeV2'}
     post:
       operationId: createInvestigation
       parameters:
@@ -6375,6 +6553,11 @@ paths:
   /api/v1/overview:
     get:
       operationId: getOverview
+      parameters:
+      - in: query
+        name: clusterUid
+        required: false
+        schema: {type: string, minLength: 1}
       responses:
         '200':
           content:
@@ -6397,6 +6580,17 @@ paths:
     get:
       operationId: getResources
       parameters:
+      - in: query
+        name: canonicalIds
+        description: Resolve at most 50 exact resource identifiers within current authorization; this filter does not expand scope.
+        style: form
+        explode: true
+        schema:
+          type: array
+          maxItems: 50
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/CanonicalID'
       - in: query
         name: kind
         schema:
