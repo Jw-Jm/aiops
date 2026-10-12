@@ -1,3 +1,8 @@
+import {
+  ExecutionProfilePreview,
+  parseSignedProfile,
+} from "./ExecutionProfilePreview";
+import { PolicyImpactPreview, type ImpactReceipt } from "./PolicyImpactPreview";
 import { StepUpControl } from "../../auth/StepUpControl";
 import { RegistryEditor } from "./RegistryEditor";
 import { FullText } from "../../components/Details";
@@ -25,7 +30,6 @@ import {
   createExecutionProfile,
   retireExecutionProfile,
 } from "../../api/generated/platform";
-import type { PublishExecutionProfileRequest } from "../../api/generated/models";
 import { checked, requestOptions, ApiError } from "../../api/client";
 import { PageHeading } from "../../components/PageHeading";
 import { QueryState } from "../../components/QueryState";
@@ -53,7 +57,12 @@ export function AdminPage({
   const [draft, setDraft] = useState("");
   const [signer, setSigner] = useState("");
   const [signature, setSignature] = useState("");
+  const [publishReceipt, setPublishReceipt] = useState<ImpactReceipt>();
+  const publishStamp = JSON.stringify([draft, revision, signer, signature]);
+  const publishReady =
+    publishReceipt?.stamp === publishStamp && publishReceipt.expiresAt > now;
   const [content, setContent] = useState("");
+  const [profileReviewed, setProfileReviewed] = useState<string>();
   const cursor = url.get("cursor") || undefined;
   const query = useQuery({
     queryKey: ["admin", section, cursor],
@@ -116,8 +125,9 @@ export function AdminPage({
     onSuccess: () => void query.refetch(),
   });
   const publish = useMutation({
-    mutationFn: () =>
-      checked(
+    mutationFn: () => {
+      if (!publishReady) throw new Error("请重新读取并核对发布影响");
+      return checked(
         publishPolicyBundle(
           {
             draftId: draft,
@@ -127,18 +137,27 @@ export function AdminPage({
           },
           requestOptions(undefined, true),
         ),
-      ),
-    onSuccess: () => void query.refetch(),
+      );
+    },
+    onSuccess: () => {
+      setPublishReceipt(undefined);
+      void query.refetch();
+    },
   });
   const publishProfile = useMutation({
-    mutationFn: () =>
-      checked(
+    mutationFn: () => {
+      if (profileReviewed !== content) throw new Error("请先核对执行配置影响");
+      return checked(
         createExecutionProfile(
-          JSON.parse(content) as PublishExecutionProfileRequest,
+          parseSignedProfile(content),
           requestOptions(undefined, true),
         ),
-      ),
-    onSuccess: () => void query.refetch(),
+      );
+    },
+    onSuccess: () => {
+      setProfileReviewed(undefined);
+      void query.refetch();
+    },
   });
   const retire = useMutation({
     mutationFn: () =>
@@ -264,6 +283,37 @@ export function AdminPage({
           <h3>已选择配置</h3>
           <Details value={selected} />
           {section === "sources" && (
+            <>
+              <h4>来源变更影响范围</h4>
+              <Details
+                value={{
+                  scope: selected.dataScopeMapping,
+                  allowedSchemas: selected.allowedSchemas,
+                  backendLogicalId: selected.backendLogicalId,
+                }}
+              />
+              <p>
+                启停或回滚影响此来源后续采集与上述授权范围；既有 Evidence
+                与审计记录保留。
+              </p>
+            </>
+          )}
+          {section === "execution-profiles" && (
+            <>
+              <h4>执行配置作用域与引用</h4>
+              <Details
+                value={{
+                  scope: selected.scope ?? selected.allowedTargets,
+                  referenceCount: selected.referenceCount,
+                  referenceCountScope: selected.referenceCountScope,
+                }}
+              />
+              <p>
+                版本发布不替换既有版本；引用信息缺失不代表无人使用。退役时服务端仍校验实际引用和权限。
+              </p>
+            </>
+          )}
+          {section === "sources" && (
             <Space wrap className="status-note">
               <label>
                 已读取的修订号{" "}
@@ -360,8 +410,16 @@ export function AdminPage({
               onChange={(e) => setSignature(e.target.value)}
             />
           </div>
+          <PolicyImpactPreview
+            stamp={publishStamp}
+            draftId={draft}
+            expectedRevision={revision}
+            onReviewed={setPublishReceipt}
+          />
           <Button
-            disabled={!ready || !draft || !signer || !signature}
+            disabled={
+              !ready || !draft || !signer || !signature || !publishReady
+            }
             loading={publish.isPending}
             onClick={() => publish.mutate()}
           >
@@ -382,8 +440,12 @@ export function AdminPage({
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
+          <ExecutionProfilePreview
+            content={content}
+            onReviewed={setProfileReviewed}
+          />
           <Button
-            disabled={!ready || !content}
+            disabled={!ready || !content || profileReviewed !== content}
             loading={publishProfile.isPending}
             onClick={() => publishProfile.mutate()}
           >

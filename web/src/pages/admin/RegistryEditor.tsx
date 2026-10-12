@@ -1,3 +1,4 @@
+import { PolicyImpactPreview, type ImpactReceipt } from "./PolicyImpactPreview";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -41,9 +42,20 @@ export function RegistryEditor({
     useState<RegistryActivationRequest["scopeType"]>("tenant");
   const [clusterId, setClusterId] = useState("");
   const [namespace, setNamespace] = useState("");
-  const [activationRevision, setActivationRevision] = useState(0);
   const [targetVersion, setTargetVersion] = useState("");
   const [result, setResult] = useState<unknown>();
+  const [impactReceipt, setImpactReceipt] = useState<ImpactReceipt>();
+  const activationStamp = JSON.stringify([
+    selected?.logicalName,
+    selected?.versionId,
+    targetVersion,
+    scopeType,
+    clusterId,
+    namespace,
+  ]);
+  const impactReady =
+    impactReceipt?.stamp === activationStamp &&
+    impactReceipt.expiresAt > Date.now();
   const [reviewedMerge, setReviewedMerge] = useState(false);
   const currentDraft = useMutation({
     mutationFn: (id: string) => checked(getRegistryDraft(id, requestOptions())),
@@ -90,6 +102,8 @@ export function RegistryEditor({
   });
   const activated = useMutation({
     mutationFn: () => {
+      if (!impactReady || impactReceipt?.revision === undefined)
+        throw new Error("请重新读取并核对影响预览");
       const body: RegistryActivationRequest = {
         kind: "policy",
         logicalName: text(selected?.logicalName),
@@ -97,13 +111,14 @@ export function RegistryEditor({
         scopeType,
         clusterId: scopeType === "tenant" ? null : clusterId,
         namespace: scopeType === "namespace" ? namespace : undefined,
-        expectedRevision: activationRevision,
+        expectedRevision: impactReceipt.revision,
       };
       return checked(
         activateRegistryVersion(body, requestOptions(undefined, true)),
       );
     },
     onSuccess: (r) => {
+      setImpactReceipt(undefined);
       setResult(record(r).data);
       onChanged();
     },
@@ -269,12 +284,10 @@ export function RegistryEditor({
               value={namespace}
               onChange={(e) => setNamespace(e.target.value)}
             />
-            <InputNumber
-              aria-label="激活 expectedRevision"
-              min={0}
-              value={activationRevision}
-              onChange={(v) => setActivationRevision(v ?? 0)}
-            />
+            <p>
+              绑定修订号取自最新影响预览：
+              {impactReady ? impactReceipt?.revision : "尚未核对"}
+            </p>
             <Input
               aria-label="回滚目标 versionId"
               placeholder="留空激活选中版本；填写既有签名版本用于回滚"
@@ -282,10 +295,22 @@ export function RegistryEditor({
               onChange={(e) => setTargetVersion(e.target.value)}
             />
           </div>
+          <PolicyImpactPreview
+            stamp={activationStamp}
+            logicalName={text(selected.logicalName)}
+            versionId={targetVersion || text(selected.versionId)}
+            scope={{
+              type: scopeType,
+              clusterId: scopeType === "tenant" ? undefined : clusterId,
+              namespace: scopeType === "namespace" ? namespace : undefined,
+            }}
+            onReviewed={setImpactReceipt}
+          />
           <Space className="status-note">
             <Button
               disabled={
                 !ready ||
+                !impactReady ||
                 !selected.versionId ||
                 (scopeType !== "tenant" && !clusterId) ||
                 (scopeType === "namespace" && !namespace)
@@ -297,7 +322,13 @@ export function RegistryEditor({
             </Button>
             <Button
               danger
-              disabled={!ready || !selected.digest}
+              disabled={
+                !ready ||
+                !selected.digest ||
+                selected.retiredAt != null ||
+                (typeof selected.referenceCount === "number" &&
+                  selected.referenceCount > 0)
+              }
               loading={retired.isPending}
               onClick={() => retired.mutate()}
             >

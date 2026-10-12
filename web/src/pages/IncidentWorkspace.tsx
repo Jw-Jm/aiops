@@ -3,7 +3,7 @@ import { FaultSummary } from "../components/FaultSummary";
 import { RegionBoundary } from "../components/RegionBoundary";
 import { lazy, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Tabs, Button, Space, Table } from "antd";
+import { Tabs, Button, Space, Table, Select } from "antd";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   getIncident,
@@ -24,6 +24,11 @@ import { Status } from "../components/Status";
 import { record, list, text } from "../components/data";
 const GraphView = lazy(() =>
   import("../features/graph/GraphView").then((m) => ({ default: m.GraphView })),
+);
+const ResourceGraphExplorer = lazy(() =>
+  import("../features/graph/ResourceGraphExplorer").then((m) => ({
+    default: m.ResourceGraphExplorer,
+  })),
 );
 const RCAPanel = lazy(() =>
   import("../features/rca/RCAPanel").then((m) => ({ default: m.RCAPanel })),
@@ -218,22 +223,73 @@ export function IncidentWorkspace() {
                       key: "graph",
                       label: "诊断关系图",
                       children: (
-                        <QueryState
-                          loading={rca.isPending}
-                          error={rca.error}
-                          retry={() => void rca.refetch()}
-                        >
-                          <p className="status-note">
-                            此图展示该次根因分析记录的资源关系。请核对观测版本和新鲜度，历史关系可能已经变化。
-                          </p>
-                          <GraphView
-                            scopeKey={"incident:" + incidentId}
+                        <>
+                          <Select
+                            aria-label="图谱数据来源"
                             value={
-                              (rca.data as CurrentRCASuccessV2 | undefined)
-                                ?.data.revision.inputManifest.graph
+                              url.get("graphSource") === "current"
+                                ? "current"
+                                : "snapshot"
                             }
+                            onChange={(v) => {
+                              const n = new URLSearchParams(url);
+                              n.set("graphSource", v);
+                              setUrl(n);
+                            }}
+                            options={[
+                              {
+                                value: "snapshot",
+                                label: "此次 RCA 的冻结诊断快照",
+                              },
+                              {
+                                value: "current",
+                                label: "当前资源关系（独立查询）",
+                              },
+                            ]}
                           />
-                        </QueryState>
+                          {url.get("graphSource") === "current" ? (
+                            <>
+                              <p className="status-note">
+                                当前查询不修改冻结 RCA
+                                快照，也不表示原诊断已更新。
+                              </p>
+                              <ResourceGraphExplorer
+                                key={
+                                  url.get("graphRoot") ||
+                                  incident.resourceCanonicalId
+                                }
+                                canonicalId={
+                                  url.get("graphRoot") ||
+                                  incident.resourceCanonicalId
+                                }
+                              />
+                            </>
+                          ) : (
+                            <QueryState
+                              loading={rca.isPending}
+                              error={rca.error}
+                              retry={() => void rca.refetch()}
+                            >
+                              <p className="status-note">
+                                此图展示该次根因分析记录的资源关系。请核对观测版本和新鲜度，历史关系可能已经变化。
+                              </p>
+                              <GraphView
+                                expandLabel="查看该节点的当前关系"
+                                onExpand={(id) => {
+                                  const n = new URLSearchParams(url);
+                                  n.set("graphRoot", id);
+                                  n.set("graphSource", "current");
+                                  setUrl(n);
+                                }}
+                                scopeKey={"incident:" + incidentId}
+                                value={
+                                  (rca.data as CurrentRCASuccessV2 | undefined)
+                                    ?.data.revision.inputManifest.graph
+                                }
+                              />
+                            </QueryState>
+                          )}
+                        </>
                       ),
                     },
                     {

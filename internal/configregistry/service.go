@@ -336,6 +336,13 @@ func (service *Service) Retire(ctx context.Context, tx pgx.Tx, actor auth.Reques
 }
 
 func (service *Service) ListVersions(ctx context.Context, request auth.RequestContext, kind Kind) ([]PublishedVersion, error) {
+	return service.ListVersionsByName(ctx, request, kind, "")
+}
+
+func (service *Service) ListVersionsByName(ctx context.Context, request auth.RequestContext, kind Kind, logicalName string) ([]PublishedVersion, error) {
+	if logicalName != "" && !validLogicalName(logicalName) {
+		return nil, ErrInvalidInput
+	}
 	if !validKind(kind) || request.TenantID == uuid.Nil || request.Subject == "" || !auth.HasRole(auth.WithRequestContext(ctx, request), auth.PlatformAdmin) {
 		return nil, ErrUnauthorized
 	}
@@ -345,7 +352,7 @@ func (service *Service) ListVersions(ctx context.Context, request auth.RequestCo
 			return err
 		}
 		var err error
-		result, err = listVersions(ctx, tx, request.TenantID, kind)
+		result, err = listVersions(ctx, tx, request.TenantID, kind, logicalName)
 		if err != nil {
 			return err
 		}

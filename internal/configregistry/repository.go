@@ -53,11 +53,15 @@ func loadVersion(ctx context.Context, tx pgx.Tx, tenantID, versionID uuid.UUID, 
 	return value, nil
 }
 
-func listVersions(ctx context.Context, tx pgx.Tx, tenantID uuid.UUID, kind Kind) ([]PublishedVersion, error) {
+func listVersions(ctx context.Context, tx pgx.Tx, tenantID uuid.UUID, kind Kind, names ...string) ([]PublishedVersion, error) {
+	name := ""
+	if len(names) > 0 {
+		name = names[0]
+	}
 	rows, err := tx.Query(ctx, `SELECT tenant_id, version_id, draft_id, kind, logical_name, version_number, content,
 		digest, signature, signer_key_id, published_by, published_at, retired_at
-		FROM platform.registry_versions WHERE tenant_id = $1 AND kind = $2
-		ORDER BY logical_name, version_number DESC, version_id`, tenantID, kind)
+		FROM platform.registry_versions WHERE tenant_id = $1 AND kind = $2 AND ($3 = '' OR logical_name = $3)
+		ORDER BY logical_name, version_number DESC, version_id`, tenantID, kind, name)
 	if err != nil {
 		return nil, fmt.Errorf("list registry versions: %w", err)
 	}

@@ -83,6 +83,18 @@ export function stateLabel(value: string): string {
   return stateLabels[value] ?? value;
 }
 export const fieldLabels: Record<string, string> = {
+  currentVersion: "当前绑定版本",
+  currentRevision: "当前绑定修订号",
+  targetVersion: "目标版本",
+  targetDigest: "目标内容摘要",
+  referenceCountScope: "引用统计范围",
+  principal: "执行身份",
+  allowedTargets: "允许目标",
+  networkPolicyRef: "网络策略引用",
+  credentialRef: "凭据引用",
+  hostOnboardingRef: "主机登记引用",
+  toolImageDigest: "工具镜像摘要",
+  developmentFallback: "开发回退",
   argsSummary: "输入范围和预算",
   rawQueryOmitted: "已省略原始查询",
   rawPromptOmitted: "已省略原始模型输入",

@@ -4577,6 +4577,13 @@ paths:
     get:
       operationId: getPolicyBundles
       parameters:
+      - in: query
+        name: logicalName
+        description: Exact policy logical name; optional compatible filter for bounded impact previews.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
       - description: Opaque cursor for keyset pagination.
         in: query
         name: cursor

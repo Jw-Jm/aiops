@@ -63,7 +63,7 @@ func (h ConfigAdminHandlers) listVersions(w http.ResponseWriter, r *http.Request
 		writeConfigError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "a verified request context is required", false, "")
 		return
 	}
-	versions, err := h.service.ListVersions(r.Context(), request, kind)
+	versions, err := h.service.ListVersionsByName(r.Context(), request, kind, r.URL.Query().Get("logicalName"))
 	if err != nil {
 		writeConfigServiceError(w, err, request.RequestID)
 		return

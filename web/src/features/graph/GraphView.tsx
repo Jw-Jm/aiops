@@ -16,9 +16,17 @@ import { edgeExpired, graphWithinBudget, graphLayout } from "./layout";
 export function GraphView({
   value,
   scopeKey,
+  onExpand,
+  canExpand,
+  expanding = false,
+  expandLabel = "展开一层关系",
 }: {
   value: unknown;
   scopeKey: string;
+  onExpand?: (id: string) => void;
+  canExpand?: (id: string) => boolean;
+  expanding?: boolean;
+  expandLabel?: string;
 }) {
   const graph = value as DiagnosticGraphSnapshotV2 | undefined;
   const container = useRef<HTMLDivElement>(null);
@@ -360,6 +368,25 @@ export function GraphView({
             ),
           },
           { title: "类型", dataIndex: "kind" },
+          ...(onExpand
+            ? [
+                {
+                  title: "查询关系",
+                  render: (_: unknown, n: ResourceEntityV2) => (
+                    <Button
+                      loading={expanding}
+                      disabled={
+                        expanding ||
+                        (canExpand ? !canExpand(n.canonicalId) : false)
+                      }
+                      onClick={() => onExpand(n.canonicalId)}
+                    >
+                      {expandLabel}
+                    </Button>
+                  ),
+                },
+              ]
+            : []),
           {
             title: "完整标识",
             dataIndex: "canonicalId",
@@ -444,6 +471,19 @@ export function GraphView({
         <section className="section">
           <h3>已选节点 / 关系</h3>
           <Details value={selected} />
+          {onExpand && typeof record(selected).canonicalId === "string" && (
+            <Button
+              disabled={
+                expanding ||
+                (canExpand
+                  ? !canExpand(String(record(selected).canonicalId))
+                  : false)
+              }
+              onClick={() => onExpand(String(record(selected).canonicalId))}
+            >
+              {expandLabel}
+            </Button>
+          )}
         </section>
       )}
     </>

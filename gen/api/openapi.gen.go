@@ -3158,6 +3158,9 @@ type CreateLegalHolddefaultJSONResponseBody struct {
 
 // GetPolicyBundlesParams defines parameters for GetPolicyBundles.
 type GetPolicyBundlesParams struct {
+	// LogicalName Exact policy logical name; optional compatible filter for bounded impact previews.
+	LogicalName *string `form:"logicalName,omitempty" json:"logicalName,omitempty"`
+
 	// Cursor Opaque cursor for keyset pagination.
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
@@ -7776,6 +7779,19 @@ func (siw *ServerInterfaceWrapper) GetPolicyBundles(w http.ResponseWriter, r *ht
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetPolicyBundlesParams
+
+	// ------------- Optional query parameter "logicalName" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "logicalName", r.URL.Query(), &params.LogicalName, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "logicalName"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "logicalName", Err: err})
+		}
+		return
+	}
 
 	// ------------- Optional query parameter "cursor" -------------
 
