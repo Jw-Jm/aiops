@@ -113,7 +113,35 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		writeJSON(w, 200, map[string]any{"data": map[string]any{"enabled": h.Repository.Jobs.AssistantEnabled, "taskKinds": tasks, "catalog": catalog, "virtualization": "deferred", "runtimeAcceptance": "unverified"}, "requestId": actor.RequestID})
+		sources := []analytics.SourceCapability{}
+		sourceStatus := "cluster_not_selected"
+		if cluster := r.URL.Query().Get("clusterUid"); cluster != "" {
+			if !auth.HasRole(r.Context(), auth.Operator) {
+				fail(investigation.ErrDenied)
+				return
+			}
+			grant, err := (graph.Authorization{Pool: h.Repository.Pool}).Effective(r.Context(), actor.TenantID.String(), actor.Subject, cluster)
+			if err != nil {
+				fail(err)
+				return
+			}
+			j := investigation.Job{TenantID: actor.TenantID, Subject: actor.Subject, Scope: grant, Assistant: &investigation.AssistantTask{GrantSnapshotDigest: graph.ScopeDigest(grant)}}
+			sources, err = h.SP04.assistantSourceCapabilities(r.Context(), j)
+			sourceStatus = "available"
+			if err != nil {
+				sourceStatus = "unavailable"
+				sources = []analytics.SourceCapability{}
+			}
+		}
+		writeJSON(w, 200, map[string]any{"data": map[string]any{"enabled": h.Repository.Jobs.AssistantEnabled, "sourceCapabilities": sources, "sourceCapabilityStatus": sourceStatus, "taskKinds": tasks, "catalog": catalog, "virtualization": "deferred", "runtimeAcceptance": "unverified"}, "requestId": actor.RequestID})
+		return
+	}
+	if r.URL.Path == "/api/v1/assistant/legal-holds" {
+		h.legalHold(w, r, actor)
+		return
+	}
+	if r.URL.Path == "/api/v1/assistant/resources:interpret" {
+		h.interpret(w, r, actor)
 		return
 	}
 	if r.URL.Path == "/api/v1/assistant/resources:resolve" {
@@ -146,6 +174,9 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			c := assistant.Conversation{TenantID: actor.TenantID, OwnerSubject: actor.Subject, Title: q.Title, Mode: q.Mode, AuthorizationDomain: q.AuthorizationDomain, ClusterUID: q.ClusterUID, Binding: assistant.ConversationBinding{Timezone: q.Timezone, Selection: analytics.Selection{Namespaces: q.NamespaceSelection, IncludeClusterScoped: q.IncludeClusterScoped, CanonicalIDs: q.ResourceCanonicalIDs}}}
+			if q.Mode == "data_query" {
+				c.Binding.TimeRange = q.TimeRange
+			}
 			if q.IncidentID != nil {
 				c.Binding.IncidentID = *q.IncidentID
 			}
@@ -216,6 +247,25 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		default:
 			writeSP04Error(w, 405, "INVALID_ARGUMENT", "method unavailable", false, actor.RequestID)
 		}
+		return
+	}
+	if len(parts) == 3 && parts[0] == "turns" && parts[2] == "formal-references" && r.Method == "GET" {
+		turn, err := uuid.Parse(parts[1])
+		if err != nil {
+			fail(investigation.ErrInvalid)
+			return
+		}
+		index, err := strconv.Atoi(r.URL.Query().Get("index"))
+		if err != nil {
+			fail(investigation.ErrInvalid)
+			return
+		}
+		out, err := h.Repository.FormalReference(r.Context(), actor.TenantID, turn, actor.Subject, index)
+		if err != nil {
+			fail(err)
+			return
+		}
+		writeJSON(w, 200, map[string]any{"data": out, "requestId": actor.RequestID})
 		return
 	}
 	if len(parts) == 2 && parts[0] == "turns" {
@@ -290,6 +340,10 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				writeJSON(w, 200, map[string]any{"data": out, "requestId": actor.RequestID})
 				return
 			}
+		}
+		if len(parts) == 3 && parts[2] == "binding" {
+			h.rebind(w, r, actor, id)
+			return
 		}
 		if len(parts) == 3 && parts[2] == "messages" {
 			if r.Method == "POST" {

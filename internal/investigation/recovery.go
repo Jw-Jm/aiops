@@ -13,14 +13,30 @@ import (
 
 func authorizeResult(ctx context.Context, tx pgx.Tx, j Job, b []byte) error {
 	var v struct {
-		EvidenceRefs    []string    `json:"evidenceRefs"`
-		QueryResultRefs []uuid.UUID `json:"queryResultRefs"`
+		EntityRefs      []string          `json:"entityRefs"`
+		EvidenceRefs    []string          `json:"evidenceRefs"`
+		QueryResultRefs []uuid.UUID       `json:"queryResultRefs"`
+		FormalRefs      []FormalReference `json:"formalRefs"`
 		Data            struct {
-			QueryResultRefs []uuid.UUID `json:"queryResultRefs"`
+			QueryResultRefs []uuid.UUID       `json:"queryResultRefs"`
+			FormalRefs      []FormalReference `json:"formalReferences"`
 		} `json:"data"`
 	}
 	if json.Unmarshal(b, &v) != nil {
 		return ErrInvalid
+	}
+	if j.Assistant != nil {
+		for _, id := range v.EntityRefs {
+			var ns string
+			if tx.QueryRow(ctx, `SELECT namespace FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, j.TenantID, id).Scan(&ns) != nil || !j.Scope.Allows(id, ns) {
+				return ErrDenied
+			}
+		}
+	}
+	for _, ref := range append(v.FormalRefs, v.Data.FormalRefs...) {
+		if err := AuthorizeFormalReferenceTx(ctx, tx, j, ref); err != nil {
+			return err
+		}
 	}
 	for _, ref := range v.EvidenceRefs {
 		id, err := uuid.Parse(ref)

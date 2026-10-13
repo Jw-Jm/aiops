@@ -16,6 +16,7 @@ var (
 )
 
 type ConversationBinding struct {
+	TimeRange       *TimeRange          `json:"timeRange,omitempty"`
 	GrantSnapshot   graph.Scope         `json:"grantSnapshot"`
 	Selection       analytics.Selection `json:"selection"`
 	ExecutionScope  graph.Scope         `json:"executionScope"`
@@ -58,18 +59,21 @@ type Turn struct {
 	ConversationRevision int64           `json:"conversationRevision"`
 }
 type SubmitMessage struct {
+	ReferentCanonicalID          string     `json:"referentCanonicalId,omitempty"`
 	Message                      string     `json:"message"`
 	ExpectedConversationRevision int64      `json:"expectedConversationRevision"`
 	ParentTurnID                 *uuid.UUID `json:"parentTurnId,omitempty"`
 	ClarificationID              *uuid.UUID `json:"clarificationId,omitempty"`
 }
 type TurnInput struct {
-	SchemaVersion         string              `json:"schemaVersion"`
-	RequestedAt           time.Time           `json:"requestedAt,omitzero"`
-	Message               string              `json:"message"`
-	Binding               ConversationBinding `json:"binding"`
-	History               []Message           `json:"history"`
-	HistoryManifestDigest string              `json:"historyManifestDigest"`
-	ParentTurnID          *uuid.UUID          `json:"parentTurnId,omitempty"`
-	ClarificationID       *uuid.UUID          `json:"clarificationId,omitempty"`
+	RequestedTimeRange    *analytics.QueryTimeRange `json:"requestedTimeRange,omitempty"`
+	ReferenceResolution   *ReferenceResolution      `json:"referenceResolution,omitempty"`
+	SchemaVersion         string                    `json:"schemaVersion"`
+	RequestedAt           time.Time                 `json:"requestedAt,omitzero"`
+	Message               string                    `json:"message"`
+	Binding               ConversationBinding       `json:"binding"`
+	History               []Message                 `json:"history"`
+	HistoryManifestDigest string                    `json:"historyManifestDigest"`
+	ParentTurnID          *uuid.UUID                `json:"parentTurnId,omitempty"`
+	ClarificationID       *uuid.UUID                `json:"clarificationId,omitempty"`
 }

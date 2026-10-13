@@ -101,7 +101,12 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		return p, ErrInvalid
 	}
 	trend := intent.Operation == "trend"
-	compare := intent.Operation == "compare"
+	compare := intent.Operation == "compare" || intent.Operation == "compare_percent"
+	average := intent.Operation == "average"
+	samples := intent.Operation == "samples"
+	if samples && (len(intent.Dimensions) != 0 || len(intent.Sort) != 0 || intent.Limit > 20) {
+		return p, ErrInvalid
+	}
 	if trend {
 		if intent.StepSeconds < 60 || intent.StepSeconds > 86400 || intent.TimeRange.From.Nanosecond() != 0 || intent.TimeRange.To.Nanosecond() != 0 || len(intent.Dimensions) != 1 || intent.Dimensions[0] != "time" || intent.TimeRange.To.Sub(intent.TimeRange.From)%(time.Duration(intent.StepSeconds)*time.Second) != 0 || int(intent.TimeRange.To.Sub(intent.TimeRange.From)/time.Second)/intent.StepSeconds+1 > intent.Limit {
 			return p, ErrInvalid
@@ -135,7 +140,11 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 	if qualification == nil || qualification.MaxWindowSeconds < 1 || intent.TimeRange.To.Sub(intent.TimeRange.From) > time.Duration(qualification.MaxWindowSeconds)*time.Second || intent.TimeRange.From.Before(qualification.CoverageFrom) || intent.TimeRange.To.After(qualification.CoverageTo) {
 		return p, ErrSource
 	}
-	if (trend || compare) && intent.TimeRange.From.Add(-5*time.Minute).Before(qualification.CoverageFrom) {
+	lookback := 5 * time.Minute
+	if trend && (dataset.ID == "metrics.pod-restarts" || dataset.ID == "logs.records") {
+		lookback = time.Duration(intent.StepSeconds) * time.Second
+	}
+	if (trend || compare) && intent.TimeRange.From.Add(-lookback).Before(qualification.CoverageFrom) {
 		return p, ErrSource
 	}
 	if compare && (intent.ComparisonTimeRange.From.Add(-5*time.Minute).Before(qualification.CoverageFrom) || intent.ComparisonTimeRange.To.After(qualification.CoverageTo)) {
@@ -263,14 +272,21 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		}
 		selectors = append(selectors, "_time:["+intent.TimeRange.From.UTC().Format(time.RFC3339Nano)+","+intent.TimeRange.To.UTC().Format(time.RFC3339Nano)+")")
 		query = strings.Join(selectors, " AND ") + " | stats "
-		if dimension != "" {
+		if dimension != "" && !trend && !compare {
 			query += "by (" + dimension + ") "
 		}
 		query += "count() as value"
 		path = "/select/logsql/stats_query"
+		if samples {
+			query = strings.Join(selectors, " AND ") + " | sort by (_time) desc | limit " + strconv.Itoa(intent.Limit+1)
+			path = "/select/logsql/query"
+		}
 	} else {
 		selector := "{" + strings.Join(selectors, ",") + "}"
 		seconds := int64(intent.TimeRange.To.Sub(intent.TimeRange.From).Seconds())
+		if trend && dataset.ID == "metrics.pod-restarts" {
+			seconds = int64(intent.StepSeconds)
+		}
 		if seconds < 1 {
 			return p, ErrInvalid
 		}
@@ -284,16 +300,23 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		case "metrics.pod-cpu":
 			selector = strings.TrimSuffix(selector, "}") + `,container!="",container!="POD"}`
 			query = "sum" + group + "(avg_over_time(rate(container_cpu_usage_seconds_total" + selector + "[5m])[" + strconv.FormatInt(seconds, 10) + "s:30s]))"
+			if trend {
+				query = "sum(rate(container_cpu_usage_seconds_total" + selector + "[5m]))"
+			}
 		case "metrics.pod-memory":
 			metric := "container_memory_working_set_bytes" + strings.TrimSuffix(selector, "}") + `,container!="",container!="POD"}`
 			if trend || compare {
 				metric = "last_over_time(" + metric + "[5m])"
+			} else if average {
+				metric = "avg_over_time(" + metric + "[" + strconv.FormatInt(seconds, 10) + "s])"
 			}
 			query = "sum" + group + "(" + metric + ")"
 		case "metrics.pod-phase":
 			metric := "kube_pod_status_phase" + selector
 			if trend || compare {
 				query = "sum(last_over_time(" + metric + "[5m]) == bool 1)"
+			} else if average {
+				query = "sum" + group + "(avg_over_time(" + metric + "[" + strconv.FormatInt(seconds, 10) + "s]))"
 			} else {
 				query = "sum" + group + "(" + metric + " == 1)"
 			}
@@ -301,6 +324,8 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 			metric := "kube_node_status_condition" + strings.TrimSuffix(selector, "}") + `,condition="Ready",status="true"}`
 			if trend || compare {
 				query = "sum(last_over_time(" + metric + "[5m]) == bool 1)"
+			} else if average {
+				query = "sum(avg_over_time(" + metric + "[" + strconv.FormatInt(seconds, 10) + "s]))"
 			} else {
 				query = "sum(" + metric + " == 1)"
 			}
@@ -308,7 +333,7 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 			return p, ErrUnsupported
 		}
 	}
-	if trend {
+	if trend && !logs {
 		path = "/api/v1/query_range"
 	}
 	order := Sort{Field: dataset.Metric, Direction: "desc"}
@@ -334,8 +359,14 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 }
 
 func (v *Victoria) Execute(ctx context.Context, p VictoriaPlan) (QueryResult, error) {
-	if p.intent.Operation == "compare" {
+	if p.intent.Operation == "compare" || p.intent.Operation == "compare_percent" {
 		return v.executeComparison(ctx, p)
+	}
+	if p.intent.Operation == "trend" && v.binding.SourceType == "victorialogs" {
+		return v.executeLogTrend(ctx, p)
+	}
+	if p.intent.Operation == "samples" {
+		return v.executeLogSamples(ctx, p)
 	}
 	if p.digest == "" || !p.qualification.VerifiedUntil.After(time.Now()) || v.authorize(ctx, v.binding) != nil {
 		return QueryResult{}, ErrDenied
@@ -398,6 +429,9 @@ func (v *Victoria) Execute(ctx context.Context, p VictoriaPlan) (QueryResult, er
 		return QueryResult{}, ErrSource
 	}
 	out := QueryResult{TimeRange: copyQueryTimeRange(p.intent.TimeRange), SchemaVersion: "query-result/v1", DatasetID: p.intent.DatasetID, PlanDigest: p.digest, CatalogDigest: p.catalogDigest, ScopeDigest: graph.ScopeDigest(p.scope), Status: "complete", Exact: true, Dimension: p.dimension, Unit: p.unit, Rows: []Row{}, SnapshotReadAt: time.Now().UTC(), Freshness: "fresh", Warnings: []string{}, DegradedSources: []string{}, SourceManifest: &SourceManifest{v.binding.SourceID, v.binding.Revision, evidence.BindingScopeDigest(v.binding), graph.ScopeDigest(p.qualification), graph.ScopeDigest(p.query), p.qualification.DatasetID + "/v1", p.intent.TimeRange.From, p.intent.TimeRange.To}}
+	if p.intent.Operation == "average" {
+		out.SourceManifest.TemplateVersion = p.intent.DatasetID + "-average/v1"
+	}
 	seen := map[string]bool{}
 	if p.intent.Operation == "trend" {
 		out.StepSeconds = p.intent.StepSeconds

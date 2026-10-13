@@ -26,12 +26,13 @@ var ErrScopeUnverified = errors.New("SOURCE_SCOPE_UNVERIFIED")
 var ErrBudget = errors.New("BUDGET_EXHAUSTED")
 var ErrArgument = errors.New("INVALID_ARGUMENT")
 var labelName = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
-var sensitive = regexp.MustCompile(`(?i)(bearer\s+)[^\s"\\]+|((?:password|passwd|token|secret|api[_-]?key)\s*[=:]\s*)[^\s,;"\\]+|-----BEGIN [^-]*PRIVATE KEY-----[\s\S]*?-----END [^-]*PRIVATE KEY-----`)
+var sensitive = regexp.MustCompile(`(?i)(bearer\s+)[^\s"\\]+|((?:password|passwd|(?:access|refresh|id|session)[_-]?token|token|secret|authorization|api[_-]?key)\s*[=:]\s*)[^\s,;"\\]+|-----BEGIN [^-]*PRIVATE KEY-----[\s\S]*?-----END [^-]*PRIVATE KEY-----`)
 
-var quotedSensitive = regexp.MustCompile(`(?i)(?:password|passwd|token|secret|api[_-]?key)["' ]*[:=]["' ]*[^\s,;"']+`)
+var quotedSensitive = regexp.MustCompile(`(?i)(?:password|passwd|(?:access|refresh|id|session)[_-]?token|token|secret|authorization|api[_-]?key)["' ]*[:=]["' ]*[^\s,;"']+`)
+var logURLCredential = regexp.MustCompile(`(?i)(https?://)[^\s/:@]+:[^\s/@]+@`)
 
 func Redact(raw string) string {
-	return quotedSensitive.ReplaceAllString(sensitive.ReplaceAllString(raw, "[REDACTED]"), "[REDACTED]")
+	return logURLCredential.ReplaceAllString(quotedSensitive.ReplaceAllString(sensitive.ReplaceAllString(raw, "[REDACTED]"), "[REDACTED]"), "${1}[REDACTED]@")
 }
 func Digest(body []byte) string {
 	sum := sha256.Sum256(body)

@@ -62,7 +62,7 @@ func authorizeConversation(ctx context.Context, tx pgx.Tx, c Conversation) (grap
 	if err != nil {
 		return grant, investigation.ErrDenied
 	}
-	// Scope can be re-bound only by an explicit new conversation. A revoked or
+	// Rebinding is explicit and stays within this frozen grant. A revoked or
 	// modified grant invalidates old prompt history rather than leaking its text.
 	if graph.ScopeDigest(grant) != graph.ScopeDigest(c.Binding.GrantSnapshot) || !investigation.ScopeSubset(grant, c.Binding.ExecutionScope) {
 		return grant, investigation.ErrDenied
@@ -118,6 +118,15 @@ func (r Repository) Create(ctx context.Context, c Conversation, keys ...Creation
 	}
 	if _, err := time.LoadLocation(c.Binding.Timezone); err != nil {
 		return c, investigation.ErrInvalid
+	}
+	if w := c.Binding.TimeRange; w != nil {
+		if c.Mode != "data_query" || w.From.IsZero() || !w.To.After(w.From) || w.To.Sub(w.From) > 31*24*time.Hour || w.To.After(time.Now().Add(time.Minute)) || w.Timezone != c.Binding.Timezone {
+			return c, investigation.ErrInvalid
+		}
+		copy := *w
+		copy.From = copy.From.UTC()
+		copy.To = copy.To.UTC()
+		c.Binding.TimeRange = &copy
 	}
 	if c.AuthorizationDomain == "audit" {
 		if c.Mode != "data_query" || c.ClusterUID != "" || c.Binding.IncidentID != uuid.Nil || c.Binding.ResourceContext != nil || len(c.Binding.Selection.Namespaces) > 0 || len(c.Binding.Selection.CanonicalIDs) > 0 || c.Binding.Selection.IncludeClusterScoped {
@@ -232,6 +241,12 @@ func (r Repository) Get(ctx context.Context, tenant, id uuid.UUID, subject strin
 		if err != nil {
 			return err
 		}
+		if _, err := investigation.AssistantReadJobTx(ctx, tx, c.TenantID, c.OwnerSubject, c.ConversationID, turn.TurnID, c.Binding.ExecutionScope); err != nil {
+			if errors.Is(err, investigation.ErrDenied) {
+				return nil
+			}
+			return err
+		}
 		if len(turn.Answer) > 0 {
 			if err := authorizeTurnAnswer(ctx, tx, c, turn.TurnID, turn.Answer); err != nil {
 				if !errors.Is(err, investigation.ErrResultExpired) {
@@ -292,13 +307,32 @@ func messages(ctx context.Context, tx pgx.Tx, c Conversation, limit int, cursors
 	for i, j := 0, len(out)-1; i < j; i, j = i+1, j-1 {
 		out[i], out[j] = out[j], out[i]
 	}
+	filtered := []Message{}
+	deniedTurns := map[uuid.UUID]bool{}
 	for _, m := range out {
+		if _, err := investigation.AssistantReadJobTx(ctx, tx, c.TenantID, c.OwnerSubject, c.ConversationID, m.TurnID, c.Binding.ExecutionScope); err != nil {
+			if errors.Is(err, investigation.ErrDenied) {
+				deniedTurns[m.TurnID] = true
+				continue
+			}
+			return nil, err
+		}
 		if m.Role == "assistant" {
 			if err := authorizeTurnAnswer(ctx, tx, c, m.TurnID, m.Content); err != nil {
+				if errors.Is(err, investigation.ErrDenied) {
+					deniedTurns[m.TurnID] = true
+					continue
+				}
 				return nil, err
 			}
 		}
 	}
+	for _, m := range out {
+		if !deniedTurns[m.TurnID] {
+			filtered = append(filtered, m)
+		}
+	}
+	out = filtered
 	return out, nil
 }
 func (r Repository) Messages(ctx context.Context, tenant, id uuid.UUID, subject string) ([]Message, error) {
@@ -429,7 +463,44 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 		if err != nil {
 			return err
 		}
-		input := TurnInput{SchemaVersion: "assistant-input/v1", RequestedAt: time.Now().UTC(), Message: tools.RedactText(q.Message), Binding: c.Binding, History: history, HistoryManifestDigest: graph.ScopeDigest(history), ParentTurnID: q.ParentTurnID, ClarificationID: q.ClarificationID}
+		referenceResolution, err := ResolveReference(q.Message, q.ReferentCanonicalID, c.Binding, history)
+		if err != nil {
+			return err
+		}
+		requestedAt := time.Now().UTC()
+		requestedWindow, err := ResolveTimeWindow(q.Message, requestedAt, c.Binding.Timezone)
+		if err != nil {
+			return err
+		}
+		if c.Mode == "data_query" && c.Binding.TimeRange != nil {
+			window := c.Binding.TimeRange
+			if requestedWindow != nil && (!requestedWindow.From.Equal(window.From) || !requestedWindow.To.Equal(window.To)) {
+				return ErrStale
+			}
+			requestedWindow = &analytics.QueryTimeRange{From: window.From, To: window.To, Timezone: window.Timezone}
+		}
+		if c.Mode == "data_query" && requestedWindow == nil {
+			// Inherit only an explicitly frozen prior turn window, already authorized
+			// through the same retained history. "Now" never inherits old observations.
+			if !strings.Contains(q.Message, "现在") && !strings.Contains(strings.ToLower(q.Message), "now") {
+				for i := len(history) - 1; i >= 0; i-- {
+					if history[i].Role != "assistant" {
+						continue
+					}
+					var priorInput []byte
+					if tx.QueryRow(ctx, `SELECT input FROM investigation.assistant_turns WHERE tenant_id=$1 AND turn_id=$2`, tenant, history[i].TurnID).Scan(&priorInput) != nil {
+						return investigation.ErrDenied
+					}
+					var previous TurnInput
+					if json.Unmarshal(priorInput, &previous) != nil {
+						return investigation.ErrInvalid
+					}
+					requestedWindow = previous.RequestedTimeRange
+					break
+				}
+			}
+		}
+		input := TurnInput{RequestedTimeRange: requestedWindow, ReferenceResolution: referenceResolution, SchemaVersion: "assistant-input/v1", RequestedAt: requestedAt, Message: tools.RedactText(q.Message), Binding: c.Binding, History: history, HistoryManifestDigest: graph.ScopeDigest(history), ParentTurnID: q.ParentTurnID, ClarificationID: q.ClarificationID}
 		inputRaw := raw(input)
 		if len(inputRaw) > 48<<10 {
 			return investigation.ErrBudget
@@ -635,9 +706,9 @@ func (r Repository) Events(ctx context.Context, tenant, id uuid.UUID, subject st
 			return err
 		}
 		if after > maxSeq {
-			return investigation.ErrInvalid
+			return errors.New("CURSOR_EXPIRED")
 		}
-		rows, err := tx.Query(ctx, `SELECT event_seq,turn_id,type,payload,occurred_at FROM investigation.assistant_events WHERE tenant_id=$1 AND conversation_id=$2 AND event_seq>$3 ORDER BY event_seq LIMIT 64`, tenant, id, after)
+		rows, err := tx.Query(ctx, `SELECT event_seq,COALESCE(turn_id,'00000000-0000-0000-0000-000000000000'::uuid),type,payload,occurred_at FROM investigation.assistant_events WHERE tenant_id=$1 AND conversation_id=$2 AND event_seq>$3 ORDER BY event_seq LIMIT 64`, tenant, id, after)
 		if err != nil {
 			return err
 		}
@@ -655,6 +726,17 @@ func (r Repository) Events(ctx context.Context, tenant, id uuid.UUID, subject st
 			return err
 		}
 		for index, e := range out {
+			if e.TurnID != uuid.Nil {
+				if _, err := investigation.AssistantReadJobTx(ctx, tx, c.TenantID, c.OwnerSubject, c.ConversationID, e.TurnID, c.Binding.ExecutionScope); err != nil {
+					if !errors.Is(err, investigation.ErrDenied) {
+						return err
+					}
+					out[index].Type = "turn.out_of_scope"
+					out[index].Payload = raw(map[string]string{"errorCode": "HISTORY_OUT_OF_SCOPE"})
+					continue
+				}
+			}
+
 			var v struct {
 				Result json.RawMessage `json:"result"`
 			}

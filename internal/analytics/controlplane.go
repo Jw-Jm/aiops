@@ -3,12 +3,15 @@ package analytics
 import (
 	"context"
 	"encoding/json"
+	"math"
 	"slices"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"ops-platform/internal/contract"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/persistence"
 )
@@ -140,6 +143,8 @@ func (e ControlPlaneExecutor) Execute(ctx context.Context, p ControlPlanePlan) (
 		return out, ErrDenied
 	}
 	var base string
+	suffix := aggregateSuffix
+	derived := false
 	switch p.queryID {
 	case "findings.occurrences/v1":
 		base = findingsBase
@@ -147,6 +152,14 @@ func (e ControlPlaneExecutor) Execute(ctx context.Context, p ControlPlanePlan) (
 		base = incidentsBase
 	case "executions.records/v1":
 		base = executionsBase
+	case "incidents.recovery-duration/v1":
+		base = strings.Replace(incidentsBase, "i.created_at AS event_time", "i.resolved_at AS event_time, CASE WHEN i.started_at IS NOT NULL AND i.resolved_at>=i.started_at THEN extract(epoch FROM (i.resolved_at-i.started_at))*1000 ELSE NULL END AS sample", 1) + " AND i.state IN ('resolved','closed')"
+		suffix = recoverySuffix
+		derived = true
+	case "executions.success-rate/v1":
+		base = executionsBase + " AND e.state IN ('succeeded','failed')"
+		suffix = successSuffix
+		derived = true
 	case "audit.events/v1":
 		base = auditBase
 	default:
@@ -173,7 +186,7 @@ func (e ControlPlaneExecutor) Execute(ctx context.Context, p ControlPlanePlan) (
 			resources = []string{}
 		}
 		args := []any{tenant, p.scope.Cluster, namespaces, p.scope.ClusterScoped, resources, p.subject, p.filters["namespace"], p.filters["state"], p.filters["severity"], p.filters["operation"], p.filters["subject"], p.dimension, p.intent.TimeRange.Timezone, p.intent.TimeRange.From, p.intent.TimeRange.To}
-		rows, err := tx.Query(bounded, "WITH scoped AS ("+base+aggregateSuffix, args...)
+		rows, err := tx.Query(bounded, "WITH scoped AS ("+base+suffix, args...)
 		if err != nil {
 			return err
 		}
@@ -188,7 +201,7 @@ func (e ControlPlaneExecutor) Execute(ctx context.Context, p ControlPlanePlan) (
 				rows.Close()
 				return err
 			}
-			if row.Value < 0 || omitted < 0 || snapshot == "" {
+			if math.IsNaN(row.Value) || math.IsInf(row.Value, 0) || row.Value < 0 || omitted < 0 || snapshot == "" {
 				rows.Close()
 				return ErrSource
 			}
@@ -219,11 +232,18 @@ func (e ControlPlaneExecutor) Execute(ctx context.Context, p ControlPlanePlan) (
 			out.Warnings = append(out.Warnings, "event_time_unreliable_or_legacy_schema")
 		}
 		if p.dimension == "" && len(out.Rows) == 0 {
-			if missing > 0 {
+			if missing > 0 || derived {
+				out.Exact = false
+				if derived {
+					out.Warnings = append(out.Warnings, "no_valid_samples")
+				}
 				out.Status = "no_data"
 			} else {
 				out.Rows = []Row{{Value: 0}}
 			}
+		}
+		if derived && len(out.Rows) == 0 {
+			out.Status, out.Exact = "no_data", false
 		}
 		sort.Slice(out.Rows, func(i, j int) bool {
 			a, b := out.Rows[i], out.Rows[j]
@@ -246,6 +266,9 @@ func (e ControlPlaneExecutor) Execute(ctx context.Context, p ControlPlanePlan) (
 	})
 	if err != nil {
 		return QueryResult{}, err
+	}
+	if contract.Validate("https://ops.local/schemas/query-result/v1", rawResult(out)) != nil {
+		return QueryResult{}, ErrSource
 	}
 	return out, nil
 }

@@ -157,6 +157,9 @@ func CatalogFor(schema, task, domain, version string) ([]Definition, error) {
 		names = append(names, "describe_analysis_dataset", "execute_analysis_query")
 	} else if domain == "operational" && (task == "incident_followup" || task == "resource_troubleshooting") {
 		names = append(names, "resolve_resources", "resource_findings")
+		if task == "incident_followup" {
+			names = append(names, "get_formal_references")
+		}
 		if task == "resource_troubleshooting" {
 			names = append(names, "get_resource_investigation_context")
 		}

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Alert, Descriptions, Table, Tag, Typography } from "antd";
+import { Alert, Descriptions, Table, Tag, Typography, List, Space } from "antd";
 import { checked, requestOptions } from "../../api/client";
 import { getAssistantQueryResult } from "../../api/generated/platform";
 import type { AssistantAnswerV1 } from "../../api/generated/models";
@@ -58,7 +58,27 @@ export function QueryResultView({
             <QueryDayTrend rows={result.rows} unit={result.unit} />
           )}
           {result.dimension === "time" && <QueryTimeTrend result={result} />}
-          {result.truncated && <Tag color="orange">分组截断</Tag>}
+          {result.truncated && <Tag color="orange">结果截断</Tag>}
+          {result.samples && (
+            <>
+              <Alert type="info" title="脱敏日志样例；样例数不代表日志总量。" />
+              <List
+                dataSource={result.samples}
+                renderItem={(sample) => (
+                  <List.Item>
+                    <Space orientation="vertical">
+                      <Typography.Text>
+                        {sample.timestamp} · {sample.level}
+                      </Typography.Text>
+                      <Typography.Paragraph style={{ whiteSpace: "pre-wrap" }}>
+                        {sample.message}
+                      </Typography.Paragraph>
+                    </Space>
+                  </List.Item>
+                )}
+              />
+            </>
+          )}
           {result.status === "no_data" || result.status === "degraded" ? (
             <Alert
               type="warning"
@@ -129,7 +149,7 @@ export function QueryResultView({
                     {
                       key: "comparison",
                       label: "对照时间窗",
-                      children: `${result.comparisonTimeRange.from} ～ ${result.comparisonTimeRange.to} (${result.comparisonTimeRange.timezone})；比较窗口末端的 gauge 快照，包含显式 5 分钟回看，不是窗口平均值。`,
+                      children: `${result.comparisonTimeRange.from} ～ ${result.comparisonTimeRange.to} (${result.comparisonTimeRange.timezone})；内存/状态比较窗口末端，CPU 比较窗口平均 rate，重启/日志比较窗口增量。百分比以非零基线计算；缺失不会补零。`,
                     },
                   ]
                 : []),

@@ -20,4 +20,6 @@ export const AssistantQueryResultV1DatasetId = {
   'metricspod-phase': 'metrics.pod-phase',
   'metricsnode-ready': 'metrics.node-ready',
   logsrecords: 'logs.records',
+  'incidentsrecovery-duration': 'incidents.recovery-duration',
+  'executionssuccess-rate': 'executions.success-rate',
 } as const;

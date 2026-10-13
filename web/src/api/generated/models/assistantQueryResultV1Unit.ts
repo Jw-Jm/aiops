@@ -19,4 +19,5 @@ export const AssistantQueryResultV1Unit = {
   cores: 'cores',
   bytes: 'bytes',
   logs: 'logs',
+  percent: 'percent',
 } as const;

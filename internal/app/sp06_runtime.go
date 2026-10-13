@@ -414,13 +414,23 @@ func StartSP06Worker(ctx context.Context, pool *pgxpool.Pool) (func(), error) {
 	wg.Go(func() {
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
+		lastCleanup := time.Time{}
 		for {
 			select {
 			case <-workerCtx.Done():
 				return
 			case <-ticker.C:
 			}
+			cleanupDue := time.Since(lastCleanup) >= time.Minute
+			if cleanupDue {
+				lastCleanup = time.Now()
+			}
 			for _, tenant := range c.Tenants {
+				if cleanupDue {
+					if _, err := (assistant.Repository{Pool: pool}).Cleanup(workerCtx, tenant, 100); err != nil {
+						slog.Error("assistant retention cleanup unavailable")
+					}
+				}
 				if c.Assistant != nil && c.Assistant.Enabled {
 					err := persistence.WithTenantTx(workerCtx, pool, tenant, func(tx pgx.Tx) error {
 						_, err := tx.Exec(workerCtx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,$2,$3,'assistant-tools/v1',clock_timestamp()+interval '15 seconds') ON CONFLICT(tenant_id,worker_id) DO UPDATE SET model_profile_version=EXCLUDED.model_profile_version,catalog_version=EXCLUDED.catalog_version,expires_at=EXCLUDED.expires_at`, tenant, "sp06-dispatcher:"+c.InvestigatorEndpoint, c.Assistant.ModelProfileVersion)

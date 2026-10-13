@@ -1,3 +1,5 @@
+import { LegalHoldControl } from "../features/assistant/LegalHoldControl";
+import { BindingEditor } from "../features/assistant/BindingEditor";
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -26,6 +28,7 @@ import {
   listAssistantConversations,
   listAssistantMessages,
   resolveAssistantResource,
+  interpretAssistantSymptom,
   submitAssistantMessage,
 } from "../api/generated/platform";
 import type {
@@ -97,6 +100,7 @@ export function AssistantPage() {
     new Date().toISOString().slice(0, 16),
   );
   const [message, setMessage] = useState("");
+  const [referent, setReferent] = useState<string>();
   const [listCursor, setListCursor] = useState<string>();
   const [messageCursor, setMessageCursor] = useState<string>();
   const [error, setError] = useState<Error>();
@@ -105,17 +109,41 @@ export function AssistantPage() {
   useEffect(() => {
     setTurn(undefined);
     setMessage("");
+    setReferent(undefined);
     setError(undefined);
     setMessageCursor(undefined);
   }, [scopeKey, id]);
   useEffect(() => {
     setListCursor(undefined);
   }, [scopeKey]);
-  const capabilities = useQuery({
-    queryKey: ["assistant", scopeKey, "capabilities"],
+  const conversation = useQuery({
+    queryKey: ["assistant", scopeKey, id, "conversation"],
+    enabled: !!id,
     queryFn: ({ signal }) =>
-      checked(getAssistantCapabilities(requestOptions(signal))),
+      checked(getAssistantConversation(id!, requestOptions(signal))),
   });
+  const capabilityCluster = conversation.data?.data.clusterUid || cluster;
+  const capabilityDomain =
+    conversation.data?.data.authorizationDomain || domain;
+  const capabilities = useQuery({
+    queryKey: [
+      "assistant",
+      scopeKey,
+      "capabilities",
+      capabilityCluster,
+      capabilityDomain,
+    ],
+    queryFn: ({ signal }) =>
+      checked(
+        getAssistantCapabilities(
+          capabilityDomain === "operational" && capabilityCluster
+            ? { clusterUid: capabilityCluster }
+            : {},
+          requestOptions(signal),
+        ),
+      ),
+  });
+  const sourceCapabilities = capabilities.data?.data.sourceCapabilities || [];
   const visibleDatasets = capabilities.data?.data.catalog.datasets;
   const taskKinds = capabilities.data?.data.taskKinds || [];
   const requestedTask =
@@ -132,6 +160,10 @@ export function AssistantPage() {
       "过去七天的 Finding 有多少？按天统计，并说明时间是否可靠。",
     "incidents.records": "过去七天新增多少 Incident？按当前状态分组。",
     "executions.records": "过去七天我提交的执行任务有多少？按状态分组。",
+    "incidents.recovery-duration":
+      "过去七天已恢复 Incident 的平均恢复时长是多少？说明可靠时间与缺失。",
+    "executions.success-rate":
+      "过去七天本人执行成功率是多少？明确成功和失败分母，排除未知和取消。",
     "audit.events": "过去七天的平台审计事件有多少？按操作类型分组。",
   };
   const conversations = useQuery({
@@ -143,12 +175,6 @@ export function AssistantPage() {
           requestOptions(signal),
         ),
       ),
-  });
-  const conversation = useQuery({
-    queryKey: ["assistant", scopeKey, id, "conversation"],
-    enabled: !!id,
-    queryFn: ({ signal }) =>
-      checked(getAssistantConversation(id!, requestOptions(signal))),
   });
   const messages = useQuery({
     queryKey: ["assistant", scopeKey, id, "messages", messageCursor],
@@ -261,11 +287,13 @@ export function AssistantPage() {
             expectedConversationRevision: conversation.data!.data.revision,
             ...(active ? { parentTurnId: active.turnId } : {}),
             ...(clarification ? { clarificationId: clarification } : {}),
+            ...(referent ? { referentCanonicalId: referent } : {}),
           },
           requestOptions(undefined, true),
         ),
       );
       setTurn(out.data);
+      setReferent(undefined);
       setMessage("");
       setMessageCursor(undefined);
     });
@@ -291,6 +319,7 @@ export function AssistantPage() {
           description="当前环境需要先完成模型 Profile 和 Worker 能力准入。"
         />
       )}
+      {session?.roles.includes("platform_admin") && <LegalHoldControl />}
       <Row gutter={16}>
         <Col xs={24} lg={7}>
           <Card
@@ -523,6 +552,36 @@ export function AssistantPage() {
                       maxLength={4000}
                     />
                     {!url.get("incidentId") && (
+                      <Button
+                        disabled={!symptom || busy}
+                        onClick={() =>
+                          void mutate(async () => {
+                            const response = await checked(
+                              interpretAssistantSymptom(
+                                { symptom },
+                                requestOptions(),
+                              ),
+                            );
+                            const intent = response.data;
+                            if (intent.selector.kind)
+                              setTargetKind(intent.selector.kind);
+                            if (intent.selector.name)
+                              setTargetName(intent.selector.name);
+                            if (intent.selector.namespace)
+                              setNamespace(intent.selector.namespace);
+                            setSelectedTarget(undefined);
+                            setResolution(undefined);
+                            if (intent.status === "clarification")
+                              throw new Error(
+                                `请明确补充目标：${intent.missingFields.join("、")}；症状本身不能确定资源身份。`,
+                              );
+                          })
+                        }
+                      >
+                        从症状识别目标，再查找并确认身份
+                      </Button>
+                    )}
+                    {!url.get("incidentId") && (
                       <>
                         <Typography.Text>
                           资源调查时间（最长 60 分钟）
@@ -592,11 +651,58 @@ export function AssistantPage() {
                 error={messages.error || conversation.error}
                 retry={() => void reload()}
               >
+                {conversation.data?.data.authorizationDomain ===
+                  "operational" && (
+                  <Alert
+                    type={
+                      capabilities.data?.data.sourceCapabilityStatus ===
+                      "available"
+                        ? "info"
+                        : "warning"
+                    }
+                    title="当前来源能力"
+                    description={
+                      sourceCapabilities.length
+                        ? sourceCapabilities
+                            .map(
+                              (source) =>
+                                `${String(source.datasetId)} / ${String(source.operation)} · ${String(source.collectorVersion)} · 覆盖 ${String(source.coverageFrom)} ～ ${String(source.coverageTo)}`,
+                            )
+                            .join("；")
+                        : "当前没有可用的指标/日志分析准入证明，或 Worker 不可用；目录存在不代表来源可查询。"
+                    }
+                  />
+                )}
                 {conversation.data && (
                   <ConversationContext
                     binding={conversation.data.data.binding}
                     domain={conversation.data.data.authorizationDomain}
                     cluster={conversation.data.data.clusterUid}
+                  />
+                )}
+                {conversation.data && (
+                  <BindingEditor
+                    key={id}
+                    conversation={conversation.data.data}
+                    running={Boolean(running)}
+                    onChanged={() => {
+                      setTurn(undefined);
+                      setMessageCursor(undefined);
+                      setReferent(undefined);
+                    }}
+                  />
+                )}
+                {active?.answer?.clarification?.missingFields.includes(
+                  "referentCanonicalId",
+                ) && (
+                  <Select
+                    aria-label="确认历史资源指代"
+                    placeholder="选择本轮指代的已验证资源"
+                    value={referent}
+                    onChange={setReferent}
+                    options={active.answer.clarification.candidates.map(
+                      (value) => ({ value, label: value }),
+                    )}
                   />
                 )}
                 <Space>
@@ -633,6 +739,7 @@ export function AssistantPage() {
                         ) : (
                           <DiagnosisAnswer
                             answer={item.content as AssistantAnswerV1}
+                            turnId={item.turnId}
                           />
                         )}
                       </Card>

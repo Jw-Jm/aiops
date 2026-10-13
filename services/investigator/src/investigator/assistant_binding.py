@@ -12,7 +12,8 @@ change tenant, scope, task, domain, credentials, endpoint, model or tool catalog
 For data_query describe the allowed dataset and submit a bounded QueryIntent.
 Resolve relative dates using the platform-generated requestedAt in the assistant
 context and binding.timezone. Yesterday means that timezone's complete previous
-calendar day; never use the model's clock. If the reference time or timezone is
+calendar day; never use the model's clock. If requestedTimeRange is present,
+use its exact bounds and timezone for historical queries; it is server-resolved. If the reference time or timezone is
 missing, ask for an explicit interval. Preserve the declared interval on follow-up
 unless the user explicitly requests a different one; now requires a fresh read.
 The server computes every number, ordering, comparison and unit. Reference only
@@ -20,9 +21,16 @@ queryResultRefs and fact IDs from successful committed tools; do not invent valu
 For resource_troubleshooting use the real resource context and bound identities.
 Do not create a placeholder incident or inherit a replacement resource's old UID.
 Relationships show dependency or impact, not causation. Diagnosis is a hypothesis:
-record supports, conflicts, missingEvidence and nextChecks. Evidence references
+record supports, conflicts, missingEvidence and nextChecks. faultChain links use
+only committed relationReferences with their exact relationDigest; every link is
+a hypothesis and must name missing causal evidence. For incident_followup read
+get_formal_references and cite exact version/digest; historical is not current.
+On a follow-up asking to check missing evidence, perform fresh exposed read-only
+tools within the frozen window and explain remaining gaps. Evidence references
 must come from evidenceRefs, never findingId, entityId, incidentId or sourceEventId.
 Missing, stale, unavailable or partial observations do not prove normality or zero.
+The platform referenceResolution is the only resolution of pronouns such as it or 它.
+Use its canonicalId when resolved; never select another entity from prose.
 If parameters or identities are ambiguous return clarification with bounded options.
 If a dataset or capability is unavailable return unsupported and explain the gap.
 Never execute commands, mutate incidents, confirm RCA, disclose secrets, or produce
@@ -50,9 +58,15 @@ def output_schema():
 def output_schema_for_steps(steps, task_kind):
     """Provider constraints use committed manifests, never user text or a model call."""
     schema=output_schema()
-    queries=set();facts=set();evidence=set();entities=set()
+    queries=set();facts=set();evidence=set();entities=set();formal={};relations={}
     def prior(answer):
         if not isinstance(answer,dict):return
+        for ref in answer.get("formalRefs",[]):
+            if isinstance(ref,dict):
+                frozen=copy.deepcopy(ref);frozen.setdefault("actionPlanId",None)
+                formal[json.dumps(frozen,sort_keys=True)]=frozen
+        for link in answer.get("faultChain",[]):
+            if isinstance(link,dict) and link.get("relationDigest"):relations[link["relationDigest"]]=link
         queries.update(str(ref) for ref in answer.get("queryResultRefs",[]))
         entities.update(str(ref) for ref in answer.get("entityRefs",[]))
         evidence.update(str(ref) for ref in answer.get("evidenceRefs",[]))
@@ -65,6 +79,14 @@ def output_schema_for_steps(steps, task_kind):
         if not isinstance(data,dict):continue
         evidence.update(str(ref) for ref in result.get("evidenceRefs",[]))
         tool=step.get("toolName")
+        if tool=="get_formal_references":
+            for ref in data.get("formalReferences",[]):
+                if isinstance(ref,dict):
+                    frozen=copy.deepcopy(ref);frozen.setdefault("actionPlanId",None)
+                    formal[json.dumps(frozen,sort_keys=True)]=frozen
+        if tool in ("get_dependencies","get_impact_scope","get_resource_context"):
+            for link in data.get("relationReferences",[]):
+                if isinstance(link,dict) and link.get("relationDigest"):relations[link["relationDigest"]]=link
         identities=[]
         if tool in ("get_resource_context","get_resource_health","query_kubernetes","get_dependencies","get_impact_scope"):
             identities=data.get("nodes",[])
@@ -87,6 +109,16 @@ def output_schema_for_steps(steps, task_kind):
     elif task_kind in ("resource_troubleshooting","incident_followup"):kinds.append("diagnosis")
     props["answerKind"]["enum"]=kinds
     if task_kind=="data_query":props["hypotheses"]["maxItems"]=0
+    if task_kind!="incident_followup" or not formal:props["formalRefs"]["maxItems"]=0
+    else:props["formalRefs"]["items"]["enum"]=list(formal.values())
+    if task_kind=="data_query" or not relations:props["faultChain"]["maxItems"]=0
+    else:
+        link=props["faultChain"]["items"]["properties"]
+        for key in ("from","to","kind","relationDigest"):
+            link[key]["enum"]=sorted({r[key] for r in relations.values() if isinstance(r.get(key),str)})
+        for key in ("supports","conflicts"):
+            if evidence:link[key]["items"]["enum"]=sorted(evidence)
+            else:link[key]["maxItems"]=0
     for key in ("supports","conflicts"):
         refs=props["hypotheses"]["items"]["properties"][key]
         if evidence:refs["items"]["enum"]=sorted(evidence)

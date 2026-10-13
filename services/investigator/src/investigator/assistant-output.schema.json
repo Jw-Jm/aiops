@@ -224,6 +224,130 @@
           "type": "null"
         }
       ]
+    },
+    "formalRefs": {
+      "type": "array",
+      "maxItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "rca",
+              "action_plan"
+            ]
+          },
+          "incidentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "actionPlanId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "contentDigest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "kind",
+          "incidentId",
+          "revision",
+          "contentDigest"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "faultChain": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "to": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "kind": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "relationDigest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "assessment": {
+            "const": "hypothesis"
+          },
+          "supports": {
+            "type": "array",
+            "maxItems": 20,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "conflicts": {
+            "type": "array",
+            "maxItems": 20,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "missingEvidence": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          },
+          "nextChecks": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "kind",
+          "relationDigest",
+          "assessment",
+          "supports",
+          "conflicts",
+          "missingEvidence",
+          "nextChecks"
+        ]
+      }
     }
   },
   "required": [
@@ -242,6 +366,8 @@
     "asOf",
     "partial",
     "hypotheses",
-    "clarification"
+    "clarification",
+    "formalRefs",
+    "faultChain"
   ]
 }

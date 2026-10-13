@@ -193,63 +193,7 @@
       "templateVersion": "metrics.pod-restarts/v1",
       "metric": "restart_increase",
       "unit": "restarts",
-      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
-      "dimensions": [
-        "namespace",
-        "uid"
-      ],
-      "filters": [
-        "namespace"
-      ],
-      "requiredFilters": [],
-      "healthValues": [],
-      "kinds": [],
-      "clusterScopedKinds": [],
-      "maxGroups": 50,
-      "historySupported": true,
-      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
-      "operations": [
-        "aggregate"
-      ]
-    },
-    {
-      "id": "metrics.pod-cpu",
-      "name": "Pod CPU 平均使用",
-      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
-      "authorizationDomain": "operational",
-      "source": "victoriametrics",
-      "templateVersion": "metrics.pod-cpu/v1",
-      "metric": "cpu_cores",
-      "unit": "cores",
-      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
-      "dimensions": [
-        "namespace",
-        "uid"
-      ],
-      "filters": [
-        "namespace"
-      ],
-      "requiredFilters": [],
-      "healthValues": [],
-      "kinds": [],
-      "clusterScopedKinds": [],
-      "maxGroups": 50,
-      "historySupported": true,
-      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
-      "operations": [
-        "aggregate"
-      ]
-    },
-    {
-      "id": "metrics.pod-memory",
-      "name": "Pod 工作集内存",
-      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
-      "authorizationDomain": "operational",
-      "source": "victoriametrics",
-      "templateVersion": "metrics.pod-memory/v1",
-      "metric": "memory_bytes",
-      "unit": "bytes",
-      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
       "dimensions": [
         "namespace",
         "uid",
@@ -269,7 +213,75 @@
       "operations": [
         "aggregate",
         "trend",
-        "compare"
+        "compare",
+        "compare_percent"
+      ]
+    },
+    {
+      "id": "metrics.pod-cpu",
+      "name": "Pod CPU 平均使用",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+      "authorizationDomain": "operational",
+      "source": "victoriametrics",
+      "templateVersion": "metrics.pod-cpu/v1",
+      "metric": "cpu_cores",
+      "unit": "cores",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
+      "dimensions": [
+        "namespace",
+        "uid",
+        "time",
+        "comparison"
+      ],
+      "filters": [
+        "namespace"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+      "operations": [
+        "aggregate",
+        "trend",
+        "compare",
+        "compare_percent"
+      ]
+    },
+    {
+      "id": "metrics.pod-memory",
+      "name": "Pod 工作集内存",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+      "authorizationDomain": "operational",
+      "source": "victoriametrics",
+      "templateVersion": "metrics.pod-memory/v1",
+      "metric": "memory_bytes",
+      "unit": "bytes",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+      "dimensions": [
+        "namespace",
+        "uid",
+        "time",
+        "comparison"
+      ],
+      "filters": [
+        "namespace"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+      "operations": [
+        "aggregate",
+        "trend",
+        "compare",
+        "compare_percent",
+        "average"
       ]
     },
     {
@@ -281,7 +293,7 @@
       "templateVersion": "metrics.pod-phase/v1",
       "metric": "phase_count",
       "unit": "resources",
-      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
       "dimensions": [
         "namespace",
         "phase",
@@ -301,7 +313,9 @@
       "operations": [
         "aggregate",
         "trend",
-        "compare"
+        "compare",
+        "compare_percent",
+        "average"
       ]
     },
     {
@@ -313,7 +327,7 @@
       "templateVersion": "metrics.node-ready/v1",
       "metric": "ready_count",
       "unit": "resources",
-      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
       "dimensions": [
         "time",
         "comparison"
@@ -331,7 +345,9 @@
       "operations": [
         "aggregate",
         "trend",
-        "compare"
+        "compare",
+        "compare_percent",
+        "average"
       ]
     },
     {
@@ -343,10 +359,12 @@
       "templateVersion": "logs.records/v1",
       "metric": "log_count",
       "unit": "logs",
-      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 samples 最多返回20条脱敏样例；value仅表示本次返回样例数，不是日志总数；样例始终partial。",
       "dimensions": [
         "namespace",
-        "level"
+        "level",
+        "time",
+        "comparison"
       ],
       "filters": [
         "namespace",
@@ -359,6 +377,63 @@
       "maxGroups": 50,
       "historySupported": true,
       "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+      "operations": [
+        "aggregate",
+        "trend",
+        "compare",
+        "compare_percent",
+        "samples"
+      ]
+    },
+    {
+      "id": "incidents.recovery-duration",
+      "name": "Incident 平均恢复时长",
+      "description": "按 resolved_at 窗口，resolved/closed 且 started_at 与 resolved_at 可靠且顺序有效；平均恢复毫秒，不使用 created_at 替代。",
+      "authorizationDomain": "operational",
+      "source": "postgresql",
+      "templateVersion": "incidents.recovery-duration/v1",
+      "metric": "mean_recovery_ms",
+      "unit": "milliseconds",
+      "calculation": "按 resolved_at 窗口，resolved/closed 且 started_at 与 resolved_at 可靠且顺序有效；平均恢复毫秒，不使用 created_at 替代。",
+      "dimensions": [
+        "namespace",
+        "day"
+      ],
+      "filters": [
+        "namespace"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "只有有效样本的计算结果可为零；无有效样本返回 no_data。",
+      "operations": [
+        "aggregate"
+      ]
+    },
+    {
+      "id": "executions.success-rate",
+      "name": "本人执行成功率",
+      "description": "窗口内本人当前授权目标的 succeeded/(succeeded+failed)*100；queued/running/cancelled/execution_unknown 不纳入分母；无分母返回 no_data。",
+      "authorizationDomain": "operational",
+      "source": "postgresql",
+      "templateVersion": "executions.success-rate/v1",
+      "metric": "success_percent",
+      "unit": "percent",
+      "calculation": "窗口内本人当前授权目标的 succeeded/(succeeded+failed)*100；queued/running/cancelled/execution_unknown 不纳入分母；无分母返回 no_data。",
+      "dimensions": [
+        "day"
+      ],
+      "filters": [],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "只有有效样本的计算结果可为零；无有效样本返回 no_data。",
       "operations": [
         "aggregate"
       ]

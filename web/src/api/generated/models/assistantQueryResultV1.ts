@@ -10,12 +10,13 @@ import type { AssistantQueryResultV1Dimension } from './assistantQueryResultV1Di
 import type { AssistantQueryResultV1Freshness } from './assistantQueryResultV1Freshness.ts';
 import type { AssistantQueryResultV1GraphRevision } from './assistantQueryResultV1GraphRevision.ts';
 import type { AssistantQueryResultV1RowsItem } from './assistantQueryResultV1RowsItem.ts';
+import type { AssistantQueryResultV1SamplesItem } from './assistantQueryResultV1SamplesItem.ts';
 import type { AssistantQueryResultV1SourceManifest } from './assistantQueryResultV1SourceManifest.ts';
 import type { AssistantQueryResultV1Status } from './assistantQueryResultV1Status.ts';
 import type { AssistantQueryResultV1TimeRange } from './assistantQueryResultV1TimeRange.ts';
 import type { AssistantQueryResultV1Unit } from './assistantQueryResultV1Unit.ts';
 
-export type AssistantQueryResultV1 = unknown & unknown & unknown & unknown & {
+export type AssistantQueryResultV1 = unknown & unknown & unknown & unknown & unknown & unknown & unknown & {
   schemaVersion: 'query-result/v1';
   datasetId: AssistantQueryResultV1DatasetId;
   /** @pattern ^sha256:[a-f0-9]{64}$ */
@@ -60,4 +61,6 @@ export type AssistantQueryResultV1 = unknown & unknown & unknown & unknown & {
      */
   stepSeconds?: number;
   comparisonTimeRange?: AssistantQueryResultV1ComparisonTimeRange;
+  /** @maxItems 20 */
+  samples?: AssistantQueryResultV1SamplesItem[];
 };

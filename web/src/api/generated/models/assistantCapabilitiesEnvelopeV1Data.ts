@@ -5,13 +5,14 @@
  * OpenAPI spec version: 1.4.0
  */
 import type { AssistantCapabilitiesEnvelopeV1DataCatalog } from './assistantCapabilitiesEnvelopeV1DataCatalog.ts';
-import type { AssistantCapabilitiesEnvelopeV1DataTaskKindsItem } from './assistantCapabilitiesEnvelopeV1DataTaskKindsItem.ts';
+import type { AssistantCapabilitiesEnvelopeV1DataSourceCapabilitiesItem } from './assistantCapabilitiesEnvelopeV1DataSourceCapabilitiesItem.ts';
 
 export type AssistantCapabilitiesEnvelopeV1Data = {
   enabled: boolean;
   catalog: AssistantCapabilitiesEnvelopeV1DataCatalog;
   virtualization: string;
   runtimeAcceptance: string;
-  /** @maxItems 3 */
-  taskKinds: AssistantCapabilitiesEnvelopeV1DataTaskKindsItem[];
+  taskKinds: string[];
+  sourceCapabilityStatus: string;
+  sourceCapabilities: AssistantCapabilitiesEnvelopeV1DataSourceCapabilitiesItem[];
 };

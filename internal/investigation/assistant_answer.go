@@ -12,6 +12,7 @@ import (
 	"ops-platform/internal/contract"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/resource"
 )
 
 type FactRef struct {
@@ -48,22 +49,24 @@ type Clarification struct {
 	Candidates      []string  `json:"candidates"`
 }
 type AssistantAnswer struct {
-	SchemaVersion   string         `json:"schemaVersion"`
-	AnswerKind      string         `json:"answerKind"`
-	Summary         string         `json:"summary"`
-	FactRefs        []FactRef      `json:"factRefs"`
-	QueryResultRefs []uuid.UUID    `json:"queryResultRefs"`
-	EvidenceRefs    []string       `json:"evidenceRefs"`
-	EntityRefs      []string       `json:"entityRefs"`
-	MissingEvidence []string       `json:"missingEvidence"`
-	ScopeSummary    string         `json:"scopeSummary"`
-	AsOf            time.Time      `json:"asOf"`
-	Partial         bool           `json:"partial"`
-	DegradedSources []string       `json:"degradedSources"`
-	Warnings        []string       `json:"warnings"`
-	Hypotheses      []Hypothesis   `json:"hypotheses"`
-	NextChecks      []string       `json:"nextChecks"`
-	Clarification   *Clarification `json:"clarification,omitempty"`
+	FormalRefs      []FormalReference `json:"formalRefs,omitempty"`
+	FaultChain      []ChainLink       `json:"faultChain,omitempty"`
+	SchemaVersion   string            `json:"schemaVersion"`
+	AnswerKind      string            `json:"answerKind"`
+	Summary         string            `json:"summary"`
+	FactRefs        []FactRef         `json:"factRefs"`
+	QueryResultRefs []uuid.UUID       `json:"queryResultRefs"`
+	EvidenceRefs    []string          `json:"evidenceRefs"`
+	EntityRefs      []string          `json:"entityRefs"`
+	MissingEvidence []string          `json:"missingEvidence"`
+	ScopeSummary    string            `json:"scopeSummary"`
+	AsOf            time.Time         `json:"asOf"`
+	Partial         bool              `json:"partial"`
+	DegradedSources []string          `json:"degradedSources"`
+	Warnings        []string          `json:"warnings"`
+	Hypotheses      []Hypothesis      `json:"hypotheses"`
+	NextChecks      []string          `json:"nextChecks"`
+	Clarification   *Clarification    `json:"clarification,omitempty"`
 }
 
 // Query result IDs are platform generated. Facts locate immutable, server computed
@@ -142,8 +145,12 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 		return nil, ErrInvalid
 	}
 	availableEvidence := map[string]bool{}
+	availableFormal := map[string]bool{}
+	availableRelations := map[string]resource.Relation{}
 	availableQueries := map[uuid.UUID]bool{}
 	availableEntities := map[string]bool{}
+	freshReferences := map[string]bool{}
+	var historicalAsOf time.Time
 	rows, err := tx.Query(ctx, `SELECT tool_name,result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND state='succeeded' AND tool_name<>'model'`, j.TenantID, j.JobID)
 	if err != nil {
 		return nil, err
@@ -177,14 +184,36 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 			rows.Close()
 			return nil, ErrInvalid
 		}
+		for digest, relation := range committedAssistantRelations(toolName, envelope.Data) {
+			availableRelations[digest] = relation
+			freshReferences[digest] = true
+		}
+		if toolName == "get_formal_references" {
+			var formal struct {
+				Refs []FormalReference `json:"formalReferences"`
+			}
+			if json.Unmarshal(envelope.Data, &formal) != nil {
+				rows.Close()
+				return nil, ErrInvalid
+			}
+			for _, ref := range formal.Refs {
+				availableFormal[graph.ScopeDigest(ref)] = true
+				freshReferences[graph.ScopeDigest(ref)] = true
+			}
+		}
 		for _, id := range committedAssistantEntities(toolName, envelope.Data) {
 			availableEntities[id] = true
+			if toolName != "get_assistant_context" {
+				freshReferences[id] = true
+			}
 		}
 		for _, ref := range v.EvidenceRefs {
 			availableEvidence[ref] = true
+			freshReferences[ref] = true
 		}
 		for _, ref := range v.Data.QueryResultRefs {
 			availableQueries[ref] = true
+			freshReferences[ref.String()] = true
 		}
 		if v.Tool == "get_assistant_context" {
 			for _, m := range v.Data.History {
@@ -195,6 +224,15 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 				if json.Unmarshal(m.Content, &prior) != nil {
 					rows.Close()
 					return nil, ErrInvalid
+				}
+				if prior.AsOf.After(historicalAsOf) {
+					historicalAsOf = prior.AsOf
+				}
+				for _, ref := range prior.FormalRefs {
+					availableFormal[graph.ScopeDigest(ref)] = true
+				}
+				for _, link := range prior.FaultChain {
+					availableRelations[link.RelationDigest] = resource.Relation{From: link.From, To: link.To, Kind: link.Kind}
 				}
 				for _, ref := range prior.QueryResultRefs {
 					availableQueries[ref] = true
@@ -276,12 +314,16 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 		}
 	}
 	for _, h := range a.Hypotheses {
-		for _, refs := range [][]string{h.Supports, h.Conflicts} {
-			for _, ref := range refs {
-				if !seen[ref] {
-					return nil, ErrDenied
-				}
-			}
+		if validateSupportConflict(h.Supports, h.Conflicts, seen) != nil {
+			return nil, ErrDenied
+		}
+	}
+	if validateFaultChain(a, availableRelations, seen) != nil {
+		return nil, ErrDenied
+	}
+	for _, ref := range a.FormalRefs {
+		if !availableFormal[graph.ScopeDigest(ref)] || AuthorizeFormalReferenceTx(ctx, tx, j, ref) != nil {
+			return nil, ErrDenied
 		}
 	}
 	if a.AnswerKind == "clarification" {
@@ -295,7 +337,7 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 		// model-supplied options rather than exposing an invalid follow-up.
 		a.Clarification = nil
 	}
-	a.AsOf = time.Now().UTC()
+	a.AsOf = assistantObservationTime(a, freshReferences, historicalAsOf, time.Now().UTC())
 	a.ScopeSummary = j.Assistant.AuthorizationDomain + ":" + j.Scope.Cluster
 	validated := raw(a)
 	if contract.Validate("https://ops.local/schemas/assistant-answer/v1", validated) != nil {
@@ -371,6 +413,13 @@ func ValidateAssistantHistoryTx(ctx context.Context, tx pgx.Tx, j Job, input []b
 		return ErrInvalid
 	}
 	for _, message := range v.History {
+		if j.Assistant == nil {
+			return ErrDenied
+		}
+		priorJob, err := AssistantReadJobTx(ctx, tx, j.TenantID, j.Subject, j.Assistant.ConversationID, message.TurnID, j.Scope)
+		if err != nil {
+			return err
+		}
 		if message.Role == "assistant" {
 			if j.Assistant == nil {
 				return ErrDenied
@@ -378,7 +427,7 @@ func ValidateAssistantHistoryTx(ctx context.Context, tx pgx.Tx, j Job, input []b
 			if err := AssistantAnswerRetainedTx(ctx, tx, j.TenantID, j.Assistant.ConversationID, message.TurnID); err != nil {
 				return err
 			}
-			if err := authorizeResult(ctx, tx, j, message.Content); err != nil {
+			if err := authorizeResult(ctx, tx, priorJob, message.Content); err != nil {
 				return err
 			}
 		} else if message.Role != "user" {
@@ -386,4 +435,30 @@ func ValidateAssistantHistoryTx(ctx context.Context, tx pgx.Tx, j Job, input []b
 		}
 	}
 	return nil
+}
+
+// Context loading does not refresh observations from prior answers. Only a
+// committed data/graph/formal read supplying a cited reference may do that.
+func assistantObservationTime(a AssistantAnswer, fresh map[string]bool, historical, now time.Time) time.Time {
+	references := []string{}
+	references = append(references, a.EvidenceRefs...)
+	references = append(references, a.EntityRefs...)
+	for _, ref := range a.QueryResultRefs {
+		references = append(references, ref.String())
+	}
+	for _, ref := range a.FormalRefs {
+		references = append(references, graph.ScopeDigest(ref))
+	}
+	for _, link := range a.FaultChain {
+		references = append(references, link.RelationDigest)
+	}
+	if len(references) > 0 && !historical.IsZero() {
+		for _, ref := range references {
+			if fresh[ref] {
+				return now
+			}
+		}
+		return historical
+	}
+	return now
 }

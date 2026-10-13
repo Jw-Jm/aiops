@@ -19,7 +19,7 @@ export function ConversationContext({
 }) {
   const scope = object(binding.executionScope);
   const context = object(binding.resourceContext);
-  const window = object(context.timeRange);
+  const window = object(context.timeRange || binding.timeRange);
   const namespaces = Array.isArray(scope.namespaces)
     ? scope.namespaces.filter(
         (value): value is string => typeof value === "string",
@@ -63,7 +63,7 @@ export function ConversationContext({
             </Typography.Text>
           )}
           <Typography.Text type="secondary">
-            范围和资源身份已冻结。更换目标或调查时间请创建新会话；查询中的“现在”需要重新读取事实。
+            本轮使用已确认的范围和资源身份。可明确调整后续轮次的目标、范围或时间；查询中的“现在”需要重新读取事实。
           </Typography.Text>
         </Space>
       }

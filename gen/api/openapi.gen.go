@@ -1607,6 +1607,24 @@ type AssistantAnswerV1 struct {
 		FactId        string             `json:"factId"`
 		QueryResultId openapi_types.UUID `json:"queryResultId"`
 	} `json:"factRefs"`
+	FaultChain *[]struct {
+		Assessment      interface{}          `json:"assessment"`
+		Conflicts       []openapi_types.UUID `json:"conflicts"`
+		From            string               `json:"from"`
+		Kind            string               `json:"kind"`
+		MissingEvidence []string             `json:"missingEvidence"`
+		NextChecks      []string             `json:"nextChecks"`
+		RelationDigest  string               `json:"relationDigest"`
+		Supports        []openapi_types.UUID `json:"supports"`
+		To              string               `json:"to"`
+	} `json:"faultChain,omitempty"`
+	FormalRefs *[]struct {
+		ActionPlanId  *openapi_types.UUID `json:"actionPlanId,omitempty"`
+		ContentDigest string              `json:"contentDigest"`
+		IncidentId    openapi_types.UUID  `json:"incidentId"`
+		Kind          interface{}         `json:"kind"`
+		Revision      int                 `json:"revision"`
+	} `json:"formalRefs,omitempty"`
 	Hypotheses []struct {
 		Conflicts       []string `json:"conflicts"`
 		Key             string   `json:"key"`
@@ -1628,10 +1646,13 @@ type AssistantAnswerV1 struct {
 // AssistantCapabilitiesEnvelopeV1 defines model for AssistantCapabilitiesEnvelopeV1.
 type AssistantCapabilitiesEnvelopeV1 struct {
 	Data struct {
-		Catalog           map[string]interface{} `json:"catalog"`
-		Enabled           bool                   `json:"enabled"`
-		RuntimeAcceptance string                 `json:"runtimeAcceptance"`
-		Virtualization    string                 `json:"virtualization"`
+		Catalog                map[string]interface{}   `json:"catalog"`
+		Enabled                bool                     `json:"enabled"`
+		RuntimeAcceptance      string                   `json:"runtimeAcceptance"`
+		SourceCapabilities     []map[string]interface{} `json:"sourceCapabilities"`
+		SourceCapabilityStatus string                   `json:"sourceCapabilityStatus"`
+		TaskKinds              []string                 `json:"taskKinds"`
+		Virtualization         string                   `json:"virtualization"`
 	} `json:"data"`
 	RequestId string `json:"requestId"`
 }
@@ -1708,6 +1729,39 @@ type AssistantEventV1 struct {
 	Type       string                 `json:"type"`
 }
 
+// AssistantFormalEnvelopeV1 defines model for AssistantFormalEnvelopeV1.
+type AssistantFormalEnvelopeV1 struct {
+	Data struct {
+		Metadata  map[string]interface{} `json:"metadata"`
+		Reference map[string]interface{} `json:"reference"`
+	} `json:"data"`
+	RequestId string `json:"requestId"`
+}
+
+// AssistantHoldV1 defines model for AssistantHoldV1.
+type AssistantHoldV1 struct {
+	Held   bool               `json:"held"`
+	Reason string             `json:"reason"`
+	TurnId openapi_types.UUID `json:"turnId"`
+}
+
+// AssistantIntentEnvelopeV1 defines model for AssistantIntentEnvelopeV1.
+type AssistantIntentEnvelopeV1 struct {
+	Data struct {
+		MissingFields        []string                    `json:"missingFields"`
+		RequiresConfirmation bool                        `json:"requiresConfirmation"`
+		Selector             AssistantResourceSelectorV1 `json:"selector"`
+		Status               string                      `json:"status"`
+		TaskKind             string                      `json:"taskKind"`
+	} `json:"data"`
+	RequestId string `json:"requestId"`
+}
+
+// AssistantInterpretV1 defines model for AssistantInterpretV1.
+type AssistantInterpretV1 struct {
+	Symptom string `json:"symptom"`
+}
+
 // AssistantMessageV1 defines model for AssistantMessageV1.
 type AssistantMessageV1 struct {
 	Content   AssistantMessageV1_Content `json:"content"`
@@ -1768,7 +1822,12 @@ type AssistantQueryFactV1 struct {
 
 // AssistantQueryResultV1 defines model for AssistantQueryResultV1.
 type AssistantQueryResultV1 struct {
-	CatalogDigest        string      `json:"catalogDigest"`
+	CatalogDigest       string `json:"catalogDigest"`
+	ComparisonTimeRange *struct {
+		From     time.Time `json:"from"`
+		Timezone string    `json:"timezone"`
+		To       time.Time `json:"to"`
+	} `json:"comparisonTimeRange,omitempty"`
 	ControlPlaneSnapshot *string     `json:"controlPlaneSnapshot,omitempty"`
 	DatasetId            interface{} `json:"datasetId"`
 	DegradedSources      []string    `json:"degradedSources"`
@@ -1784,6 +1843,11 @@ type AssistantQueryResultV1 struct {
 		Dimension string  `json:"dimension"`
 		Value     float32 `json:"value"`
 	} `json:"rows"`
+	Samples *[]struct {
+		Level     interface{} `json:"level"`
+		Message   string      `json:"message"`
+		Timestamp time.Time   `json:"timestamp"`
+	} `json:"samples,omitempty"`
 	SchemaVersion  interface{} `json:"schemaVersion"`
 	ScopeDigest    string      `json:"scopeDigest"`
 	SnapshotReadAt time.Time   `json:"snapshotReadAt"`
@@ -1797,8 +1861,9 @@ type AssistantQueryResultV1 struct {
 		SourceId            openapi_types.UUID `json:"sourceId"`
 		TemplateVersion     string             `json:"templateVersion"`
 	} `json:"sourceManifest,omitempty"`
-	Status    interface{} `json:"status"`
-	TimeRange *struct {
+	Status      interface{} `json:"status"`
+	StepSeconds *int        `json:"stepSeconds,omitempty"`
+	TimeRange   *struct {
 		From     time.Time `json:"from"`
 		Timezone string    `json:"timezone"`
 		To       time.Time `json:"to"`
@@ -1806,6 +1871,19 @@ type AssistantQueryResultV1 struct {
 	Truncated bool        `json:"truncated"`
 	Unit      interface{} `json:"unit"`
 	Warnings  []string    `json:"warnings"`
+}
+
+// AssistantRebindV1 defines model for AssistantRebindV1.
+type AssistantRebindV1 struct {
+	ExpectedConversationRevision int64     `json:"expectedConversationRevision"`
+	IncludeClusterScoped         *bool     `json:"includeClusterScoped,omitempty"`
+	NamespaceSelection           *[]string `json:"namespaceSelection,omitempty"`
+	ResourceCanonicalId          *string   `json:"resourceCanonicalId,omitempty"`
+	TimeRange                    *struct {
+		From     time.Time `json:"from"`
+		Timezone string    `json:"timezone"`
+		To       time.Time `json:"to"`
+	} `json:"timeRange,omitempty"`
 }
 
 // AssistantResolutionEnvelopeV1 defines model for AssistantResolutionEnvelopeV1.
@@ -1867,6 +1945,7 @@ type AssistantSubmitMessageV1 struct {
 	ExpectedConversationRevision int64               `json:"expectedConversationRevision"`
 	Message                      string              `json:"message"`
 	ParentTurnId                 *openapi_types.UUID `json:"parentTurnId,omitempty"`
+	ReferentCanonicalId          *string             `json:"referentCanonicalId,omitempty"`
 }
 
 // AssistantTurnEnvelopeV1 defines model for AssistantTurnEnvelopeV1.
@@ -3690,6 +3769,11 @@ type GetToolsParams struct {
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// GetAssistantCapabilitiesParams defines parameters for GetAssistantCapabilities.
+type GetAssistantCapabilitiesParams struct {
+	ClusterUid *string `form:"clusterUid,omitempty" json:"clusterUid,omitempty"`
+}
+
 // ListAssistantConversationsParams defines parameters for ListAssistantConversations.
 type ListAssistantConversationsParams struct {
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
@@ -3698,6 +3782,11 @@ type ListAssistantConversationsParams struct {
 
 // CreateAssistantConversationParams defines parameters for CreateAssistantConversation.
 type CreateAssistantConversationParams struct {
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// RebindAssistantConversationParams defines parameters for RebindAssistantConversation.
+type RebindAssistantConversationParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
@@ -3720,6 +3809,11 @@ type SubmitAssistantMessageParams struct {
 // ArchiveAssistantConversationParams defines parameters for ArchiveAssistantConversation.
 type ArchiveAssistantConversationParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// GetAssistantFormalReferenceParams defines parameters for GetAssistantFormalReference.
+type GetAssistantFormalReferenceParams struct {
+	Index int `form:"index" json:"index"`
 }
 
 // CancelAssistantTurnParams defines parameters for CancelAssistantTurn.
@@ -4177,11 +4271,20 @@ type CreateTenantJSONRequestBody = JSONRequest
 // CreateAssistantConversationJSONRequestBody defines body for CreateAssistantConversation for application/json ContentType.
 type CreateAssistantConversationJSONRequestBody = AssistantCreateConversationV1
 
+// RebindAssistantConversationJSONRequestBody defines body for RebindAssistantConversation for application/json ContentType.
+type RebindAssistantConversationJSONRequestBody = AssistantRebindV1
+
 // SubmitAssistantMessageJSONRequestBody defines body for SubmitAssistantMessage for application/json ContentType.
 type SubmitAssistantMessageJSONRequestBody = AssistantSubmitMessageV1
 
 // ArchiveAssistantConversationJSONRequestBody defines body for ArchiveAssistantConversation for application/json ContentType.
 type ArchiveAssistantConversationJSONRequestBody = AssistantEmptyBodyV1
+
+// SetAssistantLegalHoldJSONRequestBody defines body for SetAssistantLegalHold for application/json ContentType.
+type SetAssistantLegalHoldJSONRequestBody = AssistantHoldV1
+
+// InterpretAssistantSymptomJSONRequestBody defines body for InterpretAssistantSymptom for application/json ContentType.
+type InterpretAssistantSymptomJSONRequestBody = AssistantInterpretV1
 
 // ResolveAssistantResourceJSONRequestBody defines body for ResolveAssistantResource for application/json ContentType.
 type ResolveAssistantResourceJSONRequestBody = AssistantResolveResourceV1
@@ -7168,7 +7271,7 @@ type ServerInterface interface {
 	GetTools(w http.ResponseWriter, r *http.Request, params GetToolsParams)
 	// GetAssistantCapabilities getAssistantCapabilities
 	// (GET /api/v1/assistant/capabilities)
-	GetAssistantCapabilities(w http.ResponseWriter, r *http.Request)
+	GetAssistantCapabilities(w http.ResponseWriter, r *http.Request, params GetAssistantCapabilitiesParams)
 	// ListAssistantConversations listAssistantConversations
 	// (GET /api/v1/assistant/conversations)
 	ListAssistantConversations(w http.ResponseWriter, r *http.Request, params ListAssistantConversationsParams)
@@ -7178,6 +7281,9 @@ type ServerInterface interface {
 	// GetAssistantConversation getAssistantConversation
 	// (GET /api/v1/assistant/conversations/{conversationId})
 	GetAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID)
+	// RebindAssistantConversation rebindAssistantConversation
+	// (POST /api/v1/assistant/conversations/{conversationId}/binding)
+	RebindAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params RebindAssistantConversationParams)
 	// GetAssistantConversationEvents getAssistantConversationEvents
 	// (GET /api/v1/assistant/conversations/{conversationId}/events)
 	GetAssistantConversationEvents(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params GetAssistantConversationEventsParams)
@@ -7190,15 +7296,24 @@ type ServerInterface interface {
 	// ArchiveAssistantConversation archiveAssistantConversation
 	// (POST /api/v1/assistant/conversations/{conversationId}:archive)
 	ArchiveAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params ArchiveAssistantConversationParams)
+	// SetAssistantLegalHold setAssistantLegalHold
+	// (POST /api/v1/assistant/legal-holds)
+	SetAssistantLegalHold(w http.ResponseWriter, r *http.Request)
 	// GetAssistantQueryResult getAssistantQueryResult
 	// (GET /api/v1/assistant/query-results/{queryResultId})
 	GetAssistantQueryResult(w http.ResponseWriter, r *http.Request, queryResultId openapi_types.UUID)
+	// InterpretAssistantSymptom interpretAssistantSymptom
+	// (POST /api/v1/assistant/resources:interpret)
+	InterpretAssistantSymptom(w http.ResponseWriter, r *http.Request)
 	// ResolveAssistantResource resolveAssistantResource
 	// (POST /api/v1/assistant/resources:resolve)
 	ResolveAssistantResource(w http.ResponseWriter, r *http.Request)
 	// GetAssistantTurn getAssistantTurn
 	// (GET /api/v1/assistant/turns/{turnId})
 	GetAssistantTurn(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID)
+	// GetAssistantFormalReference getAssistantFormalReference
+	// (GET /api/v1/assistant/turns/{turnId}/formal-references)
+	GetAssistantFormalReference(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, params GetAssistantFormalReferenceParams)
 	// CancelAssistantTurn cancelAssistantTurn
 	// (POST /api/v1/assistant/turns/{turnId}:cancel)
 	CancelAssistantTurn(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, params CancelAssistantTurnParams)
@@ -7524,7 +7639,7 @@ func (_ Unimplemented) GetTools(w http.ResponseWriter, r *http.Request, params G
 
 // GetAssistantCapabilities getAssistantCapabilities
 // (GET /api/v1/assistant/capabilities)
-func (_ Unimplemented) GetAssistantCapabilities(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetAssistantCapabilities(w http.ResponseWriter, r *http.Request, params GetAssistantCapabilitiesParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -7543,6 +7658,12 @@ func (_ Unimplemented) CreateAssistantConversation(w http.ResponseWriter, r *htt
 // GetAssistantConversation getAssistantConversation
 // (GET /api/v1/assistant/conversations/{conversationId})
 func (_ Unimplemented) GetAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RebindAssistantConversation rebindAssistantConversation
+// (POST /api/v1/assistant/conversations/{conversationId}/binding)
+func (_ Unimplemented) RebindAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params RebindAssistantConversationParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -7570,9 +7691,21 @@ func (_ Unimplemented) ArchiveAssistantConversation(w http.ResponseWriter, r *ht
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// SetAssistantLegalHold setAssistantLegalHold
+// (POST /api/v1/assistant/legal-holds)
+func (_ Unimplemented) SetAssistantLegalHold(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // GetAssistantQueryResult getAssistantQueryResult
 // (GET /api/v1/assistant/query-results/{queryResultId})
 func (_ Unimplemented) GetAssistantQueryResult(w http.ResponseWriter, r *http.Request, queryResultId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// InterpretAssistantSymptom interpretAssistantSymptom
+// (POST /api/v1/assistant/resources:interpret)
+func (_ Unimplemented) InterpretAssistantSymptom(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -7585,6 +7718,12 @@ func (_ Unimplemented) ResolveAssistantResource(w http.ResponseWriter, r *http.R
 // GetAssistantTurn getAssistantTurn
 // (GET /api/v1/assistant/turns/{turnId})
 func (_ Unimplemented) GetAssistantTurn(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetAssistantFormalReference getAssistantFormalReference
+// (GET /api/v1/assistant/turns/{turnId}/formal-references)
+func (_ Unimplemented) GetAssistantFormalReference(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, params GetAssistantFormalReferenceParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -9371,8 +9510,27 @@ func (siw *ServerInterfaceWrapper) GetTools(w http.ResponseWriter, r *http.Reque
 // GetAssistantCapabilities operation middleware
 func (siw *ServerInterfaceWrapper) GetAssistantCapabilities(w http.ResponseWriter, r *http.Request) {
 
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetAssistantCapabilitiesParams
+
+	// ------------- Optional query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetAssistantCapabilities(w, r)
+		siw.Handler.GetAssistantCapabilities(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -9490,6 +9648,60 @@ func (siw *ServerInterfaceWrapper) GetAssistantConversation(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAssistantConversation(w, r, conversationId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RebindAssistantConversation operation middleware
+func (siw *ServerInterfaceWrapper) RebindAssistantConversation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "conversationId" -------------
+	var conversationId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "conversationId", chi.URLParam(r, "conversationId"), &conversationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "conversationId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RebindAssistantConversationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RebindAssistantConversation(w, r, conversationId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -9712,6 +9924,20 @@ func (siw *ServerInterfaceWrapper) ArchiveAssistantConversation(w http.ResponseW
 	handler.ServeHTTP(w, r)
 }
 
+// SetAssistantLegalHold operation middleware
+func (siw *ServerInterfaceWrapper) SetAssistantLegalHold(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetAssistantLegalHold(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetAssistantQueryResult operation middleware
 func (siw *ServerInterfaceWrapper) GetAssistantQueryResult(w http.ResponseWriter, r *http.Request) {
 
@@ -9729,6 +9955,20 @@ func (siw *ServerInterfaceWrapper) GetAssistantQueryResult(w http.ResponseWriter
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAssistantQueryResult(w, r, queryResultId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// InterpretAssistantSymptom operation middleware
+func (siw *ServerInterfaceWrapper) InterpretAssistantSymptom(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.InterpretAssistantSymptom(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -9769,6 +10009,48 @@ func (siw *ServerInterfaceWrapper) GetAssistantTurn(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAssistantTurn(w, r, turnId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAssistantFormalReference operation middleware
+func (siw *ServerInterfaceWrapper) GetAssistantFormalReference(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "turnId" -------------
+	var turnId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "turnId", chi.URLParam(r, "turnId"), &turnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "turnId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetAssistantFormalReferenceParams
+
+	// ------------- Required query parameter "index" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "index", r.URL.Query(), &params.Index, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "index"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAssistantFormalReference(w, r, turnId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -12093,6 +12375,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/assistant/legal-holds", wrapper.SetAssistantLegalHold)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/assistant/resources:interpret", wrapper.InterpretAssistantSymptom)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/assistant/resources:resolve", wrapper.ResolveAssistantResource)
 	})
 	r.Group(func(r chi.Router) {
@@ -12108,10 +12396,16 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}", wrapper.GetAssistantConversation)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}/binding", wrapper.RebindAssistantConversation)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}/messages", wrapper.ListAssistantMessages)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}/messages", wrapper.SubmitAssistantMessage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/assistant/turns/{turnId}/formal-references", wrapper.GetAssistantFormalReference)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/assistant/turns/{turnId}", wrapper.GetAssistantTurn)
@@ -13628,6 +13922,7 @@ func (response GetToolsdefaultJSONResponse) VisitGetToolsResponse(w http.Respons
 }
 
 type GetAssistantCapabilitiesRequestObject struct {
+	Params GetAssistantCapabilitiesParams
 }
 
 type GetAssistantCapabilitiesResponseObject interface {
@@ -13772,6 +14067,47 @@ type GetAssistantConversationdefaultJSONResponse struct {
 }
 
 func (response GetAssistantConversationdefaultJSONResponse) VisitGetAssistantConversationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RebindAssistantConversationRequestObject struct {
+	ConversationId openapi_types.UUID `json:"conversationId"`
+	Params         RebindAssistantConversationParams
+	Body           *RebindAssistantConversationJSONRequestBody
+}
+
+type RebindAssistantConversationResponseObject interface {
+	VisitRebindAssistantConversationResponse(w http.ResponseWriter) error
+}
+
+type RebindAssistantConversation200JSONResponse AssistantConversationEnvelopeV1
+
+func (response RebindAssistantConversation200JSONResponse) VisitRebindAssistantConversationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RebindAssistantConversationdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response RebindAssistantConversationdefaultJSONResponse) VisitRebindAssistantConversationResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -13974,6 +14310,45 @@ func (response ArchiveAssistantConversationdefaultJSONResponse) VisitArchiveAssi
 	return err
 }
 
+type SetAssistantLegalHoldRequestObject struct {
+	Body *SetAssistantLegalHoldJSONRequestBody
+}
+
+type SetAssistantLegalHoldResponseObject interface {
+	VisitSetAssistantLegalHoldResponse(w http.ResponseWriter) error
+}
+
+type SetAssistantLegalHold200JSONResponse AssistantMutationEnvelopeV1
+
+func (response SetAssistantLegalHold200JSONResponse) VisitSetAssistantLegalHoldResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetAssistantLegalHolddefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response SetAssistantLegalHolddefaultJSONResponse) VisitSetAssistantLegalHoldResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type GetAssistantQueryResultRequestObject struct {
 	QueryResultId openapi_types.UUID `json:"queryResultId"`
 }
@@ -14002,6 +14377,45 @@ type GetAssistantQueryResultdefaultJSONResponse struct {
 }
 
 func (response GetAssistantQueryResultdefaultJSONResponse) VisitGetAssistantQueryResultResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InterpretAssistantSymptomRequestObject struct {
+	Body *InterpretAssistantSymptomJSONRequestBody
+}
+
+type InterpretAssistantSymptomResponseObject interface {
+	VisitInterpretAssistantSymptomResponse(w http.ResponseWriter) error
+}
+
+type InterpretAssistantSymptom200JSONResponse AssistantIntentEnvelopeV1
+
+func (response InterpretAssistantSymptom200JSONResponse) VisitInterpretAssistantSymptomResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InterpretAssistantSymptomdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response InterpretAssistantSymptomdefaultJSONResponse) VisitInterpretAssistantSymptomResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -14080,6 +14494,46 @@ type GetAssistantTurndefaultJSONResponse struct {
 }
 
 func (response GetAssistantTurndefaultJSONResponse) VisitGetAssistantTurnResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetAssistantFormalReferenceRequestObject struct {
+	TurnId openapi_types.UUID `json:"turnId"`
+	Params GetAssistantFormalReferenceParams
+}
+
+type GetAssistantFormalReferenceResponseObject interface {
+	VisitGetAssistantFormalReferenceResponse(w http.ResponseWriter) error
+}
+
+type GetAssistantFormalReference200JSONResponse AssistantFormalEnvelopeV1
+
+func (response GetAssistantFormalReference200JSONResponse) VisitGetAssistantFormalReferenceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetAssistantFormalReferencedefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetAssistantFormalReferencedefaultJSONResponse) VisitGetAssistantFormalReferenceResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -15898,6 +16352,9 @@ type StrictServerInterface interface {
 	// GetAssistantConversation getAssistantConversation
 	// (GET /api/v1/assistant/conversations/{conversationId})
 	GetAssistantConversation(ctx context.Context, request GetAssistantConversationRequestObject) (GetAssistantConversationResponseObject, error)
+	// RebindAssistantConversation rebindAssistantConversation
+	// (POST /api/v1/assistant/conversations/{conversationId}/binding)
+	RebindAssistantConversation(ctx context.Context, request RebindAssistantConversationRequestObject) (RebindAssistantConversationResponseObject, error)
 	// GetAssistantConversationEvents getAssistantConversationEvents
 	// (GET /api/v1/assistant/conversations/{conversationId}/events)
 	GetAssistantConversationEvents(ctx context.Context, request GetAssistantConversationEventsRequestObject) (GetAssistantConversationEventsResponseObject, error)
@@ -15910,15 +16367,24 @@ type StrictServerInterface interface {
 	// ArchiveAssistantConversation archiveAssistantConversation
 	// (POST /api/v1/assistant/conversations/{conversationId}:archive)
 	ArchiveAssistantConversation(ctx context.Context, request ArchiveAssistantConversationRequestObject) (ArchiveAssistantConversationResponseObject, error)
+	// SetAssistantLegalHold setAssistantLegalHold
+	// (POST /api/v1/assistant/legal-holds)
+	SetAssistantLegalHold(ctx context.Context, request SetAssistantLegalHoldRequestObject) (SetAssistantLegalHoldResponseObject, error)
 	// GetAssistantQueryResult getAssistantQueryResult
 	// (GET /api/v1/assistant/query-results/{queryResultId})
 	GetAssistantQueryResult(ctx context.Context, request GetAssistantQueryResultRequestObject) (GetAssistantQueryResultResponseObject, error)
+	// InterpretAssistantSymptom interpretAssistantSymptom
+	// (POST /api/v1/assistant/resources:interpret)
+	InterpretAssistantSymptom(ctx context.Context, request InterpretAssistantSymptomRequestObject) (InterpretAssistantSymptomResponseObject, error)
 	// ResolveAssistantResource resolveAssistantResource
 	// (POST /api/v1/assistant/resources:resolve)
 	ResolveAssistantResource(ctx context.Context, request ResolveAssistantResourceRequestObject) (ResolveAssistantResourceResponseObject, error)
 	// GetAssistantTurn getAssistantTurn
 	// (GET /api/v1/assistant/turns/{turnId})
 	GetAssistantTurn(ctx context.Context, request GetAssistantTurnRequestObject) (GetAssistantTurnResponseObject, error)
+	// GetAssistantFormalReference getAssistantFormalReference
+	// (GET /api/v1/assistant/turns/{turnId}/formal-references)
+	GetAssistantFormalReference(ctx context.Context, request GetAssistantFormalReferenceRequestObject) (GetAssistantFormalReferenceResponseObject, error)
 	// CancelAssistantTurn cancelAssistantTurn
 	// (POST /api/v1/assistant/turns/{turnId}:cancel)
 	CancelAssistantTurn(ctx context.Context, request CancelAssistantTurnRequestObject) (CancelAssistantTurnResponseObject, error)
@@ -17069,8 +17535,10 @@ func (sh *strictHandler) GetTools(w http.ResponseWriter, r *http.Request, params
 }
 
 // GetAssistantCapabilities operation middleware
-func (sh *strictHandler) GetAssistantCapabilities(w http.ResponseWriter, r *http.Request) {
+func (sh *strictHandler) GetAssistantCapabilities(w http.ResponseWriter, r *http.Request, params GetAssistantCapabilitiesParams) {
 	var request GetAssistantCapabilitiesRequestObject
+
+	request.Params = params
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetAssistantCapabilities(ctx, request.(GetAssistantCapabilitiesRequestObject))
@@ -17170,6 +17638,40 @@ func (sh *strictHandler) GetAssistantConversation(w http.ResponseWriter, r *http
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetAssistantConversationResponseObject); ok {
 		if err := validResponse.VisitGetAssistantConversationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RebindAssistantConversation operation middleware
+func (sh *strictHandler) RebindAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params RebindAssistantConversationParams) {
+	var request RebindAssistantConversationRequestObject
+
+	request.ConversationId = conversationId
+	request.Params = params
+
+	var body RebindAssistantConversationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RebindAssistantConversation(ctx, request.(RebindAssistantConversationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RebindAssistantConversation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RebindAssistantConversationResponseObject); ok {
+		if err := validResponse.VisitRebindAssistantConversationResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -17299,6 +17801,37 @@ func (sh *strictHandler) ArchiveAssistantConversation(w http.ResponseWriter, r *
 	}
 }
 
+// SetAssistantLegalHold operation middleware
+func (sh *strictHandler) SetAssistantLegalHold(w http.ResponseWriter, r *http.Request) {
+	var request SetAssistantLegalHoldRequestObject
+
+	var body SetAssistantLegalHoldJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SetAssistantLegalHold(ctx, request.(SetAssistantLegalHoldRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SetAssistantLegalHold")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SetAssistantLegalHoldResponseObject); ok {
+		if err := validResponse.VisitSetAssistantLegalHoldResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // GetAssistantQueryResult operation middleware
 func (sh *strictHandler) GetAssistantQueryResult(w http.ResponseWriter, r *http.Request, queryResultId openapi_types.UUID) {
 	var request GetAssistantQueryResultRequestObject
@@ -17318,6 +17851,37 @@ func (sh *strictHandler) GetAssistantQueryResult(w http.ResponseWriter, r *http.
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetAssistantQueryResultResponseObject); ok {
 		if err := validResponse.VisitGetAssistantQueryResultResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// InterpretAssistantSymptom operation middleware
+func (sh *strictHandler) InterpretAssistantSymptom(w http.ResponseWriter, r *http.Request) {
+	var request InterpretAssistantSymptomRequestObject
+
+	var body InterpretAssistantSymptomJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.InterpretAssistantSymptom(ctx, request.(InterpretAssistantSymptomRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "InterpretAssistantSymptom")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(InterpretAssistantSymptomResponseObject); ok {
+		if err := validResponse.VisitInterpretAssistantSymptomResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -17375,6 +17939,33 @@ func (sh *strictHandler) GetAssistantTurn(w http.ResponseWriter, r *http.Request
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetAssistantTurnResponseObject); ok {
 		if err := validResponse.VisitGetAssistantTurnResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetAssistantFormalReference operation middleware
+func (sh *strictHandler) GetAssistantFormalReference(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, params GetAssistantFormalReferenceParams) {
+	var request GetAssistantFormalReferenceRequestObject
+
+	request.TurnId = turnId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetAssistantFormalReference(ctx, request.(GetAssistantFormalReferenceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetAssistantFormalReference")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetAssistantFormalReferenceResponseObject); ok {
+		if err := validResponse.VisitGetAssistantFormalReferenceResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

@@ -35,16 +35,12 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 		return
 	}
 	var q struct {
-		Intent     json.RawMessage `json:"intent"`
-		OwnerEpoch int64           `json:"ownerEpoch"`
+		Intent       json.RawMessage `json:"intent"`
+		OwnerEpoch   int64           `json:"ownerEpoch"`
+		Capabilities bool            `json:"capabilities,omitempty"`
 	}
 	if json.Unmarshal(raw, &q) != nil {
 		fail(400, "INVALID_ARGUMENT")
-		return
-	}
-	intent, err := analytics.DecodeIntent(q.Intent)
-	if err != nil {
-		fail(422, "UNSUPPORTED_QUERY")
 		return
 	}
 	current, err := (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
@@ -55,6 +51,32 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 	owner, exists := owners[claims.Scope.Tenant+"|"+claims.Scope.Cluster]
 	if !exists || owner.Lease == nil || owner.Lease.Confirm(r.Context(), q.OwnerEpoch) != nil {
 		fail(409, "STALE_CONTEXT")
+		return
+	}
+	if q.Capabilities {
+		if len(q.Intent) > 0 {
+			fail(400, "INVALID_ARGUMENT")
+			return
+		}
+		capabilities := []analytics.SourceCapability{}
+		for _, adapter := range adapters {
+			entries, err := adapter.Capabilities(r.Context(), claims.Scope)
+			if err == nil {
+				capabilities = append(capabilities, entries...)
+			}
+		}
+		refreshed, err := (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
+		if err != nil || !claims.AllowsCurrent(refreshed) || owner.Lease.Confirm(r.Context(), q.OwnerEpoch) != nil {
+			fail(409, "STALE_CONTEXT")
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"sourceCapabilities": capabilities, "scopeDigest": graph.ScopeDigest(claims.Scope)})
+		return
+	}
+	intent, err := analytics.DecodeIntent(q.Intent)
+	if err != nil {
+		fail(422, "UNSUPPORTED_QUERY")
 		return
 	}
 	binding := analytics.Binding{Subject: claims.Subject, Grant: current, Selection: analytics.Selection{Namespaces: claims.Scope.Namespaces, CanonicalIDs: claims.Scope.Resources, IncludeClusterScoped: claims.Scope.ClusterScoped}}

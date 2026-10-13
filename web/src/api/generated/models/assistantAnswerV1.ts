@@ -7,6 +7,8 @@
 import type { AssistantAnswerV1AnswerKind } from './assistantAnswerV1AnswerKind.ts';
 import type { AssistantAnswerV1Clarification } from './assistantAnswerV1Clarification.ts';
 import type { AssistantAnswerV1FactRefsItem } from './assistantAnswerV1FactRefsItem.ts';
+import type { AssistantAnswerV1FaultChainItem } from './assistantAnswerV1FaultChainItem.ts';
+import type { AssistantAnswerV1FormalRefsItem } from './assistantAnswerV1FormalRefsItem.ts';
 import type { AssistantAnswerV1HypothesesItem } from './assistantAnswerV1HypothesesItem.ts';
 
 export interface AssistantAnswerV1 {
@@ -67,4 +69,8 @@ export interface AssistantAnswerV1 {
   /** @maxItems 20 */
   hypotheses: AssistantAnswerV1HypothesesItem[];
   clarification?: AssistantAnswerV1Clarification;
+  /** @maxItems 11 */
+  formalRefs?: AssistantAnswerV1FormalRefsItem[];
+  /** @maxItems 8 */
+  faultChain?: AssistantAnswerV1FaultChainItem[];
 }

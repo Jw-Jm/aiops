@@ -20,7 +20,9 @@
         "metrics.pod-memory",
         "metrics.pod-phase",
         "metrics.node-ready",
-        "logs.records"
+        "logs.records",
+        "incidents.recovery-duration",
+        "executions.success-rate"
       ]
     },
     "operation": {
@@ -205,7 +207,10 @@
       "if": {
         "properties": {
           "operation": {
-            "const": "compare"
+            "enum": [
+              "compare",
+              "compare_percent"
+            ]
           }
         }
       },

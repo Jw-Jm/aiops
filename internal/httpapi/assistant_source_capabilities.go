@@ -1,0 +1,38 @@
+package httpapi
+
+import (
+	"context"
+	"encoding/json"
+	"ops-platform/internal/analytics"
+	"ops-platform/internal/graph"
+	"ops-platform/internal/investigation"
+	"time"
+)
+
+func (h *SP04Handlers) assistantSourceCapabilities(ctx context.Context, j investigation.Job) ([]analytics.SourceCapability, error) {
+	if h == nil || h.Client == nil || h.EndpointAllowed == nil || j.Assistant == nil {
+		return nil, investigation.ErrNoJob
+	}
+	route, err := (graph.Repository{Pool: h.Pool}).Load(ctx, j.TenantID.String(), j.Scope.Cluster)
+	if err != nil || !route.ExpiresAt.After(time.Now()) || !h.EndpointAllowed(route.Endpoint) {
+		return nil, graph.ErrNotReady
+	}
+	bounded, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	reply, err := h.callWithGrantDigest(bounded, route.Endpoint, "/internal/v1/analysis:query", "platform-analysis-query", j.Subject, j.Scope, rawJSON(map[string]any{"capabilities": true, "ownerEpoch": route.Epoch}), j.Assistant.GrantSnapshotDigest)
+	if err != nil {
+		return nil, err
+	}
+	var out struct {
+		Capabilities []analytics.SourceCapability `json:"sourceCapabilities"`
+		ScopeDigest  string                       `json:"scopeDigest"`
+	}
+	if json.Unmarshal(reply, &out) != nil || out.ScopeDigest != graph.ScopeDigest(j.Scope) || len(out.Capabilities) > 100 {
+		return nil, investigation.ErrInvalid
+	}
+	final, err := (graph.Repository{Pool: h.Pool}).Load(ctx, j.TenantID.String(), j.Scope.Cluster)
+	if err != nil || final.Epoch != route.Epoch || final.Instance != route.Instance || final.LeaseUID != route.LeaseUID || !final.ExpiresAt.After(time.Now()) {
+		return nil, graph.ErrNotReady
+	}
+	return out.Capabilities, nil
+}

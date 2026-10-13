@@ -11,9 +11,14 @@ import type {
   AssistantCreateConversationV1,
   AssistantEmptyBodyV1,
   AssistantEventV1,
+  AssistantFormalEnvelopeV1,
+  AssistantHoldV1,
+  AssistantIntentEnvelopeV1,
+  AssistantInterpretV1,
   AssistantMessagesEnvelopeV1,
   AssistantMutationEnvelopeV1,
   AssistantQueryEnvelopeV1,
+  AssistantRebindV1,
   AssistantResolutionEnvelopeV1,
   AssistantResolveResourceV1,
   AssistantSubmitMessageV1,
@@ -38,6 +43,8 @@ import type {
   FindingIngestionSuccessV2,
   FindingPageV2,
   FindingSuccessV2,
+  GetAssistantCapabilitiesParams,
+  GetAssistantFormalReferenceParams,
   GetAuditRecordsParams,
   GetCapabilitiesParams,
   GetClustersParams,
@@ -110,6 +117,134 @@ export type HTTPStatusCode3xx = 300 | 301 | 302 | 303 | 304 | 305 | 307 | 308;
 export type HTTPStatusCode4xx = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 419 | 420 | 421 | 422 | 423 | 424 | 426 | 428 | 429 | 431 | 451;
 export type HTTPStatusCode5xx = 500 | 501 | 502 | 503 | 504 | 505 | 507 | 511;
 export type HTTPStatusCodes = HTTPStatusCode1xx | HTTPStatusCode2xx | HTTPStatusCode3xx | HTTPStatusCode4xx | HTTPStatusCode5xx;
+
+export type setAssistantLegalHoldResponse200 = {
+  data: AssistantMutationEnvelopeV1
+  status: 200
+}
+
+export type setAssistantLegalHoldResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type setAssistantLegalHoldResponseSuccess = (setAssistantLegalHoldResponse200) & {
+  headers: Headers;
+};
+export type setAssistantLegalHoldResponseError = (setAssistantLegalHoldResponseDefault) & {
+  headers: Headers;
+};
+
+export type setAssistantLegalHoldResponse = (setAssistantLegalHoldResponseSuccess | setAssistantLegalHoldResponseError)
+
+export const getSetAssistantLegalHoldUrl = () => {
+
+
+
+
+  return `/api/v1/assistant/legal-holds`
+}
+
+/**
+ * @summary setAssistantLegalHold
+ */
+export const setAssistantLegalHold = async (assistantHoldV1: AssistantHoldV1, options?: RequestInit): Promise<setAssistantLegalHoldResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getSetAssistantLegalHoldUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(assistantHoldV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: setAssistantLegalHoldResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as setAssistantLegalHoldResponse
+}
+
+
+
+export type interpretAssistantSymptomResponse200 = {
+  data: AssistantIntentEnvelopeV1
+  status: 200
+}
+
+export type interpretAssistantSymptomResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type interpretAssistantSymptomResponseSuccess = (interpretAssistantSymptomResponse200) & {
+  headers: Headers;
+};
+export type interpretAssistantSymptomResponseError = (interpretAssistantSymptomResponseDefault) & {
+  headers: Headers;
+};
+
+export type interpretAssistantSymptomResponse = (interpretAssistantSymptomResponseSuccess | interpretAssistantSymptomResponseError)
+
+export const getInterpretAssistantSymptomUrl = () => {
+
+
+
+
+  return `/api/v1/assistant/resources:interpret`
+}
+
+/**
+ * @summary interpretAssistantSymptom
+ */
+export const interpretAssistantSymptom = async (assistantInterpretV1: AssistantInterpretV1, options?: RequestInit): Promise<interpretAssistantSymptomResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getInterpretAssistantSymptomUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(assistantInterpretV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: interpretAssistantSymptomResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as interpretAssistantSymptomResponse
+}
+
+
 
 export type resolveAssistantResourceResponse200 = {
   data: AssistantResolutionEnvelopeV1
@@ -194,20 +329,27 @@ export type getAssistantCapabilitiesResponseError = (getAssistantCapabilitiesRes
 
 export type getAssistantCapabilitiesResponse = (getAssistantCapabilitiesResponseSuccess | getAssistantCapabilitiesResponseError)
 
-export const getGetAssistantCapabilitiesUrl = () => {
+export const getGetAssistantCapabilitiesUrl = (params?: GetAssistantCapabilitiesParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/v1/assistant/capabilities`
+  return stringifiedParams.length > 0 ? `/api/v1/assistant/capabilities?${stringifiedParams}` : `/api/v1/assistant/capabilities`
 }
 
 /**
  * @summary getAssistantCapabilities
  */
-export const getAssistantCapabilities = async ( options?: RequestInit): Promise<getAssistantCapabilitiesResponse> => {
+export const getAssistantCapabilities = async (params?: GetAssistantCapabilitiesParams, options?: RequestInit): Promise<getAssistantCapabilitiesResponse> => {
 
-  const res = await fetch(getGetAssistantCapabilitiesUrl(),
+  const res = await fetch(getGetAssistantCapabilitiesUrl(params),
   {
     ...options,
     method: 'GET'
@@ -396,6 +538,71 @@ export const getAssistantConversation = async (conversationId: string, options?:
 
 
 
+export type rebindAssistantConversationResponse200 = {
+  data: AssistantConversationEnvelopeV1
+  status: 200
+}
+
+export type rebindAssistantConversationResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type rebindAssistantConversationResponseSuccess = (rebindAssistantConversationResponse200) & {
+  headers: Headers;
+};
+export type rebindAssistantConversationResponseError = (rebindAssistantConversationResponseDefault) & {
+  headers: Headers;
+};
+
+export type rebindAssistantConversationResponse = (rebindAssistantConversationResponseSuccess | rebindAssistantConversationResponseError)
+
+export const getRebindAssistantConversationUrl = (conversationId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/conversations/${conversationId}/binding`
+}
+
+/**
+ * @summary rebindAssistantConversation
+ */
+export const rebindAssistantConversation = async (conversationId: string,
+    assistantRebindV1: AssistantRebindV1, options?: RequestInit): Promise<rebindAssistantConversationResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getRebindAssistantConversationUrl(conversationId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(assistantRebindV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: rebindAssistantConversationResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as rebindAssistantConversationResponse
+}
+
+
+
 export type listAssistantMessagesResponse200 = {
   data: AssistantMessagesEnvelopeV1
   status: 200
@@ -516,6 +723,65 @@ const res = await fetch(getSubmitAssistantMessageUrl(conversationId),
 
   const data: submitAssistantMessageResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as submitAssistantMessageResponse
+}
+
+
+
+export type getAssistantFormalReferenceResponse200 = {
+  data: AssistantFormalEnvelopeV1
+  status: 200
+}
+
+export type getAssistantFormalReferenceResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getAssistantFormalReferenceResponseSuccess = (getAssistantFormalReferenceResponse200) & {
+  headers: Headers;
+};
+export type getAssistantFormalReferenceResponseError = (getAssistantFormalReferenceResponseDefault) & {
+  headers: Headers;
+};
+
+export type getAssistantFormalReferenceResponse = (getAssistantFormalReferenceResponseSuccess | getAssistantFormalReferenceResponseError)
+
+export const getGetAssistantFormalReferenceUrl = (turnId: string,
+    params: GetAssistantFormalReferenceParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/assistant/turns/${turnId}/formal-references?${stringifiedParams}` : `/api/v1/assistant/turns/${turnId}/formal-references`
+}
+
+/**
+ * @summary getAssistantFormalReference
+ */
+export const getAssistantFormalReference = async (turnId: string,
+    params: GetAssistantFormalReferenceParams, options?: RequestInit): Promise<getAssistantFormalReferenceResponse> => {
+
+  const res = await fetch(getGetAssistantFormalReferenceUrl(turnId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAssistantFormalReferenceResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getAssistantFormalReferenceResponse
 }
 
 

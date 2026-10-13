@@ -93,6 +93,7 @@ type Row struct {
 	Value     float64 `json:"value"`
 }
 type QueryResult struct {
+	Samples              []LogSample     `json:"samples,omitempty"`
 	ComparisonTimeRange  *QueryTimeRange `json:"comparisonTimeRange,omitempty"`
 	StepSeconds          int             `json:"stepSeconds,omitempty"`
 	TimeRange            *QueryTimeRange `json:"timeRange,omitempty"`
@@ -114,6 +115,12 @@ type QueryResult struct {
 	Freshness            string          `json:"freshness"`
 	Warnings             []string        `json:"warnings"`
 	DegradedSources      []string        `json:"degradedSources"`
+}
+
+type LogSample struct {
+	Timestamp time.Time `json:"timestamp"`
+	Message   string    `json:"message"`
+	Level     string    `json:"level"`
 }
 
 type SourceManifest struct {

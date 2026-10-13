@@ -34,6 +34,16 @@ func (d Dispatcher) RunOne(ctx context.Context, tenant uuid.UUID, owner string) 
 	if err != nil {
 		return err
 	}
+	if j.Assistant != nil {
+		answer, err := d.Repository.PlatformClarification(ctx, l)
+		if err != nil {
+			_ = d.Repository.Fail(ctx, l, "CONTEXT_REJECTED")
+			return err
+		}
+		if len(answer) > 0 {
+			return d.Repository.Complete(ctx, l, answer)
+		}
+	}
 	names := d.Tools
 	if d.CatalogFor != nil {
 		names, err = d.CatalogFor(j)

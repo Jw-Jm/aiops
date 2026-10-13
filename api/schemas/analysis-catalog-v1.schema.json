@@ -29,7 +29,9 @@
               "metrics.pod-memory",
               "metrics.pod-phase",
               "metrics.node-ready",
-              "logs.records"
+              "logs.records",
+              "incidents.recovery-duration",
+              "executions.success-rate"
             ]
           },
           "name": {
@@ -72,7 +74,9 @@
               "memory_bytes",
               "phase_count",
               "ready_count",
-              "log_count"
+              "log_count",
+              "mean_recovery_ms",
+              "success_percent"
             ]
           },
           "unit": {
@@ -85,7 +89,9 @@
               "restarts",
               "cores",
               "bytes",
-              "logs"
+              "logs",
+              "milliseconds",
+              "percent"
             ]
           },
           "calculation": {
@@ -208,11 +214,14 @@
               "enum": [
                 "aggregate",
                 "trend",
-                "compare"
+                "compare",
+                "average",
+                "compare_percent",
+                "samples"
               ]
             },
             "minItems": 1,
-            "maxItems": 3,
+            "maxItems": 6,
             "uniqueItems": true
           }
         },

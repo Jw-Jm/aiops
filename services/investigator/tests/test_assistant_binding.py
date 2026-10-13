@@ -69,3 +69,21 @@ def test_hypotheses_cannot_invent_evidence_or_appear_in_audit_queries():
     steps=[{"toolName":"query_logs","state":"succeeded","result":{"evidenceRefs":["committed-evidence"],"data":{}}}]
     diagnosis=output_schema_for_steps(steps,"resource_troubleshooting")
     assert diagnosis['properties']['hypotheses']['items']['properties']['conflicts']['items']['enum']==['committed-evidence']
+
+
+def test_chain_and_formal_references_only_use_committed_read_manifests():
+    from investigator.assistant_binding import output_schema_for_steps
+    relation={"from":"pod-a","to":"service-b","kind":"depends_on","relationDigest":"sha256:relation"}
+    reference={"kind":"rca","incidentId":"incident","revision":2,"contentDigest":"sha256:rca"}
+    steps=[{"toolName":"model","state":"succeeded","result":{"data":{"relationReferences":[relation],"formalReferences":[reference]}}}]
+    schema=output_schema_for_steps(steps,"incident_followup")
+    assert schema["properties"]["faultChain"]["maxItems"]==0
+    assert schema["properties"]["formalRefs"]["maxItems"]==0
+    steps.extend([{"toolName":"get_dependencies","state":"succeeded","result":{"data":{"relationReferences":[relation]}}},
+                  {"toolName":"get_formal_references","state":"succeeded","result":{"data":{"formalReferences":[reference]}}}])
+    schema=output_schema_for_steps(steps,"incident_followup")
+    assert schema["properties"]["faultChain"]["items"]["properties"]["relationDigest"]["enum"]==["sha256:relation"]
+    assert schema["properties"]["formalRefs"]["items"]["enum"]==[dict(reference,actionPlanId=None)]
+    data=output_schema_for_steps(steps,"data_query")
+    assert data["properties"]["faultChain"]["maxItems"]==0
+    assert data["properties"]["formalRefs"]["maxItems"]==0

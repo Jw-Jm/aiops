@@ -10,9 +10,9 @@ import (
 	"ops-platform/internal/graph"
 )
 
-// A comparison is two fixed gauge endpoint evaluations under one compiled
-// scope and qualification, with a shared deadline. It is not a window mean or
-// a model-derived percentage. Missing/partial input never produces a delta.
+// A comparison evaluates two fixed equal windows: gauge endpoints, CPU means,
+// counter increases or log counts. All derived differences and percentages are
+// server computed; missing/partial inputs never produce a delta.
 func (v *Victoria) executeComparison(ctx context.Context, p VictoriaPlan) (QueryResult, error) {
 	if p.intent.ComparisonTimeRange == nil {
 		return QueryResult{}, ErrInvalid
@@ -23,12 +23,12 @@ func (v *Victoria) executeComparison(ctx context.Context, p VictoriaPlan) (Query
 	single.intent.Operation = "aggregate"
 	single.intent.ComparisonTimeRange = nil
 	single.dimension = ""
-	single.intent.TimeRange = copyQueryTimeRange(p.intent.ComparisonTimeRange)
+	single = rewindow(single, p.intent.ComparisonTimeRange)
 	baseline, err := v.Execute(ctx, single)
 	if err != nil {
 		return QueryResult{}, err
 	}
-	single.intent.TimeRange = copyQueryTimeRange(p.intent.TimeRange)
+	single = rewindow(single, p.intent.TimeRange)
 	current, err := v.Execute(ctx, single)
 	if err != nil {
 		return QueryResult{}, err
@@ -70,13 +70,34 @@ func (v *Victoria) executeComparison(ctx context.Context, p VictoriaPlan) (Query
 		}
 		out.Rows = append(out.Rows, Row{direction, math.Abs(delta)})
 	}
+	if p.intent.Operation == "compare_percent" {
+		out.Unit = "percent"
+		out.Rows = []Row{}
+		if out.Exact && baseline.Rows[0].Value > 0 {
+			delta := current.Rows[0].Value - baseline.Rows[0].Value
+			direction := "unchanged"
+			if delta > 0 {
+				direction = "increase"
+			} else if delta < 0 {
+				direction = "decrease"
+			}
+			percent := math.Abs(delta) / baseline.Rows[0].Value * 100
+			if math.IsNaN(percent) || math.IsInf(percent, 0) || percent > 1<<53 {
+				return QueryResult{}, ErrSource
+			}
+			out.Rows = append(out.Rows, Row{direction, percent})
+		} else {
+			out.Status, out.Exact = "no_data", false
+			out.Warnings = append(out.Warnings, "percentage_requires_complete_nonzero_baseline")
+		}
+	}
 	out.SourceManifest.CoverageFrom = p.intent.ComparisonTimeRange.From
 	out.SourceManifest.CoverageTo = p.intent.TimeRange.To
 	out.SourceManifest.QueryHash = graph.ScopeDigest(struct {
 		Query             string
 		Baseline, Current *QueryTimeRange
 	}{p.query, p.intent.ComparisonTimeRange, p.intent.TimeRange})
-	out.SourceManifest.TemplateVersion = p.intent.DatasetID + "-compare/v1"
+	out.SourceManifest.TemplateVersion = p.intent.DatasetID + "-" + p.intent.Operation + "/v1"
 	if v.authorize(ctx, v.binding) != nil || !p.qualification.VerifiedUntil.After(time.Now()) {
 		return QueryResult{}, ErrDenied
 	}

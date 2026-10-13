@@ -38,3 +38,23 @@ func TestControlPlaneCompilerClosedQueries(t *testing.T) {
 		t.Fatalf("admin role inherited from operational grant: %v", err)
 	}
 }
+
+func TestStatisticCompilerDoesNotAllowBiasedDenominators(t *testing.T) {
+	now := time.Now().UTC()
+	b := Binding{Subject: "owner", Grant: graph.Scope{Tenant: "tenant", Cluster: "cluster", Namespaces: []string{"apps"}, AuthorizationRevision: "rev"}}
+	for _, entry := range [][2]string{{"executions.success-rate", "success_percent"}, {"incidents.recovery-duration", "mean_recovery_ms"}} {
+		q := QueryIntent{SchemaVersion: "query-intent/v1", DatasetID: entry[0], Operation: "aggregate", Metrics: []string{entry[1]}, Dimensions: []string{"day"}, Filters: []Filter{}, Sort: []Sort{}, Limit: 50, TimeRange: &QueryTimeRange{From: now.Add(-time.Hour), To: now, Timezone: "UTC"}}
+		if _, err := CompileControlPlane(q, b, "operational"); err != nil {
+			t.Fatal(err)
+		}
+		q.Filters = []Filter{{Field: "state", Operator: "eq", Value: "succeeded"}}
+		if _, err := CompileControlPlane(q, b, "operational"); !errors.Is(err, ErrInvalid) {
+			t.Fatalf("biased population: %v", err)
+		}
+		q.Filters = []Filter{}
+		q.Dimensions = []string{"state"}
+		if _, err := CompileControlPlane(q, b, "operational"); !errors.Is(err, ErrUnsupported) {
+			t.Fatalf("state denominator accepted: %v", err)
+		}
+	}
+}

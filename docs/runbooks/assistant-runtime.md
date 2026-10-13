@@ -6,7 +6,7 @@
 ## 部署与版本
 
 先部署支持 Job/Context/工具响应 v3 的新 API、Worker 和 investigator，再
-启用自然语言提交。向前迁移 39、40 使用现有 migration_role/schema_owner；
+启用自然语言提交。向前迁移 39～42 使用现有 migration_role/schema_owner；
 不为迁移新增数据库 CREATE 权限。旧 Worker 默认不领取 v3。
 
 Helm 开关为 `sp06.assistant.enabled`，默认 false。启用时设置
@@ -40,7 +40,7 @@ Victoria 分析能力由 Worker 的 `Sources[].AnalysisQualifications` 显式配
 每项必须与真实 SourceRegistration 匹配，字段如下：
 
 - `DatasetID`、`SourceRevision`、`BindingDigest`。
-- `Operation`：aggregate/trend/compare。未填写只匹配旧 aggregate；每种
+- `Operation`：aggregate/trend/compare/compare_percent/average/samples（依目录支持）。未填写只匹配旧 aggregate；每种
   新操作分别绑定经过验证的来源证明，不能自动借用旧聚合证明。
 - `EvidenceDigest`：实际准入证据摘要；`CollectorVersion`：已核对采集版本。
 - `VerifiedUntil`、`CoverageFrom`、`CoverageTo`：有效期及实际覆盖时间。
@@ -58,10 +58,26 @@ namespace/UID 标签、覆盖窗口不足或证明到期时拒绝查询。Fixtur
 compare 使用 dimension=comparison 和 comparisonTimeRange；两窗口同
 时区、等长、不重叠且对照窗口在前，比较各自末端 gauge。两侧完整才计算
 increase/decrease/unchanged 的绝对变化量，缺失或部分输入仅保留可用输入
-事实，不生成变化量。所有数字均由服务端产生，百分比尚未实现。
-重启增加、CPU 使用核数、日志计数及控制面日分组按目录口径处理。CPU
-百分比、任意表达式及未经实现的计数器/日志趋势和比较保持不支持。
-日志查询含显式 UTC 时间过滤。没有观测返回 no_data，不能解释为零或正常。
+事实，不生成变化量。compare_percent 输出方向与变化百分比，分母为对照值；
+缺失、partial 或零基线返回 no_data。average 仅开放 gauge，以实际采样窗口
+avg_over_time 后求和，不代表完整墙钟时间覆盖。
+CPU trend 为每点固定 5 分钟 rate，aggregate/compare 为窗口平均 rate；
+重启 trend 为每步窗口 increase，compare 为窗口增加量；日志 trend 为每步
+独立半开桶计数，compare 为窗口计数。趋势包含 from/to 两端；首个计数器/日志
+点需覆盖 from 前一个 step。最多 50 点、共享 3 秒执行预算，缺失不补零。
+CPU 利用率百分比仍不在目录内（没有合法核心数分母）；任意表达式不支持。
+日志 samples 为最多 20 条、单条 2048 字符、总响应 64 KiB 的脱敏样例，
+再次校验 tenant/cluster/namespace/UID，状态为 partial，不用样例数说明总量。
+
+新增控制面恢复时长以 resolved_at 落入窗口、started_at 可信且时间有序的
+已恢复记录求平均；缺失样本会降级。本人执行成功率只含 succeeded/failed，
+以执行创建时间落入窗口，当前目标授权与 owner 先于统计过滤；取消/未知不
+进入分母。空样本/分母是 no_data，不返回零。
+
+来源能力接口可携带 clusterUid。经当前 Owner 的签名 RPC 展示有效配置的
+operation、revision、proofDigest、collectorVersion 和 coverage；
+qualification_configured 不代表刚完成生产采集验收。无证明或失效操作不能
+借用目录存在或其他操作的证明。没有观测不能解释为零或正常。
 
 ## 会话、引用与恢复
 
@@ -79,14 +95,39 @@ SSE 使用持久 Event 和签名 Last-Event-ID；断线可重连，过期游标�
 每轮 input 带服务端生成的 requestedAt，结合会话 timezone 作为相对日期的
 基准；用户输入不能覆盖该字段。历史实体引用只能来自已验证身份字段，读取
 时仍核对当前资源与权限。假设中的支持与冲突引用可直接打开证据详情。
-资源会话可选择最近 5/15/30/60 分钟，或填写跨度不超过 60 分钟的 UTC
-绝对时间。页面展示服务端冻结的范围、真实资源身份和调查时间；更换目标或
-资源调查窗口需新建会话。Incident 会话沿现有 Incident 上下文，不套用资源
-调查时间控件。该入口不代表自然语言中的时间/指代调整已完整实现。
+资源会话创建可选择最近 5/15/30/60 分钟或不超过 60 分钟 UTC 窗口。
+同会话可通过 POST `/assistant/conversations/{id}/binding` 显式更换真实目标、
+namespace 或时间；带 Idempotency-Key 和 expectedConversationRevision，
+空闲时才允许，保持原冻结 grant 并重新验证身份。问数窗口最大 31 天，资源
+窗口最大 1 小时；查询仍受具体来源更小的限额。旧轮次不改写，范围外历史
+被隔离。Incident 窗口沿正式上下文，不接受资源窗口重绑。
 
-普通 Message/QueryResult 默认可读取 30 天；Legal Hold 字段和现有正式
-Evidence 保护优先。依赖闭包及完整 TTL 清理尚未验收，不启用新的物理清理
-任务。现有 Evidence 365 天保护不能被普通会话清理覆盖。
+服务端解析最近/过去的分钟、小时、天及今天/昨天/前天，冻结绝对时间与 IANA
+时区。已设置的绝对窗口冲突时拒绝，需明确重绑；无新窗口的追问继承最近
+已授权轮次窗口，“现在”不继承旧观测。指代只取已验证身份；多义时通过持久
+平台澄清返回，用户选项不得建立从未验证的 Canonical ID。
+
+故障链每个链接具有 from/to/kind/relationDigest、hypothesis、支持、冲突、
+缺失和下一步。支持/冲突 Evidence 不允许重复；关系和证据只来自成功提交
+工具或重新授权历史。关系不证明因果，不创建正式 Incident 或 confirmed RCA。
+Incident follow-up 的 get_formal_references 读取指定 RCA revision 和实际
+ActionPlan revision/contentDigest。侧栏按 turn/index 再授权，不接受用户随意
+指定其他 Incident。历史 RCA 标明版本；ActionPlan 变化后旧引用不可用，不用
+最新版本替换，也没有增加历史 ActionPlan 仓库。缺失证据追问可使用原只读
+工具补证，聊天不产生执行句柄。
+
+普通 Message/QueryResult/v3 Step 默认 30 天。关闭新助手提交不停止已有数据清理。
+Worker 每分钟调用有界清理
+函数；每轮最多 100 个叶轮次及 100 个过期空会话，语句预算 2 秒、调用预算
+3 秒。保留锁与会话锁防止并发提交/保留变更；到期祖先要等待所有后代删除。
+法律保留、活跃任务、有效结果、正式 Evidence 的归档/保留引用及递归依赖
+优先，正式 Evidence 仍由其原保留服务管理。成功工具正文不可更新，只有
+schema_owner 权限的受限清理函数可删除已判断为候选的 v3 Step。
+
+管理员在独立法律保留表单或 POST `/assistant/legal-holds` 指定 turnId、
+held 和原因；当前管理员身份在事务中再次验证并写审计。此接口不授予运维
+数据读取权，operator 不继承管理员能力。解除保留不覆盖其他正式保护。
+归档会话仍遵守保留保护，到期物理删除会同时移除工具正文和旧空会话绑定。
 
 取消、预算和 lease fence 沿既有任务账本处理；晚到结果不应被接受。
 预算耗尽时只能使用成功提交的查询事实生成 partial，未完成或未知工具的
@@ -96,8 +137,8 @@ Evidence 保护优先。依赖闭包及完整 TTL 清理尚未验收，不启用
 
 本机只做编译、单元与合同检查；容器、数据库、模型和集群验证在用户指定的
 `192.168.0.63`。专项隔离目录为 `/opt/ops-assistant-dev-20261012`。
-数据库/聚合日志为 `integration-latest.log`，实际模型烟测为
-`model-smoke-latest.log`。专项容器标记 `ops.task=assistant-20261012`，服务
+最新数据库/聚合日志为 `six-integration-latest.log`，实际模型烟测为
+`six-model-smoke-latest.log`，隔离浏览器验证为 `ui/browser-latest.log`。专项容器标记 `ops.task=assistant-20261012`，服务
 只监听回环地址。测试凭据只位于该目录的受限文件，不复制到发行物料。
 
 运行测试必须使用真实 API/Worker 数据库角色和更新源代码。模型烟测通过只

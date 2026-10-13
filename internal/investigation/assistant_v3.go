@@ -184,7 +184,7 @@ func AssistantReadJobTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, subjec
 		return Job{}, ErrDenied
 	}
 	j, err := load(ctx, tx, tenant, id, false)
-	if err != nil || j.Assistant == nil || j.Subject != subject || j.Assistant.ConversationID != conversation || graph.ScopeDigest(j.Scope) != graph.ScopeDigest(scope) {
+	if err != nil || j.Assistant == nil || j.Subject != subject || j.Assistant.ConversationID != conversation || !ScopeSubset(scope, j.Scope) {
 		return Job{}, ErrDenied
 	}
 	if err = currentAssistant(ctx, tx, j); err != nil {

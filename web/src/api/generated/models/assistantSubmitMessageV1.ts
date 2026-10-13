@@ -15,4 +15,5 @@ export interface AssistantSubmitMessageV1 {
   expectedConversationRevision: number;
   parentTurnId?: string;
   clarificationId?: string;
+  referentCanonicalId?: string;
 }

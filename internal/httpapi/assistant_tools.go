@@ -124,11 +124,45 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		})
 	}
 	switch name {
+	case "get_formal_references":
+		var params struct {
+			Revision int64 `json:"rcaRevision"`
+		}
+		if json.Unmarshal(args, &params) != nil {
+			return out, investigation.ErrInvalid
+		}
+		err := persistence.WithTenantTx(ctx, h.Pool, j.TenantID, func(tx pgx.Tx) error {
+			if investigation.CheckAssistantJobTx(ctx, tx, j) != nil {
+				return investigation.ErrDenied
+			}
+			data, refs, err := investigation.ReadFormalReferencesTx(ctx, tx, j, params.Revision)
+			if err == nil {
+				out.Data = data
+				out.EvidenceRefs = refs
+			}
+			return err
+		})
+		if err != nil {
+			return out, err
+		}
 	case "get_assistant_context":
 		if err := load(); err != nil {
 			return out, err
 		}
-		out.Data = input
+		data := map[string]any{}
+		if json.Unmarshal(rawJSON(input), &data) != nil {
+			return out, investigation.ErrInvalid
+		}
+		if j.Assistant.AuthorizationDomain == "operational" {
+			sources, err := h.assistantSourceCapabilities(ctx, j)
+			data["sourceCapabilities"] = sources
+			data["sourceCapabilityStatus"] = "available"
+			if err != nil {
+				data["sourceCapabilities"] = []analytics.SourceCapability{}
+				data["sourceCapabilityStatus"] = "unavailable"
+			}
+		}
+		out.Data = data
 	case "describe_analysis_dataset":
 		var p struct {
 			DatasetID string `json:"datasetId"`
@@ -159,9 +193,18 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		if json.Unmarshal(args, &p) != nil {
 			return out, investigation.ErrInvalid
 		}
+		if err := load(); err != nil {
+			return out, err
+		}
 		intent, err := analytics.DecodeIntent(p.Intent)
 		if err != nil {
 			return out, err
+		}
+		if intent.DatasetID != "resources.current" && input.RequestedTimeRange != nil {
+			window := input.RequestedTimeRange
+			if intent.TimeRange == nil || !intent.TimeRange.From.Equal(window.From) || !intent.TimeRange.To.Equal(window.To) || intent.TimeRange.Timezone != window.Timezone {
+				return out, investigation.ErrInvalid
+			}
 		}
 		if strings.HasPrefix(intent.DatasetID, "metrics.") || strings.HasPrefix(intent.DatasetID, "logs.") {
 			if j.Assistant.AuthorizationDomain != "operational" {
@@ -348,7 +391,16 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		if err != nil {
 			return out, err
 		}
-		out.Data = result
+		data := map[string]any{}
+		if json.Unmarshal(rawJSON(result), &data) != nil {
+			return out, investigation.ErrInvalid
+		}
+		relations := []map[string]any{}
+		for _, relation := range result.Edges {
+			relations = append(relations, map[string]any{"from": relation.From, "to": relation.To, "kind": relation.Kind, "relationDigest": graph.ScopeDigest(relation), "observedAt": relation.ObservedAt})
+		}
+		data["relationReferences"] = relations
+		out.Data = data
 		out.Partial = result.Partial
 		out.DegradedSources = result.DegradedSources
 	default:

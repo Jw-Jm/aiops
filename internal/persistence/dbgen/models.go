@@ -394,6 +394,119 @@ type InvestigationAdmission struct {
 	AllowedDataClasses []string           `json:"allowed_data_classes"`
 }
 
+type InvestigationAssistantBindingRequest struct {
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	OwnerSubject   string             `json:"owner_subject"`
+	IdempotencyKey string             `json:"idempotency_key"`
+	ConversationID pgtype.UUID        `json:"conversation_id"`
+	RequestDigest  string             `json:"request_digest"`
+	Revision       int64              `json:"revision"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+}
+
+type InvestigationAssistantConversation struct {
+	TenantID            pgtype.UUID        `json:"tenant_id"`
+	ConversationID      pgtype.UUID        `json:"conversation_id"`
+	OwnerSubject        string             `json:"owner_subject"`
+	Title               string             `json:"title"`
+	Mode                string             `json:"mode"`
+	AuthorizationDomain string             `json:"authorization_domain"`
+	ClusterUid          string             `json:"cluster_uid"`
+	Binding             []byte             `json:"binding"`
+	Revision            int64              `json:"revision"`
+	ArchivedAt          pgtype.Timestamptz `json:"archived_at"`
+	CreatedAt           pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt           pgtype.Timestamptz `json:"updated_at"`
+}
+
+type InvestigationAssistantCreationKey struct {
+	TenantID       pgtype.UUID `json:"tenant_id"`
+	OwnerSubject   string      `json:"owner_subject"`
+	IdempotencyKey string      `json:"idempotency_key"`
+	RequestDigest  string      `json:"request_digest"`
+	ConversationID pgtype.UUID `json:"conversation_id"`
+}
+
+type InvestigationAssistantEvent struct {
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	ConversationID pgtype.UUID        `json:"conversation_id"`
+	EventSeq       int64              `json:"event_seq"`
+	TurnID         pgtype.UUID        `json:"turn_id"`
+	Type           string             `json:"type"`
+	Payload        []byte             `json:"payload"`
+	JobEventSeq    pgtype.Int8        `json:"job_event_seq"`
+	OccurredAt     pgtype.Timestamptz `json:"occurred_at"`
+}
+
+type InvestigationAssistantLegalHold struct {
+	TenantID  pgtype.UUID        `json:"tenant_id"`
+	TurnID    pgtype.UUID        `json:"turn_id"`
+	Held      bool               `json:"held"`
+	Reason    string             `json:"reason"`
+	Subject   string             `json:"subject"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+type InvestigationAssistantMessage struct {
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	MessageID      pgtype.UUID        `json:"message_id"`
+	ConversationID pgtype.UUID        `json:"conversation_id"`
+	TurnID         pgtype.UUID        `json:"turn_id"`
+	Sequence       int64              `json:"sequence"`
+	Role           string             `json:"role"`
+	Content        []byte             `json:"content"`
+	RetainUntil    pgtype.Timestamptz `json:"retain_until"`
+	LegalHold      bool               `json:"legal_hold"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+}
+
+type InvestigationAssistantQueryResult struct {
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	QueryResultID  pgtype.UUID        `json:"query_result_id"`
+	TurnID         pgtype.UUID        `json:"turn_id"`
+	OwnerSubject   string             `json:"owner_subject"`
+	PlanDigest     string             `json:"plan_digest"`
+	Result         []byte             `json:"result"`
+	Scope          []byte             `json:"scope"`
+	SourceManifest []byte             `json:"source_manifest"`
+	RetainUntil    pgtype.Timestamptz `json:"retain_until"`
+	LegalHold      bool               `json:"legal_hold"`
+}
+
+type InvestigationAssistantRequestKey struct {
+	TenantID       pgtype.UUID `json:"tenant_id"`
+	OwnerSubject   string      `json:"owner_subject"`
+	IdempotencyKey string      `json:"idempotency_key"`
+	RequestDigest  string      `json:"request_digest"`
+	ConversationID pgtype.UUID `json:"conversation_id"`
+	TurnID         pgtype.UUID `json:"turn_id"`
+}
+
+type InvestigationAssistantTurn struct {
+	TenantID                 pgtype.UUID        `json:"tenant_id"`
+	TurnID                   pgtype.UUID        `json:"turn_id"`
+	ConversationID           pgtype.UUID        `json:"conversation_id"`
+	JobID                    pgtype.UUID        `json:"job_id"`
+	ParentTurnID             pgtype.UUID        `json:"parent_turn_id"`
+	UserMessageID            pgtype.UUID        `json:"user_message_id"`
+	Input                    []byte             `json:"input"`
+	InputDigest              string             `json:"input_digest"`
+	ContextDigest            string             `json:"context_digest"`
+	State                    string             `json:"state"`
+	BaseConversationRevision int64              `json:"base_conversation_revision"`
+	ErrorCode                string             `json:"error_code"`
+	Answer                   []byte             `json:"answer"`
+	CreatedAt                pgtype.Timestamptz `json:"created_at"`
+}
+
+type InvestigationAssistantWorkerCapability struct {
+	TenantID            pgtype.UUID        `json:"tenant_id"`
+	WorkerID            string             `json:"worker_id"`
+	ModelProfileVersion string             `json:"model_profile_version"`
+	CatalogVersion      string             `json:"catalog_version"`
+	ExpiresAt           pgtype.Timestamptz `json:"expires_at"`
+}
+
 type InvestigationCallAllocation struct {
 	TenantID        pgtype.UUID        `json:"tenant_id"`
 	JobID           pgtype.UUID        `json:"job_id"`
@@ -427,29 +540,32 @@ type InvestigationEvent struct {
 }
 
 type InvestigationJob struct {
-	TenantID             pgtype.UUID        `json:"tenant_id"`
-	JobID                pgtype.UUID        `json:"job_id"`
-	IncidentID           pgtype.UUID        `json:"incident_id"`
-	TriggerRevision      int64              `json:"trigger_revision"`
-	PolicyVersionID      pgtype.UUID        `json:"policy_version_id"`
-	State                string             `json:"state"`
-	CreatedAt            pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt            pgtype.Timestamptz `json:"updated_at"`
-	SchemaVersion        string             `json:"schema_version"`
-	RequestingSubject    string             `json:"requesting_subject"`
-	TriggerKind          string             `json:"trigger_kind"`
-	PolicyVersion        string             `json:"policy_version"`
-	EffectiveScope       []byte             `json:"effective_scope"`
-	EffectiveScopeDigest string             `json:"effective_scope_digest"`
-	ToolCatalogDigest    string             `json:"tool_catalog_digest"`
-	Budget               []byte             `json:"budget"`
-	BudgetReserved       []byte             `json:"budget_reserved"`
-	BudgetConsumed       []byte             `json:"budget_consumed"`
-	ExpiresAt            pgtype.Timestamptz `json:"expires_at"`
-	NextCallSeq          int64              `json:"next_call_seq"`
-	EventSeq             int64              `json:"event_seq"`
-	Result               []byte             `json:"result"`
-	ErrorCode            string             `json:"error_code"`
+	TenantID                pgtype.UUID        `json:"tenant_id"`
+	JobID                   pgtype.UUID        `json:"job_id"`
+	IncidentID              pgtype.UUID        `json:"incident_id"`
+	TriggerRevision         pgtype.Int8        `json:"trigger_revision"`
+	PolicyVersionID         pgtype.UUID        `json:"policy_version_id"`
+	State                   string             `json:"state"`
+	CreatedAt               pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt               pgtype.Timestamptz `json:"updated_at"`
+	SchemaVersion           string             `json:"schema_version"`
+	RequestingSubject       string             `json:"requesting_subject"`
+	TriggerKind             string             `json:"trigger_kind"`
+	PolicyVersion           string             `json:"policy_version"`
+	EffectiveScope          []byte             `json:"effective_scope"`
+	EffectiveScopeDigest    string             `json:"effective_scope_digest"`
+	ToolCatalogDigest       string             `json:"tool_catalog_digest"`
+	Budget                  []byte             `json:"budget"`
+	BudgetReserved          []byte             `json:"budget_reserved"`
+	BudgetConsumed          []byte             `json:"budget_consumed"`
+	ExpiresAt               pgtype.Timestamptz `json:"expires_at"`
+	NextCallSeq             int64              `json:"next_call_seq"`
+	EventSeq                int64              `json:"event_seq"`
+	Result                  []byte             `json:"result"`
+	ErrorCode               string             `json:"error_code"`
+	AssistantBinding        []byte             `json:"assistant_binding"`
+	AssistantConversationID pgtype.UUID        `json:"assistant_conversation_id"`
+	AssistantTurnID         pgtype.UUID        `json:"assistant_turn_id"`
 }
 
 type InvestigationReplayLedger struct {
@@ -487,6 +603,7 @@ type InvestigationStep struct {
 	ResultDigest    pgtype.Text        `json:"result_digest"`
 	ErrorCode       string             `json:"error_code"`
 	RetainUntil     pgtype.Timestamptz `json:"retain_until"`
+	ArgsSummary     []byte             `json:"args_summary"`
 }
 
 type InvestigationWorkerQueue struct {

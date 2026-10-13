@@ -20,7 +20,9 @@
         "metrics.pod-memory",
         "metrics.pod-phase",
         "metrics.node-ready",
-        "logs.records"
+        "logs.records",
+        "incidents.recovery-duration",
+        "executions.success-rate"
       ]
     },
     "planDigest": {
@@ -75,7 +77,8 @@
         "restarts",
         "cores",
         "bytes",
-        "logs"
+        "logs",
+        "percent"
       ]
     },
     "rows": {
@@ -253,6 +256,38 @@
           "maxLength": 128
         }
       }
+    },
+    "samples": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "level": {
+            "enum": [
+              "error",
+              "warn",
+              "info",
+              "debug",
+              "unknown"
+            ]
+          }
+        },
+        "required": [
+          "timestamp",
+          "message",
+          "level"
+        ]
+      }
     }
   },
   "required": [
@@ -366,7 +401,9 @@
                 "findings.occurrences",
                 "incidents.records",
                 "executions.records",
-                "audit.events"
+                "audit.events",
+                "incidents.recovery-duration",
+                "executions.success-rate"
               ]
             }
           }
@@ -429,6 +466,29 @@
           "required": [
             "comparisonTimeRange"
           ]
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "samples"
+        ]
+      },
+      "then": {
+        "properties": {
+          "datasetId": {
+            "const": "logs.records"
+          },
+          "status": {
+            "const": "partial"
+          },
+          "exact": {
+            "const": false
+          },
+          "dimension": {
+            "const": ""
+          }
         }
       }
     }
