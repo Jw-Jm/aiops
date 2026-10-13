@@ -94,6 +94,46 @@
 
 ## 正式上线所需的独立门禁
 
+### 五个独立中文评测用例（2026-10-13）
+
+用户明确要求本轮只测试五个独立用例，每例一次。已完成冻结输入、独立黄金
+算术、实际 QueryIntent/Step 采集、逐例评分与人工复核模板；开发问题与验收
+输入分开保存。工具见 [评测运行说明](../../scripts/assistant-eval/README.md)。
+
+远程实际 qwen2.5:1.5b、HolmesGPT、官方 MCP、OpenBao/mTLS、PostgreSQL
+运行角色和持久 Worker 路径完整收集五例，耗时 300.07 秒。运行工具 PASS
+仅表示采集结束；评分器返回退出码 2，整体质量为 **FAIL：1 例通过、4 例失败**。
+
+- 问数失败：模型只读 get_assistant_context，返回 unsupported；没有提交
+  QueryIntent/查询结果，未得到黄金结果 3，不能宣称数字/单位正确性实测通过。
+- Incident 排障失败：返回 unsupported，未明确列出 missingEvidence/nextChecks。
+- 无 Incident 排障失败：有缺口/目标引用，但仍返回 unsupported，未产出合格诊断。
+- 多轮排障失败：UID 指代与绑定时间窗检查通过，且没有新增 Incident；两轮
+  模型回答均为 unsupported，不能把平台记忆正确当作排障效果通过。
+- 无验证目标的“它”由平台持久澄清路径返回 awaiting_user/clarification，通过；
+  该例没有调用模型，不作为模型理解成功证据。
+
+[逐例报告](../evidence/assistant-evaluation-20261013/report.json)、
+[原始轮次](../evidence/assistant-evaluation-20261013/observations.jsonl) 和
+[人工复核模板](../evidence/assistant-evaluation-20261013/reviews.template.json)
+随源码保存。三个排障用例人工帮助性/诚实性复核尚未填写，不计为通过。
+五例不估算总体准确率、帮助率或三次复测方差，不代替完整中文质量准入。
+
+评分器八项回归测试通过，覆盖错误数字/单位/范围/时间/排序、伪造引用与
+Fact 单元格、遗漏/重复用例、基准漂移、多轮 UID/时间及副作用检查。
+受影响 Go 集成包编译与 go vet 通过；本机未运行数据库/模型/容器。
+
+远程证据目录为 `/opt/ops-assistant-dev-20261012/evaluation-five-20261013-final`，
+保留数据库 `sp03_mig_471d6b9acbda442f9c33c8220e5153f7`。采集框架初轮
+MCP/API 地址约束失败、测试身份缺少 cluster scope、跨用例幂等键冲突分别
+保留在 `evaluation-five-20261013-first`、`-latest`、`-run`；修复评测框架后
+重新收集五例，未将这些基础设施失败伪装成模型成功。没有修改验收问题、
+降低规则、调整生产 Prompt 或替换模型来提高得分。
+
+该 Fixture 环境缺少新的 Graph Owner/真实采集和非空正式因果证据；无证据
+链例只检验诚实缺口和禁止编造，不证明复杂故障链帮助性。模型、来源与发行
+准入仍为下面的独立门禁，生产开关保持关闭。
+
 本轮六类功能没有剩余编码项。以下工作属于正式放行，不能用上述 Fixture
 或 unsupported 模型回答替代：
 

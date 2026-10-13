@@ -25,7 +25,11 @@ type sp05Seed struct {
 }
 
 func sp05Database(t *testing.T, seed ...sp05Seed) (context.Context, *sql.DB, *pgxpool.Pool, source.BoundSourceContext) {
-	ctx, db, dir, dsn := newMigrationDatabaseWithTimeout(t, 3*time.Minute)
+	return sp05DatabaseTimed(t, 3*time.Minute, seed...)
+}
+
+func sp05DatabaseTimed(t *testing.T, timeout time.Duration, seed ...sp05Seed) (context.Context, *sql.DB, *pgxpool.Pool, source.BoundSourceContext) {
+	ctx, db, dir, dsn := newMigrationDatabaseWithTimeout(t, timeout)
 	if err := goose.UpToContext(ctx, db, dir, 1); err != nil {
 		t.Fatal(err)
 	}

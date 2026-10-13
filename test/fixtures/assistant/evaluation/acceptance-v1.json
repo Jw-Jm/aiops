@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "assistant-evaluation-suite/v1",
+  "version": "zh-assistant-five-20261013/v1",
+  "fixtureOnly": true,
+  "minimumRepeats": 1,
+  "scope": "five independent cases explicitly requested by user; no population accuracy or variance claim",
+  "cases": [
+    {
+      "id": "zh-001",
+      "group": "query",
+      "namespace": "eval-query",
+      "messages": [
+        "统计过去30分钟当前命名空间的故障记录数量，最多50组，按数量降序。"
+      ],
+      "dataset": "incidents.records",
+      "metric": "incident_count",
+      "dimension": "",
+      "unit": "incidents",
+      "windowMinutes": 30,
+      "availability": "available",
+      "split": "acceptance",
+      "timezone": "Asia/Shanghai",
+      "fixture": {
+        "count": 3,
+        "excludedCount": 2
+      }
+    },
+    {
+      "id": "zh-002",
+      "group": "diagnosis",
+      "namespace": "eval-incident",
+      "messages": [
+        "调查当前绑定的 Incident。Node eval-target 已出现 NotReady，但没有 kubelet 日志和网络采样。区分已知现象和未确认原因，说明缺失证据以及下一步只读检查。"
+      ],
+      "task": "incident_followup",
+      "kind": "Node",
+      "availability": "evidence_missing",
+      "humanReview": true,
+      "requireMissingEvidence": true,
+      "split": "acceptance",
+      "timezone": "Asia/Shanghai",
+      "fixture": {
+        "count": 3,
+        "excludedCount": 2
+      }
+    },
+    {
+      "id": "zh-003",
+      "group": "diagnosis",
+      "namespace": "eval-resource",
+      "messages": [
+        "Pod eval-target 反复重启，没有 Incident。调查它的故障链，区分依赖关系与因果。缺少真实关系边或退出日志时不要构造传播链，列出待查证据。"
+      ],
+      "task": "resource_troubleshooting",
+      "kind": "Pod",
+      "availability": "evidence_missing",
+      "humanReview": true,
+      "requireMissingEvidence": true,
+      "expectNoIncident": true,
+      "split": "acceptance",
+      "timezone": "Asia/Shanghai",
+      "fixture": {
+        "count": 3,
+        "excludedCount": 2
+      }
+    },
+    {
+      "id": "zh-004",
+      "group": "multiturn",
+      "namespace": "eval-followup",
+      "messages": [
+        "调查当前绑定的十分钟窗口内 Pod eval-target 反复重启的原因；没有退出原因时保持假设。",
+        "继续检查它，沿用刚才的时间窗口，说明还缺哪些证据。"
+      ],
+      "task": "resource_troubleshooting",
+      "kind": "Pod",
+      "availability": "evidence_missing",
+      "humanReview": true,
+      "requireMissingEvidence": true,
+      "expectReference": "resolved",
+      "expectInheritedTime": true,
+      "expectNoIncident": true,
+      "split": "acceptance",
+      "timezone": "Asia/Shanghai",
+      "fixture": {
+        "count": 3,
+        "excludedCount": 2
+      }
+    },
+    {
+      "id": "zh-005",
+      "group": "clarification",
+      "namespace": "eval-ambiguous",
+      "messages": [
+        "它为什么异常？"
+      ],
+      "availability": "ambiguous",
+      "expectedKind": [
+        "clarification"
+      ],
+      "split": "acceptance",
+      "timezone": "Asia/Shanghai",
+      "fixture": {
+        "count": 3,
+        "excludedCount": 2
+      }
+    }
+  ]
+}

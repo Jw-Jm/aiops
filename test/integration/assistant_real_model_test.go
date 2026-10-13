@@ -5,11 +5,15 @@ import (
 	"context"
 	"crypto/ed25519"
 	"crypto/rand"
+	"crypto/sha256"
+	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -23,12 +27,13 @@ import (
 	"ops-platform/internal/integrations/openbao"
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/modelprofile"
+	"ops-platform/internal/source"
 )
 
 // The identity/tenant setup is isolated Fixture data. Model, PostgreSQL,
 // OpenBao signing, mTLS, official MCP and HolmesGPT are actual runtime paths.
 // Passing this smoke test does not qualify the model's diagnostic quality.
-func TestAssistantRealModelMCP(t *testing.T) {
+func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Context, *sql.DB, *pgxpool.Pool, source.BoundSourceContext, assistant.Repository, modelprofile.Profile, *assistantEvaluationTrace)) {
 	if os.Getenv("OPS_ASSISTANT_REAL_MODEL") != "1" {
 		t.Skip("actual model smoke test requires explicit isolated runtime")
 	}
@@ -37,8 +42,12 @@ func TestAssistantRealModelMCP(t *testing.T) {
 	if image == "" || python == "" {
 		t.Fatal("owned investigator image and updated source required")
 	}
-	ctx, db, workerPool, b := sp05Database(t)
-	ctx, cancel := context.WithTimeout(ctx, 6*time.Minute)
+	deadline := 6 * time.Minute
+	if evaluation {
+		deadline = 22 * time.Minute
+	}
+	ctx, db, workerPool, b := sp05DatabaseTimed(t, deadline)
+	ctx, cancel := context.WithTimeout(ctx, deadline)
 	defer cancel()
 	pub, priv, _ := ed25519.GenerateKey(rand.Reader)
 	sp06Policy(t, ctx, db, workerPool, b.TenantID, priv)
@@ -77,6 +86,21 @@ func TestAssistantRealModelMCP(t *testing.T) {
 	if err != nil || json.Unmarshal(profileBytes, &material) != nil {
 		t.Fatal("profile fixture missing", err)
 	}
+	if evaluation {
+		material.Version = "assistant-zh-evaluation/v1"
+		material.TaskKinds = []string{"data_query", "incident_followup", "resource_troubleshooting"}
+		suitePath := os.Getenv("OPS_ASSISTANT_EVALUATION_SUITE")
+		if suitePath == "" {
+			suitePath = "../fixtures/assistant/evaluation/acceptance-v1.json"
+		}
+		suiteRaw, err := os.ReadFile(suitePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		sum := sha256.Sum256(suiteRaw)
+		material.EvaluationDigest = "sha256:" + hex.EncodeToString(sum[:])
+		material.EvaluationVersion = "zh-assistant-five-20261013/v1"
+	}
 	profile := material.Reference()
 	config := app.SP06Config{Namespace: "sp06-test", ListenAddress: apiAddress, InvestigatorEndpoint: "https://" + investigatorAddress, CertificateFile: files["ops-api.pem"], PrivateKeyFile: files["ops-api.key"], CAFile: files["ca.pem"], CRLFile: files["crl.pem"], PolicyName: "sp06-read-only", Tenants: []uuid.UUID{b.TenantID}, Budget: investigation.DefaultBudget(), Assistant: &app.AssistantRuntimeConfig{Enabled: true, ModelProfileVersion: profile, Profile: &material}}
 	runtimeFile := filepath.Join(dir, "runtime.json")
@@ -101,7 +125,12 @@ func TestAssistantRealModelMCP(t *testing.T) {
 	if os.WriteFile(keyFile, []byte("local-ollama-no-auth"), 0600) != nil {
 		t.Fatal("model key file")
 	}
-	write(investigatorFile, map[string]any{"listenAddress": investigatorAddress, "jobAPI": "https://" + apiAddress, "mcpEndpoint": "https://" + apiAddress + "/mcp", "apiServerName": "ops-api.sp06-test.svc.cluster.local", "caFile": files["ca.pem"], "crlFile": files["crl.pem"], "certificateFile": files["ops-investigator.pem"], "privateKeyFile": files["ops-investigator.key"], "workerIdentity": "spiffe://ops.local/ns/sp06-test/sa/ops-worker", "modelAPIKeyFile": keyFile, "assistantModelProfileVersion": profile, "assistantModelProfile": material, "model": map[string]any{"base_url": "http://127.0.0.1:11434/v1", "api_key_ref": "secret://model/api-key", "model": "qwen2.5:1.5b", "timeout": 120, "token_budget": 2048}})
+	mcpEndpoint := "https://" + apiAddress + "/mcp"
+	var trace *assistantEvaluationTrace
+	if evaluation {
+		mcpEndpoint, trace = assistantEvaluationProxy(t, apiAddress, files)
+	}
+	write(investigatorFile, map[string]any{"listenAddress": investigatorAddress, "jobAPI": strings.TrimSuffix(mcpEndpoint, "/mcp"), "mcpEndpoint": mcpEndpoint, "apiServerName": "ops-api.sp06-test.svc.cluster.local", "caFile": files["ca.pem"], "crlFile": files["crl.pem"], "certificateFile": files["ops-investigator.pem"], "privateKeyFile": files["ops-investigator.key"], "workerIdentity": "spiffe://ops.local/ns/sp06-test/sa/ops-worker", "modelAPIKeyFile": keyFile, "assistantModelProfileVersion": profile, "assistantModelProfile": material, "model": map[string]any{"base_url": "http://127.0.0.1:11434/v1", "api_key_ref": "secret://model/api-key", "model": "qwen2.5:1.5b", "timeout": 120, "token_budget": 2048}})
 	name := "ops-assistant-smoke-" + uuid.NewString()
 	process := exec.CommandContext(ctx, "docker", "run", "--rm", "--name", name, "--label", "ops.task=assistant-20261012", "--network", "host", "--user", "0", "-v", dir+":"+dir+":ro", "-v", python+":/assistant-src:ro", "-e", "PYTHONPATH=/assistant-src", "-e", "SP06_INVESTIGATOR_FILE="+investigatorFile, "--entrypoint", "python", image, "-m", "investigator.worker")
 	var output bytes.Buffer
@@ -152,38 +181,43 @@ func TestAssistantRealModelMCP(t *testing.T) {
 	if !ready {
 		t.Fatal("assistant worker unavailable")
 	}
-	actor := auth.RequestContext{TenantID: b.TenantID, Subject: "sp06-admin", Roles: []auth.Role{auth.PlatformAdmin}, RequestID: uuid.NewString()}
-	requestCtx := auth.WithRequestContext(ctx, actor)
-	repo := sp04.Assistant.Repository
-	c, err := repo.Create(requestCtx, assistant.Conversation{TenantID: b.TenantID, OwnerSubject: actor.Subject, Title: "实际模型只读烟测", Mode: "data_query", AuthorizationDomain: "audit", Binding: assistant.ConversationBinding{Timezone: "Asia/Shanghai"}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	turn, err := repo.Submit(requestCtx, b.TenantID, c.ConversationID, actor.Subject, "real-model-smoke", assistant.SubmitMessage{Message: "请描述你可以查询的平台审计数据范围。不要查询数字；如果信息不足，返回 clarification 或 unsupported。先读取当前助手上下文。", ExpectedConversationRevision: 1})
-	if err != nil {
-		t.Fatal(err)
-	}
-	for ctx.Err() == nil {
-		current, e := repo.Turn(requestCtx, b.TenantID, turn.TurnID, actor.Subject)
-		if e != nil {
-			t.Fatal(e)
+	run(ctx, db, workerPool, b, sp04.Assistant.Repository, material, trace)
+}
+
+func TestAssistantRealModelMCP(t *testing.T) {
+	assistantRealRuntime(t, false, func(ctx context.Context, db *sql.DB, workerPool *pgxpool.Pool, b source.BoundSourceContext, repo assistant.Repository, material modelprofile.Profile, _ *assistantEvaluationTrace) {
+		actor := auth.RequestContext{TenantID: b.TenantID, Subject: "sp06-admin", Roles: []auth.Role{auth.PlatformAdmin}, RequestID: uuid.NewString()}
+		requestCtx := auth.WithRequestContext(ctx, actor)
+		c, err := repo.Create(requestCtx, assistant.Conversation{TenantID: b.TenantID, OwnerSubject: actor.Subject, Title: "实际模型只读烟测", Mode: "data_query", AuthorizationDomain: "audit", Binding: assistant.ConversationBinding{Timezone: "Asia/Shanghai"}})
+		if err != nil {
+			t.Fatal(err)
 		}
-		if current.State != "queued" && current.State != "running" {
-			if current.State != "completed" && current.State != "awaiting_user" {
-				t.Fatalf("actual model turn state=%s error=%s", current.State, current.ErrorCode)
-			}
-			var answer investigation.AssistantAnswer
-			if json.Unmarshal(current.Answer, &answer) != nil || answer.SchemaVersion != "assistant-answer/v1" {
-				t.Fatal("answer unavailable")
-			}
-			var calls int
-			if db.QueryRowContext(ctx, `SELECT count(*) FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name='get_assistant_context' AND state='succeeded'`, b.TenantID, turn.JobID).Scan(&calls) != nil || calls == 0 {
-				t.Fatal("model did not commit the required MCP context read")
-			}
-			t.Logf("actual model/MCP smoke answerKind=%s contextReads=%d", answer.AnswerKind, calls)
-			return
+		turn, err := repo.Submit(requestCtx, b.TenantID, c.ConversationID, actor.Subject, "real-model-smoke", assistant.SubmitMessage{Message: "请描述你可以查询的平台审计数据范围。不要查询数字；如果信息不足，返回 clarification 或 unsupported。先读取当前助手上下文。", ExpectedConversationRevision: 1})
+		if err != nil {
+			t.Fatal(err)
 		}
-		time.Sleep(250 * time.Millisecond)
-	}
-	t.Fatal("actual model smoke deadline exceeded")
+		for ctx.Err() == nil {
+			current, e := repo.Turn(requestCtx, b.TenantID, turn.TurnID, actor.Subject)
+			if e != nil {
+				t.Fatal(e)
+			}
+			if current.State != "queued" && current.State != "running" {
+				if current.State != "completed" && current.State != "awaiting_user" {
+					t.Fatalf("actual model turn state=%s error=%s", current.State, current.ErrorCode)
+				}
+				var answer investigation.AssistantAnswer
+				if json.Unmarshal(current.Answer, &answer) != nil || answer.SchemaVersion != "assistant-answer/v1" {
+					t.Fatal("answer unavailable")
+				}
+				var calls int
+				if db.QueryRowContext(ctx, `SELECT count(*) FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name='get_assistant_context' AND state='succeeded'`, b.TenantID, turn.JobID).Scan(&calls) != nil || calls == 0 {
+					t.Fatal("model did not commit the required MCP context read")
+				}
+				t.Logf("actual model/MCP smoke answerKind=%s contextReads=%d", answer.AnswerKind, calls)
+				return
+			}
+			time.Sleep(250 * time.Millisecond)
+		}
+		t.Fatal("actual model smoke deadline exceeded")
+	})
 }
