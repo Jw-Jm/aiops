@@ -22,6 +22,15 @@ Fixture Profile 只允许本机回环监听和模型端点的隔离烟测，Helm
 能力接口和新建会话模式按 Profile taskKinds 与当前角色共同过滤；仅问数
 Profile 不开放资源/Incident 排障入口，管理员不继承运维排障模式。
 
+2026-10-13 趋势/比较补充：Pod 内存、Pod phase 数量、Node Ready 数量目录
+新增 trend/compare 操作。trend 使用固定 60～86400 秒网格、最多 50 点，
+显式 last_over_time 5 分钟回看；缺失点保持缺口，前端不补零或跨缺口连线。
+compare 在同一冻结授权范围内读取两个等长、不重叠窗口的末端 gauge 快照，
+平台生成 baseline/current 和增加或减少的绝对变化量。部分或缺失输入不生成
+变化量；这不是窗口平均值，也不计算百分比。每个点/比较单元格仍绑定持久
+QueryFact。新的 operation 必须有独立来源 qualification，旧 aggregate
+证明不能开放趋势/比较；窗口前额外 5 分钟也须落在验证覆盖范围。
+
 - P0：非虚拟化分析目录、QueryIntent/QueryResult/Facts、资源选择与上下文、
   AssistantAnswer、Job/InvocationContext v3、REST/OpenAPI 和生成客户端。
   目录含资源、Finding、Incident、本人执行、管理员审计，以及 Pod 重启/CPU
@@ -79,6 +88,13 @@ Profile 不开放资源/Incident 排障入口，管理员不继承运维排障�
 - 远程真实 VictoriaMetrics/VictoriaLogs 后端的人工 Fixture 聚合通过：
   Pod 内存与日志计数排除授权外 namespace 和其他租户。此证据仅为
   `fixture_only`，不代表生产采集、其他指标模板或质量门禁已通过。
+  新增远程 Pod 内存趋势和比较 Fixture 通过：验证 100/200/0/400 历史点、
+  缺失首点的 partial、跨 namespace/tenant 排除、增加 300 和减少 100 的
+  平台计算结果。日志为专项目录 `trend-fixture-latest.log`。
+  Node Ready 趋势远程 Fixture 通过，验证 0/1/2 观测、排除其他集群以及
+  namespace-only 主体不能访问 Node。首轮 Fixture 未显式选择集群级资源，
+  被范围收窄规则拒绝；补上真实选择后通过，保留
+  `node-trend-fixture-first.log` 和 `node-trend-fixture-latest.log`。
 - 远程既有 investigator 容器运行更新 Python 源码测试：47 项通过，包含
   完整 Profile 摘要/准入边界和实际 Holmes 参数格式化；32k Profile 请求
   按上游 max_context_size 属性预留 32k，未知使用量保守结算。
@@ -106,7 +122,9 @@ Profile 不开放资源/Incident 排障入口，管理员不继承运维排障�
    不等同于完整进程故障演练。
 3. P2：恢复时间/比率等具体统计、Incident RCA/ActionPlan 引用和追问补证
    全链路、严格的历史指代及显式范围/时间调整。
-4. P3：趋势、比较、脱敏日志样例、所有指标的实际采集与完整性验收；
+4. P3：CPU/重启计数器及日志的趋势/比较、百分比及窗口平均等派生口径、
+   脱敏日志样例、Pod phase 趋势实际 Fixture、所有指标生产采集与完整性验收；
+   gauge 末端趋势/比较源码和部分远程 Fixture 已实现，不等于整个 P3 通过。
    production SourceRegistration qualification 未建立的 dataset 保持不可用。
 5. P4：全局自由症状的意图解析、来源能力呈现、
    故障链支持/冲突依据及相关工具输出范围的完整验证。

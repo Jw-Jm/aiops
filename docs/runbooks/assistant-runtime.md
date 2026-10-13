@@ -40,6 +40,8 @@ Victoria 分析能力由 Worker 的 `Sources[].AnalysisQualifications` 显式配
 每项必须与真实 SourceRegistration 匹配，字段如下：
 
 - `DatasetID`、`SourceRevision`、`BindingDigest`。
+- `Operation`：aggregate/trend/compare。未填写只匹配旧 aggregate；每种
+  新操作分别绑定经过验证的来源证明，不能自动借用旧聚合证明。
 - `EvidenceDigest`：实际准入证据摘要；`CollectorVersion`：已核对采集版本。
 - `VerifiedUntil`、`CoverageFrom`、`CoverageTo`：有效期及实际覆盖时间。
 - `MaxWindowSeconds`：已验证最大扫描时间窗。
@@ -48,9 +50,17 @@ Victoria 分析能力由 Worker 的 `Sources[].AnalysisQualifications` 显式配
 namespace/UID 标签、覆盖窗口不足或证明到期时拒绝查询。Fixture 证据不能
 作为生产 qualification。模型和浏览器不能提供或覆盖以上配置。
 
-`resources.current` 是当前状态；Pod 内存/phase/Node Ready 模板按窗口末端
-求值，不能称为历史趋势。重启增加、CPU 使用核数、日志计数及控制面日分组
-按目录口径处理。CPU 百分比、任意表达式及未经实现的趋势/比较保持不支持。
+`resources.current` 是当前状态；Pod 内存/phase/Node Ready 的 aggregate
+仍按窗口末端求值。它们的 trend 使用 dimension=time、stepSeconds，网格
+从 from 到 to 包含两端，时间必须为整秒且窗口跨度能整除步长，最多 50 点。
+显式使用 5 分钟 last_over_time 回看；这不是原始采样点或窗口平均值。来源
+覆盖须包含 from 前额外 5 分钟，缺失点返回 partial/no_data，不补零。
+compare 使用 dimension=comparison 和 comparisonTimeRange；两窗口同
+时区、等长、不重叠且对照窗口在前，比较各自末端 gauge。两侧完整才计算
+increase/decrease/unchanged 的绝对变化量，缺失或部分输入仅保留可用输入
+事实，不生成变化量。所有数字均由服务端产生，百分比尚未实现。
+重启增加、CPU 使用核数、日志计数及控制面日分组按目录口径处理。CPU
+百分比、任意表达式及未经实现的计数器/日志趋势和比较保持不支持。
 日志查询含显式 UTC 时间过滤。没有观测返回 no_data，不能解释为零或正常。
 
 ## 会话、引用与恢复

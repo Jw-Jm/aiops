@@ -107,7 +107,9 @@
                 "day",
                 "uid",
                 "phase",
-                "level"
+                "level",
+                "time",
+                "comparison"
               ]
             },
             "maxItems": 6,
@@ -199,6 +201,19 @@
             },
             "uniqueItems": true,
             "maxItems": 3
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "aggregate",
+                "trend",
+                "compare"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true
           }
         },
         "required": [
@@ -219,7 +234,8 @@
           "historySupported",
           "zeroMeaning",
           "kinds",
-          "clusterScopedKinds"
+          "clusterScopedKinds",
+          "operations"
         ]
       },
       "maxItems": 32,

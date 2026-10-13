@@ -37,7 +37,7 @@ func Compile(intent QueryIntent, binding Binding) (QueryPlan, error) {
 		return QueryPlan{}, err
 	}
 	dataset := catalog.Datasets[0]
-	if intent.TimeRange != nil || intent.DatasetID != dataset.ID || intent.Operation != "aggregate" ||
+	if intent.ComparisonTimeRange != nil || intent.StepSeconds != 0 || intent.TimeRange != nil || intent.DatasetID != dataset.ID || intent.Operation != "aggregate" ||
 		len(intent.Metrics) != 1 || intent.Metrics[0] != dataset.Metric ||
 		len(intent.Dimensions) > 1 {
 		return QueryPlan{}, ErrUnsupported

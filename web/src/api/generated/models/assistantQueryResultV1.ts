@@ -4,6 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
+import type { AssistantQueryResultV1ComparisonTimeRange } from './assistantQueryResultV1ComparisonTimeRange.ts';
 import type { AssistantQueryResultV1DatasetId } from './assistantQueryResultV1DatasetId.ts';
 import type { AssistantQueryResultV1Dimension } from './assistantQueryResultV1Dimension.ts';
 import type { AssistantQueryResultV1Freshness } from './assistantQueryResultV1Freshness.ts';
@@ -53,4 +54,10 @@ export type AssistantQueryResultV1 = unknown & unknown & unknown & unknown & {
   controlPlaneSnapshot?: string;
   sourceManifest?: AssistantQueryResultV1SourceManifest;
   timeRange?: AssistantQueryResultV1TimeRange;
+  /**
+     * @minimum 60
+     * @maximum 86400
+     */
+  stepSeconds?: number;
+  comparisonTimeRange?: AssistantQueryResultV1ComparisonTimeRange;
 };

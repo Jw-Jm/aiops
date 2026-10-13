@@ -59,6 +59,9 @@
         "Node",
         "PersistentVolume",
         "Namespace"
+      ],
+      "operations": [
+        "aggregate"
       ]
     },
     {
@@ -88,7 +91,10 @@
       "clusterScopedKinds": [],
       "maxGroups": 50,
       "historySupported": true,
-      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+      "operations": [
+        "aggregate"
+      ]
     },
     {
       "id": "incidents.records",
@@ -115,7 +121,10 @@
       "clusterScopedKinds": [],
       "maxGroups": 50,
       "historySupported": true,
-      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+      "operations": [
+        "aggregate"
+      ]
     },
     {
       "id": "executions.records",
@@ -140,7 +149,10 @@
       "clusterScopedKinds": [],
       "maxGroups": 50,
       "historySupported": true,
-      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+      "operations": [
+        "aggregate"
+      ]
     },
     {
       "id": "audit.events",
@@ -167,7 +179,10 @@
       "clusterScopedKinds": [],
       "maxGroups": 50,
       "historySupported": true,
-      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+      "operations": [
+        "aggregate"
+      ]
     },
     {
       "id": "metrics.pod-restarts",
@@ -192,7 +207,10 @@
       "clusterScopedKinds": [],
       "maxGroups": 50,
       "historySupported": true,
-      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+      "operations": [
+        "aggregate"
+      ]
     },
     {
       "id": "metrics.pod-cpu",
@@ -217,21 +235,26 @@
       "clusterScopedKinds": [],
       "maxGroups": 50,
       "historySupported": true,
-      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+      "operations": [
+        "aggregate"
+      ]
     },
     {
       "id": "metrics.pod-memory",
-      "name": "Pod 当前工作集内存",
-      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+      "name": "Pod 工作集内存",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
       "authorizationDomain": "operational",
       "source": "victoriametrics",
       "templateVersion": "metrics.pod-memory/v1",
       "metric": "memory_bytes",
       "unit": "bytes",
-      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。",
       "dimensions": [
         "namespace",
-        "uid"
+        "uid",
+        "time",
+        "comparison"
       ],
       "filters": [
         "namespace"
@@ -241,22 +264,29 @@
       "kinds": [],
       "clusterScopedKinds": [],
       "maxGroups": 50,
-      "historySupported": false,
-      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+      "historySupported": true,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+      "operations": [
+        "aggregate",
+        "trend",
+        "compare"
+      ]
     },
     {
       "id": "metrics.pod-phase",
-      "name": "Pod 当前 phase",
-      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+      "name": "Pod phase 数量",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
       "authorizationDomain": "operational",
       "source": "victoriametrics",
       "templateVersion": "metrics.pod-phase/v1",
       "metric": "phase_count",
       "unit": "resources",
-      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。",
       "dimensions": [
         "namespace",
-        "phase"
+        "phase",
+        "time",
+        "comparison"
       ],
       "filters": [
         "namespace"
@@ -266,20 +296,28 @@
       "kinds": [],
       "clusterScopedKinds": [],
       "maxGroups": 50,
-      "historySupported": false,
-      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+      "historySupported": true,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+      "operations": [
+        "aggregate",
+        "trend",
+        "compare"
+      ]
     },
     {
       "id": "metrics.node-ready",
       "name": "Node Ready 数量",
-      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
       "authorizationDomain": "operational",
       "source": "victoriametrics",
       "templateVersion": "metrics.node-ready/v1",
       "metric": "ready_count",
       "unit": "resources",
-      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
-      "dimensions": [],
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。",
+      "dimensions": [
+        "time",
+        "comparison"
+      ],
       "filters": [
         "namespace"
       ],
@@ -288,8 +326,13 @@
       "kinds": [],
       "clusterScopedKinds": [],
       "maxGroups": 50,
-      "historySupported": false,
-      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+      "historySupported": true,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+      "operations": [
+        "aggregate",
+        "trend",
+        "compare"
+      ]
     },
     {
       "id": "logs.records",
@@ -315,7 +358,10 @@
       "clusterScopedKinds": [],
       "maxGroups": 50,
       "historySupported": true,
-      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+      "operations": [
+        "aggregate"
+      ]
     }
   ]
 }

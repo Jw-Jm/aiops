@@ -34,15 +34,17 @@ type QueryTimeRange struct {
 	Timezone string    `json:"timezone"`
 }
 type QueryIntent struct {
-	TimeRange     *QueryTimeRange `json:"timeRange,omitempty"`
-	SchemaVersion string          `json:"schemaVersion"`
-	DatasetID     string          `json:"datasetId"`
-	Operation     string          `json:"operation"`
-	Metrics       []string        `json:"metrics"`
-	Dimensions    []string        `json:"dimensions"`
-	Filters       []Filter        `json:"filters"`
-	Sort          []Sort          `json:"sort"`
-	Limit         int             `json:"limit"`
+	ComparisonTimeRange *QueryTimeRange `json:"comparisonTimeRange,omitempty"`
+	StepSeconds         int             `json:"stepSeconds,omitempty"`
+	TimeRange           *QueryTimeRange `json:"timeRange,omitempty"`
+	SchemaVersion       string          `json:"schemaVersion"`
+	DatasetID           string          `json:"datasetId"`
+	Operation           string          `json:"operation"`
+	Metrics             []string        `json:"metrics"`
+	Dimensions          []string        `json:"dimensions"`
+	Filters             []Filter        `json:"filters"`
+	Sort                []Sort          `json:"sort"`
+	Limit               int             `json:"limit"`
 }
 
 // Selection is trusted product selection, separate from model-supplied Intent.
@@ -91,6 +93,8 @@ type Row struct {
 	Value     float64 `json:"value"`
 }
 type QueryResult struct {
+	ComparisonTimeRange  *QueryTimeRange `json:"comparisonTimeRange,omitempty"`
+	StepSeconds          int             `json:"stepSeconds,omitempty"`
 	TimeRange            *QueryTimeRange `json:"timeRange,omitempty"`
 	SourceManifest       *SourceManifest `json:"sourceManifest,omitempty"`
 	SchemaVersion        string          `json:"schemaVersion"`

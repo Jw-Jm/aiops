@@ -21,4 +21,6 @@ export const AssistantQueryResultV1Dimension = {
   uid: 'uid',
   phase: 'phase',
   level: 'level',
+  time: 'time',
+  comparison: 'comparison',
 } as const;

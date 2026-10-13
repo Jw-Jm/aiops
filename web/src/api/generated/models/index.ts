@@ -44,6 +44,7 @@ export * from './assistantQueryEnvelopeV1Meta.ts';
 export * from './assistantQueryFactV1.ts';
 export * from './assistantQueryFactV1Unit.ts';
 export * from './assistantQueryResultV1.ts';
+export * from './assistantQueryResultV1ComparisonTimeRange.ts';
 export * from './assistantQueryResultV1DatasetId.ts';
 export * from './assistantQueryResultV1Dimension.ts';
 export * from './assistantQueryResultV1Freshness.ts';

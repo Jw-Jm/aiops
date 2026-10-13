@@ -25,6 +25,7 @@ import (
 // supplied by trusted deployment configuration, never by a QueryIntent. Legacy
 // evidence scope proofs do not qualify a new aggregate template by themselves.
 type Qualification struct {
+	Operation                string `json:"operation,omitempty"`
 	DatasetID                string
 	SourceRevision           int64
 	BindingDigest            string
@@ -90,7 +91,7 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 			dataset = &catalog.Datasets[i]
 		}
 	}
-	if dataset == nil || dataset.Source != v.binding.SourceType || dataset.AuthorizationDomain != "operational" || intent.Operation != "aggregate" || len(intent.Metrics) != 1 || intent.Metrics[0] != dataset.Metric || len(intent.Dimensions) > 1 || len(intent.Sort) > 1 || intent.Limit < 1 || intent.Limit > 50 {
+	if dataset == nil || dataset.Source != v.binding.SourceType || dataset.AuthorizationDomain != "operational" || !slices.Contains(dataset.Operations, intent.Operation) || len(intent.Metrics) != 1 || intent.Metrics[0] != dataset.Metric || len(intent.Dimensions) > 1 || len(intent.Sort) > 1 || intent.Limit < 1 || intent.Limit > 50 {
 		return p, ErrUnsupported
 	}
 	if intent.TimeRange == nil || intent.TimeRange.From.IsZero() || !intent.TimeRange.To.After(intent.TimeRange.From) || intent.TimeRange.To.Sub(intent.TimeRange.From) > 7*24*time.Hour || intent.TimeRange.To.After(time.Now().Add(time.Minute)) || intent.TimeRange.Timezone == "Local" {
@@ -98,6 +99,23 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 	}
 	if _, err = time.LoadLocation(intent.TimeRange.Timezone); err != nil {
 		return p, ErrInvalid
+	}
+	trend := intent.Operation == "trend"
+	compare := intent.Operation == "compare"
+	if trend {
+		if intent.StepSeconds < 60 || intent.StepSeconds > 86400 || intent.TimeRange.From.Nanosecond() != 0 || intent.TimeRange.To.Nanosecond() != 0 || len(intent.Dimensions) != 1 || intent.Dimensions[0] != "time" || intent.TimeRange.To.Sub(intent.TimeRange.From)%(time.Duration(intent.StepSeconds)*time.Second) != 0 || int(intent.TimeRange.To.Sub(intent.TimeRange.From)/time.Second)/intent.StepSeconds+1 > intent.Limit {
+			return p, ErrInvalid
+		}
+	} else if intent.StepSeconds != 0 || slices.Contains(intent.Dimensions, "time") {
+		return p, ErrUnsupported
+	}
+	if compare {
+		window := intent.ComparisonTimeRange
+		if window == nil || window.From.IsZero() || !window.To.After(window.From) || window.To.After(intent.TimeRange.From) || window.To.Sub(window.From) != intent.TimeRange.To.Sub(intent.TimeRange.From) || window.Timezone != intent.TimeRange.Timezone || len(intent.Dimensions) != 1 || intent.Dimensions[0] != "comparison" || len(intent.Sort) != 0 || intent.Limit < 3 {
+			return p, ErrInvalid
+		}
+	} else if intent.ComparisonTimeRange != nil || slices.Contains(intent.Dimensions, "comparison") {
+		return p, ErrUnsupported
 	}
 	scope, err := RestrictScope(binding.Grant, binding.Selection)
 	if err != nil {
@@ -109,11 +127,18 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 	var qualification *Qualification
 	for i := range v.qualifications {
 		q := &v.qualifications[i]
-		if q.DatasetID == intent.DatasetID && q.SourceRevision == v.binding.Revision && q.BindingDigest == evidence.BindingScopeDigest(v.binding) && regexp.MustCompile(`^sha256:[a-f0-9]{64}$`).MatchString(q.EvidenceDigest) && q.CollectorVersion != "" && q.VerifiedUntil.After(time.Now()) {
+		operationMatches := q.Operation == intent.Operation || (q.Operation == "" && intent.Operation == "aggregate")
+		if operationMatches && q.DatasetID == intent.DatasetID && q.SourceRevision == v.binding.Revision && q.BindingDigest == evidence.BindingScopeDigest(v.binding) && regexp.MustCompile(`^sha256:[a-f0-9]{64}$`).MatchString(q.EvidenceDigest) && q.CollectorVersion != "" && q.VerifiedUntil.After(time.Now()) {
 			qualification = q
 		}
 	}
 	if qualification == nil || qualification.MaxWindowSeconds < 1 || intent.TimeRange.To.Sub(intent.TimeRange.From) > time.Duration(qualification.MaxWindowSeconds)*time.Second || intent.TimeRange.From.Before(qualification.CoverageFrom) || intent.TimeRange.To.After(qualification.CoverageTo) {
+		return p, ErrSource
+	}
+	if (trend || compare) && intent.TimeRange.From.Add(-5*time.Minute).Before(qualification.CoverageFrom) {
+		return p, ErrSource
+	}
+	if compare && (intent.ComparisonTimeRange.From.Add(-5*time.Minute).Before(qualification.CoverageFrom) || intent.ComparisonTimeRange.To.After(qualification.CoverageTo)) {
 		return p, ErrSource
 	}
 	dimension := ""
@@ -250,7 +275,7 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 			return p, ErrInvalid
 		}
 		group := ""
-		if dimension != "" {
+		if dimension != "" && !trend && !compare {
 			group = " by (" + dimension + ")"
 		}
 		switch dataset.ID {
@@ -260,19 +285,42 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 			selector = strings.TrimSuffix(selector, "}") + `,container!="",container!="POD"}`
 			query = "sum" + group + "(avg_over_time(rate(container_cpu_usage_seconds_total" + selector + "[5m])[" + strconv.FormatInt(seconds, 10) + "s:30s]))"
 		case "metrics.pod-memory":
-			query = "sum" + group + "(container_memory_working_set_bytes" + strings.TrimSuffix(selector, "}") + `,container!="",container!="POD"})`
+			metric := "container_memory_working_set_bytes" + strings.TrimSuffix(selector, "}") + `,container!="",container!="POD"}`
+			if trend || compare {
+				metric = "last_over_time(" + metric + "[5m])"
+			}
+			query = "sum" + group + "(" + metric + ")"
 		case "metrics.pod-phase":
-			query = "sum" + group + "(kube_pod_status_phase" + selector + " == 1)"
+			metric := "kube_pod_status_phase" + selector
+			if trend || compare {
+				query = "sum(last_over_time(" + metric + "[5m]) == bool 1)"
+			} else {
+				query = "sum" + group + "(" + metric + " == 1)"
+			}
 		case "metrics.node-ready":
-			query = "sum(kube_node_status_condition" + strings.TrimSuffix(selector, "}") + `,condition="Ready",status="true"} == 1)`
+			metric := "kube_node_status_condition" + strings.TrimSuffix(selector, "}") + `,condition="Ready",status="true"}`
+			if trend || compare {
+				query = "sum(last_over_time(" + metric + "[5m]) == bool 1)"
+			} else {
+				query = "sum(" + metric + " == 1)"
+			}
 		default:
 			return p, ErrUnsupported
 		}
 	}
+	if trend {
+		path = "/api/v1/query_range"
+	}
 	order := Sort{Field: dataset.Metric, Direction: "desc"}
+	if trend {
+		order = Sort{Field: "time", Direction: "asc"}
+	}
 	if len(intent.Sort) > 0 {
 		order = intent.Sort[0]
 		if (order.Field != dataset.Metric && (dimension == "" || order.Field != dimension)) || !slices.Contains([]string{"asc", "desc"}, order.Direction) {
+			return p, ErrUnsupported
+		}
+		if trend && (order.Field != "time" || order.Direction != "asc") {
 			return p, ErrUnsupported
 		}
 	}
@@ -286,6 +334,9 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 }
 
 func (v *Victoria) Execute(ctx context.Context, p VictoriaPlan) (QueryResult, error) {
+	if p.intent.Operation == "compare" {
+		return v.executeComparison(ctx, p)
+	}
 	if p.digest == "" || !p.qualification.VerifiedUntil.After(time.Now()) || v.authorize(ctx, v.binding) != nil {
 		return QueryResult{}, ErrDenied
 	}
@@ -299,6 +350,11 @@ func (v *Victoria) Execute(ctx context.Context, p VictoriaPlan) (QueryResult, er
 	}
 	params := url.Values{"query": {p.query}, "time": {p.intent.TimeRange.To.UTC().Format(time.RFC3339Nano)}, "timeout": {"3s"}, "nocache": {"1"}}
 	params.Set("deny_partial_response", "1")
+	if p.intent.Operation == "trend" {
+		params.Set("start", p.intent.TimeRange.From.UTC().Format(time.RFC3339))
+		params.Set("end", p.intent.TimeRange.To.UTC().Format(time.RFC3339))
+		params.Set("step", strconv.Itoa(p.intent.StepSeconds))
+	}
 	if v.binding.SourceType == "victorialogs" {
 		params.Set("allow_partial_response", "0")
 		params.Set("start", p.intent.TimeRange.From.UTC().Format(time.RFC3339Nano))
@@ -328,17 +384,51 @@ func (v *Victoria) Execute(ctx context.Context, p VictoriaPlan) (QueryResult, er
 		Data      struct {
 			ResultType string `json:"resultType"`
 			Result     []struct {
-				Metric map[string]string `json:"metric"`
-				Value  []json.RawMessage `json:"value"`
+				Metric map[string]string   `json:"metric"`
+				Value  []json.RawMessage   `json:"value"`
+				Values [][]json.RawMessage `json:"values"`
 			} `json:"result"`
 		} `json:"data"`
 	}
-	if json.Unmarshal(body, &envelope) != nil || envelope.Status != "success" || envelope.Data.ResultType != "vector" || len(envelope.Data.Result) > 10000 {
+	resultType := "vector"
+	if p.intent.Operation == "trend" {
+		resultType = "matrix"
+	}
+	if json.Unmarshal(body, &envelope) != nil || envelope.Status != "success" || envelope.Data.ResultType != resultType || len(envelope.Data.Result) > 10000 {
 		return QueryResult{}, ErrSource
 	}
 	out := QueryResult{TimeRange: copyQueryTimeRange(p.intent.TimeRange), SchemaVersion: "query-result/v1", DatasetID: p.intent.DatasetID, PlanDigest: p.digest, CatalogDigest: p.catalogDigest, ScopeDigest: graph.ScopeDigest(p.scope), Status: "complete", Exact: true, Dimension: p.dimension, Unit: p.unit, Rows: []Row{}, SnapshotReadAt: time.Now().UTC(), Freshness: "fresh", Warnings: []string{}, DegradedSources: []string{}, SourceManifest: &SourceManifest{v.binding.SourceID, v.binding.Revision, evidence.BindingScopeDigest(v.binding), graph.ScopeDigest(p.qualification), graph.ScopeDigest(p.query), p.qualification.DatasetID + "/v1", p.intent.TimeRange.From, p.intent.TimeRange.To}}
 	seen := map[string]bool{}
+	if p.intent.Operation == "trend" {
+		out.StepSeconds = p.intent.StepSeconds
+		out.SourceManifest.TemplateVersion = p.intent.DatasetID + "-trend/v1"
+		if len(envelope.Data.Result) > 1 {
+			return QueryResult{}, ErrSource
+		}
+		for _, series := range envelope.Data.Result {
+			if len(series.Metric) != 0 || len(series.Value) != 0 || len(series.Values) > p.intent.Limit {
+				return QueryResult{}, ErrSource
+			}
+			for _, point := range series.Values {
+				row, err := trendPoint(point, p.intent.TimeRange, p.intent.StepSeconds)
+				if err != nil || seen[row.Dimension] {
+					return QueryResult{}, ErrSource
+				}
+				seen[row.Dimension] = true
+				out.Rows = append(out.Rows, row)
+			}
+		}
+		want := int(p.intent.TimeRange.To.Sub(p.intent.TimeRange.From)/time.Second)/p.intent.StepSeconds + 1
+		if len(out.Rows) > 0 && len(out.Rows) < want {
+			out.Exact = false
+			out.Status = "partial"
+			out.Warnings = append(out.Warnings, "missing_time_points")
+		}
+	}
 	for _, series := range envelope.Data.Result {
+		if p.intent.Operation == "trend" {
+			break
+		}
 		if len(series.Value) != 2 {
 			return QueryResult{}, ErrSource
 		}

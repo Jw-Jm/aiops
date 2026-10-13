@@ -4,8 +4,16 @@ import { checked, requestOptions } from "../../api/client";
 import { getAssistantQueryResult } from "../../api/generated/platform";
 import type { AssistantAnswerV1 } from "../../api/generated/models";
 import { QueryDayTrend } from "./QueryDayTrend";
+import { QueryTimeTrend } from "./QueryTimeTrend";
 import { useAuth } from "../../auth/AuthProvider";
 import { QueryState } from "../../components/QueryState";
+const comparisonLabels: Record<string, string> = {
+  baseline: "对照窗口末端",
+  current: "当前窗口末端",
+  increase: "增加量",
+  decrease: "减少量",
+  unchanged: "变化量（无变化）",
+};
 export function QueryResultView({
   id,
   answer,
@@ -14,7 +22,13 @@ export function QueryResultView({
   answer: AssistantAnswerV1;
 }) {
   const { session } = useAuth();
-  const scopeKey = JSON.stringify([session?.tenantId, session?.subject, session?.roles, session?.clusterScopes, session?.namespaceScopes]);
+  const scopeKey = JSON.stringify([
+    session?.tenantId,
+    session?.subject,
+    session?.roles,
+    session?.clusterScopes,
+    session?.namespaceScopes,
+  ]);
   const query = useQuery({
     queryKey: ["assistant", scopeKey, "result", id],
     enabled: !!session,
@@ -40,7 +54,10 @@ export function QueryResultView({
                   ? "精确结果"
                   : "部分结果"}
           </Tag>
-          {result.dimension === "day" && result.rows.length > 0 && <QueryDayTrend rows={result.rows} unit={result.unit} />}
+          {result.dimension === "day" && result.rows.length > 0 && (
+            <QueryDayTrend rows={result.rows} unit={result.unit} />
+          )}
+          {result.dimension === "time" && <QueryTimeTrend result={result} />}
           {result.truncated && <Tag color="orange">分组截断</Tag>}
           {result.status === "no_data" || result.status === "degraded" ? (
             <Alert
@@ -57,9 +74,15 @@ export function QueryResultView({
                 {
                   title: result.dimension || "范围",
                   dataIndex: "dimension",
-                  render: (value: string) => value || "当前授权范围",
+                  render: (value: string) =>
+                    result.dimension === "comparison"
+                      ? comparisonLabels[value] || value
+                      : value || "当前授权范围",
                 },
-                { title: result.unit === "resources" ? "资源数量" : "数值", dataIndex: "value" },
+                {
+                  title: result.unit === "resources" ? "资源数量" : "数值",
+                  dataIndex: "value",
+                },
               ]}
             />
           )}
@@ -92,7 +115,24 @@ export function QueryResultView({
                 children: result.snapshotReadAt,
               },
               { key: "scope", label: "范围摘要", children: result.scopeDigest },
-              ...(result.timeRange ? [{ key: "window", label: "查询时间窗", children: `${result.timeRange.from} ～ ${result.timeRange.to} (${result.timeRange.timezone})` }] : []),
+              ...(result.timeRange
+                ? [
+                    {
+                      key: "window",
+                      label: "查询时间窗",
+                      children: `${result.timeRange.from} ～ ${result.timeRange.to} (${result.timeRange.timezone})`,
+                    },
+                  ]
+                : []),
+              ...(result.comparisonTimeRange
+                ? [
+                    {
+                      key: "comparison",
+                      label: "对照时间窗",
+                      children: `${result.comparisonTimeRange.from} ～ ${result.comparisonTimeRange.to} (${result.comparisonTimeRange.timezone})；比较窗口末端的 gauge 快照，包含显式 5 分钟回看，不是窗口平均值。`,
+                    },
+                  ]
+                : []),
               {
                 key: "source",
                 label: "来源版本",
@@ -102,13 +142,20 @@ export function QueryResultView({
                     ? `${result.sourceManifest.sourceId} / revision ${result.sourceManifest.revision} / ${result.sourceManifest.templateVersion}`
                     : result.controlPlaneSnapshot || "来源版本不可用",
               },
-              ...(result.sourceManifest ? [{
-                key: "coverage", label: "来源覆盖时间",
-                children: `${result.sourceManifest.coverageFrom} ～ ${result.sourceManifest.coverageTo}`,
-              }, {
-                key: "query", label: "已执行查询摘要",
-                children: result.sourceManifest.queryHash,
-              }] : []),
+              ...(result.sourceManifest
+                ? [
+                    {
+                      key: "coverage",
+                      label: "来源覆盖时间",
+                      children: `${result.sourceManifest.coverageFrom} ～ ${result.sourceManifest.coverageTo}`,
+                    },
+                    {
+                      key: "query",
+                      label: "已执行查询摘要",
+                      children: result.sourceManifest.queryHash,
+                    },
+                  ]
+                : []),
               {
                 key: "warnings",
                 label: "缺失与警告",

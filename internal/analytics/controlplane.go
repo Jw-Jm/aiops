@@ -46,7 +46,7 @@ func CompileControlPlane(intent QueryIntent, binding Binding, domain string) (Co
 			dataset = &catalog.Datasets[i]
 		}
 	}
-	if dataset == nil || dataset.Source != "postgresql" || domain != dataset.AuthorizationDomain || intent.Operation != "aggregate" || len(intent.Metrics) != 1 || intent.Metrics[0] != dataset.Metric || len(intent.Dimensions) > 1 {
+	if intent.ComparisonTimeRange != nil || intent.StepSeconds != 0 || dataset == nil || dataset.Source != "postgresql" || domain != dataset.AuthorizationDomain || intent.Operation != "aggregate" || len(intent.Metrics) != 1 || intent.Metrics[0] != dataset.Metric || len(intent.Dimensions) > 1 {
 		return p, ErrUnsupported
 	}
 	if intent.TimeRange == nil || intent.TimeRange.From.IsZero() || !intent.TimeRange.To.After(intent.TimeRange.From) || intent.TimeRange.To.Sub(intent.TimeRange.From) > 31*24*time.Hour || intent.TimeRange.To.After(time.Now().Add(time.Minute)) || intent.TimeRange.Timezone == "Local" {

@@ -59,7 +59,9 @@
         "day",
         "uid",
         "phase",
-        "level"
+        "level",
+        "time",
+        "comparison"
       ]
     },
     "unit": {
@@ -222,6 +224,35 @@
           "maxLength": 128
         }
       }
+    },
+    "stepSeconds": {
+      "type": "integer",
+      "minimum": 60,
+      "maximum": 86400
+    },
+    "comparisonTimeRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to",
+        "timezone"
+      ],
+      "properties": {
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
     }
   },
   "required": [
@@ -353,6 +384,50 @@
         "else": {
           "required": [
             "sourceManifest"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dimension": {
+            "const": "time"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "timeRange",
+          "stepSeconds"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "stepSeconds"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dimension": {
+            "const": "comparison"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "timeRange",
+          "comparisonTimeRange"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "comparisonTimeRange"
           ]
         }
       }
