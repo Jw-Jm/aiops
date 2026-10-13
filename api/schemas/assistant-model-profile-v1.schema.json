@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/assistant-model-profile/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "assistant-model-profile/v1"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]{0,95}$"
+    },
+    "modelID": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,127}$"
+    },
+    "modelVersion": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,127}$"
+    },
+    "baseURL": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "apiKeyRef": {
+      "const": "secret://model/api-key"
+    },
+    "contextWindow": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 65536
+    },
+    "outputTokenLimit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8192
+    },
+    "tokenAccounting": {
+      "const": "reserve-context-bound"
+    },
+    "costPolicy": {
+      "const": "zero-charge"
+    },
+    "toolCalling": {
+      "const": true
+    },
+    "structuredOutput": {
+      "const": true
+    },
+    "taskKinds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "data_query",
+          "resource_troubleshooting",
+          "incident_followup"
+        ]
+      }
+    },
+    "timeoutSeconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 120
+    },
+    "retries": {
+      "const": 0
+    },
+    "licenseSPDX": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9.+-]{0,95}$"
+    },
+    "weightsDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "evaluationVersion": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]{0,95}$"
+    },
+    "evaluationDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "admissionEvidenceDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "admissionState": {
+      "enum": [
+        "pending",
+        "fixture_only",
+        "admitted"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "version",
+    "modelID",
+    "modelVersion",
+    "baseURL",
+    "apiKeyRef",
+    "contextWindow",
+    "outputTokenLimit",
+    "tokenAccounting",
+    "costPolicy",
+    "toolCalling",
+    "structuredOutput",
+    "taskKinds",
+    "timeoutSeconds",
+    "retries",
+    "licenseSPDX",
+    "weightsDigest",
+    "evaluationVersion",
+    "evaluationDigest",
+    "admissionEvidenceDigest",
+    "admissionState"
+  ]
+}

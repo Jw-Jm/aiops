@@ -8,6 +8,10 @@
 {{- if .Values.sp06.assistant.enabled }}
 {{- if eq .Values.sp06.modelState "pending" }}{{ fail "Assistant requires an admitted model" }}{{- end }}
 {{- if not .Values.sp06.assistant.modelProfileVersion }}{{ fail "Assistant requires a frozen model profile version" }}{{- end }}
+{{- if not .Values.sp06.assistant.profile }}{{ fail "Assistant requires complete model profile material" }}{{- end }}
+{{- if ne .Values.sp06.assistant.profile.admissionState "admitted" }}{{ fail "Assistant requires an admitted profile; fixtures cannot be deployed" }}{{- end }}
+{{- if ne (int .Values.sp06.assistant.profile.timeoutSeconds) (int .Values.sp06.model.timeout) }}{{ fail "Assistant profile timeout must match the shared Holmes runtime" }}{{- end }}
+{{- if ne .Values.sp06.assistant.profile.baseURL .Values.sp06.model.base_url }}{{ fail "Assistant profile must use the approved model egress endpoint" }}{{- end }}
 {{- end }}
 {{- if not .Values.networkPolicyOnly }}
 {{- $common := dict "namespace" .Release.Namespace "listenAddress" (printf ":%d" (int .Values.sp06.gatewayPort)) "investigatorEndpoint" (printf "https://ops-investigator.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.components.investigator.port)) "certificateFile" "/etc/sp04/identity/tls.crt" "privateKeyFile" "/etc/sp04/identity/tls.key" "caFile" "/etc/sp04/identity/ca.pem" "crlFile" "/etc/sp04/identity/crl.pem" "policyName" .Values.sp06.policyName "tenants" .Values.sp06.tenants "budget" .Values.sp06.budget }}
@@ -26,6 +30,7 @@ data:
 {{- $investigator := dict "listenAddress" (printf "0.0.0.0:%d" (int .Values.components.investigator.port)) "jobAPI" (printf "https://ops-api.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.sp06.gatewayPort)) "mcpEndpoint" (printf "https://ops-api.%s.svc.cluster.local:%d/mcp" .Release.Namespace (int .Values.sp06.gatewayPort)) "apiServerName" (printf "ops-api.%s.svc.cluster.local" .Release.Namespace) "workerIdentity" (printf "spiffe://ops.local/ns/%s/sa/ops-worker" .Release.Namespace) "caFile" "/etc/identity/ca.pem" "crlFile" "/etc/identity/crl.pem" "certificateFile" "/etc/identity/tls.crt" "privateKeyFile" "/etc/identity/tls.key" "identityMode" (.Values.workloadIdentity.mode | default "file") "modelAPIKeyFile" "/run/model-credentials/model-api-key" "model" .Values.sp06.model }}
 {{- if .Values.sp06.assistant.enabled }}
 {{- $_ := set $investigator "assistantModelProfileVersion" .Values.sp06.assistant.modelProfileVersion }}
+{{- $_ := set $investigator "assistantModelProfile" .Values.sp06.assistant.profile }}
 {{- end }}
   investigator.json: {{ $investigator | toJson | quote }}
 {{- end }}

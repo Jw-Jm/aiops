@@ -86,6 +86,11 @@ def output_schema_for_steps(steps, task_kind):
     if task_kind=="data_query" and facts:kinds.append("data")
     elif task_kind in ("resource_troubleshooting","incident_followup"):kinds.append("diagnosis")
     props["answerKind"]["enum"]=kinds
+    if task_kind=="data_query":props["hypotheses"]["maxItems"]=0
+    for key in ("supports","conflicts"):
+        refs=props["hypotheses"]["items"]["properties"][key]
+        if evidence:refs["items"]["enum"]=sorted(evidence)
+        else:refs["maxItems"]=0
     for key,values in (("queryResultRefs",queries),("evidenceRefs",evidence),("entityRefs",entities)):
         if values:props[key]["items"]["enum"]=sorted(values)
         else:props[key]["maxItems"]=0

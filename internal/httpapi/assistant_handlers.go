@@ -21,9 +21,10 @@ import (
 )
 
 type AssistantHandlers struct {
-	Repository assistant.Repository
-	SP04       *SP04Handlers
-	CursorKey  ed25519.PrivateKey
+	Repository     assistant.Repository
+	SP04           *SP04Handlers
+	CursorKey      ed25519.PrivateKey
+	ModelTaskKinds []string
 }
 type assistantCursor struct {
 	Tenant         uuid.UUID `json:"tenant"`
@@ -104,7 +105,15 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		catalog.Datasets = allowed
-		writeJSON(w, 200, map[string]any{"data": map[string]any{"enabled": h.Repository.Jobs.AssistantEnabled, "catalog": catalog, "virtualization": "deferred", "runtimeAcceptance": "unverified"}, "requestId": actor.RequestID})
+		tasks := []string{}
+		if h.Repository.Jobs.AssistantEnabled {
+			for _, kind := range h.ModelTaskKinds {
+				if kind == "data_query" || (auth.HasRole(r.Context(), auth.Operator) && (kind == "resource_troubleshooting" || kind == "incident_followup")) {
+					tasks = append(tasks, kind)
+				}
+			}
+		}
+		writeJSON(w, 200, map[string]any{"data": map[string]any{"enabled": h.Repository.Jobs.AssistantEnabled, "taskKinds": tasks, "catalog": catalog, "virtualization": "deferred", "runtimeAcceptance": "unverified"}, "requestId": actor.RequestID})
 		return
 	}
 	if r.URL.Path == "/api/v1/assistant/resources:resolve" {

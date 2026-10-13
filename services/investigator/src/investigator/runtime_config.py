@@ -4,6 +4,7 @@ from urllib.parse import urlsplit
 import ipaddress
 from typing import Literal
 from .model_config import ModelContract
+from .model_profile import AssistantModelProfile
 
 class RuntimeConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -19,6 +20,7 @@ class RuntimeConfig(BaseModel):
     workerIdentity: str
     modelAPIKeyFile: str
     assistantModelProfileVersion: str | None = None
+    assistantModelProfile: AssistantModelProfile | None = None
     model: ModelContract
 
     @field_validator("jobAPI","mcpEndpoint")
@@ -41,4 +43,11 @@ class RuntimeConfig(BaseModel):
         if not self.apiServerName.startswith("ops-api.") or not self.apiServerName.endswith(suffix):raise ValueError("invalid API workload")
         namespace=self.apiServerName[len("ops-api."):-len(suffix)]
         if self.workerIdentity!="spiffe://ops.local/ns/"+namespace+"/sa/ops-worker":raise ValueError("worker identity mismatch")
+        if self.assistantModelProfileVersion is not None:
+            p=self.assistantModelProfile
+            if p is None or not p.usable(self.listenAddress) or p.reference()!=self.assistantModelProfileVersion:
+                raise ValueError("assistant model profile is unavailable or changed")
+            if p.timeoutSeconds!=self.model.timeout:raise ValueError("profile timeout must match the shared locked Holmes runtime")
+            if p.baseURL!=self.model.base_url:raise ValueError("assistant must use the approved model egress endpoint")
+        elif self.assistantModelProfile is not None:raise ValueError("assistant profile reference is required")
         return self.model_dump()

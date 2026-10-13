@@ -7,6 +7,21 @@
 
 ## 已落地源码
 
+2026-10-13 补充：新增 assistant-model-profile/v1 闭合合同，绑定模型 ID/版本、
+内网端点、Secret 引用、上下文/输出上限、保守 token accounting、零计费声明、
+工具调用/结构化输出、任务模式、超时/零重试、许可证和权重/评测/准入证据摘要。
+API、Worker 和 investigator 使用同一份材料；Job 的 modelProfileVersion 为
+`version@sha256:...` 内容引用，任一字段改变都会改变本轮绑定。Pydantic 和 Go
+共享摘要用例；v2 继续使用原五字段 ModelContract 和默认 16k 预算。
+
+新 v3 模型请求预留 Profile contextWindow 和输出上限，未知使用量按预留结算。
+锁定 Holmes 通过共享运行时传递超时；Profile 必须与该值及已批准出口端点一致。
+Fixture Profile 只允许本机回环监听和模型端点的隔离烟测，Helm 禁止发布 Fixture
+和 pending Profile。真实权重、许可证与中文效果仍须独立准入，材料中的声明
+不能代替实际证据。
+能力接口和新建会话模式按 Profile taskKinds 与当前角色共同过滤；仅问数
+Profile 不开放资源/Incident 排障入口，管理员不继承运维排障模式。
+
 - P0：非虚拟化分析目录、QueryIntent/QueryResult/Facts、资源选择与上下文、
   AssistantAnswer、Job/InvocationContext v3、REST/OpenAPI 和生成客户端。
   目录含资源、Finding、Incident、本人执行、管理员审计，以及 Pod 重启/CPU
@@ -40,6 +55,9 @@
   证据可直接打开，并明确空冲突列表不代表已排除其他原因。推荐问题按当前角色
   和会话授权域可见目录筛选，发送后返回最新消息页。Helm 默认关闭，启用需冻结模型 profile，并将
   同一版本同时传给 API、Worker 和 investigator。
+  资源创建入口支持最近 5/15/30/60 分钟及有界 UTC 绝对窗口；会话显示冻结的
+  授权范围、时区、资源身份与调查时间。窗口/目标变更仍需新会话，未将此项
+  计作完整多轮范围/时间调整或浏览器验收。
 
 上述是实现状态；P0～P6 仍有下列未完成项，不宣称完整阶段验收通过。
 
@@ -61,22 +79,28 @@
 - 远程真实 VictoriaMetrics/VictoriaLogs 后端的人工 Fixture 聚合通过：
   Pod 内存与日志计数排除授权外 namespace 和其他租户。此证据仅为
   `fixture_only`，不代表生产采集、其他指标模板或质量门禁已通过。
-- 远程既有 investigator 容器运行更新 Python 源码测试：40 项通过。
+- 远程既有 investigator 容器运行更新 Python 源码测试：47 项通过，包含
+  完整 Profile 摘要/准入边界和实际 Holmes 参数格式化；32k Profile 请求
+  按上游 max_context_size 属性预留 32k，未知使用量保守结算。
 - 真实 `qwen2.5:1.5b` + HolmesGPT + 官方 MCP + OpenBao + mTLS +
   PostgreSQL 基本链路烟测通过，已提交一次助手上下文读取并返回经平台校验
   的 unsupported 回答。租户和身份为隔离 Fixture，模型实际运行；此项
   不证明中文问数正确率、有效排障、多轮质量或模型正式准入。
-  最新 smoke 保留数据库 `sp03_mig_d6e7cb8ccbc0419e8cc98ce6e01da2f5`，
-  结果为 unsupported，成功提交一次上下文读取，用时 81.08 秒；新增冻结
-  requestedAt 后链路复验通过。该时间仅为一次测试耗时，不是性能指标。
+  最新完整 Profile smoke 保留数据库 `sp03_mig_98eb6c41f5ef4bddab91d61ff9e6fcbc`，
+  结果为 unsupported，成功提交一次上下文读取，用时 46.77 秒。该时间仅为
+  一次测试耗时，不是性能指标。Profile 联调中的重复 timeout 参数失败及
+  非法假设引用被平台拒绝均保留，数据库分别为
+  `sp03_mig_92b99e1466044992a8f73598a5da950f` 和
+  `sp03_mig_9621049c0ea347b1a4f61aefba4d4507`；修复后复验通过，未抹除失败。
 
 远程数据库/聚合日志位于专项目录 `integration-latest.log`。登录凭据和
 数据库密码不进入源码、此文档或发行物。
 
 ## 尚需完成与复验
 
-1. P0/P6：真实来源能力清单、模型不可变准入 profile、冻结中文评测集和
-   独立重复测量；不能以已有 SP-06 模型名称或 profile 字符串代替效果准入。
+1. P0/P6：真实来源能力清单、Profile 权重/许可证与实际效果准入、冻结中文
+   评测集和独立重复测量；不可变 Profile 合同与运行接入已实现，不能把材料
+   声明或现有烟测 Profile 当成中文质量通过。
 2. P1/P6：官方 MCP + 实际模型完整闭环、实际进程崩溃接管、跨主体引用、
    保护归档与保留依赖的完整集成证据；目前数据库租约接管与迟到提交已通过，
    不等同于完整进程故障演练。

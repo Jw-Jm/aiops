@@ -10,13 +10,24 @@
 不为迁移新增数据库 CREATE 权限。旧 Worker 默认不领取 v3。
 
 Helm 开关为 `sp06.assistant.enabled`，默认 false。启用时设置
-`sp06.assistant.modelProfileVersion`；Chart 将相同版本同时传给三个服务。
+`sp06.assistant.profile` 的完整材料和 `sp06.assistant.modelProfileVersion`；
+后者必须是 Profile 的 `version@sha256:...` 内容引用。Chart 将同一材料和引用
+同时传给三个服务。Profile 变更后重新生成引用并滚动更新三个服务，不能沿用旧
+引用。Profile 合同见 `api/schemas/assistant-model-profile-v1.schema.json`。
 API/Worker 读取 `assistant.enabled/modelProfileVersion`，investigator 读取
-`assistantModelProfileVersion`。版本不匹配的调度请求拒绝执行。
+`assistantModelProfileVersion` 和 `assistantModelProfile`。材料摘要、适用任务
+或运行版本不匹配时拒绝执行。v3 采用 Profile 上下文/输出上限预留预算；v2
+保留原合同。当前锁定 Holmes 的超时为共享配置，Profile timeoutSeconds 必须
+与 sp06.model.timeout 一致，baseURL 必须与已批准模型出口一致。
+
+pending 不允许运行；fixture_only 仅限回环监听和回环模型的隔离测试，Helm
+一律拒绝部署。test/fixtures/assistant/model-profile.fixture.json 的权重/评测/
+准入摘要是测试值，许可证和能力为 Fixture 声明，不能作为发布材料或真实准入
+证据；Ollama manifest 摘要也不能替代模型权重摘要。
 
 必须使用与更新源码对应的镜像 digest、签名、依赖和发行物料。已有
 SP-06 的已准入镜像没有这些更新，不能直接把旧镜像与新开关组成合格 Bundle。
-模型 profile 字符串不是权重来源或质量准入证明；完整模型 profile 和质量
+模型 profile 字符串不是权重来源或质量准入证明；实际权重/许可证和中文质量
 门禁尚未完成时，正式发行保持关闭。
 
 ## 数据源准入
@@ -58,6 +69,10 @@ SSE 使用持久 Event 和签名 Last-Event-ID；断线可重连，过期游标�
 每轮 input 带服务端生成的 requestedAt，结合会话 timezone 作为相对日期的
 基准；用户输入不能覆盖该字段。历史实体引用只能来自已验证身份字段，读取
 时仍核对当前资源与权限。假设中的支持与冲突引用可直接打开证据详情。
+资源会话可选择最近 5/15/30/60 分钟，或填写跨度不超过 60 分钟的 UTC
+绝对时间。页面展示服务端冻结的范围、真实资源身份和调查时间；更换目标或
+资源调查窗口需新建会话。Incident 会话沿现有 Incident 上下文，不套用资源
+调查时间控件。该入口不代表自然语言中的时间/指代调整已完整实现。
 
 普通 Message/QueryResult 默认可读取 30 天；Legal Hold 字段和现有正式
 Evidence 保护优先。依赖闭包及完整 TTL 清理尚未验收，不启用新的物理清理

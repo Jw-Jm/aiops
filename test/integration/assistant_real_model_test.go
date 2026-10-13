@@ -22,6 +22,7 @@ import (
 	"ops-platform/internal/httpapi"
 	"ops-platform/internal/integrations/openbao"
 	"ops-platform/internal/investigation"
+	"ops-platform/internal/modelprofile"
 )
 
 // The identity/tenant setup is isolated Fixture data. Model, PostgreSQL,
@@ -71,8 +72,13 @@ func TestAssistantRealModelMCP(t *testing.T) {
 	t.Setenv("OPENBAO_CA_FILE", os.Getenv("SP03_TEST_OPENBAO_CA_FILE"))
 	t.Setenv("OPENBAO_INVOCATION_TOKEN_FILE", tokenFile)
 	apiAddress, investigatorAddress := sp06Port(t), sp06Port(t)
-	profile := "assistant-smoke-qwen2.5-1.5b/v1"
-	config := app.SP06Config{Namespace: "sp06-test", ListenAddress: apiAddress, InvestigatorEndpoint: "https://" + investigatorAddress, CertificateFile: files["ops-api.pem"], PrivateKeyFile: files["ops-api.key"], CAFile: files["ca.pem"], CRLFile: files["crl.pem"], PolicyName: "sp06-read-only", Tenants: []uuid.UUID{b.TenantID}, Budget: investigation.DefaultBudget(), Assistant: &app.AssistantRuntimeConfig{Enabled: true, ModelProfileVersion: profile}}
+	profileBytes, err := os.ReadFile("../fixtures/assistant/model-profile.fixture.json")
+	var material modelprofile.Profile
+	if err != nil || json.Unmarshal(profileBytes, &material) != nil {
+		t.Fatal("profile fixture missing", err)
+	}
+	profile := material.Reference()
+	config := app.SP06Config{Namespace: "sp06-test", ListenAddress: apiAddress, InvestigatorEndpoint: "https://" + investigatorAddress, CertificateFile: files["ops-api.pem"], PrivateKeyFile: files["ops-api.key"], CAFile: files["ca.pem"], CRLFile: files["crl.pem"], PolicyName: "sp06-read-only", Tenants: []uuid.UUID{b.TenantID}, Budget: investigation.DefaultBudget(), Assistant: &app.AssistantRuntimeConfig{Enabled: true, ModelProfileVersion: profile, Profile: &material}}
 	runtimeFile := filepath.Join(dir, "runtime.json")
 	write := func(path string, value any) {
 		raw, e := json.Marshal(value)
@@ -95,7 +101,7 @@ func TestAssistantRealModelMCP(t *testing.T) {
 	if os.WriteFile(keyFile, []byte("local-ollama-no-auth"), 0600) != nil {
 		t.Fatal("model key file")
 	}
-	write(investigatorFile, map[string]any{"listenAddress": investigatorAddress, "jobAPI": "https://" + apiAddress, "mcpEndpoint": "https://" + apiAddress + "/mcp", "apiServerName": "ops-api.sp06-test.svc.cluster.local", "caFile": files["ca.pem"], "crlFile": files["crl.pem"], "certificateFile": files["ops-investigator.pem"], "privateKeyFile": files["ops-investigator.key"], "workerIdentity": "spiffe://ops.local/ns/sp06-test/sa/ops-worker", "modelAPIKeyFile": keyFile, "assistantModelProfileVersion": profile, "model": map[string]any{"base_url": "http://127.0.0.1:11434/v1", "api_key_ref": "secret://model/api-key", "model": "qwen2.5:1.5b", "timeout": 120, "token_budget": 2048}})
+	write(investigatorFile, map[string]any{"listenAddress": investigatorAddress, "jobAPI": "https://" + apiAddress, "mcpEndpoint": "https://" + apiAddress + "/mcp", "apiServerName": "ops-api.sp06-test.svc.cluster.local", "caFile": files["ca.pem"], "crlFile": files["crl.pem"], "certificateFile": files["ops-investigator.pem"], "privateKeyFile": files["ops-investigator.key"], "workerIdentity": "spiffe://ops.local/ns/sp06-test/sa/ops-worker", "modelAPIKeyFile": keyFile, "assistantModelProfileVersion": profile, "assistantModelProfile": material, "model": map[string]any{"base_url": "http://127.0.0.1:11434/v1", "api_key_ref": "secret://model/api-key", "model": "qwen2.5:1.5b", "timeout": 120, "token_budget": 2048}})
 	name := "ops-assistant-smoke-" + uuid.NewString()
 	process := exec.CommandContext(ctx, "docker", "run", "--rm", "--name", name, "--label", "ops.task=assistant-20261012", "--network", "host", "--user", "0", "-v", dir+":"+dir+":ro", "-v", python+":/assistant-src:ro", "-e", "PYTHONPATH=/assistant-src", "-e", "SP06_INVESTIGATOR_FILE="+investigatorFile, "--entrypoint", "python", image, "-m", "investigator.worker")
 	var output bytes.Buffer

@@ -18,6 +18,7 @@ export * from './assistantAnswerV1HypothesesItem.ts';
 export * from './assistantCapabilitiesEnvelopeV1.ts';
 export * from './assistantCapabilitiesEnvelopeV1Data.ts';
 export * from './assistantCapabilitiesEnvelopeV1DataCatalog.ts';
+export * from './assistantCapabilitiesEnvelopeV1DataTaskKindsItem.ts';
 export * from './assistantConversationEnvelopeV1.ts';
 export * from './assistantConversationEnvelopeV1Meta.ts';
 export * from './assistantConversationListV1.ts';

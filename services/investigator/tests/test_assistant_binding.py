@@ -58,3 +58,14 @@ def test_entity_schema_uses_only_committed_identity_fields():
     assert output_schema_for_steps(steps,"resource_troubleshooting")['properties']['entityRefs']['maxItems']==0
     steps.append({"toolName":"get_dependencies","state":"succeeded","result":{"data":{"nodes":[{"canonicalId":"observed","attributes":{"canonicalId":"nested"}}]}}})
     assert output_schema_for_steps(steps,"resource_troubleshooting")['properties']['entityRefs']['items']['enum']==["observed"]
+
+
+def test_hypotheses_cannot_invent_evidence_or_appear_in_audit_queries():
+    from investigator.assistant_binding import output_schema_for_steps
+    empty=output_schema_for_steps([],"data_query")
+    assert empty['properties']['hypotheses']['maxItems']==0
+    diagnosis=output_schema_for_steps([],"resource_troubleshooting")
+    assert diagnosis['properties']['hypotheses']['items']['properties']['supports']['maxItems']==0
+    steps=[{"toolName":"query_logs","state":"succeeded","result":{"evidenceRefs":["committed-evidence"],"data":{}}}]
+    diagnosis=output_schema_for_steps(steps,"resource_troubleshooting")
+    assert diagnosis['properties']['hypotheses']['items']['properties']['conflicts']['items']['enum']==['committed-evidence']

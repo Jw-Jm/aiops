@@ -37,6 +37,7 @@ import type {
 import { PageHeading } from "../components/PageHeading";
 import { QueryState } from "../components/QueryState";
 import { DiagnosisAnswer } from "../features/assistant/DiagnosisAnswer";
+import { ConversationContext } from "../features/assistant/ConversationContext";
 import { useConversationStream } from "../features/assistant/useConversationStream";
 export function AssistantPage() {
   const { session } = useAuth();
@@ -88,6 +89,13 @@ export function AssistantPage() {
       ? selectedTarget
       : undefined);
   const [symptom, setSymptom] = useState("");
+  const [windowMinutes, setWindowMinutes] = useState<number | "custom">(30);
+  const [windowFrom, setWindowFrom] = useState(() =>
+    new Date(Date.now() - 30 * 60000).toISOString().slice(0, 16),
+  );
+  const [windowTo, setWindowTo] = useState(() =>
+    new Date().toISOString().slice(0, 16),
+  );
   const [message, setMessage] = useState("");
   const [listCursor, setListCursor] = useState<string>();
   const [messageCursor, setMessageCursor] = useState<string>();
@@ -109,6 +117,14 @@ export function AssistantPage() {
       checked(getAssistantCapabilities(requestOptions(signal))),
   });
   const visibleDatasets = capabilities.data?.data.catalog.datasets;
+  const taskKinds = capabilities.data?.data.taskKinds || [];
+  const requestedTask =
+    mode === "data_query"
+      ? "data_query"
+      : url.get("incidentId")
+        ? "incident_followup"
+        : "resource_troubleshooting";
+  const taskAvailable = taskKinds.includes(requestedTask);
   const queryExamples: Record<string, string> = {
     "resources.current":
       "当前授权范围内有多少 Pod？按健康状态分组，说明未知和降级状态。",
@@ -180,7 +196,6 @@ export function AssistantPage() {
   async function create() {
     await mutate(async () => {
       const now = new Date();
-      const from = new Date(now.getTime() - 30 * 60 * 1000);
       const body: AssistantCreateConversationV1 = {
         title:
           mode === "data_query"
@@ -200,13 +215,32 @@ export function AssistantPage() {
       };
       if (mode === "troubleshoot") {
         body.symptom = symptom;
-        body.timeRange = {
-          from: from.toISOString(),
-          to: now.toISOString(),
-          timezone: body.timezone,
-        };
         if (url.get("incidentId")) body.incidentId = url.get("incidentId")!;
-        else body.resourceCanonicalIds = boundTarget ? [boundTarget] : [];
+        else {
+          const from =
+            windowMinutes === "custom"
+              ? new Date(windowFrom + "Z")
+              : new Date(now.getTime() - windowMinutes * 60000);
+          const to =
+            windowMinutes === "custom" ? new Date(windowTo + "Z") : now;
+          if (
+            !Number.isFinite(from.getTime()) ||
+            !Number.isFinite(to.getTime()) ||
+            to <= from ||
+            to.getTime() - from.getTime() > 60 * 60000 ||
+            to > now
+          ) {
+            throw new Error(
+              "调查时间须有效、开始早于结束、跨度不超过 60 分钟，且结束不能晚于现在。",
+            );
+          }
+          body.timeRange = {
+            from: from.toISOString(),
+            to: to.toISOString(),
+            timezone: body.timezone,
+          };
+          body.resourceCanonicalIds = boundTarget ? [boundTarget] : [];
+        }
       }
       const out = await checked(
         createAssistantConversation(body, requestOptions(undefined, true)),
@@ -341,14 +375,22 @@ export function AssistantPage() {
             {!id ? (
               <Space orientation="vertical" style={{ width: "100%" }}>
                 <Select
+                  aria-label="会话模式"
                   value={mode}
                   onChange={(value) => {
                     setMode(value);
                     if (value === "troubleshoot") setDomain("operational");
                   }}
                   options={[
-                    { value: "data_query", label: "问数" },
-                    ...(session?.roles.includes("operator")
+                    ...(taskKinds.includes("data_query")
+                      ? [{ value: "data_query", label: "问数" }]
+                      : []),
+                    ...(session?.roles.includes("operator") &&
+                    taskKinds.includes(
+                      url.get("incidentId")
+                        ? "incident_followup"
+                        : "resource_troubleshooting",
+                    )
                       ? [{ value: "troubleshoot", label: "故障排查" }]
                       : []),
                   ]}
@@ -480,6 +522,47 @@ export function AssistantPage() {
                       onChange={(e) => setSymptom(e.target.value)}
                       maxLength={4000}
                     />
+                    {!url.get("incidentId") && (
+                      <>
+                        <Typography.Text>
+                          资源调查时间（最长 60 分钟）
+                        </Typography.Text>
+                        <Select
+                          aria-label="资源调查时间"
+                          value={windowMinutes}
+                          onChange={setWindowMinutes}
+                          options={[
+                            ...[5, 15, 30, 60].map((value) => ({
+                              value,
+                              label: `最近 ${value} 分钟`,
+                            })),
+                            { value: "custom", label: "指定绝对时间" },
+                          ]}
+                        />
+                        {windowMinutes === "custom" && (
+                          <>
+                            <label>
+                              开始时间（UTC）
+                              <Input
+                                aria-label="开始时间（UTC）"
+                                type="datetime-local"
+                                value={windowFrom}
+                                onChange={(e) => setWindowFrom(e.target.value)}
+                              />
+                            </label>
+                            <label>
+                              结束时间（UTC）
+                              <Input
+                                aria-label="结束时间（UTC）"
+                                type="datetime-local"
+                                value={windowTo}
+                                onChange={(e) => setWindowTo(e.target.value)}
+                              />
+                            </label>
+                          </>
+                        )}
+                      </>
+                    )}
                   </>
                 )}
                 <Button
@@ -487,6 +570,7 @@ export function AssistantPage() {
                   loading={busy}
                   disabled={
                     !capabilities.data?.data.enabled ||
+                    !taskAvailable ||
                     (mode === "troubleshoot" &&
                       !url.get("incidentId") &&
                       !boundTarget)
@@ -495,6 +579,12 @@ export function AssistantPage() {
                 >
                   创建会话
                 </Button>
+                {capabilities.data?.data.enabled && !taskAvailable && (
+                  <Alert
+                    type="warning"
+                    title="当前模型 Profile 未开放此会话模式，请选择已开放模式。"
+                  />
+                )}
               </Space>
             ) : (
               <QueryState
@@ -502,6 +592,13 @@ export function AssistantPage() {
                 error={messages.error || conversation.error}
                 retry={() => void reload()}
               >
+                {conversation.data && (
+                  <ConversationContext
+                    binding={conversation.data.data.binding}
+                    domain={conversation.data.data.authorizationDomain}
+                    cluster={conversation.data.data.clusterUid}
+                  />
+                )}
                 <Space>
                   <Button
                     disabled={!messageCursor}

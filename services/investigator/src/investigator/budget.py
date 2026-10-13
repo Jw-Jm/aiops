@@ -50,9 +50,14 @@ class BudgetedLLM(DefaultLLM):
     def completion(self, messages, *args, **kwargs):
         if self.job_api is None:
             raise RuntimeError("MODEL_ADMISSION_REQUIRED")
-        # The locked local model has a 16k context cap. The entire cap is reserved
+        # Reserve the configured profile context (legacy v2 defaults to 16k)
         # before calling upstream; unknown/error usage consumes the full bound.
-        reserve={"modelRequests":1,"inputTokens":16384,"outputTokens":self.args["max_tokens"],"resultBytes":65536}
+        # DefaultLLM.update_custom_args moves this field out of args during
+        # construction. Read the upstream attribute used for context sizing.
+        context_bound=getattr(self,"max_context_size",None)
+        if context_bound is None:context_bound=16384
+        if not isinstance(context_bound,int) or isinstance(context_bound,bool) or not 1024<=context_bound<=65536:raise ModelCallError("MODEL_CONTEXT_LIMIT")
+        reserve={"modelRequests":1,"inputTokens":context_bound,"outputTokens":self.args["max_tokens"],"resultBytes":65536}
         if self.needs_initial_tools and kwargs.get("tools"):
             # Provider formatting boundary: require the initial semantic read;
             # the upstream loop still owns execution and subsequent iterations.

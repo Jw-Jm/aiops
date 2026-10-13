@@ -20,6 +20,13 @@ class InitialToolChoiceTests(unittest.TestCase):
         llm=BudgetedLLM(model="openai/llama3.1:8b-16k",api_key="unit-input",args={"max_tokens":1024,"num_retries":0})
         llm.job_api=Ledger()
         return llm
+    def test_profile_context_bound_is_reserved_and_unknown_usage_is_charged(self):
+        llm=self.client();llm.needs_initial_tools=False
+        llm.max_context_size=32768
+        response=ModelResponse(choices=[{"message":{"role":"assistant","content":"bounded"}}])
+        with patch.object(DefaultLLM,"completion",return_value=response):llm.completion([])
+        self.assertEqual(llm.job_api.allocations[0][3]["inputTokens"],32768)
+        self.assertEqual(llm.job_api.settlements[0][2]["inputTokens"],32768)
     def test_initial_choice_then_upstream_auto(self):
         response=ModelResponse(choices=[{"message":{"role":"assistant","content":"bounded"}}],usage={"prompt_tokens":8,"completion_tokens":2,"total_tokens":10})
         llm=self.client();tools=[{"type":"function","function":{"name":"get_incident_context","parameters":{"type":"object"}}}]

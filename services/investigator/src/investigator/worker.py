@@ -18,6 +18,8 @@ from .runtime_config import RuntimeConfig
 def serve(config):
     config=RuntimeConfig.model_validate(config).checked()
     model=ModelContract.model_validate(config["model"])
+    from .model_profile import AssistantModelProfile
+    assistant_model=AssistantModelProfile.model_validate(config["assistantModelProfile"]) if config.get("assistantModelProfile") is not None else None
     # Locked upstream official environment setting, before importing its LLM.
     os.environ["LLM_REQUEST_TIMEOUT"]=str(model.timeout)
     os.environ["OVERRIDE_MAX_OUTPUT_TOKEN"]=str(model.token_budget)
@@ -66,6 +68,8 @@ def serve(config):
                     payload=json.loads(self.rfile.read(length))
                     from .assistant_binding import validate_dispatch
                     validate_dispatch(payload,config.get("assistantModelProfileVersion"))
+                    if payload["job"]["schemaVersion"]=="investigation-job/v3" and (assistant_model is None or payload["job"]["assistant"]["taskKind"] not in assistant_model.taskKinds):
+                        raise ValueError("MODEL_PROFILE_TASK_UNAVAILABLE")
                 except (ValueError,UnicodeError):
                     self.respond(400,{"errorCode":"INVALID_REQUEST"});return
                 sync, asynchronous=clients(config,identity)
@@ -73,7 +77,7 @@ def serve(config):
                 job_api.start_renewal(payload["mcpContext"])
                 bridge=MCPBridge(config["mcpEndpoint"],payload["mcpContext"],asynchronous)
                 bridge.token_provider=lambda:job_api.mcp_token
-                result=investigate(payload["job"],model,job_api,bridge,config["modelAPIKeyFile"])
+                result=investigate(payload["job"],assistant_model if payload["job"]["schemaVersion"]=="investigation-job/v3" else model,job_api,bridge,config["modelAPIKeyFile"])
                 result=job_api.request("/result:complete",result)
                 self.respond(200,{"data":result})
             except Exception as error:

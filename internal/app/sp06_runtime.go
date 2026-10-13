@@ -23,6 +23,7 @@ import (
 	"ops-platform/internal/investigation"
 	platformmcp "ops-platform/internal/investigation/mcp"
 	"ops-platform/internal/investigation/tools"
+	"ops-platform/internal/modelprofile"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/policy"
 	"os"
@@ -31,8 +32,9 @@ import (
 )
 
 type AssistantRuntimeConfig struct {
-	Enabled             bool   `json:"enabled"`
-	ModelProfileVersion string `json:"modelProfileVersion"`
+	Enabled             bool                  `json:"enabled"`
+	Profile             *modelprofile.Profile `json:"profile,omitempty"`
+	ModelProfileVersion string                `json:"modelProfileVersion"`
 }
 type SP06Config struct {
 	Assistant            *AssistantRuntimeConfig `json:"assistant,omitempty"`
@@ -76,7 +78,7 @@ func loadSP06() (*SP06Config, error) {
 	if (ip == nil || (!ip.IsLoopback() && !ip.IsPrivate())) && u.Hostname() != "ops-investigator."+c.Namespace+".svc.cluster.local" {
 		return nil, errors.New("SP06 investigator must use an approved private workload address")
 	}
-	if c.Assistant != nil && c.Assistant.Enabled && c.Assistant.ModelProfileVersion == "" {
+	if c.Assistant != nil && c.Assistant.Enabled && (c.Assistant.Profile == nil || !c.Assistant.Profile.Valid(c.ListenAddress) || c.Assistant.ModelProfileVersion != c.Assistant.Profile.Reference()) {
 		return nil, errors.New("assistant model profile must be frozen")
 	}
 	return &c, nil
@@ -318,9 +320,25 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 			if err != nil {
 				return assistant.Admission{}, err
 			}
+			kind := "data_query"
+			if conversation.Mode == "troubleshoot" {
+				kind = "resource_troubleshooting"
+				if conversation.Binding.IncidentID != uuid.Nil {
+					kind = "incident_followup"
+				}
+			}
+			permitted := false
+			for _, task := range c.Assistant.Profile.TaskKinds {
+				if task == kind {
+					permitted = true
+				}
+			}
+			if !permitted {
+				return assistant.Admission{}, investigation.ErrDenied
+			}
 			return assistant.Admission{PolicyVersion: decision.PolicyVersion, ModelProfileVersion: c.Assistant.ModelProfileVersion, Budget: budget}, nil
 		}
-		sp04.Assistant = &httpapi.AssistantHandlers{Repository: repo, SP04: sp04, CursorKey: sp04.SigningKey}
+		sp04.Assistant = &httpapi.AssistantHandlers{Repository: repo, SP04: sp04, CursorKey: sp04.SigningKey, ModelTaskKinds: append([]string(nil), c.Assistant.Profile.TaskKinds...)}
 	}
 
 	go func() { _ = server.Serve(tls.NewListener(listener, tlsConfig)) }()

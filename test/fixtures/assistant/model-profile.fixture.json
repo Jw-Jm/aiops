@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "assistant-model-profile/v1",
+  "version": "assistant-smoke/v1",
+  "modelID": "qwen2.5:1.5b",
+  "modelVersion": "qwen2.5:1.5b",
+  "baseURL": "http://127.0.0.1:11434/v1",
+  "apiKeyRef": "secret://model/api-key",
+  "contextWindow": 16384,
+  "outputTokenLimit": 2048,
+  "tokenAccounting": "reserve-context-bound",
+  "costPolicy": "zero-charge",
+  "toolCalling": true,
+  "structuredOutput": true,
+  "taskKinds": [
+    "data_query"
+  ],
+  "timeoutSeconds": 120,
+  "retries": 0,
+  "licenseSPDX": "Apache-2.0",
+  "weightsDigest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+  "evaluationVersion": "fixture-smoke/v1",
+  "evaluationDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "admissionEvidenceDigest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "admissionState": "fixture_only"
+}
