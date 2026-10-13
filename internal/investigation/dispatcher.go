@@ -9,14 +9,16 @@ import (
 )
 
 type DispatchRequest struct {
-	Job        Job    `json:"job"`
-	JobContext string `json:"jobContext"`
-	MCPContext string `json:"mcpContext"`
+	SchemaVersion string `json:"schemaVersion,omitempty"`
+	Job           Job    `json:"job"`
+	JobContext    string `json:"jobContext"`
+	MCPContext    string `json:"mcpContext"`
 }
 type Dispatcher struct {
 	Repository Repository
 	Signer     ContextSigner
 	Workload   string
+	CatalogFor func(Job) ([]string, error)
 	Tools      []string
 	Remote     func(context.Context, DispatchRequest) ([]byte, error)
 }
@@ -32,12 +34,19 @@ func (d Dispatcher) RunOne(ctx context.Context, tenant uuid.UUID, owner string) 
 	if err != nil {
 		return err
 	}
-	jc, err := d.Signer.IssueRegistered(ctx, d.Repository, j, l, "platform-job-api", d.Workload, d.Tools)
+	names := d.Tools
+	if d.CatalogFor != nil {
+		names, err = d.CatalogFor(j)
+		if err != nil {
+			return err
+		}
+	}
+	jc, err := d.Signer.IssueRegistered(ctx, d.Repository, j, l, "platform-job-api", d.Workload, names)
 	if err != nil {
 		_ = d.Repository.Fail(ctx, l, "CONTEXT_SIGN_UNAVAILABLE")
 		return err
 	}
-	mc, err := d.Signer.IssueRegistered(ctx, d.Repository, j, l, "platform-mcp-gateway", d.Workload, d.Tools)
+	mc, err := d.Signer.IssueRegistered(ctx, d.Repository, j, l, "platform-mcp-gateway", d.Workload, names)
 	if err != nil {
 		_ = d.Repository.Fail(ctx, l, "CONTEXT_SIGN_UNAVAILABLE")
 		return err
@@ -63,7 +72,7 @@ func (d Dispatcher) RunOne(ctx context.Context, tenant uuid.UUID, owner string) 
 			}
 		}
 	})
-	result, callErr := d.Remote(bounded, DispatchRequest{j, jc, mc})
+	result, callErr := d.Remote(bounded, DispatchRequest{Job: j, JobContext: jc, MCPContext: mc, SchemaVersion: dispatchVersion(j)})
 	close(done)
 	wg.Wait()
 	if ctx.Err() != nil {
@@ -93,4 +102,11 @@ func (d Dispatcher) RunOne(ctx context.Context, tenant uuid.UUID, owner string) 
 		return err
 	}
 	return nil
+}
+
+func dispatchVersion(j Job) string {
+	if j.Assistant != nil {
+		return "dispatcher-payload/v2"
+	}
+	return ""
 }

@@ -64,8 +64,8 @@ def serve(config):
             try:
                 try:
                     payload=json.loads(self.rfile.read(length))
-                    if not isinstance(payload,dict) or set(payload)!={"job","jobContext","mcpContext"} or not isinstance(payload["job"],dict) or not isinstance(payload["job"].get("jobId"),str) or not payload["job"]["jobId"] or not all(isinstance(payload[key],str) and payload[key] for key in ("jobContext","mcpContext")):
-                        raise ValueError()
+                    from .assistant_binding import validate_dispatch
+                    validate_dispatch(payload,config.get("assistantModelProfileVersion"))
                 except (ValueError,UnicodeError):
                     self.respond(400,{"errorCode":"INVALID_REQUEST"});return
                 sync, asynchronous=clients(config,identity)

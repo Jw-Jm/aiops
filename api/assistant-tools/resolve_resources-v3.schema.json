@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/resolve_resources/v3",
+  "title": "resolve_resources",
+  "description": "Resolve exact currently authorized resource identities, asking for clarification when ambiguous.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "selector": {
+      "$ref": "https://ops.local/schemas/resource-selector/v1"
+    }
+  },
+  "required": [
+    "selector"
+  ]
+}

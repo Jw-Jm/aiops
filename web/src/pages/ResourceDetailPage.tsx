@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Button, Tabs } from "antd";
+import { Button, Tabs, Space } from "antd";
 import { Link, useSearchParams } from "react-router-dom";
 import { getResourceByCanonicalID } from "../api/generated/platform";
 import { checked, requestOptions } from "../api/client";
@@ -25,9 +25,16 @@ export function ResourceDetailPage() {
         title="资源详情"
         description="完整标识、来源和关系均取自当前授权查询。"
         extra={
-          <Link to="/resources">
-            <Button>返回资源目录</Button>
-          </Link>
+          <Space>
+            <Link
+              to={`/assistant?canonicalId=${encodeURIComponent(id)}&clusterUid=${encodeURIComponent(id.split("/")[3] || "")}`}
+            >
+              <Button>自然语言排查</Button>
+            </Link>
+            <Link to="/resources">
+              <Button>返回资源目录</Button>
+            </Link>
+          </Space>
         }
       />
       <section className="section">

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/query-fact/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "query-fact/v1"
+    },
+    "factId": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "row": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "column": {
+      "const": "value"
+    },
+    "value": {
+      "type": "number",
+      "minimum": 0
+    },
+    "unit": {
+      "enum": [
+        "resources",
+        "findings",
+        "incidents",
+        "executions",
+        "events",
+        "milliseconds",
+        "restarts",
+        "cores",
+        "bytes",
+        "logs"
+      ]
+    },
+    "exact": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "factId",
+    "row",
+    "column",
+    "value",
+    "unit",
+    "exact"
+  ]
+}

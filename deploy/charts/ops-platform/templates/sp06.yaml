@@ -5,9 +5,14 @@
 {{- if not .Values.sp06.modelCIDRs }}{{ fail "SP06 requires exact model endpoint host CIDRs" }}{{- end }}
 {{- range .Values.sp06.modelCIDRs }}{{- if not (or (hasSuffix "/32" .) (hasSuffix "/128" .)) }}{{ fail "SP06 model egress must use exact host CIDRs" }}{{- end }}{{- end }}
 {{- end }}
+{{- if .Values.sp06.assistant.enabled }}
+{{- if eq .Values.sp06.modelState "pending" }}{{ fail "Assistant requires an admitted model" }}{{- end }}
+{{- if not .Values.sp06.assistant.modelProfileVersion }}{{ fail "Assistant requires a frozen model profile version" }}{{- end }}
+{{- end }}
 {{- if not .Values.networkPolicyOnly }}
 {{- $common := dict "namespace" .Release.Namespace "listenAddress" (printf ":%d" (int .Values.sp06.gatewayPort)) "investigatorEndpoint" (printf "https://ops-investigator.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.components.investigator.port)) "certificateFile" "/etc/sp04/identity/tls.crt" "privateKeyFile" "/etc/sp04/identity/tls.key" "caFile" "/etc/sp04/identity/ca.pem" "crlFile" "/etc/sp04/identity/crl.pem" "policyName" .Values.sp06.policyName "tenants" .Values.sp06.tenants "budget" .Values.sp06.budget }}
 {{- $_ := set $common "identityMode" (.Values.workloadIdentity.mode | default "file") }}
+{{- $_ := set $common "assistant" .Values.sp06.assistant }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -18,7 +23,11 @@ data:
   api.json: {{ $common | toJson | quote }}
   worker.json: {{ $common | toJson | quote }}
 {{- if ne .Values.sp06.modelState "pending" }}
-  investigator.json: {{ dict "listenAddress" (printf "0.0.0.0:%d" (int .Values.components.investigator.port)) "jobAPI" (printf "https://ops-api.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.sp06.gatewayPort)) "mcpEndpoint" (printf "https://ops-api.%s.svc.cluster.local:%d/mcp" .Release.Namespace (int .Values.sp06.gatewayPort)) "apiServerName" (printf "ops-api.%s.svc.cluster.local" .Release.Namespace) "workerIdentity" (printf "spiffe://ops.local/ns/%s/sa/ops-worker" .Release.Namespace) "caFile" "/etc/identity/ca.pem" "crlFile" "/etc/identity/crl.pem" "certificateFile" "/etc/identity/tls.crt" "privateKeyFile" "/etc/identity/tls.key" "identityMode" (.Values.workloadIdentity.mode | default "file") "modelAPIKeyFile" "/run/model-credentials/model-api-key" "model" .Values.sp06.model | toJson | quote }}
+{{- $investigator := dict "listenAddress" (printf "0.0.0.0:%d" (int .Values.components.investigator.port)) "jobAPI" (printf "https://ops-api.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.sp06.gatewayPort)) "mcpEndpoint" (printf "https://ops-api.%s.svc.cluster.local:%d/mcp" .Release.Namespace (int .Values.sp06.gatewayPort)) "apiServerName" (printf "ops-api.%s.svc.cluster.local" .Release.Namespace) "workerIdentity" (printf "spiffe://ops.local/ns/%s/sa/ops-worker" .Release.Namespace) "caFile" "/etc/identity/ca.pem" "crlFile" "/etc/identity/crl.pem" "certificateFile" "/etc/identity/tls.crt" "privateKeyFile" "/etc/identity/tls.key" "identityMode" (.Values.workloadIdentity.mode | default "file") "modelAPIKeyFile" "/run/model-credentials/model-api-key" "model" .Values.sp06.model }}
+{{- if .Values.sp06.assistant.enabled }}
+{{- $_ := set $investigator "assistantModelProfileVersion" .Values.sp06.assistant.modelProfileVersion }}
+{{- end }}
+  investigator.json: {{ $investigator | toJson | quote }}
 {{- end }}
 ---
 {{- if and (not .Values.bootstrapAPIOnly) (ne .Values.sp06.modelState "pending") }}

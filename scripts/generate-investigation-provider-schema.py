@@ -16,3 +16,8 @@ def localize(v):
  if isinstance(v,list):return [localize(x) for x in v]
  return v
 (root/'services/investigator/src/investigator/output.schema.json').write_text(json.dumps(localize(result),indent=2)+'\n')
+
+assistant=json.loads((root/'api/schemas/assistant-answer-v1.schema.json').read_text())
+assistant.pop('$schema',None);assistant.pop('$id',None)
+assistant['required']=list(assistant['properties'])
+(root/'services/investigator/src/investigator/assistant-output.schema.json').write_text(json.dumps(assistant,indent=2)+'\n')

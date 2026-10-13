@@ -54,7 +54,10 @@ func (r Repository) Stop(ctx context.Context, tenant, id uuid.UUID, subject stri
 				return ErrLease
 			}
 		} else {
-			scope, err := graph.EffectiveTx(ctx, tx, tenant.String(), subject, j.Scope.Cluster, true)
+			scope := j.Scope
+			if j.Assistant == nil {
+				scope, err = graph.EffectiveTx(ctx, tx, tenant.String(), subject, j.Scope.Cluster, true)
+			}
 			if err != nil || graph.ScopeDigest(scope) != j.EffectiveScopeDigest || subject != j.Subject {
 				return ErrDenied
 			}
@@ -124,6 +127,11 @@ func (r Repository) Events(ctx context.Context, tenant, id uuid.UUID, subject st
 		if err = current(ctx, tx, j); err != nil {
 			return err
 		}
+		if j.Assistant != nil && len(j.Result) > 0 {
+			if err = AssistantAnswerRetainedTx(ctx, tx, j.TenantID, j.Assistant.ConversationID, j.Assistant.TurnID); err != nil {
+				return err
+			}
+		}
 		if len(j.Result) > 0 {
 			if err = authorizeResult(ctx, tx, j, j.Result); err != nil {
 				return err
@@ -172,7 +180,7 @@ func (r Repository) Events(ctx context.Context, tenant, id uuid.UUID, subject st
 func (r Repository) ExpirePass(ctx context.Context, tenant uuid.UUID) error {
 	ids := []uuid.UUID{}
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
-		rows, err := tx.Query(ctx, `SELECT job_id FROM investigation.jobs WHERE tenant_id=$1 AND schema_version='investigation-job/v2' AND state IN('queued','running') AND expires_at<=clock_timestamp() ORDER BY expires_at LIMIT 50`, tenant)
+		rows, err := tx.Query(ctx, `SELECT job_id FROM investigation.jobs WHERE tenant_id=$1 AND (schema_version='investigation-job/v2' OR ($2 AND schema_version='investigation-job/v3')) AND state IN('queued','running') AND expires_at<=clock_timestamp() ORDER BY expires_at LIMIT 50`, tenant, r.AssistantEnabled)
 		if err != nil {
 			return err
 		}
@@ -203,6 +211,16 @@ func exhaustBudgetTx(ctx context.Context, tx pgx.Tx, j Job) error {
 	}
 	if _, err := tx.Exec(ctx, `SELECT platform.sp06_rotate_fence($1,$2,$3)`, j.TenantID, j.JobID, uuid.New()); err != nil {
 		return err
+	}
+	if j.Assistant != nil {
+		answer, err := assistantBudgetAnswerTx(ctx, tx, j)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.Exec(ctx, `UPDATE investigation.jobs SET state='partial',error_code='BUDGET_EXHAUSTED',result=$3 WHERE tenant_id=$1 AND job_id=$2`, j.TenantID, j.JobID, answer); err != nil {
+			return err
+		}
+		return event(ctx, tx, j, "result", map[string]any{"state": "partial", "result": json.RawMessage(answer), "errorCode": "BUDGET_EXHAUSTED"})
 	}
 	partial := Proposal{SchemaVersion: "investigation-result/v1", Status: "unresolved", Summary: "Investigation budget exhausted; committed steps remain available.", EvidenceRefs: []string{}, CandidateUpdates: []CandidateSuggestion{}, ActionPlans: []json.RawMessage{}, Partial: true, DegradedSources: []string{"budget-exhausted"}}
 	if _, err := tx.Exec(ctx, `UPDATE investigation.jobs SET state='partial',error_code='BUDGET_EXHAUSTED',result=$3 WHERE tenant_id=$1 AND job_id=$2`, j.TenantID, j.JobID, raw(partial)); err != nil {

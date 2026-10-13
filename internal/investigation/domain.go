@@ -11,14 +11,15 @@ import (
 )
 
 var (
-	ErrNoJob     = errors.New("INVESTIGATION_NOT_READY")
-	ErrLease     = errors.New("STALE_CONTEXT")
-	ErrConflict  = errors.New("IDEMPOTENCY_CONFLICT")
-	ErrReplay    = errors.New("REPLAY_REJECTED")
-	ErrCommitted = errors.New("STEP_ALREADY_COMMITTED")
-	ErrBudget    = errors.New("BUDGET_EXHAUSTED")
-	ErrInvalid   = errors.New("INVALID_INVESTIGATION")
-	ErrDenied    = errors.New("INVESTIGATION_NOT_AUTHORIZED")
+	ErrNoJob         = errors.New("INVESTIGATION_NOT_READY")
+	ErrLease         = errors.New("STALE_CONTEXT")
+	ErrConflict      = errors.New("IDEMPOTENCY_CONFLICT")
+	ErrReplay        = errors.New("REPLAY_REJECTED")
+	ErrCommitted     = errors.New("STEP_ALREADY_COMMITTED")
+	ErrBudget        = errors.New("BUDGET_EXHAUSTED")
+	ErrInvalid       = errors.New("INVALID_INVESTIGATION")
+	ErrDenied        = errors.New("INVESTIGATION_NOT_AUTHORIZED")
+	ErrResultExpired = errors.New("ASSISTANT_RESULT_EXPIRED")
 )
 
 type Usage struct {
@@ -124,6 +125,7 @@ type CreateInvestigationRequest struct {
 	Budget            Budget
 }
 type Job struct {
+	Assistant            *AssistantTask  `json:"assistant,omitempty"`
 	SchemaVersion        string          `json:"schemaVersion"`
 	TenantID             uuid.UUID       `json:"tenantId"`
 	JobID                uuid.UUID       `json:"jobId"`

@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/resource-investigation-context/v1",
+  "title": "resource-investigation-context/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "resource-investigation-context/v1"
+    },
+    "contextId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenantId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "ownerSubject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "clusterUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "canonicalId": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          },
+          "namespace": {
+            "type": "string",
+            "maxLength": 63
+          },
+          "observedAt": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+          }
+        },
+        "required": [
+          "canonicalId",
+          "kind",
+          "name",
+          "namespace",
+          "observedAt"
+        ]
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "symptom": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "timeRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        "to": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "required": [
+        "from",
+        "to",
+        "timezone"
+      ]
+    },
+    "resolvedAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "observationRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ownerEpoch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "graphGeneration": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "ownerEpoch",
+        "graphGeneration"
+      ]
+    },
+    "grantSnapshotDigest": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "executionScopeDigest": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "executionScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "clusterUid",
+        "namespaces",
+        "resources",
+        "clusterScoped",
+        "authorizationRevision"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "clusterUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "namespaces": {
+          "type": "array",
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 63
+          }
+        },
+        "resources": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+          }
+        },
+        "clusterScoped": {
+          "type": "boolean"
+        },
+        "authorizationRevision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "contextDigest": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "contextId",
+    "tenantId",
+    "ownerSubject",
+    "clusterUid",
+    "resources",
+    "symptom",
+    "timeRange",
+    "resolvedAt",
+    "observationRevision",
+    "grantSnapshotDigest",
+    "executionScopeDigest",
+    "executionScope",
+    "contextDigest"
+  ]
+}

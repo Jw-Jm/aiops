@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/execute_analysis_query/v3",
+  "title": "execute_analysis_query",
+  "description": "Validate and execute a server-compiled fixed analysis query; return typed facts and provenance.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "intent": {
+      "$ref": "https://ops.local/schemas/query-intent/v1"
+    }
+  },
+  "required": [
+    "intent"
+  ]
+}

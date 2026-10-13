@@ -1,0 +1,235 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/analysis-catalog/v1",
+  "title": "analysis-catalog/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "analysis-catalog/v1"
+    },
+    "version": {
+      "const": "analysis-catalog/v1"
+    },
+    "datasets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "enum": [
+              "resources.current",
+              "findings.occurrences",
+              "incidents.records",
+              "executions.records",
+              "audit.events",
+              "metrics.pod-restarts",
+              "metrics.pod-cpu",
+              "metrics.pod-memory",
+              "metrics.pod-phase",
+              "metrics.node-ready",
+              "logs.records"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "authorizationDomain": {
+            "enum": [
+              "operational",
+              "audit"
+            ]
+          },
+          "source": {
+            "enum": [
+              "graph",
+              "postgresql",
+              "victoriametrics",
+              "victorialogs"
+            ]
+          },
+          "templateVersion": {
+            "type": "string",
+            "minLength": 1
+          },
+          "metric": {
+            "enum": [
+              "resource_count",
+              "occurrence_count",
+              "incident_count",
+              "execution_count",
+              "audit_count",
+              "restart_increase",
+              "cpu_cores",
+              "memory_bytes",
+              "phase_count",
+              "ready_count",
+              "log_count"
+            ]
+          },
+          "unit": {
+            "enum": [
+              "resources",
+              "findings",
+              "incidents",
+              "executions",
+              "events",
+              "restarts",
+              "cores",
+              "bytes",
+              "logs"
+            ]
+          },
+          "calculation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "kind",
+                "health",
+                "namespace",
+                "state",
+                "severity",
+                "operation",
+                "subject",
+                "day",
+                "uid",
+                "phase",
+                "level"
+              ]
+            },
+            "maxItems": 6,
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "filters": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "kind",
+                "namespace",
+                "name",
+                "health",
+                "state",
+                "severity",
+                "operation",
+                "subject",
+                "level"
+              ]
+            },
+            "maxItems": 4,
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "requiredFilters": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "healthValues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "maxGroups": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "historySupported": {
+            "type": "boolean"
+          },
+          "zeroMeaning": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "Pod",
+                "Node",
+                "Deployment",
+                "StatefulSet",
+                "DaemonSet",
+                "Service",
+                "PersistentVolumeClaim",
+                "PersistentVolume",
+                "Namespace",
+                "Job",
+                "CronJob",
+                "ReplicaSet",
+                "ConfigMap",
+                "Secret",
+                "ServiceAccount",
+                "Ingress",
+                "EndpointSlice",
+                "Endpoints",
+                "Event"
+              ]
+            },
+            "minItems": 0,
+            "maxItems": 19,
+            "uniqueItems": true
+          },
+          "clusterScopedKinds": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "Node",
+                "PersistentVolume",
+                "Namespace"
+              ]
+            },
+            "uniqueItems": true,
+            "maxItems": 3
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "authorizationDomain",
+          "source",
+          "templateVersion",
+          "metric",
+          "unit",
+          "calculation",
+          "dimensions",
+          "filters",
+          "requiredFilters",
+          "healthValues",
+          "maxGroups",
+          "historySupported",
+          "zeroMeaning",
+          "kinds",
+          "clusterScopedKinds"
+        ]
+      },
+      "maxItems": 32,
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "version",
+    "datasets"
+  ]
+}

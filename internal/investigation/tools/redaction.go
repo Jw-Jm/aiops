@@ -54,7 +54,9 @@ func Sanitize(out Result, maxBytes int) (Result, error) {
 		return Result{}, investigation.ErrInvalid
 	}
 	out.Data = clean(v)
-	out.SchemaVersion = "tool-response/v2"
+	if out.SchemaVersion != "tool-response/v3" {
+		out.SchemaVersion = "tool-response/v2"
+	}
 	if out.EvidenceRefs == nil {
 		out.EvidenceRefs = []string{}
 	}
@@ -69,3 +71,6 @@ func Sanitize(out Result, maxBytes int) (Result, error) {
 	}
 	return out, nil
 }
+
+// RedactText applies the same prompt disclosure rules to user messages.
+func RedactText(value string) string { return clean(value).(string) }

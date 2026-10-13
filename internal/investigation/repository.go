@@ -18,23 +18,24 @@ import (
 )
 
 type Repository struct {
-	Pool       persistence.TxBeginner
-	Trust      configregistry.SignatureVerifier
-	CurrentRCA func(context.Context, Job) (int64, error)
+	Pool             persistence.TxBeginner
+	Trust            configregistry.SignatureVerifier
+	CurrentRCA       func(context.Context, Job) (int64, error)
+	AssistantEnabled bool
 }
 
 func raw(v any) []byte { b, _ := json.Marshal(v); return b }
 
-const jobColumns = `schema_version,tenant_id,job_id,incident_id,requesting_subject,trigger_revision,trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,state,budget,budget_reserved,budget_consumed,expires_at,event_seq,next_call_seq,result,error_code`
+const jobColumns = `schema_version,tenant_id,job_id,COALESCE(incident_id,'00000000-0000-0000-0000-000000000000'::uuid),requesting_subject,COALESCE(trigger_revision,0),trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,state,budget,budget_reserved,budget_consumed,expires_at,event_seq,next_call_seq,result,error_code,assistant_binding`
 
 func load(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, lock bool) (Job, error) {
 	var j Job
-	var scope, budget, reserved, consumed, result []byte
+	var scope, budget, reserved, consumed, result, assistant []byte
 	suffix := ""
 	if lock {
 		suffix = " FOR UPDATE"
 	}
-	err := tx.QueryRow(ctx, `SELECT `+jobColumns+` FROM investigation.jobs WHERE tenant_id=$1 AND job_id=$2 AND schema_version='investigation-job/v2'`+suffix, tenant, id).Scan(&j.SchemaVersion, &j.TenantID, &j.JobID, &j.IncidentID, &j.Subject, &j.TriggerRevision, &j.TriggerKind, &j.PolicyVersion, &scope, &j.EffectiveScopeDigest, &j.ToolCatalogDigest, &j.State, &budget, &reserved, &consumed, &j.ExpiresAt, &j.EventSeq, &j.NextCallSeq, &result, &j.ErrorCode)
+	err := tx.QueryRow(ctx, `SELECT `+jobColumns+` FROM investigation.jobs WHERE tenant_id=$1 AND job_id=$2 AND schema_version IN('investigation-job/v2','investigation-job/v3')`+suffix, tenant, id).Scan(&j.SchemaVersion, &j.TenantID, &j.JobID, &j.IncidentID, &j.Subject, &j.TriggerRevision, &j.TriggerKind, &j.PolicyVersion, &scope, &j.EffectiveScopeDigest, &j.ToolCatalogDigest, &j.State, &budget, &reserved, &consumed, &j.ExpiresAt, &j.EventSeq, &j.NextCallSeq, &result, &j.ErrorCode, &assistant)
 	if err != nil {
 		return j, err
 	}
@@ -46,6 +47,9 @@ func load(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, lock bool) (Job,
 			return j, ErrInvalid
 		}
 	}
+	if len(assistant) > 0 && json.Unmarshal(assistant, &j.Assistant) != nil {
+		return j, ErrInvalid
+	}
 	j.Result = result
 	if classes, ok := ctx.Value(dataClassesKey{}).([]string); ok {
 		return restrictClasses(j, classes)
@@ -53,6 +57,9 @@ func load(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, lock bool) (Job,
 	return j, nil
 }
 func current(ctx context.Context, tx pgx.Tx, j Job) error {
+	if j.SchemaVersion == "investigation-job/v3" {
+		return currentAssistant(ctx, tx, j)
+	}
 	s, err := graph.EffectiveTx(ctx, tx, j.TenantID.String(), j.Subject, j.Scope.Cluster, true)
 	if err != nil || graph.ScopeDigest(s) != j.EffectiveScopeDigest {
 		return ErrDenied
@@ -148,7 +155,7 @@ func (r Repository) CreateJob(ctx context.Context, q CreateInvestigationRequest)
 			return err
 		}
 		var id uuid.UUID
-		err = tx.QueryRow(ctx, `INSERT INTO investigation.jobs(tenant_id,job_id,incident_id,trigger_revision,state,schema_version,requesting_subject,trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,budget,budget_reserved,budget_consumed,expires_at) VALUES($1,$2,$3,$4,'queued','investigation-job/v2',$5,$6,$7,$8,$9,$10,$11,$12,$12,clock_timestamp()+make_interval(secs=>$13)) ON CONFLICT(tenant_id,incident_id,policy_version,trigger_revision,trigger_kind,requesting_subject,effective_scope_digest) DO UPDATE SET updated_at=investigation.jobs.updated_at RETURNING job_id`, q.TenantID, uuid.Must(uuid.NewV7()), q.IncidentID, q.TriggerRevision, q.Subject, q.TriggerKind, q.PolicyVersion, raw(q.Scope), j.EffectiveScopeDigest, q.ToolCatalogDigest, raw(q.Budget), raw(Usage{}), q.Budget.DurationSeconds).Scan(&id)
+		err = tx.QueryRow(ctx, `INSERT INTO investigation.jobs(tenant_id,job_id,incident_id,trigger_revision,state,schema_version,requesting_subject,trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,budget,budget_reserved,budget_consumed,expires_at) VALUES($1,$2,$3,$4,'queued','investigation-job/v2',$5,$6,$7,$8,$9,$10,$11,$12,$12,clock_timestamp()+make_interval(secs=>$13)) ON CONFLICT(tenant_id,incident_id,policy_version,trigger_revision,trigger_kind,requesting_subject,effective_scope_digest) WHERE schema_version IN('investigation-job/v1','investigation-job/v2') DO UPDATE SET updated_at=investigation.jobs.updated_at RETURNING job_id`, q.TenantID, uuid.Must(uuid.NewV7()), q.IncidentID, q.TriggerRevision, q.Subject, q.TriggerKind, q.PolicyVersion, raw(q.Scope), j.EffectiveScopeDigest, q.ToolCatalogDigest, raw(q.Budget), raw(Usage{}), q.Budget.DurationSeconds).Scan(&id)
 		if err != nil {
 			return err
 		}
@@ -190,6 +197,17 @@ func (r Repository) Get(ctx context.Context, tenant, id uuid.UUID) (Job, error) 
 		}
 		if err := current(ctx, tx, j); err != nil {
 			return err
+		}
+		if len(j.Result) > 0 && j.Assistant != nil {
+			err := AssistantAnswerRetainedTx(ctx, tx, j.TenantID, j.Assistant.ConversationID, j.Assistant.TurnID)
+			if errors.Is(err, ErrResultExpired) {
+				j.Result = nil
+				j.ErrorCode = "RESULT_EXPIRED"
+				return nil
+			}
+			if err != nil {
+				return err
+			}
 		}
 		if len(j.Result) > 0 {
 			if _, err := readSteps(ctx, tx, j); err != nil {
@@ -258,7 +276,7 @@ func (r Repository) Claim(ctx context.Context, tenant uuid.UUID, owner string, t
 	var claimError error
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
 		var id uuid.UUID
-		err := tx.QueryRow(ctx, `SELECT j.job_id FROM investigation.jobs j JOIN investigation.worker_queue q USING(tenant_id,job_id) WHERE j.tenant_id=$1 AND j.schema_version='investigation-job/v2' AND j.state IN('queued','running') AND j.expires_at>clock_timestamp() AND q.next_attempt_at<=clock_timestamp() AND(q.lease_expires_at IS NULL OR q.lease_expires_at<=clock_timestamp()) ORDER BY j.created_at FOR UPDATE OF j,q SKIP LOCKED LIMIT 1`, tenant).Scan(&id)
+		err := tx.QueryRow(ctx, `SELECT j.job_id FROM investigation.jobs j JOIN investigation.worker_queue q USING(tenant_id,job_id) WHERE j.tenant_id=$1 AND (j.schema_version='investigation-job/v2' OR ($2 AND j.schema_version='investigation-job/v3')) AND j.state IN('queued','running') AND j.expires_at>clock_timestamp() AND q.next_attempt_at<=clock_timestamp() AND(q.lease_expires_at IS NULL OR q.lease_expires_at<=clock_timestamp()) ORDER BY j.created_at FOR UPDATE OF j,q SKIP LOCKED LIMIT 1`, tenant, r.AssistantEnabled).Scan(&id)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrNoJob
 		}
@@ -509,7 +527,7 @@ func (r Repository) settleTx(ctx context.Context, tx pgx.Tx, j Job, l Lease, id 
 	}
 	if code == "" {
 		var envelope map[string]any
-		if json.Unmarshal(result, &envelope) == nil && envelope["schemaVersion"] == "tool-response/v2" {
+		if json.Unmarshal(result, &envelope) == nil && (envelope["schemaVersion"] == "tool-response/v2" || envelope["schemaVersion"] == "tool-response/v3") {
 			// The response's budget is derived under the same Job lock as its
 			// settlement. Cached successful results preserve this exact ledger view.
 			for range 6 {
@@ -523,6 +541,11 @@ func (r Repository) settleTx(ctx context.Context, tx pgx.Tx, j Job, l Lease, id 
 			if !actual.Within(reserve) {
 				return ErrBudget
 			}
+		}
+	}
+	if code == "" && j.Assistant != nil {
+		if err := persistAssistantQueryTx(ctx, tx, j, id, result); err != nil {
+			return err
 		}
 	}
 	if code == "" { // Evidence retention is committed atomically with the successful Step.

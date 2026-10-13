@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/resource_findings/v3",
+  "title": "resource_findings",
+  "description": "Read bounded standardized Finding records for a real authorized resource, without creating an Incident.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "canonicalId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+    }
+  },
+  "required": [
+    "canonicalId"
+  ]
+}

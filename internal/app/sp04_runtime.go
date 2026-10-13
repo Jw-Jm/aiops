@@ -16,6 +16,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"ops-platform/internal/analytics"
 	"ops-platform/internal/auth"
 	"ops-platform/internal/contract"
 	"ops-platform/internal/evidence"
@@ -42,13 +43,14 @@ type SP04Cluster struct {
 	Burst                                                                                                  int
 }
 type SP04Source struct {
-	Name            string
-	Binding         evidence.Binding
-	CAFile          string
-	CredentialFile  string
-	ScopeProbe      *evidence.Query
-	Mode            string
-	FrozenEndpoints []deepflow.Endpoint
+	AnalysisQualifications []analytics.Qualification
+	Name                   string
+	Binding                evidence.Binding
+	CAFile                 string
+	CredentialFile         string
+	ScopeProbe             *evidence.Query
+	Mode                   string
+	FrozenEndpoints        []deepflow.Endpoint
 }
 type SP04Config struct {
 	IdentityMode                                                                                                                                                                string
@@ -434,6 +436,7 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 		}()
 	}
 	adapters := map[string]evidence.Adapter{}
+	analysisAdapters := map[string]*analytics.Victoria{}
 	for _, source := range c.Sources {
 		if source.Name != "victoriametrics" && source.Name != "victorialogs" && source.Name != "redfish" && source.Name != "deepflow" {
 			cancel()
@@ -543,6 +546,14 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 			cancel()
 			return nil, err
 		}
+		if len(source.AnalysisQualifications) > 0 {
+			analysisAdapter, err := analytics.NewVictoria(source.Binding, client, (evidence.Repository{Pool: pool}).Authorize, source.AnalysisQualifications)
+			if err != nil {
+				cancel()
+				return nil, err
+			}
+			analysisAdapters[source.Binding.SourceID] = analysisAdapter
+		}
 		if source.ScopeProbe != nil && len(source.Binding.ScopeMapping.Scopes["cluster"]) > 0 {
 			probe := *source.ScopeProbe
 			probe.Scope = graph.Scope{Tenant: source.Binding.Tenant, Cluster: source.Binding.ScopeMapping.Scopes["cluster"][0], Namespaces: source.Binding.ScopeMapping.Scopes["namespace"], ClusterScoped: false, AuthorizationRevision: "source-isolation-probe"}
@@ -577,6 +588,10 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 		return nil, err
 	}
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/internal/v1/analysis:query" {
+			serveWorkerAnalysis(w, r, trust, key, pool, analysisAdapters, handlers)
+			return
+		}
 		if r.URL.Path == "/internal/v1/audit:verify" {
 			var verifier AuditRangeVerifier
 			if len(auditVerifier) > 0 {
@@ -668,10 +683,11 @@ func serveWorkerEvidence(w http.ResponseWriter, r *http.Request, trust auth.Work
 		return
 	}
 	scope, err := (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
-	if err != nil || graph.ScopeDigest(scope) != graph.ScopeDigest(claims.Scope) {
+	if err != nil || !claims.AllowsCurrent(scope) {
 		fail(409, "STALE_CONTEXT")
 		return
 	}
+	scope = claims.Scope
 	if r.URL.Path == "/internal/v1/evidence:read" {
 		var read struct {
 			EvidenceID string `json:"evidenceId"`
@@ -699,7 +715,7 @@ func serveWorkerEvidence(w http.ResponseWriter, r *http.Request, trust auth.Work
 			return
 		}
 		current, err := (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
-		if err != nil || graph.ScopeDigest(current) != graph.ScopeDigest(scope) {
+		if err != nil || !claims.AllowsCurrent(current) {
 			fail(409, "STALE_CONTEXT")
 			return
 		}
@@ -805,7 +821,7 @@ func serveWorkerEvidence(w http.ResponseWriter, r *http.Request, trust auth.Work
 		result.Evidence[i].FactSlice = json.RawMessage(result.Evidence[i].Data)
 	}
 	current, err := (graph.Authorization{Pool: pool}).Effective(ctx, claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
-	if err != nil || graph.ScopeDigest(current) != graph.ScopeDigest(scope) {
+	if err != nil || !claims.AllowsCurrent(current) {
 		fail(409, "STALE_CONTEXT")
 		return
 	}

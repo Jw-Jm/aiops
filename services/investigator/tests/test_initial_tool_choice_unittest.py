@@ -11,6 +11,9 @@ class Ledger:
         self.allocations.append((name,arguments,model,reserve))
         return {"stepId":"unit-model-step"}
     def settle(self,*args): self.settlements.append(args)
+    def request(self,suffix):
+        assert suffix=="/steps"
+        return []
 
 class InitialToolChoiceTests(unittest.TestCase):
     def client(self):
@@ -28,6 +31,28 @@ class InitialToolChoiceTests(unittest.TestCase):
             self.assertEqual(len(llm.job_api.settlements),1)
             llm.completion([],tools=tools,tool_choice="auto")
             self.assertEqual(provider.call_args.kwargs["tool_choice"],"auto")
+    def test_assistant_uses_its_own_context_and_answer_contract(self):
+        response=ModelResponse(choices=[{"message":{"role":"assistant","content":"bounded"}}])
+        llm=self.client();llm.assistant_task=True
+        tools=[{"type":"function","function":{"name":"get_assistant_context","parameters":{"type":"object"}}}]
+        with patch.object(DefaultLLM,"completion",return_value=response) as provider:
+            llm.completion([],tools=tools,response_format={"type":"json_schema"},tool_choice="auto")
+            self.assertEqual(provider.call_args.kwargs["tool_choice"]["function"]["name"],"get_assistant_context")
+            self.assertIsNone(provider.call_args.kwargs["response_format"])
+            llm.completion([],tools=tools,response_format={"type":"json_schema"},tool_choice="auto")
+            contract=provider.call_args.kwargs["response_format"]["json_schema"]
+            self.assertEqual(contract["name"],"AssistantAnswer")
+            self.assertIn("answerKind",contract["schema"]["properties"])
+            self.assertNotIn("incidentId",contract["schema"]["properties"])
+
+    def test_assistant_cannot_start_with_incident_context(self):
+        llm=self.client();llm.assistant_task=True
+        with patch.object(DefaultLLM,"completion") as provider:
+            with self.assertRaisesRegex(ModelCallError,"INITIAL_CONTEXT_TOOL_UNAVAILABLE"):
+                llm.completion([],tools=[{"type":"function","function":{"name":"get_incident_context"}}])
+            provider.assert_not_called()
+            self.assertEqual(llm.job_api.allocations,[])
+
     def test_missing_context_tool_fails_before_provider_and_admission(self):
         llm=self.client()
         with patch.object(DefaultLLM,"completion") as provider:

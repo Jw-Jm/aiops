@@ -103,8 +103,8 @@ export function PolicyImpactPreview({
   const matchesDraft =
     !draftId ||
     (value?.draft?.revision === expectedRevision &&
-      value.draft.status === "draft" &&
-      value.draft.kind === "policy");
+      value?.draft?.status === "draft" &&
+      value?.draft?.kind === "policy");
   const knownTarget =
     !versionId ||
     (!!target &&

@@ -76,9 +76,24 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
     steps=job_api.request("/steps")
     prior=[step["result"] for step in steps if step["state"]=="succeeded" and step["toolName"]!="model"]
     llm.needs_initial_tools=not bool(prior)
-    result=agent.call(messages=messages(job,prior),response_format={"type":"json_schema","json_schema":{"name":"InvestigationResult","strict":True,"schema":OUTPUT_JSON_SCHEMA}})
+    from .assistant_binding import is_assistant, messages as assistant_messages, output_schema as assistant_schema
+    assistant=is_assistant(job)
+    llm.assistant_task=assistant
+    if assistant:llm.assistant_task_kind=job["assistant"]["taskKind"]
+    prompt=assistant_messages(job,prior) if assistant else messages(job,prior)
+    schema=assistant_schema() if assistant else OUTPUT_JSON_SCHEMA
+    response_format={"type":"json_schema","json_schema":{"name":"AssistantAnswer" if assistant else "InvestigationResult","strict":True,"schema":schema}}
+    result=agent.call(messages=prompt,response_format=response_format)
     try:
         proposal=json.loads(result.result)
     except (ValueError,TypeError):
-        raise RuntimeError("INVALID_MODEL_JSON") from None
+        if not assistant:raise RuntimeError("INVALID_MODEL_JSON") from None
+        # At most one repair, charged by the same BudgetedLLM/Job admissions.
+        # The invalid model text is not promoted into trusted context.
+        repair_steps=job_api.request("/steps")
+        repair_prior=[step["result"] for step in repair_steps if step["state"]=="succeeded" and step["toolName"]!="model"]
+        repair_prompt=assistant_messages(job,repair_prior)+[{"role":"user","content":"The previous response was not valid JSON. Return one object matching the required schema. Use only already committed tool references."}]
+        repaired=agent.call(messages=repair_prompt,response_format=response_format)
+        try:proposal=json.loads(repaired.result)
+        except (ValueError,TypeError):raise RuntimeError("INVALID_MODEL_JSON") from None
     return sanitize(proposal)

@@ -18,6 +18,7 @@ class RuntimeConfig(BaseModel):
     identityMode: Literal["file","openbao-kubernetes"]="file"
     workerIdentity: str
     modelAPIKeyFile: str
+    assistantModelProfileVersion: str | None = None
     model: ModelContract
 
     @field_validator("jobAPI","mcpEndpoint")

@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useAuth } from "../auth/AuthProvider";
 import { getManager } from "../auth/oidc";
 const nav = [
+  { key: "/assistant", icon: <ApartmentOutlined />, label: "AI 问数与排查" },
   { key: "/overview", icon: <DashboardOutlined />, label: "运行总览" },
   { key: "/resources", icon: <DatabaseOutlined />, label: "资源目录" },
   { key: "/findings", icon: <AlertOutlined />, label: "故障告警" },

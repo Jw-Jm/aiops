@@ -35,6 +35,12 @@ type Proposal struct {
 // authority. Model proposals never mutate deterministic RCA or create execution
 // sessions. Every final reference retains the existing dependency/hold closure.
 func (r Repository) Complete(ctx context.Context, l Lease, b []byte) error {
+	var version struct {
+		SchemaVersion string `json:"schemaVersion"`
+	}
+	if json.Unmarshal(b, &version) == nil && version.SchemaVersion == "assistant-answer/v1" {
+		return r.completeAssistant(ctx, l, b)
+	}
 	var p Proposal
 	if contract.Validate("https://ops.local/schemas/investigation-result/v1", b) != nil {
 		return ErrInvalid
@@ -62,6 +68,9 @@ func (r Repository) Complete(ctx context.Context, l Lease, b []byte) error {
 		p.Partial = true
 	}
 	return r.withLease(ctx, l, func(tx pgx.Tx, j Job) error {
+		if j.Assistant != nil {
+			return ErrInvalid
+		}
 		if j.Reserved != (Usage{}) {
 			return ErrLease
 		}

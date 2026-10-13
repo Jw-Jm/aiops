@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/assistant-task/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "taskKind": {
+      "enum": [
+        "data_query",
+        "incident_followup",
+        "resource_troubleshooting"
+      ]
+    },
+    "authorizationDomain": {
+      "enum": [
+        "operational",
+        "audit"
+      ]
+    },
+    "conversationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "turnId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "inputDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "contextDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "grantSnapshot": {
+      "$ref": "https://ops.local/schemas/assistant-scope/v1"
+    },
+    "grantSnapshotDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "catalogVersion": {
+      "const": "assistant-tools/v1"
+    },
+    "datasetCatalogVersion": {
+      "const": "analysis-catalog/v1"
+    },
+    "datasetCatalogDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "promptVersion": {
+      "const": "assistant/v1"
+    },
+    "modelProfileVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "resultSchemaVersion": {
+      "const": "assistant-answer/v1"
+    }
+  },
+  "required": [
+    "taskKind",
+    "authorizationDomain",
+    "conversationId",
+    "turnId",
+    "inputDigest",
+    "contextDigest",
+    "grantSnapshot",
+    "grantSnapshotDigest",
+    "catalogVersion",
+    "datasetCatalogVersion",
+    "datasetCatalogDigest",
+    "promptVersion",
+    "modelProfileVersion",
+    "resultSchemaVersion"
+  ]
+}

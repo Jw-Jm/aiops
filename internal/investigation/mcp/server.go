@@ -32,12 +32,16 @@ type verified struct {
 	Lease  investigation.Lease
 }
 
-func (g Gateway) Handler() (http.Handler, error) {
-	defs, err := tools.Catalog()
-	if err != nil {
-		return nil, err
+func (g Gateway) handlerFor(defs []tools.Definition) (http.Handler, error) {
+	var err error
+	outputVersion := "v2"
+	for _, d := range defs {
+		if d.Version == "v3" {
+			outputVersion = "v3"
+			break
+		}
 	}
-	outputSchema, err := tools.OutputSchema()
+	outputSchema, err := tools.OutputSchema(outputVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -142,6 +146,9 @@ func (g Gateway) Handler() (http.Handler, error) {
 				_ = g.Repository.FailStep(ctx, v.Lease, c.StepID, code)
 				return g.failed(ctx, v, d.Name, errors.New(code)), nil
 			}
+			if v.Job.Assistant != nil {
+				out.SchemaVersion = "tool-response/v3"
+			}
 			// Sanitization happens before either model-visible output or persistence.
 			out, err = tools.Sanitize(out, int(reserve.ResultBytes))
 			if err != nil {
@@ -210,6 +217,9 @@ func failed(tool string, err error, jobs ...*investigation.Job) *sdk.CallToolRes
 	out := tools.Result{SchemaVersion: "tool-response/v2", Tool: tool, State: "failed", Data: map[string]any{}, EvidenceRefs: []string{}, Partial: true, DegradedSources: []string{}, ErrorCode: err.Error()}
 	if len(jobs) > 0 {
 		j := jobs[0]
+		if j.Assistant != nil {
+			out.SchemaVersion = "tool-response/v3"
+		}
 		out.Budget.Consumed = j.Consumed
 		out.Budget.Remaining = j.Budget.Usage.Sub(j.Consumed.Add(j.Reserved))
 		out.Data = map[string]any{"budgetAvailable": true}
@@ -222,4 +232,55 @@ func failed(tool string, err error, jobs ...*investigation.Job) *sdk.CallToolRes
 	}
 	b, _ := json.Marshal(out)
 	return &sdk.CallToolResult{IsError: true, StructuredContent: out, Content: []sdk.Content{&sdk.TextContent{Text: string(b)}}}
+}
+
+// Separate SDK servers ensure tools/list and tools/call expose exactly the same frozen subset.
+func (g Gateway) Handler() (http.Handler, error) {
+	old, err := tools.Catalog()
+	if err != nil {
+		return nil, err
+	}
+	legacy, err := g.handlerFor(old)
+	if err != nil {
+		return nil, err
+	}
+	handlers := map[string]http.Handler{}
+	for _, key := range []struct{ task, domain string }{{"data_query", "operational"}, {"data_query", "audit"}, {"incident_followup", "operational"}, {"resource_troubleshooting", "operational"}} {
+		defs, err := tools.CatalogFor("investigation-job/v3", key.task, key.domain, "assistant-tools/v1")
+		if err != nil {
+			return nil, err
+		}
+		h, err := g.handlerFor(defs)
+		if err != nil {
+			return nil, err
+		}
+		handlers[key.task+"/"+key.domain] = h
+	}
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fields := strings.Fields(r.Header.Get("Authorization"))
+		if len(fields) != 2 || fields[0] != "Bearer" || r.TLS == nil || len(r.TLS.PeerCertificates) == 0 {
+			http.Error(w, "FORBIDDEN", 403)
+			return
+		}
+		identity, err := auth.VerifyWorkload(auth.WithWorkloadTrust(r.Context(), g.Trust), r.TLS.PeerCertificates[0])
+		if err != nil {
+			http.Error(w, "FORBIDDEN", 403)
+			return
+		}
+		claims, err := g.Signer.VerifyContext(r.Context(), fields[1], "platform-mcp-gateway", identity.URI)
+		if err != nil {
+			http.Error(w, "FORBIDDEN", 403)
+			return
+		}
+		if claims.Assistant == nil {
+			legacy.ServeHTTP(w, r)
+			return
+		}
+		h := handlers[claims.Assistant.TaskKind+"/"+claims.Assistant.AuthorizationDomain]
+		if h == nil {
+			http.Error(w, "FORBIDDEN", 403)
+			return
+		}
+		h.ServeHTTP(w, r)
+	}), nil
 }

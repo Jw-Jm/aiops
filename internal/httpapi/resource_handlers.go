@@ -27,6 +27,7 @@ type SP04Handlers struct {
 	AuditEndpointAllowed func(string) bool
 	Action               *ActionHandlers
 	Investigation        *InvestigationHandlers
+	Assistant            *AssistantHandlers
 	SP05                 *SP05Handlers
 	Pool                 persistence.TxBeginner
 	Client               *http.Client
@@ -246,10 +247,13 @@ type callError struct {
 
 func (e callError) Error() string { return e.Code }
 func (h *SP04Handlers) call(ctx context.Context, endpoint, path, audience, subject string, scope graph.Scope, payload []byte) ([]byte, error) {
+	return h.callWithGrantDigest(ctx, endpoint, path, audience, subject, scope, payload, "")
+}
+func (h *SP04Handlers) callWithGrantDigest(ctx context.Context, endpoint, path, audience, subject string, scope graph.Scope, payload []byte, grantDigest string) ([]byte, error) {
 	deadline, cancel := context.WithTimeout(ctx, 4*time.Second)
 	defer cancel()
 	expires, _ := deadline.Deadline()
-	token, err := graph.SignContext(h.SigningKey, graph.Claims{Audience: audience, Subject: subject, Scope: scope, Deadline: expires, QueryDigest: graph.ScopeDigest(json.RawMessage(payload))})
+	token, err := graph.SignContext(h.SigningKey, graph.Claims{GrantSnapshotDigest: grantDigest, Audience: audience, Subject: subject, Scope: scope, Deadline: expires, QueryDigest: graph.ScopeDigest(json.RawMessage(payload))})
 	if err != nil {
 		return nil, err
 	}
@@ -370,6 +374,17 @@ func (h *SP04Handlers) queryEvidence(w http.ResponseWriter, r *http.Request, req
 		writeSP04Error(w, 403, "FORBIDDEN", "resource scope denied", false, request.RequestID)
 		return
 	}
+
+	grantDigest := graph.ScopeDigest(scope)
+	signedGrantDigest := ""
+	if bound, ok := r.Context().Value(assistantEvidenceScopeKey{}).(assistantEvidenceScope); ok {
+		if bound.GrantDigest != grantDigest || !graph.ContainsScope(scope, bound.Scope) {
+			writeSP04Error(w, 403, "FORBIDDEN", "assistant evidence scope denied", false, request.RequestID)
+			return
+		}
+		scope = bound.Scope
+		signedGrantDigest = bound.GrantDigest
+	}
 	err = persistence.WithTenantTx(r.Context(), h.Pool, request.TenantID, func(tx pgx.Tx) error {
 		var namespace string
 		if err := tx.QueryRow(r.Context(), `SELECT namespace FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, request.TenantID, q.Query.ResourceCanonicalID).Scan(&namespace); err != nil {
@@ -431,7 +446,7 @@ func (h *SP04Handlers) queryEvidence(w http.ResponseWriter, r *http.Request, req
 		return
 	}
 	raw, _ := json.Marshal(q)
-	reply, err := h.call(r.Context(), route.Endpoint, "/internal/v1/evidence:query", "platform-evidence-query", request.Subject, scope, raw)
+	reply, err := h.callWithGrantDigest(r.Context(), route.Endpoint, "/internal/v1/evidence:query", "platform-evidence-query", request.Subject, scope, raw, signedGrantDigest)
 	if err != nil {
 		h.writeCallError(w, err, request.RequestID)
 		return
@@ -442,7 +457,7 @@ func (h *SP04Handlers) queryEvidence(w http.ResponseWriter, r *http.Request, req
 		return
 	}
 	current, err := (graph.Authorization{Pool: h.Pool}).Effective(r.Context(), scope.Tenant, request.Subject, scope.Cluster)
-	if err != nil || graph.ScopeDigest(current) != graph.ScopeDigest(scope) {
+	if err != nil || graph.ScopeDigest(current) != grantDigest {
 		writeSP04Error(w, 409, "CONFLICT", "authorization changed", false, request.RequestID)
 		return
 	}

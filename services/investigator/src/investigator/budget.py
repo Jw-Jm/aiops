@@ -44,6 +44,8 @@ class BudgetedLLM(DefaultLLM):
     """Upstream LLM extension: admission surrounds, never replaces, completion."""
     job_api = None
     needs_initial_tools = True
+    assistant_task = False
+    assistant_task_kind = "data_query"
 
     def completion(self, messages, *args, **kwargs):
         if self.job_api is None:
@@ -54,17 +56,22 @@ class BudgetedLLM(DefaultLLM):
         if self.needs_initial_tools and kwargs.get("tools"):
             # Provider formatting boundary: require the initial semantic read;
             # the upstream loop still owns execution and subsequent iterations.
-            if not any(tool.get("function", {}).get("name") == "get_incident_context"
+            context_tool = "get_assistant_context" if self.assistant_task else "get_incident_context"
+            if not any(tool.get("function", {}).get("name") == context_tool
                        for tool in kwargs["tools"]):
                 raise ModelCallError("INITIAL_CONTEXT_TOOL_UNAVAILABLE")
             kwargs["response_format"]=None
-            kwargs["tool_choice"]={"type":"function","function":{"name":"get_incident_context"}}
+            kwargs["tool_choice"]={"type":"function","function":{"name":context_tool}}
             self.needs_initial_tools=False
         if kwargs.get("response_format"):
             # Official provider formatting extension; the original Holmes loop
             # still selects and executes tools. Only committed semantic Ledger
             # evidence IDs can appear in the formal result's reference array.
-            kwargs["response_format"]={"type":"json_schema","json_schema":{"name":"InvestigationResult","strict":True,"schema":output_schema_for_steps(self.job_api.request("/steps"))}}
+            if self.assistant_task:
+                from .assistant_binding import output_schema_for_steps as assistant_schema_for_steps
+                kwargs["response_format"]={"type":"json_schema","json_schema":{"name":"AssistantAnswer","strict":True,"schema":assistant_schema_for_steps(self.job_api.request("/steps"), self.assistant_task_kind)}}
+            else:
+                kwargs["response_format"]={"type":"json_schema","json_schema":{"name":"InvestigationResult","strict":True,"schema":output_schema_for_steps(self.job_api.request("/steps"))}}
         request_hash="sha256:"+hashlib.sha256(json.dumps({"messages":messages,"arguments":args,"options":kwargs,"model":self.model,"maxTokens":self.args["max_tokens"]},sort_keys=True,separators=(",",":"),default=str).encode()).hexdigest()
         allocation=self.job_api.allocate("model",{"requestDigest":request_hash},True,reserve)
         if allocation.get("committed"):

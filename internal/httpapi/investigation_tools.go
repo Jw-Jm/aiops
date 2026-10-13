@@ -90,6 +90,9 @@ func (a InvestigationTools) read(ctx context.Context, j investigation.Job, path 
 	if a.SP04 == nil || a.SP05 == nil {
 		return nil, graph.ErrNotReady
 	}
+	if j.Assistant != nil {
+		ctx = context.WithValue(ctx, assistantEvidenceScopeKey{}, assistantEvidenceScope{Scope: j.Scope, GrantDigest: j.Assistant.GrantSnapshotDigest})
+	}
 	actor := auth.RequestContext{TenantID: j.TenantID, Subject: j.Subject, Roles: []auth.Role{auth.Operator}, RequestID: j.JobID.String()}
 	method := "GET"
 	var payload io.Reader

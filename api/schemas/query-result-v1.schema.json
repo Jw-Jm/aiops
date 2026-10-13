@@ -1,0 +1,361 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/query-result/v1",
+  "title": "query-result/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "query-result/v1"
+    },
+    "datasetId": {
+      "enum": [
+        "resources.current",
+        "findings.occurrences",
+        "incidents.records",
+        "executions.records",
+        "audit.events",
+        "metrics.pod-restarts",
+        "metrics.pod-cpu",
+        "metrics.pod-memory",
+        "metrics.pod-phase",
+        "metrics.node-ready",
+        "logs.records"
+      ]
+    },
+    "planDigest": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "catalogDigest": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "scopeDigest": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "partial",
+        "no_data",
+        "degraded"
+      ]
+    },
+    "exact": {
+      "type": "boolean"
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "dimension": {
+      "enum": [
+        "",
+        "kind",
+        "health",
+        "namespace",
+        "state",
+        "severity",
+        "operation",
+        "subject",
+        "day",
+        "uid",
+        "phase",
+        "level"
+      ]
+    },
+    "unit": {
+      "enum": [
+        "resources",
+        "findings",
+        "incidents",
+        "executions",
+        "events",
+        "milliseconds",
+        "restarts",
+        "cores",
+        "bytes",
+        "logs"
+      ]
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "maxLength": 253
+          },
+          "value": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "dimension",
+          "value"
+        ]
+      },
+      "maxItems": 50,
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "snapshotReadAt": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "graphRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ownerEpoch": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "graphGeneration": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "ownerEpoch",
+        "graphGeneration"
+      ]
+    },
+    "freshness": {
+      "enum": [
+        "fresh",
+        "stale",
+        "unavailable"
+      ]
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "maxItems": 50
+    },
+    "degradedSources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "maxItems": 50,
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "controlPlaneSnapshot": {
+      "type": "string",
+      "maxLength": 2048
+    },
+    "sourceManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bindingDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "qualificationDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "queryHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "templateVersion": {
+          "type": "string"
+        },
+        "coverageFrom": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "coverageTo": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "sourceId",
+        "revision",
+        "bindingDigest",
+        "qualificationDigest",
+        "queryHash",
+        "templateVersion",
+        "coverageFrom",
+        "coverageTo"
+      ]
+    },
+    "timeRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to",
+        "timezone"
+      ],
+      "properties": {
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "datasetId",
+    "planDigest",
+    "catalogDigest",
+    "scopeDigest",
+    "status",
+    "exact",
+    "truncated",
+    "dimension",
+    "unit",
+    "rows",
+    "snapshotReadAt",
+    "freshness",
+    "warnings",
+    "degradedSources"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "exact": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "complete"
+          },
+          "freshness": {
+            "const": "fresh"
+          },
+          "degradedSources": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "no_data",
+              "degraded"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "rows": {
+            "maxItems": 0
+          },
+          "exact": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "complete"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "exact": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "datasetId": {
+            "const": "resources.current"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "graphRevision": {
+            "properties": {
+              "ownerEpoch": {
+                "minimum": 1
+              },
+              "graphGeneration": {
+                "minimum": 1
+              }
+            }
+          }
+        },
+        "required": [
+          "graphRevision"
+        ]
+      },
+      "else": {
+        "if": {
+          "properties": {
+            "datasetId": {
+              "enum": [
+                "findings.occurrences",
+                "incidents.records",
+                "executions.records",
+                "audit.events"
+              ]
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "controlPlaneSnapshot"
+          ],
+          "properties": {
+            "controlPlaneSnapshot": {
+              "minLength": 1
+            }
+          }
+        },
+        "else": {
+          "required": [
+            "sourceManifest"
+          ]
+        }
+      }
+    }
+  ]
+}

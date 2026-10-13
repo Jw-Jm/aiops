@@ -62,18 +62,21 @@ type InvocationContext struct {
 // digests cross this boundary. AllowedTools comes from the trusted tool registry
 // and must never be populated from request bodies.
 type PolicyInput struct {
-	Request          auth.RequestContext
-	PrincipalType    PrincipalType
-	RequestType      RequestType
-	Scope            configregistry.Scope
-	Invocation       *InvocationContext
-	ToolName         string
-	AllowedTools     []string
-	ToolReadOnly     bool
-	Risk             Risk
-	RiskAcknowledged bool
-	ClusterLevel     bool
-	RootLevel        bool
+	Request             auth.RequestContext
+	PrincipalType       PrincipalType
+	RequestType         RequestType
+	Scope               configregistry.Scope
+	Invocation          *InvocationContext
+	AssistantTaskKind   string
+	AuthorizationDomain string
+	DatasetID           string
+	ToolName            string
+	AllowedTools        []string
+	ToolReadOnly        bool
+	Risk                Risk
+	RiskAcknowledged    bool
+	ClusterLevel        bool
+	RootLevel           bool
 	// StepUpVerified is set only after validating and touching the bound session
 	// with auth.ValidateStepUpForContext in the request transaction.
 	StepUpVerified bool
@@ -161,6 +164,12 @@ func (evaluator *PolicyEvaluator) Evaluate(ctx context.Context, input PolicyInpu
 		"clusterLevel": input.ClusterLevel, "rootLevel": input.RootLevel,
 		"requiresStepUp": requiresStepUp, "stepUpVerified": input.StepUpVerified,
 		"commandDigestMatched": commandMatched,
+	}
+	if input.AssistantTaskKind != "" {
+		regoInput["toolName"] = input.ToolName
+		regoInput["taskKind"] = input.AssistantTaskKind
+		regoInput["authorizationDomain"] = input.AuthorizationDomain
+		regoInput["datasetId"] = input.DatasetID
 	}
 	query := prepared.actionQuery
 	if input.RequestType == RequestTool {

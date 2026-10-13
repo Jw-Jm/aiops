@@ -122,11 +122,12 @@ func EffectiveTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster string
 }
 
 type Claims struct {
-	Audience    string    `json:"audience"`
-	Subject     string    `json:"subject"`
-	Scope       Scope     `json:"scope"`
-	Deadline    time.Time `json:"deadline"`
-	QueryDigest string    `json:"queryDigest"`
+	GrantSnapshotDigest string    `json:"grantSnapshotDigest,omitempty"`
+	Audience            string    `json:"audience"`
+	Subject             string    `json:"subject"`
+	Scope               Scope     `json:"scope"`
+	Deadline            time.Time `json:"deadline"`
+	QueryDigest         string    `json:"queryDigest"`
 }
 
 func SignContext(key ed25519.PrivateKey, claims Claims) (string, error) {
@@ -222,7 +223,7 @@ func (h InternalHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	current, err := h.Authorization.Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
-	if err != nil || ScopeDigest(current) != ScopeDigest(claims.Scope) {
+	if err != nil || !claims.AllowsCurrent(current) {
 		fail(409, "STALE_CONTEXT")
 		return
 	}
@@ -263,7 +264,7 @@ func (h InternalHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	current, err = h.Authorization.Effective(ctx, claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
-	if err != nil || ScopeDigest(current) != ScopeDigest(claims.Scope) {
+	if err != nil || !claims.AllowsCurrent(current) {
 		fail(409, "STALE_CONTEXT")
 		return
 	}
@@ -301,4 +302,34 @@ func (h InternalHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	h.Metrics.ObserveQuery("graph", result.Partial || len(result.DegradedSources) > 0, result.Freshness)
 	_, _ = w.Write(encoded)
+}
+
+// AllowsCurrent preserves v1 full-grant equality. A signed narrowed query must
+// bind its complete grant revision separately and remain a subset of that grant.
+func (c Claims) AllowsCurrent(current Scope) bool {
+	if c.GrantSnapshotDigest == "" {
+		return ScopeDigest(current) == ScopeDigest(c.Scope)
+	}
+	return ScopeDigest(current) == c.GrantSnapshotDigest && ContainsScope(current, c.Scope)
+}
+func ContainsScope(grant, scope Scope) bool {
+	if grant.Tenant != scope.Tenant || grant.Cluster != scope.Cluster || grant.AuthorizationRevision != scope.AuthorizationRevision || (scope.ClusterScoped && !grant.ClusterScoped) {
+		return false
+	}
+	for _, ns := range scope.Namespaces {
+		if !slices.Contains(grant.Namespaces, ns) {
+			return false
+		}
+	}
+	if len(grant.Resources) > 0 {
+		if len(scope.Resources) == 0 {
+			return false
+		}
+		for _, id := range scope.Resources {
+			if !slices.Contains(grant.Resources, id) {
+				return false
+			}
+		}
+	}
+	return true
 }

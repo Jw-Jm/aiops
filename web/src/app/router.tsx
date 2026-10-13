@@ -14,6 +14,12 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Navigate to="/overview" replace /> },
           {
+            path: "/assistant",
+            lazy: async () => ({
+              Component: (await import("../pages/AssistantPage")).AssistantPage,
+            }),
+          },
+          {
             path: "/overview",
             lazy: async () => ({
               Component: (await import("../pages/OverviewPage")).OverviewPage,

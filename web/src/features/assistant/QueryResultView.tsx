@@ -1,0 +1,125 @@
+import { useQuery } from "@tanstack/react-query";
+import { Alert, Descriptions, Table, Tag, Typography } from "antd";
+import { checked, requestOptions } from "../../api/client";
+import { getAssistantQueryResult } from "../../api/generated/platform";
+import type { AssistantAnswerV1 } from "../../api/generated/models";
+import { QueryDayTrend } from "./QueryDayTrend";
+import { useAuth } from "../../auth/AuthProvider";
+import { QueryState } from "../../components/QueryState";
+export function QueryResultView({
+  id,
+  answer,
+}: {
+  id: string;
+  answer: AssistantAnswerV1;
+}) {
+  const { session } = useAuth();
+  const scopeKey = JSON.stringify([session?.tenantId, session?.subject, session?.roles, session?.clusterScopes, session?.namespaceScopes]);
+  const query = useQuery({
+    queryKey: ["assistant", scopeKey, "result", id],
+    enabled: !!session,
+    queryFn: ({ signal }) =>
+      checked(getAssistantQueryResult(id, requestOptions(signal))),
+  });
+  const stored = query.data?.data;
+  const result = stored?.result;
+  return (
+    <QueryState
+      loading={query.isPending}
+      error={query.error}
+      retry={() => void query.refetch()}
+    >
+      {result && (
+        <>
+          <Tag color={result.exact ? "green" : "orange"}>
+            {result.status === "no_data"
+              ? "无数据"
+              : result.status === "degraded"
+                ? "来源降级"
+                : result.exact
+                  ? "精确结果"
+                  : "部分结果"}
+          </Tag>
+          {result.dimension === "day" && result.rows.length > 0 && <QueryDayTrend rows={result.rows} unit={result.unit} />}
+          {result.truncated && <Tag color="orange">分组截断</Tag>}
+          {result.status === "no_data" || result.status === "degraded" ? (
+            <Alert
+              type="warning"
+              title="没有可用观测，不能据此判断为零或正常。"
+            />
+          ) : (
+            <Table
+              size="small"
+              pagination={false}
+              rowKey={(_, index) => String(index)}
+              dataSource={result.rows}
+              columns={[
+                {
+                  title: result.dimension || "范围",
+                  dataIndex: "dimension",
+                  render: (value: string) => value || "当前授权范围",
+                },
+                { title: result.unit === "resources" ? "资源数量" : "数值", dataIndex: "value" },
+              ]}
+            />
+          )}
+          {stored && (
+            <Typography.Paragraph>
+              {stored.facts
+                .filter((fact) =>
+                  answer.factRefs.some(
+                    (ref) =>
+                      ref.queryResultId === id && ref.factId === fact.factId,
+                  ),
+                )
+                .map((fact) => (
+                  <Tag key={fact.factId}>
+                    {result.rows[fact.row]?.dimension || "合计"}：{fact.value}{" "}
+                    {fact.unit}
+                    {fact.exact ? "" : "（部分）"}
+                  </Tag>
+                ))}
+            </Typography.Paragraph>
+          )}
+          <Descriptions
+            size="small"
+            column={1}
+            items={[
+              { key: "dataset", label: "口径", children: result.datasetId },
+              {
+                key: "asOf",
+                label: "快照读取时间",
+                children: result.snapshotReadAt,
+              },
+              { key: "scope", label: "范围摘要", children: result.scopeDigest },
+              ...(result.timeRange ? [{ key: "window", label: "查询时间窗", children: `${result.timeRange.from} ～ ${result.timeRange.to} (${result.timeRange.timezone})` }] : []),
+              {
+                key: "source",
+                label: "来源版本",
+                children: result.graphRevision
+                  ? `Owner ${result.graphRevision.ownerEpoch} / Graph ${result.graphRevision.graphGeneration}`
+                  : result.sourceManifest
+                    ? `${result.sourceManifest.sourceId} / revision ${result.sourceManifest.revision} / ${result.sourceManifest.templateVersion}`
+                    : result.controlPlaneSnapshot || "来源版本不可用",
+              },
+              ...(result.sourceManifest ? [{
+                key: "coverage", label: "来源覆盖时间",
+                children: `${result.sourceManifest.coverageFrom} ～ ${result.sourceManifest.coverageTo}`,
+              }, {
+                key: "query", label: "已执行查询摘要",
+                children: result.sourceManifest.queryHash,
+              }] : []),
+              {
+                key: "warnings",
+                label: "缺失与警告",
+                children:
+                  [...result.warnings, ...result.degradedSources].join("，") ||
+                  "无",
+              },
+            ]}
+          />
+        </>
+      )}
+    </QueryState>
+  );
+}

@@ -13,7 +13,11 @@ import (
 
 func authorizeResult(ctx context.Context, tx pgx.Tx, j Job, b []byte) error {
 	var v struct {
-		EvidenceRefs []string `json:"evidenceRefs"`
+		EvidenceRefs    []string    `json:"evidenceRefs"`
+		QueryResultRefs []uuid.UUID `json:"queryResultRefs"`
+		Data            struct {
+			QueryResultRefs []uuid.UUID `json:"queryResultRefs"`
+		} `json:"data"`
 	}
 	if json.Unmarshal(b, &v) != nil {
 		return ErrInvalid
@@ -26,6 +30,11 @@ func authorizeResult(ctx context.Context, tx pgx.Tx, j Job, b []byte) error {
 		e, err := evidence.GetTx(ctx, tx, j.TenantID, id, j.Scope)
 		if err != nil || !slices.Contains(j.Budget.AllowedDataClasses, e.DataClass) {
 			return ErrDenied
+		}
+	}
+	for _, ref := range append(v.QueryResultRefs, v.Data.QueryResultRefs...) {
+		if _, err := loadQueryResultTx(ctx, tx, j, ref); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -91,6 +100,11 @@ func (r Repository) ReadSteps(ctx context.Context, tenant, id uuid.UUID, subject
 	return out, err
 }
 func readSteps(ctx context.Context, tx pgx.Tx, j Job) ([]Step, error) {
+	if j.Assistant != nil && (j.State == "succeeded" || j.State == "partial") {
+		if err := AssistantAnswerRetainedTx(ctx, tx, j.TenantID, j.Assistant.ConversationID, j.Assistant.TurnID); err != nil {
+			return nil, err
+		}
+	}
 	out := []Step{}
 	rows, err := tx.Query(ctx, `SELECT step_id,tool_name,args_digest,state,result,error_code,args_summary FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 ORDER BY started_at,step_id LIMIT 128`, j.TenantID, j.JobID)
 	if err != nil {

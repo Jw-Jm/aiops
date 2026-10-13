@@ -9,12 +9,14 @@ import (
 	"ops-platform/internal/graph"
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/resource"
+	"slices"
 	"sort"
 	"strings"
 	"time"
 )
 
 type Definition struct {
+	Version  string `json:",omitempty"`
 	Name     string
 	Schema   map[string]any
 	RawQuery bool
@@ -53,7 +55,11 @@ func Names(defs []Definition) []string {
 	return out
 }
 func (d Definition) Validate(args []byte) error {
-	return contract.Validate("https://ops.local/schemas/"+d.Name+"/v2", args)
+	version := d.Version
+	if version == "" {
+		version = "v2"
+	}
+	return contract.Validate("https://ops.local/schemas/"+d.Name+"/"+version, args)
 }
 
 type Result struct {
@@ -112,8 +118,15 @@ func CheckArguments(j investigation.Job, name string, args json.RawMessage) erro
 	return nil
 }
 
-func OutputSchema() (map[string]any, error) {
-	b, err := api.Schemas.ReadFile("schemas/tool-response-v2.schema.json")
+func OutputSchema(versions ...string) (map[string]any, error) {
+	version := "v2"
+	if len(versions) > 0 {
+		version = versions[0]
+	}
+	if version != "v2" && version != "v3" {
+		return nil, investigation.ErrInvalid
+	}
+	b, err := api.Schemas.ReadFile("schemas/tool-response-" + version + ".schema.json")
 	if err != nil {
 		return nil, err
 	}
@@ -122,5 +135,74 @@ func OutputSchema() (map[string]any, error) {
 	return s, err
 }
 func ValidateOutput(b []byte) error {
-	return contract.Validate("https://ops.local/schemas/tool-response/v2", b)
+	var envelope struct {
+		SchemaVersion string `json:"schemaVersion"`
+	}
+	if json.Unmarshal(b, &envelope) != nil || (envelope.SchemaVersion != "tool-response/v2" && envelope.SchemaVersion != "tool-response/v3") {
+		return investigation.ErrInvalid
+	}
+	return contract.Validate("https://ops.local/schemas/"+envelope.SchemaVersion, b)
+}
+
+// CatalogFor freezes the v2 catalog and restricts v3 tools by task and authorization domain.
+func CatalogFor(schema, task, domain, version string) ([]Definition, error) {
+	if schema == "investigation-job/v2" {
+		return Catalog()
+	}
+	if schema != "investigation-job/v3" || version != "assistant-tools/v1" {
+		return nil, investigation.ErrInvalid
+	}
+	names := []string{"get_assistant_context"}
+	if task == "data_query" {
+		names = append(names, "describe_analysis_dataset", "execute_analysis_query")
+	} else if domain == "operational" && (task == "incident_followup" || task == "resource_troubleshooting") {
+		names = append(names, "resolve_resources", "resource_findings")
+		if task == "resource_troubleshooting" {
+			names = append(names, "get_resource_investigation_context")
+		}
+	} else {
+		return nil, investigation.ErrDenied
+	}
+	if domain != "operational" && domain != "audit" {
+		return nil, investigation.ErrDenied
+	}
+	out := []Definition{}
+	for _, name := range names {
+		b, err := api.Schemas.ReadFile("assistant-tools/" + name + "-v3.schema.json")
+		if err != nil {
+			return nil, err
+		}
+		var s map[string]any
+		if json.Unmarshal(b, &s) != nil {
+			return nil, investigation.ErrInvalid
+		}
+		s, err = inlineAssistantSchema(s)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, Definition{Name: name, Schema: s, Version: "v3", RawQuery: name == "execute_analysis_query"})
+	}
+	if task != "data_query" {
+		old, err := Catalog()
+		if err != nil {
+			return nil, err
+		}
+		for _, d := range old {
+			if d.Disabled != "" {
+				continue
+			}
+			if task == "resource_troubleshooting" && slices.Contains([]string{"get_incident_context", "get_findings", "get_ranked_evidence", "get_evidence_conflicts", "get_recent_changes", "get_root_cause_candidates"}, d.Name) {
+				continue
+			}
+			out = append(out, d)
+		}
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Name < out[j].Name })
+	return out, nil
+}
+func ForJob(j investigation.Job) ([]Definition, error) {
+	if j.Assistant == nil {
+		return Catalog()
+	}
+	return CatalogFor(j.SchemaVersion, j.Assistant.TaskKind, j.Assistant.AuthorizationDomain, j.Assistant.CatalogVersion)
 }

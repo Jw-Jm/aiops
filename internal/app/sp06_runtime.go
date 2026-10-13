@@ -15,6 +15,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"ops-platform/internal/assistant"
 	"ops-platform/internal/auth"
 	"ops-platform/internal/configregistry"
 	"ops-platform/internal/httpapi"
@@ -29,18 +30,23 @@ import (
 	"time"
 )
 
+type AssistantRuntimeConfig struct {
+	Enabled             bool   `json:"enabled"`
+	ModelProfileVersion string `json:"modelProfileVersion"`
+}
 type SP06Config struct {
-	IdentityMode         string               `json:"identityMode"`
-	Namespace            string               `json:"namespace"`
-	ListenAddress        string               `json:"listenAddress"`
-	InvestigatorEndpoint string               `json:"investigatorEndpoint"`
-	CertificateFile      string               `json:"certificateFile"`
-	PrivateKeyFile       string               `json:"privateKeyFile"`
-	CAFile               string               `json:"caFile"`
-	CRLFile              string               `json:"crlFile"`
-	PolicyName           string               `json:"policyName"`
-	Budget               investigation.Budget `json:"budget"`
-	Tenants              []uuid.UUID          `json:"tenants"`
+	Assistant            *AssistantRuntimeConfig `json:"assistant,omitempty"`
+	IdentityMode         string                  `json:"identityMode"`
+	Namespace            string                  `json:"namespace"`
+	ListenAddress        string                  `json:"listenAddress"`
+	InvestigatorEndpoint string                  `json:"investigatorEndpoint"`
+	CertificateFile      string                  `json:"certificateFile"`
+	PrivateKeyFile       string                  `json:"privateKeyFile"`
+	CAFile               string                  `json:"caFile"`
+	CRLFile              string                  `json:"crlFile"`
+	PolicyName           string                  `json:"policyName"`
+	Budget               investigation.Budget    `json:"budget"`
+	Tenants              []uuid.UUID             `json:"tenants"`
 }
 
 func loadSP06() (*SP06Config, error) {
@@ -69,6 +75,9 @@ func loadSP06() (*SP06Config, error) {
 	ip := net.ParseIP(u.Hostname())
 	if (ip == nil || (!ip.IsLoopback() && !ip.IsPrivate())) && u.Hostname() != "ops-investigator."+c.Namespace+".svc.cluster.local" {
 		return nil, errors.New("SP06 investigator must use an approved private workload address")
+	}
+	if c.Assistant != nil && c.Assistant.Enabled && c.Assistant.ModelProfileVersion == "" {
+		return nil, errors.New("assistant model profile must be frozen")
 	}
 	return &c, nil
 }
@@ -172,10 +181,38 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 	}
 	authorize := func(ctx context.Context, j investigation.Job, name string, args json.RawMessage) error {
 		scope, err := resolveScope(ctx, j.TenantID, j.Scope.Cluster)
+		if j.Assistant != nil && j.Assistant.AuthorizationDomain == "audit" {
+			scope = configregistry.Scope{Type: configregistry.ScopeTenant}
+			err = nil
+		}
 		if err != nil {
 			return investigation.ErrDenied
 		}
-		decision, err := evaluator.Evaluate(ctx, policy.PolicyInput{Request: auth.RequestContext{TenantID: j.TenantID, Subject: j.Subject}, PrincipalType: policy.PrincipalAgent, RequestType: policy.RequestTool, Scope: scope, Invocation: &policy.InvocationContext{Verified: true, TenantID: j.TenantID, Scope: scope, AllowedTools: names}, ToolName: name, AllowedTools: names, ToolReadOnly: true, Risk: policy.RiskLow})
+		currentNames := names
+		task, domain, dataset := "", "", ""
+		if j.Assistant != nil {
+			defs, err := tools.ForJob(j)
+			if err != nil {
+				return err
+			}
+			currentNames = tools.Names(defs)
+			task = j.Assistant.TaskKind
+			domain = j.Assistant.AuthorizationDomain
+			var p struct {
+				DatasetID string `json:"datasetId"`
+				Intent    struct {
+					DatasetID string `json:"datasetId"`
+				} `json:"intent"`
+			}
+			if json.Unmarshal(args, &p) != nil {
+				return investigation.ErrInvalid
+			}
+			dataset = p.DatasetID
+			if dataset == "" {
+				dataset = p.Intent.DatasetID
+			}
+		}
+		decision, err := evaluator.Evaluate(ctx, policy.PolicyInput{Request: auth.RequestContext{TenantID: j.TenantID, Subject: j.Subject}, PrincipalType: policy.PrincipalAgent, RequestType: policy.RequestTool, Scope: scope, Invocation: &policy.InvocationContext{Verified: true, TenantID: j.TenantID, Scope: scope, AllowedTools: currentNames}, ToolName: name, AllowedTools: currentNames, ToolReadOnly: true, Risk: policy.RiskLow, AssistantTaskKind: task, AuthorizationDomain: domain, DatasetID: dataset})
 		if err != nil || !decision.Allow || decision.PolicyVersion != j.PolicyVersion {
 			return investigation.ErrDenied
 		}
@@ -197,6 +234,7 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 		return decision.PolicyVersion, nil
 	}}
 	handlers.Repository.Trust = trust
+	handlers.Repository.AssistantEnabled = c.Assistant != nil && c.Assistant.Enabled
 	if sp04.SP05 != nil {
 		handlers.Repository.CurrentRCA = sp04.SP05.CurrentInvestigationRCA
 	}
@@ -221,7 +259,7 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 		}
 		return investigation.LowerBudget(c.Budget, cap)
 	}
-	gateway, err := (platformmcp.Gateway{Repository: handlers.Repository, Signer: signer, Trust: workloadTrust, API: httpapi.InvestigationTools{SP04: sp04, SP05: sp04.SP05}, Authorize: authorize}).Handler()
+	gateway, err := (platformmcp.Gateway{Repository: handlers.Repository, Signer: signer, Trust: workloadTrust, API: httpapi.AssistantTools{Legacy: httpapi.InvestigationTools{SP04: sp04, SP05: sp04.SP05}}, Authorize: authorize}).Handler()
 	if err != nil {
 		return nil, err
 	}
@@ -234,6 +272,57 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 	}
 	server := &http.Server{Handler: mux, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute}
 	sp04.Investigation = handlers
+	if c.Assistant != nil {
+		repo := assistant.Repository{Pool: pool, Jobs: handlers.Repository}
+		repo.Admit = func(ctx context.Context, conversation assistant.Conversation, task string) (assistant.Admission, error) {
+			if !c.Assistant.Enabled {
+				return assistant.Admission{}, investigation.ErrDenied
+			}
+			actor, ok := auth.RequestContextFromContext(ctx)
+			if !ok || actor.Subject != conversation.OwnerSubject || actor.TenantID != conversation.TenantID {
+				return assistant.Admission{}, investigation.ErrDenied
+			}
+			scope, err := resolveScope(ctx, actor.TenantID, conversation.ClusterUID)
+			principal := policy.PrincipalOperator
+			if conversation.AuthorizationDomain == "audit" {
+				scope = configregistry.Scope{Type: configregistry.ScopeTenant}
+				principal = policy.PrincipalPlatformAdmin
+				err = nil
+			}
+			if err != nil {
+				return assistant.Admission{}, err
+			}
+			defs, err := tools.CatalogFor("investigation-job/v3", task, conversation.AuthorizationDomain, "assistant-tools/v1")
+			if err != nil {
+				return assistant.Admission{}, err
+			}
+			decision, err := evaluator.Evaluate(ctx, policy.PolicyInput{Request: actor, PrincipalType: principal, RequestType: policy.RequestTool, Scope: scope, ToolName: "get_assistant_context", AllowedTools: tools.Names(defs), ToolReadOnly: true, Risk: policy.RiskLow, AssistantTaskKind: task, AuthorizationDomain: conversation.AuthorizationDomain})
+			if err != nil || !decision.Allow {
+				return assistant.Admission{}, investigation.ErrDenied
+			}
+			active, err := registry.ResolveActive(ctx, actor.TenantID, configregistry.KindPolicy, c.PolicyName, scope, time.Now())
+			if err != nil || active.VersionID.String() != decision.PolicyVersion {
+				return assistant.Admission{}, investigation.ErrDenied
+			}
+			var content struct {
+				Budget *investigation.Budget `json:"investigationBudget"`
+			}
+			if json.Unmarshal(active.Content, &content) != nil {
+				return assistant.Admission{}, investigation.ErrDenied
+			}
+			cap := investigation.DefaultBudget()
+			if content.Budget != nil {
+				cap = *content.Budget
+			}
+			budget, err := investigation.LowerBudget(c.Budget, cap)
+			if err != nil {
+				return assistant.Admission{}, err
+			}
+			return assistant.Admission{PolicyVersion: decision.PolicyVersion, ModelProfileVersion: c.Assistant.ModelProfileVersion, Budget: budget}, nil
+		}
+		sp04.Assistant = &httpapi.AssistantHandlers{Repository: repo, SP04: sp04, CursorKey: sp04.SigningKey}
+	}
+
 	go func() { _ = server.Serve(tls.NewListener(listener, tlsConfig)) }()
 	return func() { _ = server.Close() }, nil
 }
@@ -265,7 +354,10 @@ func StartSP06Worker(ctx context.Context, pool *pgxpool.Pool) (func(), error) {
 	if err != nil {
 		return nil, err
 	}
-	dispatcher := investigation.Dispatcher{Repository: investigation.Repository{Pool: pool}, Signer: signer, Workload: trust.Allowed[0].URI, Tools: tools.Names(defs), Remote: func(ctx context.Context, q investigation.DispatchRequest) ([]byte, error) {
+	dispatcher := investigation.Dispatcher{CatalogFor: func(j investigation.Job) ([]string, error) {
+		defs, err := tools.ForJob(j)
+		return tools.Names(defs), err
+	}, Repository: investigation.Repository{Pool: pool, AssistantEnabled: c.Assistant != nil && c.Assistant.Enabled}, Signer: signer, Workload: trust.Allowed[0].URI, Tools: tools.Names(defs), Remote: func(ctx context.Context, q investigation.DispatchRequest) ([]byte, error) {
 		b, _ := json.Marshal(q)
 		req, err := http.NewRequestWithContext(ctx, "POST", c.InvestigatorEndpoint+"/internal/v1/investigate", bytes.NewReader(b))
 		if err != nil {
@@ -311,6 +403,16 @@ func StartSP06Worker(ctx context.Context, pool *pgxpool.Pool) (func(), error) {
 			case <-ticker.C:
 			}
 			for _, tenant := range c.Tenants {
+				if c.Assistant != nil && c.Assistant.Enabled {
+					err := persistence.WithTenantTx(workerCtx, pool, tenant, func(tx pgx.Tx) error {
+						_, err := tx.Exec(workerCtx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,$2,$3,'assistant-tools/v1',clock_timestamp()+interval '15 seconds') ON CONFLICT(tenant_id,worker_id) DO UPDATE SET model_profile_version=EXCLUDED.model_profile_version,catalog_version=EXCLUDED.catalog_version,expires_at=EXCLUDED.expires_at`, tenant, "sp06-dispatcher:"+c.InvestigatorEndpoint, c.Assistant.ModelProfileVersion)
+						return err
+					})
+					if err != nil {
+						slog.Error("assistant worker readiness unavailable")
+						continue
+					}
+				}
 				_ = dispatcher.Repository.ExpirePass(workerCtx, tenant)
 				select {
 				case slots <- struct{}{}:

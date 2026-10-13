@@ -50,6 +50,8 @@ func investigationError(w http.ResponseWriter, err error, rid string) {
 	status := 503
 	code := "INVESTIGATION_UNAVAILABLE"
 	switch {
+	case errors.Is(err, investigation.ErrResultExpired):
+		status, code = 410, "RESULT_EXPIRED"
 	case errors.Is(err, investigation.ErrInvalid):
 		status, code = 400, "INVALID_ARGUMENT"
 	case errors.Is(err, investigation.ErrDenied):
@@ -350,7 +352,10 @@ func (h *InvestigationHandlers) InternalHandler() http.Handler {
 			fail(err)
 			return
 		}
-		defs, err := tools.Catalog()
+		defs, err := tools.CatalogFor("investigation-job/v2", "", "", "")
+		if c.Assistant != nil {
+			defs, err = tools.CatalogFor("investigation-job/v3", c.Assistant.TaskKind, c.Assistant.AuthorizationDomain, c.Assistant.CatalogVersion)
+		}
 		if err != nil {
 			fail(err)
 			return
@@ -427,6 +432,15 @@ func (h *InvestigationHandlers) InternalHandler() http.Handler {
 			reply(map[string]string{"jobContext": jobToken, "mcpContext": mcpToken})
 			return
 		}
+		if suffix == "/assistant-context" && r.Method == "GET" {
+			v, err := h.Repository.GetAssistantInput(r.Context(), l)
+			if err != nil {
+				fail(err)
+				return
+			}
+			reply(v)
+			return
+		}
 		if suffix == "/steps" && r.Method == "GET" {
 			v, err := h.Repository.Steps(r.Context(), l)
 			if err != nil {
@@ -470,7 +484,12 @@ func (h *InvestigationHandlers) InternalHandler() http.Handler {
 				// A model request is an investigation read under the current signed
 				// policy. Reuse its Incident-context permission before admission.
 				args, _ := json.Marshal(map[string]string{"incidentId": j.IncidentID.String()})
-				if c.Bind(j, l, tools.Digest(defs), "get_incident_context") != nil || h.Authorize == nil || h.Authorize(r.Context(), j, "get_incident_context", args) != nil {
+				contextTool := "get_incident_context"
+				if j.Assistant != nil {
+					contextTool = "get_assistant_context"
+					args = json.RawMessage(`{}`)
+				}
+				if c.Bind(j, l, tools.Digest(defs), contextTool) != nil || h.Authorize == nil || h.Authorize(r.Context(), j, contextTool, args) != nil {
 					fail(investigation.ErrDenied)
 					return
 				}

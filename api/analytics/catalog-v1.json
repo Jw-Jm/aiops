@@ -1,0 +1,321 @@
+{
+  "schemaVersion": "analysis-catalog/v1",
+  "version": "analysis-catalog/v1",
+  "datasets": [
+    {
+      "id": "resources.current",
+      "name": "当前资源统计",
+      "description": "指定非虚拟化 Kubernetes 资源类型的当前授权快照统计；不提供历史资源数量。",
+      "authorizationDomain": "operational",
+      "source": "graph",
+      "templateVersion": "resources-current-summary/v1",
+      "metric": "resource_count",
+      "unit": "resources",
+      "calculation": "按真实 Canonical ID 统计；复用 Graph 完整授权范围 summary，先授权再筛选和聚合。",
+      "dimensions": [
+        "kind",
+        "health"
+      ],
+      "filters": [
+        "kind",
+        "namespace",
+        "name",
+        "health"
+      ],
+      "requiredFilters": [
+        "kind"
+      ],
+      "healthValues": [
+        "normal",
+        "abnormal",
+        "unknown",
+        "degraded"
+      ],
+      "maxGroups": 50,
+      "historySupported": false,
+      "zeroMeaning": "只有 fresh、完整且来源无降级的成功快照才可以报告精确零。",
+      "kinds": [
+        "Pod",
+        "Node",
+        "Deployment",
+        "StatefulSet",
+        "DaemonSet",
+        "Service",
+        "PersistentVolumeClaim",
+        "PersistentVolume",
+        "Namespace",
+        "Job",
+        "CronJob",
+        "ReplicaSet",
+        "ConfigMap",
+        "Secret",
+        "ServiceAccount",
+        "Ingress",
+        "EndpointSlice",
+        "Endpoints",
+        "Event"
+      ],
+      "clusterScopedKinds": [
+        "Node",
+        "PersistentVolume",
+        "Namespace"
+      ]
+    },
+    {
+      "id": "findings.occurrences",
+      "name": "告警 occurrence 统计",
+      "description": "每个已校验 occurrence 只统计一次；使用可靠 startsAt，排除旧 Schema 和不可靠时间。",
+      "authorizationDomain": "operational",
+      "source": "postgresql",
+      "templateVersion": "findings.occurrences/v1",
+      "metric": "occurrence_count",
+      "unit": "findings",
+      "calculation": "每个已校验 occurrence 只统计一次；使用可靠 startsAt，排除旧 Schema 和不可靠时间。",
+      "dimensions": [
+        "namespace",
+        "state",
+        "severity",
+        "day"
+      ],
+      "filters": [
+        "namespace",
+        "state",
+        "severity"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+    },
+    {
+      "id": "incidents.records",
+      "name": "Incident 记录统计",
+      "description": "按 Incident ID 去重；全部关联 Finding 必须在授权范围。",
+      "authorizationDomain": "operational",
+      "source": "postgresql",
+      "templateVersion": "incidents.records/v1",
+      "metric": "incident_count",
+      "unit": "incidents",
+      "calculation": "按 Incident ID 去重；全部关联 Finding 必须在授权范围。",
+      "dimensions": [
+        "namespace",
+        "state",
+        "day"
+      ],
+      "filters": [
+        "namespace",
+        "state"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+    },
+    {
+      "id": "executions.records",
+      "name": "本人执行记录统计",
+      "description": "仅本人及当前授权目标；不读取命令或输出。",
+      "authorizationDomain": "operational",
+      "source": "postgresql",
+      "templateVersion": "executions.records/v1",
+      "metric": "execution_count",
+      "unit": "executions",
+      "calculation": "仅本人及当前授权目标；不读取命令或输出。",
+      "dimensions": [
+        "state",
+        "day"
+      ],
+      "filters": [
+        "state"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+    },
+    {
+      "id": "audit.events",
+      "name": "管理员审计元数据统计",
+      "description": "独立管理员审计授权域；只读取操作、主体和时间元数据。",
+      "authorizationDomain": "audit",
+      "source": "postgresql",
+      "templateVersion": "audit.events/v1",
+      "metric": "audit_count",
+      "unit": "events",
+      "calculation": "独立管理员审计授权域；只读取操作、主体和时间元数据。",
+      "dimensions": [
+        "operation",
+        "subject",
+        "day"
+      ],
+      "filters": [
+        "operation",
+        "subject"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+    },
+    {
+      "id": "metrics.pod-restarts",
+      "name": "Pod 重启增量",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+      "authorizationDomain": "operational",
+      "source": "victoriametrics",
+      "templateVersion": "metrics.pod-restarts/v1",
+      "metric": "restart_increase",
+      "unit": "restarts",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
+      "dimensions": [
+        "namespace",
+        "uid"
+      ],
+      "filters": [
+        "namespace"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+    },
+    {
+      "id": "metrics.pod-cpu",
+      "name": "Pod CPU 平均使用",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+      "authorizationDomain": "operational",
+      "source": "victoriametrics",
+      "templateVersion": "metrics.pod-cpu/v1",
+      "metric": "cpu_cores",
+      "unit": "cores",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
+      "dimensions": [
+        "namespace",
+        "uid"
+      ],
+      "filters": [
+        "namespace"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+    },
+    {
+      "id": "metrics.pod-memory",
+      "name": "Pod 当前工作集内存",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+      "authorizationDomain": "operational",
+      "source": "victoriametrics",
+      "templateVersion": "metrics.pod-memory/v1",
+      "metric": "memory_bytes",
+      "unit": "bytes",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
+      "dimensions": [
+        "namespace",
+        "uid"
+      ],
+      "filters": [
+        "namespace"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": false,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+    },
+    {
+      "id": "metrics.pod-phase",
+      "name": "Pod 当前 phase",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+      "authorizationDomain": "operational",
+      "source": "victoriametrics",
+      "templateVersion": "metrics.pod-phase/v1",
+      "metric": "phase_count",
+      "unit": "resources",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
+      "dimensions": [
+        "namespace",
+        "phase"
+      ],
+      "filters": [
+        "namespace"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": false,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+    },
+    {
+      "id": "metrics.node-ready",
+      "name": "Node Ready 数量",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+      "authorizationDomain": "operational",
+      "source": "victoriametrics",
+      "templateVersion": "metrics.node-ready/v1",
+      "metric": "ready_count",
+      "unit": "resources",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
+      "dimensions": [],
+      "filters": [
+        "namespace"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": false,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+    },
+    {
+      "id": "logs.records",
+      "name": "日志完整聚合",
+      "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+      "authorizationDomain": "operational",
+      "source": "victorialogs",
+      "templateVersion": "logs.records/v1",
+      "metric": "log_count",
+      "unit": "logs",
+      "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。",
+      "dimensions": [
+        "namespace",
+        "level"
+      ],
+      "filters": [
+        "namespace",
+        "level"
+      ],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+    }
+  ]
+}

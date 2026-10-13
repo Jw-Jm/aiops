@@ -5,6 +5,19 @@
  * OpenAPI spec version: 1.4.0
  */
 import type {
+  AssistantCapabilitiesEnvelopeV1,
+  AssistantConversationEnvelopeV1,
+  AssistantConversationListV1,
+  AssistantCreateConversationV1,
+  AssistantEmptyBodyV1,
+  AssistantEventV1,
+  AssistantMessagesEnvelopeV1,
+  AssistantMutationEnvelopeV1,
+  AssistantQueryEnvelopeV1,
+  AssistantResolutionEnvelopeV1,
+  AssistantResolveResourceV1,
+  AssistantSubmitMessageV1,
+  AssistantTurnEnvelopeV1,
   AuthSessionSuccessV1,
   CancelInvestigationBody,
   CapabilitiesSuccessV1,
@@ -64,6 +77,8 @@ import type {
   LegalHoldPageV1,
   LegalHoldRequestV1,
   LegalHoldResultV1,
+  ListAssistantConversationsParams,
+  ListAssistantMessagesParams,
   OnboardExecutionHostRequest,
   OperatorRoleBindingStatusUpdateRequest,
   PageEnvelope,
@@ -95,6 +110,695 @@ export type HTTPStatusCode3xx = 300 | 301 | 302 | 303 | 304 | 305 | 307 | 308;
 export type HTTPStatusCode4xx = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 419 | 420 | 421 | 422 | 423 | 424 | 426 | 428 | 429 | 431 | 451;
 export type HTTPStatusCode5xx = 500 | 501 | 502 | 503 | 504 | 505 | 507 | 511;
 export type HTTPStatusCodes = HTTPStatusCode1xx | HTTPStatusCode2xx | HTTPStatusCode3xx | HTTPStatusCode4xx | HTTPStatusCode5xx;
+
+export type resolveAssistantResourceResponse200 = {
+  data: AssistantResolutionEnvelopeV1
+  status: 200
+}
+
+export type resolveAssistantResourceResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type resolveAssistantResourceResponseSuccess = (resolveAssistantResourceResponse200) & {
+  headers: Headers;
+};
+export type resolveAssistantResourceResponseError = (resolveAssistantResourceResponseDefault) & {
+  headers: Headers;
+};
+
+export type resolveAssistantResourceResponse = (resolveAssistantResourceResponseSuccess | resolveAssistantResourceResponseError)
+
+export const getResolveAssistantResourceUrl = () => {
+
+
+
+
+  return `/api/v1/assistant/resources:resolve`
+}
+
+/**
+ * @summary resolveAssistantResource
+ */
+export const resolveAssistantResource = async (assistantResolveResourceV1: AssistantResolveResourceV1, options?: RequestInit): Promise<resolveAssistantResourceResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getResolveAssistantResourceUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(assistantResolveResourceV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: resolveAssistantResourceResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as resolveAssistantResourceResponse
+}
+
+
+
+export type getAssistantCapabilitiesResponse200 = {
+  data: AssistantCapabilitiesEnvelopeV1
+  status: 200
+}
+
+export type getAssistantCapabilitiesResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getAssistantCapabilitiesResponseSuccess = (getAssistantCapabilitiesResponse200) & {
+  headers: Headers;
+};
+export type getAssistantCapabilitiesResponseError = (getAssistantCapabilitiesResponseDefault) & {
+  headers: Headers;
+};
+
+export type getAssistantCapabilitiesResponse = (getAssistantCapabilitiesResponseSuccess | getAssistantCapabilitiesResponseError)
+
+export const getGetAssistantCapabilitiesUrl = () => {
+
+
+
+
+  return `/api/v1/assistant/capabilities`
+}
+
+/**
+ * @summary getAssistantCapabilities
+ */
+export const getAssistantCapabilities = async ( options?: RequestInit): Promise<getAssistantCapabilitiesResponse> => {
+
+  const res = await fetch(getGetAssistantCapabilitiesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAssistantCapabilitiesResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getAssistantCapabilitiesResponse
+}
+
+
+
+export type createAssistantConversationResponse201 = {
+  data: AssistantConversationEnvelopeV1
+  status: 201
+}
+
+export type createAssistantConversationResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type createAssistantConversationResponseSuccess = (createAssistantConversationResponse201) & {
+  headers: Headers;
+};
+export type createAssistantConversationResponseError = (createAssistantConversationResponseDefault) & {
+  headers: Headers;
+};
+
+export type createAssistantConversationResponse = (createAssistantConversationResponseSuccess | createAssistantConversationResponseError)
+
+export const getCreateAssistantConversationUrl = () => {
+
+
+
+
+  return `/api/v1/assistant/conversations`
+}
+
+/**
+ * @summary createAssistantConversation
+ */
+export const createAssistantConversation = async (assistantCreateConversationV1: AssistantCreateConversationV1, options?: RequestInit): Promise<createAssistantConversationResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCreateAssistantConversationUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(assistantCreateConversationV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createAssistantConversationResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createAssistantConversationResponse
+}
+
+
+
+export type listAssistantConversationsResponse200 = {
+  data: AssistantConversationListV1
+  status: 200
+}
+
+export type listAssistantConversationsResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type listAssistantConversationsResponseSuccess = (listAssistantConversationsResponse200) & {
+  headers: Headers;
+};
+export type listAssistantConversationsResponseError = (listAssistantConversationsResponseDefault) & {
+  headers: Headers;
+};
+
+export type listAssistantConversationsResponse = (listAssistantConversationsResponseSuccess | listAssistantConversationsResponseError)
+
+export const getListAssistantConversationsUrl = (params?: ListAssistantConversationsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/assistant/conversations?${stringifiedParams}` : `/api/v1/assistant/conversations`
+}
+
+/**
+ * @summary listAssistantConversations
+ */
+export const listAssistantConversations = async (params?: ListAssistantConversationsParams, options?: RequestInit): Promise<listAssistantConversationsResponse> => {
+
+  const res = await fetch(getListAssistantConversationsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: listAssistantConversationsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as listAssistantConversationsResponse
+}
+
+
+
+export type getAssistantConversationResponse200 = {
+  data: AssistantConversationEnvelopeV1
+  status: 200
+}
+
+export type getAssistantConversationResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getAssistantConversationResponseSuccess = (getAssistantConversationResponse200) & {
+  headers: Headers;
+};
+export type getAssistantConversationResponseError = (getAssistantConversationResponseDefault) & {
+  headers: Headers;
+};
+
+export type getAssistantConversationResponse = (getAssistantConversationResponseSuccess | getAssistantConversationResponseError)
+
+export const getGetAssistantConversationUrl = (conversationId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/conversations/${conversationId}`
+}
+
+/**
+ * @summary getAssistantConversation
+ */
+export const getAssistantConversation = async (conversationId: string, options?: RequestInit): Promise<getAssistantConversationResponse> => {
+
+  const res = await fetch(getGetAssistantConversationUrl(conversationId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAssistantConversationResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getAssistantConversationResponse
+}
+
+
+
+export type listAssistantMessagesResponse200 = {
+  data: AssistantMessagesEnvelopeV1
+  status: 200
+}
+
+export type listAssistantMessagesResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type listAssistantMessagesResponseSuccess = (listAssistantMessagesResponse200) & {
+  headers: Headers;
+};
+export type listAssistantMessagesResponseError = (listAssistantMessagesResponseDefault) & {
+  headers: Headers;
+};
+
+export type listAssistantMessagesResponse = (listAssistantMessagesResponseSuccess | listAssistantMessagesResponseError)
+
+export const getListAssistantMessagesUrl = (conversationId: string,
+    params?: ListAssistantMessagesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/assistant/conversations/${conversationId}/messages?${stringifiedParams}` : `/api/v1/assistant/conversations/${conversationId}/messages`
+}
+
+/**
+ * @summary listAssistantMessages
+ */
+export const listAssistantMessages = async (conversationId: string,
+    params?: ListAssistantMessagesParams, options?: RequestInit): Promise<listAssistantMessagesResponse> => {
+
+  const res = await fetch(getListAssistantMessagesUrl(conversationId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: listAssistantMessagesResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as listAssistantMessagesResponse
+}
+
+
+
+export type submitAssistantMessageResponse202 = {
+  data: AssistantTurnEnvelopeV1
+  status: 202
+}
+
+export type submitAssistantMessageResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 202>
+}
+
+export type submitAssistantMessageResponseSuccess = (submitAssistantMessageResponse202) & {
+  headers: Headers;
+};
+export type submitAssistantMessageResponseError = (submitAssistantMessageResponseDefault) & {
+  headers: Headers;
+};
+
+export type submitAssistantMessageResponse = (submitAssistantMessageResponseSuccess | submitAssistantMessageResponseError)
+
+export const getSubmitAssistantMessageUrl = (conversationId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/conversations/${conversationId}/messages`
+}
+
+/**
+ * @summary submitAssistantMessage
+ */
+export const submitAssistantMessage = async (conversationId: string,
+    assistantSubmitMessageV1: AssistantSubmitMessageV1, options?: RequestInit): Promise<submitAssistantMessageResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getSubmitAssistantMessageUrl(conversationId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(assistantSubmitMessageV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: submitAssistantMessageResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as submitAssistantMessageResponse
+}
+
+
+
+export type getAssistantTurnResponse200 = {
+  data: AssistantTurnEnvelopeV1
+  status: 200
+}
+
+export type getAssistantTurnResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getAssistantTurnResponseSuccess = (getAssistantTurnResponse200) & {
+  headers: Headers;
+};
+export type getAssistantTurnResponseError = (getAssistantTurnResponseDefault) & {
+  headers: Headers;
+};
+
+export type getAssistantTurnResponse = (getAssistantTurnResponseSuccess | getAssistantTurnResponseError)
+
+export const getGetAssistantTurnUrl = (turnId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/turns/${turnId}`
+}
+
+/**
+ * @summary getAssistantTurn
+ */
+export const getAssistantTurn = async (turnId: string, options?: RequestInit): Promise<getAssistantTurnResponse> => {
+
+  const res = await fetch(getGetAssistantTurnUrl(turnId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAssistantTurnResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getAssistantTurnResponse
+}
+
+
+
+export type cancelAssistantTurnResponse200 = {
+  data: AssistantMutationEnvelopeV1
+  status: 200
+}
+
+export type cancelAssistantTurnResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type cancelAssistantTurnResponseSuccess = (cancelAssistantTurnResponse200) & {
+  headers: Headers;
+};
+export type cancelAssistantTurnResponseError = (cancelAssistantTurnResponseDefault) & {
+  headers: Headers;
+};
+
+export type cancelAssistantTurnResponse = (cancelAssistantTurnResponseSuccess | cancelAssistantTurnResponseError)
+
+export const getCancelAssistantTurnUrl = (turnId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/turns/${turnId}:cancel`
+}
+
+/**
+ * @summary cancelAssistantTurn
+ */
+export const cancelAssistantTurn = async (turnId: string,
+    assistantEmptyBodyV1: AssistantEmptyBodyV1, options?: RequestInit): Promise<cancelAssistantTurnResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCancelAssistantTurnUrl(turnId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(assistantEmptyBodyV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: cancelAssistantTurnResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as cancelAssistantTurnResponse
+}
+
+
+
+export type archiveAssistantConversationResponse200 = {
+  data: AssistantMutationEnvelopeV1
+  status: 200
+}
+
+export type archiveAssistantConversationResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type archiveAssistantConversationResponseSuccess = (archiveAssistantConversationResponse200) & {
+  headers: Headers;
+};
+export type archiveAssistantConversationResponseError = (archiveAssistantConversationResponseDefault) & {
+  headers: Headers;
+};
+
+export type archiveAssistantConversationResponse = (archiveAssistantConversationResponseSuccess | archiveAssistantConversationResponseError)
+
+export const getArchiveAssistantConversationUrl = (conversationId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/conversations/${conversationId}:archive`
+}
+
+/**
+ * @summary archiveAssistantConversation
+ */
+export const archiveAssistantConversation = async (conversationId: string,
+    assistantEmptyBodyV1: AssistantEmptyBodyV1, options?: RequestInit): Promise<archiveAssistantConversationResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getArchiveAssistantConversationUrl(conversationId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(assistantEmptyBodyV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: archiveAssistantConversationResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as archiveAssistantConversationResponse
+}
+
+
+
+export type getAssistantQueryResultResponse200 = {
+  data: AssistantQueryEnvelopeV1
+  status: 200
+}
+
+export type getAssistantQueryResultResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getAssistantQueryResultResponseSuccess = (getAssistantQueryResultResponse200) & {
+  headers: Headers;
+};
+export type getAssistantQueryResultResponseError = (getAssistantQueryResultResponseDefault) & {
+  headers: Headers;
+};
+
+export type getAssistantQueryResultResponse = (getAssistantQueryResultResponseSuccess | getAssistantQueryResultResponseError)
+
+export const getGetAssistantQueryResultUrl = (queryResultId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/query-results/${queryResultId}`
+}
+
+/**
+ * @summary getAssistantQueryResult
+ */
+export const getAssistantQueryResult = async (queryResultId: string, options?: RequestInit): Promise<getAssistantQueryResultResponse> => {
+
+  const res = await fetch(getGetAssistantQueryResultUrl(queryResultId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAssistantQueryResultResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getAssistantQueryResultResponse
+}
+
+
+
+export type getAssistantConversationEventsResponse200 = {
+  data: AssistantEventV1
+  status: 200
+}
+
+export type getAssistantConversationEventsResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getAssistantConversationEventsResponseSuccess = (getAssistantConversationEventsResponse200) & {
+  headers: Headers;
+};
+export type getAssistantConversationEventsResponseError = (getAssistantConversationEventsResponseDefault) & {
+  headers: Headers;
+};
+
+export type getAssistantConversationEventsResponse = (getAssistantConversationEventsResponseSuccess | getAssistantConversationEventsResponseError)
+
+export const getGetAssistantConversationEventsUrl = (conversationId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/conversations/${conversationId}/events`
+}
+
+/**
+ * @summary getAssistantConversationEvents
+ */
+export const getAssistantConversationEvents = async (conversationId: string, options?: RequestInit): Promise<getAssistantConversationEventsResponse> => {
+
+  const res = await fetch(getGetAssistantConversationEventsUrl(conversationId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+  const contentType = (res.headers.get('content-type') ?? '').toLowerCase();
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAssistantConversationEventsResponse['data'] = body ? (contentType.includes('json') ? JSON.parse(body) : body) : {}
+  return { data, status: res.status, headers: res.headers } as getAssistantConversationEventsResponse
+}
+
+
 
 export type getAuthSessionResponse200 = {
   data: AuthSessionSuccessV1

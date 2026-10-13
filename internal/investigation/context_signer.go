@@ -29,25 +29,27 @@ type ContextSigner struct {
 	Key     string
 }
 type InvocationClaims struct {
-	SchemaVersion         string      `json:"schemaVersion"`
-	ContextID             uuid.UUID   `json:"context_id"`
-	Issuer                string      `json:"iss"`
-	Audience              string      `json:"aud"`
-	JobID                 uuid.UUID   `json:"job_id"`
-	IncidentID            uuid.UUID   `json:"incident_id"`
-	TenantID              uuid.UUID   `json:"tenant_id"`
-	Subject               string      `json:"subject"`
-	Scope                 graph.Scope `json:"scope"`
-	AllowedTools          []string    `json:"allowed_tools"`
-	AllowedDataClasses    []string    `json:"allowed_data_classes"`
-	PolicyVersion         string      `json:"policy_version"`
-	AuthorizationRevision string      `json:"authorizationRevision"`
-	ToolCatalogDigest     string      `json:"toolCatalogDigest"`
-	LeaseGeneration       int64       `json:"jobLeaseGeneration"`
-	IssuedAt              int64       `json:"iat"`
-	ExpiresAt             int64       `json:"exp"`
-	SessionNonce          string      `json:"session_nonce"`
-	WorkloadIdentity      string      `json:"-"`
+	TriggerRevision       int64          `json:"triggerRevision,omitempty"`
+	Assistant             *AssistantTask `json:"assistant,omitempty"`
+	SchemaVersion         string         `json:"schemaVersion"`
+	ContextID             uuid.UUID      `json:"context_id"`
+	Issuer                string         `json:"iss"`
+	Audience              string         `json:"aud"`
+	JobID                 uuid.UUID      `json:"job_id"`
+	IncidentID            uuid.UUID      `json:"incident_id"`
+	TenantID              uuid.UUID      `json:"tenant_id"`
+	Subject               string         `json:"subject"`
+	Scope                 graph.Scope    `json:"scope"`
+	AllowedTools          []string       `json:"allowed_tools"`
+	AllowedDataClasses    []string       `json:"allowed_data_classes"`
+	PolicyVersion         string         `json:"policy_version"`
+	AuthorizationRevision string         `json:"authorizationRevision"`
+	ToolCatalogDigest     string         `json:"toolCatalogDigest"`
+	LeaseGeneration       int64          `json:"jobLeaseGeneration"`
+	IssuedAt              int64          `json:"iat"`
+	ExpiresAt             int64          `json:"exp"`
+	SessionNonce          string         `json:"session_nonce"`
+	WorkloadIdentity      string         `json:"-"`
 	Confirmation          struct {
 		WorkloadIdentity string `json:"workload_identity"`
 	} `json:"cnf"`
@@ -60,7 +62,14 @@ func (c InvocationClaims) identity() string {
 	return c.WorkloadIdentity
 }
 func (c InvocationClaims) Valid(now time.Time) bool {
-	if c.SchemaVersion != "invocation-context/v2" || c.Issuer != "platform-api" || (c.Audience != "platform-mcp-gateway" && c.Audience != "platform-job-api") || c.ContextID == uuid.Nil || c.JobID == uuid.Nil || c.IncidentID == uuid.Nil || c.TenantID == uuid.Nil || c.Subject == "" || c.Scope.Tenant != c.TenantID.String() || c.Scope.Cluster == "" || (!c.Scope.ClusterScoped && len(c.Scope.Namespaces) == 0) || c.AuthorizationRevision == "" || c.Scope.AuthorizationRevision != c.AuthorizationRevision || c.PolicyVersion == "" || c.ToolCatalogDigest == "" || c.LeaseGeneration < 1 || c.SessionNonce == "" || c.identity() == "" || c.IssuedAt > now.Unix() || c.ExpiresAt <= now.Unix() || c.ExpiresAt <= c.IssuedAt || c.ExpiresAt-c.IssuedAt > 120 || len(c.AllowedTools) == 0 || len(c.AllowedTools) > 64 || len(c.AllowedDataClasses) == 0 {
+	if (c.SchemaVersion != "invocation-context/v2" && c.SchemaVersion != "invocation-context/v3") || c.Issuer != "platform-api" || (c.Audience != "platform-mcp-gateway" && c.Audience != "platform-job-api") || c.ContextID == uuid.Nil || c.JobID == uuid.Nil || (c.SchemaVersion == "invocation-context/v2" && c.IncidentID == uuid.Nil) || c.TenantID == uuid.Nil || c.Subject == "" || c.Scope.Tenant != c.TenantID.String() || (c.SchemaVersion == "invocation-context/v2" || c.Assistant == nil || c.Assistant.AuthorizationDomain != "audit") && (c.Scope.Cluster == "" || (!c.Scope.ClusterScoped && len(c.Scope.Namespaces) == 0)) || c.AuthorizationRevision == "" || c.Scope.AuthorizationRevision != c.AuthorizationRevision || c.PolicyVersion == "" || c.ToolCatalogDigest == "" || c.LeaseGeneration < 1 || c.SessionNonce == "" || c.identity() == "" || c.IssuedAt > now.Unix() || c.ExpiresAt <= now.Unix() || c.ExpiresAt <= c.IssuedAt || c.ExpiresAt-c.IssuedAt > 120 || len(c.AllowedTools) == 0 || len(c.AllowedTools) > 64 || len(c.AllowedDataClasses) == 0 {
+		return false
+	}
+	if c.SchemaVersion == "invocation-context/v3" {
+		if c.Assistant == nil || c.Assistant.ConversationID == uuid.Nil || c.Assistant.TurnID == uuid.Nil || !c.Assistant.Valid(Job{TenantID: c.TenantID, IncidentID: c.IncidentID, TriggerRevision: c.TriggerRevision, Scope: c.Scope}) {
+			return false
+		}
+	} else if c.Assistant != nil || c.TriggerRevision != 0 {
 		return false
 	}
 	seenTools := map[string]bool{}
@@ -159,6 +168,10 @@ func (s ContextSigner) VerifyContext(ctx context.Context, token, audience, workl
 	return c, nil
 }
 func (c InvocationClaims) Bind(j Job, l Lease, catalog string, tool string) error {
+	if (j.SchemaVersion == "investigation-job/v3") != (c.SchemaVersion == "invocation-context/v3") || graph.ScopeDigest(c.Assistant) != graph.ScopeDigest(j.Assistant) || (j.Assistant != nil && c.TriggerRevision != j.TriggerRevision) {
+		return ErrLease
+	}
+
 	if c.JobID != j.JobID || c.TenantID != j.TenantID || c.IncidentID != j.IncidentID || c.Subject != j.Subject || c.LeaseGeneration != l.Generation || c.PolicyVersion != j.PolicyVersion || c.ToolCatalogDigest != catalog || catalog != j.ToolCatalogDigest || graph.ScopeDigest(c.Scope) != j.EffectiveScopeDigest || c.AuthorizationRevision != j.Scope.AuthorizationRevision {
 		return ErrLease
 	}
@@ -179,6 +192,11 @@ func (s ContextSigner) Issue(ctx context.Context, j Job, l Lease, audience, work
 		expires = j.ExpiresAt
 	}
 	c := InvocationClaims{SchemaVersion: "invocation-context/v2", ContextID: uuid.New(), Issuer: "platform-api", Audience: audience, JobID: j.JobID, IncidentID: j.IncidentID, TenantID: j.TenantID, Subject: j.Subject, Scope: j.Scope, AllowedTools: tools, AllowedDataClasses: j.Budget.AllowedDataClasses, PolicyVersion: j.PolicyVersion, AuthorizationRevision: j.Scope.AuthorizationRevision, ToolCatalogDigest: j.ToolCatalogDigest, LeaseGeneration: l.Generation, IssuedAt: now.Unix(), ExpiresAt: expires.Unix(), SessionNonce: uuid.NewString(), WorkloadIdentity: workload}
+	if j.Assistant != nil {
+		c.SchemaVersion = "invocation-context/v3"
+		c.Assistant = j.Assistant
+		c.TriggerRevision = j.TriggerRevision
+	}
 	if l.JobID != j.JobID || l.TenantID != j.TenantID {
 		return "", fmt.Errorf("%w: lease binding", ErrInvalid)
 	}
@@ -199,4 +217,18 @@ func (s ContextSigner) IssueRegistered(ctx context.Context, r Repository, j Job,
 		return "", err
 	}
 	return token, nil
+}
+
+func (c InvocationClaims) MarshalJSON() ([]byte, error) {
+	type wire InvocationClaims
+	b, err := json.Marshal(wire(c))
+	if err != nil || c.SchemaVersion != "invocation-context/v3" || c.Assistant == nil || c.Assistant.TaskKind == "incident_followup" {
+		return b, err
+	}
+	var fields map[string]json.RawMessage
+	if err = json.Unmarshal(b, &fields); err != nil {
+		return nil, err
+	}
+	delete(fields, "incident_id")
+	return json.Marshal(fields)
 }
