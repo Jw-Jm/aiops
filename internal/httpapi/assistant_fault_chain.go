@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"ops-platform/internal/analytics"
+	"ops-platform/internal/assistant"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/investigation"
@@ -14,6 +16,30 @@ import (
 	"slices"
 	"time"
 )
+
+// faultChainEvaluationRequest uses only the API-frozen turn context. Models
+// select committed Steps, never the target, comparison windows or edge limit.
+func faultChainEvaluationRequest(input assistant.TurnInput, j investigation.Job) (investigation.FaultChainRequest, error) {
+	if j.Assistant == nil || j.Assistant.AuthorizationDomain != "operational" {
+		return investigation.FaultChainRequest{}, investigation.ErrDenied
+	}
+	if input.FaultChainRequest != nil {
+		return *input.FaultChainRequest, nil
+	}
+	rc := input.Binding.ResourceContext
+	if j.Assistant.TaskKind != "resource_troubleshooting" || rc == nil || len(rc.Resources) != 1 || input.RequestedAt.IsZero() {
+		return investigation.FaultChainRequest{}, investigation.ErrInvalid
+	}
+	window := input.RequestedTimeRange
+	if window == nil {
+		window = &analytics.QueryTimeRange{From: rc.TimeRange.From, To: rc.TimeRange.To, Timezone: rc.TimeRange.Timezone}
+	}
+	request := investigation.FaultChainRequest{SchemaVersion: "fault-chain-request/v1", TargetCanonicalID: rc.Resources[0].CanonicalID, Fault: *window, MaxEdges: 4}
+	if !j.Scope.Allows(request.TargetCanonicalID, rc.Resources[0].Namespace) || !request.Valid(j.Scope, input.Binding.Timezone, input.RequestedAt) {
+		return investigation.FaultChainRequest{}, investigation.ErrDenied
+	}
+	return request, nil
+}
 
 func (a AssistantTools) evaluateFaultChain(ctx context.Context, j investigation.Job, request investigation.FaultChainRequest, args json.RawMessage) (investigation.FaultChainContext, error) {
 	var out investigation.FaultChainContext

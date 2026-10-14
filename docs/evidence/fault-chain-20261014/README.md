@@ -61,3 +61,13 @@ R3 正反 Fixture 覆盖一个调用方、错 UID、窗口外健康、缺少关�
 [runtime-process-recovery.json](runtime-process-recovery.json) 为 process-r3 的真实 Dispatcher/Python 进程恢复验收回执（94.72 秒）：在已提交上下文后、下一次 MCP 请求转发前真实终止两个进程，等待生产 45 秒租约自然到期，generation 从 1 增至 2；上下文成功 Step 总数仍为 1，旧 generation 的迟到回答被拒绝。保留 3 个精确统计比较，另一次查询 SOURCE_DEGRADED 后返回 partial 和明确缺口；每个保留协议/窗口均按独立三窗口计数核对，R1/R2/R5 支持只按实际已提交结果校验，缺失数据不得产生对应支持结论。模型调用为零、跨所有者及撤销授权后的读取拒绝仍通过。process-r1/r2 失败保留在远程：旧断言错误地要求降级后的恢复必须仍有全部 4 个结果或 TCP 规则；修正的是验收断言，未放宽生产预算、来源或身份校验。
 
 本回执证明实际进程终止后的已提交上下文复用及后续真实采集；断点在网关转发前，不作为执行中来源请求 UNKNOWN_OUTCOME 的证明。取消/预算保留已提交正向数字、清理闭包、多调用方、4/8 边容量、真实趋势与非零重传、最新界面运行仍待专项验收。当前修复后检查：相关 Go 单元/合同、integration vet、生成一致性、Python 8 项、前端 19 文件/63 项及构建通过。代码按用户要求同步当前开发分支，未作生产发布或全专项完成声明。
+
+[network-operations.json](network-operations.json) 为 operations-r2 的实际来源适配器/分析编译器验收：真实 UID 双端映射、当前来源授权、原 Querier 聚合与最终身份复核取得三个 60 秒桶 1%/5%/0%，桶标签保持原半开窗口起点；HTTP 1%→5% 的相对增幅为 400%；TCP 0→100 错误观测的相对百分比为 no_data，保留 percentage_requires_nonzero_baseline，仍保留原计数附项。每次操作的原始查询预算为 3/2/2，与派生 Evidence 数对应；结果通过 QueryResult 合同，时间继续 unreliable。该回执限于真实适配器和编译器，不能宣称这些趋势/相对操作已经过签名 RPC 与归档读回。
+
+[runtime-network-operations.json](runtime-network-operations.json) 为同次随后完整固定调查通过回执（整个测试 43.78 秒）：原有 4 个协议/窗口比较、R1/R2/R5 引用、模型离线/零调用、跨所有者和撤销授权读取拒绝继续通过。初轮 operations-r1 因测试新建适配器缺少实际 L7 准入探测而被 CAPABILITY_DISABLED 拒绝；仅补上实际实时探测后重跑，未放宽生产门禁，失败数据库保留。限时健康流量正常结束。integration vet、analytics/contract 回归与差异格式检查通过。
+
+当前新增代码位于 fault-chain-validation-20261014 开发分支，以已合并 main 为基线。本轮未发布运行服务；不将后续开发自动算作主分支已合并。真实非零重传、多调用方/容量、最新界面运行、执行中请求状态和模型解释路径仍需继续验证。
+
+普通资源排障工具缺口已修复：evaluate_fault_chain 原先只接受 evidence_only 的 FaultChainRequest，虽然在普通排障中列出却始终被拒绝。现在使用已经校验摘要的当前 TurnInput：单一资源上下文确定目标，优先使用冻结 requestedTimeRange，否则使用已绑定资源上下文的窗口；固定最多 4 边，不由模型传入目标/窗口/边数。没有基线或恢复窗时不构造比较；模糊目标、audit、其他任务、范围外资源/namespace、未来窗口被拒绝。get_assistant_context 显示服务端允许的 faultChainEvaluationRequest，模型仍只能选择当前 Job 成功提交的 Step IDs。原证据专用模式沿用显式请求与摘要校验。
+
+[ordinary-evaluation.log](ordinary-evaluation.log) 为远程 PostgreSQL/最小权限角色的普通模式机制验收：无专用请求的普通 resource_troubleshooting 仍保留普通模式及非零模型预算，实际工具派发得到 partial 上下文，提交 Step 后回答持久化和上下文读回成功；目标/窗口保持冻结，无来源事实时不补数字。跨所有者和授权撤销读取拒绝通过（0.41 秒）。资源身份及租户/角色是协议 Fixture，未执行实际模型请求，不代表模型解释质量或真实来源正向规则证明。相关 Go 单元/合同与 vet 通过，覆盖普通请求的窗口优先级与拒绝条件。Incident follow-up 没有单一资源上下文时仍需现有资源解析；不通过猜测目标开放评估。
