@@ -60,6 +60,13 @@
     },
     "resultSchemaVersion": {
       "const": "assistant-answer/v1"
+    },
+    "executionMode": {
+      "const": "evidence_only"
+    },
+    "faultChainRequestDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
     }
   },
   "required": [

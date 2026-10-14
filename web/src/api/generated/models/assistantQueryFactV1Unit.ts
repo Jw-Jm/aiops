@@ -20,4 +20,8 @@ export const AssistantQueryFactV1Unit = {
   bytes: 'bytes',
   logs: 'logs',
   percent: 'percent',
+  responses: 'responses',
+  retransmissions: 'retransmissions',
+  observations: 'observations',
+  percentage_points: 'percentage_points',
 } as const;

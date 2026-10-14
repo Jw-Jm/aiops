@@ -440,6 +440,7 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 	}
 	adapters := map[string]evidence.Adapter{}
 	analysisAdapters := map[string]*analytics.Victoria{}
+	networkAdapters := map[string]*analytics.Network{}
 	for _, source := range c.Sources {
 		if source.Name != "victoriametrics" && source.Name != "victorialogs" && source.Name != "redfish" && source.Name != "deepflow" {
 			cancel()
@@ -595,6 +596,9 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 				}
 			}
 			adapters[source.Binding.SourceID] = adapter
+			if df, ok := adapter.(*deepflow.Adapter); ok && len(source.AnalysisQualifications) > 0 {
+				networkAdapters[source.Binding.SourceID] = analytics.NewNetwork(df, source.AnalysisQualifications)
+			}
 			continue
 		}
 		adapter, err := evidence.NewVictoria(source.Name, source.Binding, client, (evidence.Repository{Pool: pool}).Authorize)
@@ -645,7 +649,7 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 	}
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/internal/v1/analysis:query" {
-			serveWorkerAnalysis(w, r, trust, key, pool, analysisAdapters, handlers, adapters)
+			serveWorkerAnalysis(w, r, trust, key, pool, analysisAdapters, handlers, adapters, networkAnalysisRuntime{Adapters: networkAdapters, Archive: archive})
 			return
 		}
 		if r.URL.Path == "/internal/v1/audit:verify" {

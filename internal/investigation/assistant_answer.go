@@ -49,56 +49,76 @@ type Clarification struct {
 	Candidates      []string  `json:"candidates"`
 }
 type AssistantAnswer struct {
-	FormalRefs      []FormalReference `json:"formalRefs,omitempty"`
-	FaultChain      []ChainLink       `json:"faultChain,omitempty"`
-	SchemaVersion   string            `json:"schemaVersion"`
-	AnswerKind      string            `json:"answerKind"`
-	Summary         string            `json:"summary"`
-	FactRefs        []FactRef         `json:"factRefs"`
-	QueryResultRefs []uuid.UUID       `json:"queryResultRefs"`
-	EvidenceRefs    []string          `json:"evidenceRefs"`
-	EntityRefs      []string          `json:"entityRefs"`
-	MissingEvidence []string          `json:"missingEvidence"`
-	ScopeSummary    string            `json:"scopeSummary"`
-	AsOf            time.Time         `json:"asOf"`
-	Partial         bool              `json:"partial"`
-	DegradedSources []string          `json:"degradedSources"`
-	Warnings        []string          `json:"warnings"`
-	Hypotheses      []Hypothesis      `json:"hypotheses"`
-	NextChecks      []string          `json:"nextChecks"`
-	Clarification   *Clarification    `json:"clarification,omitempty"`
+	FaultChainContextRef *FaultChainContextRef `json:"faultChainContextRef,omitempty"`
+	FormalRefs           []FormalReference     `json:"formalRefs,omitempty"`
+	FaultChain           []ChainLink           `json:"faultChain,omitempty"`
+	SchemaVersion        string                `json:"schemaVersion"`
+	AnswerKind           string                `json:"answerKind"`
+	Summary              string                `json:"summary"`
+	FactRefs             []FactRef             `json:"factRefs"`
+	QueryResultRefs      []uuid.UUID           `json:"queryResultRefs"`
+	EvidenceRefs         []string              `json:"evidenceRefs"`
+	EntityRefs           []string              `json:"entityRefs"`
+	MissingEvidence      []string              `json:"missingEvidence"`
+	ScopeSummary         string                `json:"scopeSummary"`
+	AsOf                 time.Time             `json:"asOf"`
+	Partial              bool                  `json:"partial"`
+	DegradedSources      []string              `json:"degradedSources"`
+	Warnings             []string              `json:"warnings"`
+	Hypotheses           []Hypothesis          `json:"hypotheses"`
+	NextChecks           []string              `json:"nextChecks"`
+	Clarification        *Clarification        `json:"clarification,omitempty"`
 }
 
 // Query result IDs are platform generated. Facts locate immutable, server computed
 // cells; a model cannot supply a replacement value or an arbitrary calculation.
 func BuildStoredQueryResult(result analytics.QueryResult) StoredQueryResult {
 	out := StoredQueryResult{QueryResultID: uuid.Must(uuid.NewV7()), Result: result, Facts: []QueryFact{}}
-	for row, value := range result.Rows {
-		out.Facts = append(out.Facts, QueryFact{"query-fact/v1", graph.ScopeDigest(struct {
-			Plan string
-			Row  int
-		}{result.PlanDigest, row}), row, "value", value.Value, result.Unit, result.Exact})
-	}
+	out.Facts = queryResultFacts(result)
+
 	out.ContentDigest = graph.ScopeDigest(out)
 	return out
 }
+func queryResultFacts(result analytics.QueryResult) []QueryFact {
+	facts := []QueryFact{}
+	for row, value := range result.Rows {
+		id := graph.ScopeDigest(struct {
+			Plan string
+			Row  int
+		}{result.PlanDigest, row})
+		unit := result.Unit
+		if result.NetworkContext != nil && (result.DatasetID == "network.http-5xx-rate" || result.DatasetID == "network.http-summary") && len(result.Rows) == 3 && result.Rows[0].Dimension == "baseline" && result.Rows[1].Dimension == "current" && row == 2 {
+			unit = "percentage_points"
+		}
+		facts = append(facts, QueryFact{"query-fact/v1", id, row, "value", value.Value, unit, result.Exact})
+	}
+	for row, value := range result.Statistics {
+		id := graph.ScopeDigest(struct {
+			Plan   string
+			Row    int
+			Column string
+		}{result.PlanDigest, row, "statistic"})
+		facts = append(facts, QueryFact{"query-fact/v1", id, row, "statistic", value.Value, value.Unit, result.Exact})
+	}
+	return facts
+}
+
 func validateStoredQueryResult(out StoredQueryResult) error {
 	digest := out.ContentDigest
 	out.ContentDigest = ""
-	if digest == "" || graph.ScopeDigest(out) != digest || out.QueryResultID == uuid.Nil || len(out.Facts) != len(out.Result.Rows) {
+	if digest == "" || graph.ScopeDigest(out) != digest || out.QueryResultID == uuid.Nil || len(out.Facts) != len(out.Result.Rows)+len(out.Result.Statistics) {
 		return ErrInvalid
 	}
 	if contract.Validate("https://ops.local/schemas/query-result/v1", raw(out.Result)) != nil {
 		return ErrInvalid
 	}
+	expected := queryResultFacts(out.Result)
 	for n, f := range out.Facts {
-		if f.SchemaVersion != "query-fact/v1" || f.Row != n || f.Column != "value" || f.Value != out.Result.Rows[n].Value || f.Unit != out.Result.Unit || f.Exact != out.Result.Exact || f.FactID != graph.ScopeDigest(struct {
-			Plan string
-			Row  int
-		}{out.Result.PlanDigest, n}) {
+		if f != expected[n] {
 			return ErrInvalid
 		}
 	}
+
 	return nil
 }
 func loadQueryResultTx(ctx context.Context, tx pgx.Tx, j Job, id uuid.UUID) (StoredQueryResult, error) {
@@ -316,6 +336,11 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 	for _, h := range a.Hypotheses {
 		if validateSupportConflict(h.Supports, h.Conflicts, seen) != nil {
 			return nil, ErrDenied
+		}
+	}
+	if a.FaultChainContextRef != nil {
+		if _, err := ReadFaultChainContextTx(ctx, tx, j, *a.FaultChainContextRef); err != nil {
+			return nil, err
 		}
 	}
 	if validateFaultChain(a, availableRelations, seen) != nil {

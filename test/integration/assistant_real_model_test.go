@@ -112,8 +112,11 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 		material.EvaluationDigest = "sha256:" + hex.EncodeToString(sum[:])
 		material.EvaluationVersion = "zh-assistant-five-20261013/v1"
 	}
+	if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1" {
+		material.BaseURL = "http://127.0.0.1:1/v1"
+	}
 	profile := material.Reference()
-	config := app.SP06Config{Namespace: "sp06-test", ListenAddress: apiAddress, InvestigatorEndpoint: "https://" + investigatorAddress, CertificateFile: files["ops-api.pem"], PrivateKeyFile: files["ops-api.key"], CAFile: files["ca.pem"], CRLFile: files["crl.pem"], PolicyName: "sp06-read-only", Tenants: []uuid.UUID{b.TenantID}, Budget: investigation.DefaultBudget(), Assistant: &app.AssistantRuntimeConfig{Enabled: true, ModelProfileVersion: profile, Profile: &material}}
+	config := app.SP06Config{Namespace: "sp06-test", ListenAddress: apiAddress, InvestigatorEndpoint: "https://" + investigatorAddress, CertificateFile: files["ops-api.pem"], PrivateKeyFile: files["ops-api.key"], CAFile: files["ca.pem"], CRLFile: files["crl.pem"], PolicyName: "sp06-read-only", Tenants: []uuid.UUID{b.TenantID}, Budget: investigation.DefaultBudget(), Assistant: &app.AssistantRuntimeConfig{Enabled: true, FaultChainEnabled: os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1", ModelProfileVersion: profile, Profile: &material}}
 	runtimeFile := filepath.Join(dir, "runtime.json")
 	write := func(path string, value any) {
 		raw, e := json.Marshal(value)
@@ -139,12 +142,15 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 	if os.WriteFile(keyFile, []byte("local-ollama-no-auth"), 0600) != nil {
 		t.Fatal("model key file")
 	}
+	if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1" {
+		keyFile = filepath.Join(dir, "nonexistent-model-key")
+	}
 	mcpEndpoint := "https://" + apiAddress + "/mcp"
 	var trace *assistantEvaluationTrace
 	if evaluation {
 		mcpEndpoint, trace = assistantEvaluationProxy(t, apiAddress, files)
 	}
-	write(investigatorFile, map[string]any{"listenAddress": investigatorAddress, "jobAPI": strings.TrimSuffix(mcpEndpoint, "/mcp"), "mcpEndpoint": mcpEndpoint, "apiServerName": "ops-api.sp06-test.svc.cluster.local", "caFile": files["ca.pem"], "crlFile": files["crl.pem"], "certificateFile": files["ops-investigator.pem"], "privateKeyFile": files["ops-investigator.key"], "workerIdentity": "spiffe://ops.local/ns/sp06-test/sa/ops-worker", "modelAPIKeyFile": keyFile, "assistantModelProfileVersion": profile, "assistantModelProfile": material, "model": map[string]any{"base_url": "http://127.0.0.1:11434/v1", "api_key_ref": "secret://model/api-key", "model": "qwen2.5:1.5b", "timeout": 120, "token_budget": 2048}})
+	write(investigatorFile, map[string]any{"listenAddress": investigatorAddress, "jobAPI": strings.TrimSuffix(mcpEndpoint, "/mcp"), "mcpEndpoint": mcpEndpoint, "apiServerName": "ops-api.sp06-test.svc.cluster.local", "caFile": files["ca.pem"], "crlFile": files["crl.pem"], "certificateFile": files["ops-investigator.pem"], "privateKeyFile": files["ops-investigator.key"], "workerIdentity": "spiffe://ops.local/ns/sp06-test/sa/ops-worker", "modelAPIKeyFile": keyFile, "assistantModelProfileVersion": profile, "assistantModelProfile": material, "model": map[string]any{"base_url": material.BaseURL, "api_key_ref": "secret://model/api-key", "model": "qwen2.5:1.5b", "timeout": 120, "token_budget": 2048}})
 	name := "ops-assistant-smoke-" + uuid.NewString()
 	process := exec.CommandContext(ctx, "docker", "run", "--rm", "--name", name, "--label", "ops.task=assistant-20261012", "--network", "host", "--user", "0", "-v", dir+":"+dir+":ro", "-v", python+":/assistant-src:ro", "-e", "PYTHONPATH=/assistant-src", "-e", "SP06_INVESTIGATOR_FILE="+investigatorFile, "--entrypoint", "python", image, "-m", "investigator.worker")
 	var output bytes.Buffer
@@ -179,11 +185,57 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 			t.Fatal(err)
 		}
 	} else {
-		stopWorker, err := app.StartSP06Worker(ctx, workerPool)
-		if err != nil {
-			t.Fatal(err)
+		if binary := os.Getenv("OPS_ASSISTANT_DISPATCHER_BINARY"); binary != "" {
+			if trace == nil || trace.recoveryPaused == nil {
+				t.Fatal("process recovery requires transparent acceptance proxy")
+			}
+			databaseFile := filepath.Join(dir, "worker.database")
+			if os.WriteFile(databaseFile, []byte(workerPool.Config().ConnString()), 0600) != nil {
+				t.Fatal("private dispatcher configuration")
+			}
+			spawn := func() *exec.Cmd {
+				child := exec.CommandContext(ctx, binary)
+				child.Env = append(os.Environ(), "SP06_DATABASE_URL_FILE="+databaseFile)
+				if child.Start() != nil {
+					t.Fatal("dispatcher startup")
+				}
+				return child
+			}
+			child := spawn()
+			defer func() {
+				if child.ProcessState == nil {
+					_ = child.Process.Kill()
+					_ = child.Wait()
+				}
+			}()
+			trace.restartProcesses = func() {
+				if child.Process.Kill() != nil {
+					t.Fatal("dispatcher SIGKILL")
+				}
+				if child.Wait() == nil {
+					t.Fatal("dispatcher exited without SIGKILL")
+				}
+				if exec.CommandContext(ctx, "docker", "kill", "--signal=KILL", name).Run() != nil {
+					t.Fatal("investigator SIGKILL")
+				}
+				_ = process.Wait()
+				process = exec.CommandContext(ctx, process.Args[0], process.Args[1:]...)
+				process.Env = append([]string{}, os.Environ()...)
+				process.Stdout = &output
+				process.Stderr = &output
+				if process.Start() != nil {
+					t.Fatal("investigator restart")
+				}
+				close(trace.recoveryResume)
+				child = spawn()
+			}
+		} else {
+			stopWorker, err := app.StartSP06Worker(ctx, workerPool)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer stopWorker()
 		}
-		defer stopWorker()
 	}
 
 	ready = false

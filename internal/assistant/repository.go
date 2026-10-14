@@ -24,8 +24,9 @@ type Admission struct {
 	Budget              investigation.Budget
 }
 type Repository struct {
-	Pool persistence.TxBeginner
-	Jobs investigation.Repository
+	FaultChainEnabled bool
+	Pool              persistence.TxBeginner
+	Jobs              investigation.Repository
 	// Admit applies the existing signed policy and freezes the admitted model profile.
 	// Missing admission denies submission; it never starts a private model path.
 	Admit func(context.Context, Conversation, string) (Admission, error)
@@ -373,6 +374,9 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 	if err != nil {
 		return out, err
 	}
+	if q.FaultChainRequest != nil && (!r.FaultChainEnabled || c.Mode != "troubleshoot" || c.AuthorizationDomain != "operational" || !q.FaultChainRequest.Valid(c.Binding.ExecutionScope, c.Binding.Timezone, time.Now())) {
+		return out, investigation.ErrInvalid
+	}
 	admission, err := r.Admit(ctx, c, taskKind(c))
 	if err != nil {
 		return out, err
@@ -500,7 +504,13 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 				}
 			}
 		}
-		input := TurnInput{RequestedTimeRange: requestedWindow, ReferenceResolution: referenceResolution, SchemaVersion: "assistant-input/v1", RequestedAt: requestedAt, Message: tools.RedactText(q.Message), Binding: c.Binding, History: history, HistoryManifestDigest: graph.ScopeDigest(history), ParentTurnID: q.ParentTurnID, ClarificationID: q.ClarificationID}
+		if q.FaultChainRequest != nil {
+			if !q.FaultChainRequest.Valid(c.Binding.ExecutionScope, c.Binding.Timezone, requestedAt) || !c.Binding.ExecutionScope.Allows(q.FaultChainRequest.TargetCanonicalID, c.Binding.ExecutionScope.Namespaces[0]) {
+				return investigation.ErrDenied
+			}
+			requestedWindow = &q.FaultChainRequest.Fault
+		}
+		input := TurnInput{FaultChainRequest: q.FaultChainRequest, RequestedTimeRange: requestedWindow, ReferenceResolution: referenceResolution, SchemaVersion: "assistant-input/v1", RequestedAt: requestedAt, Message: tools.RedactText(q.Message), Binding: c.Binding, History: history, HistoryManifestDigest: graph.ScopeDigest(history), ParentTurnID: q.ParentTurnID, ClarificationID: q.ClarificationID}
 		inputRaw := raw(input)
 		if len(inputRaw) > 48<<10 {
 			return investigation.ErrBudget
@@ -521,6 +531,15 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 			return err
 		}
 		j.Assistant = &investigation.AssistantTask{DatasetCatalogVersion: datasetCatalog.Version, DatasetCatalogDigest: graph.ScopeDigest(datasetCatalog), TaskKind: taskKind(c), AuthorizationDomain: c.AuthorizationDomain, ConversationID: id, TurnID: out.TurnID, InputDigest: graph.ScopeDigest(input), ContextDigest: graph.ScopeDigest(c.Binding), GrantSnapshot: grant, GrantSnapshotDigest: graph.ScopeDigest(grant), CatalogVersion: "assistant-tools/v1", PromptVersion: "assistant/v1", ModelProfileVersion: admission.ModelProfileVersion, ResultSchemaVersion: "assistant-answer/v1"}
+		if q.FaultChainRequest != nil {
+			j.Assistant.ExecutionMode = "evidence_only"
+			j.Assistant.FaultChainRequestDigest = graph.ScopeDigest(*q.FaultChainRequest)
+			j.Budget.ModelRequests = 0
+			j.Budget.InputTokens = 0
+			j.Budget.OutputTokens = 0
+			j.Budget.DurationSeconds = min(j.Budget.DurationSeconds, 60)
+			j.ExpiresAt = requestedAt.Add(time.Duration(j.Budget.DurationSeconds) * time.Second)
+		}
 		mid := uuid.Must(uuid.NewV7())
 		if err = investigation.CreateAssistantJobTx(ctx, tx, j); err != nil {
 			return err

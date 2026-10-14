@@ -30,6 +30,8 @@ func TestJSONSchemas(t *testing.T) {
 		{"audit-record", schemaBase + "audit-record/v1"},
 		{"finding-event", schemaBase + "finding-event/v1"},
 		{"incident-event", schemaBase + "incident-event/v1"},
+		{"network-summary-http", schemaBase + "network-summary/v1"},
+		{"network-summary-tcp", schemaBase + "network-summary/v1"},
 	}
 	for _, test := range valid {
 		t.Run("valid/"+test.name, func(t *testing.T) {
@@ -53,6 +55,7 @@ func TestJSONSchemas(t *testing.T) {
 		{"oversized-text", schemaBase + "incident/v1"},
 		{"unbounded-graph-budget", schemaBase + "diagnostic-graph/v1"},
 		{"action-plan-v1", schemaBase + "action-plan/v2"},
+		{"network-summary-mixed-population", schemaBase + "network-summary/v1"},
 	}
 	for _, test := range invalid {
 		t.Run("invalid/"+test.name, func(t *testing.T) {

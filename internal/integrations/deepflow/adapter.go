@@ -96,7 +96,7 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 	ctx, cancelQuery := context.WithTimeout(ctx, q.TimeBudget())
 	defer cancelQuery()
 	if err := a.authorize(ctx, a.binding); err != nil {
-		return out, evidence.ErrScopeUnverified
+		return out, fmt.Errorf("%w: binding authorization", evidence.ErrScopeUnverified)
 	}
 	if a.binding.ScopeMapping.NativeTenant != "" || len(a.binding.ScopeMapping.RequiredLabels) > 0 {
 		return out, evidence.ErrScopeUnverified
@@ -116,10 +116,10 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 	}
 	endpoint, err := a.mapping.ByCanonical(ctx, q.ResourceCanonicalID)
 	if err != nil || endpoint.PodID == 0 || endpoint.ClusterID == 0 || endpoint.NamespaceID == 0 || endpoint.CanonicalID != q.ResourceCanonicalID || endpoint.Namespace != q.Namespace || !q.Scope.Allows(endpoint.CanonicalID, endpoint.Namespace) || q.Scope.Tenant != a.binding.Tenant || !slices.Contains(a.binding.ScopeMapping.Scopes["cluster"], q.Scope.Cluster) || !slices.Contains(a.binding.ScopeMapping.Scopes["namespace"], endpoint.Namespace) {
-		return out, evidence.ErrScopeUnverified
+		return out, fmt.Errorf("%w: endpoint identity or execution scope", evidence.ErrScopeUnverified)
 	}
 	if a.mode == "live" && (endpoint.IdentityValidFrom.IsZero() || q.From.Before(endpoint.IdentityValidFrom)) {
-		return out, evidence.ErrScopeUnverified
+		return out, fmt.Errorf("%w: identity lifetime", evidence.ErrScopeUnverified)
 	}
 	// Only integers are bound into the immutable template; no caller SQL,
 	// identifiers, regex or operator strings enter this private query path.
@@ -198,6 +198,21 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 		out.Warnings = append(out.Warnings, "row_budget_exhausted")
 	}
 	rows := []map[string]any{}
+	// Backend IDs repeat across bounded flow rows. Reuse only this query's
+	// resolution; final source/native fences still cover the complete result.
+	type mappedEndpoint struct {
+		endpoint Endpoint
+		err      error
+	}
+	resolved := map[uint64]mappedEndpoint{}
+	byBackend := func(id uint64) (Endpoint, error) {
+		if value, ok := resolved[id]; ok {
+			return value.endpoint, value.err
+		}
+		endpoint, err := a.mapping.ByBackend(ctx, id)
+		resolved[id] = mappedEndpoint{endpoint, err}
+		return endpoint, err
+	}
 	for _, row := range body.Result.Values {
 		if len(row) != len(body.Result.Columns) {
 			return degraded("invalid_columns")
@@ -211,8 +226,8 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 		if !lok || !rok || left != endpoint.PodID && right != endpoint.PodID {
 			return degraded("invalid_endpoint")
 		}
-		l, le := a.mapping.ByBackend(ctx, left)
-		r, re := a.mapping.ByBackend(ctx, right)
+		l, le := byBackend(left)
+		r, re := byBackend(right)
 		baseResolved := le == nil && re == nil && l.CanonicalID != "" && r.CanonicalID != "" && l.ClusterID == endpoint.ClusterID && r.ClusterID == endpoint.ClusterID && l.NamespaceID == endpoint.NamespaceID && r.NamespaceID == endpoint.NamespaceID
 		fullyScoped := baseResolved && q.Scope.Allows(l.CanonicalID, l.Namespace) && q.Scope.Allows(r.CanonicalID, r.Namespace)
 		localOnly := baseResolved && len(q.Scope.Resources) > 0 && slices.Contains(q.Scope.Namespaces, l.Namespace) && slices.Contains(q.Scope.Namespaces, r.Namespace) && slices.Contains([]string{"GetL7Context", "GetResourceNetworkHealth", "FindTCPRetransmission", "FindConnectionFailure", "FindPacketLoss"}, q.Template)
@@ -287,11 +302,11 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 		out.Warnings = append(out.Warnings, "fixture_only")
 	}
 	if err := a.authorize(ctx, a.binding); err != nil {
-		return evidence.Result{}, evidence.ErrScopeUnverified
+		return evidence.Result{}, fmt.Errorf("%w: final binding authorization", evidence.ErrScopeUnverified)
 	}
 	if a.mode == "live" {
 		if err := a.mapping.(*LiveMapper).ValidateCurrent(ctx); err != nil {
-			return evidence.Result{}, evidence.ErrScopeUnverified
+			return evidence.Result{}, fmt.Errorf("%w: final native identity", evidence.ErrScopeUnverified)
 		}
 	}
 	if len(rows) == 0 {
@@ -300,7 +315,27 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 	}
 	data, _ := json.Marshal(rows)
 	if len(data) > q.ByteBudget() {
-		return degraded("evidence_byte_budget")
+		// Keep a whole-row prefix within the admitted payload budget. These
+		// observations still prove individual scoped relations, but cannot
+		// prove complete coverage or population counts. Statistics use the
+		// separate fixed aggregate path, never this truncated detail payload.
+		low, high := 0, len(rows)
+		for low < high {
+			mid := (low + high + 1) / 2
+			prefix, _ := json.Marshal(rows[:mid])
+			if len(prefix) <= q.ByteBudget() {
+				low = mid
+			} else {
+				high = mid - 1
+			}
+		}
+		if low == 0 {
+			return degraded("evidence_byte_budget")
+		}
+		rows = rows[:low]
+		data, _ = json.Marshal(rows)
+		out.Partial = true
+		out.Warnings = append(out.Warnings, "evidence_byte_budget_exhausted")
 	}
 	observedFrom, observedTo := rows[0]["observedAt"].(time.Time), rows[0]["observedAt"].(time.Time)
 	for _, row := range rows {

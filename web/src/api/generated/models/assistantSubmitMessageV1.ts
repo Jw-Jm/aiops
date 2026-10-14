@@ -4,6 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
+import type { AssistantFaultChainRequestV1 } from './assistantFaultChainRequestV1.ts';
 
 export interface AssistantSubmitMessageV1 {
   /**
@@ -16,4 +17,5 @@ export interface AssistantSubmitMessageV1 {
   parentTurnId?: string;
   clarificationId?: string;
   referentCanonicalId?: string;
+  faultChainRequest?: AssistantFaultChainRequestV1;
 }

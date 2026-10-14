@@ -14,10 +14,13 @@ def arr(schema):return {'type':'array','items':schema}
 def obj(properties,required=None):return {'type':'object','additionalProperties':False,'properties':properties,'required':list(properties) if required is None else required}
 text={'type':'string'};uid={'type':'string','format':'uuid'};timestamp={'type':'string','format':'date-time'}
 components={}
-for filename,name in [('assistant-answer-v1','AssistantAnswerV1'),('query-result-v1','AssistantQueryResultV1'),('query-fact-v1','AssistantQueryFactV1')]:
+for filename,name in [('assistant-answer-v1','AssistantAnswerV1'),('query-result-v1','AssistantQueryResultV1'),('query-fact-v1','AssistantQueryFactV1'),('fault-chain-request-v1','AssistantFaultChainRequestV1'),('fault-chain-context-v1','AssistantFaultChainContextV1')]:
  v=json.loads((root/'api/schemas'/f'{filename}.schema.json').read_text());v.pop('$id',None);v.pop('$schema',None)
  def normalize(v):
   if isinstance(v,dict):
+   if v.get('$ref')=='https://ops.local/schemas/fault-chain-request/v1':return ref('AssistantFaultChainRequestV1')
+   if v.get('$ref')=='https://ops.local/schemas/resource-relation/v2':return ref('ResourceRelationV2')
+   if v.get('$ref')=='https://ops.local/schemas/graph-source-authority/v2':return ref('GraphSourceAuthorityV2')
    if '$ref' in v and v['$ref'].startswith('https://ops.local/schemas/common/v1#/$defs/'):
     key=v['$ref'].split('/')[-1];return timestamp if key=='timestamp' else {'type':'string','pattern':'^sha256:[a-f0-9]{64}$'} if key=='sha256' else text
    return {k:normalize(x) for k,x in v.items()}
@@ -35,12 +38,13 @@ components['AssistantConversationV1']=obj({'tenantId':uid,'conversationId':uid,'
 components['AssistantMessageV1']=obj({'messageId':uid,'turnId':uid,'sequence':{'type':'integer','format':'int64'},'role':{'type':'string','enum':['user','assistant']},'content':{'oneOf':[obj({'text':text}),ref('AssistantAnswerV1')]},'createdAt':timestamp})
 components['AssistantTurnV1']=obj({'turnId':uid,'conversationId':uid,'jobId':uid,'parentTurnId':uid,'state':{'type':'string','enum':['queued','running','awaiting_user','completed','partial','failed','cancelled','expired']},'errorCode':text,'answer':ref('AssistantAnswerV1'),'createdAt':timestamp,'conversationRevision':{'type':'integer','format':'int64'}},['turnId','conversationId','jobId','state','createdAt','conversationRevision'])
 components['AssistantRebindV1']=obj({'expectedConversationRevision':{'type':'integer','format':'int64','minimum':1},'namespaceSelection':arr(text),'includeClusterScoped':{'type':'boolean'},'resourceCanonicalId':text,'timeRange':obj({'from':timestamp,'to':timestamp,'timezone':text})},['expectedConversationRevision'])
-components['AssistantSubmitMessageV1']=obj({'message':{'type':'string','minLength':1,'maxLength':4000},'expectedConversationRevision':{'type':'integer','format':'int64','minimum':1},'parentTurnId':uid,'clarificationId':uid,'referentCanonicalId':text},['message','expectedConversationRevision'])
+components['AssistantSubmitMessageV1']=obj({'message':{'type':'string','minLength':1,'maxLength':4000},'expectedConversationRevision':{'type':'integer','format':'int64','minimum':1},'parentTurnId':uid,'clarificationId':uid,'referentCanonicalId':text,'faultChainRequest':ref('AssistantFaultChainRequestV1')},['message','expectedConversationRevision'])
 components['AssistantStoredQueryResultV1']=obj({'queryResultId':uid,'result':ref('AssistantQueryResultV1'),'facts':arr(ref('AssistantQueryFactV1')),'contentDigest':text})
 components['AssistantEventV1']=obj({'eventId':{'type':'integer','format':'int64'},'turnId':uid,'type':text,'payload':{'type':'object','additionalProperties':True},'occurredAt':timestamp})
 for name,data in [('AssistantConversationEnvelopeV1',ref('AssistantConversationV1')),('AssistantConversationListV1',arr(ref('AssistantConversationV1'))),('AssistantMessagesEnvelopeV1',arr(ref('AssistantMessageV1'))),('AssistantTurnEnvelopeV1',ref('AssistantTurnV1')),('AssistantQueryEnvelopeV1',ref('AssistantStoredQueryResultV1'))]:
  components[name]=obj({'data':data,'requestId':text,'meta':obj({'nextCursor':text})},['data','requestId'])
-components['AssistantCapabilitiesEnvelopeV1']=obj({'data':obj({'enabled':{'type':'boolean'},'catalog':{'type':'object','additionalProperties':True},'virtualization':text,'runtimeAcceptance':text,'taskKinds':arr(text),'sourceCapabilityStatus':text,'sourceCapabilities':arr({'type':'object','additionalProperties':True})}),'requestId':text})
+components['AssistantCapabilitiesEnvelopeV1']=obj({'data':obj({'enabled':{'type':'boolean'},'faultChainEnabled':{'type':'boolean'},'catalog':{'type':'object','additionalProperties':True},'virtualization':text,'runtimeAcceptance':text,'taskKinds':arr(text),'sourceCapabilityStatus':text,'sourceCapabilities':arr({'type':'object','additionalProperties':True}),'networkCapabilities':arr(obj({'network':{'enum':['live','fixture_only','disabled/unverified']},'l7':{'enum':['disabled','live','fixture_only']},'trace':{'const':'CAPABILITY_DISABLED'}}))}),'requestId':text})
+components['AssistantFaultChainContextEnvelopeV1']=obj({'data':ref('AssistantFaultChainContextV1'),'requestId':text})
 components['AssistantMutationEnvelopeV1']=obj({'data':{'type':'object','additionalProperties':{'type':'boolean'}},'requestId':text})
 components['AssistantHoldV1']=obj({'turnId':uid,'held':{'type':'boolean'},'reason':{'type':'string','minLength':1,'maxLength':1024}})
 components['AssistantFormalEnvelopeV1']=obj({'data':obj({'reference':{'type':'object','additionalProperties':True},'metadata':{'type':'object','additionalProperties':True}}),'requestId':text})
@@ -70,6 +74,8 @@ add(base+'/conversations/{conversationId}','get','getAssistantConversation','Ass
 add(base+'/conversations/{conversationId}/binding','post','rebindAssistantConversation','AssistantConversationEnvelopeV1','AssistantRebindV1','200')
 add(base+'/conversations/{conversationId}/messages','get','listAssistantMessages','AssistantMessagesEnvelopeV1',params=[{'in':'query','name':'cursor','schema':text},{'in':'query','name':'limit','schema':{'type':'integer','minimum':1,'maximum':100}}])
 add(base+'/conversations/{conversationId}/messages','post','submitAssistantMessage','AssistantTurnEnvelopeV1','AssistantSubmitMessageV1','202')
+add(base+'/conversations/{conversationId}/fault-chain-investigations','post','collectAssistantFaultChain','AssistantTurnEnvelopeV1','AssistantSubmitMessageV1','202')
+add(base+'/turns/{turnId}/fault-chain-context','get','getAssistantFaultChainContext','AssistantFaultChainContextEnvelopeV1')
 add(base+'/turns/{turnId}/formal-references','get','getAssistantFormalReference','AssistantFormalEnvelopeV1',params=[{'in':'query','name':'index','required':True,'schema':{'type':'integer','minimum':0,'maximum':10}}])
 add(base+'/turns/{turnId}','get','getAssistantTurn','AssistantTurnEnvelopeV1')
 add(base+'/turns/{turnId}:cancel','post','cancelAssistantTurn','AssistantMutationEnvelopeV1','AssistantEmptyBodyV1')

@@ -14,6 +14,32 @@ const comparisonLabels: Record<string, string> = {
   decrease: "减少量",
   unchanged: "变化量（无变化）",
 };
+const statisticLabels: Record<string, string> = {
+  observations: "观测记录数",
+  responses: "完成 HTTP 响应数",
+  "5xx": "HTTP 5xx 响应数",
+  mean_response_ms: "平均 HTTP 响应耗时",
+  retransmissions: "TCP 重传计数",
+  failure_observations: "TCP 错误观测数",
+};
+const statisticUnits: Record<string, string> = {
+  observations: "条",
+  responses: "个响应",
+  milliseconds: "毫秒",
+  retransmissions: "次",
+};
+function statisticLabel(key: string) {
+  const separator = key.lastIndexOf(".");
+  const window = key.slice(0, separator);
+  const metric = key.slice(separator + 1);
+  const windowLabel =
+    window === "baseline"
+      ? "对照窗口"
+      : window === "current"
+        ? "所选窗口"
+        : window;
+  return `${windowLabel} · ${statisticLabels[metric] || metric}`;
+}
 export function QueryResultView({
   id,
   answer,
@@ -37,6 +63,7 @@ export function QueryResultView({
   });
   const stored = query.data?.data;
   const result = stored?.result;
+  const network = result?.networkContext;
   return (
     <QueryState
       loading={query.isPending}
@@ -51,9 +78,28 @@ export function QueryResultView({
               : result.status === "degraded"
                 ? "来源降级"
                 : result.exact
-                  ? "精确结果"
+                  ? network
+                    ? "观测总体的精确统计"
+                    : "精确结果"
                   : "部分结果"}
           </Tag>
+          {network && (
+            <Alert
+              type="info"
+              title={`统计范围：${network.population === "completed_http_session_observations" ? "完成的 HTTP 会话观测" : network.population === "scoped_single_observation_point_records" ? "授权范围内单一采集点的记录" : network.population}；采集位置：${network.observationPoint}；不代表所有用户请求。${network.timeReliable ? "" : "源时间尚未验证，不能判定异常先后。"}`}
+            />
+          )}
+          {result.statistics && (
+            <Descriptions
+              size="small"
+              column={1}
+              items={result.statistics.map((item) => ({
+                key: item.key,
+                label: statisticLabel(item.key),
+                children: `${item.value} ${statisticUnits[item.unit] || item.unit}`,
+              }))}
+            />
+          )}
           {result.dimension === "day" && result.rows.length > 0 && (
             <QueryDayTrend rows={result.rows} unit={result.unit} />
           )}
@@ -96,12 +142,21 @@ export function QueryResultView({
                   dataIndex: "dimension",
                   render: (value: string) =>
                     result.dimension === "comparison"
-                      ? comparisonLabels[value] || value
+                      ? (network && value === "baseline"
+                          ? "基线窗口"
+                          : network && value === "current"
+                            ? "所选窗口"
+                            : comparisonLabels[value]) || value
                       : value || "当前授权范围",
                 },
                 {
-                  title: result.unit === "resources" ? "资源数量" : "数值",
+                  title:
+                    result.unit === "resources"
+                      ? "资源数量"
+                      : `数值（${result.unit}）`,
                   dataIndex: "value",
+                  render: (value: number, row: { dimension: string }) =>
+                    `${value}${network && (result.datasetId === "network.http-5xx-rate" || result.datasetId === "network.http-summary") && result.rows.length === 3 && ["increase", "decrease", "unchanged"].includes(row.dimension) ? " pp" : ""}`,
                 },
               ]}
             />
@@ -117,8 +172,10 @@ export function QueryResultView({
                 )
                 .map((fact) => (
                   <Tag key={fact.factId}>
-                    {result.rows[fact.row]?.dimension || "合计"}：{fact.value}{" "}
-                    {fact.unit}
+                    {(fact.column === "statistic"
+                      ? result.statistics?.[fact.row]?.key
+                      : result.rows[fact.row]?.dimension) || "合计"}
+                    ：{fact.value} {fact.unit}
                     {fact.exact ? "" : "（部分）"}
                   </Tag>
                 ))}
@@ -149,7 +206,7 @@ export function QueryResultView({
                     {
                       key: "comparison",
                       label: "对照时间窗",
-                      children: `${result.comparisonTimeRange.from} ～ ${result.comparisonTimeRange.to} (${result.comparisonTimeRange.timezone})；内存/状态比较窗口末端，CPU 比较窗口平均 rate，重启/日志比较窗口增量。百分比以非零基线计算；缺失不会补零。`,
+                      children: `${result.comparisonTimeRange.from} ～ ${result.comparisonTimeRange.to} (${result.comparisonTimeRange.timezone})；${network ? "网络按等长窗口观测统计比较；5xx 比例的绝对变化单位为百分点。" : "内存/状态比较窗口末端，CPU 比较窗口平均 rate，重启/日志比较窗口增量。"}百分比以非零基线计算；缺失不会补零。`,
                     },
                   ]
                 : []),

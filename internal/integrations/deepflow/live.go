@@ -77,6 +77,30 @@ func (m *LiveMapper) ByCanonical(ctx context.Context, id string) (Endpoint, erro
 	}
 	return endpoint, nil
 }
+
+// ByCanonicalPair resolves both identities from one verified native/backend
+// snapshot. Every invocation refreshes; this does not introduce a TTL cache.
+func (m *LiveMapper) ByCanonicalPair(ctx context.Context, left, right string) (Endpoint, Endpoint, error) {
+	for _, id := range []string{left, right} {
+		c, err := resource.ParseCanonicalID(id)
+		if err != nil || c.Domain != "k8s" || c.Kind != "Pod" || c.Tenant != m.binding.Tenant || c.Scope != m.config.ClusterUID {
+			return Endpoint{}, Endpoint{}, evidence.ErrScopeUnverified
+		}
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if err := m.refresh(ctx); err != nil {
+		m.endpoints = map[string]Endpoint{}
+		return Endpoint{}, Endpoint{}, err
+	}
+	l, lok := m.endpoints[left]
+	r, rok := m.endpoints[right]
+	if !lok || !rok {
+		return Endpoint{}, Endpoint{}, evidence.ErrScopeUnverified
+	}
+	return l, r, nil
+}
+
 func (m *LiveMapper) ByBackend(ctx context.Context, id uint64) (Endpoint, error) {
 	if m.authorize(ctx, m.binding) != nil {
 		return Endpoint{}, evidence.ErrScopeUnverified

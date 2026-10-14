@@ -22,6 +22,9 @@ func DecodeIntent(raw []byte) (QueryIntent, error) {
 }
 
 func Compile(intent QueryIntent, binding Binding) (QueryPlan, error) {
+	if intent.NetworkSelection != nil {
+		return QueryPlan{}, ErrUnsupported
+	}
 	raw, err := json.Marshal(intent)
 	if err != nil {
 		return QueryPlan{}, ErrInvalid
@@ -54,7 +57,7 @@ func Compile(intent QueryIntent, binding Binding) (QueryPlan, error) {
 		return QueryPlan{}, err
 	}
 	q := graph.Query{QueryKind: "list", Scope: scope, ExpectedOwnerEpoch: binding.OwnerEpoch,
-		MaxDepth: 1, MaxNodes: 1, MaxEdges: 1, Sort: "canonicalId", Order: "asc"}
+		RelationKinds: []string{}, MaxDepth: 1, MaxNodes: 1, MaxEdges: 1, Sort: "canonicalId", Order: "asc"}
 	seen := map[string]bool{}
 	for _, filter := range intent.Filters {
 		if seen[filter.Field] {

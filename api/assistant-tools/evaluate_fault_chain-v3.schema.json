@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "stepIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "maxItems": 40,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "stepIds"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/evaluate_fault_chain/v3",
+  "description": "Evaluate fixed fault-chain predicates using only successful committed Steps in this Job; never confirms RCA."
+}

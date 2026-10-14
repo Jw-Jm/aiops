@@ -1,0 +1,249 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "fault-chain-context/v1"
+    },
+    "ruleVersion": {
+      "const": "fault-chain-rules/v1"
+    },
+    "request": {
+      "$ref": "https://ops.local/schemas/fault-chain-request/v1"
+    },
+    "asOf": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "partial"
+      ]
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "relation": {
+            "$ref": "https://ops.local/schemas/resource-relation/v2"
+          },
+          "relationDigest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "callDirection": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "temporalAssessment": {
+            "enum": [
+              "before",
+              "same_bucket",
+              "uncertain",
+              "unreliable"
+            ]
+          },
+          "comparisonStatus": {
+            "enum": [
+              "comparable",
+              "baseline_missing",
+              "coverage_insufficient"
+            ]
+          },
+          "queryResultRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 100
+          },
+          "observations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ruleId": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "reason": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "supports": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "maxItems": 100
+                },
+                "conflicts": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "maxItems": 100
+                },
+                "factRefs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "queryResultId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "factId": {
+                        "type": "string",
+                        "pattern": "^sha256:[a-f0-9]{64}$"
+                      }
+                    },
+                    "required": [
+                      "queryResultId",
+                      "factId"
+                    ]
+                  },
+                  "maxItems": 100
+                },
+                "resourceHealth": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "stepId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "canonicalId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2048
+                    },
+                    "namespace": {
+                      "type": "string",
+                      "maxLength": 253
+                    },
+                    "observedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "conditionType": {
+                      "const": "Ready"
+                    },
+                    "conditionStatus": {
+                      "const": "False"
+                    },
+                    "sources": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 200,
+                      "items": {
+                        "$ref": "https://ops.local/schemas/graph-source-authority/v2"
+                      }
+                    }
+                  },
+                  "required": [
+                    "stepId",
+                    "canonicalId",
+                    "namespace",
+                    "observedAt",
+                    "conditionType",
+                    "conditionStatus",
+                    "sources"
+                  ]
+                },
+                "relatedRelations": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "$ref": "https://ops.local/schemas/resource-relation/v2"
+                  }
+                }
+              },
+              "required": [
+                "ruleId",
+                "reason",
+                "supports",
+                "conflicts",
+                "factRefs"
+              ]
+            },
+            "maxItems": 32
+          },
+          "missingEvidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "maxItems": 100
+          },
+          "nextChecks": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "relation",
+          "relationDigest",
+          "callDirection",
+          "temporalAssessment",
+          "comparisonStatus",
+          "queryResultRefs",
+          "observations",
+          "missingEvidence",
+          "nextChecks"
+        ]
+      },
+      "maxItems": 8
+    },
+    "queryResultRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 100
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 100
+    },
+    "missingEvidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 2048
+      },
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "ruleVersion",
+    "request",
+    "asOf",
+    "status",
+    "edges",
+    "queryResultRefs",
+    "evidenceRefs",
+    "missingEvidence"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/fault-chain-context/v1"
+}

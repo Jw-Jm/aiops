@@ -22,4 +22,12 @@ export const AssistantQueryResultV1DatasetId = {
   logsrecords: 'logs.records',
   'incidentsrecovery-duration': 'incidents.recovery-duration',
   'executionssuccess-rate': 'executions.success-rate',
+  'networkhttp-responses': 'network.http-responses',
+  'networkhttp-5xx': 'network.http-5xx',
+  'networkhttp-5xx-rate': 'network.http-5xx-rate',
+  'networkhttp-response-time': 'network.http-response-time',
+  'networktcp-retransmissions': 'network.tcp-retransmissions',
+  'networkconnection-failure-observations': 'network.connection-failure-observations',
+  'networkhttp-summary': 'network.http-summary',
+  'networktcp-summary': 'network.tcp-summary',
 } as const;

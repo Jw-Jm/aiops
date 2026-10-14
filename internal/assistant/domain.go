@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/investigation"
 	"time"
 )
 
@@ -59,21 +60,23 @@ type Turn struct {
 	ConversationRevision int64           `json:"conversationRevision"`
 }
 type SubmitMessage struct {
-	ReferentCanonicalID          string     `json:"referentCanonicalId,omitempty"`
-	Message                      string     `json:"message"`
-	ExpectedConversationRevision int64      `json:"expectedConversationRevision"`
-	ParentTurnID                 *uuid.UUID `json:"parentTurnId,omitempty"`
-	ClarificationID              *uuid.UUID `json:"clarificationId,omitempty"`
+	FaultChainRequest            *investigation.FaultChainRequest `json:"faultChainRequest,omitempty"`
+	ReferentCanonicalID          string                           `json:"referentCanonicalId,omitempty"`
+	Message                      string                           `json:"message"`
+	ExpectedConversationRevision int64                            `json:"expectedConversationRevision"`
+	ParentTurnID                 *uuid.UUID                       `json:"parentTurnId,omitempty"`
+	ClarificationID              *uuid.UUID                       `json:"clarificationId,omitempty"`
 }
 type TurnInput struct {
-	RequestedTimeRange    *analytics.QueryTimeRange `json:"requestedTimeRange,omitempty"`
-	ReferenceResolution   *ReferenceResolution      `json:"referenceResolution,omitempty"`
-	SchemaVersion         string                    `json:"schemaVersion"`
-	RequestedAt           time.Time                 `json:"requestedAt,omitzero"`
-	Message               string                    `json:"message"`
-	Binding               ConversationBinding       `json:"binding"`
-	History               []Message                 `json:"history"`
-	HistoryManifestDigest string                    `json:"historyManifestDigest"`
-	ParentTurnID          *uuid.UUID                `json:"parentTurnId,omitempty"`
-	ClarificationID       *uuid.UUID                `json:"clarificationId,omitempty"`
+	FaultChainRequest     *investigation.FaultChainRequest `json:"faultChainRequest,omitempty"`
+	RequestedTimeRange    *analytics.QueryTimeRange        `json:"requestedTimeRange,omitempty"`
+	ReferenceResolution   *ReferenceResolution             `json:"referenceResolution,omitempty"`
+	SchemaVersion         string                           `json:"schemaVersion"`
+	RequestedAt           time.Time                        `json:"requestedAt,omitzero"`
+	Message               string                           `json:"message"`
+	Binding               ConversationBinding              `json:"binding"`
+	History               []Message                        `json:"history"`
+	HistoryManifestDigest string                           `json:"historyManifestDigest"`
+	ParentTurnID          *uuid.UUID                       `json:"parentTurnId,omitempty"`
+	ClarificationID       *uuid.UUID                       `json:"clarificationId,omitempty"`
 }

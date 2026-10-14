@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/network-summary/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "network-summary/v1"
+    },
+    "namespace": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 253
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "peer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "direction": {
+      "enum": [
+        "incoming",
+        "outgoing",
+        "either"
+      ]
+    },
+    "observationPoint": {
+      "enum": [
+        "c",
+        "s",
+        "c-p",
+        "s-p",
+        "c-app",
+        "s-app",
+        "app"
+      ]
+    },
+    "protocol": {
+      "enum": [
+        "http",
+        "tcp"
+      ]
+    },
+    "population": {
+      "enum": [
+        "completed_http_session_observations",
+        "scoped_single_observation_point_records"
+      ]
+    },
+    "timeReliable": {
+      "const": false
+    },
+    "from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "to": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "identityValidFrom": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observations": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "responses": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "errors": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "durationMicroseconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "retransmissions": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "failures": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "namespace",
+    "target",
+    "peer",
+    "direction",
+    "observationPoint",
+    "protocol",
+    "population",
+    "timeReliable",
+    "from",
+    "to",
+    "identityValidFrom",
+    "observations",
+    "responses",
+    "errors",
+    "durationMicroseconds",
+    "retransmissions",
+    "failures"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "protocol": {
+            "const": "http"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "population": {
+            "const": "completed_http_session_observations"
+          },
+          "failures": {
+            "const": 0
+          },
+          "retransmissions": {
+            "const": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "population": {
+            "const": "scoped_single_observation_point_records"
+          },
+          "responses": {
+            "const": 0
+          },
+          "errors": {
+            "const": 0
+          },
+          "durationMicroseconds": {
+            "const": 0
+          }
+        }
+      }
+    }
+  ]
+}

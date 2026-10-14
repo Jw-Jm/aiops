@@ -139,7 +139,7 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				sources = []analytics.SourceCapability{}
 			}
 		}
-		writeJSON(w, 200, map[string]any{"data": map[string]any{"enabled": h.Repository.Jobs.AssistantEnabled, "sourceCapabilities": sources, "networkCapabilities": network, "sourceCapabilityStatus": sourceStatus, "taskKinds": tasks, "catalog": catalog, "virtualization": "deferred", "runtimeAcceptance": "unverified"}, "requestId": actor.RequestID})
+		writeJSON(w, 200, map[string]any{"data": map[string]any{"enabled": h.Repository.Jobs.AssistantEnabled, "faultChainEnabled": h.Repository.FaultChainEnabled, "sourceCapabilities": sources, "networkCapabilities": network, "sourceCapabilityStatus": sourceStatus, "taskKinds": tasks, "catalog": catalog, "virtualization": "deferred", "runtimeAcceptance": "unverified"}, "requestId": actor.RequestID})
 		return
 	}
 	if r.URL.Path == "/api/v1/assistant/legal-holds" {
@@ -255,6 +255,20 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	if len(parts) == 3 && parts[0] == "turns" && parts[2] == "fault-chain-context" && r.Method == "GET" {
+		turn, err := uuid.Parse(parts[1])
+		if err != nil {
+			fail(investigation.ErrInvalid)
+			return
+		}
+		out, err := h.Repository.FaultChainContext(r.Context(), actor.TenantID, turn, actor.Subject)
+		if err != nil {
+			fail(err)
+			return
+		}
+		writeJSON(w, 200, map[string]any{"data": out, "requestId": actor.RequestID})
+		return
+	}
 	if len(parts) == 3 && parts[0] == "turns" && parts[2] == "formal-references" && r.Method == "GET" {
 		turn, err := uuid.Parse(parts[1])
 		if err != nil {
@@ -351,7 +365,7 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.rebind(w, r, actor, id)
 			return
 		}
-		if len(parts) == 3 && parts[2] == "messages" {
+		if len(parts) == 3 && (parts[2] == "messages" || parts[2] == "fault-chain-investigations") {
 			if r.Method == "POST" {
 				if len(r.Header.Values("Idempotency-Key")) != 1 || !validIdempotencyKey(r.Header.Get("Idempotency-Key")) {
 					fail(investigation.ErrInvalid)
@@ -359,6 +373,10 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				var q assistant.SubmitMessage
 				if decodeInvestigation(r, &q) != nil {
+					fail(investigation.ErrInvalid)
+					return
+				}
+				if parts[2] == "fault-chain-investigations" && q.FaultChainRequest == nil {
 					fail(investigation.ErrInvalid)
 					return
 				}
@@ -370,7 +388,7 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				writeJSON(w, 202, map[string]any{"data": out, "requestId": actor.RequestID})
 				return
 			}
-			if r.Method == "GET" {
+			if r.Method == "GET" && parts[2] == "messages" {
 				cursor, err := h.decodeCursor(r.URL.Query().Get("cursor"), actor, "assistant-messages")
 				if err != nil {
 					fail(err)

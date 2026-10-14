@@ -4,6 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
+import type { AssistantQueryFactV1Column } from './assistantQueryFactV1Column.ts';
 import type { AssistantQueryFactV1Unit } from './assistantQueryFactV1Unit.ts';
 
 export interface AssistantQueryFactV1 {
@@ -12,7 +13,7 @@ export interface AssistantQueryFactV1 {
   factId: string;
   /** @minimum 0 */
   row: number;
-  column: 'value';
+  column: AssistantQueryFactV1Column;
   /** @minimum 0 */
   value: number;
   unit: AssistantQueryFactV1Unit;

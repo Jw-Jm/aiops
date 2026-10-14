@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.4.0
  */
 import type { CanonicalID } from './canonicalID.ts';
+import type { GraphSourceAuthorityV2 } from './graphSourceAuthorityV2.ts';
 import type { ResourceEntityV2 } from './resourceEntityV2.ts';
 import type { ResourceGraphV2Budgets } from './resourceGraphV2Budgets.ts';
 import type { ResourceGraphV2ConflictsItem } from './resourceGraphV2ConflictsItem.ts';
@@ -16,6 +17,8 @@ import type { ResourceRelationV2 } from './resourceRelationV2.ts';
 import type { ResourceSummaryV1 } from './resourceSummaryV1.ts';
 
 export interface ResourceGraphV2 {
+  /** @maxItems 200 */
+  observationSources?: GraphSourceAuthorityV2[];
   summary?: ResourceSummaryV1;
   schemaVersion: ResourceGraphV2SchemaVersion;
   graphRevision: ResourceGraphV2GraphRevision;

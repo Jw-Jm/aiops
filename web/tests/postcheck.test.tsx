@@ -3,6 +3,7 @@ import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PostCheckPanel } from "../src/features/action/PostCheckPanel";
 import { setCredentials } from "../src/api/client";
+import { MemoryRouter } from "react-router-dom";
 it("distinguishes pending checks from final verdicts and stops polling final results", async () => {
   setCredentials("TEST-FIXTURE");
   for (const [status, verdict, label] of [
@@ -32,7 +33,9 @@ it("distinguishes pending checks from final verdicts and stops polling final res
     });
     render(
       <QueryClientProvider client={client}>
-        <PostCheckPanel executionId="test" />
+        <MemoryRouter>
+          <PostCheckPanel executionId="test" />
+        </MemoryRouter>
       </QueryClientProvider>,
     );
     await waitFor(() =>

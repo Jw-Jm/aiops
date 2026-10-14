@@ -4,6 +4,7 @@ import type { AssistantAnswerV1 } from "../../api/generated/models";
 import { AssistantEvidence } from "./AssistantEvidence";
 import { FormalReferenceView } from "./FormalReferenceView";
 import { QueryResultView } from "./QueryResultView";
+import { FaultChainPanel } from "./FaultChainPanel";
 export function DiagnosisAnswer({
   answer,
   turnId,
@@ -45,9 +46,13 @@ export function DiagnosisAnswer({
           ].join("；")}
         />
       )}
-      {answer.queryResultRefs.map((id) => (
-        <QueryResultView key={id} id={id} answer={answer} />
-      ))}
+      {answer.faultChainContextRef && turnId && (
+        <FaultChainPanel answer={answer} turnId={turnId} />
+      )}
+      {!answer.faultChainContextRef &&
+        answer.queryResultRefs.map((id) => (
+          <QueryResultView key={id} id={id} answer={answer} />
+        ))}
       {answer.hypotheses.map((h) => (
         <Card key={h.key} size="small" title={h.summary}>
           <Typography.Paragraph type="secondary">
@@ -79,35 +84,36 @@ export function DiagnosisAnswer({
           />
         </Card>
       ))}
-      {(answer.faultChain || []).map((link) => (
-        <Card
-          key={link.relationDigest}
-          size="small"
-          title={`${link.from} → ${link.to}`}
-        >
-          <Tag>关系：{link.kind}</Tag>
-          <Tag color="orange">待验证的故障传播假设</Tag>
-          <Typography.Paragraph>
-            关系观测不能单独证明因果。
-          </Typography.Paragraph>
-          <Typography.Text>支持证据</Typography.Text>
-          <AssistantEvidence refs={link.supports} />
-          <Typography.Text>冲突证据</Typography.Text>
-          {link.conflicts.length ? (
-            <AssistantEvidence refs={link.conflicts} />
-          ) : (
+      {!answer.faultChainContextRef &&
+        (answer.faultChain || []).map((link) => (
+          <Card
+            key={link.relationDigest}
+            size="small"
+            title={`${link.from} → ${link.to}`}
+          >
+            <Tag>关系：{link.kind}</Tag>
+            <Tag color="orange">待验证的故障传播假设</Tag>
             <Typography.Paragraph>
-              尚无已引用冲突，不代表已排除其他原因。
+              关系观测不能单独证明因果。
             </Typography.Paragraph>
-          )}
-          <Typography.Paragraph>
-            待补证据：{link.missingEvidence.join("；")}
-          </Typography.Paragraph>
-          <Typography.Paragraph>
-            下一步：{link.nextChecks.join("；") || "请追问需要补充的检查"}
-          </Typography.Paragraph>
-        </Card>
-      ))}
+            <Typography.Text>支持证据</Typography.Text>
+            <AssistantEvidence refs={link.supports} />
+            <Typography.Text>冲突证据</Typography.Text>
+            {link.conflicts.length ? (
+              <AssistantEvidence refs={link.conflicts} />
+            ) : (
+              <Typography.Paragraph>
+                尚无已引用冲突，不代表已排除其他原因。
+              </Typography.Paragraph>
+            )}
+            <Typography.Paragraph>
+              待补证据：{link.missingEvidence.join("；")}
+            </Typography.Paragraph>
+            <Typography.Paragraph>
+              下一步：{link.nextChecks.join("；") || "请追问需要补充的检查"}
+            </Typography.Paragraph>
+          </Card>
+        ))}
       {turnId &&
         (answer.formalRefs || []).map((ref, index) => (
           <FormalReferenceView

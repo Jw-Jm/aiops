@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"slices"
 	"strings"
 	"time"
 
@@ -54,6 +55,17 @@ func (a assistantGraphReader) Query(ctx context.Context, q graph.Query) (graph.R
 	return out, nil
 }
 func rawJSON(v any) []byte { b, _ := json.Marshal(v); return b }
+
+func sameStringSet(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	a = slices.Clone(a)
+	b = slices.Clone(b)
+	slices.Sort(a)
+	slices.Sort(b)
+	return slices.Equal(a, b)
+}
 
 type AssistantTools struct{ Legacy InvestigationTools }
 
@@ -121,10 +133,28 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			if investigation.ValidateAssistantHistoryTx(ctx, tx, j, raw) != nil || json.Unmarshal(raw, &input) != nil || graph.ScopeDigest(input) != j.Assistant.InputDigest {
 				return investigation.ErrDenied
 			}
+			if (input.FaultChainRequest != nil) != (j.Assistant.ExecutionMode == "evidence_only") || input.FaultChainRequest != nil && graph.ScopeDigest(*input.FaultChainRequest) != j.Assistant.FaultChainRequestDigest {
+				return investigation.ErrDenied
+			}
 			return nil
 		})
 	}
 	switch name {
+	case "evaluate_fault_chain":
+		if err := load(); err != nil {
+			return out, err
+		}
+		if input.FaultChainRequest == nil {
+			return out, investigation.ErrInvalid
+		}
+		context, err := a.evaluateFaultChain(ctx, j, *input.FaultChainRequest, args)
+		if err != nil {
+			return out, err
+		}
+		out.Data = map[string]any{"context": context, "contentDigest": graph.ScopeDigest(context), "queryResultRefs": context.QueryResultRefs}
+		out.EvidenceRefs = context.EvidenceRefs
+		out.Partial = context.Status != "complete"
+
 	case "get_formal_references":
 		var params struct {
 			Revision int64 `json:"rcaRevision"`
@@ -168,6 +198,32 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 				data["sourceCapabilityStatus"] = "unavailable"
 			}
 		}
+		for i := len(input.History) - 1; i >= 0; i-- {
+			if input.History[i].Role != "assistant" {
+				continue
+			}
+			var prior investigation.AssistantAnswer
+			if json.Unmarshal(input.History[i].Content, &prior) != nil || prior.FaultChainContextRef == nil {
+				continue
+			}
+			err := persistence.WithTenantTx(ctx, h.Pool, j.TenantID, func(tx pgx.Tx) error {
+				readJob, err := investigation.AssistantReadJobTx(ctx, tx, j.TenantID, j.Subject, j.Assistant.ConversationID, input.History[i].TurnID, j.Scope)
+				if err != nil {
+					return err
+				}
+				historical, err := investigation.ReadFaultChainContextTx(ctx, tx, readJob, *prior.FaultChainContextRef)
+				if err == nil {
+					data["historicalFaultChainContext"] = historical
+				}
+				return err
+			})
+			if err != nil {
+				data["historicalFaultChainContextStatus"] = "unavailable"
+			} else {
+				data["historicalFaultChainContextStatus"] = "historical"
+			}
+			break
+		}
 		out.Data = data
 	case "describe_analysis_dataset":
 		var p struct {
@@ -206,13 +262,17 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		if err != nil {
 			return out, err
 		}
-		if intent.DatasetID != "resources.current" && input.RequestedTimeRange != nil {
+		if input.FaultChainRequest != nil {
+			if !input.FaultChainRequest.Allows(intent.TimeRange) || intent.ComparisonTimeRange != nil && !input.FaultChainRequest.Allows(intent.ComparisonTimeRange) {
+				return out, investigation.ErrInvalid
+			}
+		} else if intent.DatasetID != "resources.current" && input.RequestedTimeRange != nil {
 			window := input.RequestedTimeRange
 			if intent.TimeRange == nil || !intent.TimeRange.From.Equal(window.From) || !intent.TimeRange.To.Equal(window.To) || intent.TimeRange.Timezone != window.Timezone {
 				return out, investigation.ErrInvalid
 			}
 		}
-		if strings.HasPrefix(intent.DatasetID, "metrics.") || strings.HasPrefix(intent.DatasetID, "logs.") {
+		if strings.HasPrefix(intent.DatasetID, "metrics.") || strings.HasPrefix(intent.DatasetID, "logs.") || strings.HasPrefix(intent.DatasetID, "network.") {
 			if j.Assistant.AuthorizationDomain != "operational" {
 				return out, investigation.ErrDenied
 			}
@@ -226,8 +286,9 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 				return out, err
 			}
 			var answer struct {
-				Result analytics.QueryResult `json:"result"`
-				Scope  graph.Scope           `json:"scope"`
+				Result       analytics.QueryResult `json:"result"`
+				Scope        graph.Scope           `json:"scope"`
+				EvidenceRefs []string              `json:"evidenceRefs"`
 			}
 			if json.Unmarshal(reply, &answer) != nil || contract.Validate("https://ops.local/schemas/query-result/v1", rawJSON(answer.Result)) != nil || answer.Result.SourceManifest == nil || answer.Result.DatasetID != intent.DatasetID || answer.Result.CatalogDigest != j.Assistant.DatasetCatalogDigest || !graph.ContainsScope(j.Scope, answer.Scope) || answer.Result.ScopeDigest != graph.ScopeDigest(answer.Scope) {
 				return out, investigation.ErrDenied
@@ -240,6 +301,10 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			if err != nil {
 				return out, err
 			}
+			if !sameStringSet(answer.EvidenceRefs, answer.Result.DerivationEvidenceRefs) {
+				return out, investigation.ErrDenied
+			}
+			out.EvidenceRefs = append(out.EvidenceRefs, stored.Result.DerivationEvidenceRefs...)
 			out.Data = map[string]any{"storedQueryResult": stored, "queryResultRefs": []uuid.UUID{stored.QueryResultID}, "scope": answer.Scope}
 			out.Partial = !stored.Result.Exact
 			out.DegradedSources = stored.Result.DegradedSources

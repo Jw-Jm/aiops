@@ -1,0 +1,240 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "fault-chain-server",
+        "namespace": "ops-assistant-deepflow-20261013",
+        "labels": {
+          "app": "fault-chain-server",
+          "ops.platform.io/canary-version": "fault-chain-v1",
+          "ops.platform.io/test-release": "fault-chain-20261014"
+        }
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "app": "fault-chain-server",
+            "ops.platform.io/canary-version": "fault-chain-v1",
+            "ops.platform.io/test-release": "fault-chain-20261014"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "fault-chain-server",
+              "ops.platform.io/canary-version": "fault-chain-v1",
+              "ops.platform.io/test-release": "fault-chain-20261014"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "containers": [
+              {
+                "command": [
+                  "python3",
+                  "-u",
+                  "-c",
+                  "from http.server import HTTPServer,BaseHTTPRequestHandler\nimport time,json\nclass H(BaseHTTPRequestHandler):\n def do_GET(self):\n  start=time.time();code=503 if self.path.startswith('/fail') else 200\n  if self.path.startswith('/slow'):time.sleep(0.2)\n  self.send_response(code);self.end_headers();self.wfile.write(b'canary');print(json.dumps({'timestamp':start,'code':code}),flush=True)\n def log_message(self,*args):pass\nHTTPServer(('0.0.0.0',8080),H).serve_forever()\n"
+                ],
+                "image": "ops.local/amd64-20261009/command-runner@sha256:d755f1b67fba76588c7e08d22cdcceacc02b0aeead09bbbbe1f3c9660eacac5a",
+                "imagePullPolicy": "Never",
+                "name": "app",
+                "resources": {
+                  "limits": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "10m",
+                    "memory": "24Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 65532
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "fault-chain-client",
+        "namespace": "ops-assistant-deepflow-20261013",
+        "labels": {
+          "app": "fault-chain-client",
+          "ops.platform.io/canary-version": "fault-chain-v1",
+          "ops.platform.io/test-release": "fault-chain-20261014"
+        }
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "app": "fault-chain-client",
+            "ops.platform.io/canary-version": "fault-chain-v1",
+            "ops.platform.io/test-release": "fault-chain-20261014"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "fault-chain-client",
+              "ops.platform.io/canary-version": "fault-chain-v1",
+              "ops.platform.io/test-release": "fault-chain-20261014"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "containers": [
+              {
+                "command": [
+                  "python3",
+                  "-u",
+                  "-c",
+                  "import time; time.sleep(86400)"
+                ],
+                "image": "ops.local/amd64-20261009/command-runner@sha256:d755f1b67fba76588c7e08d22cdcceacc02b0aeead09bbbbe1f3c9660eacac5a",
+                "imagePullPolicy": "Never",
+                "name": "app",
+                "resources": {
+                  "limits": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "10m",
+                    "memory": "24Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 65532
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "fault-chain-server",
+        "namespace": "ops-assistant-deepflow-20261013",
+        "labels": {
+          "ops.platform.io/test-release": "fault-chain-20261014",
+          "app": "fault-chain-server",
+          "ops.platform.io/canary-version": "fault-chain-v1"
+        }
+      },
+      "spec": {
+        "internalTrafficPolicy": "Cluster",
+        "ports": [
+          {
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "ops.platform.io/test-release": "fault-chain-20261014",
+          "app": "fault-chain-server",
+          "ops.platform.io/canary-version": "fault-chain-v1"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      }
+    }
+  ]
+}

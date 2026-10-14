@@ -18,21 +18,6 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// Defines values for AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace.
-const (
-	AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTraceCAPABILITYDISABLED AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace = "CAPABILITY_DISABLED"
-)
-
-// Valid indicates whether the value is a known member of the AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace enum.
-func (e AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace) Valid() bool {
-	switch e {
-	case AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTraceCAPABILITYDISABLED:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for AssistantCreateConversationV1AuthorizationDomain.
 const (
 	Audit       AssistantCreateConversationV1AuthorizationDomain = "audit"
@@ -1633,6 +1618,10 @@ type AssistantAnswerV1 struct {
 		Supports        []openapi_types.UUID `json:"supports"`
 		To              string               `json:"to"`
 	} `json:"faultChain,omitempty"`
+	FaultChainContextRef *struct {
+		ContentDigest string             `json:"contentDigest"`
+		StepId        openapi_types.UUID `json:"stepId"`
+	} `json:"faultChainContextRef,omitempty"`
 	FormalRefs *[]struct {
 		ActionPlanId  *openapi_types.UUID `json:"actionPlanId,omitempty"`
 		ContentDigest string              `json:"contentDigest"`
@@ -1663,11 +1652,12 @@ type AssistantCapabilitiesEnvelopeV1 struct {
 	Data struct {
 		Catalog             map[string]interface{} `json:"catalog"`
 		Enabled             bool                   `json:"enabled"`
-		NetworkCapabilities *[]struct {
-			L7      string                                                      `json:"l7"`
-			Network string                                                      `json:"network"`
-			Trace   AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace `json:"trace"`
-		} `json:"networkCapabilities,omitempty"`
+		FaultChainEnabled   bool                   `json:"faultChainEnabled"`
+		NetworkCapabilities []struct {
+			L7      interface{} `json:"l7"`
+			Network interface{} `json:"network"`
+			Trace   interface{} `json:"trace"`
+		} `json:"networkCapabilities"`
 		RuntimeAcceptance      string                   `json:"runtimeAcceptance"`
 		SourceCapabilities     []map[string]interface{} `json:"sourceCapabilities"`
 		SourceCapabilityStatus string                   `json:"sourceCapabilityStatus"`
@@ -1676,9 +1666,6 @@ type AssistantCapabilitiesEnvelopeV1 struct {
 	} `json:"data"`
 	RequestId string `json:"requestId"`
 }
-
-// AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace defines model for AssistantCapabilitiesEnvelopeV1.Data.NetworkCapabilities.Trace.
-type AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace string
 
 // AssistantConversationEnvelopeV1 defines model for AssistantConversationEnvelopeV1.
 type AssistantConversationEnvelopeV1 struct {
@@ -1750,6 +1737,76 @@ type AssistantEventV1 struct {
 	Payload    map[string]interface{} `json:"payload"`
 	TurnId     openapi_types.UUID     `json:"turnId"`
 	Type       string                 `json:"type"`
+}
+
+// AssistantFaultChainContextEnvelopeV1 defines model for AssistantFaultChainContextEnvelopeV1.
+type AssistantFaultChainContextEnvelopeV1 struct {
+	Data      AssistantFaultChainContextV1 `json:"data"`
+	RequestId string                       `json:"requestId"`
+}
+
+// AssistantFaultChainContextV1 defines model for AssistantFaultChainContextV1.
+type AssistantFaultChainContextV1 struct {
+	AsOf  time.Time `json:"asOf"`
+	Edges []struct {
+		CallDirection    string      `json:"callDirection"`
+		ComparisonStatus interface{} `json:"comparisonStatus"`
+		MissingEvidence  []string    `json:"missingEvidence"`
+		NextChecks       []string    `json:"nextChecks"`
+		Observations     []struct {
+			Conflicts []openapi_types.UUID `json:"conflicts"`
+			FactRefs  []struct {
+				FactId        string             `json:"factId"`
+				QueryResultId openapi_types.UUID `json:"queryResultId"`
+			} `json:"factRefs"`
+			Reason           string                `json:"reason"`
+			RelatedRelations *[]ResourceRelationV2 `json:"relatedRelations,omitempty"`
+			ResourceHealth   *struct {
+				CanonicalId     string                   `json:"canonicalId"`
+				ConditionStatus interface{}              `json:"conditionStatus"`
+				ConditionType   interface{}              `json:"conditionType"`
+				Namespace       string                   `json:"namespace"`
+				ObservedAt      time.Time                `json:"observedAt"`
+				Sources         []GraphSourceAuthorityV2 `json:"sources"`
+				StepId          openapi_types.UUID       `json:"stepId"`
+			} `json:"resourceHealth,omitempty"`
+			RuleId   string               `json:"ruleId"`
+			Supports []openapi_types.UUID `json:"supports"`
+		} `json:"observations"`
+		QueryResultRefs    []openapi_types.UUID `json:"queryResultRefs"`
+		Relation           ResourceRelationV2   `json:"relation"`
+		RelationDigest     string               `json:"relationDigest"`
+		TemporalAssessment interface{}          `json:"temporalAssessment"`
+	} `json:"edges"`
+	EvidenceRefs    []openapi_types.UUID         `json:"evidenceRefs"`
+	MissingEvidence []string                     `json:"missingEvidence"`
+	QueryResultRefs []openapi_types.UUID         `json:"queryResultRefs"`
+	Request         AssistantFaultChainRequestV1 `json:"request"`
+	RuleVersion     interface{}                  `json:"ruleVersion"`
+	SchemaVersion   interface{}                  `json:"schemaVersion"`
+	Status          interface{}                  `json:"status"`
+}
+
+// AssistantFaultChainRequestV1 defines model for AssistantFaultChainRequestV1.
+type AssistantFaultChainRequestV1 struct {
+	Baseline *struct {
+		From     time.Time `json:"from"`
+		Timezone string    `json:"timezone"`
+		To       time.Time `json:"to"`
+	} `json:"baseline,omitempty"`
+	Fault struct {
+		From     time.Time `json:"from"`
+		Timezone string    `json:"timezone"`
+		To       time.Time `json:"to"`
+	} `json:"fault"`
+	MaxEdges int `json:"maxEdges"`
+	Recovery *struct {
+		From     time.Time `json:"from"`
+		Timezone string    `json:"timezone"`
+		To       time.Time `json:"to"`
+	} `json:"recovery,omitempty"`
+	SchemaVersion     interface{} `json:"schemaVersion"`
+	TargetCanonicalId string      `json:"targetCanonicalId"`
 }
 
 // AssistantFormalEnvelopeV1 defines model for AssistantFormalEnvelopeV1.
@@ -1851,16 +1908,29 @@ type AssistantQueryResultV1 struct {
 		Timezone string    `json:"timezone"`
 		To       time.Time `json:"to"`
 	} `json:"comparisonTimeRange,omitempty"`
-	ControlPlaneSnapshot *string     `json:"controlPlaneSnapshot,omitempty"`
-	DatasetId            interface{} `json:"datasetId"`
-	DegradedSources      []string    `json:"degradedSources"`
-	Dimension            interface{} `json:"dimension"`
-	Exact                bool        `json:"exact"`
-	Freshness            interface{} `json:"freshness"`
-	GraphRevision        *struct {
+	ControlPlaneSnapshot   *string               `json:"controlPlaneSnapshot,omitempty"`
+	DatasetId              interface{}           `json:"datasetId"`
+	DegradedSources        []string              `json:"degradedSources"`
+	DerivationEvidenceRefs *[]openapi_types.UUID `json:"derivationEvidenceRefs,omitempty"`
+	Dimension              interface{}           `json:"dimension"`
+	Exact                  bool                  `json:"exact"`
+	Freshness              interface{}           `json:"freshness"`
+	GraphRevision          *struct {
 		GraphGeneration int `json:"graphGeneration"`
 		OwnerEpoch      int `json:"ownerEpoch"`
 	} `json:"graphRevision,omitempty"`
+	NetworkContext *struct {
+		CoverageComplete bool        `json:"coverageComplete"`
+		ObservationPoint interface{} `json:"observationPoint"`
+		Population       interface{} `json:"population"`
+		Protocol         interface{} `json:"protocol"`
+		Selection        struct {
+			Direction         interface{} `json:"direction"`
+			PeerCanonicalId   string      `json:"peerCanonicalId"`
+			TargetCanonicalId string      `json:"targetCanonicalId"`
+		} `json:"selection"`
+		TimeReliable bool `json:"timeReliable"`
+	} `json:"networkContext,omitempty"`
 	PlanDigest string `json:"planDigest"`
 	Rows       []struct {
 		Dimension string  `json:"dimension"`
@@ -1884,6 +1954,11 @@ type AssistantQueryResultV1 struct {
 		SourceId            openapi_types.UUID `json:"sourceId"`
 		TemplateVersion     string             `json:"templateVersion"`
 	} `json:"sourceManifest,omitempty"`
+	Statistics *[]struct {
+		Key   string      `json:"key"`
+		Unit  interface{} `json:"unit"`
+		Value float32     `json:"value"`
+	} `json:"statistics,omitempty"`
 	Status      interface{} `json:"status"`
 	StepSeconds *int        `json:"stepSeconds,omitempty"`
 	TimeRange   *struct {
@@ -1964,11 +2039,12 @@ type AssistantStoredQueryResultV1 struct {
 
 // AssistantSubmitMessageV1 defines model for AssistantSubmitMessageV1.
 type AssistantSubmitMessageV1 struct {
-	ClarificationId              *openapi_types.UUID `json:"clarificationId,omitempty"`
-	ExpectedConversationRevision int64               `json:"expectedConversationRevision"`
-	Message                      string              `json:"message"`
-	ParentTurnId                 *openapi_types.UUID `json:"parentTurnId,omitempty"`
-	ReferentCanonicalId          *string             `json:"referentCanonicalId,omitempty"`
+	ClarificationId              *openapi_types.UUID           `json:"clarificationId,omitempty"`
+	ExpectedConversationRevision int64                         `json:"expectedConversationRevision"`
+	FaultChainRequest            *AssistantFaultChainRequestV1 `json:"faultChainRequest,omitempty"`
+	Message                      string                        `json:"message"`
+	ParentTurnId                 *openapi_types.UUID           `json:"parentTurnId,omitempty"`
+	ReferentCanonicalId          *string                       `json:"referentCanonicalId,omitempty"`
 }
 
 // AssistantTurnEnvelopeV1 defines model for AssistantTurnEnvelopeV1.
@@ -3250,11 +3326,12 @@ type ResourceGraphV2 struct {
 		GraphGeneration int `json:"graphGeneration"`
 		OwnerEpoch      int `json:"ownerEpoch"`
 	} `json:"graphRevision"`
-	IndirectlyAffected *[]CanonicalID     `json:"indirectlyAffected,omitempty"`
-	NextCanonicalId    *string            `json:"nextCanonicalId,omitempty"`
-	Nodes              []ResourceEntityV2 `json:"nodes"`
-	OwnerInstance      string             `json:"ownerInstance"`
-	Partial            bool               `json:"partial"`
+	IndirectlyAffected *[]CanonicalID            `json:"indirectlyAffected,omitempty"`
+	NextCanonicalId    *string                   `json:"nextCanonicalId,omitempty"`
+	Nodes              []ResourceEntityV2        `json:"nodes"`
+	ObservationSources *[]GraphSourceAuthorityV2 `json:"observationSources,omitempty"`
+	OwnerInstance      string                    `json:"ownerInstance"`
+	Partial            bool                      `json:"partial"`
 	RankedEvidence     *[]struct {
 		Confidence *string    `json:"confidence,omitempty"`
 		EdgeKey    *string    `json:"edgeKey,omitempty"`
@@ -3818,6 +3895,11 @@ type GetAssistantConversationEventsParams struct {
 	LastEventID *string `json:"Last-Event-ID,omitempty"`
 }
 
+// CollectAssistantFaultChainParams defines parameters for CollectAssistantFaultChain.
+type CollectAssistantFaultChainParams struct {
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
 // ListAssistantMessagesParams defines parameters for ListAssistantMessages.
 type ListAssistantMessagesParams struct {
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
@@ -4296,6 +4378,9 @@ type CreateAssistantConversationJSONRequestBody = AssistantCreateConversationV1
 
 // RebindAssistantConversationJSONRequestBody defines body for RebindAssistantConversation for application/json ContentType.
 type RebindAssistantConversationJSONRequestBody = AssistantRebindV1
+
+// CollectAssistantFaultChainJSONRequestBody defines body for CollectAssistantFaultChain for application/json ContentType.
+type CollectAssistantFaultChainJSONRequestBody = AssistantSubmitMessageV1
 
 // SubmitAssistantMessageJSONRequestBody defines body for SubmitAssistantMessage for application/json ContentType.
 type SubmitAssistantMessageJSONRequestBody = AssistantSubmitMessageV1
@@ -7310,6 +7395,9 @@ type ServerInterface interface {
 	// GetAssistantConversationEvents getAssistantConversationEvents
 	// (GET /api/v1/assistant/conversations/{conversationId}/events)
 	GetAssistantConversationEvents(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params GetAssistantConversationEventsParams)
+	// CollectAssistantFaultChain collectAssistantFaultChain
+	// (POST /api/v1/assistant/conversations/{conversationId}/fault-chain-investigations)
+	CollectAssistantFaultChain(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params CollectAssistantFaultChainParams)
 	// ListAssistantMessages listAssistantMessages
 	// (GET /api/v1/assistant/conversations/{conversationId}/messages)
 	ListAssistantMessages(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params ListAssistantMessagesParams)
@@ -7334,6 +7422,9 @@ type ServerInterface interface {
 	// GetAssistantTurn getAssistantTurn
 	// (GET /api/v1/assistant/turns/{turnId})
 	GetAssistantTurn(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID)
+	// GetAssistantFaultChainContext getAssistantFaultChainContext
+	// (GET /api/v1/assistant/turns/{turnId}/fault-chain-context)
+	GetAssistantFaultChainContext(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID)
 	// GetAssistantFormalReference getAssistantFormalReference
 	// (GET /api/v1/assistant/turns/{turnId}/formal-references)
 	GetAssistantFormalReference(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, params GetAssistantFormalReferenceParams)
@@ -7696,6 +7787,12 @@ func (_ Unimplemented) GetAssistantConversationEvents(w http.ResponseWriter, r *
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// CollectAssistantFaultChain collectAssistantFaultChain
+// (POST /api/v1/assistant/conversations/{conversationId}/fault-chain-investigations)
+func (_ Unimplemented) CollectAssistantFaultChain(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params CollectAssistantFaultChainParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ListAssistantMessages listAssistantMessages
 // (GET /api/v1/assistant/conversations/{conversationId}/messages)
 func (_ Unimplemented) ListAssistantMessages(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params ListAssistantMessagesParams) {
@@ -7741,6 +7838,12 @@ func (_ Unimplemented) ResolveAssistantResource(w http.ResponseWriter, r *http.R
 // GetAssistantTurn getAssistantTurn
 // (GET /api/v1/assistant/turns/{turnId})
 func (_ Unimplemented) GetAssistantTurn(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetAssistantFaultChainContext getAssistantFaultChainContext
+// (GET /api/v1/assistant/turns/{turnId}/fault-chain-context)
+func (_ Unimplemented) GetAssistantFaultChainContext(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -9784,6 +9887,60 @@ func (siw *ServerInterfaceWrapper) GetAssistantConversationEvents(w http.Respons
 	handler.ServeHTTP(w, r)
 }
 
+// CollectAssistantFaultChain operation middleware
+func (siw *ServerInterfaceWrapper) CollectAssistantFaultChain(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "conversationId" -------------
+	var conversationId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "conversationId", chi.URLParam(r, "conversationId"), &conversationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "conversationId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CollectAssistantFaultChainParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CollectAssistantFaultChain(w, r, conversationId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListAssistantMessages operation middleware
 func (siw *ServerInterfaceWrapper) ListAssistantMessages(w http.ResponseWriter, r *http.Request) {
 
@@ -10032,6 +10189,32 @@ func (siw *ServerInterfaceWrapper) GetAssistantTurn(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAssistantTurn(w, r, turnId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAssistantFaultChainContext operation middleware
+func (siw *ServerInterfaceWrapper) GetAssistantFaultChainContext(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "turnId" -------------
+	var turnId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "turnId", chi.URLParam(r, "turnId"), &turnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "turnId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAssistantFaultChainContext(w, r, turnId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -12428,6 +12611,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}/messages", wrapper.SubmitAssistantMessage)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}/fault-chain-investigations", wrapper.CollectAssistantFaultChain)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/assistant/turns/{turnId}/fault-chain-context", wrapper.GetAssistantFaultChainContext)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/assistant/turns/{turnId}/formal-references", wrapper.GetAssistantFormalReference)
 	})
 	r.Group(func(r chi.Router) {
@@ -14211,6 +14400,47 @@ func (response GetAssistantConversationEventsdefaultJSONResponse) VisitGetAssist
 	return err
 }
 
+type CollectAssistantFaultChainRequestObject struct {
+	ConversationId openapi_types.UUID `json:"conversationId"`
+	Params         CollectAssistantFaultChainParams
+	Body           *CollectAssistantFaultChainJSONRequestBody
+}
+
+type CollectAssistantFaultChainResponseObject interface {
+	VisitCollectAssistantFaultChainResponse(w http.ResponseWriter) error
+}
+
+type CollectAssistantFaultChain202JSONResponse AssistantTurnEnvelopeV1
+
+func (response CollectAssistantFaultChain202JSONResponse) VisitCollectAssistantFaultChainResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(202)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CollectAssistantFaultChaindefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response CollectAssistantFaultChaindefaultJSONResponse) VisitCollectAssistantFaultChainResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type ListAssistantMessagesRequestObject struct {
 	ConversationId openapi_types.UUID `json:"conversationId"`
 	Params         ListAssistantMessagesParams
@@ -14517,6 +14747,45 @@ type GetAssistantTurndefaultJSONResponse struct {
 }
 
 func (response GetAssistantTurndefaultJSONResponse) VisitGetAssistantTurnResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetAssistantFaultChainContextRequestObject struct {
+	TurnId openapi_types.UUID `json:"turnId"`
+}
+
+type GetAssistantFaultChainContextResponseObject interface {
+	VisitGetAssistantFaultChainContextResponse(w http.ResponseWriter) error
+}
+
+type GetAssistantFaultChainContext200JSONResponse AssistantFaultChainContextEnvelopeV1
+
+func (response GetAssistantFaultChainContext200JSONResponse) VisitGetAssistantFaultChainContextResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetAssistantFaultChainContextdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetAssistantFaultChainContextdefaultJSONResponse) VisitGetAssistantFaultChainContextResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -16381,6 +16650,9 @@ type StrictServerInterface interface {
 	// GetAssistantConversationEvents getAssistantConversationEvents
 	// (GET /api/v1/assistant/conversations/{conversationId}/events)
 	GetAssistantConversationEvents(ctx context.Context, request GetAssistantConversationEventsRequestObject) (GetAssistantConversationEventsResponseObject, error)
+	// CollectAssistantFaultChain collectAssistantFaultChain
+	// (POST /api/v1/assistant/conversations/{conversationId}/fault-chain-investigations)
+	CollectAssistantFaultChain(ctx context.Context, request CollectAssistantFaultChainRequestObject) (CollectAssistantFaultChainResponseObject, error)
 	// ListAssistantMessages listAssistantMessages
 	// (GET /api/v1/assistant/conversations/{conversationId}/messages)
 	ListAssistantMessages(ctx context.Context, request ListAssistantMessagesRequestObject) (ListAssistantMessagesResponseObject, error)
@@ -16405,6 +16677,9 @@ type StrictServerInterface interface {
 	// GetAssistantTurn getAssistantTurn
 	// (GET /api/v1/assistant/turns/{turnId})
 	GetAssistantTurn(ctx context.Context, request GetAssistantTurnRequestObject) (GetAssistantTurnResponseObject, error)
+	// GetAssistantFaultChainContext getAssistantFaultChainContext
+	// (GET /api/v1/assistant/turns/{turnId}/fault-chain-context)
+	GetAssistantFaultChainContext(ctx context.Context, request GetAssistantFaultChainContextRequestObject) (GetAssistantFaultChainContextResponseObject, error)
 	// GetAssistantFormalReference getAssistantFormalReference
 	// (GET /api/v1/assistant/turns/{turnId}/formal-references)
 	GetAssistantFormalReference(ctx context.Context, request GetAssistantFormalReferenceRequestObject) (GetAssistantFormalReferenceResponseObject, error)
@@ -17729,6 +18004,40 @@ func (sh *strictHandler) GetAssistantConversationEvents(w http.ResponseWriter, r
 	}
 }
 
+// CollectAssistantFaultChain operation middleware
+func (sh *strictHandler) CollectAssistantFaultChain(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params CollectAssistantFaultChainParams) {
+	var request CollectAssistantFaultChainRequestObject
+
+	request.ConversationId = conversationId
+	request.Params = params
+
+	var body CollectAssistantFaultChainJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CollectAssistantFaultChain(ctx, request.(CollectAssistantFaultChainRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CollectAssistantFaultChain")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CollectAssistantFaultChainResponseObject); ok {
+		if err := validResponse.VisitCollectAssistantFaultChainResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // ListAssistantMessages operation middleware
 func (sh *strictHandler) ListAssistantMessages(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params ListAssistantMessagesParams) {
 	var request ListAssistantMessagesRequestObject
@@ -17962,6 +18271,32 @@ func (sh *strictHandler) GetAssistantTurn(w http.ResponseWriter, r *http.Request
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetAssistantTurnResponseObject); ok {
 		if err := validResponse.VisitGetAssistantTurnResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetAssistantFaultChainContext operation middleware
+func (sh *strictHandler) GetAssistantFaultChainContext(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID) {
+	var request GetAssistantFaultChainContextRequestObject
+
+	request.TurnId = turnId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetAssistantFaultChainContext(ctx, request.(GetAssistantFaultChainContextRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetAssistantFaultChainContext")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetAssistantFaultChainContextResponseObject); ok {
+		if err := validResponse.VisitGetAssistantFaultChainContextResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

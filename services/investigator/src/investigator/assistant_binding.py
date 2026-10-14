@@ -20,6 +20,7 @@ The server computes every number, ordering, comparison and unit. Reference only
 queryResultRefs and fact IDs from successful committed tools; do not invent values.
 For resource_troubleshooting use the real resource context and bound identities.
 Do not create a placeholder incident or inherit a replacement resource's old UID.
+Historical fault-chain context is an archived observation, not a fresh query. Explain its explicit supports, conflicts, coverage and missing checks without inventing numeric values.
 Relationships show dependency or impact, not causation. Diagnosis is a hypothesis:
 record supports, conflicts, missingEvidence and nextChecks. faultChain links use
 only committed relationReferences with their exact relationDigest; every link is
@@ -104,6 +105,9 @@ def output_schema_for_steps(steps, task_kind):
             for message in data.get("history",[]):
                 if message.get("role")=="assistant":prior(message.get("content"))
     props=schema["properties"]
+    # A model can explain historical context, but cannot invent a new committed
+    # context reference. Fixed collection supplies its platform-owned reference.
+    if "faultChainContextRef" in props:props["faultChainContextRef"]={"type":"null"}
     kinds=["clarification","unsupported"]
     if task_kind=="data_query" and facts:kinds.append("data")
     elif task_kind in ("resource_troubleshooting","incident_followup"):kinds.append("diagnosis")
@@ -143,6 +147,9 @@ def validate_dispatch(payload, profile_version=None):
     if is_assistant(job):
         if set(payload)!={"schemaVersion","job","jobContext","mcpContext"} or payload["schemaVersion"]!="dispatcher-payload/v2":raise ValueError("INVALID_REQUEST")
         task=job.get("assistant")
+        if isinstance(task,dict) and (task.get("executionMode") or task.get("faultChainRequestDigest")):
+            if task.get("executionMode")!="evidence_only" or not task.get("faultChainRequestDigest") or task.get("authorizationDomain")!="operational" or task.get("taskKind") not in ("incident_followup","resource_troubleshooting"):
+                raise ValueError("FAULT_CHAIN_MODE_INVALID")
         if not isinstance(task,dict) or task.get("taskKind") not in ("data_query","incident_followup","resource_troubleshooting") or task.get("authorizationDomain") not in ("audit","operational"):
             raise ValueError("INVALID_REQUEST")
         if not profile_version or task.get("modelProfileVersion")!=profile_version:raise ValueError("MODEL_PROFILE_UNAVAILABLE")

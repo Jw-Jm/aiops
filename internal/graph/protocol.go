@@ -174,7 +174,7 @@ type InternalHandler struct {
 }
 
 // Frozen collection authority is process configuration, not a caller grant.
-// It accompanies RCA inputs without changing the frozen Graph response wire shape.
+// It accompanies RCA inputs and optional qualified observation metadata.
 type SourceAuthority struct {
 	SourceRegistrationID string `json:"sourceRegistrationId"`
 	Revision             int64  `json:"revision"`
@@ -281,6 +281,21 @@ func (h InternalHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// it across native Lease, source authorization or socket operations.
 	var encoded []byte
 	err = h.Graph.QueryReadResponse(ctx, q, func(current Result) error {
+		used := map[string]bool{}
+		for _, node := range current.Nodes {
+			for _, id := range node.SourceRefs {
+				used[id] = true
+			}
+		}
+		for _, edge := range current.Edges {
+			used[edge.Provenance.SourceRegistrationID] = true
+		}
+		for _, source := range h.SourceAuthorities {
+			if used[source.SourceRegistrationID] {
+				current.ObservationSources = append(current.ObservationSources, source)
+			}
+		}
+		slices.SortFunc(current.ObservationSources, func(a, b SourceAuthority) int { return strings.Compare(a.SourceRegistrationID, b.SourceRegistrationID) })
 		result = current
 		var encodeErr error
 		encoded, encodeErr = json.Marshal(current)

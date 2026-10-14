@@ -2,11 +2,15 @@ package integration
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"ops-platform/internal/integrations/kubernetes"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -108,7 +112,11 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 		var pods struct {
 			Items []struct{ Metadata struct{ UID string } }
 		}
-		raw := sp04Kubectl(t, ctx, nil, "-n", cfg.Namespace, "get", "pods", "-l", "app=network-server,ops.platform.io/canary-version=deployment-v1", "-o", "json")
+		selector := "app=network-server,ops.platform.io/canary-version=deployment-v1"
+		if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1" {
+			selector = "app=fault-chain-server,ops.platform.io/test-release=fault-chain-20261014"
+		}
+		raw := sp04Kubectl(t, ctx, nil, "-n", cfg.Namespace, "get", "pods", "-l", selector, "-o", "json")
 		if json.Unmarshal(raw, &pods) != nil || len(pods.Items) != 1 {
 			t.Fatal("native DeepFlow target missing")
 		}
@@ -129,10 +137,107 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 			t.Fatal("native DeepFlow domain unavailable")
 		}
 		now := time.Now().UTC()
-		probe := evidence.Query{ResourceCanonicalID: canonical, Namespace: cfg.Namespace, Template: "GetResourceNetworkHealth", From: now.Add(-20 * time.Second), To: now, Limit: 100}
+		probe := evidence.Query{ResourceCanonicalID: canonical, Namespace: cfg.Namespace, Template: "GetResourceNetworkHealth", From: now.Add(-120 * time.Second), To: now, Limit: 100}
 		l7Probe := probe
 		l7Probe.Template = "GetL7Context"
-		workerConfig.Sources = append(workerConfig.Sources, app.SP04Source{Name: "deepflow", Mode: "live", L7Context: true, ScopeProbe: &probe, L7ScopeProbe: &l7Probe, Binding: evidence.Binding{SourceType: "deepflow", Tenant: b.TenantID.String(), SourceID: sourceID.String(), Revision: 1, BackendLogicalID: "assistant-live-deepflow", Endpoint: "http://127.0.0.1:21416", SourceRetentionSeconds: 21600, ScopeMapping: scopeMapping}, DeepFlowLive: &deepflow.LiveConfig{ControllerEndpoint: "http://127.0.0.1:21417", DomainLCUUID: domains.Data[0].LCUUID, ClusterUID: cfg.ClusterUID}})
+		qualifications := []analytics.Qualification{}
+		if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1" {
+			raw, e := os.ReadFile(os.Getenv("OPS_FAULT_CHAIN_PROOF"))
+			if e != nil {
+				t.Fatal(e)
+			}
+			var proof struct {
+				Status           string `json:"status"`
+				ObservationPoint string `json:"observationPoint"`
+				Window           struct {
+					From int64 `json:"fromUnix"`
+					To   int64 `json:"toUnix"`
+				} `json:"window"`
+				Golden struct {
+					Responses int `json:"responses"`
+					Errors    int `json:"errors"`
+				} `json:"golden"`
+			}
+			if json.Unmarshal(raw, &proof) != nil || proof.Status != "PASS" || proof.Golden.Responses < 1000 || proof.Golden.Errors != 50 {
+				t.Fatal("independent HTTP proof required")
+			}
+			binding := evidence.Binding{SourceType: "deepflow", Tenant: b.TenantID.String(), SourceID: sourceID.String(), Revision: 1, BackendLogicalID: "assistant-live-deepflow", Endpoint: "http://127.0.0.1:21416", SourceRetentionSeconds: 21600, ScopeMapping: scopeMapping}
+			ca, e := os.ReadFile(collector.CAFile)
+			if e != nil {
+				t.Fatal(e)
+			}
+			token, e := os.ReadFile(collector.TokenFile)
+			if e != nil {
+				t.Fatal(e)
+			}
+			roots := x509.NewCertPool()
+			roots.AppendCertsFromPEM(ca)
+			native, e := kubernetes.NewClient(collector.Endpoint, &http.Client{Transport: assistantNativeTokenTransport{&http.Transport{TLSClientConfig: &tls.Config{RootCAs: roots, MinVersion: tls.VersionTLS12}}, strings.TrimSpace(string(token))}}, 20, 20)
+			if e != nil {
+				t.Fatal(e)
+			}
+			mapper, e := deepflow.NewLiveMapper(deepflow.LiveConfig{ControllerEndpoint: "http://127.0.0.1:21417", DomainLCUUID: domains.Data[0].LCUUID, ClusterUID: cfg.ClusterUID}, binding, native, http.DefaultClient, (evidence.Repository{Pool: pool}).CheckBinding)
+			if e != nil {
+				t.Fatal(e)
+			}
+			var clients struct {
+				Items []struct{ Metadata struct{ UID string } }
+			}
+			clientRaw := sp04Kubectl(t, ctx, nil, "-n", cfg.Namespace, "get", "pods", "-l", "app=fault-chain-client,ops.platform.io/test-release=fault-chain-20261014", "-o", "json")
+			if json.Unmarshal(clientRaw, &clients) != nil || len(clients.Items) != 1 {
+				t.Fatal("owned client required")
+			}
+			clientID := resource.CanonicalID{Domain: "k8s", Tenant: b.TenantID.String(), Scope: cfg.ClusterUID, APIGroup: "core", Kind: "Pod", StableID: clients.Items[0].Metadata.UID}.String()
+			mapped, e := mapper.ByCanonical(ctx, clientID)
+			t.Log("native fault-chain client mapping", mapped.PodID, mapped.Namespace, mapped.IdentityValidFrom, e)
+			if e != nil || mapped.PodID == 0 || mapped.IdentityValidFrom.IsZero() {
+				t.Fatal("native client identity not qualified", e)
+			}
+			// Diagnose the actual bounded L4 read before the asynchronous proof
+			// worker. Only adapter-controlled status and warning codes are logged;
+			// no source payload, credentials, or HTTP headers are included.
+			candidate, e := deepflow.New(binding, http.DefaultClient, mapper, (evidence.Repository{Pool: pool}).CheckBinding, true, "live")
+			if e != nil {
+				t.Fatal("native proof candidate unavailable")
+			}
+			diagnostic := probe
+			diagnostic.Scope = graph.Scope{Tenant: binding.Tenant, Cluster: cfg.ClusterUID, Namespaces: []string{cfg.Namespace}, AuthorizationRevision: "source-isolation-probe"}
+			diagnostic.To = time.Now().UTC()
+			diagnostic.From = diagnostic.To.Add(-120 * time.Second)
+			result, readErr := candidate.Query(ctx, diagnostic)
+			t.Log("native L4 proof diagnostic", "evidence", len(result.Evidence), "freshness", result.Freshness, "partial", result.Partial, "warnings", result.Warnings, "error", readErr)
+			for _, dataset := range []string{"network.http-responses", "network.http-5xx", "network.http-5xx-rate", "network.http-response-time"} {
+				qualifications = append(qualifications, analytics.Qualification{DatasetID: dataset, Operation: "aggregate", SourceRevision: 1, BindingDigest: evidence.BindingScopeDigest(binding), EvidenceDigest: evidence.Digest(raw), CollectorVersion: "deepflow-e567b167453ffa99f08f26def20379b4f831e073/http-session-counts", VerifiedUntil: time.Now().Add(time.Hour), CoverageFrom: time.Unix(proof.Window.From, 0).UTC(), CoverageTo: time.Unix(proof.Window.To, 0).UTC(), MaxWindowSeconds: 3600, ObservationPoint: proof.ObservationPoint, CoverageComplete: true})
+			}
+			if path := os.Getenv("OPS_FAULT_CHAIN_WINDOWS_PROOF"); path != "" {
+				raw, err := os.ReadFile(path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				var windows struct {
+					Status string `json:"status"`
+					Golden []struct {
+						From int64 `json:"fromUnix"`
+						To   int64 `json:"toUnix"`
+					} `json:"golden"`
+					Points       struct{ HTTP, TCP string } `json:"observationPoints"`
+					Measurements []struct {
+						Responses, Errors   int
+						FailureObservations int `json:"failureObservations"`
+					} `json:"measurements"`
+				}
+				if json.Unmarshal(raw, &windows) != nil || windows.Status != "PASS" || len(windows.Golden) != 3 || len(windows.Measurements) != 3 || windows.Measurements[0].Errors != 10 || windows.Measurements[1].Errors != 50 || windows.Measurements[2].Errors != 0 || windows.Measurements[1].FailureObservations != 100 {
+					t.Fatal("independent three-window proof required")
+				}
+				for _, item := range []struct{ Dataset, Point string }{{"network.http-summary", windows.Points.HTTP}, {"network.tcp-summary", windows.Points.TCP}} {
+					for _, op := range []string{"aggregate", "compare", "compare_percent", "trend"} {
+						qualifications = append(qualifications, analytics.Qualification{DatasetID: item.Dataset, Operation: op, SourceRevision: 1, BindingDigest: evidence.BindingScopeDigest(binding), EvidenceDigest: evidence.Digest(raw), CollectorVersion: "deepflow-e567b167453ffa99f08f26def20379b4f831e073/controlled-http-tcp-windows", VerifiedUntil: time.Now().Add(time.Hour), CoverageFrom: time.Unix(windows.Golden[0].From, 0).UTC(), CoverageTo: time.Unix(windows.Golden[2].To, 0).UTC(), MaxWindowSeconds: 3600, ObservationPoint: item.Point, CoverageComplete: true})
+					}
+				}
+			}
+
+		}
+		workerConfig.Sources = append(workerConfig.Sources, app.SP04Source{Name: "deepflow", AnalysisQualifications: qualifications, Mode: "live", L7Context: true, ScopeProbe: &probe, L7ScopeProbe: &l7Probe, Binding: evidence.Binding{SourceType: "deepflow", Tenant: b.TenantID.String(), SourceID: sourceID.String(), Revision: 1, BackendLogicalID: "assistant-live-deepflow", Endpoint: "http://127.0.0.1:21416", SourceRetentionSeconds: 21600, ScopeMapping: scopeMapping}, DeepFlowLive: &deepflow.LiveConfig{ControllerEndpoint: "http://127.0.0.1:21417", DomainLCUUID: domains.Data[0].LCUUID, ClusterUID: cfg.ClusterUID}})
 	}
 	bucket := "assistant-native-" + uuid.NewString()[:8]
 	fixture := newRoleTenantS3Fixture(t, []uuid.UUID{b.TenantID}, bucket)
@@ -170,6 +275,13 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 	handlers.SP05 = &httpapi.SP05Handlers{Pool: apiPool, Enabled: true, GraphAPI: handlers}
 	for n := 0; n < 120; n++ {
 		route, err := (graph.Repository{Pool: pool}).Load(ctx, cfg.TenantID.String(), cfg.ClusterUID)
+		if n == 60 {
+			t.Log("route diagnostic", route.Epoch, route.ExpiresAt.After(time.Now()), err)
+			for _, configured := range workerConfig.Sources {
+				t.Log("source diagnostic", configured.Name, (evidence.Repository{Pool: pool}).Authorize(ctx, configured.Binding))
+			}
+
+		}
 		if err == nil && route.Epoch > 0 && route.ExpiresAt.After(time.Now()) {
 			proofsReady := true
 			for _, configured := range workerConfig.Sources {
@@ -181,6 +293,7 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 				time.Sleep(500 * time.Millisecond)
 				continue
 			}
+
 			t.Log("actual native Graph informer + Kubernetes Lease route ready; archive dependency fixture explicitly excluded")
 			return handlers
 		}

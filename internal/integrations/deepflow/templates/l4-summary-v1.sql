@@ -1,0 +1,1 @@
+SELECT status, Count(row) AS observations, Sum(retrans_tx) AS retrans_tx, Sum(retrans_rx) AS retrans_rx FROM l4_flow_log WHERE time >= %d AND time < %d AND pod_cluster_id_0 = %d AND pod_cluster_id_1 = %d AND pod_ns_id_0 = %d AND pod_ns_id_1 = %d AND %s AND tap_side = '%s' AND protocol = 6 GROUP BY status LIMIT 257
