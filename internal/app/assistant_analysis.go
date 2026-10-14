@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"crypto/ed25519"
 	"encoding/json"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -8,10 +9,11 @@ import (
 	"net/http"
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 )
 
-func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.WorkloadTrust, key ed25519.PublicKey, pool *pgxpool.Pool, adapters map[string]*analytics.Victoria, owners map[string]graph.InternalHandler) {
+func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.WorkloadTrust, key ed25519.PublicKey, pool *pgxpool.Pool, adapters map[string]*analytics.Victoria, owners map[string]graph.InternalHandler, evidenceAdapters map[string]evidence.Adapter) {
 	fail := func(status int, code string) {
 		w.WriteHeader(status)
 		json.NewEncoder(w).Encode(map[string]string{"code": code})
@@ -71,7 +73,17 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]any{"sourceCapabilities": capabilities, "scopeDigest": graph.ScopeDigest(claims.Scope)})
+		network := []evidence.CapabilitySet{}
+		for _, adapter := range evidenceAdapters {
+			if scoped, ok := adapter.(interface {
+				ScopedCapabilities(context.Context, graph.Scope) (evidence.CapabilitySet, error)
+			}); ok {
+				if capabilities, err := scoped.ScopedCapabilities(r.Context(), claims.Scope); err == nil {
+					network = append(network, capabilities)
+				}
+			}
+		}
+		json.NewEncoder(w).Encode(map[string]any{"sourceCapabilities": capabilities, "networkCapabilities": network, "scopeDigest": graph.ScopeDigest(claims.Scope)})
 		return
 	}
 	intent, err := analytics.DecodeIntent(q.Intent)

@@ -1,0 +1,48 @@
+{
+  "uid": "e2f79638-5bd2-45e4-acb2-1398e79ffb90",
+  "release": "assistant-network-20261013",
+  "startupProbe": {
+    "failureThreshold": 120,
+    "httpGet": {
+      "path": "/v1/health/",
+      "port": "server",
+      "scheme": "HTTP"
+    },
+    "periodSeconds": 5,
+    "successThreshold": 1,
+    "timeoutSeconds": 1
+  },
+  "livenessProbe": {
+    "failureThreshold": 12,
+    "httpGet": {
+      "path": "/v1/health/",
+      "port": "server",
+      "scheme": "HTTP"
+    },
+    "periodSeconds": 10,
+    "successThreshold": 1,
+    "timeoutSeconds": 5
+  },
+  "readinessProbe": {
+    "failureThreshold": 10,
+    "httpGet": {
+      "path": "/v1/health/",
+      "port": "server",
+      "scheme": "HTTP"
+    },
+    "initialDelaySeconds": 15,
+    "periodSeconds": 10,
+    "successThreshold": 1,
+    "timeoutSeconds": 1
+  },
+  "resources": {
+    "limits": {
+      "cpu": "1",
+      "memory": "1536Mi"
+    },
+    "requests": {
+      "cpu": "100m",
+      "memory": "128Mi"
+    }
+  }
+}

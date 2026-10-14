@@ -51,6 +51,9 @@ type SP04Source struct {
 	ScopeProbe             *evidence.Query
 	Mode                   string
 	FrozenEndpoints        []deepflow.Endpoint
+	DeepFlowLive           *deepflow.LiveConfig
+	L7Context              bool
+	L7ScopeProbe           *evidence.Query
 }
 type SP04Config struct {
 	IdentityMode                                                                                                                                                                string
@@ -472,30 +475,62 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 		if source.Name == "deepflow" || source.Name == "redfish" {
 			var adapter, candidate evidence.Adapter
 			if source.Name == "deepflow" {
-				// A live mapping requires a separately qualified Server UID
-				// contract; frozen endpoint files cannot promote themselves.
-				if source.Mode != "fixture_only" {
-					cancel()
-					return nil, errors.New("live DeepFlow identity mapper unverified")
-				}
-				mappings := deepflow.FrozenMappings{}
-				for _, e := range source.FrozenEndpoints {
-					if _, exists := mappings[e.CanonicalID]; exists {
+				var mappings deepflow.Mapper
+				switch source.Mode {
+				case "fixture_only":
+					if source.DeepFlowLive != nil {
 						cancel()
-						return nil, errors.New("conflicting DeepFlow fixture identities")
+						return nil, errors.New("fixture DeepFlow cannot use live identity configuration")
 					}
-					mappings[e.CanonicalID] = e
+					frozen := deepflow.FrozenMappings{}
+					for _, e := range source.FrozenEndpoints {
+						if _, exists := frozen[e.CanonicalID]; exists {
+							cancel()
+							return nil, errors.New("conflicting DeepFlow fixture identities")
+						}
+						frozen[e.CanonicalID] = e
+					}
+					mappings = frozen
+				case "live":
+					if source.DeepFlowLive == nil || len(source.FrozenEndpoints) != 0 {
+						cancel()
+						return nil, errors.New("live DeepFlow requires native identity configuration")
+					}
+					var native *kubernetes.Client
+					for _, cluster := range c.Clusters {
+						if cluster.Tenant == source.Binding.Tenant && cluster.ClusterUID == source.DeepFlowLive.ClusterUID {
+							native, err = clusterClient(cluster)
+							if err != nil {
+								cancel()
+								return nil, err
+							}
+							break
+						}
+					}
+					if native == nil {
+						cancel()
+						return nil, errors.New("live DeepFlow has no matching native Kubernetes source")
+					}
+					mappings, err = deepflow.NewLiveMapper(*source.DeepFlowLive, source.Binding, native, client, repo.CheckBinding)
+					if err != nil {
+						cancel()
+						return nil, err
+					}
+				default:
+					cancel()
+					return nil, errors.New("DeepFlow mode invalid")
 				}
-				adapter, err = deepflow.New(source.Binding, client, mappings, repo.Authorize, false, "fixture_only")
+				adapter, err = deepflow.New(source.Binding, client, mappings, repo.Authorize, source.L7Context, source.Mode)
 				if err != nil {
 					cancel()
 					return nil, err
 				}
-				candidate, err = deepflow.New(source.Binding, client, mappings, repo.CheckBinding, false, "fixture_only")
+				candidate, err = deepflow.New(source.Binding, client, mappings, repo.CheckBinding, source.L7Context, source.Mode)
 				if err != nil {
 					cancel()
 					return nil, err
 				}
+
 			} else {
 				var credential struct {
 					Username string `json:"username"`
@@ -530,8 +565,29 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 						currentProbe.To = time.Now().UTC()
 						currentProbe.From = currentProbe.To.Add(-probe.To.Sub(probe.From))
 					}
-					return repo.VerifyAdapter(proofContext, source.Binding, candidate, currentProbe)
+					if source.Name == "deepflow" && source.Mode == "live" {
+						currentProbe.To = time.Now().UTC()
+						currentProbe.From = currentProbe.To.Add(-probe.To.Sub(probe.From))
+					}
+					if err := repo.VerifyAdapter(proofContext, source.Binding, candidate, currentProbe); err != nil {
+						return err
+					}
+					return nil
 				}, handlers, source.Binding, runtime)
+				if source.Name == "deepflow" && source.Mode == "live" && source.L7Context {
+					// L7 has its own expiring proof. Missing application traffic
+					// must disable L7 without invalidating native Graph/L4 reads.
+					renewSourceProof(runContext, &group, source.Binding.SourceID+"/l7", func(proofContext context.Context) error {
+						if source.L7ScopeProbe == nil {
+							return errors.New("live L7 requires separate nonempty scope probe")
+						}
+						l7Probe := *source.L7ScopeProbe
+						l7Probe.Scope = probe.Scope
+						l7Probe.To = time.Now().UTC()
+						l7Probe.From = l7Probe.To.Add(-source.L7ScopeProbe.To.Sub(source.L7ScopeProbe.From))
+						return adapter.(*deepflow.Adapter).QualifyL7(proofContext, l7Probe)
+					}, nil, source.Binding, runtime)
+				}
 			}
 			if hardwareAdapter, ok := adapter.(*redfish.Adapter); ok {
 				if owner, found := handlers[source.Binding.Tenant+"|"+hardwareAdapter.Config.Scope]; found {
@@ -589,7 +645,7 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 	}
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/internal/v1/analysis:query" {
-			serveWorkerAnalysis(w, r, trust, key, pool, analysisAdapters, handlers)
+			serveWorkerAnalysis(w, r, trust, key, pool, analysisAdapters, handlers, adapters)
 			return
 		}
 		if r.URL.Path == "/internal/v1/audit:verify" {
@@ -853,6 +909,9 @@ func renewSourceProof(ctx context.Context, group *sync.WaitGroup, source string,
 			err := verify(bounded)
 			cancel()
 			delay := 15 * time.Minute
+			if binding.SourceType == "deepflow" {
+				delay = time.Minute
+			}
 			reason := ""
 			result := "ok"
 			if err != nil {

@@ -148,3 +148,57 @@ MCP/API 地址约束失败、测试身份缺少 cluster scope、跨用例幂等�
 [运行手册](../runbooks/assistant-runtime.md) 已随功能更新。正式助手开关
 保持默认 false。KubeVirt/CDI 持续 deferred/disabled/unverified，根目录
 00～10 正式文档保留，人工处置继续本人输入真实 Bash 并确认。
+
+
+## 2026-10-14：真实来源、运行机制与 DeepFlow L4/L7
+
+本次增量依据 ADR-0039、ADR-0040，用户已明确模型回答质量不作为机制验收
+标准。2026-10-13 五例质量整体 FAIL 与未填人工评审保持原样。
+
+已完成实际来源验证：独立 namespace 两个真实 Pod、原生 cAdvisor CPU/内存、
+Kubernetes 重启/phase 和原生带时间戳日志。96 轮采集得到 1536 个指标点、
+1344 条日志，采集错误为 0；窗口聚合、趋势、比较、日志样例和独立 golden
+计数通过。100 次查询、并发 4 的 P50/P95 只代表此有限开发范围。
+VictoriaLogs 固定查询增加实际 `_time` 约束，避免仅 HTTP start/end 无效。
+
+运行机制通过实际单子进程 SIGKILL、租约过期和接管验证；旧 generation
+不能提交，已提交 Step 不重复。真实 Keycloak PKCE/RS256、当前数据库角色、
+API/Worker、持久轮次、SSE、刷新恢复和跨角色隔离已通过原 VM/VL 运行闭环。
+Archive 的 TLS/IAM 依赖明确为独立 Fixture，不代表生产归档或 HA/灾备通过。
+
+DeepFlow 实时 UID/容器身份映射、6 项 L4 查询、HTTP 200/503 的 L7 元数据、
+范围与来源撤销均通过独立真实适配器验证。固定 L7 模板只返回协议/状态/耗时，
+不返回 URL 参数、头、正文、SQL 或 Trace。来源验证和 L7 证明分别续约；
+没有实际非空 L7 证明时不标记 live。MCP 新增 get l7 context，接口及页面
+返回当前范围的 networkCapabilities，Trace 始终 CAPABILITY_DISABLED。
+单目标查询不披露范围外对端身份，也不把不透明统计转换成图关系。
+
+开发部署与 Agent Group 共用 checked-in 默认资源上限：1024 MiB（1 GiB）、
+1000 millicpus；requests 为 256Mi / 100m。通信地址从独立 Service 解析，
+脚本保留已有配置并回读核对。远程同一 Agent Pod 在 2026-10-14 08:21
+核对时已运行约 16 小时、重启 0 次。Server 增加独立启动探针以等待数据库
+初始化，配置见 scripts/deepflow-dev。此部署仍是 candidate，不进入 core
+Bundle，不修改既有 core/final 发布配置。
+
+签名 MCP 的 L4/L7 持久调用已于 r16 通过（34.63 秒）：官方 SDK、mTLS、
+OpenBao 注册上下文、两个已提交步骤、非空 EvidenceRefs、wire replay 拒绝及
+Committed 分配复用；Incident 数为 0。依赖的 tenant/role/PKI 和 TLS/IAM
+Archive 仍明确为 Fixture。
+
+网络能力页面追加真实浏览器验收已通过：Playwright r7（1.3 分钟）、
+Go OIDC runtime r4（187.42 秒），随机 runtimeId 回执一致；真实 PKCE/RS256、
+当前角色、L4/L7 live/Trace 禁用页面、持久轮次、SSE、刷新与跨角色隔离通过。
+轮次为协议有效 partial，运行日志保留 Graph 暂时不可用和 investigator
+可用性错误，不宣称本次模型诊断效果或持续健康通过。2026-10-14 曾发生 91%～93%
+I/O wait、Controller 超时、Graph 租约续约失败及 CDP 超时，失败轮次保留。
+实查本专项三个 PVC 在 NVMe，但原浏览器工具和 containerd 在机械盘 /data，
+机械盘读取等待 231～417ms，NVMe 仅 0.07～0.16ms。独立同版本工具复制到
+NVMe；开发 Server 存活探针改为 5 秒 timeout、10 秒周期、12 次失败窗口，
+readiness 和实际来源准入不变。长时测试静态签名 CRL 增加 Fixture 周期
+刷新，保留浏览器 r6 的 stale CRL 拒绝；不调整生产撤销检查。真实最终结果
+以 evidence 回执为准。
+
+证据见 ../evidence/assistant-runtime-20261013；脚本见
+../../scripts/assistant-runtime/README.md 与 ../../scripts/deepflow-dev/README.md。
+迁移闭包的旧准入摘要仍因既有 41/42 增量失配；不修改旧准入或以 make check
+替代正式发行。根目录 00～10、Trace 禁用和 KubeVirt/CDI 延期继续有效。

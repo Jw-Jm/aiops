@@ -299,7 +299,7 @@ func (a InvestigationTools) Invoke(ctx context.Context, j investigation.Job, nam
 		if p.TimeRange == nil || id == "" {
 			return out, investigation.ErrInvalid
 		}
-		templates := map[string]string{"get network health": "GetResourceNetworkHealth", "get dependencies": "GetNetworkDependencies", "find retransmission": "FindTCPRetransmission", "find packet loss": "FindPacketLoss", "find connection failure": "FindConnectionFailure", "get network path": "GetNetworkPath"}
+		templates := map[string]string{"get network health": "GetResourceNetworkHealth", "get dependencies": "GetNetworkDependencies", "find retransmission": "FindTCPRetransmission", "find packet loss": "FindPacketLoss", "find connection failure": "FindConnectionFailure", "get network path": "GetNetworkPath", "get l7 context": "GetL7Context"}
 		data, err = a.read(ctx, j, "/api/v1/evidence:query", q, map[string]any{"resourceCanonicalId": id, "type": "deepflow", "timeRange": p.TimeRange, "queryTemplate": templates[p.Operation], "budget": map[string]int{"maxBytes": 32 << 10, "timeoutMs": 2500}, "limit": 100})
 	default:
 		return out, investigation.ErrDenied

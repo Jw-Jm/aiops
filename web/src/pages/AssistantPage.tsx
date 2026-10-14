@@ -144,6 +144,7 @@ export function AssistantPage() {
       ),
   });
   const sourceCapabilities = capabilities.data?.data.sourceCapabilities || [];
+  const networkCapabilities = capabilities.data?.data.networkCapabilities || [];
   const visibleDatasets = capabilities.data?.data.catalog.datasets;
   const taskKinds = capabilities.data?.data.taskKinds || [];
   const requestedTask =
@@ -670,6 +671,23 @@ export function AssistantPage() {
                             )
                             .join("；")
                         : "当前没有可用的指标/日志分析准入证明，或 Worker 不可用；目录存在不代表来源可查询。"
+                    }
+                  />
+                )}
+                {conversation.data?.data.authorizationDomain ===
+                  "operational" && (
+                  <Alert
+                    type="info"
+                    title="网络与应用层观测"
+                    description={
+                      networkCapabilities.length
+                        ? networkCapabilities
+                            .map(
+                              (source) =>
+                                `DeepFlow L4：${source.network}；L7：${source.l7}；Trace：未启用`,
+                            )
+                            .join("；")
+                        : "当前没有通过范围验证的 DeepFlow 来源。"
                     }
                   />
                 )}

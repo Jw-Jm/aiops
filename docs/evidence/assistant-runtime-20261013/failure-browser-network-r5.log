@@ -1,0 +1,28 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 assistant_runtime.spec.ts:6:5 › actual OIDC PKCE, assistant durable turn/SSE, restoration and role isolation (39.5s)
+
+
+  1) assistant_runtime.spec.ts:6:5 › actual OIDC PKCE, assistant durable turn/SSE, restoration and role isolation
+
+    TimeoutError: browserType.connectOverCDP: Timeout 30000ms exceeded.
+    Call log:
+      - <ws preparing> retrieving websocket url from http://127.0.0.1:19224
+      - <ws connecting> ws://127.0.0.1:19224/devtools/browser/db61ce1d-cfdc-4b89-bd31-87c4944bd27f
+      - <ws connected> ws://127.0.0.1:19224/devtools/browser/db61ce1d-cfdc-4b89-bd31-87c4944bd27f
+
+
+      15 |   );
+      16 |   const baseURL = "https://192.168.0.63:18643";
+    > 17 |   const browser = await chromium.connectOverCDP(
+         |                                  ^
+      18 |     process.env.OPS_WEB_QA_CDP || "http://127.0.0.1:19222",
+      19 |   );
+      20 |   const context = await browser.newContext({
+        at /opt/ops-assistant-dev-20261012/ui/assistant_runtime.spec.ts:17:34
+
+    Error Context: runtime-results/assistant_runtime-actual-O-bca47-toration-and-role-isolation/error-context.md
+
+  1 failed
+    assistant_runtime.spec.ts:6:5 › actual OIDC PKCE, assistant durable turn/SSE, restoration and role isolation

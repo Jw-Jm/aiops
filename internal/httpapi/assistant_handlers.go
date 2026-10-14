@@ -16,6 +16,7 @@ import (
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/assistant"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/investigation"
 )
@@ -114,6 +115,7 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		sources := []analytics.SourceCapability{}
+		network := []evidence.CapabilitySet{}
 		sourceStatus := "cluster_not_selected"
 		if cluster := r.URL.Query().Get("clusterUid"); cluster != "" {
 			if !auth.HasRole(r.Context(), auth.Operator) {
@@ -126,14 +128,18 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			j := investigation.Job{TenantID: actor.TenantID, Subject: actor.Subject, Scope: grant, Assistant: &investigation.AssistantTask{GrantSnapshotDigest: graph.ScopeDigest(grant)}}
-			sources, err = h.SP04.assistantSourceCapabilities(r.Context(), j)
+			details, err := h.SP04.AssistantCapabilityDetails(r.Context(), j)
+			if err == nil {
+				sources = details.Capabilities
+				network = details.Network
+			}
 			sourceStatus = "available"
 			if err != nil {
 				sourceStatus = "unavailable"
 				sources = []analytics.SourceCapability{}
 			}
 		}
-		writeJSON(w, 200, map[string]any{"data": map[string]any{"enabled": h.Repository.Jobs.AssistantEnabled, "sourceCapabilities": sources, "sourceCapabilityStatus": sourceStatus, "taskKinds": tasks, "catalog": catalog, "virtualization": "deferred", "runtimeAcceptance": "unverified"}, "requestId": actor.RequestID})
+		writeJSON(w, 200, map[string]any{"data": map[string]any{"enabled": h.Repository.Jobs.AssistantEnabled, "sourceCapabilities": sources, "networkCapabilities": network, "sourceCapabilityStatus": sourceStatus, "taskKinds": tasks, "catalog": catalog, "virtualization": "deferred", "runtimeAcceptance": "unverified"}, "requestId": actor.RequestID})
 		return
 	}
 	if r.URL.Path == "/api/v1/assistant/legal-holds" {

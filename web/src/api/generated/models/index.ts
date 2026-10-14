@@ -21,6 +21,7 @@ export * from './assistantAnswerV1HypothesesItem.ts';
 export * from './assistantCapabilitiesEnvelopeV1.ts';
 export * from './assistantCapabilitiesEnvelopeV1Data.ts';
 export * from './assistantCapabilitiesEnvelopeV1DataCatalog.ts';
+export * from './assistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesItem.ts';
 export * from './assistantCapabilitiesEnvelopeV1DataSourceCapabilitiesItem.ts';
 export * from './assistantConversationEnvelopeV1.ts';
 export * from './assistantConversationEnvelopeV1Meta.ts';

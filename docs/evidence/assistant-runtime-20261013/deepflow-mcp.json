@@ -1,0 +1,35 @@
+{
+  "committedAllocationReuse": true,
+  "committedSteps": 2,
+  "dependencyFixtures": [
+    "isolated tenant/role/PKI setup",
+    "TLS/IAM Archive"
+  ],
+  "fixtureOnly": false,
+  "incidentCount": 0,
+  "modelQualityAcceptance": false,
+  "outcomes": [
+    {
+      "evidenceRefs": [
+        "01a137fc-e818-777e-b7f4-8e859a8ab357"
+      ],
+      "operation": "get network health",
+      "state": "partial",
+      "stepId": "01a137fc-e805-7bf6-b594-e257eac8ec4b"
+    },
+    {
+      "evidenceRefs": [
+        "01a137fc-ef6b-78d5-b600-d038ad80ae6b"
+      ],
+      "operation": "get l7 context",
+      "state": "partial",
+      "stepId": "01a137fc-ef5d-7b45-89e2-3a20fb2f8583"
+    }
+  ],
+  "passed": true,
+  "productionAdmission": false,
+  "profileReference": "assistant-zh-evaluation/v1@sha256:7f1761538baf3abd45c863304a13f75ca70020dff44803980db067d7f7cc8d4c",
+  "schemaVersion": "assistant-deepflow-mcp/v1",
+  "transport": "actual official SDK, mTLS, OpenBao signed registered context",
+  "wireReplayRejected": true
+}

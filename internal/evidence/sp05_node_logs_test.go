@@ -13,11 +13,15 @@ import (
 )
 
 func TestNodeKernelTemplateBindsClusterUIDAndCannotGrantPodScope(t *testing.T) {
-	now := time.Now().UTC().Truncate(time.Second)
+	now := time.Now().UTC().Truncate(time.Second).Add(123456789 * time.Nanosecond)
 	reads := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		reads++
 		query := r.URL.Query().Get("query")
+		window := "_time:[" + now.Add(-time.Minute).Format(time.RFC3339Nano) + "," + now.Add(time.Second).Format(time.RFC3339Nano) + "]"
+		if !strings.Contains(query, window) {
+			t.Error("log expression omitted or rounded its actual time window")
+		}
 		for _, term := range []string{`_TRANSPORT="kernel"`, `tenant="tenant-a"`, `cluster="cluster-a"`, `uid="node-a"`, `namespace=""`} {
 			if !strings.Contains(query, term) {
 				t.Errorf("missing exact isolation term %s", term)

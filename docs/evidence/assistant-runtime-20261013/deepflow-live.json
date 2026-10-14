@@ -1,0 +1,304 @@
+{
+  "capabilities": {
+    "l7": "live",
+    "network": "live",
+    "trace": "CAPABILITY_DISABLED"
+  },
+  "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+  "fixtureOnly": false,
+  "httpStimuli": [
+    200,
+    503
+  ],
+  "identityValidFrom": "2026-10-13T07:43:46Z",
+  "modelQualityAcceptance": false,
+  "namespace": "ops-assistant-deepflow-20261013",
+  "nativePodUid": "ff3e4087-10d3-478a-9ffd-c7a655b84d35",
+  "passed": true,
+  "results": {
+    "FindConnectionFailure": {
+      "schemaVersion": "evidence-result/v2",
+      "evidence": [
+        {
+          "sourceScopeDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+          "schemaVersion": "evidence/v2",
+          "evidenceId": "01a1343f-1a79-794e-86ef-643149e3fe09",
+          "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+          "resourceCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/ff3e4087-10d3-478a-9ffd-c7a655b84d35",
+          "type": "network",
+          "dataClass": "D1",
+          "sourceRegistrationId": "536932f0-d92c-4529-afa2-e876622f813d",
+          "sourceRevision": 1,
+          "sourceSystem": "deepflow",
+          "backendLogicalId": "assistant-live-deepflow",
+          "queryTemplateVersion": "deepflow-v7.2.0/FindConnectionFailure",
+          "queryHash": "sha256:ed83286d353f18dbd2d58bb095ea0c87ff37b18bbbeaa372e12db88589a6dfcd",
+          "effectiveScope": {
+            "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-assistant-deepflow-20261013"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "actual-deepflow-source-probe"
+          },
+          "evaluatedAt": "2026-10-13T15:51:53.209610246+08:00",
+          "observedFrom": "2026-10-13T07:51:30Z",
+          "observedTo": "2026-10-13T07:51:37Z",
+          "sourceRetentionUntil": "2026-10-13T13:51:37Z",
+          "timeReliable": false,
+          "replayState": "archive_pending",
+          "contentDigest": "sha256:218891b2cf7de86f9c7a856c607d86252db86f651a8693bb6d5c08e7cc0d725e",
+          "derivationEvidenceRefs": [],
+          "independenceGroup": "536932f0-d92c-4529-afa2-e876622f813d"
+        }
+      ],
+      "partial": false,
+      "freshness": "fresh",
+      "degradedSources": [],
+      "warnings": [],
+      "queryHash": "sha256:ed83286d353f18dbd2d58bb095ea0c87ff37b18bbbeaa372e12db88589a6dfcd"
+    },
+    "FindPacketLoss": {
+      "schemaVersion": "evidence-result/v2",
+      "evidence": [
+        {
+          "sourceScopeDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+          "schemaVersion": "evidence/v2",
+          "evidenceId": "01a1343f-1c41-71e5-831d-4ca695eebb7d",
+          "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+          "resourceCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/ff3e4087-10d3-478a-9ffd-c7a655b84d35",
+          "type": "network",
+          "dataClass": "D1",
+          "sourceRegistrationId": "536932f0-d92c-4529-afa2-e876622f813d",
+          "sourceRevision": 1,
+          "sourceSystem": "deepflow",
+          "backendLogicalId": "assistant-live-deepflow",
+          "queryTemplateVersion": "deepflow-v7.2.0/FindPacketLoss",
+          "queryHash": "sha256:4077a1b2cb1224df3bb9109911ad80ea5747b3c1fc878c48bed36f46e69b5e06",
+          "effectiveScope": {
+            "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-assistant-deepflow-20261013"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "actual-deepflow-source-probe"
+          },
+          "evaluatedAt": "2026-10-13T15:51:53.665125159+08:00",
+          "observedFrom": "2026-10-13T07:51:27Z",
+          "observedTo": "2026-10-13T07:51:37Z",
+          "sourceRetentionUntil": "2026-10-13T13:51:37Z",
+          "timeReliable": false,
+          "replayState": "archive_pending",
+          "contentDigest": "sha256:750bc79e646156c5b26424966be75a3d64e7a3b88ab3210caf51dc6026a902e1",
+          "derivationEvidenceRefs": [],
+          "independenceGroup": "536932f0-d92c-4529-afa2-e876622f813d"
+        }
+      ],
+      "partial": true,
+      "freshness": "fresh",
+      "degradedSources": [],
+      "warnings": [
+        "packet_loss_not_directly_observed; retransmission_is_only_supporting_evidence"
+      ],
+      "queryHash": "sha256:4077a1b2cb1224df3bb9109911ad80ea5747b3c1fc878c48bed36f46e69b5e06"
+    },
+    "FindTCPRetransmission": {
+      "schemaVersion": "evidence-result/v2",
+      "evidence": [],
+      "partial": false,
+      "freshness": "fresh",
+      "degradedSources": [],
+      "warnings": [
+        "no_evidence"
+      ],
+      "queryHash": "sha256:a06d89e749c7ed7ed3b11c210cae4aa8684907def893a40b01cb48bf9a2586bf"
+    },
+    "GetL7Context": {
+      "schemaVersion": "evidence-result/v2",
+      "evidence": [
+        {
+          "sourceScopeDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+          "schemaVersion": "evidence/v2",
+          "evidenceId": "01a1343f-201e-79d2-b0e3-22bac037cc0c",
+          "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+          "resourceCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/ff3e4087-10d3-478a-9ffd-c7a655b84d35",
+          "type": "network",
+          "dataClass": "D1",
+          "sourceRegistrationId": "536932f0-d92c-4529-afa2-e876622f813d",
+          "sourceRevision": 1,
+          "sourceSystem": "deepflow",
+          "backendLogicalId": "assistant-live-deepflow",
+          "queryTemplateVersion": "deepflow-v7.2.0/GetL7Context",
+          "queryHash": "sha256:71eede334e5bb6f556ba574fa38801b0068e7f744e4a03aa4b5849729edc7ea0",
+          "effectiveScope": {
+            "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-assistant-deepflow-20261013"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "actual-deepflow-source-probe"
+          },
+          "evaluatedAt": "2026-10-13T15:51:54.654644105+08:00",
+          "observedFrom": "2026-10-13T07:51:25Z",
+          "observedTo": "2026-10-13T07:51:46Z",
+          "sourceRetentionUntil": "2026-10-13T13:51:46Z",
+          "timeReliable": false,
+          "replayState": "archive_pending",
+          "contentDigest": "sha256:f4630104755798ef7e23cf40e4aa39224808e0ae8a11093846cec81dbbd28b75",
+          "derivationEvidenceRefs": [],
+          "independenceGroup": "536932f0-d92c-4529-afa2-e876622f813d"
+        }
+      ],
+      "partial": false,
+      "freshness": "fresh",
+      "degradedSources": [],
+      "warnings": [],
+      "queryHash": "sha256:71eede334e5bb6f556ba574fa38801b0068e7f744e4a03aa4b5849729edc7ea0"
+    },
+    "GetNetworkDependencies": {
+      "schemaVersion": "evidence-result/v2",
+      "evidence": [
+        {
+          "sourceScopeDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+          "schemaVersion": "evidence/v2",
+          "evidenceId": "01a1343f-1526-78c3-bbfd-c592bcbba776",
+          "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+          "resourceCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/ff3e4087-10d3-478a-9ffd-c7a655b84d35",
+          "type": "network",
+          "dataClass": "D1",
+          "sourceRegistrationId": "536932f0-d92c-4529-afa2-e876622f813d",
+          "sourceRevision": 1,
+          "sourceSystem": "deepflow",
+          "backendLogicalId": "assistant-live-deepflow",
+          "queryTemplateVersion": "deepflow-v7.2.0/GetNetworkDependencies",
+          "queryHash": "sha256:03c9635addf0db146babccddca336e26d984b539092d21b74693e84e00222580",
+          "effectiveScope": {
+            "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-assistant-deepflow-20261013"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "actual-deepflow-source-probe"
+          },
+          "evaluatedAt": "2026-10-13T15:51:51.846574738+08:00",
+          "observedFrom": "2026-10-13T07:51:27Z",
+          "observedTo": "2026-10-13T07:51:37Z",
+          "sourceRetentionUntil": "2026-10-13T13:51:37Z",
+          "timeReliable": false,
+          "replayState": "archive_pending",
+          "contentDigest": "sha256:750bc79e646156c5b26424966be75a3d64e7a3b88ab3210caf51dc6026a902e1",
+          "derivationEvidenceRefs": [],
+          "independenceGroup": "536932f0-d92c-4529-afa2-e876622f813d"
+        }
+      ],
+      "partial": false,
+      "freshness": "fresh",
+      "degradedSources": [],
+      "warnings": [],
+      "queryHash": "sha256:03c9635addf0db146babccddca336e26d984b539092d21b74693e84e00222580"
+    },
+    "GetNetworkPath": {
+      "schemaVersion": "evidence-result/v2",
+      "evidence": [
+        {
+          "sourceScopeDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+          "schemaVersion": "evidence/v2",
+          "evidenceId": "01a1343f-16ed-7691-8c62-db6eb9650952",
+          "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+          "resourceCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/ff3e4087-10d3-478a-9ffd-c7a655b84d35",
+          "type": "network",
+          "dataClass": "D1",
+          "sourceRegistrationId": "536932f0-d92c-4529-afa2-e876622f813d",
+          "sourceRevision": 1,
+          "sourceSystem": "deepflow",
+          "backendLogicalId": "assistant-live-deepflow",
+          "queryTemplateVersion": "deepflow-v7.2.0/GetNetworkPath",
+          "queryHash": "sha256:d2d274f811bd9bb5e2e8732b488cd4527ebf29653ee752cb66de7f7ff641451f",
+          "effectiveScope": {
+            "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-assistant-deepflow-20261013"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "actual-deepflow-source-probe"
+          },
+          "evaluatedAt": "2026-10-13T15:51:52.301430713+08:00",
+          "observedFrom": "2026-10-13T07:51:27Z",
+          "observedTo": "2026-10-13T07:51:37Z",
+          "sourceRetentionUntil": "2026-10-13T13:51:37Z",
+          "timeReliable": false,
+          "replayState": "archive_pending",
+          "contentDigest": "sha256:750bc79e646156c5b26424966be75a3d64e7a3b88ab3210caf51dc6026a902e1",
+          "derivationEvidenceRefs": [],
+          "independenceGroup": "536932f0-d92c-4529-afa2-e876622f813d"
+        }
+      ],
+      "partial": true,
+      "freshness": "fresh",
+      "degradedSources": [],
+      "warnings": [
+        "path_incomplete_l4_observation_only"
+      ],
+      "queryHash": "sha256:d2d274f811bd9bb5e2e8732b488cd4527ebf29653ee752cb66de7f7ff641451f"
+    },
+    "GetResourceNetworkHealth": {
+      "schemaVersion": "evidence-result/v2",
+      "evidence": [
+        {
+          "sourceScopeDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+          "schemaVersion": "evidence/v2",
+          "evidenceId": "01a1343f-135f-7e39-b4d5-4f34843095d3",
+          "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+          "resourceCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/ff3e4087-10d3-478a-9ffd-c7a655b84d35",
+          "type": "network",
+          "dataClass": "D1",
+          "sourceRegistrationId": "536932f0-d92c-4529-afa2-e876622f813d",
+          "sourceRevision": 1,
+          "sourceSystem": "deepflow",
+          "backendLogicalId": "assistant-live-deepflow",
+          "queryTemplateVersion": "deepflow-v7.2.0/GetResourceNetworkHealth",
+          "queryHash": "sha256:c334d36c7d1c12dd58c0bb650a6f160f060d9d960b4da3a37257cf71d7a82a83",
+          "effectiveScope": {
+            "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-assistant-deepflow-20261013"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "actual-deepflow-source-probe"
+          },
+          "evaluatedAt": "2026-10-13T15:51:51.391932553+08:00",
+          "observedFrom": "2026-10-13T07:51:27Z",
+          "observedTo": "2026-10-13T07:51:33Z",
+          "sourceRetentionUntil": "2026-10-13T13:51:33Z",
+          "timeReliable": false,
+          "replayState": "archive_pending",
+          "contentDigest": "sha256:39555a888f61659097a2b6a62189d734136ea3d11a25d57e05ac8f4586d53168",
+          "derivationEvidenceRefs": [],
+          "independenceGroup": "536932f0-d92c-4529-afa2-e876622f813d"
+        }
+      ],
+      "partial": false,
+      "freshness": "fresh",
+      "degradedSources": [],
+      "warnings": [],
+      "queryHash": "sha256:c334d36c7d1c12dd58c0bb650a6f160f060d9d960b4da3a37257cf71d7a82a83"
+    }
+  },
+  "schemaVersion": "assistant-deepflow-live-acceptance/v1",
+  "scope": "one native cluster, isolated canary namespace, actual TCP/HTTP stimuli",
+  "sourceId": "536932f0-d92c-4529-afa2-e876622f813d",
+  "sourceRevisionRevocationRejected": true,
+  "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1"
+}

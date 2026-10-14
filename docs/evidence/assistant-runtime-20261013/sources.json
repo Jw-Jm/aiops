@@ -1,0 +1,577 @@
+{
+  "capacity": {
+    "concurrency": 4,
+    "p50Nanoseconds": 3757450,
+    "p95Nanoseconds": 5853677,
+    "requests": 100,
+    "scopePods": 2,
+    "sourceFaultsInjected": false
+  },
+  "collectorDigest": "sha256:363fce9cd2ed749a59303799f07a69183caeb6ecaf8af62e8a1782170df22474",
+  "collectorVersion": "kubernetes-cadvisor-logs/v1",
+  "coverageFrom": "2026-10-13T06:10:57.338629Z",
+  "coverageTo": "2026-10-13T06:18:52.680031Z",
+  "logCountGolden": 120,
+  "maxWindowSeconds": 60,
+  "modelQualityAcceptance": false,
+  "queries": {
+    "logs.records": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "datasetId": "logs.records",
+      "degradedSources": [],
+      "dimension": "",
+      "exact": true,
+      "freshness": "fresh",
+      "planDigest": "sha256:f6fc39b775712e70f7c5a5f17b0425abe3fc8837a10ba36865a772157088c12b",
+      "rows": [
+        {
+          "dimension": "",
+          "value": 120
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.582744096Z",
+      "sourceManifest": {
+        "sourceId": "017b5b2f-20f8-4ad5-8b6a-7934903474b6",
+        "revision": 1,
+        "bindingDigest": "sha256:6bbb10a57f6d42adb5baa9a151f22144808eba03d330dd5b5ae481c5d8c123f0",
+        "qualificationDigest": "sha256:746bfbd4b2b0e0dbb445467a5a4e2a11dcb61ff57bd3291df2b889d609a067e8",
+        "queryHash": "sha256:89995a1a69134efabb709b62b6b65cc0a3bd6c5f6f2a4624915431ac93ec8efd",
+        "templateVersion": "logs.records/v1",
+        "coverageFrom": "2026-10-13T06:17:50Z",
+        "coverageTo": "2026-10-13T06:18:50Z"
+      },
+      "status": "complete",
+      "timeRange": {
+        "from": "2026-10-13T06:17:50Z",
+        "to": "2026-10-13T06:18:50Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": false,
+      "unit": "logs",
+      "warnings": []
+    },
+    "logs.records/compare": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "comparisonTimeRange": {
+        "from": "2026-10-13T06:17:50Z",
+        "to": "2026-10-13T06:18:20Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "datasetId": "logs.records",
+      "degradedSources": [],
+      "dimension": "comparison",
+      "exact": true,
+      "freshness": "fresh",
+      "planDigest": "sha256:4205b50f4d8b7eff5eecfa44b793cc953215b046d9a2ba9b36b8903b26fb7d63",
+      "rows": [
+        {
+          "dimension": "baseline",
+          "value": 60
+        },
+        {
+          "dimension": "current",
+          "value": 60
+        },
+        {
+          "dimension": "unchanged",
+          "value": 0
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.604303968Z",
+      "sourceManifest": {
+        "sourceId": "017b5b2f-20f8-4ad5-8b6a-7934903474b6",
+        "revision": 1,
+        "bindingDigest": "sha256:6bbb10a57f6d42adb5baa9a151f22144808eba03d330dd5b5ae481c5d8c123f0",
+        "qualificationDigest": "sha256:e8d0db657a1006daf8029d6d31137a04a58bd496423e34c3f72b8995b6ffa71c",
+        "queryHash": "sha256:cd193eb44be9f46d7e7005f5f334c0226a599757600c56ab766e2d2e4c3d44bc",
+        "templateVersion": "logs.records-compare/v1",
+        "coverageFrom": "2026-10-13T06:17:50Z",
+        "coverageTo": "2026-10-13T06:18:50Z"
+      },
+      "status": "complete",
+      "timeRange": {
+        "from": "2026-10-13T06:18:20Z",
+        "to": "2026-10-13T06:18:50Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": false,
+      "unit": "logs",
+      "warnings": []
+    },
+    "logs.records/samples": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "datasetId": "logs.records",
+      "degradedSources": [],
+      "dimension": "",
+      "exact": false,
+      "freshness": "fresh",
+      "planDigest": "sha256:1607df2f15ff7bdfe5e3c53858396177f4d24a1485e0fc7ec1d63dbd8f42f114",
+      "rows": [
+        {
+          "dimension": "",
+          "value": 20
+        }
+      ],
+      "samples": [
+        {
+          "timestamp": "2026-10-13T06:18:49.385640326Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872329.3855226, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:49.38245196Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872329.3823128, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:48.385551386Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872328.3854344, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:48.38235499Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872328.3822114, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:47.385372076Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872327.3853137, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:47.382201159Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872327.3821075, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:46.38530666Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872326.385208, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:46.382159833Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872326.3820052, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:45.385221756Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872325.3851109, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:45.382035605Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872325.3819048, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:44.385070864Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872324.38502, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:44.381853584Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872324.381798, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:43.385009192Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872323.3849282, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:43.38180716Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872323.3816943, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:42.384922374Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872322.3848338, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:42.381682456Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872322.3815615, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:41.384880419Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872321.3847878, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:41.381547114Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872321.3814178, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:40.384840519Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872320.3847418, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        },
+        {
+          "timestamp": "2026-10-13T06:18:40.381454686Z",
+          "message": "{\"event\": \"assistant-live-observation\", \"time\": 1791872320.3813143, \"message\": \"actual container stdout [REDACTED]\"}",
+          "level": "info"
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.60762565Z",
+      "sourceManifest": {
+        "sourceId": "017b5b2f-20f8-4ad5-8b6a-7934903474b6",
+        "revision": 1,
+        "bindingDigest": "sha256:6bbb10a57f6d42adb5baa9a151f22144808eba03d330dd5b5ae481c5d8c123f0",
+        "qualificationDigest": "sha256:55ffcac1e29fcc694faf90f67d4a777f200bd366fc76809ac4696044e363ceaf",
+        "queryHash": "sha256:6776f08ee4df0e5c15304d0ec8f928d6d01b0f3561df016d28e7b02c5376a0a7",
+        "templateVersion": "logs.records-samples/v1",
+        "coverageFrom": "2026-10-13T06:17:50Z",
+        "coverageTo": "2026-10-13T06:18:50Z"
+      },
+      "status": "partial",
+      "timeRange": {
+        "from": "2026-10-13T06:17:50Z",
+        "to": "2026-10-13T06:18:50Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": true,
+      "unit": "logs",
+      "warnings": [
+        "bounded_sanitized_samples_not_total_count"
+      ]
+    },
+    "logs.records/trend": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "datasetId": "logs.records",
+      "degradedSources": [],
+      "dimension": "time",
+      "exact": true,
+      "freshness": "fresh",
+      "planDigest": "sha256:3fd6a7b955703f44c09caea003ee95b1dd8301d317e4414ee12bed76e426ff97",
+      "rows": [
+        {
+          "dimension": "2026-10-13T06:17:50Z",
+          "value": 120
+        },
+        {
+          "dimension": "2026-10-13T06:18:50Z",
+          "value": 120
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.595920128Z",
+      "sourceManifest": {
+        "sourceId": "017b5b2f-20f8-4ad5-8b6a-7934903474b6",
+        "revision": 1,
+        "bindingDigest": "sha256:6bbb10a57f6d42adb5baa9a151f22144808eba03d330dd5b5ae481c5d8c123f0",
+        "qualificationDigest": "sha256:4bf8469c7b2e8e862556f2776ebff613bba9c11f87dbc4780e222c45f5a3c849",
+        "queryHash": "sha256:692286a22156c27d00be17a03bdaeed68073f367ee28437db8b4394c8e9aa847",
+        "templateVersion": "logs.records-trend/v1",
+        "coverageFrom": "2026-10-13T06:16:50Z",
+        "coverageTo": "2026-10-13T06:18:50Z"
+      },
+      "status": "complete",
+      "stepSeconds": 60,
+      "timeRange": {
+        "from": "2026-10-13T06:17:50Z",
+        "to": "2026-10-13T06:18:50Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": false,
+      "unit": "logs",
+      "warnings": []
+    },
+    "metrics.pod-cpu": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "datasetId": "metrics.pod-cpu",
+      "degradedSources": [],
+      "dimension": "",
+      "exact": true,
+      "freshness": "fresh",
+      "planDigest": "sha256:46fa14de7dcabffa5cd2efdd72dacebd1a575231a3eb7e001742f48b699c950e",
+      "rows": [
+        {
+          "dimension": "",
+          "value": 0.060694553363861224
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.589387917Z",
+      "sourceManifest": {
+        "sourceId": "6a4037b5-2843-47fc-a958-d632e985f058",
+        "revision": 1,
+        "bindingDigest": "sha256:5af2335940f04251174653d84123aad4cdd2aa877f55868fbb2321bf799c94b9",
+        "qualificationDigest": "sha256:33e53da07a7ac3824aa4ab13467793a54d287f202d57e99b3462950ad8df4e03",
+        "queryHash": "sha256:0497e3faaadd4be08a8703b1b8933c0d471bfeac0c3ee36d996d1e31a9416f2c",
+        "templateVersion": "metrics.pod-cpu/v1",
+        "coverageFrom": "2026-10-13T06:17:50Z",
+        "coverageTo": "2026-10-13T06:18:50Z"
+      },
+      "status": "complete",
+      "timeRange": {
+        "from": "2026-10-13T06:17:50Z",
+        "to": "2026-10-13T06:18:50Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": false,
+      "unit": "cores",
+      "warnings": []
+    },
+    "metrics.pod-cpu/compare": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "comparisonTimeRange": {
+        "from": "2026-10-13T06:17:50Z",
+        "to": "2026-10-13T06:18:20Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "datasetId": "metrics.pod-cpu",
+      "degradedSources": [],
+      "dimension": "comparison",
+      "exact": true,
+      "freshness": "fresh",
+      "planDigest": "sha256:fd583b4d5817fcde60a4567fb08a71fed7a8db841bf86d7761ebed05bef8f8a5",
+      "rows": [
+        {
+          "dimension": "baseline",
+          "value": 0.060349672773201926
+        },
+        {
+          "dimension": "current",
+          "value": 0.06103943395452052
+        },
+        {
+          "dimension": "increase",
+          "value": 0.0006897611813185961
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.599952726Z",
+      "sourceManifest": {
+        "sourceId": "6a4037b5-2843-47fc-a958-d632e985f058",
+        "revision": 1,
+        "bindingDigest": "sha256:5af2335940f04251174653d84123aad4cdd2aa877f55868fbb2321bf799c94b9",
+        "qualificationDigest": "sha256:00ca43df833d9f32a4ee0163d7660b72127dd80e37e9ffd4a17aea95439240dc",
+        "queryHash": "sha256:229174d5e65f5f00b240542d7b2093f9429f1474a07c9ddb125b1fe626d99f3e",
+        "templateVersion": "metrics.pod-cpu-compare/v1",
+        "coverageFrom": "2026-10-13T06:17:50Z",
+        "coverageTo": "2026-10-13T06:18:50Z"
+      },
+      "status": "complete",
+      "timeRange": {
+        "from": "2026-10-13T06:18:20Z",
+        "to": "2026-10-13T06:18:50Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": false,
+      "unit": "cores",
+      "warnings": []
+    },
+    "metrics.pod-cpu/trend": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "datasetId": "metrics.pod-cpu",
+      "degradedSources": [],
+      "dimension": "time",
+      "exact": true,
+      "freshness": "fresh",
+      "planDigest": "sha256:d14502b3d68d9e6782390589c4fe39f6f80aa791704c592ce60d03be29ae411c",
+      "rows": [
+        {
+          "dimension": "2026-10-13T06:17:50Z",
+          "value": 0.06034295883320121
+        },
+        {
+          "dimension": "2026-10-13T06:18:50Z",
+          "value": 0.06156800793564514
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.591012703Z",
+      "sourceManifest": {
+        "sourceId": "6a4037b5-2843-47fc-a958-d632e985f058",
+        "revision": 1,
+        "bindingDigest": "sha256:5af2335940f04251174653d84123aad4cdd2aa877f55868fbb2321bf799c94b9",
+        "qualificationDigest": "sha256:3c60db0dea85502d0c9640a7d4532d678d0ceb476329cce92a634cfaeb97e979",
+        "queryHash": "sha256:936bbaad1b86c9d9cd7b4fc462ce4e23b7aceefd4aa2a863508a32884a571d0d",
+        "templateVersion": "metrics.pod-cpu-trend/v1",
+        "coverageFrom": "2026-10-13T06:17:50Z",
+        "coverageTo": "2026-10-13T06:18:50Z"
+      },
+      "status": "complete",
+      "stepSeconds": 60,
+      "timeRange": {
+        "from": "2026-10-13T06:17:50Z",
+        "to": "2026-10-13T06:18:50Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": false,
+      "unit": "cores",
+      "warnings": []
+    },
+    "metrics.pod-memory": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "datasetId": "metrics.pod-memory",
+      "degradedSources": [],
+      "dimension": "",
+      "exact": true,
+      "freshness": "fresh",
+      "planDigest": "sha256:2616ddeee3792638c65a0fad9a139f03eff5ffb879b71083f6560c31a1bcec0f",
+      "rows": [
+        {
+          "dimension": "",
+          "value": 9158656
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.576013463Z",
+      "sourceManifest": {
+        "sourceId": "6a4037b5-2843-47fc-a958-d632e985f058",
+        "revision": 1,
+        "bindingDigest": "sha256:5af2335940f04251174653d84123aad4cdd2aa877f55868fbb2321bf799c94b9",
+        "qualificationDigest": "sha256:57d4f8a435b8854279fa143ddd3234405cf07267094962ae4481c5a2c89af1e0",
+        "queryHash": "sha256:f40c147e7753f6c372c6e02e0092ef4a782fef9fcc2c2e066679605d86ad9063",
+        "templateVersion": "metrics.pod-memory/v1",
+        "coverageFrom": "2026-10-13T06:17:50Z",
+        "coverageTo": "2026-10-13T06:18:50Z"
+      },
+      "status": "complete",
+      "timeRange": {
+        "from": "2026-10-13T06:17:50Z",
+        "to": "2026-10-13T06:18:50Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": false,
+      "unit": "bytes",
+      "warnings": []
+    },
+    "metrics.pod-phase": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "datasetId": "metrics.pod-phase",
+      "degradedSources": [],
+      "dimension": "phase",
+      "exact": true,
+      "freshness": "fresh",
+      "planDigest": "sha256:ebfbb00584da9d0b31a8a7dc77560a55aa3abdcd8adc531535a914b2981db6c1",
+      "rows": [
+        {
+          "dimension": "Running",
+          "value": 2
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.579201249Z",
+      "sourceManifest": {
+        "sourceId": "6a4037b5-2843-47fc-a958-d632e985f058",
+        "revision": 1,
+        "bindingDigest": "sha256:5af2335940f04251174653d84123aad4cdd2aa877f55868fbb2321bf799c94b9",
+        "qualificationDigest": "sha256:35cd168f287d03c802bac5b25670b157e0d704910d8b63474f428e3ec995fa39",
+        "queryHash": "sha256:afcf4a5e12e581f19c6b6e3a73c5525fa4f393226120612c08ec4ebc6fc72603",
+        "templateVersion": "metrics.pod-phase/v1",
+        "coverageFrom": "2026-10-13T06:17:50Z",
+        "coverageTo": "2026-10-13T06:18:50Z"
+      },
+      "status": "complete",
+      "timeRange": {
+        "from": "2026-10-13T06:17:50Z",
+        "to": "2026-10-13T06:18:50Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": false,
+      "unit": "resources",
+      "warnings": []
+    },
+    "metrics.pod-restarts": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "datasetId": "metrics.pod-restarts",
+      "degradedSources": [],
+      "dimension": "",
+      "exact": true,
+      "freshness": "fresh",
+      "planDigest": "sha256:f58d307e43d5433142c139eb4eaa7ddd6dbce665b66d2fb3066c40b9e00d2229",
+      "rows": [
+        {
+          "dimension": "",
+          "value": 2
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.570772913Z",
+      "sourceManifest": {
+        "sourceId": "6a4037b5-2843-47fc-a958-d632e985f058",
+        "revision": 1,
+        "bindingDigest": "sha256:5af2335940f04251174653d84123aad4cdd2aa877f55868fbb2321bf799c94b9",
+        "qualificationDigest": "sha256:2a24742913b94e87c90f7ff2ffaadd615afd159ee199083b82d4ef511dd0fa0c",
+        "queryHash": "sha256:3b116d786e547738d1682429c0ae31483a7fd47af430e3a02944a89509958940",
+        "templateVersion": "metrics.pod-restarts/v1",
+        "coverageFrom": "2026-10-13T06:12:32Z",
+        "coverageTo": "2026-10-13T06:13:32Z"
+      },
+      "status": "complete",
+      "timeRange": {
+        "from": "2026-10-13T06:12:32Z",
+        "to": "2026-10-13T06:13:32Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": false,
+      "unit": "restarts",
+      "warnings": []
+    },
+    "metrics.pod-restarts/trend": {
+      "catalogDigest": "sha256:ccd11af22a25742b4400555d5a755a0b2330a80f3c8839c1f34e5e6f5099246f",
+      "datasetId": "metrics.pod-restarts",
+      "degradedSources": [],
+      "dimension": "time",
+      "exact": true,
+      "freshness": "fresh",
+      "planDigest": "sha256:1b7b26960e20ca4f5b8a56292a6cf8c28d6468bb5204bdbd8bf2d808724974e3",
+      "rows": [
+        {
+          "dimension": "2026-10-13T06:17:50Z",
+          "value": 0
+        },
+        {
+          "dimension": "2026-10-13T06:18:50Z",
+          "value": 0
+        }
+      ],
+      "schemaVersion": "query-result/v1",
+      "scopeDigest": "sha256:310f7aca99b9730692ed58d7762f1bedcb473495b9f7446e27b45386393d3c41",
+      "snapshotReadAt": "2026-10-13T06:56:39.592512989Z",
+      "sourceManifest": {
+        "sourceId": "6a4037b5-2843-47fc-a958-d632e985f058",
+        "revision": 1,
+        "bindingDigest": "sha256:5af2335940f04251174653d84123aad4cdd2aa877f55868fbb2321bf799c94b9",
+        "qualificationDigest": "sha256:f4a84088935aef0d960d43a267b93c8fa9ec44f88b329e41973314151359a893",
+        "queryHash": "sha256:3b116d786e547738d1682429c0ae31483a7fd47af430e3a02944a89509958940",
+        "templateVersion": "metrics.pod-restarts-trend/v1",
+        "coverageFrom": "2026-10-13T06:17:50Z",
+        "coverageTo": "2026-10-13T06:18:50Z"
+      },
+      "status": "complete",
+      "stepSeconds": 60,
+      "timeRange": {
+        "from": "2026-10-13T06:17:50Z",
+        "to": "2026-10-13T06:18:50Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "truncated": false,
+      "unit": "restarts",
+      "warnings": []
+    }
+  },
+  "restartTransitionAt": "2026-10-13T06:13:22.377Z",
+  "revisionRevocationRejected": true,
+  "schemaVersion": "assistant-live-source-acceptance/v1",
+  "scope": "actual two-Pod Kubernetes canary only",
+  "sourceProofDigest": "sha256:96b6cde2898eba4e49263e4c65bb17e549c6a37eac6a380185ee5a3796098dc4",
+  "sourceRevision": 1
+}

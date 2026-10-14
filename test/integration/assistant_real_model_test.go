@@ -33,7 +33,7 @@ import (
 // The identity/tenant setup is isolated Fixture data. Model, PostgreSQL,
 // OpenBao signing, mTLS, official MCP and HolmesGPT are actual runtime paths.
 // Passing this smoke test does not qualify the model's diagnostic quality.
-func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Context, *sql.DB, *pgxpool.Pool, source.BoundSourceContext, assistant.Repository, modelprofile.Profile, *assistantEvaluationTrace)) {
+func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Context, *sql.DB, *pgxpool.Pool, source.BoundSourceContext, assistant.Repository, modelprofile.Profile, *assistantEvaluationTrace, *httpapi.SP04Handlers)) {
 	if os.Getenv("OPS_ASSISTANT_REAL_MODEL") != "1" {
 		t.Skip("actual model smoke test requires explicit isolated runtime")
 	}
@@ -46,7 +46,15 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 	if evaluation {
 		deadline = 22 * time.Minute
 	}
-	ctx, db, workerPool, b := sp05DatabaseTimed(t, deadline)
+	var seed []sp05Seed
+	if os.Getenv("OPS_ASSISTANT_RUNTIME_ACCEPTANCE") == "1" {
+		cfg, _, _, _ := readAssistantLiveSource(t)
+		if os.Getenv("OPS_ASSISTANT_DEEPFLOW_GRAPH_ONLY") == "1" {
+			cfg.Namespace = "ops-assistant-deepflow-20261013"
+		}
+		seed = []sp05Seed{{Tenant: cfg.TenantID, Source: cfg.SourceID, ClusterUID: cfg.ClusterUID, Namespace: cfg.Namespace, Backend: "assistant-live-kubernetes"}}
+	}
+	ctx, db, workerPool, b := sp05DatabaseTimed(t, deadline, seed...)
 	ctx, cancel := context.WithTimeout(ctx, deadline)
 	defer cancel()
 	pub, priv, _ := ed25519.GenerateKey(rand.Reader)
@@ -73,6 +81,9 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 	}
 	dir := t.TempDir()
 	files := sp06Certificates(t, dir)
+	if os.Getenv("OPS_ASSISTANT_RUNTIME_ACCEPTANCE") == "1" {
+		refreshAssistantFixtureCRL(ctx, files["crl.pem"])
+	}
 	tokenFile := filepath.Join(dir, "bao.token")
 	if os.WriteFile(tokenFile, []byte(os.Getenv("SP03_TEST_OPENBAO_TOKEN")), 0600) != nil {
 		t.Fatal("token file")
@@ -115,6 +126,9 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 	_, cursorKey, _ := ed25519.GenerateKey(rand.Reader)
 	sp04 := &httpapi.SP04Handlers{Pool: apiPool, SigningKey: cursorKey, SP05: &httpapi.SP05Handlers{Pool: apiPool, Enabled: true}}
 	sp04.SP05.GraphAPI = sp04
+	if os.Getenv("OPS_ASSISTANT_RUNTIME_ACCEPTANCE") == "1" {
+		sp04 = assistantNativeGraphRuntime(t, ctx, db, workerPool, apiPool, b, bao)
+	}
 	stopAPI, err := app.StartSP06API(ctx, apiPool, sp04, trust)
 	if err != nil {
 		t.Fatal(err)
@@ -160,11 +174,18 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 	config.CertificateFile = files["ops-worker.pem"]
 	config.PrivateKeyFile = files["ops-worker.key"]
 	write(runtimeFile, config)
-	stopWorker, err := app.StartSP06Worker(ctx, workerPool)
-	if err != nil {
-		t.Fatal(err)
+	if os.Getenv("OPS_ASSISTANT_MANUAL_MCP") == "1" {
+		if _, err = db.ExecContext(ctx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,'manual-native-mcp',$2,'assistant-tools/v1',clock_timestamp()+interval '15 minutes')`, b.TenantID, profile); err != nil {
+			t.Fatal(err)
+		}
+	} else {
+		stopWorker, err := app.StartSP06Worker(ctx, workerPool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer stopWorker()
 	}
-	defer stopWorker()
+
 	ready = false
 	for n := 0; n < 100; n++ {
 		var exists bool
@@ -181,11 +202,11 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 	if !ready {
 		t.Fatal("assistant worker unavailable")
 	}
-	run(ctx, db, workerPool, b, sp04.Assistant.Repository, material, trace)
+	run(ctx, db, workerPool, b, sp04.Assistant.Repository, material, trace, sp04)
 }
 
 func TestAssistantRealModelMCP(t *testing.T) {
-	assistantRealRuntime(t, false, func(ctx context.Context, db *sql.DB, workerPool *pgxpool.Pool, b source.BoundSourceContext, repo assistant.Repository, material modelprofile.Profile, _ *assistantEvaluationTrace) {
+	assistantRealRuntime(t, false, func(ctx context.Context, db *sql.DB, workerPool *pgxpool.Pool, b source.BoundSourceContext, repo assistant.Repository, material modelprofile.Profile, _ *assistantEvaluationTrace, _ *httpapi.SP04Handlers) {
 		actor := auth.RequestContext{TenantID: b.TenantID, Subject: "sp06-admin", Roles: []auth.Role{auth.PlatformAdmin}, RequestID: uuid.NewString()}
 		requestCtx := auth.WithRequestContext(ctx, actor)
 		c, err := repo.Create(requestCtx, assistant.Conversation{TenantID: b.TenantID, OwnerSubject: actor.Subject, Title: "实际模型只读烟测", Mode: "data_query", AuthorizationDomain: "audit", Binding: assistant.ConversationBinding{Timezone: "Asia/Shanghai"}})

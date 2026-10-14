@@ -1,0 +1,7 @@
+# Same user-namespace allowance as the existing remote QA browser, restricted
+# to the unchanged Chromium binary copied to this task's NVMe tool directory.
+abi <abi/4.0>,
+include <tunables/global>
+profile ops-assistant-qa-chromium /opt/ops-assistant-browser-20261014/chrome-linux64/chrome flags=(unconfined) {
+  userns,
+}

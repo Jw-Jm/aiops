@@ -18,6 +18,21 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace.
+const (
+	AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTraceCAPABILITYDISABLED AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace = "CAPABILITY_DISABLED"
+)
+
+// Valid indicates whether the value is a known member of the AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace enum.
+func (e AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace) Valid() bool {
+	switch e {
+	case AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTraceCAPABILITYDISABLED:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AssistantCreateConversationV1AuthorizationDomain.
 const (
 	Audit       AssistantCreateConversationV1AuthorizationDomain = "audit"
@@ -1646,8 +1661,13 @@ type AssistantAnswerV1 struct {
 // AssistantCapabilitiesEnvelopeV1 defines model for AssistantCapabilitiesEnvelopeV1.
 type AssistantCapabilitiesEnvelopeV1 struct {
 	Data struct {
-		Catalog                map[string]interface{}   `json:"catalog"`
-		Enabled                bool                     `json:"enabled"`
+		Catalog             map[string]interface{} `json:"catalog"`
+		Enabled             bool                   `json:"enabled"`
+		NetworkCapabilities *[]struct {
+			L7      string                                                      `json:"l7"`
+			Network string                                                      `json:"network"`
+			Trace   AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace `json:"trace"`
+		} `json:"networkCapabilities,omitempty"`
 		RuntimeAcceptance      string                   `json:"runtimeAcceptance"`
 		SourceCapabilities     []map[string]interface{} `json:"sourceCapabilities"`
 		SourceCapabilityStatus string                   `json:"sourceCapabilityStatus"`
@@ -1656,6 +1676,9 @@ type AssistantCapabilitiesEnvelopeV1 struct {
 	} `json:"data"`
 	RequestId string `json:"requestId"`
 }
+
+// AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace defines model for AssistantCapabilitiesEnvelopeV1.Data.NetworkCapabilities.Trace.
+type AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesTrace string
 
 // AssistantConversationEnvelopeV1 defines model for AssistantConversationEnvelopeV1.
 type AssistantConversationEnvelopeV1 struct {

@@ -166,3 +166,35 @@ profile、来源 revision/coverage、租约/nonce、保留期、已提交引用�
 
 KubeVirt/CDI 始终按 ADR-0008 延期；人工处置使用原人工确认流程，不接受
 聊天生成的执行句柄或自动修复。
+
+
+## 真实来源与 DeepFlow 开发部署
+
+真实采集/运行机制的阶段边界见 ADR-0039、ADR-0040，模型回答质量排除于
+本轮机制标准，既有质量 FAIL 保留。来源、范围、协议、提交及引用校验仍有效。
+运行步骤见 [真实运行脚本](../../scripts/assistant-runtime/README.md)，部署
+步骤见 [DeepFlow 开发配置](../../scripts/deepflow-dev/README.md)。
+
+Agent 的容器 limits 与 Agent Group 的 global.limits 必须一起变更；仅
+kubectl 修改容器资源会被 Server 重写。当前默认 1024 MiB / 1000 millicpus，
+requests 256Mi / 100m，来自同一份 agent-defaults.json。通信地址由当前
+独立 Service 推导，不下发 127.0.0.1。Server 启动探针保护数据库初始化窗口，
+但 readiness 仍须实际健康；启动等待不能当作通过。
+
+L4/L7 查询须有实时 Kubernetes UID、namespace UID、容器 ID、生命周期
+和组织/双端范围证明；每轮结束重新验证来源及身份。当前协议验证限开发
+HTTP 200/503，不能推广为所有协议/内核兼容性。重传不等于直接丢包测量，
+路径上下文只标记 L4 不完整观测。L7 仅 D1 元数据，Trace 仍禁用。
+网络能力由当前授权范围的 Worker RPC 返回，来源失效/撤销/过期时如实不可用。
+
+浏览器回执带本轮随机 runtimeId，不能复用旧成功回执。受保护 Archive
+依赖只停止测试进程并保留存储与身份。发现远程 I/O/启动/租约失败时保存失败
+轮次，不修改旧 PASS/FAIL，不修改生产服务或磁盘来掩盖问题。
+
+
+2026-10-14 机械盘排查：`/data` 在 sda1（ROTA=1），采样读等待 231～417ms、
+利用率约 94%～100%；本专项三个 DeepFlow PVC 的 hostPath 实际位于 `/opt`
+的 NVMe 上。containerd 与原浏览器工具仍在 `/data`，不能从 PVC 路径推断
+运行镜像和工具不受机械盘影响。追加验收复制既有 Chromium/Node 到独立
+`/opt/ops-assistant-browser-20261014`，不升级版本；独立非 root 浏览器使用
+19226 环回 CDP、专属 tmpfs profile，保留实际 TLS 信任校验。

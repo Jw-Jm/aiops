@@ -14,14 +14,22 @@ func NetworkRelations(result evidence.Result) ([]resource.Relation, error) {
 	edges := []resource.Relation{}
 	for _, fact := range result.Evidence {
 		var rows []struct {
-			From       string    `json:"from"`
-			To         string    `json:"to"`
-			ObservedAt time.Time `json:"observedAt"`
+			From                string    `json:"from"`
+			ResourceCanonicalID string    `json:"resourceCanonicalId"`
+			PeerScopeLimited    bool      `json:"peerScopeLimited"`
+			To                  string    `json:"to"`
+			ObservedAt          time.Time `json:"observedAt"`
 		}
 		if json.Unmarshal(fact.Data, &rows) != nil {
 			return nil, evidence.ErrArgument
 		}
 		for _, row := range rows {
+			if row.PeerScopeLimited && row.From == "" && row.To == "" && row.ResourceCanonicalID != "" {
+				if _, err := resource.ParseCanonicalID(row.ResourceCanonicalID); err != nil {
+					return nil, evidence.ErrArgument
+				}
+				continue
+			}
 			if row.ObservedAt.IsZero() {
 				return nil, evidence.ErrArgument
 			}

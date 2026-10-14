@@ -95,6 +95,41 @@ func TestDeepFlowRejectsRowsViolatingOperationPredicate(t *testing.T) {
 	}
 }
 
+func TestSelectedTargetHidesPeerAndCannotCreateNetworkEdge(t *testing.T) {
+	now := time.Date(2026, 10, 1, 0, 0, 1, 0, time.UTC)
+	id := resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: "pod-1"}.String()
+	peer := resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: "private-peer"}.String()
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"OPT_STATUS":"SUCCESS","result":{"columns":["pod_id_0","pod_id_1","retrans_tx","retrans_rx","status","tap_side","observed_at"],"values":[[1,2,4,0,3,"c-p",1790812800]]}}`)
+	}))
+	defer server.Close()
+	b := evidence.Binding{Tenant: "tenant-a", SourceID: "df-a", Revision: 1, BackendLogicalID: "querier-a", Endpoint: server.URL, ScopeMapping: datascope.Mapping{Scopes: map[string][]string{"organization": {"2"}, "cluster": {"cluster-a"}, "namespace": {"apps"}}}}
+	a, err := New(b, server.Client(), mappings{
+		id:   {CanonicalID: id, Namespace: "apps", PodID: 1, ClusterID: 2, NamespaceID: 3},
+		peer: {CanonicalID: peer, Namespace: "apps", PodID: 2, ClusterID: 2, NamespaceID: 3},
+	}, func(context.Context, evidence.Binding) error { return nil }, false, "fixture_only")
+	if err != nil {
+		t.Fatal(err)
+	}
+	q := evidence.Query{Template: "GetResourceNetworkHealth", ResourceCanonicalID: id, Namespace: "apps", From: now.Add(-time.Minute), To: now, Limit: 10, Scope: graph.Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps"}, Resources: []string{id}}}
+	got, err := a.Query(context.Background(), q)
+	if err != nil || !got.Partial || len(got.Evidence) != 1 {
+		t.Fatalf("selected target observation unavailable: %+v %v", got, err)
+	}
+	var rows []map[string]any
+	if json.Unmarshal(got.Evidence[0].Data, &rows) != nil || len(rows) != 1 || rows[0]["resourceCanonicalId"] != id || rows[0]["peerScopeLimited"] != true || rows[0]["from"] != nil || rows[0]["to"] != nil {
+		t.Fatal("peer identity disclosed")
+	}
+	if edges, err := NetworkRelations(got); err != nil || len(edges) != 0 {
+		t.Fatal("opaque target observation became a graph edge", edges, err)
+	}
+	q.Template = "GetNetworkDependencies"
+	got, err = a.Query(context.Background(), q)
+	if err != nil || !got.Partial || len(got.Evidence) != 0 {
+		t.Fatal("dependency query expanded the selected resource scope", got, err)
+	}
+}
+
 func TestDeepFlowFrozenContractMissingExtraTimeoutEmptyAndUnknown(t *testing.T) {
 	frozen, err := os.ReadFile("../../../test/fixtures/deepflow/v7.2.0/l4-flow-response.json")
 	if err != nil {

@@ -1,0 +1,343 @@
+=== RUN   TestAssistantActualOIDCAndBrowserRuntime
+2026/10/14 09:41:12 OK   00001_roles_and_schemas.sql (5.46ms)
+2026/10/14 09:41:12 goose: successfully migrated database to version: 1
+2026/10/14 09:41:12 OK   00002_platform_meta.sql (17.69ms)
+2026/10/14 09:41:12 OK   00003_finding.sql (6.73ms)
+2026/10/14 09:41:12 OK   00004_incident.sql (3.41ms)
+2026/10/14 09:41:12 OK   00005_investigation.sql (4.25ms)
+2026/10/14 09:41:12 OK   00006_action_command.sql (4.05ms)
+2026/10/14 09:41:12 OK   00007_audit.sql (6.71ms)
+2026/10/14 09:41:12 OK   00008_rls.sql (6.4ms)
+2026/10/14 09:41:12 OK   00009_idempotency_ledger.sql (4.38ms)
+2026/10/14 09:41:12 OK   00010_tenant_provisioning.sql (1.69ms)
+2026/10/14 09:41:12 OK   00011_source_registration_history.sql (3.87ms)
+2026/10/14 09:41:12 OK   00012_config_registry_lifecycle.sql (6.13ms)
+2026/10/14 09:41:12 OK   00013_audit_signed_segments.sql (6.34ms)
+2026/10/14 09:41:12 OK   00014_audit_segment_predecessors.sql (2.61ms)
+2026/10/14 09:41:12 OK   00015_source_schema_scope.sql (1.03ms)
+2026/10/14 09:41:12 OK   00016_cluster_registration_metadata.sql (2.41ms)
+2026/10/14 09:41:12 OK   00017_source_data_scope.sql (1.43ms)
+2026/10/14 09:41:12 OK   00018_sp04_resources_evidence.sql (13.19ms)
+2026/10/14 09:41:12 OK   00019_sp04_archive_ciphertext_bytes.sql (843.87µs)
+2026/10/14 09:41:12 OK   00020_sp04_request_ledger.sql (2.17ms)
+2026/10/14 09:41:12 OK   00021_sp04_archive_protection.sql (1.15ms)
+2026/10/14 09:41:12 OK   00022_sp04_legal_hold_dependencies.sql (732.14µs)
+2026/10/14 09:41:12 OK   00023_sp04_archive_query_intent.sql (796.48µs)
+2026/10/14 09:41:12 OK   00024_sp05_finding_incident.sql (14.85ms)
+2026/10/14 09:41:12 OK   00025_sp05_incident_event_time.sql (881.43µs)
+2026/10/14 09:41:12 OK   00026_sp05_source_binding_lock.sql (1.01ms)
+2026/10/14 09:41:12 OK   00027_sp05_rca_and_poll.sql (5.62ms)
+2026/10/14 09:41:12 OK   00028_sp05_operator_lock.sql (998.66µs)
+2026/10/14 09:41:12 OK   00029_sp05_evidence_links.sql (2.54ms)
+2026/10/14 09:41:12 OK   00030_sp05_recipe_fence.sql (833.75µs)
+2026/10/14 09:41:12 OK   00031_sp05_rca_postcheck.sql (682.87µs)
+2026/10/14 09:41:12 OK   00032_sp05_transport_audit.sql (829.75µs)
+2026/10/14 09:41:12 OK   00033_sp05_poll_resolution_clock.sql (1.19ms)
+2026/10/14 09:41:12 OK   00034_sp06_investigation_ledger.sql (16.42ms)
+2026/10/14 09:41:12 OK   00035_sp06_admission_data_classes.sql (1.1ms)
+2026/10/14 09:41:12 OK   00036_sp07_command_binding.sql (16.31ms)
+2026/10/14 09:41:12 OK   00037_sp07_worker_authority.sql (1.12ms)
+2026/10/14 09:41:12 OK   00038_sp08_safe_step_input_summary.sql (1ms)
+2026/10/14 09:41:12 OK   00039_assistant_conversations.sql (16.49ms)
+2026/10/14 09:41:12 OK   00040_assistant_job_v3.sql (8.17ms)
+2026/10/14 09:41:12 OK   00041_assistant_binding.sql (2.2ms)
+2026/10/14 09:41:12 OK   00042_assistant_retention.sql (4.39ms)
+2026/10/14 09:41:12 goose: successfully migrated database to version: 42
+    archive_iam_test.go:43: owned TLS/IAM fixture image=sha256:31d61f5e8771cbd5993912cd051be0c7bcdc207faaa12c50e1a3b8371631c927 id=41ef0409a870308dbab3f95afc848ac5afb58036ef4e6aa662a54d8b44d02aa6 bucket=assistant-native-80ba4a40 tenants=1
+{"time":"2026-10-14T09:41:18.820196211+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-14T09:41:20.728848539+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+    assistant_real_model_test.go:130: actual native Graph informer + Kubernetes Lease route ready; archive dependency fixture explicitly excluded
+    assistant_runtime_live_test.go:103: actual OIDC/API ready; waiting for isolated browser receipt
+{"time":"2026-10-14T09:41:53.656564047+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-b96f-7986-91fd-9c0043402a9d","method":"GET","status_code":200,"duration_ms":8}
+{"time":"2026-10-14T09:41:53.701533419+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-b9a4-78aa-9a63-a591771cfc8c","method":"GET","status_code":200,"duration_ms":0}
+{"time":"2026-10-14T09:41:54.208594829+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bb9f-7a3c-81e6-e71446239e15","method":"GET","status_code":200,"duration_ms":0}
+{"time":"2026-10-14T09:41:54.347494152+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bc24-7a1a-a99c-cd6df2c2e685","method":"GET","status_code":200,"duration_ms":6}
+{"time":"2026-10-14T09:41:54.45302311+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bc24-7403-be2b-754fda611d1b","method":"GET","status_code":200,"duration_ms":112}
+{"time":"2026-10-14T09:41:54.702661725+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bd8d-7355-8d00-84d6ca300840","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:41:54.920799797+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bdbc-7e87-9565-a41239bccf22","method":"GET","status_code":200,"duration_ms":171}
+{"time":"2026-10-14T09:41:55.121692157+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-be96-7e6f-8eba-668fc8bc81d7","method":"GET","status_code":200,"duration_ms":154}
+{"time":"2026-10-14T09:41:55.231092536+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bf99-77a7-95e2-285b4a52c2d5","method":"POST","status_code":201,"duration_ms":5}
+{"time":"2026-10-14T09:41:55.239622579+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bfa4-7115-9732-d59cd52796a4","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:41:55.252505585+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bfb1-77ef-a2bf-ad64ad09ca85","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:41:55.256581809+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bfb1-7876-91e7-c51668adf85d","method":"GET","status_code":200,"duration_ms":6}
+{"time":"2026-10-14T09:41:55.343041741+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bfa4-7132-ae75-f406ec1817f1","method":"GET","status_code":200,"duration_ms":106}
+{"time":"2026-10-14T09:41:56.152358139+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c321-7d9e-8187-bf3da827bee5","method":"POST","status_code":202,"duration_ms":22}
+{"time":"2026-10-14T09:41:56.158446245+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c33c-7492-98b8-37a30b3c23e8","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:41:56.164254532+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c33b-7dc9-8baf-6a801be594f9","method":"GET","status_code":200,"duration_ms":8}
+{"time":"2026-10-14T09:41:56.164810026+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c342-7880-ac1c-0e3074893f4c","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:41:56.173562311+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c34b-75b0-821d-64472579fae4","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:41:56.176422519+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c33c-74e3-a7e7-6e4fce4bb3d2","method":"GET","status_code":200,"duration_ms":20}
+{"time":"2026-10-14T09:41:56.267466704+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c33c-712b-9ab1-8c80ee52b90a","method":"GET","status_code":200,"duration_ms":111}
+{"time":"2026-10-14T09:41:56.282308078+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c3b6-749a-92d9-4ad1e22cd19c","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:41:56.289884096+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c3b8-7043-b348-33b9fe2c9671","method":"GET","status_code":200,"duration_ms":9}
+{"time":"2026-10-14T09:41:56.291135246+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c3b8-7b27-be71-6827d97e07dd","method":"GET","status_code":200,"duration_ms":10}
+{"time":"2026-10-14T09:41:56.292863524+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c3c2-7371-b2c7-0de71ac71e65","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:41:56.293145024+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c3b8-7041-9f69-0e8eb87867e8","method":"GET","status_code":200,"duration_ms":13}
+{"time":"2026-10-14T09:41:56.296761577+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c3c6-7a51-aa1e-79127a648c3e","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:41:56.300887384+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c3c2-7732-a104-57fa3f2da59e","method":"GET","status_code":200,"duration_ms":10}
+{"time":"2026-10-14T09:41:56.304102211+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c3c4-7893-bbdc-971c624840d2","method":"GET","status_code":200,"duration_ms":11}
+{"time":"2026-10-14T09:41:56.562885306+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c3b6-73b4-aab5-a3a3748d20ed","method":"GET","status_code":200,"duration_ms":284}
+{"time":"2026-10-14T09:41:56.662981018+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c3bc-73fb-9553-7da0f0b2499c","method":"GET","status_code":200,"duration_ms":378}
+{"time":"2026-10-14T09:41:57.274619721+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c798-777f-87c8-556e54366ed6","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:41:57.274950802+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c798-746b-81f6-e5f57bb7c734","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:41:57.277047445+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c798-7734-ba1b-1d6504373db7","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-14T09:41:57.279958468+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c798-739e-bb13-2c1f7a2a4b8b","method":"GET","status_code":200,"duration_ms":7}
+{"time":"2026-10-14T09:41:57.282689308+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c79f-788f-a673-b7951784978a","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:41:57.284303215+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c7a2-7582-8635-0d9a4c9a9885","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:41:57.284752076+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c7a1-73da-a3cd-db461bc409dc","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:41:57.28803145+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c7a1-73e3-844e-8d9f3eb5b766","method":"GET","status_code":200,"duration_ms":6}
+{"time":"2026-10-14T09:41:57.379005381+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c798-7257-a7be-d4d1da2f89ec","method":"GET","status_code":200,"duration_ms":106}
+{"time":"2026-10-14T09:41:57.581013125+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-c79f-75b7-9593-b735b0c69419","method":"GET","status_code":200,"duration_ms":301}
+{"time":"2026-10-14T09:41:58.182805464+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-cb23-7b49-a3cc-f7e12d5e6caf","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:41:59.459267112+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-d00f-7100-83dc-cb4853ccf0f8","method":"GET","status_code":200,"duration_ms":18}
+{"time":"2026-10-14T09:42:41.885144078+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-75d0-7c58-87b6-fac581ee0804","method":"GET","status_code":200,"duration_ms":11}
+{"time":"2026-10-14T09:42:41.891399082+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-75d0-7c52-8060-9f3f568a406b","method":"GET","status_code":200,"duration_ms":18}
+{"time":"2026-10-14T09:42:41.892667061+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-75da-7306-86c0-fa28bb6cd52d","method":"GET","status_code":200,"duration_ms":10}
+{"time":"2026-10-14T09:42:42.311098146+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-777f-7057-b673-3966775fd817","method":"GET","status_code":200,"duration_ms":6}
+{"time":"2026-10-14T09:42:42.311101412+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-777e-75b5-8b26-d60aaefd34d0","method":"GET","status_code":200,"duration_ms":7}
+{"time":"2026-10-14T09:42:42.311984561+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-777e-7770-8333-d2709a96d2b4","method":"GET","status_code":200,"duration_ms":9}
+{"time":"2026-10-14T09:42:42.313341757+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-777d-72d1-aca3-47af62be7591","method":"GET","status_code":200,"duration_ms":12}
+{"time":"2026-10-14T09:42:42.316932627+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-777d-79bd-9897-ae447675f886","method":"GET","status_code":200,"duration_ms":15}
+{"time":"2026-10-14T09:42:42.327919596+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-7792-7c2c-8cd4-16a31021b667","method":"GET","status_code":200,"duration_ms":5}
+{"time":"2026-10-14T09:42:42.328598663+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-7795-7163-b5c1-18973980ce65","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:42:42.329450222+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-7795-76fd-81fc-12160063edc5","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:42:42.332943352+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-7796-72ee-ac88-1c4afc8948f7","method":"GET","status_code":200,"duration_ms":6}
+{"time":"2026-10-14T09:42:42.336951355+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-7795-7691-857e-a3d83ff311a5","method":"GET","status_code":200,"duration_ms":11}
+{"time":"2026-10-14T09:42:43.964543141+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-7ded-7d26-9b04-6906499a8a4f","method":"GET","status_code":200,"duration_ms":13}
+{"time":"2026-10-14T09:42:44.420604938+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-7fc1-7b72-99f4-5df884e3f9bc","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:44.516320862+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:42:44.516713741+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:42:45.997912772+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-85ea-70a6-bdcb-68282badb555","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:42:46.464210538+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-87bd-768e-8ad3-40865c5feac5","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:47.517405295+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:42:47.518035915+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:42:48.01406782+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-8dcb-7212-9b08-af722ca1c18e","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:48.475459212+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-8f98-7d55-9451-15beffb779c2","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:50.024872713+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-95a5-792e-94dd-845755f63a3b","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:42:50.483398155+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-9771-717b-84ce-45a295b67345","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:50.519434482+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:42:50.519796716+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:42:52.037372356+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-9d82-7a13-9b8c-49cc9f364c93","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:52.491910626+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-9f49-7142-be74-274a002cd3f7","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:53.520807042+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:42:53.521337851+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:42:54.050079803+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-a55f-74c9-9365-fc2623e4af63","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:54.344990644+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-a686-77ef-b249-a4be0adaf605","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:54.500084218+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-a721-77c9-b930-8936a27fc907","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:56.061325449+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-ad3a-79e8-b8d2-76a18b618f00","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:56.5090753+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-aefa-7b65-9329-b6914e33879b","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:56.522906238+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:42:56.523018787+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:42:58.075172028+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b517-715d-82ec-173adfaf43a3","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:42:58.519236593+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b6d3-7ac6-8b61-f860af155f8c","method":"GET","status_code":200,"duration_ms":3}
+2026/10/14 09:42:59 ERROR investigator dispatch failed reason=INVESTIGATOR_UNAVAILABLE
+{"time":"2026-10-14T09:42:59.282393131+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9cf-7b4a-a3a7-5abde3d09b3a","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:59.283003925+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9cf-79c2-9cf1-e8b6fb8b0c73","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:42:59.284237702+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9cf-7ae4-a64e-96f7f5416400","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-14T09:42:59.286963168+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9cf-7aa9-8697-c4d73549873b","method":"GET","status_code":200,"duration_ms":7}
+{"time":"2026-10-14T09:42:59.291015019+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9cf-7f38-8fd1-852d2a17e69d","method":"GET","status_code":200,"duration_ms":10}
+{"time":"2026-10-14T09:42:59.293998464+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9db-7696-9906-5766dea05984","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:59.294565155+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9db-7749-990c-a7dd66d113f5","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:42:59.296705981+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9dc-73b3-9316-d5f9777a1699","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-14T09:42:59.297460062+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9db-7742-bfcd-cc8f8505d089","method":"GET","status_code":200,"duration_ms":5}
+{"time":"2026-10-14T09:42:59.301815535+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9db-78b5-b7cd-b38a8837af0a","method":"GET","status_code":200,"duration_ms":10}
+{"time":"2026-10-14T09:42:59.311957347+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9ee-705a-8124-10cf7dda22a4","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:42:59.313007884+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-b9ef-7232-b63b-01b0d23a863b","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:42:59.342697212+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-ba0b-770b-b1d9-05cc4ae01220","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:42:59.348742048+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-ba12-74cd-a5d1-1e438b2602ca","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:42:59.350887573+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-ba10-7423-a8da-3ac3b8d6bfbf","method":"GET","status_code":200,"duration_ms":6}
+{"time":"2026-10-14T09:42:59.523769544+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:42:59.523954187+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:43:00.08500809+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-bcf2-71cd-a19e-3e53b181f4b9","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:00.10118452+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-bcfd-7da3-9a0d-b0b910210d9f","method":"GET","status_code":200,"duration_ms":7}
+{"time":"2026-10-14T09:43:00.841897007+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-bfe8-7382-870c-2fd2f314fc8c","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:00.934770074+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c044-78c3-a678-62dda3a5b93c","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:00.93481292+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c040-7666-b3ca-37c944321d51","method":"GET","status_code":200,"duration_ms":5}
+{"time":"2026-10-14T09:43:00.936770085+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c040-758a-a55e-c6100241721d","method":"GET","status_code":200,"duration_ms":8}
+{"time":"2026-10-14T09:43:00.943893013+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c044-78c2-9bef-e51ea7497161","method":"GET","status_code":200,"duration_ms":11}
+{"time":"2026-10-14T09:43:00.980677853+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c072-7176-94e2-731842cd069b","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:00.981094252+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c072-7320-9299-86d3ebc26bae","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:00.983796322+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c072-7331-8b79-d0d189c835cd","method":"GET","status_code":200,"duration_ms":5}
+{"time":"2026-10-14T09:43:00.983805707+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c072-7305-bfe9-b975d8c2998d","method":"GET","status_code":200,"duration_ms":5}
+{"time":"2026-10-14T09:43:00.987893624+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c072-7101-bb66-00ecf5e3ed7b","method":"GET","status_code":200,"duration_ms":9}
+{"time":"2026-10-14T09:43:00.990785209+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c07a-77bd-813d-20dffa8c9bef","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-14T09:43:00.99099677+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c07c-7d6d-b297-4ace2456e824","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:00.992126527+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c07e-7118-84ca-bebe713fa8c8","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:00.997827238+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c083-7dd8-8987-0d67cc2a8087","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:00.997995613+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c084-7244-8caa-772a619f33c0","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:01.002371994+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c083-7b98-8b6d-550b761c9702","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-14T09:43:01.007912998+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c084-7162-a311-dcaf6d870ddc","method":"GET","status_code":200,"duration_ms":11}
+{"time":"2026-10-14T09:43:01.008367223+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c08e-795e-bf00-32e7fee802cc","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:01.008534416+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c08e-7215-8a3a-464b0ca97771","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:01.00881466+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c08a-78e3-9610-866f36fe0cf5","method":"GET","status_code":200,"duration_ms":6}
+{"time":"2026-10-14T09:43:01.015189907+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c08f-7e33-9881-9d64bf3fc754","method":"GET","status_code":200,"duration_ms":7}
+{"time":"2026-10-14T09:43:01.018664464+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c098-7d9b-b53f-e4436a2bf2b9","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:01.019937006+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c09a-72c2-b3c3-9c3787dc36e2","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:01.020874221+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c098-7a4e-a265-ad65e4657a19","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-14T09:43:01.028117664+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0a1-7d1e-8468-c8c2b8fd8287","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:01.028224547+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c09b-7c25-9284-7727dfb58adb","method":"GET","status_code":200,"duration_ms":8}
+{"time":"2026-10-14T09:43:01.028561695+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0a2-79ed-a9ca-932e5a64c2c0","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:01.030077123+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0a1-7d21-a5e0-8e9df3d7858e","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-14T09:43:01.03667554+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0aa-7374-a7c8-d7d2814f454a","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:01.036756084+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0aa-798b-a583-b328ad9a9870","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:01.03705639+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0a3-77cd-8705-4a20922c0ed1","method":"GET","status_code":200,"duration_ms":9}
+{"time":"2026-10-14T09:43:01.039230449+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0aa-718d-9d65-fb05302a616f","method":"GET","status_code":200,"duration_ms":5}
+{"time":"2026-10-14T09:43:01.042895426+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0b0-7d8d-bce0-e7f64d841792","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:01.044701252+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0b2-75db-8697-dfa8e812b251","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:01.045020569+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0aa-7aa6-9009-538a4e7cd0d7","method":"GET","status_code":200,"duration_ms":10}
+{"time":"2026-10-14T09:43:01.045043083+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0b0-77a5-951d-8e5bf865d494","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-14T09:43:01.048753367+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0b6-7735-a126-6458152164dc","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:01.049948104+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0b7-7c2f-92fa-c2a8b87feb77","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:01.051908298+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0b6-77d4-8d30-5f31813c9b19","method":"GET","status_code":200,"duration_ms":5}
+{"time":"2026-10-14T09:43:01.053602132+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0bb-778d-b2bd-3695d9baf683","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:01.054183005+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0bb-777e-b55a-1995048ef849","method":"GET","status_code":200,"duration_ms":2}
+{"time":"2026-10-14T09:43:01.056386749+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0bb-777f-96e9-cace8c6f8acc","method":"GET","status_code":200,"duration_ms":4}
+{"time":"2026-10-14T09:43:01.058584449+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0c0-7a30-a5a1-72b8e0a33ec6","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:01.05903907+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0c1-75cc-b0e8-6fbd01834c85","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:01.06058067+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0c0-7a2e-8d28-6b9b7923dbcd","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:43:01.061626192+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0bc-7af3-b4e1-4515d4dc131e","method":"GET","status_code":200,"duration_ms":8}
+{"time":"2026-10-14T09:43:01.065675848+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c0c3-70e0-9ecb-09c42bff256b","method":"GET","status_code":200,"duration_ms":6}
+{"time":"2026-10-14T09:43:01.315006123+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c1bf-7819-89e8-2932c46c19aa","method":"GET","status_code":200,"duration_ms":3}
+{"time":"2026-10-14T09:43:02.525419631+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:02.525821975+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:43:05.527224047+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:05.527302696+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:43:06.675371333+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-d6a9-741f-9223-cbeaf5819635","method":"GET","status_code":200,"duration_ms":9}
+{"time":"2026-10-14T09:43:06.719649221+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-d6de-785c-b674-ff5d1a8b3da7","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:07.255117549+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-d8f6-7333-8639-45d2c6e6b8d3","method":"GET","status_code":200,"duration_ms":0}
+{"time":"2026-10-14T09:43:07.390964451+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-d97d-7057-8157-6e4850555fa2","method":"GET","status_code":200,"duration_ms":1}
+{"time":"2026-10-14T09:43:07.39341632+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-d97c-7164-9594-c37aa836bff3","method":"GET","status_code":200,"duration_ms":5}
+{"time":"2026-10-14T09:43:07.752140968+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-dae6-781b-99e4-4175f6888a0e","method":"GET","status_code":404,"duration_ms":1}
+{"time":"2026-10-14T09:43:07.794330187+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-db10-7de9-a54e-32eb6d0a6f14","method":"GET","status_code":200,"duration_ms":1}
+    assistant_runtime_live_test.go:117: actual PKCE OIDC + current DB role bindings + API/Worker + persistent turn/SSE/browser receipt passed; no model quality criterion
+{"time":"2026-10-14T09:43:08.525611524+08:00","level":"INFO","msg":"http request complete","request_id":"01a13813-c044-78c4-af81-470261f6a3ab","method":"GET","status_code":200,"duration_ms":7593}
+{"time":"2026-10-14T09:43:08.525634728+08:00","level":"INFO","msg":"http request complete","request_id":"01a13812-bfb2-7a55-a4a4-269a493e46bd","method":"GET","status_code":200,"duration_ms":73274}
+{"time":"2026-10-14T09:43:08.528818447+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:08.529661659+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:43:11.530576808+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:11.530635005+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:43:14.53098851+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:14.53106923+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/nodes":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/persistentvolumes":"connectivity_unverified","/v1/pods":"connectivity_unverified","/v1/services":"connectivity_unverified","apps/v1/daemonsets":"connectivity_unverified","apps/v1/deployments":"connectivity_unverified","apps/v1/replicasets":"connectivity_unverified","apps/v1/statefulsets":"connectivity_unverified","batch/v1/jobs":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/storageclasses":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+{"time":"2026-10-14T09:43:17.532152533+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:17.532216625+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:20.535396146+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:20.53545816+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:23.535972459+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:23.536028074+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:26.537113243+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:26.537170595+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:29.537908653+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:29.539437353+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:32.539823008+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:32.539889673+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:35.541147985+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:35.541211604+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:38.543813709+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:38.543871577+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:41.544873826+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:41.544954481+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:44.545670453+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:44.545747897+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:47.548501058+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:47.548564087+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:50.549731718+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:50.549806767+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_unavailable","/v1/events":"watch_unavailable","/v1/nodes":"watch_unavailable","/v1/persistentvolumeclaims":"watch_unavailable","/v1/persistentvolumes":"watch_unavailable","/v1/pods":"watch_unavailable","/v1/services":"watch_unavailable","apps/v1/daemonsets":"watch_unavailable","apps/v1/deployments":"watch_unavailable","apps/v1/replicasets":"watch_unavailable","apps/v1/statefulsets":"watch_unavailable","batch/v1/jobs":"watch_unavailable","discovery.k8s.io/v1/endpointslices":"watch_unavailable","storage.k8s.io/v1/csidrivers":"watch_unavailable","storage.k8s.io/v1/csinodes":"watch_unavailable","storage.k8s.io/v1/storageclasses":"watch_unavailable","storage.k8s.io/v1/volumeattachments":"watch_unavailable"}}
+{"time":"2026-10-14T09:43:55.423964803+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:55.42413961+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_disconnected","/v1/events":"watch_initializing","apps/v1/replicasets":"watch_initializing","apps/v1/statefulsets":"watch_disconnected","discovery.k8s.io/v1/endpointslices":"watch_disconnected","storage.k8s.io/v1/volumeattachments":"watch_disconnected"}}
+{"time":"2026-10-14T09:43:58.424910904+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-14T09:43:58.424983044+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"watch_initializing","/v1/events":"watch_initializing"}}
+{"time":"2026-10-14T09:44:02.229950996+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+    assistant_real_model_test.go:159: investigator diagnostics ERROR:root:LLM call failed on model=openai/qwen2.5:1.5b (streaming iteration 1): ModelCallError: MODEL_RESULT_SETTLEMENT_REJECTED
+        Traceback (most recent call last):
+          File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/budget.py", line 116, in completion
+            raise ModelCallError("MODEL_RESULT_SETTLEMENT_REJECTED") from None
+        investigator.budget.ModelCallError: MODEL_RESULT_SETTLEMENT_REJECTED
+        investigator-model-failure MODEL_RESULT_SETTLEMENT_REJECTED
+        investigator-failure ModelCallError /assistant-src/investigator/worker.py 80
+        investigator-failure ModelCallError /assistant-src/investigator/holmes_adapter.py 86
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        investigator-failure ModelCallError /assistant-src/investigator/budget.py 116
+        ----------------------------------------
+        Exception occurred during processing of request from ('127.0.0.1', 34228)
+        Traceback (most recent call last):
+          File "/assistant-src/investigator/worker.py", line 80, in do_POST
+            result=investigate(payload["job"],assistant_model if payload["job"]["schemaVersion"]=="investigation-job/v3" else model,job_api,bridge,config["modelAPIKeyFile"])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/holmes_adapter.py", line 86, in investigate
+            result=agent.call(messages=prompt,response_format=response_format)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          File "/usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py", line 1154, in sync_wrapper
+            return f(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^
+          File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 657, in call
+            for event in stream:
+                         ^^^^^^
+          File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/budget.py", line 116, in completion
+            raise ModelCallError("MODEL_RESULT_SETTLEMENT_REJECTED") from None
+        investigator.budget.ModelCallError: MODEL_RESULT_SETTLEMENT_REJECTED
+
+        During handling of the above exception, another exception occurred:
+
+        Traceback (most recent call last):
+          File "/usr/local/lib/python3.12/socketserver.py", line 697, in process_request_thread
+            self.finish_request(request, client_address)
+          File "/usr/local/lib/python3.12/socketserver.py", line 362, in finish_request
+            self.RequestHandlerClass(request, client_address, self)
+          File "/usr/local/lib/python3.12/socketserver.py", line 766, in __init__
+            self.handle()
+          File "/usr/local/lib/python3.12/http/server.py", line 440, in handle
+            self.handle_one_request()
+          File "/usr/local/lib/python3.12/http/server.py", line 428, in handle_one_request
+            method()
+          File "/assistant-src/investigator/worker.py", line 89, in do_POST
+            self.respond(503,{"errorCode":code})
+          File "/assistant-src/investigator/worker.py", line 55, in respond
+            b=json.dumps(value).encode();self.send_response(status);self.send_header("Content-Type","application/json");self.send_header("Content-Length",str(len(b)));self.end_headers();self.wfile.write(b)
+                                                                                                                                                                                          ^^^^^^^^^^^^^^^^^^^
+          File "/usr/local/lib/python3.12/socketserver.py", line 845, in write
+            self._sock.sendall(b)
+          File "/usr/local/lib/python3.12/ssl.py", line 1210, in sendall
+            v = self.send(byte_view[count:])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          File "/usr/local/lib/python3.12/ssl.py", line 1179, in send
+            return self._sslobj.write(data)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+        BrokenPipeError: [Errno 32] Broken pipe
+        ----------------------------------------
+        ERROR:root:LLM call failed on model=openai/qwen2.5:1.5b (streaming iteration 2): RuntimeError: JOB_API_REJECTED_429
+        Traceback (most recent call last):
+          File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/budget.py", line 81, in completion
+            allocation=self.job_api.allocate("model",{"requestDigest":request_hash},True,reserve)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/job_api.py", line 26, in allocate
+            return self.request("/calls:allocate",body)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/job_api.py", line 20, in request
+            raise RuntimeError("JOB_API_REJECTED_"+str(response.status_code))
+        RuntimeError: JOB_API_REJECTED_429
+        investigator-failure RuntimeError /assistant-src/investigator/worker.py 80
+        investigator-failure RuntimeError /assistant-src/investigator/holmes_adapter.py 86
+        investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure RuntimeError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        investigator-failure RuntimeError /assistant-src/investigator/budget.py 81
+        investigator-failure RuntimeError /assistant-src/investigator/job_api.py 26
+        investigator-failure RuntimeError /assistant-src/investigator/job_api.py 20
+
+{"time":"2026-10-14T09:44:08.827517736+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_cas"}
+{"time":"2026-10-14T09:44:08.827616731+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"watch_disconnected","/v1/nodes":"watch_disconnected","/v1/persistentvolumes":"watch_disconnected","/v1/pods":"watch_disconnected","/v1/services":"watch_disconnected","apps/v1/daemonsets":"watch_disconnected","apps/v1/replicasets":"watch_disconnected","apps/v1/statefulsets":"watch_disconnected","batch/v1/jobs":"watch_disconnected","discovery.k8s.io/v1/endpointslices":"watch_disconnected","storage.k8s.io/v1/csidrivers":"watch_disconnected","storage.k8s.io/v1/csinodes":"watch_disconnected","storage.k8s.io/v1/storageclasses":"watch_disconnected","storage.k8s.io/v1/volumeattachments":"watch_disconnected"}}
+    archive_iam_test.go:187: retained owned Archive fixture id=41ef0409a870308dbab3f95afc848ac5afb58036ef4e6aa662a54d8b44d02aa6 label=287a4439-873f-456d-aec0-49a1d9044185 bucket=assistant-native-80ba4a40 private-material-directory=/root/.cache/ops-protected-integration/archive-iam-3431460219; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_406012eb37764aa99cf236a1e56eb5a3 test=TestAssistantActualOIDCAndBrowserRuntime reason=audit.records; no automatic protected cleanup
+--- PASS: TestAssistantActualOIDCAndBrowserRuntime (187.42s)
+PASS

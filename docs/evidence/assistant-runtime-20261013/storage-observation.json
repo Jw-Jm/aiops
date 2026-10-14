@@ -1,0 +1,62 @@
+{
+  "capturedDate": "2026-10-14",
+  "environment": "192.168.0.63",
+  "deepflowPVCFilesystem": {
+    "mount": "/",
+    "device": "/dev/nvme0n1p2",
+    "rotational": false,
+    "path": "/opt/ops-assistant-dev-20261012/deepflow-storage",
+    "claims": [
+      "ops-assistant-deepflow-mysql-data-pvc",
+      "clickhouse-path-ops-assistant-deepflow-clickhouse-0",
+      "clickhouse-storage-path-ops-assistant-deepflow-clickhouse-0"
+    ]
+  },
+  "runtimeAndOriginalBrowserFilesystem": {
+    "mount": "/data",
+    "device": "/dev/sda1",
+    "rotational": true,
+    "model": "ST2000DM008-2FR102"
+  },
+  "initialThreeSecondSample": {
+    "iowaitPercent": [
+      71.93,
+      73.61,
+      69.04
+    ],
+    "hddReadAwaitMilliseconds": [
+      287.45,
+      231.16,
+      416.75
+    ],
+    "hddUtilPercent": [
+      104.7,
+      95.4,
+      93.8
+    ],
+    "nvmeReadAwaitMilliseconds": [
+      0.07,
+      0.16,
+      0.12
+    ],
+    "nvmeUtilPercent": [
+      4.2,
+      2.4,
+      1.4
+    ]
+  },
+  "laterThreeSecondSample": {
+    "iowaitPercent": [
+      1.76,
+      3.02,
+      2.08
+    ],
+    "hddReadAwaitMilliseconds": [
+      13.72,
+      4.31,
+      2.71
+    ]
+  },
+  "interpretation": "HDD saturation observed, not caused by these three PVC paths. Later sample shows transient recovery; moving owned tools does not prove a permanent host I/O fix. iostat can report utilization above 100% during sample accounting.",
+  "productionChanges": false
+}

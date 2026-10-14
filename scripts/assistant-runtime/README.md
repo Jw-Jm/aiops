@@ -1,0 +1,82 @@
+# 真实来源与运行机制验收
+
+所有容器、数据库、模型、Kubernetes 和浏览器操作只在 `192.168.0.63` 执行。
+本机可编辑、编译和运行无外部服务的单元/合同检查；不使用 OrbStack。
+阶段边界见 ADR-0039、ADR-0040，模型回答质量不作为机制验收标准。
+
+远程基目录 `/opt/ops-assistant-dev-20261012`，私有配置与协调目录为
+`runtime-private`（0700），数据库、Bao、OIDC 密码和证书文件为 0600。
+禁止把凭据、完整 kubeconfig、原始全集群资源或浏览器 bearer 日志提交到 Git。
+
+`collect_live.py` 从专属 canary namespace 的真实 cAdvisor、Kubernetes UID/
+容器状态和带时间戳的 Pod 日志采集，仅写入专属 VM/VL 后端；保留原始观测供
+独立 golden 计数。`--output` 必须使用新目录，不能覆盖旧轮次。
+Kubernetes 对象/容器发生变化时重新核对身份，不补零或伪造采样。
+
+`run.py` 读取远程私有凭据，执行预先编译并复制的 Linux amd64 集成测试二进制
+`runtime-stage.test`，每轮用新的 `--name`，日志独占创建。真实服务必须先启动。
+当前 VM/VL、PostgreSQL、Bao、OIDC、Ollama 使用回环端口，固定版本/镜像来自
+既有锁定材料；本轮不升级依赖、不生成发行 Bundle。
+
+```sh
+python3 scripts/assistant-runtime/run.py --source live-source-20261013-r3 \
+  --name sources-new-round --tests '^TestAssistantActualCollectedSourcesAndCapacity$'
+```
+
+实际进程接管测试 `TestAssistantActualProcessKillAndTakeover` 使用子进程
+SIGKILL、过期租约和替代 Worker，验证已提交 Step 复用、旧 generation 围栏。
+子进程的上下文工具事实明确为机制 Fixture，不能当作生产 HA/灾备验收。
+
+DeepFlow 部署与 1 GiB Agent 默认值见 [开发部署说明](../deepflow-dev/README.md)。
+Controller/Querier 仅经远程环回 port-forward，真实采集用两个有 ownerRef 的
+HTTP canary Deployment，既有 core/final namespace 不参与写入。
+运行实际签名 MCP 测试需设置：
+
+```sh
+export OPS_ASSISTANT_DEEPFLOW_GRAPH_ONLY=1 OPS_ASSISTANT_MANUAL_MCP=1
+export OPS_TEST_ARCHIVE_HOST_NETWORK=1
+export OPS_TEST_ARCHIVE_IMAGE=sha256:31d61f5e8771cbd5993912cd051be0c7bcdc207faaa12c50e1a3b8371631c927
+export OPS_ASSISTANT_DEEPFLOW_MCP_REPORT=/opt/ops-assistant-dev-20261012/deepflow-new-report.json
+python3 scripts/assistant-runtime/run.py --name deepflow-new \
+  --tests '^TestAssistantActualDeepFlowSignedMCP$'
+```
+
+Archive 使用独立 TLS/IAM 依赖 Fixture，数据、身份及精确 bind storage 保留，
+不据此宣称生产归档准入；测试结束只停止进程。MCP 使用真实 API/Worker
+数据库角色、官方 SDK、mTLS、Bao 注册签名、真实查询和持久 Step。
+
+`web_gateway.py` 代理真实 OIDC 和动态 API 地址并提供构建后的静态 UI。
+浏览器测试运行于远程既有 Chromium CDP，不注入令牌、不 mock 路由。
+Node 必须通过 `NODE_EXTRA_CA_CERTS` 信任任务根 CA；不忽略 TLS 校验。
+启动 `TestAssistantActualOIDCAndBrowserRuntime` 后，用远程 Playwright 执行
+`assistant_runtime.spec.ts`。API 写入随机 runtimeId，回执必须匹配本轮，
+不得复用旧 profile 相同的回执。验收真实 PKCE、角色隔离、持久轮次、SSE、
+刷新恢复和 L4/L7 能力显示，答案仅校验协议与引用合同。
+
+失败轮次保留。来源无有效证明、过期、撤销或实际身份变化时如实不可用；
+测试未运行、Fixture 通过和配置开关不能替代真实运行通过。
+
+
+### 机械盘阻塞时的同版本工具路径
+
+远程 `/data` 是旋转介质，浏览器与 Node 原工具路径会受其读取延迟影响。
+2026-10-14 追加验收将既有 Chromium 1248 和 Node v24.21.0 复制到
+`/opt/ops-assistant-browser-20261014`（NVMe），没有下载/升级依赖。
+浏览器仍以 `ops-sp08-qa` 非 root 用户运行，实际 TLS 校验保持开启。
+Ubuntu 的 user namespace 策略要求将 `chromium-apparmor` 安装到
+`/etc/apparmor.d/ops-assistant-qa-chromium` 并用 `apparmor_parser -r` 加载；
+它复用原 QA 浏览器的 userns 许可，仅匹配新工具的精确执行路径。
+不要使用 `--no-sandbox` 或全局关闭 AppArmor/userns 限制。
+
+```sh
+# 仅远程执行；先复制现有工具并配置精确路径的 AppArmor profile。
+runuser -u ops-sp08-qa -- env HOME=/data/ops-sp08-20261011/browser-home \
+  /opt/ops-assistant-browser-20261014/chrome-linux64/chrome \
+  --headless --remote-debugging-address=127.0.0.1 --remote-debugging-port=19226 \
+  --user-data-dir=/dev/shm/ops-assistant-browser-20261014-nvme/profile \
+  --disk-cache-dir=/dev/shm/ops-assistant-browser-20261014-nvme/cache \
+  --noerrdialogs --no-first-run --ozone-platform=headless --use-angle=swiftshader-webgl
+```
+
+Playwright 设置 `OPS_WEB_QA_CDP=http://127.0.0.1:19226`，使用复制后的 Node。
+该浏览器仅用于本专项；收尾按 PID/执行路径/profile 核对后停止，保留日志。

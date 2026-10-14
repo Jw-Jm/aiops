@@ -1,0 +1,1 @@
+SELECT pod_id_0, pod_id_1, 0 AS retrans_tx, 0 AS retrans_rx, response_status AS status, tap_side, toUnixTimestamp(time) AS observed_at, l7_protocol, response_code, response_duration AS rrt FROM l7_flow_log WHERE time >= %d AND time <= %d AND pod_cluster_id_0 = %d AND pod_cluster_id_1 = %d AND pod_ns_id_0 = %d AND pod_ns_id_1 = %d AND (pod_id_0 = %d OR pod_id_1 = %d) LIMIT %d

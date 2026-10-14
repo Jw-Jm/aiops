@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -43,7 +44,16 @@ func newRoleTenantS3Fixture(t *testing.T, tenants []uuid.UUID, bucket string) te
 }
 func newTenantS3FixtureMode(t *testing.T, tenants []uuid.UUID, bucket string, separated bool) tenantS3Fixture {
 	t.Helper()
-	if _, err := exec.CommandContext(t.Context(), "docker", "image", "inspect", archiveIAMFixtureImage).Output(); err != nil {
+	image := archiveIAMFixtureImage
+	hostNetwork := os.Getenv("OPS_TEST_ARCHIVE_HOST_NETWORK") == "1"
+	if candidate := os.Getenv("OPS_TEST_ARCHIVE_IMAGE"); candidate != "" {
+		// Remote native reuse must identify an immutable, already cached image.
+		if !strings.HasPrefix(candidate, "sha256:") || len(candidate) != 71 {
+			t.Fatal("cached archive image requires exact immutable Docker image ID")
+		}
+		image = candidate
+	}
+	if _, err := exec.CommandContext(t.Context(), "docker", "image", "inspect", image).Output(); err != nil {
 		t.Fatal("locked SeaweedFS 4.47 image must already be present; fixture never pulls")
 	}
 	dir := retainedArchiveFixtureDirectory(t)
@@ -118,12 +128,34 @@ func newTenantS3FixtureMode(t *testing.T, tenants []uuid.UUID, bucket string, se
 	}
 	label := uuid.NewString()
 	name := "ops-archive-iam-" + label
-	output, err := exec.CommandContext(t.Context(), "docker", "run", "-d", "--pull=never", "--name", name, "--label", "ops.sp03.archive-iam="+label, "--label", "ops.platform.test.retention=protected-archive-fixture", "-p", "127.0.0.1::8333", "-v", dir+":/fixture:ro", "-v", dataDirectory+":/data", archiveIAMFixtureImage, "server", "-dir=/data", "-s3", "-s3.config=/fixture/s3.json", "-s3.cert.file=/fixture/tls.crt", "-s3.key.file=/fixture/tls.key", "-master.volumeSizeLimitMB=128").CombinedOutput()
+	port := ""
+	args := []string{"run", "-d", "--pull=never", "--name", name, "--label", "ops.sp03.archive-iam=" + label, "--label", "ops.platform.test.retention=protected-archive-fixture"}
+	serverArgs := []string{"server", "-dir=/data", "-s3", "-s3.config=/fixture/s3.json", "-s3.cert.file=/fixture/tls.crt", "-s3.key.file=/fixture/tls.key", "-master.volumeSizeLimitMB=128"}
+	if hostNetwork {
+		args = append(args, "--network", "host", "--user", "0:0", "--entrypoint", "/usr/bin/weed")
+		allocate := func() string {
+			for {
+				address := sp06Port(t)
+				_, p, _ := net.SplitHostPort(address)
+				v, _ := strconv.Atoi(p)
+				if v < 45000 {
+					return p
+				}
+			}
+		}
+		port = allocate()
+		serverArgs = append(serverArgs, "-s3.port.iceberg=0", "-s3.port.lance=0", "-ip=127.0.0.1", "-ip.bind=127.0.0.1", "-master.port="+allocate(), "-volume.port="+allocate(), "-filer.port="+allocate(), "-s3.port="+port)
+	} else {
+		args = append(args, "-p", "127.0.0.1::8333")
+	}
+	args = append(args, "-v", dir+":/fixture:ro", "-v", dataDirectory+":/data", image)
+	args = append(args, serverArgs...)
+	output, err := exec.CommandContext(t.Context(), "docker", args...).CombinedOutput()
 	if err != nil {
 		t.Fatalf("start owned TLS/IAM fixture: %v", err)
 	}
 	id := strings.TrimSpace(string(output))
-	receipt, _ := json.Marshal(map[string]any{"containerId": id, "ownerLabel": label, "image": archiveIAMFixtureImage, "test": t.Name(), "bucket": bucket, "retention": "container, exact bind storage, TLS and IAM materials retained outside Git; no automatic deletion"})
+	receipt, _ := json.Marshal(map[string]any{"containerId": id, "ownerLabel": label, "image": image, "test": t.Name(), "bucket": bucket, "retention": "container, exact bind storage, TLS and IAM materials retained outside Git; no automatic deletion"})
 	if os.WriteFile(filepath.Join(dir, "fixture-identity.json"), append(receipt, '\n'), 0600) != nil {
 		t.Fatal("retained Archive identity receipt unavailable")
 	}
@@ -158,7 +190,9 @@ func newTenantS3FixtureMode(t *testing.T, tenants []uuid.UUID, bucket string, se
 	if err != nil {
 		t.Fatal(err)
 	}
-	port := data["NetworkSettings"].(map[string]any)["Ports"].(map[string]any)["8333/tcp"].([]any)[0].(map[string]any)["HostPort"].(string)
+	if !hostNetwork {
+		port = data["NetworkSettings"].(map[string]any)["Ports"].(map[string]any)["8333/tcp"].([]any)[0].(map[string]any)["HostPort"].(string)
+	}
 	endpoint := "https://localhost:" + port
 	admin, err := s3.NewClient(s3.Config{Endpoint: endpoint, CACertBundle: ca, Bucket: bucket, AccessKey: adminAccess, SecretKey: adminSecret})
 	if err != nil {
@@ -176,7 +210,7 @@ func newTenantS3FixtureMode(t *testing.T, tenants []uuid.UUID, bucket string, se
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
-	t.Logf("owned TLS/IAM fixture image=%s id=%s bucket=%s tenants=%d", archiveIAMFixtureImage, id, bucket, len(tenants))
+	t.Logf("owned TLS/IAM fixture image=%s id=%s bucket=%s tenants=%d", image, id, bucket, len(tenants))
 	return tenantS3Fixture{Endpoint: endpoint, CAFile: certFile, CredentialFile: credentialFile, ContainerID: id, PrivateDirectory: dir, CA: ca, Credentials: credentials, Admin: admin}
 }
 

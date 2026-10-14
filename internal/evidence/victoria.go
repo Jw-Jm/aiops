@@ -160,7 +160,10 @@ func (a *Victoria) Query(ctx context.Context, q Query) (Result, error) {
 		if q.Template != "resource-logs/v1" && q.Template != "kernel-logs/v1" && !nodeLogs {
 			return out, ErrArgument
 		}
-		query = selector
+		// LogsQL query does not use query_range's start/end parameters. Bind
+		// the exact evidence window in the expression as well; retain v2's
+		// inclusive end, independently checked against every returned row.
+		query = selector + " AND _time:[" + q.From.UTC().Format(time.RFC3339Nano) + "," + q.To.UTC().Format(time.RFC3339Nano) + "]"
 		path = "/select/logsql/query"
 	}
 	bound, _ := json.Marshal(struct {

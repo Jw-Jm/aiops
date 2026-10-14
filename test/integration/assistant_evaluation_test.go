@@ -19,6 +19,7 @@ import (
 	"ops-platform/internal/assistant"
 	"ops-platform/internal/auth"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/httpapi"
 	"ops-platform/internal/modelprofile"
 	"ops-platform/internal/resource"
 	"ops-platform/internal/source"
@@ -87,7 +88,7 @@ func TestAssistantChineseEvaluation(t *testing.T) {
 			t.Fatal("five-case run requires one repeat")
 		}
 	}
-	assistantRealRuntime(t, true, func(ctx context.Context, db *sql.DB, pool *pgxpool.Pool, b source.BoundSourceContext, repo assistant.Repository, profile modelprofile.Profile, trace *assistantEvaluationTrace) {
+	assistantRealRuntime(t, true, func(ctx context.Context, db *sql.DB, pool *pgxpool.Pool, b source.BoundSourceContext, repo assistant.Repository, profile modelprofile.Profile, trace *assistantEvaluationTrace, _ *httpapi.SP04Handlers) {
 		namespaces := []map[string]string{}
 		for _, c := range suite.Cases {
 			for r := 1; r <= repeats; r++ {

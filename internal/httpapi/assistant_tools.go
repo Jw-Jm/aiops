@@ -12,6 +12,7 @@ import (
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/assistant"
 	"ops-platform/internal/contract"
+	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/investigation/tools"
@@ -154,8 +155,13 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			return out, investigation.ErrInvalid
 		}
 		if j.Assistant.AuthorizationDomain == "operational" {
-			sources, err := h.assistantSourceCapabilities(ctx, j)
-			data["sourceCapabilities"] = sources
+			details, err := h.AssistantCapabilityDetails(ctx, j)
+			data["sourceCapabilities"] = []analytics.SourceCapability{}
+			data["networkCapabilities"] = []evidence.CapabilitySet{}
+			if err == nil {
+				data["sourceCapabilities"] = details.Capabilities
+				data["networkCapabilities"] = details.Network
+			}
 			data["sourceCapabilityStatus"] = "available"
 			if err != nil {
 				data["sourceCapabilities"] = []analytics.SourceCapability{}

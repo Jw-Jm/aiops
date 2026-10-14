@@ -1,0 +1,237 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "network-server",
+        "namespace": "ops-assistant-deepflow-20261013",
+        "labels": {
+          "app": "network-server",
+          "ops.platform.io/canary-version": "deployment-v1",
+          "ops.platform.io/test-release": "assistant-network-20261013"
+        }
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "app": "network-server",
+            "ops.platform.io/canary-version": "deployment-v1",
+            "ops.platform.io/test-release": "assistant-network-20261013"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "network-server",
+              "ops.platform.io/canary-version": "deployment-v1",
+              "ops.platform.io/test-release": "assistant-network-20261013"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "containers": [
+              {
+                "command": [
+                  "python3",
+                  "-u",
+                  "-c",
+                  "from http.server import HTTPServer,BaseHTTPRequestHandler\nclass H(BaseHTTPRequestHandler):\n def do_GET(self):\n  self.send_response(503 if self.path.startswith('/fail') else 200);self.end_headers();self.wfile.write(b'canary')\nHTTPServer(('0.0.0.0',8080),H).serve_forever()\n"
+                ],
+                "image": "ops.local/amd64-20261009/command-runner@sha256:d755f1b67fba76588c7e08d22cdcceacc02b0aeead09bbbbe1f3c9660eacac5a",
+                "imagePullPolicy": "Never",
+                "name": "app",
+                "resources": {
+                  "limits": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "10m",
+                    "memory": "24Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 65532
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "network-client",
+        "namespace": "ops-assistant-deepflow-20261013",
+        "labels": {
+          "app": "network-client",
+          "ops.platform.io/canary-version": "deployment-v1",
+          "ops.platform.io/test-release": "assistant-network-20261013"
+        }
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "app": "network-client",
+            "ops.platform.io/canary-version": "deployment-v1",
+            "ops.platform.io/test-release": "assistant-network-20261013"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "network-client",
+              "ops.platform.io/canary-version": "deployment-v1",
+              "ops.platform.io/test-release": "assistant-network-20261013"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "containers": [
+              {
+                "command": [
+                  "python3",
+                  "-u",
+                  "-c",
+                  "import time,itertools,urllib.request,urllib.error\nfor n in itertools.count():\n try: urllib.request.urlopen('http://network-server:8080/'+('fail?token=canary-only' if n%2 else 'health'),timeout=2).read()\n except urllib.error.HTTPError: pass\n except Exception: pass\n time.sleep(0.5)\n"
+                ],
+                "image": "ops.local/amd64-20261009/command-runner@sha256:d755f1b67fba76588c7e08d22cdcceacc02b0aeead09bbbbe1f3c9660eacac5a",
+                "imagePullPolicy": "Never",
+                "name": "app",
+                "resources": {
+                  "limits": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "10m",
+                    "memory": "24Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 65532
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "network-server",
+        "namespace": "ops-assistant-deepflow-20261013",
+        "labels": {
+          "ops.platform.io/test-release": "assistant-network-20261013"
+        }
+      },
+      "spec": {
+        "internalTrafficPolicy": "Cluster",
+        "ports": [
+          {
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "app": "network-server",
+          "ops.platform.io/canary-version": "deployment-v1"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      }
+    }
+  ]
+}
