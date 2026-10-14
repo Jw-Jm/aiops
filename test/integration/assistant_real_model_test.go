@@ -185,11 +185,57 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 			t.Fatal(err)
 		}
 	} else {
-		stopWorker, err := app.StartSP06Worker(ctx, workerPool)
-		if err != nil {
-			t.Fatal(err)
+		if binary := os.Getenv("OPS_ASSISTANT_DISPATCHER_BINARY"); binary != "" {
+			if trace == nil || trace.recoveryPaused == nil {
+				t.Fatal("process recovery requires transparent acceptance proxy")
+			}
+			databaseFile := filepath.Join(dir, "worker.database")
+			if os.WriteFile(databaseFile, []byte(workerPool.Config().ConnString()), 0600) != nil {
+				t.Fatal("private dispatcher configuration")
+			}
+			spawn := func() *exec.Cmd {
+				child := exec.CommandContext(ctx, binary)
+				child.Env = append(os.Environ(), "SP06_DATABASE_URL_FILE="+databaseFile)
+				if child.Start() != nil {
+					t.Fatal("dispatcher startup")
+				}
+				return child
+			}
+			child := spawn()
+			defer func() {
+				if child.ProcessState == nil {
+					_ = child.Process.Kill()
+					_ = child.Wait()
+				}
+			}()
+			trace.restartProcesses = func() {
+				if child.Process.Kill() != nil {
+					t.Fatal("dispatcher SIGKILL")
+				}
+				if child.Wait() == nil {
+					t.Fatal("dispatcher exited without SIGKILL")
+				}
+				if exec.CommandContext(ctx, "docker", "kill", "--signal=KILL", name).Run() != nil {
+					t.Fatal("investigator SIGKILL")
+				}
+				_ = process.Wait()
+				process = exec.CommandContext(ctx, process.Args[0], process.Args[1:]...)
+				process.Env = append([]string{}, os.Environ()...)
+				process.Stdout = &output
+				process.Stderr = &output
+				if process.Start() != nil {
+					t.Fatal("investigator restart")
+				}
+				close(trace.recoveryResume)
+				child = spawn()
+			}
+		} else {
+			stopWorker, err := app.StartSP06Worker(ctx, workerPool)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer stopWorker()
 		}
-		defer stopWorker()
 	}
 
 	ready = false

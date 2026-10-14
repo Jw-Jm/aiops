@@ -87,7 +87,7 @@ func queryResultFacts(result analytics.QueryResult) []QueryFact {
 			Row  int
 		}{result.PlanDigest, row})
 		unit := result.Unit
-		if result.NetworkContext != nil && result.DatasetID == "network.http-5xx-rate" && len(result.Rows) == 3 && result.Rows[0].Dimension == "baseline" && result.Rows[1].Dimension == "current" && row == 2 {
+		if result.NetworkContext != nil && (result.DatasetID == "network.http-5xx-rate" || result.DatasetID == "network.http-summary") && len(result.Rows) == 3 && result.Rows[0].Dimension == "baseline" && result.Rows[1].Dimension == "current" && row == 2 {
 			unit = "percentage_points"
 		}
 		facts = append(facts, QueryFact{"query-fact/v1", id, row, "value", value.Value, unit, result.Exact})

@@ -193,9 +193,49 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 			if e != nil || mapped.PodID == 0 || mapped.IdentityValidFrom.IsZero() {
 				t.Fatal("native client identity not qualified", e)
 			}
+			// Diagnose the actual bounded L4 read before the asynchronous proof
+			// worker. Only adapter-controlled status and warning codes are logged;
+			// no source payload, credentials, or HTTP headers are included.
+			candidate, e := deepflow.New(binding, http.DefaultClient, mapper, (evidence.Repository{Pool: pool}).CheckBinding, true, "live")
+			if e != nil {
+				t.Fatal("native proof candidate unavailable")
+			}
+			diagnostic := probe
+			diagnostic.Scope = graph.Scope{Tenant: binding.Tenant, Cluster: cfg.ClusterUID, Namespaces: []string{cfg.Namespace}, AuthorizationRevision: "source-isolation-probe"}
+			diagnostic.To = time.Now().UTC()
+			diagnostic.From = diagnostic.To.Add(-120 * time.Second)
+			result, readErr := candidate.Query(ctx, diagnostic)
+			t.Log("native L4 proof diagnostic", "evidence", len(result.Evidence), "freshness", result.Freshness, "partial", result.Partial, "warnings", result.Warnings, "error", readErr)
 			for _, dataset := range []string{"network.http-responses", "network.http-5xx", "network.http-5xx-rate", "network.http-response-time"} {
 				qualifications = append(qualifications, analytics.Qualification{DatasetID: dataset, Operation: "aggregate", SourceRevision: 1, BindingDigest: evidence.BindingScopeDigest(binding), EvidenceDigest: evidence.Digest(raw), CollectorVersion: "deepflow-e567b167453ffa99f08f26def20379b4f831e073/http-session-counts", VerifiedUntil: time.Now().Add(time.Hour), CoverageFrom: time.Unix(proof.Window.From, 0).UTC(), CoverageTo: time.Unix(proof.Window.To, 0).UTC(), MaxWindowSeconds: 3600, ObservationPoint: proof.ObservationPoint, CoverageComplete: true})
 			}
+			if path := os.Getenv("OPS_FAULT_CHAIN_WINDOWS_PROOF"); path != "" {
+				raw, err := os.ReadFile(path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				var windows struct {
+					Status string `json:"status"`
+					Golden []struct {
+						From int64 `json:"fromUnix"`
+						To   int64 `json:"toUnix"`
+					} `json:"golden"`
+					Points       struct{ HTTP, TCP string } `json:"observationPoints"`
+					Measurements []struct {
+						Responses, Errors   int
+						FailureObservations int `json:"failureObservations"`
+					} `json:"measurements"`
+				}
+				if json.Unmarshal(raw, &windows) != nil || windows.Status != "PASS" || len(windows.Golden) != 3 || len(windows.Measurements) != 3 || windows.Measurements[0].Errors != 10 || windows.Measurements[1].Errors != 50 || windows.Measurements[2].Errors != 0 || windows.Measurements[1].FailureObservations != 100 {
+					t.Fatal("independent three-window proof required")
+				}
+				for _, item := range []struct{ Dataset, Point string }{{"network.http-summary", windows.Points.HTTP}, {"network.tcp-summary", windows.Points.TCP}} {
+					for _, op := range []string{"aggregate", "compare", "compare_percent", "trend"} {
+						qualifications = append(qualifications, analytics.Qualification{DatasetID: item.Dataset, Operation: op, SourceRevision: 1, BindingDigest: evidence.BindingScopeDigest(binding), EvidenceDigest: evidence.Digest(raw), CollectorVersion: "deepflow-e567b167453ffa99f08f26def20379b4f831e073/controlled-http-tcp-windows", VerifiedUntil: time.Now().Add(time.Hour), CoverageFrom: time.Unix(windows.Golden[0].From, 0).UTC(), CoverageTo: time.Unix(windows.Golden[2].To, 0).UTC(), MaxWindowSeconds: 3600, ObservationPoint: item.Point, CoverageComplete: true})
+					}
+				}
+			}
+
 		}
 		workerConfig.Sources = append(workerConfig.Sources, app.SP04Source{Name: "deepflow", AnalysisQualifications: qualifications, Mode: "live", L7Context: true, ScopeProbe: &probe, L7ScopeProbe: &l7Probe, Binding: evidence.Binding{SourceType: "deepflow", Tenant: b.TenantID.String(), SourceID: sourceID.String(), Revision: 1, BackendLogicalID: "assistant-live-deepflow", Endpoint: "http://127.0.0.1:21416", SourceRetentionSeconds: 21600, ScopeMapping: scopeMapping}, DeepFlowLive: &deepflow.LiveConfig{ControllerEndpoint: "http://127.0.0.1:21417", DomainLCUUID: domains.Data[0].LCUUID, ClusterUID: cfg.ClusterUID}})
 	}

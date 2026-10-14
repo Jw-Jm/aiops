@@ -20,6 +20,7 @@ for filename,name in [('assistant-answer-v1','AssistantAnswerV1'),('query-result
   if isinstance(v,dict):
    if v.get('$ref')=='https://ops.local/schemas/fault-chain-request/v1':return ref('AssistantFaultChainRequestV1')
    if v.get('$ref')=='https://ops.local/schemas/resource-relation/v2':return ref('ResourceRelationV2')
+   if v.get('$ref')=='https://ops.local/schemas/graph-source-authority/v2':return ref('GraphSourceAuthorityV2')
    if '$ref' in v and v['$ref'].startswith('https://ops.local/schemas/common/v1#/$defs/'):
     key=v['$ref'].split('/')[-1];return timestamp if key=='timestamp' else {'type':'string','pattern':'^sha256:[a-f0-9]{64}$'} if key=='sha256' else text
    return {k:normalize(x) for k,x in v.items()}

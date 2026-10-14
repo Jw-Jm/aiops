@@ -32,6 +32,7 @@ check-toolchain:
 	check uv 0.12.17 "$$(uv --version | awk '{print $$2}')"
 
 generate:
+	python3 scripts/generate-assistant-openapi.py
 	$(GO) generate ./...
 
 check-generated:

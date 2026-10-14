@@ -1,0 +1,467 @@
+{
+  "ancillaryFixtures": [
+    "tenant/role/PKI bootstrap",
+    "TLS/IAM archive backend"
+  ],
+  "authorizationRevocation": true,
+  "context": {
+    "schemaVersion": "fault-chain-context/v1",
+    "ruleVersion": "fault-chain-rules/v1",
+    "request": {
+      "schemaVersion": "fault-chain-request/v1",
+      "targetCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "fault": {
+        "from": "2026-10-14T07:43:31Z",
+        "to": "2026-10-14T07:44:31Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "baseline": {
+        "from": "2026-10-14T07:42:31Z",
+        "to": "2026-10-14T07:43:31Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "recovery": {
+        "from": "2026-10-14T07:44:31Z",
+        "to": "2026-10-14T07:45:31Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "maxEdges": 4
+    },
+    "asOf": "2026-10-14T09:43:11.393190835Z",
+    "status": "partial",
+    "edges": [
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "756c7625-ddf0-441e-b6a1-2b553dd0aeb4",
+            "ruleVersion": "deepflow-v7.2.0/GetResourceNetworkHealth",
+            "sourceValues": null,
+            "observedAt": "2026-10-14T09:41:25Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-14T09:41:25Z",
+          "validFrom": "2026-10-14T09:41:25Z",
+          "ttl": 300
+        },
+        "relationDigest": "sha256:23d2610956666f09734ee0c77157c988ccc7b5917a3041a610282e4cedc2008e",
+        "callDirection": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605 → k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "comparable",
+        "queryResultRefs": [
+          "01a139cb-486b-7298-af79-694969dbd09c",
+          "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+          "01a139cb-55b7-7852-9d86-b71eac6da4d6",
+          "01a139cb-5cc9-7a23-939b-5269ef457618"
+        ],
+        "observations": [
+          {
+            "ruleId": "R1/http-response-increase",
+            "reason": "故障窗 HTTP 5xx 观测较基线增加，建议检查服务端及其依赖。",
+            "supports": [
+              "01a139cb-45bf-7610-bc3c-692126b0f951",
+              "01a139cb-45d1-77de-bbc4-8b47309fec59"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-486b-7298-af79-694969dbd09c",
+                "factId": "sha256:94b02faee1796c689fc7bbb92df2b58880d99617ac178d3c78b146efdc9494c2"
+              },
+              {
+                "queryResultId": "01a139cb-486b-7298-af79-694969dbd09c",
+                "factId": "sha256:b652e831044003a517356bfd9466492e42374768c4dd249a12e612eea50bf11c"
+              },
+              {
+                "queryResultId": "01a139cb-486b-7298-af79-694969dbd09c",
+                "factId": "sha256:f11354c04122a067a71e11daa251773d3e4ec02dc3c1f2b28690b489aa7c2d48"
+              }
+            ]
+          },
+          {
+            "ruleId": "R1/http-latency-increase",
+            "reason": "同口径完成响应的平均耗时增加，具体延迟来源尚待检查。",
+            "supports": [
+              "01a139cb-45bf-7610-bc3c-692126b0f951",
+              "01a139cb-45d1-77de-bbc4-8b47309fec59"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-486b-7298-af79-694969dbd09c",
+                "factId": "sha256:72d0ad07b59b2cc2762f35d2029c52007790e9d02f47e0b6df95c86bfcf50733"
+              },
+              {
+                "queryResultId": "01a139cb-486b-7298-af79-694969dbd09c",
+                "factId": "sha256:e9f14ffaef0b37bb5ec26c6947727acfdc184d90350bc5ea665a326401cb0436"
+              }
+            ]
+          },
+          {
+            "ruleId": "R5/recovery-observation",
+            "reason": "恢复窗口的异常指标低于故障窗口，支持改善观察；不能据此自动关闭 Incident。",
+            "supports": [
+              "01a139cb-4c05-78b7-932a-efa443c4aea4",
+              "01a139cb-4c1b-7dab-a081-27f1c485338d"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+                "factId": "sha256:c6784d732f347649fc5264d51f725be30f291b1e8a59126bff62bade1871276c"
+              },
+              {
+                "queryResultId": "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+                "factId": "sha256:0902bd3fa0de68c7cc25774d96d74e7600b5c633bb7b530ca5f9e354e6d20002"
+              },
+              {
+                "queryResultId": "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+                "factId": "sha256:21944ccdb63fdc07cf6faabb79213fee1e64b6799d63b5e5b41841e4cbea37fc"
+              }
+            ]
+          },
+          {
+            "ruleId": "R5/recovery-observation",
+            "reason": "恢复窗口的同口径指标低于故障窗口，支持改善观察；不自动关闭 Incident。",
+            "supports": [
+              "01a139cb-4c05-78b7-932a-efa443c4aea4",
+              "01a139cb-4c1b-7dab-a081-27f1c485338d"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+                "factId": "sha256:4835573027a6eff3a1c56ed69150965cbef83b94bf08092bd9962ea3c7407e40"
+              },
+              {
+                "queryResultId": "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+                "factId": "sha256:822c60a16158feec49b8ab6b241a21de6bad811d2d583e16582d68991b2902d6"
+              }
+            ]
+          },
+          {
+            "ruleId": "R2/transport-observation-increase",
+            "reason": "传输异常观测较基线增加；不等同于已测得丢包或因果。",
+            "supports": [
+              "01a139cb-522c-7218-a1f6-c8a49d914ad2",
+              "01a139cb-5240-7eac-a281-d21ee6a4018a"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-55b7-7852-9d86-b71eac6da4d6",
+                "factId": "sha256:9eb1a21517e2d4e096220aa095985c2751a7d7b0203fd9070201164d2ffd63d9"
+              },
+              {
+                "queryResultId": "01a139cb-55b7-7852-9d86-b71eac6da4d6",
+                "factId": "sha256:443f90c43a9676b72c2dcf08ea96b70f955faa6a9897e99997316e9669fecd11"
+              },
+              {
+                "queryResultId": "01a139cb-55b7-7852-9d86-b71eac6da4d6",
+                "factId": "sha256:a87b4783ee904f0c25e6c9e75f123a2183e161233db78ee59bd5b54aff96d7ad"
+              }
+            ]
+          },
+          {
+            "ruleId": "R5/recovery-observation",
+            "reason": "恢复窗口的异常指标低于故障窗口，支持改善观察；不能据此自动关闭 Incident。",
+            "supports": [
+              "01a139cb-588a-7872-a756-a716b7404fd7",
+              "01a139cb-589e-759d-a25e-faa8aa309715"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-5cc9-7a23-939b-5269ef457618",
+                "factId": "sha256:6e47a64d47beaad5a17e579efa35182167a71d271ddcc50479e5fa2cfc919143"
+              },
+              {
+                "queryResultId": "01a139cb-5cc9-7a23-939b-5269ef457618",
+                "factId": "sha256:c528ce55f2fe1eda87bb753fa44e765b057048d05103a7104872ab925555dd1f"
+              },
+              {
+                "queryResultId": "01a139cb-5cc9-7a23-939b-5269ef457618",
+                "factId": "sha256:1316109c538f84cfba6952f90de3a1353587ea8d4b920943c1e0351d7d9be784"
+              }
+            ]
+          },
+          {
+            "ruleId": "R5/recovery-observation",
+            "reason": "恢复窗口的同口径指标没有降低，尚未观察到改善。",
+            "supports": [],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-5cc9-7a23-939b-5269ef457618",
+                "factId": "sha256:00a982af018a485c8714a1bf5e04ab3fc21daa00c582d3caab1dfe35cc7502ba"
+              },
+              {
+                "queryResultId": "01a139cb-5cc9-7a23-939b-5269ef457618",
+                "factId": "sha256:34b4fc6b0395e44f5625bd49367aa4c2ab4411ac351e350d1886c45cd706fa3f"
+              }
+            ]
+          }
+        ],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      },
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "756c7625-ddf0-441e-b6a1-2b553dd0aeb4",
+            "ruleVersion": "deepflow-v7.2.0/GetResourceNetworkHealth",
+            "sourceValues": null,
+            "observedAt": "2026-10-14T09:41:35Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-14T09:41:35Z",
+          "validFrom": "2026-10-14T09:41:35Z",
+          "ttl": 300
+        },
+        "relationDigest": "sha256:e13ccb936f31f953ac61155a8b48b549f69fe57e791c0d7f9acf22de3b4582fa",
+        "callDirection": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605 → k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "comparable",
+        "queryResultRefs": [
+          "01a139cb-486b-7298-af79-694969dbd09c",
+          "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+          "01a139cb-55b7-7852-9d86-b71eac6da4d6",
+          "01a139cb-5cc9-7a23-939b-5269ef457618"
+        ],
+        "observations": [
+          {
+            "ruleId": "R1/http-response-increase",
+            "reason": "故障窗 HTTP 5xx 观测较基线增加，建议检查服务端及其依赖。",
+            "supports": [
+              "01a139cb-45bf-7610-bc3c-692126b0f951",
+              "01a139cb-45d1-77de-bbc4-8b47309fec59"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-486b-7298-af79-694969dbd09c",
+                "factId": "sha256:94b02faee1796c689fc7bbb92df2b58880d99617ac178d3c78b146efdc9494c2"
+              },
+              {
+                "queryResultId": "01a139cb-486b-7298-af79-694969dbd09c",
+                "factId": "sha256:b652e831044003a517356bfd9466492e42374768c4dd249a12e612eea50bf11c"
+              },
+              {
+                "queryResultId": "01a139cb-486b-7298-af79-694969dbd09c",
+                "factId": "sha256:f11354c04122a067a71e11daa251773d3e4ec02dc3c1f2b28690b489aa7c2d48"
+              }
+            ]
+          },
+          {
+            "ruleId": "R1/http-latency-increase",
+            "reason": "同口径完成响应的平均耗时增加，具体延迟来源尚待检查。",
+            "supports": [
+              "01a139cb-45bf-7610-bc3c-692126b0f951",
+              "01a139cb-45d1-77de-bbc4-8b47309fec59"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-486b-7298-af79-694969dbd09c",
+                "factId": "sha256:72d0ad07b59b2cc2762f35d2029c52007790e9d02f47e0b6df95c86bfcf50733"
+              },
+              {
+                "queryResultId": "01a139cb-486b-7298-af79-694969dbd09c",
+                "factId": "sha256:e9f14ffaef0b37bb5ec26c6947727acfdc184d90350bc5ea665a326401cb0436"
+              }
+            ]
+          },
+          {
+            "ruleId": "R5/recovery-observation",
+            "reason": "恢复窗口的异常指标低于故障窗口，支持改善观察；不能据此自动关闭 Incident。",
+            "supports": [
+              "01a139cb-4c05-78b7-932a-efa443c4aea4",
+              "01a139cb-4c1b-7dab-a081-27f1c485338d"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+                "factId": "sha256:c6784d732f347649fc5264d51f725be30f291b1e8a59126bff62bade1871276c"
+              },
+              {
+                "queryResultId": "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+                "factId": "sha256:0902bd3fa0de68c7cc25774d96d74e7600b5c633bb7b530ca5f9e354e6d20002"
+              },
+              {
+                "queryResultId": "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+                "factId": "sha256:21944ccdb63fdc07cf6faabb79213fee1e64b6799d63b5e5b41841e4cbea37fc"
+              }
+            ]
+          },
+          {
+            "ruleId": "R5/recovery-observation",
+            "reason": "恢复窗口的同口径指标低于故障窗口，支持改善观察；不自动关闭 Incident。",
+            "supports": [
+              "01a139cb-4c05-78b7-932a-efa443c4aea4",
+              "01a139cb-4c1b-7dab-a081-27f1c485338d"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+                "factId": "sha256:4835573027a6eff3a1c56ed69150965cbef83b94bf08092bd9962ea3c7407e40"
+              },
+              {
+                "queryResultId": "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+                "factId": "sha256:822c60a16158feec49b8ab6b241a21de6bad811d2d583e16582d68991b2902d6"
+              }
+            ]
+          },
+          {
+            "ruleId": "R2/transport-observation-increase",
+            "reason": "传输异常观测较基线增加；不等同于已测得丢包或因果。",
+            "supports": [
+              "01a139cb-522c-7218-a1f6-c8a49d914ad2",
+              "01a139cb-5240-7eac-a281-d21ee6a4018a"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-55b7-7852-9d86-b71eac6da4d6",
+                "factId": "sha256:9eb1a21517e2d4e096220aa095985c2751a7d7b0203fd9070201164d2ffd63d9"
+              },
+              {
+                "queryResultId": "01a139cb-55b7-7852-9d86-b71eac6da4d6",
+                "factId": "sha256:443f90c43a9676b72c2dcf08ea96b70f955faa6a9897e99997316e9669fecd11"
+              },
+              {
+                "queryResultId": "01a139cb-55b7-7852-9d86-b71eac6da4d6",
+                "factId": "sha256:a87b4783ee904f0c25e6c9e75f123a2183e161233db78ee59bd5b54aff96d7ad"
+              }
+            ]
+          },
+          {
+            "ruleId": "R5/recovery-observation",
+            "reason": "恢复窗口的异常指标低于故障窗口，支持改善观察；不能据此自动关闭 Incident。",
+            "supports": [
+              "01a139cb-588a-7872-a756-a716b7404fd7",
+              "01a139cb-589e-759d-a25e-faa8aa309715"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-5cc9-7a23-939b-5269ef457618",
+                "factId": "sha256:6e47a64d47beaad5a17e579efa35182167a71d271ddcc50479e5fa2cfc919143"
+              },
+              {
+                "queryResultId": "01a139cb-5cc9-7a23-939b-5269ef457618",
+                "factId": "sha256:c528ce55f2fe1eda87bb753fa44e765b057048d05103a7104872ab925555dd1f"
+              },
+              {
+                "queryResultId": "01a139cb-5cc9-7a23-939b-5269ef457618",
+                "factId": "sha256:1316109c538f84cfba6952f90de3a1353587ea8d4b920943c1e0351d7d9be784"
+              }
+            ]
+          },
+          {
+            "ruleId": "R5/recovery-observation",
+            "reason": "恢复窗口的同口径指标没有降低，尚未观察到改善。",
+            "supports": [],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a139cb-5cc9-7a23-939b-5269ef457618",
+                "factId": "sha256:00a982af018a485c8714a1bf5e04ab3fc21daa00c582d3caab1dfe35cc7502ba"
+              },
+              {
+                "queryResultId": "01a139cb-5cc9-7a23-939b-5269ef457618",
+                "factId": "sha256:34b4fc6b0395e44f5625bd49367aa4c2ab4411ac351e350d1886c45cd706fa3f"
+              }
+            ]
+          }
+        ],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      },
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/d85a8149-2364-47f4-bbc0-26b65bfb83e2",
+          "kind": "managed_by",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-14T09:42:50.514363738Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-14T09:42:50.514363738Z",
+          "validFrom": "2026-10-14T09:42:50.514363738Z",
+          "ttl": 0
+        },
+        "relationDigest": "sha256:c1611692a0b78ba3e1e2e29b2adc1efa2c41535e83a2284d3f542680721eaec4",
+        "callDirection": "unknown",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [],
+        "observations": [],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked",
+          "network_window_statistics"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      }
+    ],
+    "queryResultRefs": [
+      "01a139cb-486b-7298-af79-694969dbd09c",
+      "01a139cb-4eaf-75f1-9dcb-13d16cce2b81",
+      "01a139cb-55b7-7852-9d86-b71eac6da4d6",
+      "01a139cb-5cc9-7a23-939b-5269ef457618"
+    ],
+    "evidenceRefs": [
+      "01a139cb-45bf-7610-bc3c-692126b0f951",
+      "01a139cb-45d1-77de-bbc4-8b47309fec59",
+      "01a139cb-4c05-78b7-932a-efa443c4aea4",
+      "01a139cb-4c1b-7dab-a081-27f1c485338d",
+      "01a139cb-522c-7218-a1f6-c8a49d914ad2",
+      "01a139cb-5240-7eac-a281-d21ee6a4018a",
+      "01a139cb-588a-7872-a756-a716b7404fd7",
+      "01a139cb-589e-759d-a25e-faa8aa309715"
+    ],
+    "missingEvidence": []
+  },
+  "modelCalls": 0,
+  "modelEndpointOffline": true,
+  "modelKeyMissing": true,
+  "modelQualityAcceptance": false,
+  "nativePodUid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+  "passed": true,
+  "schemaVersion": "fault-chain-runtime-acceptance/v1",
+  "turnId": "01a139cb-2f2b-7d95-8c80-60cb58f244db"
+}

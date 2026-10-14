@@ -2,9 +2,11 @@ package analytics
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"ops-platform/internal/contract"
 	"ops-platform/internal/datascope"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
@@ -37,13 +39,16 @@ func TestNetworkComparisonDenominatorsAndQualification(t *testing.T) {
 	}
 	target, peer := id("a"), id("b")
 	empty := false
+	baselineErrors := 10
+	queries := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		queries++
 		r.ParseForm()
 		sql := r.Form.Get("sql")
 		errors := 50
 		responses := 1000
 		if strings.Contains(sql, fmt.Sprint(baselineFrom.Unix())) {
-			errors = 10
+			errors = baselineErrors
 		}
 		if empty {
 			responses = 0
@@ -66,6 +71,65 @@ func TestNetworkComparisonDenominatorsAndQualification(t *testing.T) {
 	result, facts, err := n.Execute(t.Context(), plan)
 	if err != nil || len(result.Rows) != 3 || result.Rows[0].Value != 1 || result.Rows[1].Value != 5 || result.Rows[2].Value != 4 || len(facts) != 2 || len(result.Statistics) != 6 {
 		t.Fatalf("comparison %+v %v", result, err)
+	}
+	combined := proof
+	combined.DatasetID = "network.http-summary"
+	combinedIntent := intent
+	combinedIntent.DatasetID = combined.DatasetID
+	combinedPlan, err := NewNetwork(adapter, []Qualification{combined}).Compile(combinedIntent, auth)
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshot, _, err := NewNetwork(adapter, []Qualification{combined}).Execute(t.Context(), combinedPlan)
+	if err != nil || len(snapshot.Statistics) != 8 {
+		t.Fatal("combined HTTP statistics missing", err)
+	}
+	encoded, _ := json.Marshal(snapshot)
+	if err := contract.Validate("https://ops.local/schemas/query-result/v1", encoded); err != nil {
+		t.Fatal("combined units violate wire contract", err)
+	}
+	percentProof := combined
+	percentProof.Operation = "compare_percent"
+	percentNetwork := NewNetwork(adapter, []Qualification{percentProof})
+	percentIntent := combinedIntent
+	percentIntent.Operation = "compare_percent"
+	percentPlan, err := percentNetwork.Compile(percentIntent, auth)
+	if err != nil {
+		t.Fatal(err)
+	}
+	before := queries
+	percent, _, err := percentNetwork.Execute(t.Context(), percentPlan)
+	if err != nil || !percent.Exact || percent.Unit != "percent" || len(percent.Rows) != 1 || percent.Rows[0].Value != 400 || queries-before != 2 {
+		t.Fatal("relative change or charged subqueries invalid", percent, err)
+	}
+	baselineErrors = 0
+	percent, _, err = percentNetwork.Execute(t.Context(), percentPlan)
+	if err != nil || percent.Exact || len(percent.Rows) != 0 || len(percent.Statistics) != 8 {
+		t.Fatal("zero baseline invented relative change or discarded population", percent, err)
+	}
+	baselineErrors = 10
+	trendProof := combined
+	trendProof.Operation = "trend"
+	trendNetwork := NewNetwork(adapter, []Qualification{trendProof})
+	trendIntent := combinedIntent
+	trendIntent.Operation = "trend"
+	trendIntent.ComparisonTimeRange = nil
+	trendIntent.Dimensions = []string{"time"}
+	trendIntent.StepSeconds = 60
+	trendIntent.TimeRange = &QueryTimeRange{baselineFrom, baselineFrom.Add(3 * time.Minute), "UTC"}
+	trendPlan, err := trendNetwork.Compile(trendIntent, auth)
+	if err != nil {
+		t.Fatal(err)
+	}
+	before = queries
+	trend, _, err := trendNetwork.Execute(t.Context(), trendPlan)
+	if err != nil || !trend.Exact || len(trend.Rows) != 3 || len(trend.Statistics) != 12 || queries-before != 3 {
+		t.Fatal("trend population or bounded subqueries invalid", trend, err)
+	}
+	for i, expected := range []float64{1, 5, 5} {
+		if trend.Rows[i].Value != expected || trend.Rows[i].Dimension != baselineFrom.Add(time.Duration(i)*time.Minute).Format(time.RFC3339) {
+			t.Fatal("bucket value or original boundary changed", trend.Rows[i])
+		}
 	}
 	empty = true
 	result, _, err = n.Execute(t.Context(), plan)

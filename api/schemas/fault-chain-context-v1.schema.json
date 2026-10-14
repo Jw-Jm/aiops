@@ -112,6 +112,59 @@
                     ]
                   },
                   "maxItems": 100
+                },
+                "resourceHealth": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "stepId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "canonicalId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2048
+                    },
+                    "namespace": {
+                      "type": "string",
+                      "maxLength": 253
+                    },
+                    "observedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "conditionType": {
+                      "const": "Ready"
+                    },
+                    "conditionStatus": {
+                      "const": "False"
+                    },
+                    "sources": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 200,
+                      "items": {
+                        "$ref": "https://ops.local/schemas/graph-source-authority/v2"
+                      }
+                    }
+                  },
+                  "required": [
+                    "stepId",
+                    "canonicalId",
+                    "namespace",
+                    "observedAt",
+                    "conditionType",
+                    "conditionStatus",
+                    "sources"
+                  ]
+                },
+                "relatedRelations": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "$ref": "https://ops.local/schemas/resource-relation/v2"
+                  }
                 }
               },
               "required": [

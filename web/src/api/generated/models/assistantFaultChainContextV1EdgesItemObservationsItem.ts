@@ -5,6 +5,8 @@
  * OpenAPI spec version: 1.4.0
  */
 import type { AssistantFaultChainContextV1EdgesItemObservationsItemFactRefsItem } from './assistantFaultChainContextV1EdgesItemObservationsItemFactRefsItem.ts';
+import type { AssistantFaultChainContextV1EdgesItemObservationsItemResourceHealth } from './assistantFaultChainContextV1EdgesItemObservationsItemResourceHealth.ts';
+import type { ResourceRelationV2 } from './resourceRelationV2.ts';
 
 export type AssistantFaultChainContextV1EdgesItemObservationsItem = {
   /** @maxLength 2048 */
@@ -17,4 +19,7 @@ export type AssistantFaultChainContextV1EdgesItemObservationsItem = {
   conflicts: string[];
   /** @maxItems 100 */
   factRefs: AssistantFaultChainContextV1EdgesItemObservationsItemFactRefsItem[];
+  resourceHealth?: AssistantFaultChainContextV1EdgesItemObservationsItemResourceHealth;
+  /** @maxItems 40 */
+  relatedRelations?: ResourceRelationV2[];
 };

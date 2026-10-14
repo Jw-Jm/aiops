@@ -19,7 +19,10 @@ def collect(job, job_api, bridge):
             result = bridge.call(name, args, allocation)
         if result.get("budget", {}).get("remaining"):
             remaining = result["budget"]["remaining"]
-        last_error = result.get("errorCode", "") or result.get("data", {}).get("sourceErrorCode", "")
+        # The admitted wrapper reports SOURCE_DEGRADED while preserving the
+        # specific source failure in data. Prefer that code for bounded
+        # fallback selection; the generic wrapper must not hide it.
+        last_error = result.get("data", {}).get("sourceErrorCode", "") or result.get("errorCode", "")
         if result.get("state") != "succeeded":
             failures.append(name + "_not_completed")
             return {}, None
@@ -40,8 +43,10 @@ def collect(job, job_api, bridge):
         l7_live=any(c.get("l7")=="live" or c.get("l7")=="fixture_only" for c in context.get("networkCapabilities",[]))
         relation_args={"resourceCanonicalId": target, "operation": "get l7 context" if l7_live else "get network health", "timeRange": relation_window}
         call("query_deepflow", relation_args)
-        if last_error in ("SOURCE_SCOPE_UNVERIFIED","SOURCE_CAPABILITY_UNAVAILABLE") and remaining.get("rawQueries",0)>0 and remaining.get("toolCalls",0)>3:
-            call("query_deepflow", relation_args)
+        if l7_live and last_error in ("SOURCE_SCOPE_UNVERIFIED","SOURCE_CAPABILITY_UNAVAILABLE") and remaining.get("rawQueries",0)>0 and remaining.get("toolCalls",0)>3:
+            # Degraded legacy reads are committed too. Use the separately
+            # admitted L4 operation; identical args would replay the same gap.
+            call("query_deepflow", {**relation_args,"operation":"get network health"})
     dependencies, _ = call("get_dependencies", {"canonicalId": target, "depth": 1})
     # Capability records use datasetId; choose only current operational sources.
     available = {(d.get("datasetId"), d.get("operation")) for d in context.get("sourceCapabilities", []) if d.get("status") == "qualification_configured"}
@@ -59,21 +64,40 @@ def collect(job, job_api, bridge):
         if relation.get("kind")=="communicates_with":directions[peer]="outgoing" if relation["from"]==target else "incoming"
         if peer not in peers:
             peers.append(peer)
-    for peer in peers[:request["maxEdges"]]:
-        for dataset, metric in (("network.http-5xx-rate", "http_5xx_percent"), ("network.http-5xx", "http_5xx_count"), ("network.http-response-time", "mean_http_response_ms"), ("network.connection-failure-observations", "connection_failure_observation_count"), ("network.tcp-retransmissions", "retransmission_count")):
-            for label, window in (("fault", fault), ("recovery", request.get("recovery"))):
-                if window is None:
-                    continue
-                compare = request.get("baseline") is not None
-                operation = "compare" if compare else "aggregate"
-                if (dataset, operation) not in available:
-                    failures.append(dataset + "_" + operation + "_capability_unavailable")
-                    continue
+    # Stable stages give every selected edge its primary fault observation
+    # before spending budget on transport and recovery. Every read still goes
+    # through allocate/call and uses the frozen window, never a private loop.
+    for label, window in (("fault", fault), ("recovery", request.get("recovery"))):
+        if window is None:
+            continue
+        compare = label == "recovery" or request.get("baseline") is not None
+        operation = "compare" if compare else "aggregate"
+        datasets = []
+        if ("network.http-summary", operation) in available:
+            datasets.append(("network.http-summary", "http_5xx_percent"))
+        else:
+            if ("network.http-5xx-rate", operation) in available:
+                datasets.append(("network.http-5xx-rate", "http_5xx_percent"))
+            elif ("network.http-5xx", operation) in available:
+                datasets.append(("network.http-5xx", "http_5xx_count"))
+            else:
+                failures.append(label + "_http_error_capability_unavailable")
+            if ("network.http-response-time", operation) in available:
+                datasets.append(("network.http-response-time", "mean_http_response_ms"))
+        if ("network.tcp-summary", operation) in available:
+            datasets.append(("network.tcp-summary", "connection_failure_observation_count"))
+        else:
+            tcp = [(d, m) for d, m in (("network.connection-failure-observations", "connection_failure_observation_count"), ("network.tcp-retransmissions", "retransmission_count")) if (d, operation) in available]
+            datasets.extend(tcp)
+            if not tcp:
+                failures.append(label + "_tcp_capability_unavailable")
+        for dataset, metric in datasets:
+            for peer in peers[:request["maxEdges"]]:
                 cost = 2 if compare else 1
                 if remaining.get("rawQueries", 0) < cost or remaining.get("toolCalls", 0) <= 2:
                     failures.append(label + "_remaining_checks_not_completed")
                     continue
-                intent = {"schemaVersion": "query-intent/v1", "datasetId": dataset, "operation": "compare" if compare else "aggregate", "metrics": [metric], "dimensions": ["comparison"] if compare else [], "filters": [], "sort": [], "limit": 3 if compare else 1, "timeRange": window, "networkSelection": {"targetCanonicalId": target, "peerCanonicalId": peer, "direction": directions.get(peer,"either")}}
+                intent = {"schemaVersion": "query-intent/v1", "datasetId": dataset, "operation": operation, "metrics": [metric], "dimensions": ["comparison"] if compare else [], "filters": [], "sort": [], "limit": 3 if compare else 1, "timeRange": window, "networkSelection": {"targetCanonicalId": target, "peerCanonicalId": peer, "direction": directions.get(peer,"either")}}
                 if compare:
                     intent["comparisonTimeRange"] = fault if label == "recovery" else request["baseline"]
                 result, _ = call("execute_analysis_query", {"intent": intent})
@@ -81,6 +105,16 @@ def collect(job, job_api, bridge):
                     result, _ = call("execute_analysis_query", {"intent":intent})
                 if result.get("storedQueryResult"):
                     queries.append(result["storedQueryResult"])
+        if label == "fault":
+            # Only already disclosed Nodes may enter a cluster-scoped read.
+            health_targets=sorted({n.get("canonicalId") for n in dependencies.get("nodes",[]) if n.get("kind")=="Node" and n.get("canonicalId")})
+            health_targets.append(target)
+            health_targets.extend(p for p in peers if p not in health_targets)
+            for resource in health_targets[:request["maxEdges"]]:
+                if remaining.get("toolCalls",0)>3:
+                    call("get_resource_health", {"canonicalId":resource})
+                else:
+                    failures.append("shared_resource_health_not_completed")
     evaluation, step = call("evaluate_fault_chain", {"stepIds": list(dict.fromkeys(committed))})
     chain = evaluation.get("context")
     if not chain or not step:
@@ -90,6 +124,10 @@ def collect(job, job_api, bridge):
     for edge in chain["edges"]:
         relation = edge["relation"]
         entities.update((relation["from"], relation["to"]))
+        for observation in edge["observations"]:
+            health=observation.get("resourceHealth")
+            if health:entities.add(health["canonicalId"])
+            for path in observation.get("relatedRelations",[]):entities.update((path["from"],path["to"]))
         yes = sorted({e for o in edge["observations"] for e in o["supports"]})
         no = sorted({e for o in edge["observations"] for e in o["conflicts"]})
         yes = [e for e in yes if e not in no]

@@ -1,0 +1,154 @@
+{
+  "ancillaryFixtures": [
+    "tenant/role/PKI bootstrap",
+    "TLS/IAM archive backend"
+  ],
+  "authorizationRevocation": true,
+  "context": {
+    "schemaVersion": "fault-chain-context/v1",
+    "ruleVersion": "fault-chain-rules/v1",
+    "request": {
+      "schemaVersion": "fault-chain-request/v1",
+      "targetCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "fault": {
+        "from": "2026-10-14T04:16:39Z",
+        "to": "2026-10-14T04:16:44Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "maxEdges": 4
+    },
+    "asOf": "2026-10-14T07:07:43.111708368Z",
+    "status": "partial",
+    "edges": [
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "972a6cb9-8ffb-4e8d-aa00-79434157f79a",
+            "ruleVersion": "deepflow-v7.2.0/GetL7Context",
+            "sourceValues": null,
+            "observedAt": "2026-10-14T07:05:45Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-14T07:05:45Z",
+          "validFrom": "2026-10-14T07:05:45Z",
+          "ttl": 300
+        },
+        "relationDigest": "sha256:977b36b1f9ea54e9e2155d5912ac91da8ef56d827bed8a215088a02e8192f200",
+        "callDirection": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605 → k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [
+          "01a1393c-fa6d-76b0-bc69-3be810cbeba4",
+          "01a1393d-00b1-7df1-ae54-201a94ac3114",
+          "01a1393d-062f-7b4b-b315-25f967506c28"
+        ],
+        "observations": [
+          {
+            "ruleId": "observation/v1",
+            "reason": "已提交的网络观测；未证明故障原因。",
+            "supports": [],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a1393c-fa6d-76b0-bc69-3be810cbeba4",
+                "factId": "sha256:fdf76aab4cabac76451b2e6fbb9944bc83d900271e5347daead492dbf074039a"
+              }
+            ]
+          },
+          {
+            "ruleId": "observation/v1",
+            "reason": "已提交的网络观测；未证明故障原因。",
+            "supports": [],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a1393d-00b1-7df1-ae54-201a94ac3114",
+                "factId": "sha256:761428cdc4f541ef158dabb00a9031f3a9b6b41bca022e9261fc48391f4e1ea6"
+              }
+            ]
+          },
+          {
+            "ruleId": "observation/v1",
+            "reason": "已提交的网络观测；未证明故障原因。",
+            "supports": [],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a1393d-062f-7b4b-b315-25f967506c28",
+                "factId": "sha256:9496dcf5094c352e5c60ce68fdcd7fe4b9979cd067ab6130bb730d291cc20a08"
+              }
+            ]
+          }
+        ],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      },
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/d85a8149-2364-47f4-bbc0-26b65bfb83e2",
+          "kind": "managed_by",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-14T07:07:24.285124133Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-14T07:07:24.285124133Z",
+          "validFrom": "2026-10-14T07:07:24.285124133Z",
+          "ttl": 0
+        },
+        "relationDigest": "sha256:604aec145ef1349415a20853345cca2073f0ffe8315fb52b04f03a823805d77c",
+        "callDirection": "unknown",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [],
+        "observations": [],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked",
+          "network_window_statistics"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      }
+    ],
+    "queryResultRefs": [
+      "01a1393c-fa6d-76b0-bc69-3be810cbeba4",
+      "01a1393d-00b1-7df1-ae54-201a94ac3114",
+      "01a1393d-062f-7b4b-b315-25f967506c28"
+    ],
+    "evidenceRefs": [
+      "01a1393c-fa04-7e2c-864a-e34209d34645",
+      "01a1393c-ffe7-7e80-a177-29c4b1512ab9",
+      "01a1393d-05cb-755c-bea4-eb48e928cd10"
+    ],
+    "missingEvidence": []
+  },
+  "modelCalls": 0,
+  "modelEndpointOffline": true,
+  "modelKeyMissing": true,
+  "modelQualityAcceptance": false,
+  "nativePodUid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+  "passed": true,
+  "schemaVersion": "fault-chain-runtime-acceptance/v1",
+  "turnId": "01a1393c-e5a9-7e85-8fa1-a8dc70cd7cb1"
+}

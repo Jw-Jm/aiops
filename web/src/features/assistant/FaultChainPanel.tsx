@@ -19,6 +19,19 @@ import { QueryState } from "../../components/QueryState";
 import { AssistantEvidence } from "./AssistantEvidence";
 import { QueryResultView } from "./QueryResultView";
 
+const missingLabels: Record<string, string> = {
+  causal_mechanism_unverified: "故障因果机制尚未验证",
+  clock_and_event_time_unverified: "来源时钟与事件时间尚未验证",
+  historical_relation_unverified: "历史窗口内的依赖关系尚未验证",
+  change_source_not_checked: "尚未取得合格变更证据",
+  change_causal_mechanism_unverified: "变更与异常的因果机制尚未验证",
+  shared_resource_cause_not_checked: "尚未核验共享资源异常",
+  shared_resource_causal_mechanism_unverified:
+    "共同资源与症状的因果机制尚未验证",
+  network_window_statistics: "缺少相应窗口的网络统计",
+  committed_scoped_resource_relations: "缺少已提交的范围内资源关系",
+};
+
 export function FaultChainPanel({
   answer,
   turnId,
@@ -77,6 +90,14 @@ export function FaultChainPanel({
                       },
                     ]
                   : [{ content: "恢复未验证", color: "gray" }]),
+                ...(edge?.relation.observedAt
+                  ? [
+                      {
+                        content: `所选关系观测：${edge.relation.observedAt}（历史窗口内是否成立仍待核验）`,
+                        color: "gray",
+                      },
+                    ]
+                  : []),
                 {
                   content: `调查完成：${context.asOf}（窗口顺序不代表传播顺序）`,
                   color: "gray",
@@ -145,6 +166,38 @@ export function FaultChainPanel({
                         <Typography.Text type="secondary">
                           规则：{observation.ruleId}
                         </Typography.Text>
+                        {observation.resourceHealth && (
+                          <>
+                            <Link
+                              to={`/resources/detail?canonicalId=${encodeURIComponent(observation.resourceHealth.canonicalId)}`}
+                            >
+                              共同资源候选：
+                              {observation.resourceHealth.canonicalId}
+                            </Link>
+                            <Typography.Text>
+                              已提交状态：Ready=False；观测时间：
+                              {observation.resourceHealth.observedAt}
+                            </Typography.Text>
+                            <Typography.Text type="secondary">
+                              状态步骤：{observation.resourceHealth.stepId}
+                              ；来源版本：
+                              {observation.resourceHealth.sources
+                                .map(
+                                  (source) =>
+                                    `${source.sourceRegistrationId}@${source.revision}`,
+                                )
+                                .join("、")}
+                            </Typography.Text>
+                          </>
+                        )}
+                        {observation.relatedRelations?.map((path) => (
+                          <Typography.Text
+                            key={`${path.from}:${path.kind}:${path.to}`}
+                          >
+                            共享关系：{path.from} → {path.to}（{path.kind}
+                            ；观测：{path.observedAt}）
+                          </Typography.Text>
+                        ))}
                         {observation.supports.length > 0 && (
                           <>
                             <Typography.Text>支持证据</Typography.Text>
@@ -172,7 +225,9 @@ export function FaultChainPanel({
                 <List
                   size="small"
                   dataSource={edge.missingEvidence}
-                  renderItem={(item) => <List.Item>{item}</List.Item>}
+                  renderItem={(item) => (
+                    <List.Item>{missingLabels[item] || item}</List.Item>
+                  )}
                 />
                 <Typography.Text strong>下一步只读检查</Typography.Text>
                 <List
@@ -185,7 +240,9 @@ export function FaultChainPanel({
             {context.missingEvidence.length > 0 && (
               <Alert
                 type="warning"
-                title={context.missingEvidence.join("；")}
+                title={context.missingEvidence
+                  .map((item) => missingLabels[item] || item)
+                  .join("；")}
               />
             )}
           </Space>

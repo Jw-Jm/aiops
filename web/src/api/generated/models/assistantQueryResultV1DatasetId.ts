@@ -28,4 +28,6 @@ export const AssistantQueryResultV1DatasetId = {
   'networkhttp-response-time': 'network.http-response-time',
   'networktcp-retransmissions': 'network.tcp-retransmissions',
   'networkconnection-failure-observations': 'network.connection-failure-observations',
+  'networkhttp-summary': 'network.http-summary',
+  'networktcp-summary': 'network.tcp-summary',
 } as const;

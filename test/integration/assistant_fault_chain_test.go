@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"os"
 	"testing"
 	"time"
@@ -27,7 +28,7 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 	if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") != "1" || os.Getenv("OPS_ASSISTANT_DEEPFLOW_GRAPH_ONLY") != "1" {
 		t.Skip("isolated fault-chain proof and native runtime required")
 	}
-	assistantRealRuntime(t, true, func(ctx context.Context, db *sql.DB, pool *pgxpool.Pool, b source.BoundSourceContext, repo assistant.Repository, profile modelprofile.Profile, _ *assistantEvaluationTrace, sp04 *httpapi.SP04Handlers) {
+	assistantRealRuntime(t, true, func(ctx context.Context, db *sql.DB, pool *pgxpool.Pool, b source.BoundSourceContext, repo assistant.Repository, profile modelprofile.Profile, trace *assistantEvaluationTrace, sp04 *httpapi.SP04Handlers) {
 		const namespace = "ops-assistant-deepflow-20261013"
 		scopes, _ := json.Marshal([]map[string]string{{"clusterId": b.ClusterID.String(), "namespace": namespace}})
 		if _, err := db.ExecContext(ctx, `INSERT INTO platform.role_bindings(tenant_id,binding_id,subject,role_name,cluster_scopes,namespace_scopes) VALUES($1,$2,'fault-chain-operator','operator',$3,$4)`, b.TenantID, uuid.New(), `["`+b.ClusterID.String()+`"]`, scopes); err != nil {
@@ -72,6 +73,26 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 			t.Fatal("source proof unavailable")
 		}
 		window := analytics.QueryTimeRange{From: time.Unix(proof.Window.From, 0).UTC(), To: time.Unix(proof.Window.To, 0).UTC(), Timezone: "Asia/Shanghai"}
+		var baseline, recovery *analytics.QueryTimeRange
+		comparison := os.Getenv("OPS_FAULT_CHAIN_WINDOWS_PROOF") != ""
+		if comparison {
+			raw, e := os.ReadFile(os.Getenv("OPS_FAULT_CHAIN_WINDOWS_PROOF"))
+			var p struct {
+				Golden []struct {
+					From int64 `json:"fromUnix"`
+					To   int64 `json:"toUnix"`
+				} `json:"golden"`
+			}
+			if e != nil || json.Unmarshal(raw, &p) != nil || len(p.Golden) != 3 {
+				t.Fatal("window proof required")
+			}
+			w := func(i int) *analytics.QueryTimeRange {
+				return &analytics.QueryTimeRange{From: time.Unix(p.Golden[i].From, 0).UTC(), To: time.Unix(p.Golden[i].To, 0).UTC(), Timezone: "Asia/Shanghai"}
+			}
+			baseline, recovery = w(0), w(2)
+			window = *w(1)
+		}
+
 		scope := analytics.CloneScope(grant)
 		scope.Resources = []string{target}
 		scope.Namespaces = []string{namespace}
@@ -91,7 +112,7 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		}); err != nil {
 			t.Fatal(err)
 		}
-		request := assistant.SubmitMessage{Message: "收集故障链证据", ExpectedConversationRevision: conversation.Revision, FaultChainRequest: &investigation.FaultChainRequest{SchemaVersion: "fault-chain-request/v1", TargetCanonicalID: target, Fault: window, MaxEdges: 4}}
+		request := assistant.SubmitMessage{Message: "收集故障链证据", ExpectedConversationRevision: conversation.Revision, FaultChainRequest: &investigation.FaultChainRequest{SchemaVersion: "fault-chain-request/v1", TargetCanonicalID: target, Fault: window, Baseline: baseline, Recovery: recovery, MaxEdges: 4}}
 		turn, err := repo.Submit(requestCtx, b.TenantID, conversation.ConversationID, actor.Subject, "fault-chain-explicit", request)
 		if err != nil {
 			t.Fatal(err)
@@ -99,6 +120,24 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		duplicate, err := repo.Submit(requestCtx, b.TenantID, conversation.ConversationID, actor.Subject, "fault-chain-explicit", request)
 		if err != nil || duplicate.TurnID != turn.TurnID {
 			t.Fatal("idempotency failed", err)
+		}
+		var killedLease investigation.Lease
+		if trace != nil && trace.recoveryPaused != nil {
+			select {
+			case <-trace.recoveryPaused:
+			case <-time.After(45 * time.Second):
+				t.Fatal("fixed collector did not reach recovery barrier")
+			}
+			var committed int
+			if db.QueryRowContext(ctx, `SELECT count(*) FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name='get_assistant_context' AND state='succeeded'`, b.TenantID, turn.JobID).Scan(&committed) != nil || committed != 1 {
+				t.Fatal("recovery barrier preceded committed context")
+			}
+			killedLease.TenantID = b.TenantID
+			killedLease.JobID = turn.JobID
+			if db.QueryRowContext(ctx, `SELECT lease_token,fencing_epoch FROM investigation.worker_queue WHERE tenant_id=$1 AND job_id=$2`, b.TenantID, turn.JobID).Scan(&killedLease.Token, &killedLease.Generation) != nil {
+				t.Fatal("dispatcher lease unavailable")
+			}
+			trace.restartProcesses()
 		}
 		var current assistant.Turn
 		for attempt := 0; attempt < 90; attempt++ {
@@ -114,18 +153,69 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		if current.State != "partial" && current.State != "completed" {
 			t.Fatalf("collection state=%s code=%s", current.State, current.ErrorCode)
 		}
+		if killedLease.Generation > 0 {
+			var generation int64
+			var reads int
+			if db.QueryRowContext(ctx, `SELECT fencing_epoch FROM investigation.worker_queue WHERE tenant_id=$1 AND job_id=$2`, b.TenantID, turn.JobID).Scan(&generation) != nil || generation <= killedLease.Generation {
+				t.Fatal("dispatcher did not take over real expired lease")
+			}
+			if db.QueryRowContext(ctx, `SELECT count(*) FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name='get_assistant_context' AND state='succeeded'`, b.TenantID, turn.JobID).Scan(&reads) != nil || reads != 1 {
+				t.Fatal("committed context repeated after process kill")
+			}
+			if err := repo.Jobs.Complete(ctx, killedLease, assistantEmptyAnswer()); !errors.Is(err, investigation.ErrLease) {
+				t.Fatal("old dispatcher accepted a late answer", err)
+			}
+			t.Log("actual dispatcher and Python SIGKILL; real 45-second lease takeover; context reused once; old generation rejected", generation)
+		}
 		context, err := repo.FaultChainContext(requestCtx, b.TenantID, turn.TurnID, actor.Subject)
 		if err != nil || len(context.Edges) == 0 || len(context.QueryResultRefs) == 0 || len(context.EvidenceRefs) == 0 {
 			t.Fatalf("actual context edges=%d queries=%d evidence=%d err=%v", len(context.Edges), len(context.QueryResultRefs), len(context.EvidenceRefs), err)
 		}
+		if comparison && len(context.QueryResultRefs) != 4 {
+			if killedLease.Generation == 0 {
+				t.Fatal("both protocol comparisons for fault and recovery required", len(context.QueryResultRefs))
+			}
+			var partial investigation.AssistantAnswer
+			if json.Unmarshal(current.Answer, &partial) != nil || !partial.Partial || len(partial.MissingEvidence) == 0 {
+				t.Fatal("interrupted recovery omitted explicit partial checks")
+			}
+			var failed int
+			if db.QueryRowContext(ctx, `SELECT count(*) FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name='execute_analysis_query' AND state='failed' AND error_code='SOURCE_DEGRADED'`, b.TenantID, turn.JobID).Scan(&failed) != nil || failed == 0 {
+				t.Fatal("recovery lost comparisons without recorded source failure")
+			}
+			t.Log("source failure after takeover preserved committed statistics with explicit partial gaps", len(context.QueryResultRefs), failed)
+		}
+		rules := map[string]bool{}
+		if comparison {
+			for _, edge := range context.Edges {
+				if edge.TemporalAssessment != "unreliable" {
+					t.Fatal("unverified source clock became propagation order")
+				}
+				for _, observation := range edge.Observations {
+					if len(observation.Supports) > 0 {
+						rules[observation.RuleID] = true
+					}
+					if len(observation.FactRefs) == 0 {
+						t.Fatal("rule lost committed statistics or evidence references")
+					}
+				}
+			}
+		}
+
 		validated := map[string]bool{}
+		validatedWindows := map[string]bool{}
 		for _, id := range context.QueryResultRefs {
 			stored, err := repo.QueryResult(requestCtx, b.TenantID, id, actor.Subject)
 			if err != nil || !stored.Result.Exact || stored.Result.Status != "complete" {
 				t.Fatal("qualified stored result unavailable", err)
 			}
+			isRecovery := stored.Result.TimeRange.From.Equal(recoveryFrom(recovery))
+			expectedErrors := float64(50)
+			if isRecovery {
+				expectedErrors = 0
+			}
 			for _, stat := range stored.Result.Statistics {
-				if stat.Key == "current.responses" && stat.Value != 1000 {
+				if stat.Key == "current.responses" && stat.Value != 1000 || stat.Key == "current.5xx" && stat.Value != expectedErrors {
 					t.Fatal("HTTP population differs from independent oracle", stat.Value)
 				}
 			}
@@ -137,9 +227,55 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 					t.Fatal("HTTP observation differs from independent oracle", stored.Result.DatasetID, row.Value)
 				}
 			}
+			if comparison {
+				expected := []float64{1, 5, 4}
+				unit := "percentage_points"
+				if stored.Result.DatasetID == "network.http-summary" && isRecovery {
+					expected = []float64{5, 0, 5}
+				}
+				if stored.Result.DatasetID == "network.tcp-summary" {
+					expected = []float64{0, 100, 100}
+					unit = "observations"
+					if isRecovery {
+						expected = []float64{100, 0, 100}
+					}
+				}
+				if len(stored.Result.Rows) != 3 || stored.Facts[2].Unit != unit {
+					t.Fatal("comparison rows or difference unit invalid")
+				}
+				for i, row := range stored.Result.Rows {
+					if row.Value != expected[i] {
+						t.Fatal("comparison differs from independent oracle", stored.Result.DatasetID, row.Value, expected[i])
+					}
+				}
+			}
 			validated[stored.Result.DatasetID] = true
+			phase := "fault"
+			if isRecovery {
+				phase = "recovery"
+			}
+			if comparison && !isRecovery && !stored.Result.TimeRange.From.Equal(window.From) {
+				t.Fatal("result used an unfrozen window")
+			}
+			validatedWindows[stored.Result.DatasetID+"/"+phase] = true
 		}
-		if !validated["network.http-5xx-rate"] || !validated["network.http-5xx"] || !validated["network.http-response-time"] {
+		if comparison && killedLease.Generation == 0 && (!validated["network.http-summary"] || !validated["network.tcp-summary"]) {
+			t.Fatal("qualified protocol snapshots not collected")
+		}
+		if comparison {
+			expectedRules := map[string]bool{
+				"R1/http-response-increase":         validatedWindows["network.http-summary/fault"],
+				"R1/http-latency-increase":          validatedWindows["network.http-summary/fault"],
+				"R2/transport-observation-increase": validatedWindows["network.tcp-summary/fault"],
+				"R5/recovery-observation":           validatedWindows["network.http-summary/recovery"] || validatedWindows["network.tcp-summary/recovery"],
+			}
+			for rule, expected := range expectedRules {
+				if rules[rule] != expected {
+					t.Fatal("rule support differs from committed protocol/window facts", rule, rules[rule], expected)
+				}
+			}
+		}
+		if !comparison && (!validated["network.http-5xx-rate"] || !validated["network.http-response-time"]) {
 			t.Fatal("required HTTP datasets not collected")
 		}
 		var calls int
@@ -161,9 +297,16 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		if _, err = repo.QueryResult(requestCtx, b.TenantID, context.QueryResultRefs[0], actor.Subject); err == nil {
 			t.Fatal("revoked grant exposed stored query")
 		}
-		result, _ := json.MarshalIndent(map[string]any{"passed": true, "authorizationRevocation": true, "schemaVersion": "fault-chain-runtime-acceptance/v1", "modelEndpointOffline": true, "modelKeyMissing": true, "modelCalls": calls, "nativePodUid": pods.Items[0].Metadata.UID, "turnId": turn.TurnID, "context": context, "ancillaryFixtures": []string{"tenant/role/PKI bootstrap", "TLS/IAM archive backend"}, "modelQualityAcceptance": false}, "", "  ")
+		result, _ := json.MarshalIndent(map[string]any{"passed": true, "authorizationRevocation": true, "processRecovery": killedLease.Generation > 0, "killedGeneration": killedLease.Generation, "validatedWindows": validatedWindows, "schemaVersion": "fault-chain-runtime-acceptance/v1", "modelEndpointOffline": true, "modelKeyMissing": true, "modelCalls": calls, "nativePodUid": pods.Items[0].Metadata.UID, "turnId": turn.TurnID, "context": context, "ancillaryFixtures": []string{"tenant/role/PKI bootstrap", "TLS/IAM archive backend"}, "modelQualityAcceptance": false}, "", "  ")
 		if os.WriteFile(os.Getenv("OPS_FAULT_CHAIN_RUNTIME_REPORT"), result, 0600) != nil {
 			t.Fatal("report path required")
 		}
 	})
+}
+
+func recoveryFrom(w *analytics.QueryTimeRange) time.Time {
+	if w == nil {
+		return time.Time{}
+	}
+	return w.From
 }

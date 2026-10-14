@@ -3,8 +3,11 @@ package investigation
 import (
 	"github.com/google/uuid"
 	"ops-platform/internal/analytics"
+	"ops-platform/internal/archive"
+	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/resource"
+	"slices"
 	"testing"
 	"time"
 )
@@ -58,6 +61,68 @@ func TestFaultChainCorrelationKeepsTemporalAndCausalGaps(t *testing.T) {
 	out, err := EvaluateFaultChain(request, []resource.Relation{relation}, []StoredQueryResult{query}, now)
 	if err != nil || len(out.Edges) != 1 || len(out.Edges[0].Observations) != 1 || out.Edges[0].TemporalAssessment != "unreliable" || out.Edges[0].Observations[0].RuleID != "R1/http-response-increase" || len(out.Edges[0].MissingEvidence) == 0 {
 		t.Fatalf("context %+v %v", out, err)
+	}
+	// Fixture clocks are explicitly qualified only for this finite-predicate
+	// test. Actual DeepFlow runtime clocks remain unverified.
+	change := evidence.Evidence{EvidenceID: uuid.NewString(), TenantID: "tenant-a", ResourceCanonicalID: peer, Type: "change_event", SourceRegistrationID: uuid.NewString(), SourceSystem: "fixture-change-collector", SourceRevision: 1, SourceScopeDigest: graph.ScopeDigest("change-source"), TimeReliable: true, ObservedFrom: baseline.From.Add(time.Second), ObservedTo: baseline.From.Add(2 * time.Second), ReplayState: "archived_verified", ContentDigest: graph.ScopeDigest("fixture-change"), ArchiveRef: &evidence.ArchiveRef{Object: archive.ObjectRef{VersionID: "fixture-v1"}, PlaintextDigest: graph.ScopeDigest("fixture-change")}}
+	for _, name := range []string{"qualified", "change-clock-unreliable", "network-clock-unreliable", "different-uid", "different-tenant", "overlapping-event", "outside-baseline", "archive-pending", "archive-proof-missing", "not-a-change", "no-baseline", "partial-statistics"} {
+		t.Run("R4/"+name, func(t *testing.T) {
+			candidate := change
+			input := request
+			stats := result
+			network := *result.NetworkContext
+			network.TimeReliable = true
+			stats.NetworkContext = &network
+			switch name {
+			case "change-clock-unreliable":
+				candidate.TimeReliable = false
+			case "network-clock-unreliable":
+				network.TimeReliable = false
+			case "different-uid":
+				candidate.ResourceCanonicalID = id("replacement-pod")
+			case "different-tenant":
+				candidate.TenantID = "other"
+			case "overlapping-event":
+				candidate.ObservedTo = fault.From
+			case "outside-baseline":
+				candidate.ObservedFrom = baseline.From.Add(-time.Second)
+			case "archive-pending":
+				candidate.ReplayState = "archive_pending"
+			case "archive-proof-missing":
+				candidate.ArchiveRef = nil
+			case "not-a-change":
+				candidate.Type = "log"
+			case "no-baseline":
+				input.Baseline = nil
+				stats.ComparisonTimeRange = nil
+				stats.Dimension = ""
+				stats.Rows = []analytics.Row{{Dimension: "current", Value: 5}}
+				stats.Statistics = []analytics.Statistic{{Key: "current.responses", Value: 1000, Unit: "responses"}, {Key: "current.5xx", Value: 50, Unit: "responses"}}
+			case "partial-statistics":
+				stats.Exact = false
+				stats.Status = "partial"
+			}
+			got, err := EvaluateFaultChain(input, []resource.Relation{relation}, []StoredQueryResult{BuildStoredQueryResult(stats)}, now, []evidence.Evidence{candidate, candidate})
+			if err != nil {
+				t.Fatal(err)
+			}
+			found := false
+			for _, ob := range got.Edges[0].Observations {
+				if ob.RuleID != "R4/change-before-observation-window" {
+					continue
+				}
+				found = true
+				if len(ob.FactRefs) == 0 || !slices.Contains(ob.Supports, candidate.EvidenceID) || len(ob.Supports) != 2 || !slices.Contains(got.EvidenceRefs, candidate.EvidenceID) {
+					t.Fatal("change lost exact committed parents", ob)
+				}
+			}
+			if found != (name == "qualified") {
+				t.Fatal("unqualified change became an association", name, got)
+			}
+			if found && slices.Contains(got.Edges[0].MissingEvidence, "change_source_not_checked") {
+				t.Fatal("qualified change left wrong missing source marker")
+			}
+		})
 	}
 	// Silence without a population is a gap, never counterevidence.
 	positive := result

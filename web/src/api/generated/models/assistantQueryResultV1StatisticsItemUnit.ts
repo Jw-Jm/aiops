@@ -11,4 +11,6 @@ export type AssistantQueryResultV1StatisticsItemUnit = typeof AssistantQueryResu
 export const AssistantQueryResultV1StatisticsItemUnit = {
   responses: 'responses',
   observations: 'observations',
+  milliseconds: 'milliseconds',
+  retransmissions: 'retransmissions',
 } as const;

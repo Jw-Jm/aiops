@@ -594,14 +594,76 @@
     },
     {
       "id": "network.connection-failure-observations",
-      "name": "连接失败观测记录数",
+      "name": "TCP 客户端/服务端错误观测数",
       "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
       "authorizationDomain": "operational",
       "source": "deepflow",
       "templateVersion": "deepflow-network-summary/v1",
       "metric": "connection_failure_observation_count",
       "unit": "observations",
-      "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+      "calculation": "protocol=6、单一合格采集点中 status=3/4 的记录数，含建连、重置、超时等错误分类；不是独立失败连接数，不代表失败请求数。",
+      "dimensions": [
+        "time",
+        "comparison"
+      ],
+      "filters": [],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [
+        "Pod"
+      ],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+      "operations": [
+        "aggregate",
+        "trend",
+        "compare",
+        "compare_percent"
+      ]
+    },
+    {
+      "id": "network.http-summary",
+      "name": "HTTP 完成响应统计",
+      "description": "单一合格采集点的固定统计快照；数值按独立单位 Fact 引用，避免重复读取同一总体。",
+      "authorizationDomain": "operational",
+      "source": "deepflow",
+      "templateVersion": "deepflow-network-summary/v1",
+      "metric": "http_5xx_percent",
+      "unit": "percent",
+      "calculation": "HTTP：完成会话的响应数、5xx 数、比例及样本加权平均耗时；TCP：status=3/4 的客户端/服务端错误观测记录及周期重传计数。不是独立失败连接数或丢包率。",
+      "dimensions": [
+        "time",
+        "comparison"
+      ],
+      "filters": [],
+      "requiredFilters": [],
+      "healthValues": [],
+      "kinds": [
+        "Pod"
+      ],
+      "clusterScopedKinds": [],
+      "maxGroups": 50,
+      "historySupported": true,
+      "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+      "operations": [
+        "aggregate",
+        "trend",
+        "compare",
+        "compare_percent"
+      ]
+    },
+    {
+      "id": "network.tcp-summary",
+      "name": "TCP 观测记录统计",
+      "description": "单一合格采集点的固定统计快照；数值按独立单位 Fact 引用，避免重复读取同一总体。",
+      "authorizationDomain": "operational",
+      "source": "deepflow",
+      "templateVersion": "deepflow-network-summary/v1",
+      "metric": "connection_failure_observation_count",
+      "unit": "observations",
+      "calculation": "HTTP：完成会话的响应数、5xx 数、比例及样本加权平均耗时；TCP：status=3/4 的客户端/服务端错误观测记录及周期重传计数。不是独立失败连接数或丢包率。",
       "dimensions": [
         "time",
         "comparison"

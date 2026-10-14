@@ -5,9 +5,13 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"ops-platform/internal/evidence"
+	"ops-platform/internal/graph"
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/persistence"
+	"ops-platform/internal/rca"
 	"ops-platform/internal/resource"
+	"slices"
 	"time"
 )
 
@@ -25,6 +29,8 @@ func (a AssistantTools) evaluateFaultChain(ctx context.Context, j investigation.
 		}
 		relations := []resource.Relation{}
 		queries := []investigation.StoredQueryResult{}
+		changes := []evidence.Evidence{}
+		health := []investigation.FaultChainResourceHealth{}
 		seen := map[uuid.UUID]bool{}
 		for _, id := range p.StepIDs {
 			if id == uuid.Nil || seen[id] {
@@ -37,13 +43,49 @@ func (a AssistantTools) evaluateFaultChain(ctx context.Context, j investigation.
 				return investigation.ErrDenied
 			}
 			var wire struct {
-				Tool string          `json:"tool"`
-				Data json.RawMessage `json:"data"`
+				Tool         string          `json:"tool"`
+				Data         json.RawMessage `json:"data"`
+				EvidenceRefs []string        `json:"evidenceRefs"`
 			}
 			if json.Unmarshal(raw, &wire) != nil || wire.Tool != tool {
 				return investigation.ErrInvalid
 			}
 			switch tool {
+			case "get_resource_health":
+				var snapshot graph.Result
+				if json.Unmarshal(wire.Data, &snapshot) != nil {
+					return investigation.ErrInvalid
+				}
+				// Older workers have no qualified observation source metadata.
+				// Keep the health gap instead of assigning a current revision to
+				// a potentially older snapshot.
+				if len(snapshot.ObservationSources) == 0 {
+					continue
+				}
+				if rca.CheckGraphSources(ctx, tx, j.TenantID, snapshot.ObservationSources, snapshot) != nil {
+					return investigation.ErrDenied
+				}
+				for _, node := range snapshot.Nodes {
+					if !j.Scope.Allows(node.CanonicalID, node.Namespace) {
+						return investigation.ErrDenied
+					}
+				}
+				health = append(health, investigation.CommittedFaultChainResourceHealth(id, snapshot)...)
+			case "get_recent_changes":
+				for _, ref := range wire.EvidenceRefs {
+					id, err := uuid.Parse(ref)
+					if err != nil {
+						return investigation.ErrInvalid
+					}
+					e, err := evidence.GetTx(ctx, tx, j.TenantID, id, j.Scope)
+					if err != nil || !slices.Contains(j.Budget.AllowedDataClasses, e.DataClass) {
+						return investigation.ErrDenied
+					}
+					changes = append(changes, e)
+					if len(changes) > 80 {
+						return investigation.ErrInvalid
+					}
+				}
 			case "get_dependencies", "get_impact_scope", "get_resource_context":
 				var graph struct {
 					Edges []resource.Relation `json:"edges"`
@@ -69,7 +111,7 @@ func (a AssistantTools) evaluateFaultChain(ctx context.Context, j investigation.
 			}
 		}
 		var err error
-		out, err = investigation.EvaluateFaultChain(request, relations, queries, time.Now().UTC())
+		out, err = investigation.EvaluateFaultChainWithResourceHealth(request, relations, queries, time.Now().UTC(), health, changes)
 		return err
 	})
 	return out, err

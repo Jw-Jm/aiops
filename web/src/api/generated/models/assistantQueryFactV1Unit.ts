@@ -23,4 +23,5 @@ export const AssistantQueryFactV1Unit = {
   responses: 'responses',
   retransmissions: 'retransmissions',
   observations: 'observations',
+  percentage_points: 'percentage_points',
 } as const;

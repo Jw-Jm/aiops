@@ -1759,7 +1759,17 @@ type AssistantFaultChainContextV1 struct {
 				FactId        string             `json:"factId"`
 				QueryResultId openapi_types.UUID `json:"queryResultId"`
 			} `json:"factRefs"`
-			Reason   string               `json:"reason"`
+			Reason           string                `json:"reason"`
+			RelatedRelations *[]ResourceRelationV2 `json:"relatedRelations,omitempty"`
+			ResourceHealth   *struct {
+				CanonicalId     string                   `json:"canonicalId"`
+				ConditionStatus interface{}              `json:"conditionStatus"`
+				ConditionType   interface{}              `json:"conditionType"`
+				Namespace       string                   `json:"namespace"`
+				ObservedAt      time.Time                `json:"observedAt"`
+				Sources         []GraphSourceAuthorityV2 `json:"sources"`
+				StepId          openapi_types.UUID       `json:"stepId"`
+			} `json:"resourceHealth,omitempty"`
 			RuleId   string               `json:"ruleId"`
 			Supports []openapi_types.UUID `json:"supports"`
 		} `json:"observations"`
@@ -3316,11 +3326,12 @@ type ResourceGraphV2 struct {
 		GraphGeneration int `json:"graphGeneration"`
 		OwnerEpoch      int `json:"ownerEpoch"`
 	} `json:"graphRevision"`
-	IndirectlyAffected *[]CanonicalID     `json:"indirectlyAffected,omitempty"`
-	NextCanonicalId    *string            `json:"nextCanonicalId,omitempty"`
-	Nodes              []ResourceEntityV2 `json:"nodes"`
-	OwnerInstance      string             `json:"ownerInstance"`
-	Partial            bool               `json:"partial"`
+	IndirectlyAffected *[]CanonicalID            `json:"indirectlyAffected,omitempty"`
+	NextCanonicalId    *string                   `json:"nextCanonicalId,omitempty"`
+	Nodes              []ResourceEntityV2        `json:"nodes"`
+	ObservationSources *[]GraphSourceAuthorityV2 `json:"observationSources,omitempty"`
+	OwnerInstance      string                    `json:"ownerInstance"`
+	Partial            bool                      `json:"partial"`
 	RankedEvidence     *[]struct {
 		Confidence *string    `json:"confidence,omitempty"`
 		EdgeKey    *string    `json:"edgeKey,omitempty"`

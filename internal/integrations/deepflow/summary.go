@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"ops-platform/internal/contract"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 )
@@ -61,6 +62,57 @@ func (a *Adapter) Binding() evidence.Binding {
 }
 
 func (a *Adapter) Summary(ctx context.Context, q SummaryQuery) (NetworkSummary, evidence.Result, error) {
+	return a.summary(ctx, q, a.resolveSummaryPair)
+}
+func (a *Adapter) resolveSummaryPair(ctx context.Context, target, peer string) (Endpoint, Endpoint, error) {
+	if live, ok := a.mapping.(*LiveMapper); ok {
+		return live.ByCanonicalPair(ctx, target, peer)
+	}
+	l, err := a.mapping.ByCanonical(ctx, target)
+	if err != nil {
+		return Endpoint{}, Endpoint{}, err
+	}
+	r, err := a.mapping.ByCanonical(ctx, peer)
+	return l, r, err
+}
+
+// SummaryBatch freezes one verified pair for bounded window reads and rechecks
+// both native/backend identities after all reads. Nothing is archived until the
+// complete batch passes this fence; it is not a cross-request identity cache.
+func (a *Adapter) SummaryBatch(ctx context.Context, queries []SummaryQuery) ([]NetworkSummary, []evidence.Result, error) {
+	if len(queries) < 1 || len(queries) > 10 {
+		return nil, nil, evidence.ErrBudget
+	}
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	first := queries[0]
+	for _, q := range queries {
+		if q.Target != first.Target || q.Peer != first.Peer || q.Direction != first.Direction || q.ObservationPoint != first.ObservationPoint || q.L7 != first.L7 || graph.ScopeDigest(q.Scope) != graph.ScopeDigest(first.Scope) {
+			return nil, nil, evidence.ErrArgument
+		}
+	}
+	left, right, err := a.resolveSummaryPair(ctx, first.Target, first.Peer)
+	if err != nil {
+		return nil, nil, evidence.ErrScopeUnverified
+	}
+	frozen := func(context.Context, string, string) (Endpoint, Endpoint, error) { return left, right, nil }
+	summaries := []NetworkSummary{}
+	results := []evidence.Result{}
+	for _, q := range queries {
+		s, r, err := a.summary(ctx, q, frozen)
+		if err != nil {
+			return nil, nil, err
+		}
+		summaries = append(summaries, s)
+		results = append(results, r)
+	}
+	l2, r2, err := a.resolveSummaryPair(ctx, first.Target, first.Peer)
+	if err != nil || l2 != left || r2 != right || a.authorize(ctx, a.binding) != nil {
+		return nil, nil, evidence.ErrScopeUnverified
+	}
+	return summaries, results, nil
+}
+func (a *Adapter) summary(ctx context.Context, q SummaryQuery, resolve func(context.Context, string, string) (Endpoint, Endpoint, error)) (NetworkSummary, evidence.Result, error) {
 	s := NetworkSummary{SchemaVersion: "network-summary/v1", Target: q.Target, Peer: q.Peer, Direction: q.Direction, ObservationPoint: q.ObservationPoint, From: q.From, To: q.To, Protocol: "tcp", Population: "scoped_single_observation_point_records"}
 	out := evidence.Result{SchemaVersion: "evidence-result/v2", Evidence: []evidence.Evidence{}, Freshness: "fresh", Warnings: []string{}, DegradedSources: []string{}}
 	if q.L7 {
@@ -94,17 +146,7 @@ func (a *Adapter) Summary(ctx context.Context, q SummaryQuery) (NetworkSummary, 
 	if err != nil || org == 0 {
 		return s, out, evidence.ErrScopeUnverified
 	}
-	resolvePair := func() (Endpoint, Endpoint, error) {
-		if live, ok := a.mapping.(*LiveMapper); ok {
-			return live.ByCanonicalPair(ctx, q.Target, q.Peer)
-		}
-		left, err := a.mapping.ByCanonical(ctx, q.Target)
-		if err != nil {
-			return Endpoint{}, Endpoint{}, err
-		}
-		right, err := a.mapping.ByCanonical(ctx, q.Peer)
-		return left, right, err
-	}
+	resolvePair := func() (Endpoint, Endpoint, error) { return resolve(ctx, q.Target, q.Peer) }
 	left, right, err := resolvePair()
 	if err != nil {
 		return s, out, fmt.Errorf("%w: initial endpoint pair", evidence.ErrScopeUnverified)
@@ -274,8 +316,16 @@ func (a *Adapter) Summary(ctx context.Context, q SummaryQuery) (NetworkSummary, 
 	if a.mode == "fixture_only" {
 		out.Warnings = append(out.Warnings, "fixture_only")
 	}
-	out.Warnings = append(out.Warnings, "unreliable-event-time", "observation_population_not_all_user_requests", "incomplete_sessions_excluded_not_counted")
+	out.Warnings = append(out.Warnings, "unreliable-event-time", "observation_population_not_all_user_requests")
+	if q.L7 {
+		out.Warnings = append(out.Warnings, "incomplete_sessions_excluded_not_counted")
+	} else {
+		out.Warnings = append(out.Warnings, "status_3_4_error_observations_not_unique_failed_connections")
+	}
 	data, _ := json.Marshal(s)
+	if err := contract.Validate("https://ops.local/schemas/network-summary/v1", data); err != nil {
+		return fail("summary_contract_invalid")
+	}
 	now := time.Now().UTC()
 	out.Evidence = []evidence.Evidence{{SchemaVersion: "evidence/v2", EvidenceID: uuid.Must(uuid.NewV7()).String(), TenantID: a.binding.Tenant, ResourceCanonicalID: q.Target, Type: "network", DataClass: "D1", SourceRegistrationID: a.binding.SourceID, SourceRevision: a.binding.Revision, SourceSystem: "deepflow", BackendLogicalID: a.binding.BackendLogicalID, SourceScopeDigest: evidence.BindingScopeDigest(a.binding), QueryTemplateVersion: "deepflow-v7.2.0/network-summary/v1", QueryHash: out.QueryHash, EffectiveScope: q.Scope, EvaluatedAt: now, ObservedFrom: q.From, ObservedTo: q.To, SourceRetentionUntil: q.To.Add(time.Duration(a.binding.SourceRetentionSeconds) * time.Second), TimeReliable: false, ReplayState: "archive_pending", ContentDigest: evidence.Digest(data), DerivationEvidenceRefs: []string{}, IndependenceGroup: a.binding.SourceID, Data: data}}
 	return s, out, nil

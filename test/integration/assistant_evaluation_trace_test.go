@@ -23,14 +23,22 @@ import (
 // implementation: all calls still go to the real signed production gateway.
 // Only typed QueryIntent and step ID are retained; auth headers/tokens are not.
 type assistantEvaluationTrace struct {
-	mu      sync.Mutex
-	intents map[string]analytics.QueryIntent
-	digests map[string]string
+	mu               sync.Mutex
+	intents          map[string]analytics.QueryIntent
+	digests          map[string]string
+	recoveryPaused   chan struct{}
+	recoveryResume   chan struct{}
+	recoveryOnce     sync.Once
+	restartProcesses func()
 }
 
 func assistantEvaluationProxy(t *testing.T, address string, files map[string]string) (string, *assistantEvaluationTrace) {
 	t.Helper()
 	trace := &assistantEvaluationTrace{intents: map[string]analytics.QueryIntent{}, digests: map[string]string{}}
+	if os.Getenv("OPS_ASSISTANT_DISPATCHER_BINARY") != "" {
+		trace.recoveryPaused = make(chan struct{})
+		trace.recoveryResume = make(chan struct{})
+	}
 	ca, err := os.ReadFile(files["ca.pem"])
 	if err != nil {
 		t.Fatal(err)
@@ -74,6 +82,18 @@ func assistantEvaluationProxy(t *testing.T, address string, files map[string]str
 					Arguments json.RawMessage `json:"arguments"`
 					Meta      map[string]any  `json:"_meta"`
 				} `json:"params"`
+			}
+			if trace.recoveryPaused != nil && json.Unmarshal(raw, &message) == nil && message.Method == "tools/call" && message.Params.Name == "get_dependencies" {
+				paused := false
+				trace.recoveryOnce.Do(func() { paused = true; close(trace.recoveryPaused) })
+				if paused {
+					select {
+					case <-trace.recoveryResume:
+					case <-r.Context().Done():
+					}
+					http.Error(w, "acceptance transport interrupted", http.StatusServiceUnavailable)
+					return
+				}
 			}
 			if json.Unmarshal(raw, &message) == nil && message.Method == "tools/call" && message.Params.Name == "execute_analysis_query" {
 				var arguments struct {

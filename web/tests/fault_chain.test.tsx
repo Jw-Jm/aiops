@@ -46,6 +46,33 @@ it("links the selected edge to explicit conflict and missing evidence without cl
         supports: [],
         conflicts: [],
         factRefs: [],
+        ...(i === 0
+          ? {
+              resourceHealth: {
+                canonicalId: "shared-node",
+                stepId: "fixture-health-step",
+                namespace: "",
+                observedAt: window.from,
+                conditionType: "Ready",
+                conditionStatus: "False",
+                sources: [
+                  {
+                    sourceRegistrationId: "fixture-source",
+                    revision: 3,
+                    scopeDigest: "fixture-digest",
+                  },
+                ],
+              },
+              relatedRelations: [
+                {
+                  from: "a",
+                  to: "shared-node",
+                  kind: "scheduled_on",
+                  observedAt: window.from,
+                },
+              ],
+            }
+          : {}),
       },
     ],
     missingEvidence: ["缺少因果证据：" + name],
@@ -108,6 +135,12 @@ it("links the selected edge to explicit conflict and missing evidence without cl
   );
   expect(await screen.findByText("缺少因果证据：a")).toBeDefined();
   expect(screen.getByText("时间先后：未验证")).toBeDefined();
+  expect(
+    screen
+      .getByRole("link", { name: "共同资源候选：shared-node" })
+      .getAttribute("href"),
+  ).toContain("canonicalId=shared-node");
+  expect(screen.getByText(/已提交状态：Ready=False/)).toBeDefined();
   fireEvent.click(
     screen.getByRole("button", { name: "链路 2 · communicates_with" }),
   );

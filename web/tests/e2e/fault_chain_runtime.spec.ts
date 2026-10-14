@@ -162,6 +162,9 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
       expect(
         query.statistics.find((s: any) => s.key === "current.responses").value,
       ).toBe(1000);
+      datasets["network.http-5xx"] = query.statistics.find(
+        (s: any) => s.key === "current.5xx",
+      ).value;
       datasets[query.datasetId] = query.rows.find(
         (r: any) => r.dimension === "current",
       ).value;

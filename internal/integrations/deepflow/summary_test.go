@@ -2,9 +2,11 @@ package deepflow
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"ops-platform/internal/contract"
 	"ops-platform/internal/datascope"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
@@ -57,6 +59,20 @@ func TestSummaryAggregatesBeyondDetailLimitAndRechecksScope(t *testing.T) {
 	if err != nil || out.Partial || s.Responses != 1000 || s.Errors != 50 || s.DurationMicroseconds != 250000000 || len(out.Evidence) != 1 || out.Evidence[0].TimeReliable {
 		t.Fatalf("aggregate %+v %+v %v", s, out, err)
 	}
+	if err := contract.Validate("https://ops.local/schemas/network-summary/v1", out.Evidence[0].Data); err != nil {
+		t.Fatal("archived summary contract", err)
+	}
+	for _, mutation := range []map[string]any{{"unknown": true}, {"timeReliable": true}, {"population": "scoped_single_observation_point_records"}, {"retransmissions": 1}, {"responses": -1}, {"observationPoint": "unverified"}} {
+		var wire map[string]any
+		_ = json.Unmarshal(out.Evidence[0].Data, &wire)
+		for key, value := range mutation {
+			wire[key] = value
+		}
+		raw, _ := json.Marshal(wire)
+		if err := contract.Validate("https://ops.local/schemas/network-summary/v1", raw); err == nil {
+			t.Fatal("invalid summary accepted", mutation)
+		}
+	}
 	q.Scope.Resources = []string{target}
 	if _, _, err = adapter.Summary(t.Context(), q); err != evidence.ErrScopeUnverified || calls != 1 {
 		t.Fatal("scope widened")
@@ -97,5 +113,39 @@ func TestTCPRecordSummaryUsesProtocolAndDoesNotInventPacketLossRate(t *testing.T
 	s, result, err := a.Summary(t.Context(), SummaryQuery{Target: target, Peer: peer, Direction: "outgoing", ObservationPoint: "s-p", From: now.Add(-time.Minute), To: now, Scope: graph.Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps"}}})
 	if err != nil || result.Partial || s.Observations != 1005 || s.Retransmissions != 6 || s.Failures != 5 || s.Protocol != "tcp" || s.TimeReliable {
 		t.Fatalf("TCP record counts %+v %v", s, err)
+	}
+}
+
+func TestWindowBatchRejectsIdentityChangeBeforePublishingAnyResult(t *testing.T) {
+	now := time.Now().UTC().Truncate(time.Second)
+	id := func(uid string) string {
+		return resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: uid}.String()
+	}
+	target, peer := id("a"), id("b")
+	mapping := mappings{target: {CanonicalID: target, Namespace: "apps", PodID: 1, ClusterID: 2, NamespaceID: 3}, peer: {CanonicalID: peer, Namespace: "apps", PodID: 2, ClusterID: 2, NamespaceID: 3}}
+	calls := 0
+	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		if calls == 2 {
+			endpoint := mapping[peer]
+			endpoint.PodID = 4
+			mapping[peer] = endpoint
+		}
+		fmt.Fprint(w, `{"OPT_STATUS":"SUCCESS","result":{"columns":["response_code","observations","duration_us"],"values":[[200,1000,2000000]]}}`)
+	}))
+	defer backend.Close()
+	b := evidence.Binding{SourceType: "deepflow", Tenant: "tenant-a", SourceID: "df", Revision: 1, Endpoint: backend.URL, ScopeMapping: datascope.Mapping{Scopes: map[string][]string{"organization": {"1"}, "cluster": {"cluster-a"}, "namespace": {"apps"}}}}
+	a, _ := New(b, backend.Client(), mapping, func(context.Context, evidence.Binding) error { return nil }, true, "fixture_only")
+	q := SummaryQuery{Target: target, Peer: peer, Direction: "outgoing", ObservationPoint: "s-p", From: now.Add(-2 * time.Minute), To: now.Add(-time.Minute), Scope: graph.Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps"}}, L7: true}
+	q2 := q
+	q2.From = q.To
+	q2.To = now
+	summaries, results, err := a.SummaryBatch(t.Context(), []SummaryQuery{q, q2})
+	if err == nil || len(summaries) != 0 || len(results) != 0 || calls != 2 {
+		t.Fatal("changed identity published a partial historical batch", err, calls)
+	}
+	q2.Scope.Namespaces = []string{"other"}
+	if _, _, err = a.SummaryBatch(t.Context(), []SummaryQuery{q, q2}); err == nil || calls != 2 {
+		t.Fatal("mixed-scope batch queried source")
 	}
 }

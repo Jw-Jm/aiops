@@ -85,6 +85,7 @@ type ResourceSummary struct {
 	ByHealth map[string]int `json:"byHealth"`
 }
 type Result struct {
+	ObservationSources []SourceAuthority        `json:"observationSources,omitempty"`
 	Summary            *ResourceSummary         `json:"summary,omitempty"`
 	DirectlyAffected   []string                 `json:"directlyAffected"`
 	IndirectlyAffected []string                 `json:"indirectlyAffected"`

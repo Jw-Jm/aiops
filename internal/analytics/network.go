@@ -5,6 +5,7 @@ import (
 	"math"
 	"regexp"
 	"slices"
+	"strings"
 	"time"
 
 	"ops-platform/internal/evidence"
@@ -158,12 +159,30 @@ func (n *Network) Execute(ctx context.Context, p NetworkPlan) (QueryResult, []ev
 		out.Dimension = "comparison"
 		out.SourceManifest.CoverageFrom = from
 	}
+	windows := []*QueryTimeRange{}
+	if p.intent.Operation == "trend" {
+		for at := from; at.Before(p.intent.TimeRange.To); at = at.Add(time.Duration(p.intent.StepSeconds) * time.Second) {
+			windows = append(windows, &QueryTimeRange{at, at.Add(time.Duration(p.intent.StepSeconds) * time.Second), p.intent.TimeRange.Timezone})
+		}
+	} else {
+		if p.intent.ComparisonTimeRange != nil {
+			windows = append(windows, p.intent.ComparisonTimeRange)
+		}
+		windows = append(windows, p.intent.TimeRange)
+	}
+	queries := []deepflow.SummaryQuery{}
+	for _, w := range windows {
+		queries = append(queries, deepflow.SummaryQuery{Target: p.intent.NetworkSelection.TargetCanonicalID, Peer: p.intent.NetworkSelection.PeerCanonicalID, Direction: p.intent.NetworkSelection.Direction, ObservationPoint: p.proof.ObservationPoint, From: w.From, To: w.To, Scope: p.scope, L7: strings.HasPrefix(p.dataset.ID, "network.http")})
+	}
+	summaries, results, err := n.adapter.SummaryBatch(ctx, queries)
+	if err != nil {
+		return out, facts, err
+	}
+	index := 0
 	hashes := []string{}
 	query := func(window *QueryTimeRange, label string) (float64, bool, error) {
-		summary, result, err := n.adapter.Summary(ctx, deepflow.SummaryQuery{Target: p.intent.NetworkSelection.TargetCanonicalID, Peer: p.intent.NetworkSelection.PeerCanonicalID, Direction: p.intent.NetworkSelection.Direction, ObservationPoint: p.proof.ObservationPoint, From: window.From, To: window.To, Scope: p.scope, L7: len(p.dataset.ID) >= 12 && p.dataset.ID[:12] == "network.http"})
-		if err != nil {
-			return 0, false, err
-		}
+		summary, result := summaries[index], results[index]
+		index++
 		out.Warnings = append(out.Warnings, result.Warnings...)
 		out.DegradedSources = append(out.DegradedSources, result.DegradedSources...)
 		if result.Partial || result.Freshness != "fresh" {
@@ -186,7 +205,7 @@ func (n *Network) Execute(ctx context.Context, p NetworkPlan) (QueryResult, []ev
 			v = float64(summary.Responses)
 		case "network.http-5xx":
 			v = float64(summary.Errors)
-		case "network.http-5xx-rate":
+		case "network.http-5xx-rate", "network.http-summary":
 			if summary.Responses == 0 {
 				valid = false
 			} else {
@@ -200,13 +219,18 @@ func (n *Network) Execute(ctx context.Context, p NetworkPlan) (QueryResult, []ev
 			}
 		case "network.tcp-retransmissions":
 			v = float64(summary.Retransmissions)
-		case "network.connection-failure-observations":
+		case "network.connection-failure-observations", "network.tcp-summary":
 			v = float64(summary.Failures)
 		default:
 			return 0, false, ErrUnsupported
 		}
 		if summary.Protocol == "http" {
 			out.Statistics = append(out.Statistics, Statistic{label + ".responses", float64(summary.Responses), "responses"}, Statistic{label + ".5xx", float64(summary.Errors), "responses"})
+			if p.dataset.ID == "network.http-summary" && summary.Responses > 0 {
+				out.Statistics = append(out.Statistics, Statistic{label + ".mean_response_ms", float64(summary.DurationMicroseconds) / float64(summary.Responses) / 1000, "milliseconds"})
+			}
+		} else if p.dataset.ID == "network.tcp-summary" {
+			out.Statistics = append(out.Statistics, Statistic{label + ".retransmissions", float64(summary.Retransmissions), "retransmissions"}, Statistic{label + ".failure_observations", float64(summary.Failures), "observations"})
 		}
 		if !valid {
 			out.Warnings = append(out.Warnings, label+"_denominator_zero")

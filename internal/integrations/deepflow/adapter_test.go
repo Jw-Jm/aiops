@@ -196,3 +196,50 @@ func TestDeepFlowFrozenContractMissingExtraTimeoutEmptyAndUnknown(t *testing.T) 
 		})
 	}
 }
+
+func TestDetailByteBudgetRetainsOnlyWholeScopedObservations(t *testing.T) {
+	now := time.Date(2026, 10, 1, 0, 0, 30, 0, time.UTC)
+	id := resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: "pod-1"}.String()
+	peer := resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: "pod-2"}.String()
+	values := [][]any{}
+	for i := 1; i <= 20; i++ {
+		values = append(values, []any{1, 2, 0, 0, 0, "s", now.Add(-time.Duration(i) * time.Second).Unix()})
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(map[string]any{"OPT_STATUS": "SUCCESS", "result": map[string]any{"columns": []string{"pod_id_0", "pod_id_1", "retrans_tx", "retrans_rx", "status", "tap_side", "observed_at"}, "values": values}})
+	}))
+	defer server.Close()
+	binding := evidence.Binding{Tenant: "tenant-a", SourceID: "df-a", Revision: 1, Endpoint: server.URL, ScopeMapping: datascope.Mapping{Scopes: map[string][]string{"organization": {"2"}, "cluster": {"cluster-a"}, "namespace": {"apps"}}}}
+	adapter, err := New(binding, server.Client(), mappings{id: {CanonicalID: id, Namespace: "apps", PodID: 1, ClusterID: 2, NamespaceID: 3}, peer: {CanonicalID: peer, Namespace: "apps", PodID: 2, ClusterID: 2, NamespaceID: 3}}, func(context.Context, evidence.Binding) error { return nil }, false, "fixture_only")
+	if err != nil {
+		t.Fatal(err)
+	}
+	q := evidence.Query{Template: "GetNetworkDependencies", ResourceCanonicalID: id, Namespace: "apps", From: now.Add(-time.Minute), To: now, Limit: 30, Scope: graph.Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps"}}}
+	full, err := adapter.Query(t.Context(), q)
+	if err != nil || len(full.Evidence) != 1 {
+		t.Fatal("full observations unavailable", err)
+	}
+	var rows []json.RawMessage
+	if json.Unmarshal(full.Evidence[0].Data, &rows) != nil || len(rows) != 20 {
+		t.Fatal("oracle rows unavailable")
+	}
+	prefix, _ := json.Marshal(rows[:2])
+	q.MaxBytes = len(prefix)
+	got, err := adapter.Query(t.Context(), q)
+	if err != nil || !got.Partial || got.Freshness != "fresh" || len(got.Evidence) != 1 {
+		t.Fatal("bounded observations lost", got, err)
+	}
+	e := got.Evidence[0]
+	if string(e.Data) != string(prefix) || len(e.Data) > q.MaxBytes || e.ContentDigest != evidence.Digest(prefix) || !e.ObservedFrom.Equal(now.Add(-2*time.Second)) || !e.ObservedTo.Equal(now.Add(-time.Second)) {
+		t.Fatal("truncated evidence metadata not bound to retained rows")
+	}
+	edges, err := NetworkRelations(got)
+	if err != nil || len(edges) != 2 || edges[0].From != id || edges[0].To != peer || !edges[0].ObservedAt.Equal(now.Add(-time.Second)) {
+		t.Fatal("scoped observed relations lost", edges, err)
+	}
+	q.MaxBytes = 1
+	got, err = adapter.Query(t.Context(), q)
+	if err != nil || len(got.Evidence) != 0 || got.Freshness != "unavailable" {
+		t.Fatal("oversized single row emitted", got, err)
+	}
+}

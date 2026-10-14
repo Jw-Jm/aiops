@@ -14,6 +14,32 @@ const comparisonLabels: Record<string, string> = {
   decrease: "减少量",
   unchanged: "变化量（无变化）",
 };
+const statisticLabels: Record<string, string> = {
+  observations: "观测记录数",
+  responses: "完成 HTTP 响应数",
+  "5xx": "HTTP 5xx 响应数",
+  mean_response_ms: "平均 HTTP 响应耗时",
+  retransmissions: "TCP 重传计数",
+  failure_observations: "TCP 错误观测数",
+};
+const statisticUnits: Record<string, string> = {
+  observations: "条",
+  responses: "个响应",
+  milliseconds: "毫秒",
+  retransmissions: "次",
+};
+function statisticLabel(key: string) {
+  const separator = key.lastIndexOf(".");
+  const window = key.slice(0, separator);
+  const metric = key.slice(separator + 1);
+  const windowLabel =
+    window === "baseline"
+      ? "对照窗口"
+      : window === "current"
+        ? "所选窗口"
+        : window;
+  return `${windowLabel} · ${statisticLabels[metric] || metric}`;
+}
 export function QueryResultView({
   id,
   answer,
@@ -60,7 +86,7 @@ export function QueryResultView({
           {network && (
             <Alert
               type="info"
-              title={`统计范围：${network.population}；采集位置：${network.observationPoint}；不代表所有用户请求。${network.timeReliable ? "" : "源时间尚未验证，不能判定异常先后。"}`}
+              title={`统计范围：${network.population === "completed_http_session_observations" ? "完成的 HTTP 会话观测" : network.population === "scoped_single_observation_point_records" ? "授权范围内单一采集点的记录" : network.population}；采集位置：${network.observationPoint}；不代表所有用户请求。${network.timeReliable ? "" : "源时间尚未验证，不能判定异常先后。"}`}
             />
           )}
           {result.statistics && (
@@ -69,8 +95,8 @@ export function QueryResultView({
               column={1}
               items={result.statistics.map((item) => ({
                 key: item.key,
-                label: item.key,
-                children: `${item.value} ${item.unit}`,
+                label: statisticLabel(item.key),
+                children: `${item.value} ${statisticUnits[item.unit] || item.unit}`,
               }))}
             />
           )}
@@ -130,7 +156,7 @@ export function QueryResultView({
                       : `数值（${result.unit}）`,
                   dataIndex: "value",
                   render: (value: number, row: { dimension: string }) =>
-                    `${value}${network && result.datasetId === "network.http-5xx-rate" && result.rows.length === 3 && ["increase", "decrease", "unchanged"].includes(row.dimension) ? " pp" : ""}`,
+                    `${value}${network && (result.datasetId === "network.http-5xx-rate" || result.datasetId === "network.http-summary") && result.rows.length === 3 && ["increase", "decrease", "unchanged"].includes(row.dimension) ? " pp" : ""}`,
                 },
               ]}
             />

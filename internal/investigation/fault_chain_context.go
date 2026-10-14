@@ -12,6 +12,7 @@ import (
 	"ops-platform/internal/contract"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/rca"
 	"ops-platform/internal/resource"
 )
 
@@ -71,11 +72,13 @@ type FaultChainContextRef struct {
 	ContentDigest string    `json:"contentDigest"`
 }
 type ChainObservation struct {
-	RuleID    string    `json:"ruleId"`
-	Reason    string    `json:"reason"`
-	Supports  []string  `json:"supports"`
-	Conflicts []string  `json:"conflicts"`
-	FactRefs  []FactRef `json:"factRefs"`
+	ResourceHealth   *FaultChainResourceHealth `json:"resourceHealth,omitempty"`
+	RelatedRelations []resource.Relation       `json:"relatedRelations,omitempty"`
+	RuleID           string                    `json:"ruleId"`
+	Reason           string                    `json:"reason"`
+	Supports         []string                  `json:"supports"`
+	Conflicts        []string                  `json:"conflicts"`
+	FactRefs         []FactRef                 `json:"factRefs"`
 }
 type FaultChainEdge struct {
 	Relation           resource.Relation  `json:"relation"`
@@ -102,11 +105,19 @@ type FaultChainContext struct {
 
 // EvaluateFaultChain contains finite descriptive predicates. It never changes
 // Incident/Finding/RCA state or treats co-occurrence as causal confirmation.
-func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation, queries []StoredQueryResult, now time.Time) (FaultChainContext, error) {
+func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation, queries []StoredQueryResult, now time.Time, committedEvidence ...[]evidence.Evidence) (FaultChainContext, error) {
 	out := FaultChainContext{SchemaVersion: "fault-chain-context/v1", RuleVersion: FaultChainRuleVersion, Request: request, AsOf: now, Status: "partial", Edges: []FaultChainEdge{}, QueryResultRefs: []uuid.UUID{}, EvidenceRefs: []string{}, MissingEvidence: []string{}}
 	if request.MaxEdges < 1 || request.MaxEdges > 8 {
 		return out, ErrInvalid
 	}
+	changes := []evidence.Evidence{}
+	for _, items := range committedEvidence {
+		changes = append(changes, items...)
+		if len(changes) > 80 {
+			return out, ErrInvalid
+		}
+	}
+	slices.SortFunc(changes, func(a, b evidence.Evidence) int { return slices.Compare([]byte(a.EvidenceID), []byte(b.EvidenceID)) })
 	relations = slices.Clone(relations)
 	slices.SortFunc(relations, func(a, b resource.Relation) int {
 		if (a.Kind == "communicates_with") != (b.Kind == "communicates_with") {
@@ -175,11 +186,15 @@ func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation
 				edge.MissingEvidence = append(edge.MissingEvidence, "nonempty_observation_population")
 				continue
 			}
+			errors := float64(-1)
 			if q.Result.NetworkContext.Protocol == "http" {
 				population := float64(0)
 				for _, stat := range q.Result.Statistics {
 					if stat.Key == "current.responses" {
 						population = stat.Value
+					}
+					if stat.Key == "current.5xx" {
+						errors = stat.Value
 					}
 				}
 				if baseOK {
@@ -191,7 +206,8 @@ func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation
 					}
 					if baselinePopulation == 0 {
 						edge.MissingEvidence = append(edge.MissingEvidence, "nonempty_baseline_population")
-						continue
+						edge.ComparisonStatus = "coverage_insufficient"
+						baseOK = false
 					}
 				}
 				if population == 0 {
@@ -207,17 +223,24 @@ func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation
 				factRefs = append(factRefs, FactRef{q.QueryResultID, f.FactID})
 			}
 			ob := ChainObservation{RuleID: "observation/v1", Reason: "已提交的网络观测；未证明故障原因。", Supports: []string{}, Conflicts: []string{}, FactRefs: factRefs}
+			if !baseOK && errors > 0 && (q.Result.DatasetID == "network.http-5xx-rate" || q.Result.DatasetID == "network.http-5xx" || q.Result.DatasetID == "network.http-summary") {
+				ob.RuleID = "R1/observed-http-5xx"
+				ob.Reason = "合格完成响应中观察到 HTTP 5xx，支持调查响应异常；缺少可用基线及服务端自身证据，不能确认具体原因。"
+				if len(q.Result.DerivationEvidenceRefs) > 0 {
+					ob.Supports = []string{q.Result.DerivationEvidenceRefs[len(q.Result.DerivationEvidenceRefs)-1]}
+				}
+			}
 			if baseOK {
 				edge.ComparisonStatus = "comparable"
 				if current > baseline {
 					switch q.Result.DatasetID {
-					case "network.http-5xx", "network.http-5xx-rate":
+					case "network.http-5xx", "network.http-5xx-rate", "network.http-summary":
 						ob.RuleID = "R1/http-response-increase"
 						ob.Reason = "故障窗 HTTP 5xx 观测较基线增加，建议检查服务端及其依赖。"
 					case "network.http-response-time":
 						ob.RuleID = "R1/http-latency-increase"
 						ob.Reason = "完成 HTTP 响应平均耗时增加，具体延迟来源尚待检查。"
-					case "network.tcp-retransmissions", "network.connection-failure-observations":
+					case "network.tcp-retransmissions", "network.connection-failure-observations", "network.tcp-summary":
 						ob.RuleID = "R2/transport-observation-increase"
 						ob.Reason = "传输异常观测较基线增加；不等同于已测得丢包或因果。"
 					}
@@ -227,7 +250,7 @@ func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation
 				}
 			}
 			// Zero contradicts only the narrow 5xx claim for a nonempty population.
-			if q.Result.DatasetID == "network.http-5xx" && current == 0 {
+			if q.Result.DatasetID == "network.http-5xx" && current == 0 || (q.Result.DatasetID == "network.http-5xx-rate" || q.Result.DatasetID == "network.http-summary") && errors == 0 {
 				ob.RuleID = "R6/no-observed-http-5xx"
 				ob.Reason = "合格完成会话中未观察到 5xx，仅与该窗口存在 5xx 的候选相矛盾。"
 				if len(q.Result.DerivationEvidenceRefs) > 0 {
@@ -250,10 +273,52 @@ func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation
 				}
 			}
 			edge.Observations = append(edge.Observations, ob)
+			// Additional fields of a qualified combined snapshot retain their
+			// own units and Facts; they do not require another source read.
+			for _, metric := range []struct{ dataset, key, rule, reason string }{
+				{"network.http-summary", "mean_response_ms", "R1/http-latency-increase", "同口径完成响应的平均耗时增加，具体延迟来源尚待检查。"},
+				{"network.tcp-summary", "retransmissions", "R2/retransmission-observation-increase", "同口径重传计数增加，支持检查传输路径；不能据此测得丢包率或确认因果。"},
+			} {
+				if q.Result.DatasetID != metric.dataset {
+					continue
+				}
+				stats := map[string]float64{}
+				refs := []FactRef{}
+				for i, stat := range q.Result.Statistics {
+					stats[stat.Key] = stat.Value
+					if stat.Key == "baseline."+metric.key || stat.Key == "current."+metric.key {
+						for _, f := range q.Facts {
+							if f.Column == "statistic" && f.Row == i {
+								refs = append(refs, FactRef{q.QueryResultID, f.FactID})
+							}
+						}
+					}
+				}
+				value, ok := stats["current."+metric.key]
+				prior, hasPrior := stats["baseline."+metric.key]
+				if !ok || !hasPrior || !baseOK {
+					continue
+				}
+				extra := ChainObservation{RuleID: metric.rule, Reason: metric.reason, Supports: []string{}, Conflicts: []string{}, FactRefs: refs}
+				if request.Recovery != nil && q.Result.TimeRange.From.Equal(request.Recovery.From) {
+					extra.RuleID = "R5/recovery-observation"
+					extra.Reason = "恢复窗口的同口径指标没有降低，尚未观察到改善。"
+					if value < prior {
+						extra.Reason = "恢复窗口的同口径指标低于故障窗口，支持改善观察；不自动关闭 Incident。"
+						extra.Supports = slices.Clone(q.Result.DerivationEvidenceRefs)
+					}
+				} else if value > prior {
+					extra.Supports = slices.Clone(q.Result.DerivationEvidenceRefs)
+				} else {
+					continue
+				}
+				edge.Observations = append(edge.Observations, extra)
+			}
 		}
 		if len(edge.QueryResultRefs) == 0 {
 			edge.MissingEvidence = append(edge.MissingEvidence, "network_window_statistics")
 		}
+		applyFaultChainChanges(request, &edge, queries, changes, &out)
 		out.Edges = append(out.Edges, edge)
 	}
 	slices.Sort(out.EvidenceRefs)
@@ -290,6 +355,48 @@ func ReadFaultChainContextTx(ctx context.Context, tx pgx.Tx, j Job, ref FaultCha
 		return FaultChainContext{}, ErrInvalid
 	}
 	for _, edge := range out.Edges {
+		for _, ob := range edge.Observations {
+			if ob.ResourceHealth == nil {
+				continue
+			}
+			h := ob.ResourceHealth
+			var rawStep []byte
+			if tx.QueryRow(ctx, `SELECT result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND step_id=$3 AND tool_name='get_resource_health' AND state='succeeded'`, j.TenantID, j.JobID, h.StepID).Scan(&rawStep) != nil {
+				return FaultChainContext{}, ErrDenied
+			}
+			var parent struct {
+				Tool string          `json:"tool"`
+				Data json.RawMessage `json:"data"`
+			}
+			if json.Unmarshal(rawStep, &parent) != nil || parent.Tool != "get_resource_health" {
+				return FaultChainContext{}, ErrDenied
+			}
+			snapshot, err := decodeFaultChainHealthSnapshot(parent.Data)
+			if err != nil || !j.Scope.Allows(h.CanonicalID, h.Namespace) || rca.CheckGraphSources(ctx, tx, j.TenantID, snapshot.ObservationSources, snapshot) != nil {
+				return FaultChainContext{}, ErrDenied
+			}
+			matched := false
+			for _, candidate := range CommittedFaultChainResourceHealth(h.StepID, snapshot) {
+				if graph.ScopeDigest(candidate) == graph.ScopeDigest(h) {
+					matched = true
+				}
+			}
+			if !matched {
+				return FaultChainContext{}, ErrDenied
+			}
+			for _, relation := range ob.RelatedRelations {
+				for _, id := range []string{relation.From, relation.To} {
+					var ns string
+					if tx.QueryRow(ctx, `SELECT namespace FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, j.TenantID, id).Scan(&ns) != nil || !j.Scope.Allows(id, ns) {
+						return FaultChainContext{}, ErrDenied
+					}
+				}
+				var active bool
+				if tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM platform.source_registrations WHERE tenant_id=$1 AND source_id::text=$2 AND status='active')`, j.TenantID, relation.Provenance.SourceRegistrationID).Scan(&active) != nil || !active {
+					return FaultChainContext{}, ErrDenied
+				}
+			}
+		}
 		for _, id := range []string{edge.Relation.From, edge.Relation.To} {
 			var ns string
 			if tx.QueryRow(ctx, `SELECT namespace FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, j.TenantID, id).Scan(&ns) != nil || !j.Scope.Allows(id, ns) {
