@@ -234,6 +234,9 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 						qualifications = append(qualifications, analytics.Qualification{DatasetID: item.Dataset, Operation: op, SourceRevision: 1, BindingDigest: evidence.BindingScopeDigest(binding), EvidenceDigest: evidence.Digest(raw), CollectorVersion: "deepflow-e567b167453ffa99f08f26def20379b4f831e073/controlled-http-tcp-windows", VerifiedUntil: time.Now().Add(time.Hour), CoverageFrom: time.Unix(windows.Golden[0].From, 0).UTC(), CoverageTo: time.Unix(windows.Golden[2].To, 0).UTC(), MaxWindowSeconds: 3600, ObservationPoint: item.Point, CoverageComplete: true})
 					}
 				}
+				if os.Getenv("OPS_FAULT_CHAIN_OPERATIONS_REPORT") != "" {
+					assistantActualNetworkOperations(t, ctx, candidate, qualifications, diagnostic.Scope, clientID, cfg.Namespace, raw)
+				}
 			}
 
 		}

@@ -1,0 +1,342 @@
+{
+  "adapterMode": "live",
+  "passed": true,
+  "relativeComparison": {
+    "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+    "comparisonTimeRange": {
+      "from": "2026-10-14T07:42:31Z",
+      "to": "2026-10-14T07:43:31Z",
+      "timezone": "Asia/Shanghai"
+    },
+    "datasetId": "network.http-summary",
+    "degradedSources": [],
+    "derivationEvidenceRefs": [
+      "01a13a26-8fd5-780a-aa37-365b5083078c",
+      "01a13a26-8fe5-7c78-927c-d495ecce5ea7"
+    ],
+    "dimension": "comparison",
+    "exact": true,
+    "freshness": "fresh",
+    "networkContext": {
+      "selection": {
+        "targetCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "peerCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "direction": "outgoing"
+      },
+      "observationPoint": "s-p",
+      "population": "completed_http_session_observations",
+      "timeReliable": false,
+      "coverageComplete": true,
+      "protocol": "http"
+    },
+    "planDigest": "sha256:ae6e25d7cc2c56139d0be36c09a83ab7dd3059adddd3b674afca9d3a89160482",
+    "rows": [
+      {
+        "dimension": "increase",
+        "value": 400
+      }
+    ],
+    "schemaVersion": "query-result/v1",
+    "scopeDigest": "sha256:2aead3e5c80a76cf15b1d92088372826ecbf0a923a30a1584e3e3e85b68c5983",
+    "snapshotReadAt": "2026-10-14T11:22:47.833087301Z",
+    "sourceManifest": {
+      "sourceId": "545ee30d-1882-4657-892e-fa9a3ec134ec",
+      "revision": 1,
+      "bindingDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+      "qualificationDigest": "sha256:5530dea992fd5a84d03a68b8b2daf8c20e33768953863d7f00b06718e2398fd0",
+      "queryHash": "sha256:67534243f8ff4a6d0826527cfba94b14d1fd573e097fa8c761889ffa7188cd19",
+      "templateVersion": "deepflow-network-summary/v1",
+      "coverageFrom": "2026-10-14T07:42:31Z",
+      "coverageTo": "2026-10-14T07:44:31Z"
+    },
+    "statistics": [
+      {
+        "key": "baseline.observations",
+        "value": 1000,
+        "unit": "observations"
+      },
+      {
+        "key": "baseline.responses",
+        "value": 1000,
+        "unit": "responses"
+      },
+      {
+        "key": "baseline.5xx",
+        "value": 10,
+        "unit": "responses"
+      },
+      {
+        "key": "baseline.mean_response_ms",
+        "value": 0.063135,
+        "unit": "milliseconds"
+      },
+      {
+        "key": "current.observations",
+        "value": 1000,
+        "unit": "observations"
+      },
+      {
+        "key": "current.responses",
+        "value": 1000,
+        "unit": "responses"
+      },
+      {
+        "key": "current.5xx",
+        "value": 50,
+        "unit": "responses"
+      },
+      {
+        "key": "current.mean_response_ms",
+        "value": 20.078791000000002,
+        "unit": "milliseconds"
+      }
+    ],
+    "status": "complete",
+    "timeRange": {
+      "from": "2026-10-14T07:43:31Z",
+      "to": "2026-10-14T07:44:31Z",
+      "timezone": "Asia/Shanghai"
+    },
+    "truncated": false,
+    "unit": "percent",
+    "warnings": [
+      "unreliable-event-time",
+      "observation_population_not_all_user_requests",
+      "incomplete_sessions_excluded_not_counted",
+      "unreliable-event-time",
+      "observation_population_not_all_user_requests",
+      "incomplete_sessions_excluded_not_counted"
+    ]
+  },
+  "schemaVersion": "fault-chain-network-operations/v1",
+  "scope": "real source adapter and compiler; not signed RPC or archived readback",
+  "sourceProofDigest": "sha256:5f066deec25786833fd3c7228f4c4cac152e9188c367600964ef23e05d9b7ad8",
+  "trend": {
+    "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+    "datasetId": "network.http-summary",
+    "degradedSources": [],
+    "derivationEvidenceRefs": [
+      "01a13a26-8d75-76d7-b4c8-3ee2bb18ddb7",
+      "01a13a26-8d85-7323-8e7d-e5c0d62f8328",
+      "01a13a26-8d95-77a9-be62-599fe9488868"
+    ],
+    "dimension": "time",
+    "exact": true,
+    "freshness": "fresh",
+    "networkContext": {
+      "selection": {
+        "targetCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "peerCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "direction": "outgoing"
+      },
+      "observationPoint": "s-p",
+      "population": "completed_http_session_observations",
+      "timeReliable": false,
+      "coverageComplete": true,
+      "protocol": "http"
+    },
+    "planDigest": "sha256:774253ccb061f91d840c0a0eb3caaa23828c96187e39c2023d17c1e567836464",
+    "rows": [
+      {
+        "dimension": "2026-10-14T07:42:31Z",
+        "value": 1
+      },
+      {
+        "dimension": "2026-10-14T07:43:31Z",
+        "value": 5
+      },
+      {
+        "dimension": "2026-10-14T07:44:31Z",
+        "value": 0
+      }
+    ],
+    "schemaVersion": "query-result/v1",
+    "scopeDigest": "sha256:2aead3e5c80a76cf15b1d92088372826ecbf0a923a30a1584e3e3e85b68c5983",
+    "snapshotReadAt": "2026-10-14T11:22:47.221822407Z",
+    "sourceManifest": {
+      "sourceId": "545ee30d-1882-4657-892e-fa9a3ec134ec",
+      "revision": 1,
+      "bindingDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+      "qualificationDigest": "sha256:aab3c6257e7639374a0638a727f3b9dec1182c6d06478518f4732210b4d6d6b8",
+      "queryHash": "sha256:c73ba36b01fca9c4e9c9800cf06e85c2821f09cccc02c4db8ef1a018982c103c",
+      "templateVersion": "deepflow-network-summary/v1",
+      "coverageFrom": "2026-10-14T07:42:31Z",
+      "coverageTo": "2026-10-14T07:45:31Z"
+    },
+    "statistics": [
+      {
+        "key": "2026-10-14T07:42:31Z.observations",
+        "value": 1000,
+        "unit": "observations"
+      },
+      {
+        "key": "2026-10-14T07:42:31Z.responses",
+        "value": 1000,
+        "unit": "responses"
+      },
+      {
+        "key": "2026-10-14T07:42:31Z.5xx",
+        "value": 10,
+        "unit": "responses"
+      },
+      {
+        "key": "2026-10-14T07:42:31Z.mean_response_ms",
+        "value": 0.063135,
+        "unit": "milliseconds"
+      },
+      {
+        "key": "2026-10-14T07:43:31Z.observations",
+        "value": 1000,
+        "unit": "observations"
+      },
+      {
+        "key": "2026-10-14T07:43:31Z.responses",
+        "value": 1000,
+        "unit": "responses"
+      },
+      {
+        "key": "2026-10-14T07:43:31Z.5xx",
+        "value": 50,
+        "unit": "responses"
+      },
+      {
+        "key": "2026-10-14T07:43:31Z.mean_response_ms",
+        "value": 20.078791000000002,
+        "unit": "milliseconds"
+      },
+      {
+        "key": "2026-10-14T07:44:31Z.observations",
+        "value": 1000,
+        "unit": "observations"
+      },
+      {
+        "key": "2026-10-14T07:44:31Z.responses",
+        "value": 1000,
+        "unit": "responses"
+      },
+      {
+        "key": "2026-10-14T07:44:31Z.5xx",
+        "value": 0,
+        "unit": "responses"
+      },
+      {
+        "key": "2026-10-14T07:44:31Z.mean_response_ms",
+        "value": 0.062756,
+        "unit": "milliseconds"
+      }
+    ],
+    "status": "complete",
+    "stepSeconds": 60,
+    "timeRange": {
+      "from": "2026-10-14T07:42:31Z",
+      "to": "2026-10-14T07:45:31Z",
+      "timezone": "Asia/Shanghai"
+    },
+    "truncated": false,
+    "unit": "percent",
+    "warnings": [
+      "unreliable-event-time",
+      "observation_population_not_all_user_requests",
+      "incomplete_sessions_excluded_not_counted",
+      "unreliable-event-time",
+      "observation_population_not_all_user_requests",
+      "incomplete_sessions_excluded_not_counted",
+      "unreliable-event-time",
+      "observation_population_not_all_user_requests",
+      "incomplete_sessions_excluded_not_counted"
+    ]
+  },
+  "zeroBaseline": {
+    "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+    "comparisonTimeRange": {
+      "from": "2026-10-14T07:42:31Z",
+      "to": "2026-10-14T07:43:31Z",
+      "timezone": "Asia/Shanghai"
+    },
+    "datasetId": "network.tcp-summary",
+    "degradedSources": [],
+    "derivationEvidenceRefs": [
+      "01a13a26-9236-7871-a21c-a44d910b5a8e",
+      "01a13a26-9248-767f-bd05-253543cb0d9e"
+    ],
+    "dimension": "comparison",
+    "exact": false,
+    "freshness": "fresh",
+    "networkContext": {
+      "selection": {
+        "targetCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "peerCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "direction": "outgoing"
+      },
+      "observationPoint": "s",
+      "population": "scoped_single_observation_point_records",
+      "timeReliable": false,
+      "coverageComplete": true,
+      "protocol": "tcp"
+    },
+    "planDigest": "sha256:c960f2d337eb2b819e41cc17ea16a0f222052d6f325370634e78784389d61566",
+    "rows": [],
+    "schemaVersion": "query-result/v1",
+    "scopeDigest": "sha256:2aead3e5c80a76cf15b1d92088372826ecbf0a923a30a1584e3e3e85b68c5983",
+    "snapshotReadAt": "2026-10-14T11:22:48.435765128Z",
+    "sourceManifest": {
+      "sourceId": "545ee30d-1882-4657-892e-fa9a3ec134ec",
+      "revision": 1,
+      "bindingDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+      "qualificationDigest": "sha256:797bc5435f5d5ed6e8ed9e9c83cc152d1c194be780a8589ded4513dd59ce0f77",
+      "queryHash": "sha256:3f872dd951f97ee9356b8f1ec5481e215a57b1bcb0a6903adadae5b556c69317",
+      "templateVersion": "deepflow-network-summary/v1",
+      "coverageFrom": "2026-10-14T07:42:31Z",
+      "coverageTo": "2026-10-14T07:44:31Z"
+    },
+    "statistics": [
+      {
+        "key": "baseline.observations",
+        "value": 1000,
+        "unit": "observations"
+      },
+      {
+        "key": "baseline.retransmissions",
+        "value": 0,
+        "unit": "retransmissions"
+      },
+      {
+        "key": "baseline.failure_observations",
+        "value": 0,
+        "unit": "observations"
+      },
+      {
+        "key": "current.observations",
+        "value": 1100,
+        "unit": "observations"
+      },
+      {
+        "key": "current.retransmissions",
+        "value": 0,
+        "unit": "retransmissions"
+      },
+      {
+        "key": "current.failure_observations",
+        "value": 100,
+        "unit": "observations"
+      }
+    ],
+    "status": "no_data",
+    "timeRange": {
+      "from": "2026-10-14T07:43:31Z",
+      "to": "2026-10-14T07:44:31Z",
+      "timezone": "Asia/Shanghai"
+    },
+    "truncated": false,
+    "unit": "percent",
+    "warnings": [
+      "unreliable-event-time",
+      "observation_population_not_all_user_requests",
+      "status_3_4_error_observations_not_unique_failed_connections",
+      "unreliable-event-time",
+      "observation_population_not_all_user_requests",
+      "status_3_4_error_observations_not_unique_failed_connections",
+      "percentage_requires_nonzero_baseline"
+    ]
+  }
+}
