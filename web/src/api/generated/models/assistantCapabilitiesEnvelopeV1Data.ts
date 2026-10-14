@@ -10,11 +10,12 @@ import type { AssistantCapabilitiesEnvelopeV1DataSourceCapabilitiesItem } from '
 
 export type AssistantCapabilitiesEnvelopeV1Data = {
   enabled: boolean;
+  faultChainEnabled: boolean;
   catalog: AssistantCapabilitiesEnvelopeV1DataCatalog;
   virtualization: string;
   runtimeAcceptance: string;
   taskKinds: string[];
   sourceCapabilityStatus: string;
   sourceCapabilities: AssistantCapabilitiesEnvelopeV1DataSourceCapabilitiesItem[];
-  networkCapabilities?: AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesItem[];
+  networkCapabilities: AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesItem[];
 };

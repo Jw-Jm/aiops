@@ -1,0 +1,1 @@
+SELECT response_code, Count(row) AS observations, Sum(response_duration) AS duration_us FROM l7_flow_log WHERE time >= %d AND time < %d AND pod_cluster_id_0 = %d AND pod_cluster_id_1 = %d AND pod_ns_id_0 = %d AND pod_ns_id_1 = %d AND %s AND tap_side = '%s' AND l7_protocol = 20 AND type = 2 AND response_code >= 200 AND response_code < 600 GROUP BY response_code LIMIT 401

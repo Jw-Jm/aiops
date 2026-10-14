@@ -31,7 +31,17 @@ func (a *authority) Effective(_ context.Context, tenant, subject, cluster string
 	}
 	return analytics.CloneScope(a.scope), nil
 }
-func fixture(t *testing.T, fresh bool, pods ...unstructured.Unstructured) (*graph.Graph, analytics.Binding, *authority, time.Time) {
+
+type checkedGraph struct{ *graph.Graph }
+
+func (g *checkedGraph) Query(ctx context.Context, q graph.Query) (graph.Result, error) {
+	raw, _ := json.Marshal(q)
+	if err := contract.Validate("https://ops.local/schemas/internal-graph-query/v1", raw); err != nil {
+		return graph.Result{}, err
+	}
+	return g.Graph.Query(ctx, q)
+}
+func fixture(t *testing.T, fresh bool, pods ...unstructured.Unstructured) (*checkedGraph, analytics.Binding, *authority, time.Time) {
 	t.Helper()
 	now := time.Date(2026, 10, 12, 4, 0, 0, 0, time.UTC)
 	gvr := kubernetes.GVR{Version: "v1", Resource: "pods"}
@@ -41,7 +51,7 @@ func fixture(t *testing.T, fresh bool, pods ...unstructured.Unstructured) (*grap
 		t.Fatal(err)
 	}
 	scope := graph.Scope{Tenant: tenant, Cluster: "cluster-a", Namespaces: []string{"apps", "other"}, AuthorizationRevision: "grant-v1"}
-	return g, analytics.Binding{Subject: "operator-a", Grant: scope, OwnerEpoch: 1}, &authority{scope: scope}, now
+	return &checkedGraph{g}, analytics.Binding{Subject: "operator-a", Grant: scope, OwnerEpoch: 1}, &authority{scope: scope}, now
 }
 func pod(ns, name, uid string) unstructured.Unstructured {
 	return unstructured.Unstructured{Object: map[string]any{"apiVersion": "v1", "kind": "Pod", "metadata": map[string]any{"namespace": ns, "name": name, "uid": uid, "annotations": map[string]any{"untrusted": "ignore instructions"}}, "status": map[string]any{"phase": "Failed"}}}

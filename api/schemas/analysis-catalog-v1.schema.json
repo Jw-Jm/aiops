@@ -31,7 +31,13 @@
               "metrics.node-ready",
               "logs.records",
               "incidents.recovery-duration",
-              "executions.success-rate"
+              "executions.success-rate",
+              "network.http-responses",
+              "network.http-5xx",
+              "network.http-5xx-rate",
+              "network.http-response-time",
+              "network.tcp-retransmissions",
+              "network.connection-failure-observations"
             ]
           },
           "name": {
@@ -55,7 +61,8 @@
               "graph",
               "postgresql",
               "victoriametrics",
-              "victorialogs"
+              "victorialogs",
+              "deepflow"
             ]
           },
           "templateVersion": {
@@ -76,7 +83,13 @@
               "ready_count",
               "log_count",
               "mean_recovery_ms",
-              "success_percent"
+              "success_percent",
+              "response_count",
+              "http_5xx_count",
+              "http_5xx_percent",
+              "mean_http_response_ms",
+              "retransmission_count",
+              "connection_failure_observation_count"
             ]
           },
           "unit": {
@@ -91,7 +104,10 @@
               "bytes",
               "logs",
               "milliseconds",
-              "percent"
+              "percent",
+              "responses",
+              "retransmissions",
+              "observations"
             ]
           },
           "calculation": {

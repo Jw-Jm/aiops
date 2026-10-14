@@ -96,7 +96,7 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 	ctx, cancelQuery := context.WithTimeout(ctx, q.TimeBudget())
 	defer cancelQuery()
 	if err := a.authorize(ctx, a.binding); err != nil {
-		return out, evidence.ErrScopeUnverified
+		return out, fmt.Errorf("%w: binding authorization", evidence.ErrScopeUnverified)
 	}
 	if a.binding.ScopeMapping.NativeTenant != "" || len(a.binding.ScopeMapping.RequiredLabels) > 0 {
 		return out, evidence.ErrScopeUnverified
@@ -116,10 +116,10 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 	}
 	endpoint, err := a.mapping.ByCanonical(ctx, q.ResourceCanonicalID)
 	if err != nil || endpoint.PodID == 0 || endpoint.ClusterID == 0 || endpoint.NamespaceID == 0 || endpoint.CanonicalID != q.ResourceCanonicalID || endpoint.Namespace != q.Namespace || !q.Scope.Allows(endpoint.CanonicalID, endpoint.Namespace) || q.Scope.Tenant != a.binding.Tenant || !slices.Contains(a.binding.ScopeMapping.Scopes["cluster"], q.Scope.Cluster) || !slices.Contains(a.binding.ScopeMapping.Scopes["namespace"], endpoint.Namespace) {
-		return out, evidence.ErrScopeUnverified
+		return out, fmt.Errorf("%w: endpoint identity or execution scope", evidence.ErrScopeUnverified)
 	}
 	if a.mode == "live" && (endpoint.IdentityValidFrom.IsZero() || q.From.Before(endpoint.IdentityValidFrom)) {
-		return out, evidence.ErrScopeUnverified
+		return out, fmt.Errorf("%w: identity lifetime", evidence.ErrScopeUnverified)
 	}
 	// Only integers are bound into the immutable template; no caller SQL,
 	// identifiers, regex or operator strings enter this private query path.
@@ -287,11 +287,11 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 		out.Warnings = append(out.Warnings, "fixture_only")
 	}
 	if err := a.authorize(ctx, a.binding); err != nil {
-		return evidence.Result{}, evidence.ErrScopeUnverified
+		return evidence.Result{}, fmt.Errorf("%w: final binding authorization", evidence.ErrScopeUnverified)
 	}
 	if a.mode == "live" {
 		if err := a.mapping.(*LiveMapper).ValidateCurrent(ctx); err != nil {
-			return evidence.Result{}, evidence.ErrScopeUnverified
+			return evidence.Result{}, fmt.Errorf("%w: final native identity", evidence.ErrScopeUnverified)
 		}
 	}
 	if len(rows) == 0 {

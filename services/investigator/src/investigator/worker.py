@@ -24,7 +24,7 @@ def serve(config):
     os.environ["LLM_REQUEST_TIMEOUT"]=str(model.timeout)
     os.environ["OVERRIDE_MAX_OUTPUT_TOKEN"]=str(model.token_budget)
     os.environ["LITELLM_LOCAL_MODEL_COST_MAP"]="True"
-    from .holmes_adapter import MCPBridge, investigate
+    from .mcp_bridge import MCPBridge
     from .budget import ModelCallError
     from .job_api import JobAPI
     import httpx
@@ -77,7 +77,12 @@ def serve(config):
                 job_api.start_renewal(payload["mcpContext"])
                 bridge=MCPBridge(config["mcpEndpoint"],payload["mcpContext"],asynchronous)
                 bridge.token_provider=lambda:job_api.mcp_token
-                result=investigate(payload["job"],assistant_model if payload["job"]["schemaVersion"]=="investigation-job/v3" else model,job_api,bridge,config["modelAPIKeyFile"])
+                if payload["job"].get("assistant",{}).get("executionMode")=="evidence_only":
+                    from .fault_chain import collect
+                    result=collect(payload["job"],job_api,bridge)
+                else:
+                    from .holmes_adapter import investigate
+                    result=investigate(payload["job"],assistant_model if payload["job"]["schemaVersion"]=="investigation-job/v3" else model,job_api,bridge,config["modelAPIKeyFile"])
                 result=job_api.request("/result:complete",result)
                 self.respond(200,{"data":result})
             except Exception as error:

@@ -9,6 +9,7 @@ import (
 	sdkauth "github.com/modelcontextprotocol/go-sdk/auth"
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"net/http"
+	"ops-platform/internal/analytics"
 	"ops-platform/internal/auth"
 
 	"ops-platform/internal/investigation"
@@ -124,6 +125,18 @@ func (g Gateway) handlerFor(defs []tools.Definition) (http.Handler, error) {
 			}
 			if d.RawQuery {
 				reserve.RawQueries = 1
+				if d.Name == "execute_analysis_query" {
+					var args struct {
+						Intent analytics.QueryIntent `json:"intent"`
+					}
+					if json.Unmarshal(r.Params.Arguments, &args) == nil && strings.HasPrefix(args.Intent.DatasetID, "network.") {
+						cost := analytics.NetworkRawQueryCost(args.Intent)
+						if cost < 1 || cost > 10 {
+							return deny(investigation.ErrInvalid)
+						}
+						reserve.RawQueries = cost
+					}
+				}
 			}
 			c := investigation.Call{Arguments: r.Params.Arguments, StepID: meta.StepID, ContextID: v.Claims.ContextID, Seq: meta.Seq, JTI: meta.JTI, Name: d.Name, ArgsDigest: investigation.ArgumentsDigest(r.Params.Arguments), Reserve: reserve, Claims: &v.Claims}
 			if _, err := g.Repository.BeginCall(ctx, v.Lease, c); err != nil {

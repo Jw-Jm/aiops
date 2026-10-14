@@ -11,6 +11,7 @@ import type {
   AssistantCreateConversationV1,
   AssistantEmptyBodyV1,
   AssistantEventV1,
+  AssistantFaultChainContextEnvelopeV1,
   AssistantFormalEnvelopeV1,
   AssistantHoldV1,
   AssistantIntentEnvelopeV1,
@@ -723,6 +724,121 @@ const res = await fetch(getSubmitAssistantMessageUrl(conversationId),
 
   const data: submitAssistantMessageResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as submitAssistantMessageResponse
+}
+
+
+
+export type collectAssistantFaultChainResponse202 = {
+  data: AssistantTurnEnvelopeV1
+  status: 202
+}
+
+export type collectAssistantFaultChainResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 202>
+}
+
+export type collectAssistantFaultChainResponseSuccess = (collectAssistantFaultChainResponse202) & {
+  headers: Headers;
+};
+export type collectAssistantFaultChainResponseError = (collectAssistantFaultChainResponseDefault) & {
+  headers: Headers;
+};
+
+export type collectAssistantFaultChainResponse = (collectAssistantFaultChainResponseSuccess | collectAssistantFaultChainResponseError)
+
+export const getCollectAssistantFaultChainUrl = (conversationId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/conversations/${conversationId}/fault-chain-investigations`
+}
+
+/**
+ * @summary collectAssistantFaultChain
+ */
+export const collectAssistantFaultChain = async (conversationId: string,
+    assistantSubmitMessageV1: AssistantSubmitMessageV1, options?: RequestInit): Promise<collectAssistantFaultChainResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCollectAssistantFaultChainUrl(conversationId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(assistantSubmitMessageV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: collectAssistantFaultChainResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as collectAssistantFaultChainResponse
+}
+
+
+
+export type getAssistantFaultChainContextResponse200 = {
+  data: AssistantFaultChainContextEnvelopeV1
+  status: 200
+}
+
+export type getAssistantFaultChainContextResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getAssistantFaultChainContextResponseSuccess = (getAssistantFaultChainContextResponse200) & {
+  headers: Headers;
+};
+export type getAssistantFaultChainContextResponseError = (getAssistantFaultChainContextResponseDefault) & {
+  headers: Headers;
+};
+
+export type getAssistantFaultChainContextResponse = (getAssistantFaultChainContextResponseSuccess | getAssistantFaultChainContextResponseError)
+
+export const getGetAssistantFaultChainContextUrl = (turnId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/turns/${turnId}/fault-chain-context`
+}
+
+/**
+ * @summary getAssistantFaultChainContext
+ */
+export const getAssistantFaultChainContext = async (turnId: string, options?: RequestInit): Promise<getAssistantFaultChainContextResponse> => {
+
+  const res = await fetch(getGetAssistantFaultChainContextUrl(turnId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAssistantFaultChainContextResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getAssistantFaultChainContextResponse
 }
 
 

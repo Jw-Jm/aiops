@@ -348,6 +348,31 @@
           "nextChecks"
         ]
       }
+    },
+    "faultChainContextRef": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "stepId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "contentDigest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "stepId",
+            "contentDigest"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "required": [
@@ -368,6 +393,7 @@
     "hypotheses",
     "clarification",
     "formalRefs",
-    "faultChain"
+    "faultChain",
+    "faultChainContextRef"
   ]
 }

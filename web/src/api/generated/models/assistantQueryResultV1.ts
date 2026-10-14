@@ -9,9 +9,11 @@ import type { AssistantQueryResultV1DatasetId } from './assistantQueryResultV1Da
 import type { AssistantQueryResultV1Dimension } from './assistantQueryResultV1Dimension.ts';
 import type { AssistantQueryResultV1Freshness } from './assistantQueryResultV1Freshness.ts';
 import type { AssistantQueryResultV1GraphRevision } from './assistantQueryResultV1GraphRevision.ts';
+import type { AssistantQueryResultV1NetworkContext } from './assistantQueryResultV1NetworkContext.ts';
 import type { AssistantQueryResultV1RowsItem } from './assistantQueryResultV1RowsItem.ts';
 import type { AssistantQueryResultV1SamplesItem } from './assistantQueryResultV1SamplesItem.ts';
 import type { AssistantQueryResultV1SourceManifest } from './assistantQueryResultV1SourceManifest.ts';
+import type { AssistantQueryResultV1StatisticsItem } from './assistantQueryResultV1StatisticsItem.ts';
 import type { AssistantQueryResultV1Status } from './assistantQueryResultV1Status.ts';
 import type { AssistantQueryResultV1TimeRange } from './assistantQueryResultV1TimeRange.ts';
 import type { AssistantQueryResultV1Unit } from './assistantQueryResultV1Unit.ts';
@@ -63,4 +65,9 @@ export type AssistantQueryResultV1 = unknown & unknown & unknown & unknown & unk
   comparisonTimeRange?: AssistantQueryResultV1ComparisonTimeRange;
   /** @maxItems 20 */
   samples?: AssistantQueryResultV1SamplesItem[];
+  networkContext?: AssistantQueryResultV1NetworkContext;
+  /** @maxItems 40 */
+  statistics?: AssistantQueryResultV1StatisticsItem[];
+  /** @maxItems 10 */
+  derivationEvidenceRefs?: string[];
 };

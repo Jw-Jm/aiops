@@ -116,7 +116,7 @@ func (r ResourceResolver) Resolve(ctx context.Context, binding analytics.Binding
 		return result, nil
 	}
 	q := graph.Query{QueryKind: "list", Scope: scope, ExpectedOwnerEpoch: binding.OwnerEpoch,
-		MaxDepth: 1, MaxNodes: 10, MaxEdges: 1, Name: selector.Name, Kind: selector.Kind,
+		RelationKinds: []string{}, MaxDepth: 1, MaxNodes: 10, MaxEdges: 1, Name: selector.Name, Kind: selector.Kind,
 		Namespace: selector.Namespace, Sort: "canonicalId", Order: "asc"}
 	if selector.CanonicalID != "" {
 		id, err := resource.ParseCanonicalID(selector.CanonicalID)

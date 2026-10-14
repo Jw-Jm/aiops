@@ -11,9 +11,17 @@ import (
 	"ops-platform/internal/auth"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/integrations/deepflow"
+	"strings"
+	"time"
 )
 
-func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.WorkloadTrust, key ed25519.PublicKey, pool *pgxpool.Pool, adapters map[string]*analytics.Victoria, owners map[string]graph.InternalHandler, evidenceAdapters map[string]evidence.Adapter) {
+type networkAnalysisRuntime struct {
+	Adapters map[string]*analytics.Network
+	Archive  *evidence.ArchiveService
+}
+
+func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.WorkloadTrust, key ed25519.PublicKey, pool *pgxpool.Pool, adapters map[string]*analytics.Victoria, owners map[string]graph.InternalHandler, evidenceAdapters map[string]evidence.Adapter, networkRuntime ...networkAnalysisRuntime) {
 	fail := func(status int, code string) {
 		w.WriteHeader(status)
 		json.NewEncoder(w).Encode(map[string]string{"code": code})
@@ -67,6 +75,13 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 				capabilities = append(capabilities, entries...)
 			}
 		}
+		if len(networkRuntime) > 0 {
+			for _, adapter := range networkRuntime[0].Adapters {
+				if entries, err := adapter.Capabilities(r.Context(), claims.Scope); err == nil {
+					capabilities = append(capabilities, entries...)
+				}
+			}
+		}
 		refreshed, err := (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
 		if err != nil || !claims.AllowsCurrent(refreshed) || owner.Lease.Confirm(r.Context(), q.OwnerEpoch) != nil {
 			fail(409, "STALE_CONTEXT")
@@ -92,6 +107,60 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 		return
 	}
 	binding := analytics.Binding{Subject: claims.Subject, Grant: current, Selection: analytics.Selection{Namespaces: claims.Scope.Namespaces, CanonicalIDs: claims.Scope.Resources, IncludeClusterScoped: claims.Scope.ClusterScoped}}
+	if strings.HasPrefix(intent.DatasetID, "network.") {
+		if len(networkRuntime) == 0 || networkRuntime[0].Archive == nil {
+			fail(503, "SOURCE_CAPABILITY_UNAVAILABLE")
+			return
+		}
+		var selected *analytics.Network
+		var plan analytics.NetworkPlan
+		for _, adapter := range networkRuntime[0].Adapters {
+			candidate, err := adapter.Compile(intent, binding)
+			if err != nil {
+				continue
+			}
+			if selected != nil {
+				fail(422, "AMBIGUOUS_SOURCE")
+				return
+			}
+			selected = adapter
+			plan = candidate
+		}
+		if selected == nil {
+			fail(503, "SOURCE_CAPABILITY_UNAVAILABLE")
+			return
+		}
+		result, facts, err := selected.Execute(r.Context(), plan)
+		if err != nil {
+			fail(503, "SOURCE_CAPABILITY_UNAVAILABLE")
+			return
+		}
+		refs := []string{}
+		for _, fact := range facts {
+			var summary deepflow.NetworkSummary
+			if json.Unmarshal(fact.Data, &summary) != nil || summary.Namespace == "" {
+				fail(503, "SOURCE_CONTRACT_INVALID")
+				return
+			}
+			if err := networkRuntime[0].Archive.Capture(r.Context(), fact, summary.Namespace, fact.EvaluatedAt.Add(181*24*time.Hour)); err != nil {
+				fail(503, "ARCHIVE_UNAVAILABLE")
+				return
+			}
+			refs = append(refs, fact.EvidenceID)
+		}
+		current, err = (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
+		if err != nil || !claims.AllowsCurrent(current) || owner.Lease.Confirm(r.Context(), q.OwnerEpoch) != nil {
+			fail(409, "STALE_CONTEXT")
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(struct {
+			Result       analytics.QueryResult `json:"result"`
+			Scope        graph.Scope           `json:"scope"`
+			EvidenceRefs []string              `json:"evidenceRefs"`
+		}{result, plan.ExecutionScope(), refs})
+		return
+	}
 	var selected *analytics.Victoria
 	var plan analytics.VictoriaPlan
 	for _, adapter := range adapters {

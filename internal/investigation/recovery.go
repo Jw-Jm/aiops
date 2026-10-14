@@ -13,17 +13,23 @@ import (
 
 func authorizeResult(ctx context.Context, tx pgx.Tx, j Job, b []byte) error {
 	var v struct {
-		EntityRefs      []string          `json:"entityRefs"`
-		EvidenceRefs    []string          `json:"evidenceRefs"`
-		QueryResultRefs []uuid.UUID       `json:"queryResultRefs"`
-		FormalRefs      []FormalReference `json:"formalRefs"`
-		Data            struct {
+		FaultChainContextRef *FaultChainContextRef `json:"faultChainContextRef"`
+		EntityRefs           []string              `json:"entityRefs"`
+		EvidenceRefs         []string              `json:"evidenceRefs"`
+		QueryResultRefs      []uuid.UUID           `json:"queryResultRefs"`
+		FormalRefs           []FormalReference     `json:"formalRefs"`
+		Data                 struct {
 			QueryResultRefs []uuid.UUID       `json:"queryResultRefs"`
 			FormalRefs      []FormalReference `json:"formalReferences"`
 		} `json:"data"`
 	}
 	if json.Unmarshal(b, &v) != nil {
 		return ErrInvalid
+	}
+	if v.FaultChainContextRef != nil {
+		if _, err := ReadFaultChainContextTx(ctx, tx, j, *v.FaultChainContextRef); err != nil {
+			return err
+		}
 	}
 	if j.Assistant != nil {
 		for _, id := range v.EntityRefs {

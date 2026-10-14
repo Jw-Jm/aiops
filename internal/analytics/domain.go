@@ -34,17 +34,18 @@ type QueryTimeRange struct {
 	Timezone string    `json:"timezone"`
 }
 type QueryIntent struct {
-	ComparisonTimeRange *QueryTimeRange `json:"comparisonTimeRange,omitempty"`
-	StepSeconds         int             `json:"stepSeconds,omitempty"`
-	TimeRange           *QueryTimeRange `json:"timeRange,omitempty"`
-	SchemaVersion       string          `json:"schemaVersion"`
-	DatasetID           string          `json:"datasetId"`
-	Operation           string          `json:"operation"`
-	Metrics             []string        `json:"metrics"`
-	Dimensions          []string        `json:"dimensions"`
-	Filters             []Filter        `json:"filters"`
-	Sort                []Sort          `json:"sort"`
-	Limit               int             `json:"limit"`
+	NetworkSelection    *NetworkSelection `json:"networkSelection,omitempty"`
+	ComparisonTimeRange *QueryTimeRange   `json:"comparisonTimeRange,omitempty"`
+	StepSeconds         int               `json:"stepSeconds,omitempty"`
+	TimeRange           *QueryTimeRange   `json:"timeRange,omitempty"`
+	SchemaVersion       string            `json:"schemaVersion"`
+	DatasetID           string            `json:"datasetId"`
+	Operation           string            `json:"operation"`
+	Metrics             []string          `json:"metrics"`
+	Dimensions          []string          `json:"dimensions"`
+	Filters             []Filter          `json:"filters"`
+	Sort                []Sort            `json:"sort"`
+	Limit               int               `json:"limit"`
 }
 
 // Selection is trusted product selection, separate from model-supplied Intent.
@@ -93,28 +94,50 @@ type Row struct {
 	Value     float64 `json:"value"`
 }
 type QueryResult struct {
-	Samples              []LogSample     `json:"samples,omitempty"`
-	ComparisonTimeRange  *QueryTimeRange `json:"comparisonTimeRange,omitempty"`
-	StepSeconds          int             `json:"stepSeconds,omitempty"`
-	TimeRange            *QueryTimeRange `json:"timeRange,omitempty"`
-	SourceManifest       *SourceManifest `json:"sourceManifest,omitempty"`
-	SchemaVersion        string          `json:"schemaVersion"`
-	DatasetID            string          `json:"datasetId"`
-	PlanDigest           string          `json:"planDigest"`
-	CatalogDigest        string          `json:"catalogDigest"`
-	ScopeDigest          string          `json:"scopeDigest"`
-	Status               string          `json:"status"`
-	Exact                bool            `json:"exact"`
-	Truncated            bool            `json:"truncated"`
-	Dimension            string          `json:"dimension"`
-	Unit                 string          `json:"unit"`
-	Rows                 []Row           `json:"rows"`
-	SnapshotReadAt       time.Time       `json:"snapshotReadAt"`
-	GraphRevision        graph.Revision  `json:"graphRevision,omitempty"`
-	ControlPlaneSnapshot string          `json:"controlPlaneSnapshot,omitempty"`
-	Freshness            string          `json:"freshness"`
-	Warnings             []string        `json:"warnings"`
-	DegradedSources      []string        `json:"degradedSources"`
+	NetworkContext         *NetworkContext `json:"networkContext,omitempty"`
+	Statistics             []Statistic     `json:"statistics,omitempty"`
+	DerivationEvidenceRefs []string        `json:"derivationEvidenceRefs,omitempty"`
+	Samples                []LogSample     `json:"samples,omitempty"`
+	ComparisonTimeRange    *QueryTimeRange `json:"comparisonTimeRange,omitempty"`
+	StepSeconds            int             `json:"stepSeconds,omitempty"`
+	TimeRange              *QueryTimeRange `json:"timeRange,omitempty"`
+	SourceManifest         *SourceManifest `json:"sourceManifest,omitempty"`
+	SchemaVersion          string          `json:"schemaVersion"`
+	DatasetID              string          `json:"datasetId"`
+	PlanDigest             string          `json:"planDigest"`
+	CatalogDigest          string          `json:"catalogDigest"`
+	ScopeDigest            string          `json:"scopeDigest"`
+	Status                 string          `json:"status"`
+	Exact                  bool            `json:"exact"`
+	Truncated              bool            `json:"truncated"`
+	Dimension              string          `json:"dimension"`
+	Unit                   string          `json:"unit"`
+	Rows                   []Row           `json:"rows"`
+	SnapshotReadAt         time.Time       `json:"snapshotReadAt"`
+	GraphRevision          graph.Revision  `json:"graphRevision,omitempty"`
+	ControlPlaneSnapshot   string          `json:"controlPlaneSnapshot,omitempty"`
+	Freshness              string          `json:"freshness"`
+	Warnings               []string        `json:"warnings"`
+	DegradedSources        []string        `json:"degradedSources"`
+}
+
+type NetworkSelection struct {
+	TargetCanonicalID string `json:"targetCanonicalId"`
+	PeerCanonicalID   string `json:"peerCanonicalId"`
+	Direction         string `json:"direction"`
+}
+type NetworkContext struct {
+	Selection        NetworkSelection `json:"selection"`
+	ObservationPoint string           `json:"observationPoint"`
+	Population       string           `json:"population"`
+	TimeReliable     bool             `json:"timeReliable"`
+	CoverageComplete bool             `json:"coverageComplete"`
+	Protocol         string           `json:"protocol"`
+}
+type Statistic struct {
+	Key   string  `json:"key"`
+	Value float64 `json:"value"`
+	Unit  string  `json:"unit"`
 }
 
 type LogSample struct {

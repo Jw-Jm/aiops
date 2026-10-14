@@ -25,6 +25,8 @@ import (
 // supplied by trusted deployment configuration, never by a QueryIntent. Legacy
 // evidence scope proofs do not qualify a new aggregate template by themselves.
 type Qualification struct {
+	ObservationPoint         string `json:"observationPoint,omitempty"`
+	CoverageComplete         bool   `json:"coverageComplete,omitempty"`
 	Operation                string `json:"operation,omitempty"`
 	DatasetID                string
 	SourceRevision           int64
@@ -81,6 +83,10 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		return p, err
 	}
 	intent = decoded
+
+	if intent.NetworkSelection != nil {
+		return p, ErrUnsupported
+	}
 	catalog, err := Catalog()
 	if err != nil {
 		return p, err

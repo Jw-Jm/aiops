@@ -2,6 +2,8 @@
 
 ## 后续专项授权
 
+用户于 2026-10-14 明确要求完成故障链调查增强开发，见 [ADR-0041](docs/adr/0041-fault-chain-investigation-enhancement.md)。按专项方案推进非虚拟化统计、调查、证据与界面，沿用 192.168.0.63 独立开发环境；不恢复虚拟化、Trace 或生产发布。
+
 用户于 2026-10-12 明确要求启动 AI 问数与自然语言排障开发，见
 [ADR-0038](docs/adr/0038-ai-assistant-development.md)。该专项覆盖下面的旧阶段
 限制，按实施方案独立推进。真实来源/运行机制验收见 [ADR-0039](docs/adr/0039-assistant-live-source-and-runtime-acceptance.md)，实时 DeepFlow L4/L7 专项见 [ADR-0040](docs/adr/0040-deepflow-live-l4-l7-development.md)；模型回答质量不作为本轮机制验收标准。虚拟化延期、正式文档保留、双角色及人工处置边界

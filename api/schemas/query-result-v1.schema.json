@@ -22,7 +22,13 @@
         "metrics.node-ready",
         "logs.records",
         "incidents.recovery-duration",
-        "executions.success-rate"
+        "executions.success-rate",
+        "network.http-responses",
+        "network.http-5xx",
+        "network.http-5xx-rate",
+        "network.http-response-time",
+        "network.tcp-retransmissions",
+        "network.connection-failure-observations"
       ]
     },
     "planDigest": {
@@ -78,7 +84,10 @@
         "cores",
         "bytes",
         "logs",
-        "percent"
+        "percent",
+        "responses",
+        "retransmissions",
+        "observations"
       ]
     },
     "rows": {
@@ -288,6 +297,116 @@
           "level"
         ]
       }
+    },
+    "networkContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "targetCanonicalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "peerCanonicalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "direction": {
+              "enum": [
+                "incoming",
+                "outgoing",
+                "either"
+              ]
+            }
+          },
+          "required": [
+            "targetCanonicalId",
+            "peerCanonicalId",
+            "direction"
+          ]
+        },
+        "observationPoint": {
+          "enum": [
+            "c",
+            "s",
+            "c-p",
+            "s-p",
+            "c-app",
+            "s-app",
+            "app"
+          ]
+        },
+        "population": {
+          "enum": [
+            "completed_http_session_observations",
+            "scoped_single_observation_point_records"
+          ]
+        },
+        "timeReliable": {
+          "type": "boolean"
+        },
+        "coverageComplete": {
+          "type": "boolean"
+        },
+        "protocol": {
+          "enum": [
+            "http",
+            "tcp"
+          ]
+        }
+      },
+      "required": [
+        "selection",
+        "observationPoint",
+        "population",
+        "timeReliable",
+        "coverageComplete",
+        "protocol"
+      ]
+    },
+    "statistics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "value": {
+            "type": "number",
+            "minimum": 0
+          },
+          "unit": {
+            "enum": [
+              "responses",
+              "observations"
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "value",
+          "unit"
+        ]
+      },
+      "maxItems": 40
+    },
+    "derivationEvidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 10,
+      "uniqueItems": true
     }
   },
   "required": [

@@ -11,24 +11,29 @@ import (
 )
 
 type AssistantTask struct {
-	TaskKind              string      `json:"taskKind"`
-	AuthorizationDomain   string      `json:"authorizationDomain"`
-	ConversationID        uuid.UUID   `json:"conversationId"`
-	TurnID                uuid.UUID   `json:"turnId"`
-	InputDigest           string      `json:"inputDigest"`
-	ContextDigest         string      `json:"contextDigest"`
-	GrantSnapshot         graph.Scope `json:"grantSnapshot"`
-	GrantSnapshotDigest   string      `json:"grantSnapshotDigest"`
-	DatasetCatalogVersion string      `json:"datasetCatalogVersion"`
-	DatasetCatalogDigest  string      `json:"datasetCatalogDigest"`
-	CatalogVersion        string      `json:"catalogVersion"`
-	PromptVersion         string      `json:"promptVersion"`
-	ModelProfileVersion   string      `json:"modelProfileVersion"`
-	ResultSchemaVersion   string      `json:"resultSchemaVersion"`
+	ExecutionMode           string      `json:"executionMode,omitempty"`
+	FaultChainRequestDigest string      `json:"faultChainRequestDigest,omitempty"`
+	TaskKind                string      `json:"taskKind"`
+	AuthorizationDomain     string      `json:"authorizationDomain"`
+	ConversationID          uuid.UUID   `json:"conversationId"`
+	TurnID                  uuid.UUID   `json:"turnId"`
+	InputDigest             string      `json:"inputDigest"`
+	ContextDigest           string      `json:"contextDigest"`
+	GrantSnapshot           graph.Scope `json:"grantSnapshot"`
+	GrantSnapshotDigest     string      `json:"grantSnapshotDigest"`
+	DatasetCatalogVersion   string      `json:"datasetCatalogVersion"`
+	DatasetCatalogDigest    string      `json:"datasetCatalogDigest"`
+	CatalogVersion          string      `json:"catalogVersion"`
+	PromptVersion           string      `json:"promptVersion"`
+	ModelProfileVersion     string      `json:"modelProfileVersion"`
+	ResultSchemaVersion     string      `json:"resultSchemaVersion"`
 }
 
 func (a *AssistantTask) Valid(j Job) bool {
 	if a == nil || a.ConversationID == uuid.Nil || a.TurnID == uuid.Nil || a.InputDigest == "" || a.ContextDigest == "" || a.CatalogVersion != "assistant-tools/v1" || a.PromptVersion != "assistant/v1" || a.ModelProfileVersion == "" || a.DatasetCatalogVersion != "analysis-catalog/v1" || a.DatasetCatalogDigest == "" || a.ResultSchemaVersion != "assistant-answer/v1" || a.GrantSnapshotDigest != graph.ScopeDigest(a.GrantSnapshot) {
+		return false
+	}
+	if (a.ExecutionMode != "" || a.FaultChainRequestDigest != "") && (a.ExecutionMode != "evidence_only" || a.FaultChainRequestDigest == "" || a.AuthorizationDomain != "operational" || !slices.Contains([]string{"resource_troubleshooting", "incident_followup"}, a.TaskKind)) {
 		return false
 	}
 	if a.AuthorizationDomain == "audit" {

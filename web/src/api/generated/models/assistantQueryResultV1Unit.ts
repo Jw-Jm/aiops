@@ -20,4 +20,7 @@ export const AssistantQueryResultV1Unit = {
   bytes: 'bytes',
   logs: 'logs',
   percent: 'percent',
+  responses: 'responses',
+  retransmissions: 'retransmissions',
+  observations: 'observations',
 } as const;

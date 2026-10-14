@@ -63,6 +63,10 @@ func (a InvestigationTools) CheckScope(ctx context.Context, j investigation.Job,
 	})
 }
 
+type sourceReadError struct{ Code string }
+
+func (e sourceReadError) Error() string { return e.Code }
+
 type boundedResponse struct {
 	header http.Header
 	status int
@@ -132,6 +136,10 @@ func (a InvestigationTools) read(ctx context.Context, j investigation.Job, path 
 		}
 		if w.status == 404 {
 			return nil, pgx.ErrNoRows
+		}
+		switch envelope.ErrorCode {
+		case "CAPABILITY_DISABLED", "SOURCE_CAPABILITY_UNAVAILABLE", "SOURCE_SCOPE_UNVERIFIED", "STALE_CONTEXT", "BUDGET_EXHAUSTED", "INVALID_ARGUMENT":
+			return nil, sourceReadError{envelope.ErrorCode}
 		}
 		return nil, graph.ErrNotReady
 	}
@@ -312,6 +320,10 @@ func (a InvestigationTools) Invoke(ctx context.Context, j investigation.Job, nam
 		out.Partial = true
 		out.DegradedSources = []string{name}
 		out.ErrorCode = "SOURCE_DEGRADED"
+		var sourceErr sourceReadError
+		if errors.As(err, &sourceErr) {
+			out.Data = map[string]any{"sourceErrorCode": sourceErr.Code}
+		}
 		return out, nil
 	}
 	if data != nil {

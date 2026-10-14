@@ -30,6 +30,9 @@ type ControlPlanePlan struct {
 func (p ControlPlanePlan) Digest() string              { return p.digest }
 func (p ControlPlanePlan) ExecutionScope() graph.Scope { return CloneScope(p.scope) }
 func CompileControlPlane(intent QueryIntent, binding Binding, domain string) (ControlPlanePlan, error) {
+	if intent.NetworkSelection != nil {
+		return ControlPlanePlan{}, ErrUnsupported
+	}
 	var p ControlPlanePlan
 	decoded, err := DecodeIntent(rawIntent(intent))
 	if err != nil {

@@ -1,4 +1,5 @@
 import { LegalHoldControl } from "../features/assistant/LegalHoldControl";
+import { FaultChainCollector } from "../features/assistant/FaultChainCollector";
 import { BindingEditor } from "../features/assistant/BindingEditor";
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -710,6 +711,19 @@ export function AssistantPage() {
                     }}
                   />
                 )}
+                {conversation.data?.data.mode === "troubleshoot" &&
+                  capabilities.data?.data.faultChainEnabled && (
+                    <FaultChainCollector
+                      key={id}
+                      conversation={conversation.data.data}
+                      disabled={Boolean(running) || busy}
+                      onSubmitted={(next) => {
+                        setTurn(next);
+                        setMessageCursor(undefined);
+                        void reload();
+                      }}
+                    />
+                  )}
                 {active?.answer?.clarification?.missingFields.includes(
                   "referentCanonicalId",
                 ) && (

@@ -4,9 +4,11 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
+import type { AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesItemL7 } from './assistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesItemL7.ts';
+import type { AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesItemNetwork } from './assistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesItemNetwork.ts';
 
 export type AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesItem = {
-  network: string;
-  l7: string;
+  network: AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesItemNetwork;
+  l7: AssistantCapabilitiesEnvelopeV1DataNetworkCapabilitiesItemL7;
   trace: 'CAPABILITY_DISABLED';
 };

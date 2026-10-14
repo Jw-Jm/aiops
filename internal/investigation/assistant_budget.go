@@ -15,7 +15,7 @@ func assistantBudgetAnswerTx(ctx context.Context, tx pgx.Tx, j Job) ([]byte, err
 	a := AssistantAnswer{SchemaVersion: "assistant-answer/v1", AnswerKind: "unsupported", Summary: "本轮预算已耗尽，保留已提交的查询事实；未完成的检查没有结论。", FactRefs: []FactRef{}, QueryResultRefs: []uuid.UUID{}, EvidenceRefs: []string{}, EntityRefs: []string{}, MissingEvidence: []string{"remaining_checks_not_completed"}, Partial: true, DegradedSources: []string{"budget-exhausted"}, Warnings: []string{"BUDGET_EXHAUSTED"}, Hypotheses: []Hypothesis{}, NextChecks: []string{"缩小范围后发起新一轮检查"}}
 	a.ScopeSummary = graph.ScopeDigest(j.Scope)
 	a.AsOf = time.Now().UTC()
-	if j.Assistant.TaskKind == "data_query" {
+	if j.Assistant.TaskKind == "data_query" || j.Assistant.ExecutionMode == "evidence_only" {
 		rows, err := tx.Query(ctx, `SELECT result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND state='succeeded' AND tool_name='execute_analysis_query' ORDER BY started_at,step_id`, j.TenantID, j.JobID)
 		if err != nil {
 			return nil, err
@@ -54,6 +54,7 @@ func assistantBudgetAnswerTx(ctx context.Context, tx pgx.Tx, j Job) ([]byte, err
 				continue
 			}
 			a.QueryResultRefs = append(a.QueryResultRefs, id)
+			a.EvidenceRefs = append(a.EvidenceRefs, query.Result.DerivationEvidenceRefs...)
 			for _, fact := range query.Facts {
 				a.FactRefs = append(a.FactRefs, FactRef{id, fact.FactID})
 				if len(a.FactRefs) >= 50 {
@@ -65,7 +66,11 @@ func assistantBudgetAnswerTx(ctx context.Context, tx pgx.Tx, j Job) ([]byte, err
 			}
 		}
 		if len(a.FactRefs) > 0 {
-			a.AnswerKind = "data"
+			if j.Assistant.TaskKind == "data_query" {
+				a.AnswerKind = "data"
+			} else {
+				a.AnswerKind = "diagnosis"
+			}
 		}
 	}
 	// The validator derives scope/asOf and checks the same committed-reference

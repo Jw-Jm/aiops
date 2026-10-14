@@ -32,6 +32,7 @@ import (
 )
 
 type AssistantRuntimeConfig struct {
+	FaultChainEnabled   bool                  `json:"faultChainEnabled"`
 	Enabled             bool                  `json:"enabled"`
 	Profile             *modelprofile.Profile `json:"profile,omitempty"`
 	ModelProfileVersion string                `json:"modelProfileVersion"`
@@ -275,7 +276,7 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 	server := &http.Server{Handler: mux, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute}
 	sp04.Investigation = handlers
 	if c.Assistant != nil {
-		repo := assistant.Repository{Pool: pool, Jobs: handlers.Repository}
+		repo := assistant.Repository{Pool: pool, Jobs: handlers.Repository, FaultChainEnabled: c.Assistant.FaultChainEnabled}
 		repo.Admit = func(ctx context.Context, conversation assistant.Conversation, task string) (assistant.Admission, error) {
 			if !c.Assistant.Enabled {
 				return assistant.Admission{}, investigation.ErrDenied
