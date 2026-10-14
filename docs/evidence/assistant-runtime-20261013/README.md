@@ -78,3 +78,27 @@ TypeScript/Vite 构建与 runtime 源码闭包检查通过。
 candidate plane 和受保护证据/数据库/Archive 身份与存储保留。后续要复验
 live L7，须重新应用 canary manifest 并取得新的有效非空来源证明；归档回执
 不代表停止刺激后仍持续 live。未修改 core/final 工作负载。
+
+
+## 用户授权的开发系统负载阈值覆盖
+
+2026-10-14 用户允许针对远程机器配置绕过 DeepFlow 阈值，开发默认配置设
+relative_sys_load.trigger_threshold=0。`agent-defaults-bypass.json` 回读一致且
+重复同步 changed=false；Agent 1 GiB / 1 CPU 保留，来源/范围/非空数据门禁
+不绕过。实际采集恢复后，r9 的六项 L4、L7 200/503、范围/来源撤销、Trace
+禁用通过（5.56 秒），回执见 `deepflow-live-after-bypass.json`。
+`agent-health-after-bypass.json` 如实记录一次 09:44、exit 255 的 Agent 重启，
+早于此覆盖值，旧零重启快照保留。
+
+补验收中的 OIDC network r5/r6 与 direct live r6/r7 无有效新采集而失败；
+direct r5 是 SKIP，不计入通过；r8 已完成查询却缺少输出路径而 FAIL。
+runner 现自动分配 DeepFlow/MCP 报告路径，拒绝零实际通过或任何 SKIP。
+失败记录和资源继续保留，最终补验收状态以追加回执为准。
+
+
+最终补验收说明：浏览器 r8（对应 OIDC network r7）正常模型轮次发生
+MODEL_TIMEOUT，状态 failed，未通过；分别保留 failure-browser-network-r8.log、
+failure-oidc-network-r7.log、failure-runtime-network-r7.json。模型位于本机
+NVMe，冻结 Profile 的 120 秒超时保持；未替换模型、放宽 Schema、将 failed
+计为通过或修改五例质量结果。此前 r7 浏览器 / r4 Go 的有效 partial 机制
+通过结果继续保留，但不用于宣称最新正常模型轮次或持续运行健康通过。

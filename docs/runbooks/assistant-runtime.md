@@ -198,3 +198,8 @@ HTTP 200/503，不能推广为所有协议/内核兼容性。重传不等于直�
 运行镜像和工具不受机械盘影响。追加验收复制既有 Chromium/Node 到独立
 `/opt/ops-assistant-browser-20261014`，不升级版本；独立非 root 浏览器使用
 19226 环回 CDP、专属 tmpfs profile，保留实际 TLS 信任校验。
+
+用户于 2026-10-14 授权此远程开发实例绕过 DeepFlow 系统负载阈值：Agent
+Group 的 `global.circuit_breakers.relative_sys_load.trigger_threshold` 为 0，
+checked-in 开发默认值与回读一致。1024 MiB / 1000 millicpus 上限和平台
+实时身份/范围/来源证据门禁保留；core/final 发行配置不采用此开发覆盖值。

@@ -1,0 +1,26 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 assistant_runtime.spec.ts:6:5 › actual OIDC PKCE, assistant durable turn/SSE, restoration and role isolation (2.5m)
+
+
+  1) assistant_runtime.spec.ts:6:5 › actual OIDC PKCE, assistant durable turn/SSE, restoration and role isolation
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected value: "failed"
+    Received array: ["completed", "awaiting_user", "partial"]
+
+      139 |       await page.waitForTimeout(2000);
+      140 |     }
+    > 141 |     expect(["completed", "awaiting_user", "partial"]).toContain(state);
+          |                                                       ^
+      142 |     expect(answer?.schemaVersion).toBe("assistant-answer/v1");
+      143 |     const messages = await context.request.get(
+      144 |       baseURL +
+        at /opt/ops-assistant-dev-20261012/ui/assistant_runtime.spec.ts:141:55
+
+    Error Context: runtime-results/assistant_runtime-actual-O-bca47-toration-and-role-isolation/error-context.md
+
+  1 failed
+    assistant_runtime.spec.ts:6:5 › actual OIDC PKCE, assistant durable turn/SSE, restoration and role isolation

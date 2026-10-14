@@ -67,3 +67,15 @@ kubectl -n ops-assistant-deepflow-20261013 rollout status deployment/network-cli
 
 采集结束只在核对 release 标签与记录 UID 后，缩容这两个 canary Deployment
 为 0；不删除证据、受保护存储、发行 namespace 或其他业务资源。
+
+
+用户于 2026-10-14 明确允许因远程机器配置绕过 DeepFlow 阈值。此独立开发
+实例的 `agent-defaults.json` 增加
+`global.circuit_breakers.relative_sys_load.trigger_threshold: 0`，只禁用系统
+负载熔断；Agent 的 1024 MiB / 1000 millicpus 上限保持不变。
+这采用 [锁定源码的官方配置语义](https://raw.githubusercontent.com/deepflowio/deepflow/e567b167453ffa99f08f26def20379b4f831e073/server/agent_config/template.yaml)：阈值 0 支持热更新禁用，
+用于避免机械盘 I/O 累积的 load15 与五分钟恢复等待阻塞本机开发采集。
+不把此设置传播到 core/final 发行配置；生产阈值另行评估。
+同步脚本递归核对指定叶值，保留现有 metric、recovery_threshold 等配置。
+绕过只影响 Agent 系统负载保护，不绕过平台原生 UID、范围、权限、来源新鲜度
+或非空 L7 证明；仍须以实际数据复验。

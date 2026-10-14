@@ -46,6 +46,8 @@ def main():
     limits = defaults["global"]["limits"]
     if set(limits) != {"max_memory", "max_millicpus"} or any(type(v) is not int or v <= 0 for v in limits.values()):
         raise ValueError("invalid Agent Group limits")
+    if defaults["global"].get("circuit_breakers") != {"relative_sys_load": {"trigger_threshold": 0}}:
+        raise ValueError("expected only the authorized development system-load bypass")
     wanted = copy.deepcopy(defaults)
     wanted["global"]["communication"] = {
         "proxy_controller_ip": address, "proxy_controller_port": 30035,
@@ -76,9 +78,13 @@ def main():
     if merged != existing:
         request(path, "PUT", merged)
     actual = request(path)
-    for key, value in wanted["global"].items():
-        if any(actual["global"][key].get(k) != v for k, v in value.items()):
-            raise ValueError("Agent Group read-back differs from defaults")
+    def contains(current, expected):
+        return isinstance(current, dict) and all(
+            key in current and (contains(current[key], value) if isinstance(value, dict) else current[key] == value)
+            for key, value in expected.items()
+        )
+    if not contains(actual, wanted):
+        raise ValueError("Agent Group read-back differs from defaults")
     print(json.dumps({"namespace": NAMESPACE, "group": group,
                       "changed": merged != existing, "configured": wanted}, indent=2))
 

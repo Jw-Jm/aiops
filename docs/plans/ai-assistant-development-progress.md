@@ -202,3 +202,18 @@ readiness 和实际来源准入不变。长时测试静态签名 CRL 增加 Fixt
 ../../scripts/assistant-runtime/README.md 与 ../../scripts/deepflow-dev/README.md。
 迁移闭包的旧准入摘要仍因既有 41/42 增量失配；不修改旧准入或以 make check
 替代正式发行。根目录 00～10、Trace 禁用和 KubeVirt/CDI 延期继续有效。
+
+
+2026-10-14 补充授权：用户允许因远程机器配置绕过 DeepFlow 阈值。独立开发
+Agent Group 增加 `global.circuit_breakers.relative_sys_load.trigger_threshold=0`，
+checked-in 默认值、幂等同步脚本与 Controller 回读一致；1 GiB / 1 CPU
+上限及平台 UID/权限/范围/非空 L7 证明保持。原高 load15 使 Agent 进入
+melt_down；真实数据恢复后，完整 L4/L7 适配器 r9 通过（5.56 秒），含
+HTTP 200/503、来源撤销与 Trace 禁用，见 deepflow-live-after-bypass.json。
+历史 09:27 的 Agent 零重启回执保留；最终回读记录 09:44 的一次退出 255
+重启，发生在负载阈值覆盖之前，不宣称当前仍零重启。
+
+补充正常模型浏览器轮次 r8（OIDC network r7）因 MODEL_TIMEOUT / failed
+未通过，失败与停止保留回执随源码归档；原浏览器 r7 / Go r4 的有效 partial
+机制通过保留，但不替代正常模型成功路径。冻结 120 秒模型协议未放宽，
+五例质量 FAIL 原样保留；模型正常轮次可用性仍是单独待验证项。
