@@ -144,10 +144,11 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		if err := load(); err != nil {
 			return out, err
 		}
-		if input.FaultChainRequest == nil {
-			return out, investigation.ErrInvalid
+		request, err := faultChainEvaluationRequest(input, j)
+		if err != nil {
+			return out, err
 		}
-		context, err := a.evaluateFaultChain(ctx, j, *input.FaultChainRequest, args)
+		context, err := a.evaluateFaultChain(ctx, j, request, args)
 		if err != nil {
 			return out, err
 		}
@@ -197,6 +198,9 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 				data["sourceCapabilities"] = []analytics.SourceCapability{}
 				data["sourceCapabilityStatus"] = "unavailable"
 			}
+		}
+		if request, err := faultChainEvaluationRequest(input, j); err == nil {
+			data["faultChainEvaluationRequest"] = request
 		}
 		for i := len(input.History) - 1; i >= 0; i-- {
 			if input.History[i].Role != "assistant" {
