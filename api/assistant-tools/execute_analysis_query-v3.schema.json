@@ -8,6 +8,16 @@
   "properties": {
     "intent": {
       "$ref": "https://ops.local/schemas/query-intent/v1"
+    },
+    "canonicalId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+    },
+    "windowRole": {
+      "enum": [
+        "fault",
+        "baseline",
+        "recovery"
+      ]
     }
   },
   "required": [

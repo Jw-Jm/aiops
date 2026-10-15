@@ -30,7 +30,7 @@ type AssistantTask struct {
 }
 
 func (a *AssistantTask) Valid(j Job) bool {
-	if a == nil || a.ConversationID == uuid.Nil || a.TurnID == uuid.Nil || a.InputDigest == "" || a.ContextDigest == "" || a.CatalogVersion != "assistant-tools/v1" || a.PromptVersion != "assistant/v1" || a.ModelProfileVersion == "" || a.DatasetCatalogVersion != "analysis-catalog/v1" || a.DatasetCatalogDigest == "" || a.ResultSchemaVersion != "assistant-answer/v1" || a.GrantSnapshotDigest != graph.ScopeDigest(a.GrantSnapshot) {
+	if a == nil || a.ConversationID == uuid.Nil || a.TurnID == uuid.Nil || a.InputDigest == "" || a.ContextDigest == "" || !slices.Contains([]string{"assistant-tools/v1", "assistant-tools/v2"}, a.CatalogVersion) || a.PromptVersion != "assistant/v1" || a.ModelProfileVersion == "" || a.DatasetCatalogVersion != "analysis-catalog/v1" || a.DatasetCatalogDigest == "" || a.ResultSchemaVersion != "assistant-answer/v1" || a.GrantSnapshotDigest != graph.ScopeDigest(a.GrantSnapshot) {
 		return false
 	}
 	if (a.ExecutionMode != "" || a.FaultChainRequestDigest != "") && (a.ExecutionMode != "evidence_only" || a.FaultChainRequestDigest == "" || a.AuthorizationDomain != "operational" || !slices.Contains([]string{"resource_troubleshooting", "incident_followup"}, a.TaskKind)) {

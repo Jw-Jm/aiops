@@ -19,7 +19,18 @@ import (
 func collectorSink(ctx context.Context, cluster SP04Cluster, g *graph.Graph, store resourcestore.Repository, queue *projectionArchiveQueue) func(kubernetes.Snapshot) error {
 	previous := map[string]string{}
 	kind, group := "", ""
+	coverageSignature := ""
 	return func(s kubernetes.Snapshot) error {
+		signature := graph.ScopeDigest(struct {
+			Listed                          time.Time
+			Connected, Continuous, HasError bool
+		}{s.State.LastListCompletedAt, s.State.WatchConnected, s.State.WatchContinuous, s.State.LastError != ""})
+		if signature != coverageSignature {
+			if err := store.ObserveCoverage(ctx, cluster.Tenant, cluster.SourceID, s.GVR, s.State); err != nil {
+				return err
+			}
+			coverageSignature = signature
+		}
 		if s.ObservationOnly {
 			return g.UpdateSourceState(g.OwnerEpoch(), s.GVR, s.State)
 		}
@@ -116,10 +127,10 @@ func prepareProjection(ctx context.Context, cluster SP04Cluster, o unstructured.
 	if observed.IsZero() {
 		return uuid.Nil, resource.ErrIdentity
 	}
-	identity, _ := json.Marshal(struct{ ID, RV string }{id, o.GetResourceVersion()})
+	identity, _ := json.Marshal(struct{ ID, RV, ProjectionVersion string }{id, o.GetResourceVersion(), "kubernetes-projection/v2"})
 	objectID := uuid.NewSHA1(uuid.NameSpaceOID, append([]byte(cluster.SourceID), identity...))
 	scope := graph.Scope{Tenant: cluster.Tenant, Cluster: cluster.ClusterUID, Namespaces: []string{o.GetNamespace()}, ClusterScoped: true, AuthorizationRevision: "collector/" + cluster.SourceID + "/" + strconv.FormatInt(cluster.SourceRevision, 10)}
-	metadata := evidence.Evidence{SourceScopeDigest: cluster.SourceScopeDigest, SchemaVersion: "evidence/v2", EvidenceID: objectID.String(), TenantID: cluster.Tenant, ResourceCanonicalID: id, Type: "resource_state", DataClass: "D0", SourceRegistrationID: cluster.SourceID, SourceRevision: cluster.SourceRevision, SourceSystem: "kubernetes", BackendLogicalID: cluster.BackendLogicalID, QueryTemplateVersion: "kubernetes-projection/v1", QueryHash: evidence.Digest(identity), EffectiveScope: scope, EvaluatedAt: observed, ObservedFrom: observed, ObservedTo: observed, SourceRetentionUntil: observed, TimeReliable: true, ReplayState: "archive_pending", ContentDigest: evidence.Digest(data), DerivationEvidenceRefs: []string{}, IndependenceGroup: cluster.SourceID, Data: data}
+	metadata := evidence.Evidence{SourceScopeDigest: cluster.SourceScopeDigest, SchemaVersion: "evidence/v2", EvidenceID: objectID.String(), TenantID: cluster.Tenant, ResourceCanonicalID: id, Type: "resource_state", DataClass: "D0", SourceRegistrationID: cluster.SourceID, SourceRevision: cluster.SourceRevision, SourceSystem: "kubernetes", BackendLogicalID: cluster.BackendLogicalID, QueryTemplateVersion: "kubernetes-projection/v2", QueryHash: evidence.Digest(identity), EffectiveScope: scope, EvaluatedAt: observed, ObservedFrom: observed, ObservedTo: observed, SourceRetentionUntil: observed, TimeReliable: true, ReplayState: "archive_pending", ContentDigest: evidence.Digest(data), DerivationEvidenceRefs: []string{}, IndependenceGroup: cluster.SourceID, Data: data}
 	// Re-listing or a second Worker may observe the same immutable UID/RV at a
 	// later wall clock. Reuse the first durable observation; the new observation
 	// cannot rebind its archive identity or renew history retention.

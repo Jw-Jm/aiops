@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "fault-chain-http-proof/v1",
+  "namespace": "ops-assistant-deepflow-20261013",
+  "release": "fault-chain-20261014",
+  "golden": {
+    "startedAt": 1792063563.7571008,
+    "endedAt": 1792063567.357953,
+    "responses": 1000,
+    "errors": 50,
+    "transportFailures": 0
+  },
+  "window": {
+    "fromUnix": 1792063563,
+    "toUnix": 1792063569
+  },
+  "nativePods": [
+    {
+      "name": "fault-chain-client-79ff8cbd6b-225l8",
+      "uid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "containerIds": [
+        "containerd://da90e61d0199e4f875c1ba353420bfdf88b0e5edbae14818fc4b634757cc2336"
+      ]
+    },
+    {
+      "name": "fault-chain-server-66b747979c-xmgl7",
+      "uid": "d5c42e77-453b-43d0-a541-b266968a1aa2",
+      "containerIds": [
+        "containerd://d945c1559f8232e5e9ca39bfc81babc966e12c335d8c5dd03a91f58d2a6027d8"
+      ]
+    }
+  ],
+  "metadataCounts": [
+    {
+      "pod_id_0": 45,
+      "pod_id_1": 46,
+      "pod_cluster_id_0": 1,
+      "pod_cluster_id_1": 1,
+      "pod_ns_id_0": 12,
+      "pod_ns_id_1": 12,
+      "tap_side": "s",
+      "l7_protocol": 20,
+      "type": 2,
+      "response_code": 200,
+      "observations": 962
+    },
+    {
+      "pod_id_0": 45,
+      "pod_id_1": 46,
+      "pod_cluster_id_0": 1,
+      "pod_cluster_id_1": 1,
+      "pod_ns_id_0": 12,
+      "pod_ns_id_1": 12,
+      "tap_side": "s",
+      "l7_protocol": 20,
+      "type": 2,
+      "response_code": 503,
+      "observations": 50
+    },
+    {
+      "pod_id_0": 45,
+      "pod_id_1": 46,
+      "pod_cluster_id_0": 1,
+      "pod_cluster_id_1": 1,
+      "pod_ns_id_0": 12,
+      "pod_ns_id_1": 12,
+      "tap_side": "s-p",
+      "l7_protocol": 20,
+      "type": 2,
+      "response_code": 503,
+      "observations": 50
+    },
+    {
+      "pod_id_0": 45,
+      "pod_id_1": 46,
+      "pod_cluster_id_0": 1,
+      "pod_cluster_id_1": 1,
+      "pod_ns_id_0": 12,
+      "pod_ns_id_1": 12,
+      "tap_side": "s-p",
+      "l7_protocol": 20,
+      "type": 2,
+      "response_code": 200,
+      "observations": 962
+    }
+  ],
+  "status": "FAIL",
+  "timeReliable": false,
+  "scope": "single_point_completed_http_session_observations"
+}

@@ -1,0 +1,26 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 operational_fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation (13.8s)
+
+
+  1) operational_fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      183 |       { mode: 0o600 },
+      184 |     );
+    > 185 |     expect(chain.evidenceRefs.length).toBeGreaterThan(0);
+          |                                       ^
+      186 |     expect(chain.sourceSteps.length).toBeGreaterThan(0);
+      187 |     await expect(
+      188 |       page.getByRole("heading", { name: "资源关联观察" }),
+        at /opt/ops-assistant-dev-20261012/ui/operational_fault_chain_runtime.spec.ts:185:39
+
+    Error Context: operational-results/operational_fault_chain_ru-69a3d-oration-and-owner-isolation/error-context.md
+
+  1 failed
+    operational_fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 

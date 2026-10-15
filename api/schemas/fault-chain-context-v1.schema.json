@@ -289,6 +289,129 @@
           "sources"
         ]
       }
+    },
+    "sourceSteps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "stepId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tool": {
+            "enum": [
+              "resource_history",
+              "resource_changes",
+              "resource_findings",
+              "execute_analysis_query",
+              "get_dependencies",
+              "get_impact_scope",
+              "get_resource_context"
+            ]
+          },
+          "canonicalId": {
+            "type": "string"
+          },
+          "contentDigest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "stepId",
+          "tool",
+          "canonicalId",
+          "contentDigest"
+        ]
+      },
+      "maxItems": 40
+    },
+    "resourceAssessments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "canonicalId": {
+            "type": "string"
+          },
+          "ruleId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "supports": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 40
+          },
+          "conflicts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 40
+          },
+          "factRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "queryResultId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "factId": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "queryResultId",
+                "factId"
+              ]
+            },
+            "maxItems": 100
+          },
+          "missingEvidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100
+          },
+          "sourceQuality": {
+            "type": "string"
+          },
+          "nextChecks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "canonicalId",
+          "ruleId",
+          "reason",
+          "supports",
+          "conflicts",
+          "factRefs",
+          "missingEvidence",
+          "sourceQuality",
+          "nextChecks"
+        ]
+      },
+      "maxItems": 64
     }
   },
   "required": [

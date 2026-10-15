@@ -32,6 +32,46 @@ func safeLabels(v any) map[string]any {
 }
 func projectNested(path []string, v any) any {
 	switch strings.Join(path, ".") {
+	case "spec.containers", "spec.initContainers", "spec.template.spec.containers", "spec.template.spec.initContainers":
+		out := []any{}
+		for _, raw := range sliceValues(v) {
+			out = append(out, selectStrings(raw, "name", "image"))
+		}
+		return out
+	case "status.containerStatuses", "status.initContainerStatuses":
+		out := []any{}
+		for _, raw := range sliceValues(v) {
+			m, _ := raw.(map[string]any)
+			item := selectStrings(raw, "name", "containerID", "imageID")
+			if n, ok := m["restartCount"].(int64); ok && n >= 0 {
+				item["restartCount"] = n
+			}
+			if ready, ok := m["ready"].(bool); ok {
+				item["ready"] = ready
+			}
+			for _, field := range []string{"state", "lastState"} {
+				states, _ := m[field].(map[string]any)
+				safe := map[string]any{}
+				for _, state := range []string{"waiting", "running", "terminated"} {
+					if raw, exists := states[state]; exists {
+						value := selectStrings(raw, "reason", "startedAt", "finishedAt", "containerID")
+						source, _ := raw.(map[string]any)
+						for _, key := range []string{"exitCode", "signal"} {
+							if n, ok := source[key].(int64); ok {
+								value[key] = n
+							}
+						}
+						safe[state] = value
+					}
+				}
+				item[field] = safe
+			}
+			out = append(out, item)
+		}
+		return out
+	case "spec.unschedulable":
+		b, _ := v.(bool)
+		return b
 	case "spec.selector":
 		m, _ := v.(map[string]any)
 		if _, exists := m["matchLabels"]; !exists {

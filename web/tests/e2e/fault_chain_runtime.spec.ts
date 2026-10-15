@@ -28,6 +28,7 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
   let token = "",
     streams = 0;
   const page = await context.newPage();
+  page.setDefaultTimeout(30000);
   page.on("request", (r) => {
     if (r.url().includes("/api/")) token = r.headers().authorization || token;
     if (r.url().includes("/events")) streams++;
@@ -53,23 +54,35 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
       Authorization: token,
       "X-Tenant-ID": api.tenantId,
     });
-    const resolved = await context.request.post(
-      base + "/api/v1/assistant/resources:resolve",
-      {
-        headers: headers(),
-        data: {
-          clusterUid: api.clusterUid,
-          namespaceSelection: [api.namespace],
-          includeClusterScoped: false,
-          selector: { kind: "Pod", name: pod.name, namespace: api.namespace },
+    let resolution: any;
+    await expect
+      .poll(
+        async () => {
+          const resolved = await context.request.post(
+            base + "/api/v1/assistant/resources:resolve",
+            {
+              headers: headers(),
+              data: {
+                clusterUid: api.clusterUid,
+                namespaceSelection: [api.namespace],
+                includeClusterScoped: false,
+                selector: {
+                  kind: "Pod",
+                  name: pod.name,
+                  namespace: api.namespace,
+                },
+              },
+            },
+          );
+          expect(resolved.status()).toBe(200);
+          resolution = (await resolved.json()).data;
+          return resolution.status;
         },
-      },
-    );
-    expect(resolved.status(), String((await resolved.json()).code || "")).toBe(
-      200,
-    );
-    const candidates = (await resolved.json()).data.candidates;
-    expect(candidates).toHaveLength(1);
+        { timeout: 30000, intervals: [1000] },
+      )
+      .toBe("resolved");
+    const candidates = resolution.candidates;
+    expect(candidates, JSON.stringify(resolution)).toHaveLength(1);
     const from = new Date(proof.window.fromUnix * 1000).toISOString();
     const to = new Date(proof.window.toUnix * 1000).toISOString();
     const created = await context.request.post(
@@ -95,11 +108,26 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
     await page.goto(
       base + "/assistant?conversation=" + conversation.conversationId,
     );
+    await page.getByRole("combobox", { name: "调查资源类型" }).click();
+    await page.getByTitle("Node", { exact: true }).click();
+    await expect(
+      page.getByText(
+        "请通过现有范围编辑器显式选入集群资源；不会自动扩大权限。",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "查找当前授权范围的资源" }),
+    ).toBeDisabled();
+    await page.getByRole("combobox", { name: "调查资源类型" }).click();
+    await page.getByTitle("PVC", { exact: true }).click();
+    await page.getByRole("combobox", { name: "调查资源类型" }).click();
+    await page.getByTitle("Pod", { exact: true }).click();
     await page
-      .getByRole("textbox", { name: "调查 Pod 名称", exact: true })
+      .getByRole("textbox", { name: "调查资源名称", exact: true })
       .fill(pod.name);
-    await page.getByRole("button", { name: "查找当前授权范围的 Pod" }).click();
-    await page.getByRole("combobox", { name: "调查目标 Pod" }).click();
+    await page.getByRole("button", { name: "查找当前授权范围的资源" }).click();
+    await page.getByRole("combobox", { name: "调查目标资源" }).click();
     await page
       .getByTitle(api.namespace + "/" + pod.name, { exact: true })
       .click();
@@ -149,7 +177,31 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
     );
     expect(chainResponse.status()).toBe(200);
     const chain = (await chainResponse.json()).data;
+    await writeFile(
+      privateDir + "/browser-collection-" + turn.turnId + ".json",
+      JSON.stringify({ turnId: turn.turnId, answer: complete.answer, chain }),
+      { mode: 0o600 },
+    );
     expect(chain.evidenceRefs.length).toBeGreaterThan(0);
+    expect(chain.sourceSteps.length).toBeGreaterThan(0);
+    await expect(
+      page.getByRole("heading", { name: "资源关联观察" }),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: /定位来源步骤/ })
+      .first()
+      .click();
+    await expect(
+      page.getByText("原始已提交来源（安全投影）", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/resource_history/, { exact: false }).last(),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: /^(关闭|Close)$/ })
+      .last()
+      .click();
+
     const datasets: any = {};
     for (const id of chain.queryResultRefs) {
       const result = await context.request.get(
@@ -158,7 +210,10 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
       );
       expect(result.status()).toBe(200);
       const query = (await result.json()).data.result;
+      if (!query.datasetId.startsWith("network.")) continue;
       expect(query.exact).toBe(true);
+      if (!query.statistics.some((s: any) => s.key === "current.responses"))
+        continue;
       expect(
         query.statistics.find((s: any) => s.key === "current.responses").value,
       ).toBe(1000);

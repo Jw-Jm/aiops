@@ -149,7 +149,7 @@ func CatalogFor(schema, task, domain, version string) ([]Definition, error) {
 	if schema == "investigation-job/v2" {
 		return Catalog()
 	}
-	if schema != "investigation-job/v3" || version != "assistant-tools/v1" {
+	if schema != "investigation-job/v3" || !slices.Contains([]string{"assistant-tools/v1", "assistant-tools/v2"}, version) {
 		return nil, investigation.ErrInvalid
 	}
 	names := []string{"get_assistant_context"}
@@ -158,6 +158,9 @@ func CatalogFor(schema, task, domain, version string) ([]Definition, error) {
 	} else if domain == "operational" && (task == "incident_followup" || task == "resource_troubleshooting") {
 		names = append(names, "describe_analysis_dataset", "execute_analysis_query", "evaluate_fault_chain")
 		names = append(names, "resolve_resources", "resource_findings")
+		if version == "assistant-tools/v2" {
+			names = append(names, "resource_history", "resource_changes")
+		}
 		if task == "incident_followup" {
 			names = append(names, "get_formal_references")
 		}
@@ -183,6 +186,17 @@ func CatalogFor(schema, task, domain, version string) ([]Definition, error) {
 		s, err = inlineAssistantSchema(s)
 		if err != nil {
 			return nil, err
+		}
+		if version == "assistant-tools/v1" {
+			properties, _ := s["properties"].(map[string]any)
+			if name == "resource_findings" {
+				delete(properties, "windowRole")
+				s["description"] = "Read bounded standardized Finding records for a real authorized resource, without creating an Incident."
+			}
+			if name == "execute_analysis_query" {
+				delete(properties, "canonicalId")
+				delete(properties, "windowRole")
+			}
 		}
 		out = append(out, Definition{Name: name, Schema: s, Version: "v3", RawQuery: name == "execute_analysis_query"})
 	}

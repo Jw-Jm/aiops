@@ -49,6 +49,7 @@ type Clarification struct {
 	Candidates      []string  `json:"candidates"`
 }
 type AssistantAnswer struct {
+	ResourceSourceSteps  []ResourceSourceStep  `json:"resourceSourceSteps,omitempty"`
 	FaultChainContextRef *FaultChainContextRef `json:"faultChainContextRef,omitempty"`
 	FormalRefs           []FormalReference     `json:"formalRefs,omitempty"`
 	FaultChain           []ChainLink           `json:"faultChain,omitempty"`
@@ -336,6 +337,11 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 	for _, h := range a.Hypotheses {
 		if validateSupportConflict(h.Supports, h.Conflicts, seen) != nil {
 			return nil, ErrDenied
+		}
+	}
+	for _, ref := range a.ResourceSourceSteps {
+		if _, err := ReadResourceSourceStepTx(ctx, tx, j, ref); err != nil {
+			return nil, err
 		}
 	}
 	if a.FaultChainContextRef != nil {

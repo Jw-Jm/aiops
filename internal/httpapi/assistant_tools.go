@@ -18,6 +18,7 @@ import (
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/investigation/tools"
 	"ops-platform/internal/persistence"
+	"ops-platform/internal/resource"
 )
 
 // assistantGraphReader invokes the existing signed graph transport with a
@@ -273,7 +274,9 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 	case "execute_analysis_query":
 
 		var p struct {
-			Intent json.RawMessage `json:"intent"`
+			Intent      json.RawMessage `json:"intent"`
+			CanonicalID string          `json:"canonicalId"`
+			WindowRole  string          `json:"windowRole"`
 		}
 		if json.Unmarshal(args, &p) != nil {
 			return out, investigation.ErrInvalid
@@ -285,8 +288,37 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		if err != nil {
 			return out, err
 		}
-		if input.FaultChainRequest != nil {
-			if !input.FaultChainRequest.Allows(intent.TimeRange) || intent.ComparisonTimeRange != nil && !input.FaultChainRequest.Allows(intent.ComparisonTimeRange) {
+		queryScope := j.Scope
+		if p.CanonicalID != "" {
+			var ns string
+			err := persistence.WithTenantTx(ctx, h.Pool, j.TenantID, func(tx pgx.Tx) error {
+				return tx.QueryRow(ctx, `SELECT namespace FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, j.TenantID, p.CanonicalID).Scan(&ns)
+			})
+			if err != nil || !j.Scope.Allows(p.CanonicalID, ns) {
+				return out, investigation.ErrDenied
+			}
+			queryScope.Resources = []string{p.CanonicalID}
+			queryScope.ClusterScoped = ns == ""
+			queryScope.Namespaces = []string{}
+			if ns != "" {
+				queryScope.Namespaces = []string{ns}
+			}
+		}
+		if p.WindowRole != "" {
+			w, err := resourceWindow(input, j, p.WindowRole)
+			if err != nil {
+				return out, err
+			}
+			if intent.TimeRange == nil || *intent.TimeRange != w {
+				return out, investigation.ErrDenied
+			}
+		}
+		frozen := input.FaultChainRequest
+		if frozen == nil {
+			frozen = input.FrozenCorrelationRequest
+		}
+		if frozen != nil {
+			if !frozen.Allows(intent.TimeRange) || intent.ComparisonTimeRange != nil && !frozen.Allows(intent.ComparisonTimeRange) {
 				return out, investigation.ErrInvalid
 			}
 		} else if intent.DatasetID != "resources.current" && input.RequestedTimeRange != nil {
@@ -304,7 +336,7 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 				return out, graph.ErrNotReady
 			}
 			payload := rawJSON(map[string]any{"intent": intent, "ownerEpoch": route.Epoch})
-			reply, err := h.callWithGrantDigest(ctx, route.Endpoint, "/internal/v1/analysis:query", "platform-analysis-query", j.Subject, j.Scope, payload, j.Assistant.GrantSnapshotDigest)
+			reply, err := h.callWithGrantDigest(ctx, route.Endpoint, "/internal/v1/analysis:query", "platform-analysis-query", j.Subject, queryScope, payload, j.Assistant.GrantSnapshotDigest)
 			if err != nil {
 				return out, err
 			}
@@ -313,7 +345,7 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 				Scope        graph.Scope           `json:"scope"`
 				EvidenceRefs []string              `json:"evidenceRefs"`
 			}
-			if json.Unmarshal(reply, &answer) != nil || contract.Validate("https://ops.local/schemas/query-result/v1", rawJSON(answer.Result)) != nil || answer.Result.SourceManifest == nil || answer.Result.DatasetID != intent.DatasetID || answer.Result.CatalogDigest != j.Assistant.DatasetCatalogDigest || !graph.ContainsScope(j.Scope, answer.Scope) || answer.Result.ScopeDigest != graph.ScopeDigest(answer.Scope) {
+			if json.Unmarshal(reply, &answer) != nil || contract.Validate("https://ops.local/schemas/query-result/v1", rawJSON(answer.Result)) != nil || answer.Result.SourceManifest == nil || answer.Result.DatasetID != intent.DatasetID || answer.Result.CatalogDigest != j.Assistant.DatasetCatalogDigest || !graph.ContainsScope(queryScope, answer.Scope) || answer.Result.ScopeDigest != graph.ScopeDigest(answer.Scope) {
 				return out, investigation.ErrDenied
 			}
 			final, err := (graph.Repository{Pool: h.Pool}).Load(ctx, j.TenantID.String(), j.Scope.Cluster)
@@ -328,7 +360,11 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 				return out, investigation.ErrDenied
 			}
 			out.EvidenceRefs = append(out.EvidenceRefs, stored.Result.DerivationEvidenceRefs...)
-			out.Data = map[string]any{"storedQueryResult": stored, "queryResultRefs": []uuid.UUID{stored.QueryResultID}, "scope": answer.Scope}
+			data := map[string]any{"storedQueryResult": stored, "queryResultRefs": []uuid.UUID{stored.QueryResultID}, "scope": answer.Scope, "filters": intent.Filters}
+			if p.CanonicalID != "" {
+				data["canonicalId"] = p.CanonicalID
+			}
+			out.Data = data
 			out.Partial = !stored.Result.Exact
 			out.DegradedSources = stored.Result.DegradedSources
 			return out, nil
@@ -419,38 +455,11 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			return out, err
 		}
 		out.Data = resolution
-	case "resource_findings":
-		var p struct {
-			CanonicalID string `json:"canonicalId"`
-		}
-		if json.Unmarshal(args, &p) != nil {
-			return out, investigation.ErrInvalid
-		}
-		records := []map[string]any{}
-		err := persistence.WithTenantTx(ctx, h.Pool, j.TenantID, func(tx pgx.Tx) error {
-			if err := investigation.CheckAssistantJobTx(ctx, tx, j); err != nil {
-				return err
-			}
-			rows, err := tx.Query(ctx, `SELECT finding_id,lifecycle_state,COALESCE(payload->>'severity','unknown'),observed_at FROM finding.records WHERE tenant_id=$1 AND resource_canonical_id=$2 ORDER BY observed_at DESC,finding_id LIMIT 50`, j.TenantID, p.CanonicalID)
-			if err != nil {
-				return err
-			}
-			defer rows.Close()
-			for rows.Next() {
-				var id uuid.UUID
-				var state, severity string
-				var at time.Time
-				if err := rows.Scan(&id, &state, &severity, &at); err != nil {
-					return err
-				}
-				records = append(records, map[string]any{"findingId": id, "state": state, "severity": severity, "observedAt": at})
-			}
-			return rows.Err()
-		})
-		if err != nil {
+	case "resource_findings", "resource_history", "resource_changes":
+		if err := load(); err != nil {
 			return out, err
 		}
-		out.Data = map[string]any{"findings": records, "limit": 50}
+		return a.resourceHistory(ctx, j, name, args, input)
 	case "get_resource_context", "get_resource_health", "query_kubernetes", "get_dependencies", "get_impact_scope":
 		var p struct {
 			CanonicalID string `json:"canonicalId"`
@@ -475,6 +484,12 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			q.MaxDepth = p.Depth
 			if q.MaxDepth < 1 {
 				q.MaxDepth = 1
+			}
+		}
+		if name == "get_dependencies" && j.Assistant.CatalogVersion == "assistant-tools/v2" {
+			parsed, err := resource.ParseCanonicalID(id)
+			if err == nil && parsed.Kind == "PersistentVolumeClaim" {
+				q.QueryKind = "diagnostic"
 			}
 		}
 		if name == "get_impact_scope" {

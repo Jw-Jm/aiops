@@ -1658,14 +1658,20 @@ type AssistantAnswerV1 struct {
 		Summary         string   `json:"summary"`
 		Supports        []string `json:"supports"`
 	} `json:"hypotheses"`
-	MissingEvidence []string             `json:"missingEvidence"`
-	NextChecks      []string             `json:"nextChecks"`
-	Partial         bool                 `json:"partial"`
-	QueryResultRefs []openapi_types.UUID `json:"queryResultRefs"`
-	SchemaVersion   interface{}          `json:"schemaVersion"`
-	ScopeSummary    string               `json:"scopeSummary"`
-	Summary         string               `json:"summary"`
-	Warnings        []string             `json:"warnings"`
+	MissingEvidence     []string             `json:"missingEvidence"`
+	NextChecks          []string             `json:"nextChecks"`
+	Partial             bool                 `json:"partial"`
+	QueryResultRefs     []openapi_types.UUID `json:"queryResultRefs"`
+	ResourceSourceSteps *[]struct {
+		CanonicalId   string             `json:"canonicalId"`
+		ContentDigest string             `json:"contentDigest"`
+		StepId        openapi_types.UUID `json:"stepId"`
+		Tool          interface{}        `json:"tool"`
+	} `json:"resourceSourceSteps,omitempty"`
+	SchemaVersion interface{} `json:"schemaVersion"`
+	ScopeSummary  string      `json:"scopeSummary"`
+	Summary       string      `json:"summary"`
+	Warnings      []string    `json:"warnings"`
 }
 
 // AssistantCapabilitiesEnvelopeV1 defines model for AssistantCapabilitiesEnvelopeV1.
@@ -1799,10 +1805,24 @@ type AssistantFaultChainContextV1 struct {
 		RelationDigest     string               `json:"relationDigest"`
 		TemporalAssessment interface{}          `json:"temporalAssessment"`
 	} `json:"edges"`
-	EvidenceRefs         []openapi_types.UUID         `json:"evidenceRefs"`
-	MissingEvidence      []string                     `json:"missingEvidence"`
-	QueryResultRefs      []openapi_types.UUID         `json:"queryResultRefs"`
-	Request              AssistantFaultChainRequestV1 `json:"request"`
+	EvidenceRefs        []openapi_types.UUID         `json:"evidenceRefs"`
+	MissingEvidence     []string                     `json:"missingEvidence"`
+	QueryResultRefs     []openapi_types.UUID         `json:"queryResultRefs"`
+	Request             AssistantFaultChainRequestV1 `json:"request"`
+	ResourceAssessments *[]struct {
+		CanonicalId string               `json:"canonicalId"`
+		Conflicts   []openapi_types.UUID `json:"conflicts"`
+		FactRefs    []struct {
+			FactId        string             `json:"factId"`
+			QueryResultId openapi_types.UUID `json:"queryResultId"`
+		} `json:"factRefs"`
+		MissingEvidence []string             `json:"missingEvidence"`
+		NextChecks      []string             `json:"nextChecks"`
+		Reason          string               `json:"reason"`
+		RuleId          string               `json:"ruleId"`
+		SourceQuality   string               `json:"sourceQuality"`
+		Supports        []openapi_types.UUID `json:"supports"`
+	} `json:"resourceAssessments,omitempty"`
 	ResourceHealthChecks *[]struct {
 		CanonicalId     string                   `json:"canonicalId"`
 		ConditionStatus interface{}              `json:"conditionStatus"`
@@ -1814,7 +1834,13 @@ type AssistantFaultChainContextV1 struct {
 	} `json:"resourceHealthChecks,omitempty"`
 	RuleVersion   interface{} `json:"ruleVersion"`
 	SchemaVersion interface{} `json:"schemaVersion"`
-	Status        interface{} `json:"status"`
+	SourceSteps   *[]struct {
+		CanonicalId   string             `json:"canonicalId"`
+		ContentDigest string             `json:"contentDigest"`
+		StepId        openapi_types.UUID `json:"stepId"`
+		Tool          interface{}        `json:"tool"`
+	} `json:"sourceSteps,omitempty"`
+	Status interface{} `json:"status"`
 }
 
 // AssistantFaultChainRequestV1 defines model for AssistantFaultChainRequestV1.
@@ -2068,6 +2094,12 @@ type AssistantResourceSelectorV1 struct {
 	Kind        *string `json:"kind,omitempty"`
 	Name        *string `json:"name,omitempty"`
 	Namespace   *string `json:"namespace,omitempty"`
+}
+
+// AssistantResourceSourceStepEnvelopeV1 defines model for AssistantResourceSourceStepEnvelopeV1.
+type AssistantResourceSourceStepEnvelopeV1 struct {
+	Data      map[string]interface{} `json:"data"`
+	RequestId string                 `json:"requestId"`
 }
 
 // AssistantStoredQueryResultV1 defines model for AssistantStoredQueryResultV1.
@@ -7469,6 +7501,9 @@ type ServerInterface interface {
 	// GetAssistantFormalReference getAssistantFormalReference
 	// (GET /api/v1/assistant/turns/{turnId}/formal-references)
 	GetAssistantFormalReference(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, params GetAssistantFormalReferenceParams)
+	// GetAssistantResourceSourceStep getAssistantResourceSourceStep
+	// (GET /api/v1/assistant/turns/{turnId}/source-steps/{stepId})
+	GetAssistantResourceSourceStep(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, stepId openapi_types.UUID)
 	// CancelAssistantTurn cancelAssistantTurn
 	// (POST /api/v1/assistant/turns/{turnId}:cancel)
 	CancelAssistantTurn(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, params CancelAssistantTurnParams)
@@ -7891,6 +7926,12 @@ func (_ Unimplemented) GetAssistantFaultChainContext(w http.ResponseWriter, r *h
 // GetAssistantFormalReference getAssistantFormalReference
 // (GET /api/v1/assistant/turns/{turnId}/formal-references)
 func (_ Unimplemented) GetAssistantFormalReference(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, params GetAssistantFormalReferenceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetAssistantResourceSourceStep getAssistantResourceSourceStep
+// (GET /api/v1/assistant/turns/{turnId}/source-steps/{stepId})
+func (_ Unimplemented) GetAssistantResourceSourceStep(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, stepId openapi_types.UUID) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -10307,6 +10348,41 @@ func (siw *ServerInterfaceWrapper) GetAssistantFormalReference(w http.ResponseWr
 	handler.ServeHTTP(w, r)
 }
 
+// GetAssistantResourceSourceStep operation middleware
+func (siw *ServerInterfaceWrapper) GetAssistantResourceSourceStep(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "turnId" -------------
+	var turnId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "turnId", chi.URLParam(r, "turnId"), &turnId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "turnId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "stepId" -------------
+	var stepId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "stepId", chi.URLParam(r, "stepId"), &stepId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "stepId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAssistantResourceSourceStep(w, r, turnId, stepId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // CancelAssistantTurn operation middleware
 func (siw *ServerInterfaceWrapper) CancelAssistantTurn(w http.ResponseWriter, r *http.Request) {
 
@@ -12655,6 +12731,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}/fault-chain-investigations", wrapper.CollectAssistantFaultChain)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/assistant/turns/{turnId}/source-steps/{stepId}", wrapper.GetAssistantResourceSourceStep)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/assistant/turns/{turnId}/fault-chain-context", wrapper.GetAssistantFaultChainContext)
 	})
 	r.Group(func(r chi.Router) {
@@ -14878,6 +14957,46 @@ func (response GetAssistantFormalReferencedefaultJSONResponse) VisitGetAssistant
 	return err
 }
 
+type GetAssistantResourceSourceStepRequestObject struct {
+	TurnId openapi_types.UUID `json:"turnId"`
+	StepId openapi_types.UUID `json:"stepId"`
+}
+
+type GetAssistantResourceSourceStepResponseObject interface {
+	VisitGetAssistantResourceSourceStepResponse(w http.ResponseWriter) error
+}
+
+type GetAssistantResourceSourceStep200JSONResponse AssistantResourceSourceStepEnvelopeV1
+
+func (response GetAssistantResourceSourceStep200JSONResponse) VisitGetAssistantResourceSourceStepResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetAssistantResourceSourceStepdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetAssistantResourceSourceStepdefaultJSONResponse) VisitGetAssistantResourceSourceStepResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type CancelAssistantTurnRequestObject struct {
 	TurnId openapi_types.UUID `json:"turnId"`
 	Params CancelAssistantTurnParams
@@ -16724,6 +16843,9 @@ type StrictServerInterface interface {
 	// GetAssistantFormalReference getAssistantFormalReference
 	// (GET /api/v1/assistant/turns/{turnId}/formal-references)
 	GetAssistantFormalReference(ctx context.Context, request GetAssistantFormalReferenceRequestObject) (GetAssistantFormalReferenceResponseObject, error)
+	// GetAssistantResourceSourceStep getAssistantResourceSourceStep
+	// (GET /api/v1/assistant/turns/{turnId}/source-steps/{stepId})
+	GetAssistantResourceSourceStep(ctx context.Context, request GetAssistantResourceSourceStepRequestObject) (GetAssistantResourceSourceStepResponseObject, error)
 	// CancelAssistantTurn cancelAssistantTurn
 	// (POST /api/v1/assistant/turns/{turnId}:cancel)
 	CancelAssistantTurn(ctx context.Context, request CancelAssistantTurnRequestObject) (CancelAssistantTurnResponseObject, error)
@@ -18365,6 +18487,33 @@ func (sh *strictHandler) GetAssistantFormalReference(w http.ResponseWriter, r *h
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetAssistantFormalReferenceResponseObject); ok {
 		if err := validResponse.VisitGetAssistantFormalReferenceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetAssistantResourceSourceStep operation middleware
+func (sh *strictHandler) GetAssistantResourceSourceStep(w http.ResponseWriter, r *http.Request, turnId openapi_types.UUID, stepId openapi_types.UUID) {
+	var request GetAssistantResourceSourceStepRequestObject
+
+	request.TurnId = turnId
+	request.StepId = stepId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetAssistantResourceSourceStep(ctx, request.(GetAssistantResourceSourceStepRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetAssistantResourceSourceStep")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetAssistantResourceSourceStepResponseObject); ok {
+		if err := validResponse.VisitGetAssistantResourceSourceStepResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

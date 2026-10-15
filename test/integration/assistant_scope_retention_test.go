@@ -30,7 +30,7 @@ func assistantExtendedFixture(t *testing.T) (context.Context, *sql.DB, *pgxpool.
 	if _, err = db.ExecContext(ctx, `INSERT INTO platform.role_bindings(tenant_id,binding_id,subject,role_name,cluster_scopes,namespace_scopes) VALUES($1,$2,'assistant-owner','operator',$3,$4)`, b.TenantID, uuid.New(), `["`+b.ClusterID.String()+`"]`, `[{"clusterId":"`+b.ClusterID.String()+`","namespace":"apps"},{"clusterId":"`+b.ClusterID.String()+`","namespace":"private"}]`); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = db.ExecContext(ctx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,'fixture','test-profile/v1','assistant-tools/v1',clock_timestamp()+interval '5 minutes')`, b.TenantID); err != nil {
+	if _, err = db.ExecContext(ctx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,'fixture','test-profile/v1','assistant-tools/v2',clock_timestamp()+interval '5 minutes')`, b.TenantID); err != nil {
 		t.Fatal(err)
 	}
 	jobs := investigation.Repository{Pool: worker, AssistantEnabled: true}

@@ -42,7 +42,7 @@ func TestAssistantConversationLifecycle(t *testing.T) {
 	if _, err = repo.Get(ctx, b.TenantID, c.ConversationID, "other-admin"); err == nil {
 		t.Fatal("owner isolation failed")
 	}
-	if _, err = db.ExecContext(ctx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,'test-worker','test-profile/v1','assistant-tools/v1',clock_timestamp()+interval '1 minute')`, b.TenantID); err != nil {
+	if _, err = db.ExecContext(ctx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,'test-worker','test-profile/v1','assistant-tools/v2',clock_timestamp()+interval '1 minute')`, b.TenantID); err != nil {
 		t.Fatal(err)
 	}
 	q := assistant.SubmitMessage{Message: "统计本人最近一小时的操作", ExpectedConversationRevision: 1}

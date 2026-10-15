@@ -22,6 +22,7 @@ import type {
   AssistantRebindV1,
   AssistantResolutionEnvelopeV1,
   AssistantResolveResourceV1,
+  AssistantResourceSourceStepEnvelopeV1,
   AssistantSubmitMessageV1,
   AssistantTurnEnvelopeV1,
   AuthSessionSuccessV1,
@@ -789,6 +790,58 @@ const res = await fetch(getCollectAssistantFaultChainUrl(conversationId),
 
   const data: collectAssistantFaultChainResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as collectAssistantFaultChainResponse
+}
+
+
+
+export type getAssistantResourceSourceStepResponse200 = {
+  data: AssistantResourceSourceStepEnvelopeV1
+  status: 200
+}
+
+export type getAssistantResourceSourceStepResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getAssistantResourceSourceStepResponseSuccess = (getAssistantResourceSourceStepResponse200) & {
+  headers: Headers;
+};
+export type getAssistantResourceSourceStepResponseError = (getAssistantResourceSourceStepResponseDefault) & {
+  headers: Headers;
+};
+
+export type getAssistantResourceSourceStepResponse = (getAssistantResourceSourceStepResponseSuccess | getAssistantResourceSourceStepResponseError)
+
+export const getGetAssistantResourceSourceStepUrl = (turnId: string,
+    stepId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/turns/${turnId}/source-steps/${stepId}`
+}
+
+/**
+ * @summary getAssistantResourceSourceStep
+ */
+export const getAssistantResourceSourceStep = async (turnId: string,
+    stepId: string, options?: RequestInit): Promise<getAssistantResourceSourceStepResponse> => {
+
+  const res = await fetch(getGetAssistantResourceSourceStepUrl(turnId,stepId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getAssistantResourceSourceStepResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getAssistantResourceSourceStepResponse
 }
 
 

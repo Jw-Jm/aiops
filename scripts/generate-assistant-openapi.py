@@ -44,6 +44,7 @@ components['AssistantEventV1']=obj({'eventId':{'type':'integer','format':'int64'
 for name,data in [('AssistantConversationEnvelopeV1',ref('AssistantConversationV1')),('AssistantConversationListV1',arr(ref('AssistantConversationV1'))),('AssistantMessagesEnvelopeV1',arr(ref('AssistantMessageV1'))),('AssistantTurnEnvelopeV1',ref('AssistantTurnV1')),('AssistantQueryEnvelopeV1',ref('AssistantStoredQueryResultV1'))]:
  components[name]=obj({'data':data,'requestId':text,'meta':obj({'nextCursor':text})},['data','requestId'])
 components['AssistantCapabilitiesEnvelopeV1']=obj({'data':obj({'enabled':{'type':'boolean'},'faultChainEnabled':{'type':'boolean'},'catalog':{'type':'object','additionalProperties':True},'virtualization':text,'runtimeAcceptance':text,'taskKinds':arr(text),'sourceCapabilityStatus':text,'sourceCapabilities':arr({'type':'object','additionalProperties':True}),'networkCapabilities':arr(obj({'network':{'enum':['live','fixture_only','disabled/unverified']},'l7':{'enum':['disabled','live','fixture_only']},'trace':{'const':'CAPABILITY_DISABLED'}}))}),'requestId':text})
+components['AssistantResourceSourceStepEnvelopeV1']=obj({'data':{'type':'object','additionalProperties':True},'requestId':text})
 components['AssistantFaultChainContextEnvelopeV1']=obj({'data':ref('AssistantFaultChainContextV1'),'requestId':text})
 components['AssistantMutationEnvelopeV1']=obj({'data':{'type':'object','additionalProperties':{'type':'boolean'}},'requestId':text})
 components['AssistantHoldV1']=obj({'turnId':uid,'held':{'type':'boolean'},'reason':{'type':'string','minLength':1,'maxLength':1024}})
@@ -75,6 +76,7 @@ add(base+'/conversations/{conversationId}/binding','post','rebindAssistantConver
 add(base+'/conversations/{conversationId}/messages','get','listAssistantMessages','AssistantMessagesEnvelopeV1',params=[{'in':'query','name':'cursor','schema':text},{'in':'query','name':'limit','schema':{'type':'integer','minimum':1,'maximum':100}}])
 add(base+'/conversations/{conversationId}/messages','post','submitAssistantMessage','AssistantTurnEnvelopeV1','AssistantSubmitMessageV1','202')
 add(base+'/conversations/{conversationId}/fault-chain-investigations','post','collectAssistantFaultChain','AssistantTurnEnvelopeV1','AssistantSubmitMessageV1','202')
+add(base+'/turns/{turnId}/source-steps/{stepId}','get','getAssistantResourceSourceStep','AssistantResourceSourceStepEnvelopeV1',params=[{'in':'path','name':'stepId','required':True,'schema':uid}])
 add(base+'/turns/{turnId}/fault-chain-context','get','getAssistantFaultChainContext','AssistantFaultChainContextEnvelopeV1')
 add(base+'/turns/{turnId}/formal-references','get','getAssistantFormalReference','AssistantFormalEnvelopeV1',params=[{'in':'query','name':'index','required':True,'schema':{'type':'integer','minimum':0,'maximum':10}}])
 add(base+'/turns/{turnId}','get','getAssistantTurn','AssistantTurnEnvelopeV1')

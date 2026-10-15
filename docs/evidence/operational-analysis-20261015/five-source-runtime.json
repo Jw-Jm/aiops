@@ -1,0 +1,265 @@
+{
+  "ancillaryFixtures": [
+    "tenant/role/PKI bootstrap",
+    "TLS/IAM archive backend"
+  ],
+  "authorizationRevocation": true,
+  "context": {
+    "sourceSteps": [
+      {
+        "stepId": "01a13ebe-6160-799f-b724-fea0947d1c75",
+        "tool": "resource_history",
+        "canonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "contentDigest": "sha256:a9d7a4d558460583465c1038c55770b7f1a07df40605216e493e7cbd10300671"
+      },
+      {
+        "stepId": "01a13ebe-61bb-7204-ae7e-6518edc1ebe4",
+        "tool": "resource_findings",
+        "canonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "contentDigest": "sha256:15a430852e6dd5c06a246bebbe6d3e8ee4103c2514c75b0ceb40349bc22ecf60"
+      },
+      {
+        "stepId": "01a13ebe-620a-780e-a2fd-fb004567b413",
+        "tool": "resource_changes",
+        "canonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "contentDigest": "sha256:0ef8b380d6757904910b4d1b723d16f44789030ba6ee5845b4fede84ba1f0183"
+      },
+      {
+        "stepId": "01a13ebe-625f-752c-8117-cd11524d59e8",
+        "tool": "execute_analysis_query",
+        "canonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "contentDigest": "sha256:068960c6c51ef5a791d1e01c17efdbdfa9ac873b9f6756a313c909615b3ec48d"
+      },
+      {
+        "stepId": "01a13ebe-716d-770e-919a-131a1d87b5ea",
+        "tool": "get_dependencies",
+        "canonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "contentDigest": "sha256:d5721578930b191549576825921a693d0bfe743263baea83917e6ef414818b31"
+      },
+      {
+        "stepId": "01a13ebe-7304-7bce-aabf-d07e761bb68e",
+        "tool": "resource_history",
+        "canonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "contentDigest": "sha256:989f646e2972d9b7ca794a61e276825107532f8d728c2ae18afa3f10b5fcb5fb"
+      },
+      {
+        "stepId": "01a13ebe-7bee-70f2-8fd2-a8913c366561",
+        "tool": "execute_analysis_query",
+        "canonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "contentDigest": "sha256:94cf8944bec1508a88935bff20c57f5f5d52536c52777761c981b467d22c34f1"
+      },
+      {
+        "stepId": "01a13ebe-7cbe-71a2-afb2-6f07cab131ac",
+        "tool": "execute_analysis_query",
+        "canonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "contentDigest": "sha256:b2a0ba8ee262722a5276243606eefa2b2638d825613bc1f10a48e64f3800c7c3"
+      }
+    ],
+    "resourceAssessments": [
+      {
+        "canonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "ruleId": "Pod/no-observed-restart",
+        "reason": "完整来源在该统计窗口的重启增量为零，仅反驳该窗口发生重启的候选。",
+        "supports": [],
+        "conflicts": [
+          "01a13ebe-644a-7a38-918a-cc4343efc6e4"
+        ],
+        "factRefs": [
+          {
+            "queryResultId": "01a13ebe-644a-7a38-918a-cc4343efc6e4",
+            "factId": "sha256:f059c2df0b11d2d41cd7021a3c2e991dd92cfff75a839630848b0c72e6cb86bc"
+          }
+        ],
+        "missingEvidence": [
+          "causal_mechanism_unverified"
+        ],
+        "sourceQuality": "qualified_fixed_source;exact_window_statistic",
+        "nextChecks": [
+          "resource_history",
+          "resource_findings",
+          "execute_analysis_query"
+        ]
+      },
+      {
+        "canonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "ruleId": "K8S/no-structured-error-logs",
+        "reason": "完整日志来源在该窗口未观察到结构化 error 等级；不能证明应用正常。",
+        "supports": [],
+        "conflicts": [
+          "01a13ebe-7c89-7041-8f0f-f49ebfbd9c2f"
+        ],
+        "factRefs": [
+          {
+            "queryResultId": "01a13ebe-7c89-7041-8f0f-f49ebfbd9c2f",
+            "factId": "sha256:0c082127c4b42dc1e7046076c34d5218ad3368d6d3a75cb1e8c99df2562adba6"
+          }
+        ],
+        "missingEvidence": [
+          "causal_mechanism_unverified"
+        ],
+        "sourceQuality": "qualified_fixed_source;exact_window_statistic",
+        "nextChecks": [
+          "resource_history",
+          "resource_findings",
+          "execute_analysis_query"
+        ]
+      }
+    ],
+    "schemaVersion": "fault-chain-context/v1",
+    "ruleVersion": "fault-chain-rules/v1",
+    "request": {
+      "schemaVersion": "fault-chain-request/v2",
+      "targetCanonicalId": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "fault": {
+        "from": "2026-10-15T08:30:14Z",
+        "to": "2026-10-15T08:30:20Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "maxEdges": 4
+    },
+    "asOf": "2026-10-15T08:47:13.912169792Z",
+    "status": "partial",
+    "edges": [
+      {
+        "relation": {
+          "from": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "24fef601-883d-4bf5-9181-5a513a7c1d62",
+            "ruleVersion": "deepflow-v7.2.0/GetResourceNetworkHealth",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T08:46:50Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T08:46:50Z",
+          "validFrom": "2026-10-15T08:46:50Z",
+          "ttl": 300
+        },
+        "relationDigest": "sha256:4a7170e7d596de454a8db364d1add960c569615346d68c56376d2eaf7eed7cde",
+        "callDirection": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605 → k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [
+          "01a13ebe-763f-73b6-a731-704dedbaf996",
+          "01a13ebe-7a2d-7248-a329-fce6d0ffb204"
+        ],
+        "observations": [
+          {
+            "ruleId": "R1/observed-http-5xx",
+            "reason": "合格完成响应中观察到 HTTP 5xx，支持调查响应异常；缺少可用基线及服务端自身证据，不能确认具体原因。",
+            "supports": [
+              "01a13ebe-74cc-75f3-b74a-2d75ba42e08e"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a13ebe-763f-73b6-a731-704dedbaf996",
+                "factId": "sha256:c32e1288e6199c83f8f1ea38d6b3f65a06194d75abd282c27b2a4ef5b069124c"
+              }
+            ]
+          },
+          {
+            "ruleId": "observation/v1",
+            "reason": "已提交的网络观测；未证明故障原因。",
+            "supports": [],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a13ebe-7a2d-7248-a329-fce6d0ffb204",
+                "factId": "sha256:aba77f61195742c137a3ce38a73b8939261b238b9e6bbe3ce15cf29b7a06b08a"
+              }
+            ]
+          }
+        ],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      },
+      {
+        "relation": {
+          "from": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://1c5611dd-e1f9-4675-9786-7eff325f0950/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/d85a8149-2364-47f4-bbc0-26b65bfb83e2",
+          "kind": "managed_by",
+          "provenance": {
+            "sourceRegistrationId": "4df0c789-8d99-4d69-9674-2f7bcfca0d88",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T08:46:54.769513411Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T08:46:54.769513411Z",
+          "validFrom": "2026-10-15T08:46:54.769513411Z",
+          "ttl": 0
+        },
+        "relationDigest": "sha256:d736f236938cc0c27040694c457083112cba43260e376892def350eef497d2d3",
+        "callDirection": "unknown",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [],
+        "observations": [],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked"
+        ],
+        "nextChecks": [
+          "核对授权范围内资源的历史健康、原生事件与 Finding"
+        ]
+      }
+    ],
+    "queryResultRefs": [
+      "01a13ebe-763f-73b6-a731-704dedbaf996",
+      "01a13ebe-7a2d-7248-a329-fce6d0ffb204",
+      "01a13ebe-644a-7a38-918a-cc4343efc6e4",
+      "01a13ebe-7c89-7041-8f0f-f49ebfbd9c2f",
+      "01a13ebe-7d51-7e9b-aa03-1761eaec8e22"
+    ],
+    "evidenceRefs": [
+      "01a13ebe-74cc-75f3-b74a-2d75ba42e08e",
+      "01a13ebe-77ef-72ba-8b54-36344a6c9b9a"
+    ],
+    "missingEvidence": []
+  },
+  "killedGeneration": 0,
+  "modelCalls": 0,
+  "modelEndpointOffline": false,
+  "modelExplanation": {
+    "answer": null,
+    "attempted": true,
+    "chineseQualityAcceptance": false,
+    "contextReads": 1,
+    "errorCode": "",
+    "evidencePreserved": true,
+    "mechanismPassed": true,
+    "modelCalls": 2,
+    "state": "running",
+    "turnId": "01a13ebe-8134-73bd-9695-9c348a62d514"
+  },
+  "modelKeyMissing": false,
+  "modelQualityAcceptance": false,
+  "multiCallerScenario": "",
+  "nativePodUid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+  "passed": true,
+  "processRecovery": false,
+  "schemaVersion": "fault-chain-runtime-acceptance/v1",
+  "sharedNativeChecks": [],
+  "turnId": "01a13ebe-5d8b-7673-ab32-2338c1e7172c",
+  "validatedWindows": {
+    "logs.records/fault": true,
+    "metrics.pod-memory/fault": true,
+    "metrics.pod-restarts/fault": true,
+    "network.http-5xx-rate/fault": true,
+    "network.http-response-time/fault": true
+  }
+}

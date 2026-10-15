@@ -8,9 +8,10 @@ import type { AssistantFaultChainRequestV1Baseline } from './assistantFaultChain
 import type { AssistantFaultChainRequestV1Fault } from './assistantFaultChainRequestV1Fault.ts';
 import type { AssistantFaultChainRequestV1ReadOnlyCheck } from './assistantFaultChainRequestV1ReadOnlyCheck.ts';
 import type { AssistantFaultChainRequestV1Recovery } from './assistantFaultChainRequestV1Recovery.ts';
+import type { AssistantFaultChainRequestV1SchemaVersion } from './assistantFaultChainRequestV1SchemaVersion.ts';
 
 export interface AssistantFaultChainRequestV1 {
-  schemaVersion: 'fault-chain-request/v1';
+  schemaVersion: AssistantFaultChainRequestV1SchemaVersion;
   /**
      * @minLength 1
      * @maxLength 2048

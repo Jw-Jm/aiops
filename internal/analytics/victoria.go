@@ -193,7 +193,7 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		labels[k] = value
 	}
 	node := dataset.ID == "metrics.node-ready"
-	if node && (!scope.ClusterScoped || len(scope.Resources) > 0) {
+	if node && !scope.ClusterScoped {
 		return p, ErrDenied
 	}
 	if !node && len(scope.Namespaces) == 0 {
@@ -251,7 +251,11 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		uids := []string{}
 		for _, id := range scope.Resources {
 			parsed, err := resource.ParseCanonicalID(id)
-			if err != nil || parsed.Domain != "k8s" || parsed.Kind != "Pod" || parsed.Tenant != scope.Tenant || parsed.Scope != scope.Cluster {
+			expectedKind := "Pod"
+			if node {
+				expectedKind = "Node"
+			}
+			if err != nil || parsed.Domain != "k8s" || parsed.Kind != expectedKind || parsed.Tenant != scope.Tenant || parsed.Scope != scope.Cluster {
 				return p, ErrDenied
 			}
 			uids = append(uids, parsed.StableID)

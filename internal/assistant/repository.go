@@ -453,7 +453,7 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 			}
 		}
 		var ready bool
-		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM investigation.assistant_worker_capabilities WHERE tenant_id=$1 AND model_profile_version=$2 AND catalog_version='assistant-tools/v1' AND expires_at>clock_timestamp())`, tenant, admission.ModelProfileVersion).Scan(&ready); err != nil {
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM investigation.assistant_worker_capabilities WHERE tenant_id=$1 AND model_profile_version=$2 AND catalog_version='assistant-tools/v2' AND expires_at>clock_timestamp())`, tenant, admission.ModelProfileVersion).Scan(&ready); err != nil {
 			return err
 		}
 		if !ready {
@@ -505,7 +505,7 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 			}
 		}
 		if q.FaultChainRequest != nil {
-			if !q.FaultChainRequest.Valid(c.Binding.ExecutionScope, c.Binding.Timezone, requestedAt) || !c.Binding.ExecutionScope.Allows(q.FaultChainRequest.TargetCanonicalID, c.Binding.ExecutionScope.Namespaces[0]) {
+			if !q.FaultChainRequest.Valid(c.Binding.ExecutionScope, c.Binding.Timezone, requestedAt) {
 				return investigation.ErrDenied
 			}
 			if q.FaultChainRequest.ReadOnlyCheck != nil {
@@ -516,12 +516,35 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 			requestedWindow = &q.FaultChainRequest.Fault
 		}
 		input := TurnInput{FaultChainRequest: q.FaultChainRequest, RequestedTimeRange: requestedWindow, ReferenceResolution: referenceResolution, SchemaVersion: "assistant-input/v1", RequestedAt: requestedAt, Message: tools.RedactText(q.Message), Binding: c.Binding, History: history, HistoryManifestDigest: graph.ScopeDigest(history), ParentTurnID: q.ParentTurnID, ClarificationID: q.ClarificationID}
+		if q.FaultChainRequest == nil && c.Mode == "troubleshoot" && !strings.Contains(q.Message, "现在") && !strings.Contains(strings.ToLower(q.Message), "now") {
+			for i := len(history) - 1; i >= 0; i-- {
+				if history[i].Role != "assistant" {
+					continue
+				}
+				var priorRaw []byte
+				var previous TurnInput
+				if tx.QueryRow(ctx, `SELECT input FROM investigation.assistant_turns WHERE tenant_id=$1 AND turn_id=$2`, tenant, history[i].TurnID).Scan(&priorRaw) != nil || json.Unmarshal(priorRaw, &previous) != nil {
+					return investigation.ErrDenied
+				}
+				frozen := previous.FaultChainRequest
+				if frozen == nil {
+					frozen = previous.FrozenCorrelationRequest
+				}
+				if frozen != nil && graph.ScopeDigest(previous.Binding) == graph.ScopeDigest(c.Binding) && (q.ReferentCanonicalID == "" || q.ReferentCanonicalID == frozen.TargetCanonicalID) && (requestedWindow == nil || *requestedWindow == frozen.Fault) && frozen.Valid(c.Binding.ExecutionScope, c.Binding.Timezone, requestedAt) {
+					copy := *frozen
+					copy.ReadOnlyCheck = nil
+					input.FrozenCorrelationRequest = &copy
+					input.RequestedTimeRange = &copy.Fault
+				}
+				break
+			}
+		}
 		inputRaw := raw(input)
 		if len(inputRaw) > 48<<10 {
 			return investigation.ErrBudget
 		}
 		out = Turn{TurnID: uuid.Must(uuid.NewV7()), ConversationID: id, JobID: uuid.Must(uuid.NewV7()), ParentTurnID: q.ParentTurnID, State: "queued", ConversationRevision: c.Revision + 1}
-		defs, err := tools.CatalogFor("investigation-job/v3", taskKind(c), c.AuthorizationDomain, "assistant-tools/v1")
+		defs, err := tools.CatalogFor("investigation-job/v3", taskKind(c), c.AuthorizationDomain, "assistant-tools/v2")
 		if err != nil {
 			return err
 		}
@@ -535,7 +558,7 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 		if err != nil {
 			return err
 		}
-		j.Assistant = &investigation.AssistantTask{DatasetCatalogVersion: datasetCatalog.Version, DatasetCatalogDigest: graph.ScopeDigest(datasetCatalog), TaskKind: taskKind(c), AuthorizationDomain: c.AuthorizationDomain, ConversationID: id, TurnID: out.TurnID, InputDigest: graph.ScopeDigest(input), ContextDigest: graph.ScopeDigest(c.Binding), GrantSnapshot: grant, GrantSnapshotDigest: graph.ScopeDigest(grant), CatalogVersion: "assistant-tools/v1", PromptVersion: "assistant/v1", ModelProfileVersion: admission.ModelProfileVersion, ResultSchemaVersion: "assistant-answer/v1"}
+		j.Assistant = &investigation.AssistantTask{DatasetCatalogVersion: datasetCatalog.Version, DatasetCatalogDigest: graph.ScopeDigest(datasetCatalog), TaskKind: taskKind(c), AuthorizationDomain: c.AuthorizationDomain, ConversationID: id, TurnID: out.TurnID, InputDigest: graph.ScopeDigest(input), ContextDigest: graph.ScopeDigest(c.Binding), GrantSnapshot: grant, GrantSnapshotDigest: graph.ScopeDigest(grant), CatalogVersion: "assistant-tools/v2", PromptVersion: "assistant/v1", ModelProfileVersion: admission.ModelProfileVersion, ResultSchemaVersion: "assistant-answer/v1"}
 		if q.FaultChainRequest != nil {
 			j.Assistant.ExecutionMode = "evidence_only"
 			j.Assistant.FaultChainRequestDigest = graph.ScopeDigest(*q.FaultChainRequest)
