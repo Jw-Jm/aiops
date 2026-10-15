@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// Only committed, currently disclosable results survive budget exhaustion.
+// Only committed, currently disclosable results survive cancellation or budget exhaustion.
 // Unsettled requests and model guesses cannot become partial numeric facts.
 func assistantPartialAnswerTx(ctx context.Context, tx pgx.Tx, j Job, code string) ([]byte, error) {
 	a := AssistantAnswer{SchemaVersion: "assistant-answer/v1", AnswerKind: "unsupported", Summary: "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。", FactRefs: []FactRef{}, QueryResultRefs: []uuid.UUID{}, EvidenceRefs: []string{}, EntityRefs: []string{}, MissingEvidence: []string{"remaining_checks_not_completed"}, Partial: true, DegradedSources: []string{}, Warnings: []string{code}, Hypotheses: []Hypothesis{}, NextChecks: []string{"缩小范围后发起新一轮检查"}}

@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/assistant"
+	"ops-platform/internal/contract"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/investigation"
 )
@@ -34,8 +35,11 @@ func TestAssistantCancellationAndBudgetKeepCommittedNumbers(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			stored := investigation.BuildStoredQueryResult(analytics.QueryResult{SchemaVersion: "query-result/v1", DatasetID: "findings.current", PlanDigest: graph.ScopeDigest("protocol-plan"), CatalogDigest: job.Assistant.DatasetCatalogDigest, ScopeDigest: graph.ScopeDigest(job.Scope), Status: "complete", Exact: true, Unit: "findings", Dimension: "", Rows: []analytics.Row{{Dimension: "", Value: 7}}, SnapshotReadAt: time.Now().UTC(), Freshness: "fresh", Warnings: []string{}, DegradedSources: []string{}, ControlPlaneSnapshot: graph.ScopeDigest("protocol-snapshot")})
-			var encoded []byte
+			stored := investigation.BuildStoredQueryResult(analytics.QueryResult{SchemaVersion: "query-result/v1", DatasetID: "findings.occurrences", PlanDigest: graph.ScopeDigest("protocol-plan"), CatalogDigest: job.Assistant.DatasetCatalogDigest, ScopeDigest: graph.ScopeDigest(job.Scope), Status: "complete", Exact: true, Unit: "findings", Dimension: "", Rows: []analytics.Row{{Dimension: "", Value: 7}}, SnapshotReadAt: time.Now().UTC(), Freshness: "fresh", Warnings: []string{}, DegradedSources: []string{}, ControlPlaneSnapshot: graph.ScopeDigest("protocol-snapshot")})
+			encoded, _ := json.Marshal(stored.Result)
+			if err := contract.Validate("https://ops.local/schemas/query-result/v1", encoded); err != nil {
+				t.Fatal("protocol Fixture contract", err)
+			}
 			call := investigation.Call{StepID: uuid.New(), ContextID: uuid.New(), JTI: uuid.NewString(), Name: "execute_analysis_query", Arguments: json.RawMessage(`{}`), ArgsDigest: investigation.ArgumentsDigest([]byte(`{}`)), Reserve: investigation.Usage{ToolCalls: 1, ResultBytes: 65536}}
 			if _, err := jobs.BeginCall(ctx, lease, call); err != nil {
 				t.Fatal(err)
@@ -56,6 +60,19 @@ func TestAssistantCancellationAndBudgetKeepCommittedNumbers(t *testing.T) {
 			var answer investigation.AssistantAnswer
 			if err != nil || json.Unmarshal(current.Answer, &answer) != nil || len(answer.QueryResultRefs) != 1 || answer.QueryResultRefs[0] != stored.QueryResultID || len(answer.FactRefs) != 1 || len(answer.MissingEvidence) == 0 {
 				t.Fatal("committed numeric references lost", terminal, current.State, err)
+			}
+			messages, err := repo.Messages(ctx, b.TenantID, c.ConversationID, c.OwnerSubject)
+			preserved := false
+			for _, message := range messages {
+				if message.Role == "assistant" && message.TurnID == turn.TurnID {
+					var a investigation.AssistantAnswer
+					if json.Unmarshal(message.Content, &a) == nil && len(a.FactRefs) == 1 {
+						preserved = true
+					}
+				}
+			}
+			if err != nil || !preserved {
+				t.Fatal("retained answer missing from normal history", err)
 			}
 			read, err := repo.QueryResult(ctx, b.TenantID, stored.QueryResultID, c.OwnerSubject)
 			if err != nil || read.Facts[0].Value != 7 || read.ContentDigest != stored.ContentDigest {
