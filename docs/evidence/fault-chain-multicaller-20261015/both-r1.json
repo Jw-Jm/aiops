@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "fault-chain-multicaller-proof/v1",
+  "status": "PASS",
+  "scenario": "both-abnormal",
+  "identityStable": true,
+  "nativeIdentitiesBefore": [
+    [
+      "13eb1016-d2fb-40d7-952d-15e1d4fa5230",
+      "mssc",
+      [
+        [
+          "app",
+          "containerd://edf2e39ecc45b0948a2a1494d04829e823d10e4729643ebb8adbb3834420da4f",
+          "2026-10-15T00:47:44Z"
+        ]
+      ]
+    ],
+    [
+      "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "mssc",
+      [
+        [
+          "app",
+          "containerd://da90e61d0199e4f875c1ba353420bfdf88b0e5edbae14818fc4b634757cc2336",
+          "2026-10-15T04:07:28Z"
+        ]
+      ]
+    ],
+    [
+      "d5c42e77-453b-43d0-a541-b266968a1aa2",
+      "mssc",
+      [
+        [
+          "app",
+          "containerd://d945c1559f8232e5e9ca39bfc81babc966e12c335d8c5dd03a91f58d2a6027d8",
+          "2026-10-14T04:07:23Z"
+        ]
+      ]
+    ]
+  ],
+  "nativeIdentitiesAfter": [
+    [
+      "13eb1016-d2fb-40d7-952d-15e1d4fa5230",
+      "mssc",
+      [
+        [
+          "app",
+          "containerd://edf2e39ecc45b0948a2a1494d04829e823d10e4729643ebb8adbb3834420da4f",
+          "2026-10-15T00:47:44Z"
+        ]
+      ]
+    ],
+    [
+      "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "mssc",
+      [
+        [
+          "app",
+          "containerd://da90e61d0199e4f875c1ba353420bfdf88b0e5edbae14818fc4b634757cc2336",
+          "2026-10-15T04:07:28Z"
+        ]
+      ]
+    ],
+    [
+      "d5c42e77-453b-43d0-a541-b266968a1aa2",
+      "mssc",
+      [
+        [
+          "app",
+          "containerd://d945c1559f8232e5e9ca39bfc81babc966e12c335d8c5dd03a91f58d2a6027d8",
+          "2026-10-14T04:07:23Z"
+        ]
+      ]
+    ]
+  ],
+  "golden": {
+    "responses": 1000,
+    "errors": 50,
+    "transportFailures": 0,
+    "finishedAt": 1792043886.6985352
+  },
+  "callers": [
+    {
+      "name": "fault-chain-client-79ff8cbd6b-225l8",
+      "uid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "node": "mssc",
+      "responses": 1000,
+      "errors": 50,
+      "rows": [
+        {
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 3494
+        },
+        {
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 632929
+        }
+      ]
+    },
+    {
+      "name": "fault-chain-client-b-5f8954d87c-z76k6",
+      "uid": "13eb1016-d2fb-40d7-952d-15e1d4fa5230",
+      "node": "mssc",
+      "responses": 1000,
+      "errors": 50,
+      "rows": [
+        {
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 34709
+        },
+        {
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 509930
+        }
+      ]
+    }
+  ],
+  "oracle": [
+    {
+      "responses": 1000,
+      "errors": 50,
+      "transportFailures": 0,
+      "finishedAt": 1792043886.6985352
+    },
+    {
+      "responses": 1000,
+      "errors": 50,
+      "transportFailures": 0,
+      "finishedAt": 1792043886.7612004
+    }
+  ],
+  "window": {
+    "fromUnix": 1792043883,
+    "toUnix": 1792043943
+  },
+  "observationPoint": "s-p",
+  "timeReliable": false,
+  "sharedNode": true,
+  "nativePods": [
+    {
+      "name": "fault-chain-client-79ff8cbd6b-225l8",
+      "uid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605"
+    },
+    {
+      "name": "fault-chain-client-b-5f8954d87c-z76k6",
+      "uid": "13eb1016-d2fb-40d7-952d-15e1d4fa5230"
+    },
+    {
+      "name": "fault-chain-server-66b747979c-xmgl7",
+      "uid": "d5c42e77-453b-43d0-a541-b266968a1aa2"
+    }
+  ],
+  "serverUid": "d5c42e77-453b-43d0-a541-b266968a1aa2",
+  "namespace": "ops-assistant-deepflow-20261013",
+  "release": "fault-chain-20261014"
+}

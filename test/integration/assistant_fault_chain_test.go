@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
-	"strings"
+	"slices"
 	"testing"
 	"time"
 
@@ -70,14 +70,38 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 			t.Fatal("native graph identity unavailable")
 		}
 		var proof struct {
+			Status         string `json:"status"`
+			IdentityStable bool   `json:"identityStable"`
+			Scenario       string `json:"scenario"`
+			Callers        []struct {
+				UID       string `json:"uid"`
+				Responses int    `json:"responses"`
+				Errors    int    `json:"errors"`
+			} `json:"callers"`
 			Window struct {
 				From int64 `json:"fromUnix"`
 				To   int64 `json:"toUnix"`
 			} `json:"window"`
 		}
 		raw, err = os.ReadFile(os.Getenv("OPS_FAULT_CHAIN_PROOF"))
-		if err != nil || json.Unmarshal(raw, &proof) != nil {
+		if err != nil || json.Unmarshal(raw, &proof) != nil || proof.Status != "PASS" {
 			t.Fatal("source proof unavailable")
+		}
+		expectedByPeer := map[string]float64{}
+		if multi {
+			if !proof.IdentityStable || len(proof.Callers) != 2 || (proof.Scenario != "mixed" && proof.Scenario != "both-abnormal") {
+				t.Fatal("two-caller scenario proof required")
+			}
+			for _, caller := range proof.Callers {
+				if caller.UID == "" || caller.Responses != 1000 {
+					t.Fatal("invalid independent caller population")
+				}
+				id := resource.CanonicalID{Domain: "k8s", Tenant: b.TenantID.String(), Scope: b.ClusterUID, APIGroup: "core", Kind: "Pod", StableID: caller.UID}.String()
+				expectedByPeer[id] = float64(caller.Errors)
+			}
+			if len(expectedByPeer) != 2 {
+				t.Fatal("duplicate caller identity")
+			}
 		}
 		window := analytics.QueryTimeRange{From: time.Unix(proof.Window.From, 0).UTC(), To: time.Unix(proof.Window.To, 0).UTC(), Timezone: "Asia/Shanghai"}
 		var baseline, recovery *analytics.QueryTimeRange
@@ -103,7 +127,9 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		scope := analytics.CloneScope(grant)
 		scope.Resources = []string{target}
 		scope.Namespaces = []string{namespace}
-		scope.ClusterScoped = multi
+		// ResourceContext describes the Pod anchor; the explicit conversation
+		// selection separately admits cluster-scoped shared Node reads.
+		scope.ClusterScoped = false
 		entity := observation.Nodes[0]
 		rc := assistant.ResourceContext{SchemaVersion: "resource-investigation-context/v1", ContextID: uuid.New(), TenantID: b.TenantID.String(), OwnerSubject: actor.Subject, ClusterUID: b.ClusterUID, Resources: []assistant.Candidate{{CanonicalID: target, Kind: entity.Kind, Name: entity.Name, Namespace: entity.Namespace, ObservedAt: entity.UpdatedAt}}, Symptom: "比较响应异常和依赖证据", TimeRange: assistant.TimeRange{From: window.From, To: window.To, Timezone: window.Timezone}, ResolvedAt: observation.CollectedAt, ObservationRevision: observation.GraphRevision, GrantSnapshotDigest: graph.ScopeDigest(grant), ExecutionScope: scope, ExecutionScopeDigest: graph.ScopeDigest(scope)}
 		rc.ContextDigest = graph.ScopeDigest(rc)
@@ -221,16 +247,21 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 			if isRecovery {
 				expectedErrors = 0
 			}
-			for _, stat := range stored.Result.Statistics {
-				if multi && stored.Result.NetworkContext != nil {
-					var peerName string
-					if err := db.QueryRowContext(ctx, `SELECT name FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2`, b.TenantID, stored.Result.NetworkContext.Selection.PeerCanonicalID).Scan(&peerName); err != nil {
-						t.Fatal(err)
-					}
-					if strings.HasPrefix(peerName, "fault-chain-client-b-") {
-						expectedErrors = 0
-					}
+			if multi {
+				n := stored.Result.NetworkContext
+				if n == nil || n.Selection.TargetCanonicalID != target || n.Selection.Direction != "incoming" || n.TimeReliable {
+					t.Fatal("multi-caller frozen selection or time gate lost")
 				}
+				var ok bool
+				expectedErrors, ok = expectedByPeer[n.Selection.PeerCanonicalID]
+				if !ok {
+					t.Fatal("result is outside independent caller identities")
+				}
+				if !stored.Result.TimeRange.From.Equal(window.From) || !stored.Result.TimeRange.To.Equal(window.To) {
+					t.Fatal("multi-caller window changed")
+				}
+			}
+			for _, stat := range stored.Result.Statistics {
 				if stat.Key == "current.responses" && stat.Value != 1000 || stat.Key == "current.5xx" && stat.Value != expectedErrors {
 					t.Fatal("HTTP population differs from independent oracle", stat.Value)
 				}
@@ -307,6 +338,7 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 				}
 			}
 		}
+		sharedNativeChecks := []map[string]any{}
 		if multi {
 			observations := map[string]bool{}
 			peers := map[string]bool{}
@@ -322,10 +354,72 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 				}
 				peers[q.Result.NetworkContext.Selection.PeerCanonicalID] = true
 			}
-			if len(peers) != 2 || !observations["R1/observed-http-5xx"] || !observations["R6/no-observed-http-5xx"] || observations["R3/shared-resource-observation"] {
+			if len(peers) != 2 || !observations["R1/observed-http-5xx"] || observations["R6/no-observed-http-5xx"] != (proof.Scenario == "mixed") || observations["R3/shared-resource-observation"] {
 				t.Fatal("two callers' competing explanations or source gate lost", len(peers), observations)
 			}
-			t.Log("two actual callers: one 5xx path and one nonempty normal path; shared Node graph/health read; R3 remains unavailable for unqualified source time")
+			rows, err := db.QueryContext(ctx, `SELECT step_id,tool_name,result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND state='succeeded' AND tool_name IN ('get_dependencies','get_resource_health') ORDER BY started_at`, b.TenantID, turn.JobID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			sharedPaths := map[string]map[string]bool{}
+			healthy := map[string]bool{}
+			for rows.Next() {
+				var step uuid.UUID
+				var tool string
+				var raw []byte
+				if err := rows.Scan(&step, &tool, &raw); err != nil {
+					t.Fatal(err)
+				}
+				var result struct {
+					Data graph.Result `json:"data"`
+				}
+				if json.Unmarshal(raw, &result) != nil {
+					t.Fatal("invalid committed native result")
+				}
+				snapshot := result.Data
+				if snapshot.Partial || snapshot.Freshness != "fresh" || len(snapshot.ObservationSources) == 0 {
+					t.Fatal("native shared checks were not qualified", tool)
+				}
+				health := []investigation.FaultChainResourceHealth{}
+				if tool == "get_resource_health" {
+					health = investigation.CommittedFaultChainResourceHealth(step, snapshot)
+				}
+				for _, h := range health {
+					healthy[h.CanonicalID] = h.ConditionStatus == "True"
+				}
+				for _, relation := range snapshot.Edges {
+					if relation.Kind != "scheduled_on" {
+						continue
+					}
+					if _, selected := expectedByPeer[relation.From]; !selected {
+						continue
+					}
+					if sharedPaths[relation.To] == nil {
+						sharedPaths[relation.To] = map[string]bool{}
+					}
+					sharedPaths[relation.To][relation.From] = true
+				}
+				sharedNativeChecks = append(sharedNativeChecks, map[string]any{"stepId": step, "tool": tool, "collectedAt": snapshot.CollectedAt, "sources": snapshot.ObservationSources, "relations": snapshot.Edges, "health": health})
+			}
+			if err := rows.Err(); err != nil {
+				t.Fatal(err)
+			}
+			rows.Close()
+			sharedHealthyNode := false
+			for node, callers := range sharedPaths {
+				if len(callers) == 2 && healthy[node] {
+					sharedHealthyNode = true
+				}
+			}
+			if !sharedHealthyNode || !healthy[target] {
+				t.Fatal("actual shared Node paths or common downstream health not collected")
+			}
+			for _, edge := range context.Edges {
+				if !slices.Contains(edge.MissingEvidence, "shared_resource_cause_not_checked") {
+					t.Fatal("unqualified common-resource candidate lost its explicit gap")
+				}
+			}
+			t.Log("two actual callers; scenario", proof.Scenario, "R3 remains unavailable for unqualified source time")
 		}
 		if !comparison && (!validated["network.http-5xx-rate"] || !validated["network.http-response-time"]) {
 			t.Fatal("required HTTP datasets not collected")
@@ -381,7 +475,7 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		if _, err = repo.QueryResult(requestCtx, b.TenantID, context.QueryResultRefs[0], actor.Subject); err == nil {
 			t.Fatal("revoked grant exposed stored query")
 		}
-		result, _ := json.MarshalIndent(map[string]any{"passed": true, "authorizationRevocation": true, "processRecovery": killedLease.Generation > 0, "killedGeneration": killedLease.Generation, "validatedWindows": validatedWindows, "schemaVersion": "fault-chain-runtime-acceptance/v1", "modelExplanation": modelReceipt, "modelEndpointOffline": os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1", "modelKeyMissing": os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1", "modelCalls": calls, "nativePodUid": pods.Items[0].Metadata.UID, "turnId": turn.TurnID, "context": context, "ancillaryFixtures": []string{"tenant/role/PKI bootstrap", "TLS/IAM archive backend"}, "modelQualityAcceptance": false}, "", "  ")
+		result, _ := json.MarshalIndent(map[string]any{"passed": true, "authorizationRevocation": true, "processRecovery": killedLease.Generation > 0, "killedGeneration": killedLease.Generation, "validatedWindows": validatedWindows, "schemaVersion": "fault-chain-runtime-acceptance/v1", "modelExplanation": modelReceipt, "modelEndpointOffline": os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1", "modelKeyMissing": os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1", "modelCalls": calls, "sharedNativeChecks": sharedNativeChecks, "multiCallerScenario": proof.Scenario, "nativePodUid": pods.Items[0].Metadata.UID, "turnId": turn.TurnID, "context": context, "ancillaryFixtures": []string{"tenant/role/PKI bootstrap", "TLS/IAM archive backend"}, "modelQualityAcceptance": false}, "", "  ")
 		if os.WriteFile(os.Getenv("OPS_FAULT_CHAIN_RUNTIME_REPORT"), result, 0600) != nil {
 			t.Fatal("report path required")
 		}

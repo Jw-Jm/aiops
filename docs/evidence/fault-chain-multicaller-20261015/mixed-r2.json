@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "fault-chain-multicaller-proof/v1",
+  "status": "PASS",
+  "scenario": "mixed",
+  "identityStable": true,
+  "golden": {
+    "responses": 1000,
+    "errors": 50,
+    "transportFailures": 0,
+    "finishedAt": 1792043167.6617627
+  },
+  "callers": [
+    {
+      "name": "fault-chain-client-79ff8cbd6b-225l8",
+      "uid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "node": "mssc",
+      "responses": 1000,
+      "errors": 50,
+      "rows": [
+        {
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 34899
+        },
+        {
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 692118
+        }
+      ]
+    },
+    {
+      "name": "fault-chain-client-b-5f8954d87c-z76k6",
+      "uid": "13eb1016-d2fb-40d7-952d-15e1d4fa5230",
+      "node": "mssc",
+      "responses": 1000,
+      "errors": 0,
+      "rows": [
+        {
+          "response_code": 200,
+          "observations": 1000,
+          "duration_us": 665058
+        }
+      ]
+    }
+  ],
+  "oracle": [
+    {
+      "responses": 1000,
+      "errors": 50,
+      "transportFailures": 0,
+      "finishedAt": 1792043167.6617627
+    },
+    {
+      "responses": 1000,
+      "errors": 0,
+      "transportFailures": 0,
+      "finishedAt": 1792043167.695481
+    }
+  ],
+  "window": {
+    "fromUnix": 1792043164,
+    "toUnix": 1792043224
+  },
+  "observationPoint": "s-p",
+  "timeReliable": false,
+  "sharedNode": true,
+  "nativePods": [
+    {
+      "name": "fault-chain-client-79ff8cbd6b-225l8",
+      "uid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605"
+    },
+    {
+      "name": "fault-chain-client-b-5f8954d87c-z76k6",
+      "uid": "13eb1016-d2fb-40d7-952d-15e1d4fa5230"
+    },
+    {
+      "name": "fault-chain-server-66b747979c-xmgl7",
+      "uid": "d5c42e77-453b-43d0-a541-b266968a1aa2"
+    }
+  ],
+  "serverUid": "d5c42e77-453b-43d0-a541-b266968a1aa2",
+  "namespace": "ops-assistant-deepflow-20261013",
+  "release": "fault-chain-20261014"
+}

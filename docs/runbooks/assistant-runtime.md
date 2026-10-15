@@ -116,6 +116,16 @@ ActionPlan revision/contentDigest。侧栏按 turn/index 再授权，不接受�
 最新版本替换，也没有增加历史 ActionPlan 仓库。缺失证据追问可使用原只读
 工具补证，聊天不产生执行句柄。
 
+故障链多调用方复验使用 `scripts/deepflow-dev/fault-chain-multicaller-probe.py`，
+分别选择 `--scenario mixed` 和 `--scenario both-abnormal`，每次指定新的报告路径。
+停止其他受控流量后生成窗口，核对独立客户端计数、源聚合及采集前后 UID/容器身份；
+PASS 后以 `OPS_FAULT_CHAIN_MULTI=1` 和对应的新 `OPS_FAULT_CHAIN_PROOF` 运行
+`TestAssistantActualFaultChainWithoutModel`。不要混用单链路三窗证明。
+共享 Node 读取需要会话显式选择集群资源且当前授权允许；范围不足通过范围编辑处理。
+同窗异常、共享关系、共同资源自身异常和可靠来源/时间缺一时，R3 仍保留缺口；
+当前健康快照不能替代历史证明。运行结果与源码绑定见
+[多调用方记录](../evidence/fault-chain-multicaller-20261015/README.md)。
+
 普通 Message/QueryResult/v3 Step 默认 30 天。关闭新助手提交不停止已有数据清理。
 Worker 每分钟调用有界清理
 函数；每轮最多 100 个叶轮次及 100 个过期空会话，语句预算 2 秒、调用预算
