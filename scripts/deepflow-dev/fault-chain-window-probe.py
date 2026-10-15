@@ -13,6 +13,7 @@ def query(sql):
 def main():
  p=argparse.ArgumentParser();p.add_argument("--report",required=True);a=p.parse_args()
  pods=json.loads(kubectl("get","pods","-l","ops.platform.io/test-release="+RELEASE,"-o","json"))["items"]
+ pods = [p for p in pods if p["metadata"]["labels"].get("app") in ("fault-chain-client", "fault-chain-server")]
  if len(pods)!=2 or any(p["status"].get("phase")!="Running" for p in pods):raise RuntimeError("OWNED_RUNNING_PAIR_REQUIRED")
  client=next(p for p in pods if p["metadata"]["labels"]["app"]=="fault-chain-client")
  server=next(p for p in pods if p["metadata"]["labels"]["app"]=="fault-chain-server")

@@ -1,0 +1,640 @@
+{
+  "ancillaryFixtures": [
+    "tenant/role/PKI bootstrap",
+    "TLS/IAM archive backend"
+  ],
+  "modelQualityAcceptance": false,
+  "passed": true,
+  "rawQueryCosts": [
+    3,
+    2,
+    2
+  ],
+  "results": [
+    {
+      "queryResultId": "01a13d66-f0bb-73a5-9c1f-03752a479927",
+      "result": {
+        "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+        "datasetId": "network.http-summary",
+        "degradedSources": [],
+        "derivationEvidenceRefs": [
+          "01a13d66-ee1c-7d27-b272-cb95bca544fb",
+          "01a13d66-ee31-7a9d-920c-215f078a0b21",
+          "01a13d66-ee46-7cb1-a4de-b85f1113dd49"
+        ],
+        "dimension": "time",
+        "exact": true,
+        "freshness": "fresh",
+        "networkContext": {
+          "selection": {
+            "targetCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+            "peerCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+            "direction": "outgoing"
+          },
+          "observationPoint": "s-p",
+          "population": "completed_http_session_observations",
+          "timeReliable": false,
+          "coverageComplete": true,
+          "protocol": "http"
+        },
+        "planDigest": "sha256:7e6730329e8a3e6abb115a740ec5052f8101cc4cb9ffe6ed0e7248c5f600dcd7",
+        "rows": [
+          {
+            "dimension": "2026-10-15T01:57:58Z",
+            "value": 1
+          },
+          {
+            "dimension": "2026-10-15T01:58:58Z",
+            "value": 5
+          },
+          {
+            "dimension": "2026-10-15T01:59:58Z",
+            "value": 0
+          }
+        ],
+        "schemaVersion": "query-result/v1",
+        "scopeDigest": "sha256:5688d4e2e0bd3195ec2224ee4d2417721cf6806d2c258dac63ffd71f1e865b7b",
+        "snapshotReadAt": "2026-10-15T02:31:57.897719628Z",
+        "sourceManifest": {
+          "sourceId": "a5508f3c-44a3-4a43-a5d6-e383f0c9f0d5",
+          "revision": 1,
+          "bindingDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+          "qualificationDigest": "sha256:35b6747a0d111baecfde2075e1fa4b105045ac83eab6b7f2cb7da6e250626aba",
+          "queryHash": "sha256:32af3323b73b11465d10ca31e5b99428e1e16870ec3e58dc54b4eec4ee73c27b",
+          "templateVersion": "deepflow-network-summary/v1",
+          "coverageFrom": "2026-10-15T01:57:58Z",
+          "coverageTo": "2026-10-15T02:00:58Z"
+        },
+        "statistics": [
+          {
+            "key": "2026-10-15T01:57:58Z.observations",
+            "value": 1000,
+            "unit": "observations"
+          },
+          {
+            "key": "2026-10-15T01:57:58Z.responses",
+            "value": 1000,
+            "unit": "responses"
+          },
+          {
+            "key": "2026-10-15T01:57:58Z.5xx",
+            "value": 10,
+            "unit": "responses"
+          },
+          {
+            "key": "2026-10-15T01:57:58Z.mean_response_ms",
+            "value": 0.063285,
+            "unit": "milliseconds"
+          },
+          {
+            "key": "2026-10-15T01:58:58Z.observations",
+            "value": 1000,
+            "unit": "observations"
+          },
+          {
+            "key": "2026-10-15T01:58:58Z.responses",
+            "value": 1000,
+            "unit": "responses"
+          },
+          {
+            "key": "2026-10-15T01:58:58Z.5xx",
+            "value": 50,
+            "unit": "responses"
+          },
+          {
+            "key": "2026-10-15T01:58:58Z.mean_response_ms",
+            "value": 20.079414,
+            "unit": "milliseconds"
+          },
+          {
+            "key": "2026-10-15T01:59:58Z.observations",
+            "value": 1000,
+            "unit": "observations"
+          },
+          {
+            "key": "2026-10-15T01:59:58Z.responses",
+            "value": 1000,
+            "unit": "responses"
+          },
+          {
+            "key": "2026-10-15T01:59:58Z.5xx",
+            "value": 0,
+            "unit": "responses"
+          },
+          {
+            "key": "2026-10-15T01:59:58Z.mean_response_ms",
+            "value": 0.063318,
+            "unit": "milliseconds"
+          }
+        ],
+        "status": "complete",
+        "stepSeconds": 60,
+        "timeRange": {
+          "from": "2026-10-15T01:57:58Z",
+          "to": "2026-10-15T02:00:58Z",
+          "timezone": "Asia/Shanghai"
+        },
+        "truncated": false,
+        "unit": "percent",
+        "warnings": [
+          "unreliable-event-time",
+          "observation_population_not_all_user_requests",
+          "incomplete_sessions_excluded_not_counted",
+          "unreliable-event-time",
+          "observation_population_not_all_user_requests",
+          "incomplete_sessions_excluded_not_counted",
+          "unreliable-event-time",
+          "observation_population_not_all_user_requests",
+          "incomplete_sessions_excluded_not_counted"
+        ]
+      },
+      "facts": [
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:8ef40eabd53e6cd4f42354d207f8778cd96c7e3585ec645113b47743e97a0c01",
+          "row": 0,
+          "column": "value",
+          "value": 1,
+          "unit": "percent",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:c89ca211c126e537701c168b0d0be33e3e3060b0c8286c7a8a4948470a82e1ac",
+          "row": 1,
+          "column": "value",
+          "value": 5,
+          "unit": "percent",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:cc55c35888c870639caabf9137863a2286e0a586ee3a0a77e2a54936c9f302f9",
+          "row": 2,
+          "column": "value",
+          "value": 0,
+          "unit": "percent",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:91fcdaf303b86b48c796159638ab497ab5040b0f03d5fece0d1ee823a0f60c5b",
+          "row": 0,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "observations",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:6be9a4042872bac355878114079913ec6dcdecf64c2b0f1cb552f5e1c80ba4c0",
+          "row": 1,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "responses",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:eeb347b3d9f15928b63390a86945f9257ac7fcc3b9be631abdc667067dd6639f",
+          "row": 2,
+          "column": "statistic",
+          "value": 10,
+          "unit": "responses",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:0c58cc1b09d706c5b779eb1a569e168ed62ae034970eca3579d78912a645d7b4",
+          "row": 3,
+          "column": "statistic",
+          "value": 0.063285,
+          "unit": "milliseconds",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:8e44182cd613e6f3c2c541f332abf1e76c61c90af54374a6754b46bfac15bea2",
+          "row": 4,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "observations",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:567e3908d13f6df06557c39fd0ea615b684a85ca34f8dd9f33518e2c46a44e4a",
+          "row": 5,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "responses",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:48612ae481700421c4bb78cff8aeecb3e8fd9580970376fd8f0f68884b8396cd",
+          "row": 6,
+          "column": "statistic",
+          "value": 50,
+          "unit": "responses",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:d6816b78485edfd50e877c31ede6164bbe776169561c79d672ca86dd1d656744",
+          "row": 7,
+          "column": "statistic",
+          "value": 20.079414,
+          "unit": "milliseconds",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:a1655334138cc5e59a7b19bbb2e68edf6bc1bfa89e4e1c5fb7d0576d2c5dfef8",
+          "row": 8,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "observations",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:3cfb18a62bb484d7ab55bb18e8afbe964873d1b24a917c6c8a7ccd5e72edcef0",
+          "row": 9,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "responses",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:827dcacb551edf354a63df3bc7e19df3f7facb33e4463847df4f86d45ec0b722",
+          "row": 10,
+          "column": "statistic",
+          "value": 0,
+          "unit": "responses",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:c1283ef6ae6e39dfa174651a5cf6721e90feb6e908f9552c8c8afac92709357b",
+          "row": 11,
+          "column": "statistic",
+          "value": 0.063318,
+          "unit": "milliseconds",
+          "exact": true
+        }
+      ],
+      "contentDigest": "sha256:8417b507fdf748089e00f8c83a155e860b0a42b35dae589e4a30d3d76d1503dc"
+    },
+    {
+      "queryResultId": "01a13d66-f3da-733e-b42f-d0d927f91c21",
+      "result": {
+        "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+        "comparisonTimeRange": {
+          "from": "2026-10-15T01:57:58Z",
+          "to": "2026-10-15T01:58:58Z",
+          "timezone": "Asia/Shanghai"
+        },
+        "datasetId": "network.http-summary",
+        "degradedSources": [],
+        "derivationEvidenceRefs": [
+          "01a13d66-f265-791e-bc17-8dc4a4bc68c6",
+          "01a13d66-f275-7d0a-a894-10fb30857b44"
+        ],
+        "dimension": "comparison",
+        "exact": true,
+        "freshness": "fresh",
+        "networkContext": {
+          "selection": {
+            "targetCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+            "peerCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+            "direction": "outgoing"
+          },
+          "observationPoint": "s-p",
+          "population": "completed_http_session_observations",
+          "timeReliable": false,
+          "coverageComplete": true,
+          "protocol": "http"
+        },
+        "planDigest": "sha256:9c52065cc8d7ada7ac99b52a765008cfebb06cf4e050fc99676f16b7522a0928",
+        "rows": [
+          {
+            "dimension": "increase",
+            "value": 400
+          }
+        ],
+        "schemaVersion": "query-result/v1",
+        "scopeDigest": "sha256:5688d4e2e0bd3195ec2224ee4d2417721cf6806d2c258dac63ffd71f1e865b7b",
+        "snapshotReadAt": "2026-10-15T02:31:59.002092135Z",
+        "sourceManifest": {
+          "sourceId": "a5508f3c-44a3-4a43-a5d6-e383f0c9f0d5",
+          "revision": 1,
+          "bindingDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+          "qualificationDigest": "sha256:2764b419580440769dd0aedd01c82d5114094016a1e504be5100f41256b7b1ef",
+          "queryHash": "sha256:80f988a43cdc635c0cfa88f3d6dbd861729a39ebf572fdf41aa814a0db291b73",
+          "templateVersion": "deepflow-network-summary/v1",
+          "coverageFrom": "2026-10-15T01:57:58Z",
+          "coverageTo": "2026-10-15T01:59:58Z"
+        },
+        "statistics": [
+          {
+            "key": "baseline.observations",
+            "value": 1000,
+            "unit": "observations"
+          },
+          {
+            "key": "baseline.responses",
+            "value": 1000,
+            "unit": "responses"
+          },
+          {
+            "key": "baseline.5xx",
+            "value": 10,
+            "unit": "responses"
+          },
+          {
+            "key": "baseline.mean_response_ms",
+            "value": 0.063285,
+            "unit": "milliseconds"
+          },
+          {
+            "key": "current.observations",
+            "value": 1000,
+            "unit": "observations"
+          },
+          {
+            "key": "current.responses",
+            "value": 1000,
+            "unit": "responses"
+          },
+          {
+            "key": "current.5xx",
+            "value": 50,
+            "unit": "responses"
+          },
+          {
+            "key": "current.mean_response_ms",
+            "value": 20.079414,
+            "unit": "milliseconds"
+          }
+        ],
+        "status": "complete",
+        "timeRange": {
+          "from": "2026-10-15T01:58:58Z",
+          "to": "2026-10-15T01:59:58Z",
+          "timezone": "Asia/Shanghai"
+        },
+        "truncated": false,
+        "unit": "percent",
+        "warnings": [
+          "unreliable-event-time",
+          "observation_population_not_all_user_requests",
+          "incomplete_sessions_excluded_not_counted",
+          "unreliable-event-time",
+          "observation_population_not_all_user_requests",
+          "incomplete_sessions_excluded_not_counted"
+        ]
+      },
+      "facts": [
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:a06edc4916826f16f14f5f74334a09f8079f74fee8edc908d750a246d273a16a",
+          "row": 0,
+          "column": "value",
+          "value": 400,
+          "unit": "percent",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:34a75ea99b946b6ddb072b69f405aeb8abd47693dcb8534839083c3655113aeb",
+          "row": 0,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "observations",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:f830099856bf4b2892ea678fa02b58093ee40af72c8e03be70547103ef6736c2",
+          "row": 1,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "responses",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:38101f5cef7039930aecf99ef84c23708fb5f6fb0dead2976c078a18a36ad9b6",
+          "row": 2,
+          "column": "statistic",
+          "value": 10,
+          "unit": "responses",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:7d5a4e94d5a5b6fa6076531500e1a29082eff04ae0ff32a4e4e0ea7ad5e43d47",
+          "row": 3,
+          "column": "statistic",
+          "value": 0.063285,
+          "unit": "milliseconds",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:1b453635b2182d950727559c5d6cdccb882e5d146611395c08907189d88441b8",
+          "row": 4,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "observations",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:4ccba72eb71155433d99377b78984071db160d592b7f096b9de0d8c80d6c7291",
+          "row": 5,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "responses",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:d2ca462a1dca7b7e24c354b424de5464d87aada47737419b782335a637b77cc8",
+          "row": 6,
+          "column": "statistic",
+          "value": 50,
+          "unit": "responses",
+          "exact": true
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:d58a9e2a96a9196f035c4e981a2ff20921bb0aaeed69304bdbfb8d6e67ef82e9",
+          "row": 7,
+          "column": "statistic",
+          "value": 20.079414,
+          "unit": "milliseconds",
+          "exact": true
+        }
+      ],
+      "contentDigest": "sha256:a97b74c8855724326f66367fbd17980da23f53d5e969a4ca693d8d5d0ed9c299"
+    },
+    {
+      "queryResultId": "01a13d66-f958-7480-b013-5c4d6d201e8b",
+      "result": {
+        "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+        "comparisonTimeRange": {
+          "from": "2026-10-15T01:57:58Z",
+          "to": "2026-10-15T01:58:58Z",
+          "timezone": "Asia/Shanghai"
+        },
+        "datasetId": "network.tcp-summary",
+        "degradedSources": [],
+        "derivationEvidenceRefs": [
+          "01a13d66-f5ad-7395-8257-93341f67abc3",
+          "01a13d66-f5c1-75f1-9884-69284a1708cf"
+        ],
+        "dimension": "comparison",
+        "exact": false,
+        "freshness": "fresh",
+        "networkContext": {
+          "selection": {
+            "targetCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+            "peerCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+            "direction": "outgoing"
+          },
+          "observationPoint": "s",
+          "population": "scoped_single_observation_point_records",
+          "timeReliable": false,
+          "coverageComplete": true,
+          "protocol": "tcp"
+        },
+        "planDigest": "sha256:fb25be0055244081f2ebe6c130e3691e7e96aec1e697f5fe67d059bb12d90e72",
+        "rows": [],
+        "schemaVersion": "query-result/v1",
+        "scopeDigest": "sha256:5688d4e2e0bd3195ec2224ee4d2417721cf6806d2c258dac63ffd71f1e865b7b",
+        "snapshotReadAt": "2026-10-15T02:31:59.806885883Z",
+        "sourceManifest": {
+          "sourceId": "a5508f3c-44a3-4a43-a5d6-e383f0c9f0d5",
+          "revision": 1,
+          "bindingDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5",
+          "qualificationDigest": "sha256:a0f5cc660eee10075861cdccced16f94c230d296ed0f2ee36f612b20f833c845",
+          "queryHash": "sha256:f91a8741df2e44bf981690cb5d54fa597ac3321e54b96643a25e11f0ad9ce726",
+          "templateVersion": "deepflow-network-summary/v1",
+          "coverageFrom": "2026-10-15T01:57:58Z",
+          "coverageTo": "2026-10-15T01:59:58Z"
+        },
+        "statistics": [
+          {
+            "key": "baseline.observations",
+            "value": 1000,
+            "unit": "observations"
+          },
+          {
+            "key": "baseline.retransmissions",
+            "value": 0,
+            "unit": "retransmissions"
+          },
+          {
+            "key": "baseline.failure_observations",
+            "value": 0,
+            "unit": "observations"
+          },
+          {
+            "key": "current.observations",
+            "value": 1100,
+            "unit": "observations"
+          },
+          {
+            "key": "current.retransmissions",
+            "value": 0,
+            "unit": "retransmissions"
+          },
+          {
+            "key": "current.failure_observations",
+            "value": 100,
+            "unit": "observations"
+          }
+        ],
+        "status": "no_data",
+        "timeRange": {
+          "from": "2026-10-15T01:58:58Z",
+          "to": "2026-10-15T01:59:58Z",
+          "timezone": "Asia/Shanghai"
+        },
+        "truncated": false,
+        "unit": "percent",
+        "warnings": [
+          "unreliable-event-time",
+          "observation_population_not_all_user_requests",
+          "status_3_4_error_observations_not_unique_failed_connections",
+          "unreliable-event-time",
+          "observation_population_not_all_user_requests",
+          "status_3_4_error_observations_not_unique_failed_connections",
+          "percentage_requires_nonzero_baseline"
+        ]
+      },
+      "facts": [
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:99a2e379e889737f886271a9939562acc3664f198140a008dfe14fe28d4f996d",
+          "row": 0,
+          "column": "statistic",
+          "value": 1000,
+          "unit": "observations",
+          "exact": false
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:7e6442757610870cfae9ac85b973ffbe27c8b33d8c5f84faab5bf01dd1ee9c4d",
+          "row": 1,
+          "column": "statistic",
+          "value": 0,
+          "unit": "retransmissions",
+          "exact": false
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:107e0b4166793efdab79f0c1c1628cb6559ae473c16733a832c8a5f609cc2deb",
+          "row": 2,
+          "column": "statistic",
+          "value": 0,
+          "unit": "observations",
+          "exact": false
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:88d7351f326777bb4e51a7aba2a88ccb8176cf660001cd648560c5b9db1d3531",
+          "row": 3,
+          "column": "statistic",
+          "value": 1100,
+          "unit": "observations",
+          "exact": false
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:2edf806de16e4e295e2fbdc93d194ae3cfedd539b54a4220ce4c9801ea03b667",
+          "row": 4,
+          "column": "statistic",
+          "value": 0,
+          "unit": "retransmissions",
+          "exact": false
+        },
+        {
+          "schemaVersion": "query-fact/v1",
+          "factId": "sha256:af57196f632538a50cb4ad49eb2b5e8135da26d728d0c81accdb74671fc03853",
+          "row": 5,
+          "column": "statistic",
+          "value": 100,
+          "unit": "observations",
+          "exact": false
+        }
+      ],
+      "contentDigest": "sha256:6fbce084d365c760b218c36d0baef2853c1aa938b70203d4b2998f9b6a4a219f"
+    }
+  ],
+  "schemaVersion": "fault-chain-signed-network-operations/v1",
+  "transport": "official MCP SDK / mTLS / registered OpenBao context / signed Worker RPC"
+}

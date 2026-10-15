@@ -485,7 +485,7 @@ func TestAssistantActualNetworkOperationsSignedMCP(t *testing.T) {
 			}
 			results = append(results, stored)
 			costs = append(costs, cost)
-			if err := repo.Cancel(requestCtx, b.TenantID, turn.TurnID, actor.Subject, "operation-acceptance-finished"); err != nil {
+			if err := repo.Cancel(requestCtx, b.TenantID, turn.TurnID, actor.Subject, "operation-acceptance-finished-"+operation); err != nil {
 				t.Fatal(err)
 			}
 			session.Close()
