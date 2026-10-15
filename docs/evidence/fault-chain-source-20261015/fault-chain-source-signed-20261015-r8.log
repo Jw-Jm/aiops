@@ -1,0 +1,59 @@
+=== RUN   TestAssistantActualNetworkOperationsSignedMCP
+2026/10/15 10:21:00 OK   00001_roles_and_schemas.sql (5.91ms)
+2026/10/15 10:21:00 goose: successfully migrated database to version: 1
+2026/10/15 10:21:00 OK   00002_platform_meta.sql (17.46ms)
+2026/10/15 10:21:00 OK   00003_finding.sql (6.13ms)
+2026/10/15 10:21:00 OK   00004_incident.sql (3.39ms)
+2026/10/15 10:21:00 OK   00005_investigation.sql (4.23ms)
+2026/10/15 10:21:00 OK   00006_action_command.sql (4.25ms)
+2026/10/15 10:21:00 OK   00007_audit.sql (7.13ms)
+2026/10/15 10:21:00 OK   00008_rls.sql (6.95ms)
+2026/10/15 10:21:00 OK   00009_idempotency_ledger.sql (5.01ms)
+2026/10/15 10:21:00 OK   00010_tenant_provisioning.sql (1.5ms)
+2026/10/15 10:21:00 OK   00011_source_registration_history.sql (3.62ms)
+2026/10/15 10:21:00 OK   00012_config_registry_lifecycle.sql (6.55ms)
+2026/10/15 10:21:00 OK   00013_audit_signed_segments.sql (6.46ms)
+2026/10/15 10:21:00 OK   00014_audit_segment_predecessors.sql (2.72ms)
+2026/10/15 10:21:00 OK   00015_source_schema_scope.sql (1.04ms)
+2026/10/15 10:21:00 OK   00016_cluster_registration_metadata.sql (2.36ms)
+2026/10/15 10:21:00 OK   00017_source_data_scope.sql (1.4ms)
+2026/10/15 10:21:00 OK   00018_sp04_resources_evidence.sql (12.84ms)
+2026/10/15 10:21:00 OK   00019_sp04_archive_ciphertext_bytes.sql (874.8µs)
+2026/10/15 10:21:00 OK   00020_sp04_request_ledger.sql (2.18ms)
+2026/10/15 10:21:00 OK   00021_sp04_archive_protection.sql (1.08ms)
+2026/10/15 10:21:00 OK   00022_sp04_legal_hold_dependencies.sql (712.69µs)
+2026/10/15 10:21:00 OK   00023_sp04_archive_query_intent.sql (893.03µs)
+2026/10/15 10:21:00 OK   00024_sp05_finding_incident.sql (14.98ms)
+2026/10/15 10:21:00 OK   00025_sp05_incident_event_time.sql (840.54µs)
+2026/10/15 10:21:00 OK   00026_sp05_source_binding_lock.sql (997.85µs)
+2026/10/15 10:21:00 OK   00027_sp05_rca_and_poll.sql (5.42ms)
+2026/10/15 10:21:00 OK   00028_sp05_operator_lock.sql (983.55µs)
+2026/10/15 10:21:00 OK   00029_sp05_evidence_links.sql (2.63ms)
+2026/10/15 10:21:00 OK   00030_sp05_recipe_fence.sql (821.87µs)
+2026/10/15 10:21:00 OK   00031_sp05_rca_postcheck.sql (710.3µs)
+2026/10/15 10:21:00 OK   00032_sp05_transport_audit.sql (852.61µs)
+2026/10/15 10:21:00 OK   00033_sp05_poll_resolution_clock.sql (1.23ms)
+2026/10/15 10:21:00 OK   00034_sp06_investigation_ledger.sql (16.71ms)
+2026/10/15 10:21:00 OK   00035_sp06_admission_data_classes.sql (1.31ms)
+2026/10/15 10:21:00 OK   00036_sp07_command_binding.sql (17.85ms)
+2026/10/15 10:21:00 OK   00037_sp07_worker_authority.sql (1.31ms)
+2026/10/15 10:21:00 OK   00038_sp08_safe_step_input_summary.sql (1.03ms)
+2026/10/15 10:21:00 OK   00039_assistant_conversations.sql (15.88ms)
+2026/10/15 10:21:00 OK   00040_assistant_job_v3.sql (8.78ms)
+2026/10/15 10:21:00 OK   00041_assistant_binding.sql (2.39ms)
+2026/10/15 10:21:00 OK   00042_assistant_retention.sql (4.5ms)
+2026/10/15 10:21:00 goose: successfully migrated database to version: 42
+    assistant_real_model_test.go:133: native fault-chain client mapping 45 ops-assistant-deepflow-20261013 2026-10-14 04:07:23 +0000 UTC <nil>
+    assistant_real_model_test.go:133: native L4 proof diagnostic evidence 1 freshness fresh partial false warnings [] error <nil>
+    archive_iam_test.go:43: owned TLS/IAM fixture image=sha256:31d61f5e8771cbd5993912cd051be0c7bcdc207faaa12c50e1a3b8371631c927 id=26046a5a7205a3dd91c6cd638982491375a5a9bb592295ad94198d1b24b75e17 bucket=assistant-native-d7e1aa5a tenants=1
+{"time":"2026-10-15T10:21:05.738890933+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+{"time":"2026-10-15T10:21:07.651670852+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/services":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+    assistant_real_model_test.go:133: actual native Graph informer + Kubernetes Lease route ready; archive dependency fixture explicitly excluded
+2026/10/15 10:21:20 WARN DeepFlow pair fence unavailable stage=final causeType=*errors.errorString deadlineExceeded=false
+2026/10/15 10:21:20 WARN Network analysis unavailable stage=execute operation=compare_percent scopeUnverified=true deadlineExceeded=false capabilityDisabled=false
+    assistant_deepflow_mcp_test.go:438: signed real network operation=compare_percent state=failed code=SOURCE_DEGRADED
+    assistant_real_model_test.go:165: investigator diagnostics 
+    archive_iam_test.go:187: retained owned Archive fixture id=26046a5a7205a3dd91c6cd638982491375a5a9bb592295ad94198d1b24b75e17 label=45409588-f56b-41c0-b666-3200cde41186 bucket=assistant-native-d7e1aa5a private-material-directory=/root/.cache/ops-protected-integration/archive-iam-3477363813; process stopped, no storage/identity deletion
+    migrations_test.go:436: retained owned integration database=sp03_mig_cc43663d3afe4f17b3bfbf30f9e9bb1f test=TestAssistantActualNetworkOperationsSignedMCP reason=audit.records; no automatic protected cleanup
+--- FAIL: TestAssistantActualNetworkOperationsSignedMCP (33.24s)
+FAIL
