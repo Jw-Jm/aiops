@@ -26,16 +26,36 @@ func faultChainEvaluationRequest(input assistant.TurnInput, j investigation.Job)
 	if input.FaultChainRequest != nil {
 		return *input.FaultChainRequest, nil
 	}
-	rc := input.Binding.ResourceContext
-	if j.Assistant.TaskKind != "resource_troubleshooting" || rc == nil || len(rc.Resources) != 1 || input.RequestedAt.IsZero() {
+	if input.RequestedAt.IsZero() {
 		return investigation.FaultChainRequest{}, investigation.ErrInvalid
 	}
+	target, namespace := "", ""
 	window := input.RequestedTimeRange
-	if window == nil {
-		window = &analytics.QueryTimeRange{From: rc.TimeRange.From, To: rc.TimeRange.To, Timezone: rc.TimeRange.Timezone}
+	switch j.Assistant.TaskKind {
+	case "resource_troubleshooting":
+		rc := input.Binding.ResourceContext
+		if rc == nil || len(rc.Resources) != 1 {
+			return investigation.FaultChainRequest{}, investigation.ErrInvalid
+		}
+		target, namespace = rc.Resources[0].CanonicalID, rc.Resources[0].Namespace
+		if window == nil {
+			window = &analytics.QueryTimeRange{From: rc.TimeRange.From, To: rc.TimeRange.To, Timezone: rc.TimeRange.Timezone}
+		}
+	case "incident_followup":
+		ref := input.ReferenceResolution
+		if j.IncidentID == uuid.Nil || input.Binding.IncidentID != j.IncidentID || ref == nil || ref.Status != "resolved" || ref.CanonicalID == "" || len(j.Scope.Namespaces) != 1 {
+			return investigation.FaultChainRequest{}, investigation.ErrInvalid
+		}
+		target, namespace = ref.CanonicalID, j.Scope.Namespaces[0]
+
+	default:
+		return investigation.FaultChainRequest{}, investigation.ErrInvalid
 	}
-	request := investigation.FaultChainRequest{SchemaVersion: "fault-chain-request/v1", TargetCanonicalID: rc.Resources[0].CanonicalID, Fault: *window, MaxEdges: 4}
-	if !j.Scope.Allows(request.TargetCanonicalID, rc.Resources[0].Namespace) || !request.Valid(j.Scope, input.Binding.Timezone, input.RequestedAt) {
+	if window == nil {
+		return investigation.FaultChainRequest{}, investigation.ErrInvalid
+	}
+	request := investigation.FaultChainRequest{SchemaVersion: "fault-chain-request/v1", TargetCanonicalID: target, Fault: *window, MaxEdges: 4}
+	if !j.Scope.Allows(target, namespace) || !request.Valid(j.Scope, input.Binding.Timezone, input.RequestedAt) {
 		return investigation.FaultChainRequest{}, investigation.ErrDenied
 	}
 	return request, nil

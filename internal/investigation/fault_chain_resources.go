@@ -36,14 +36,20 @@ func CommittedFaultChainResourceHealth(step uuid.UUID, snapshot graph.Result) []
 		}
 		status, _ := node.Attributes["status"].(map[string]any)
 		conditions, _ := status["conditions"].([]any)
-		notReady := false
+		readyStatus := ""
 		for _, raw := range conditions {
 			condition, _ := raw.(map[string]any)
-			if condition["type"] == "Ready" && condition["status"] == "False" {
-				notReady = true
+			if condition["type"] != "Ready" {
+				continue
 			}
+			status, _ := condition["status"].(string)
+			if readyStatus != "" || !slices.Contains([]string{"False", "True", "Unknown"}, status) {
+				readyStatus = ""
+				break
+			}
+			readyStatus = status
 		}
-		if !notReady {
+		if readyStatus == "" {
 			continue
 		}
 		sources := []graph.SourceAuthority{}
@@ -60,7 +66,7 @@ func CommittedFaultChainResourceHealth(step uuid.UUID, snapshot graph.Result) []
 		slices.SortFunc(sources, func(a, b graph.SourceAuthority) int {
 			return strings.Compare(a.SourceRegistrationID, b.SourceRegistrationID)
 		})
-		out = append(out, FaultChainResourceHealth{step, node.CanonicalID, node.Namespace, node.UpdatedAt, "Ready", "False", sources})
+		out = append(out, FaultChainResourceHealth{step, node.CanonicalID, node.Namespace, node.UpdatedAt, "Ready", readyStatus, sources})
 	}
 	return out
 }
@@ -172,6 +178,7 @@ func EvaluateFaultChainWithResourceHealth(request FaultChainRequest, relations [
 				out.EvidenceRefs = append(out.EvidenceRefs, q.Result.DerivationEvidenceRefs...)
 			}
 		}
+		applyFaultChainRecovery(request, edge, queries, health)
 		slices.SortFunc(edge.QueryResultRefs, func(a, b uuid.UUID) int { return strings.Compare(a.String(), b.String()) })
 		edge.QueryResultRefs = slices.Compact(edge.QueryResultRefs)
 	}

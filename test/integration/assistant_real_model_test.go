@@ -112,7 +112,7 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 		material.EvaluationDigest = "sha256:" + hex.EncodeToString(sum[:])
 		material.EvaluationVersion = "zh-assistant-five-20261013/v1"
 	}
-	if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1" {
+	if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1" && os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1" {
 		material.BaseURL = "http://127.0.0.1:1/v1"
 	}
 	profile := material.Reference()
@@ -142,7 +142,7 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 	if os.WriteFile(keyFile, []byte("local-ollama-no-auth"), 0600) != nil {
 		t.Fatal("model key file")
 	}
-	if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1" {
+	if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1" && os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1" {
 		keyFile = filepath.Join(dir, "nonexistent-model-key")
 	}
 	mcpEndpoint := "https://" + apiAddress + "/mcp"

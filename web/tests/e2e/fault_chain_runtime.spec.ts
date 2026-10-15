@@ -175,6 +175,28 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
     await expect(
       page.getByText("窗口顺序不代表传播顺序", { exact: false }),
     ).toBeVisible({ timeout: 30000 });
+    const chainButton = page.getByRole("button", { name: /链路 1 ·/ }).first();
+    await chainButton.focus();
+    await page.keyboard.press("Enter");
+    await expect(chainButton).toHaveAttribute("aria-pressed", "true");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(
+      page.getByText("故障链证据调查", { exact: true }).first(),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "准备解释这些证据" })
+      .first()
+      .click();
+    await expect(page.locator("#assistant-message")).toHaveValue(
+      /get_assistant_context/,
+    );
+    await expect(page.locator("#assistant-message")).toBeFocused();
+    const retained = await context.request.get(
+      base + "/api/v1/assistant/turns/" + turn.turnId + "/fault-chain-context",
+      { headers: headers() },
+    );
+    expect((await retained.json()).data).toEqual(chain);
+    expect(streams).toBeGreaterThan(0);
     const adminContext = await browser.newContext();
     const admin = await adminContext.newPage();
     let adminToken = "";
@@ -205,6 +227,10 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
         oracle5xx: 50,
         restored: true,
         ownerIsolation: true,
+        keyboard: true,
+        narrowScreen: true,
+        explanationDraftUsesPublishedContext: true,
+        evidenceUnchangedAfterDraft: true,
         streams,
       }),
       { mode: 0o600 },

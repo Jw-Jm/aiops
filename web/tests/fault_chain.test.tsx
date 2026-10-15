@@ -126,10 +126,11 @@ it("links the selected edge to explicit conflict and missing evidence without cl
     nextChecks: [],
     hypotheses: [],
   };
+  const prepare = vi.fn();
   render(
     <QueryClientProvider client={client}>
       <MemoryRouter>
-        <FaultChainPanel answer={answer} turnId="fixture-turn" />
+        <FaultChainPanel answer={answer} turnId="fixture-turn" onReadOnlyCheck={prepare} />
       </MemoryRouter>
     </QueryClientProvider>,
   );
@@ -137,7 +138,7 @@ it("links the selected edge to explicit conflict and missing evidence without cl
   expect(screen.getByText("时间先后：未验证")).toBeDefined();
   expect(
     screen
-      .getByRole("link", { name: "共同资源候选：shared-node" })
+      .getByRole("link", { name: "健康观测资源：shared-node" })
       .getAttribute("href"),
   ).toContain("canonicalId=shared-node");
   expect(screen.getByText(/已提交状态：Ready=False/)).toBeDefined();
@@ -147,5 +148,8 @@ it("links the selected edge to explicit conflict and missing evidence without cl
   expect(await screen.findByText("缺少因果证据：b")).toBeDefined();
   expect(screen.queryByText("缺少因果证据：a")).toBeNull();
   expect(screen.getByText("恢复未验证")).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "准备解释这些证据" }));
+  expect(prepare).toHaveBeenCalledWith(expect.stringContaining("get_assistant_context"));
+  expect(screen.getByText("证据已提交；模型解释使用独立轮次")).toBeDefined();
   client.clear();
 });

@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"github.com/google/uuid"
 	"testing"
 	"time"
 
@@ -57,6 +58,37 @@ func TestFaultChainEvaluationUsesFrozenOrdinaryTurn(t *testing.T) {
 			}
 			if _, err := faultChainEvaluationRequest(in, j); err == nil {
 				t.Fatal("unqualified frozen context was accepted")
+			}
+		})
+	}
+}
+
+func TestIncidentFaultChainRequiresResolvedReferentAndFrozenWindow(t *testing.T) {
+	now := time.Now().UTC().Truncate(time.Second)
+	target := resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: "pod-a"}.String()
+	incident := uuid.New()
+	window := analytics.QueryTimeRange{From: now.Add(-time.Minute), To: now, Timezone: "UTC"}
+	for _, name := range []string{"resolved", "ambiguous", "missing-window", "wrong-incident", "outside-scope"} {
+		t.Run(name, func(t *testing.T) {
+			input := assistant.TurnInput{RequestedAt: now, RequestedTimeRange: &window, Binding: assistant.ConversationBinding{IncidentID: incident, Timezone: "UTC"}, ReferenceResolution: &assistant.ReferenceResolution{Status: "resolved", CanonicalID: target, Candidates: []string{target}}}
+			job := investigation.Job{IncidentID: incident, Scope: graph.Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps"}, Resources: []string{target}}, Assistant: &investigation.AssistantTask{TaskKind: "incident_followup", AuthorizationDomain: "operational"}}
+			switch name {
+			case "ambiguous":
+				input.ReferenceResolution.Status = "clarification"
+			case "missing-window":
+				input.RequestedTimeRange = nil
+			case "wrong-incident":
+				input.Binding.IncidentID = uuid.New()
+			case "outside-scope":
+				job.Scope.Resources = []string{"other"}
+			}
+			request, err := faultChainEvaluationRequest(input, job)
+			if name == "resolved" {
+				if err != nil || request.TargetCanonicalID != target || request.Fault != window {
+					t.Fatal("frozen incident binding lost", err)
+				}
+			} else if err == nil {
+				t.Fatal("unresolved incident accepted")
 			}
 		})
 	}
