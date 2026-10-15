@@ -339,6 +339,12 @@ export function FaultChainPanel({
                     {edge.relation.to}
                   </Link>
                 </Space>
+                <Typography.Text type="secondary">
+                  关系摘要：{edge.relationDigest}；来源：
+                  {edge.relation.provenance?.sourceRegistrationId || "未披露"}
+                  ；规则版本：
+                  {edge.relation.provenance?.ruleVersion || "未披露"}
+                </Typography.Text>
                 <Typography.Text>
                   调用方向：
                   {edge.callDirection === "unknown"
@@ -377,6 +383,7 @@ export function FaultChainPanel({
                           <Button
                             key={`${ref.queryResultId}:${ref.factId}`}
                             size="small"
+                            style={{ whiteSpace: "normal", height: "auto" }}
                             onClick={() => {
                               setFocusedFact(ref);
                               locateQuery(ref.queryResultId);
@@ -412,12 +419,26 @@ export function FaultChainPanel({
                           </>
                         )}
                         {observation.relatedRelations?.map((path) => (
-                          <Typography.Text
+                          <Space
+                            wrap
                             key={`${path.from}:${path.kind}:${path.to}`}
                           >
-                            共享关系：{path.from} → {path.to}（{path.kind}
-                            ；观测：{path.observedAt}）
-                          </Typography.Text>
+                            <span>共享关系：</span>
+                            <Link
+                              to={`/resources/detail?canonicalId=${encodeURIComponent(path.from)}`}
+                            >
+                              {path.from}
+                            </Link>
+                            <span>→</span>
+                            <Link
+                              to={`/resources/detail?canonicalId=${encodeURIComponent(path.to)}`}
+                            >
+                              {path.to}
+                            </Link>
+                            <span>
+                              （{path.kind}；观测：{path.observedAt}）
+                            </span>
+                          </Space>
                         ))}
                         {observation.supports.length > 0 && (
                           <>
@@ -478,10 +499,7 @@ export function FaultChainPanel({
                 />
               </>
             )}
-            {(edge?.queryResultRefs.length
-              ? edge.queryResultRefs
-              : context.queryResultRefs
-            ).map((id) => (
+            {(edge?.queryResultRefs || []).map((id) => (
               <QueryResultView
                 key={id}
                 id={id}
@@ -494,6 +512,26 @@ export function FaultChainPanel({
                 }
               />
             ))}
+            {context.queryResultRefs
+              .filter(
+                (id) =>
+                  !context.edges.some((item) =>
+                    item.queryResultRefs.includes(id),
+                  ),
+              )
+              .map((id) => (
+                <div key={id}>
+                  <Alert
+                    type="info"
+                    title="该已提交统计未匹配本轮关系；按原查询目标、对端及窗口独立展示，不能据此构造链路。"
+                  />
+                  <QueryResultView
+                    id={id}
+                    answer={answer}
+                    anchorId={`fault-chain-${viewId}-${id}`}
+                  />
+                </div>
+              ))}
             {checkControls &&
               context.missingEvidence.includes(
                 "committed_scoped_resource_relations",
