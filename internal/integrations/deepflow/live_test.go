@@ -135,3 +135,107 @@ func TestLiveUIDContainerLifetimeAndL7Qualification(t *testing.T) {
 		t.Fatal("frozen mappings promoted to live")
 	}
 }
+
+func TestCanonicalPairDoesNotResolveUnrelatedBackendTags(t *testing.T) {
+	now := time.Now().UTC().Truncate(time.Second)
+	cluster, nsUID := "a94a0648-ce43-4905-b5c7-3d7b937283b5", "d115d180-d747-4727-8cc9-218024e1a944"
+	container := strings.Repeat("a", 64)
+	nativeReads := 0
+	mutateDuringSummary := false
+	pods := []any{}
+	cloud := []any{}
+	for _, name := range []string{"caller", "dependency", "unrelated"} {
+		pods = append(pods, map[string]any{"metadata": map[string]any{"uid": name, "name": name, "namespace": "apps", "creationTimestamp": now.Add(-time.Minute)}, "status": map[string]any{"containerStatuses": []any{map[string]any{"containerID": "containerd://" + container, "state": map[string]any{"running": map[string]any{"startedAt": now.Add(-time.Minute)}}}}}})
+		cloud = append(cloud, map[string]any{"name": name, "lcuuid": name, "container_ids": container, "created_at": now.Add(-time.Minute), "pod_namespace_lcuuid": nsUID, "pod_cluster_lcuuid": "cloud-cluster"})
+	}
+	native := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		nativeReads++
+		switch r.URL.Path {
+		case "/api/v1/namespaces/kube-system":
+			fmt.Fprintf(w, `{"metadata":{"uid":%q}}`, cluster)
+		case "/api/v1/namespaces/apps":
+			fmt.Fprintf(w, `{"metadata":{"uid":%q}}`, nsUID)
+		default:
+			if mutateDuringSummary && container != strings.Repeat("a", 64) {
+				pod := pods[0].(map[string]any)
+				status := pod["status"].(map[string]any)["containerStatuses"].([]any)[0].(map[string]any)
+				status["containerID"] = "containerd://" + container
+			}
+			json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]string{}, "items": pods})
+		}
+	}))
+	defer native.Close()
+	tags := 0
+	allowUnrelated := false
+	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/v1/info/") {
+			json.NewEncoder(w).Encode(map[string]any{"OPT_STATUS": "SUCCESS", "DATA": map[string]any{"Verified": true, "SyncAt": now, "PodClusters": []any{map[string]string{"lcuuid": "cloud-cluster", "name": "cluster"}}, "Pods": cloud}})
+			return
+		}
+		r.ParseForm()
+		sql := r.Form.Get("sql")
+		if strings.Contains(sql, "GROUP BY response_code") {
+			if mutateDuringSummary {
+				container = strings.Repeat("b", 64)
+			}
+			fmt.Fprint(w, `{"OPT_STATUS":"SUCCESS","result":{"columns":["response_code","observations","duration_us"],"values":[[200,1000,2000000]]}}`)
+			return
+		}
+		tags++
+		if strings.Contains(sql, "unrelated") && !allowUnrelated {
+			t.Error("unrelated tag read consumed the selected pair's budget")
+			w.WriteHeader(503)
+			return
+		}
+		id := 1
+		if strings.Contains(sql, "pod='dependency'") {
+			id = 2
+		}
+		if strings.Contains(sql, "pod='unrelated'") {
+			id = 3
+		}
+		fmt.Fprintf(w, `{"OPT_STATUS":"SUCCESS","result":{"columns":["value"],"values":[[%d]]}}`, id)
+	}))
+	defer backend.Close()
+	binding := evidence.Binding{SourceType: "deepflow", Tenant: "tenant", SourceID: "source", Revision: 1, BackendLogicalID: "querier", Endpoint: backend.URL, ScopeMapping: datascope.Mapping{Scopes: map[string][]string{"organization": {"1"}, "cluster": {cluster}, "namespace": {"apps"}}}}
+	client, _ := kubernetes.NewClient(native.URL, native.Client(), 20, 20)
+	mapper, err := NewLiveMapper(LiveConfig{ControllerEndpoint: backend.URL, DomainLCUUID: nsUID, ClusterUID: cluster}, binding, client, backend.Client(), func(context.Context, evidence.Binding) error { return nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	id := func(name string) string {
+		return resource.CanonicalID{Domain: "k8s", Tenant: "tenant", Scope: cluster, APIGroup: "core", Kind: "Pod", StableID: name}.String()
+	}
+	left, right, err := mapper.ByCanonicalPair(t.Context(), id("caller"), id("dependency"))
+	if err != nil || left.CanonicalID != id("caller") || right.CanonicalID != id("dependency") || tags != 4 {
+		t.Fatalf("pair=%+v %+v tags=%d err=%v", left, right, tags, err)
+	}
+	allowUnrelated = true
+	if _, err = mapper.ByCanonical(t.Context(), id("caller")); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err = mapper.ByCanonicalPair(t.Context(), id("caller"), id("dependency")); err != nil {
+		t.Fatal(err)
+	}
+	other, err := mapper.ByBackend(t.Context(), 3)
+	if err != nil || other.CanonicalID != id("unrelated") {
+		t.Fatal("pair query overwrote an active legacy flow mapping", other, err)
+	}
+	if err := mapper.ValidateCurrent(t.Context()); err != nil {
+		t.Fatal("native fence lost", err)
+	}
+
+	adapter, _ := New(binding, backend.Client(), mapper, func(context.Context, evidence.Binding) error { return nil }, true, "fixture_only")
+	q := SummaryQuery{Target: id("caller"), Peer: id("dependency"), Direction: "outgoing", ObservationPoint: "s-p", From: now.Add(-30 * time.Second), To: now, Scope: graph.Scope{Tenant: "tenant", Cluster: cluster, Namespaces: []string{"apps"}}, L7: true}
+	count := nativeReads
+	summaries, results, err := adapter.SummaryBatch(t.Context(), []SummaryQuery{q})
+	if err != nil || len(summaries) != 1 || len(results) != 1 || nativeReads-count != 6 {
+		t.Fatalf("batch fences/counts: summaries=%d reads=%d err=%v", len(summaries), nativeReads-count, err)
+	}
+	mutateDuringSummary = true
+	summaries, results, err = adapter.SummaryBatch(t.Context(), []SummaryQuery{q})
+	if err == nil || len(summaries) != 0 || len(results) != 0 {
+		t.Fatal("native container changed during window read but batch was published", err)
+	}
+
+}

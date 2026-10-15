@@ -38,6 +38,7 @@ def main():
     if not 1 <= args.count <= 2000:
         raise ValueError("bounded traffic required")
     pods = json.loads(kubectl("get", "pods", "-l", "ops.platform.io/test-release=" + RELEASE, "-o", "json"))["items"]
+    pods = [p for p in pods if p["metadata"]["labels"].get("app") in ("fault-chain-client", "fault-chain-server")]
     if len(pods) != 2:
         raise RuntimeError("OWNED_PAIR_REQUIRED")
     client = next(p for p in pods if p["metadata"]["labels"]["app"] == "fault-chain-client")

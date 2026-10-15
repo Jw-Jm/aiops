@@ -3,6 +3,7 @@ package deepflow
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -147,5 +148,21 @@ func TestWindowBatchRejectsIdentityChangeBeforePublishingAnyResult(t *testing.T)
 	q2.Scope.Namespaces = []string{"other"}
 	if _, _, err = a.SummaryBatch(t.Context(), []SummaryQuery{q, q2}); err == nil || calls != 2 {
 		t.Fatal("mixed-scope batch queried source")
+	}
+}
+
+type expiredPairMapping struct{}
+
+func (expiredPairMapping) ByCanonical(context.Context, string) (Endpoint, error) {
+	return Endpoint{}, context.DeadlineExceeded
+}
+func (expiredPairMapping) ByBackend(context.Context, uint64) (Endpoint, error) {
+	return Endpoint{}, context.DeadlineExceeded
+}
+func TestBatchPreservesIdentityDeadlineCause(t *testing.T) {
+	a := &Adapter{mapping: expiredPairMapping{}}
+	_, _, err := a.SummaryBatch(t.Context(), []SummaryQuery{{Target: "target", Peer: "peer"}})
+	if !errors.Is(err, evidence.ErrScopeUnverified) || !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatal("identity timeout cause masked", err)
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -67,7 +68,8 @@ func (m *LiveMapper) ByCanonical(ctx context.Context, id string) (Endpoint, erro
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if err = m.refresh(ctx); err != nil {
+	m.endpoints, m.snapshotDigest, err = m.refresh(ctx)
+	if err != nil {
 		m.endpoints = map[string]Endpoint{}
 		return Endpoint{}, err
 	}
@@ -89,12 +91,14 @@ func (m *LiveMapper) ByCanonicalPair(ctx context.Context, left, right string) (E
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if err := m.refresh(ctx); err != nil {
-		m.endpoints = map[string]Endpoint{}
+	// Pair reads use a local verified snapshot, so they cannot overwrite the
+	// legacy flow reader's backend map while it is resolving returned rows.
+	endpoints, _, err := m.refresh(ctx, left, right)
+	if err != nil {
 		return Endpoint{}, Endpoint{}, err
 	}
-	l, lok := m.endpoints[left]
-	r, rok := m.endpoints[right]
+	l, lok := endpoints[left]
+	r, rok := endpoints[right]
 	if !lok || !rok {
 		return Endpoint{}, Endpoint{}, evidence.ErrScopeUnverified
 	}
@@ -193,29 +197,60 @@ type cloudPod struct {
 	Cluster      string    `json:"pod_cluster_lcuuid"`
 }
 
-func (m *LiveMapper) refresh(ctx context.Context) error {
+func (m *LiveMapper) refresh(ctx context.Context, requested ...string) (out map[string]Endpoint, digest string, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 2500*time.Millisecond)
 	defer cancel()
+	stage := "binding"
+	started := time.Now()
+	defer func() {
+		if err != nil {
+			slog.Warn("DeepFlow identity refresh rejected", "stage", stage, "elapsedMs", time.Since(started).Milliseconds(), "contextDone", ctx.Err() != nil)
+		}
+	}()
 	if m.authorize(ctx, m.binding) != nil {
-		return evidence.ErrScopeUnverified
+		return nil, "", evidence.ErrScopeUnverified
 	}
+	stage = "native_before"
 	before, err := m.nativeSnapshot(ctx)
 	if err != nil {
-		return err
+		return nil, "", err
 	}
+	stage = "backend"
+	endpoints, err := m.resolveSnapshot(ctx, before, requested...)
+	if err != nil {
+		return nil, "", err
+	}
+	stage = "native_after"
+	after, err := m.nativeSnapshot(ctx)
+	if err != nil {
+		return nil, "", err
+	}
+	fingerprint := func(s nativeSnapshot) string { raw, _ := json.Marshal(s); return evidence.Digest(raw) }
+	if fingerprint(before) != fingerprint(after) {
+		return nil, "", evidence.ErrScopeUnverified
+	}
+	stage = "binding_after"
+	if m.authorize(ctx, m.binding) != nil {
+		return nil, "", evidence.ErrScopeUnverified
+	}
+	return endpoints, fingerprint(after), nil
+}
+
+// resolveSnapshot maps only native identities from this call's bounded snapshot.
+func (m *LiveMapper) resolveSnapshot(ctx context.Context, before nativeSnapshot, requested ...string) (map[string]Endpoint, error) {
 	request, err := http.NewRequestWithContext(ctx, "GET", m.config.ControllerEndpoint+"/v1/info/"+m.config.DomainLCUUID+"/", nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	request.Header.Set("X-Org-Id", m.binding.ScopeMapping.Scopes["organization"][0])
 	response, err := m.client.Do(request)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer response.Body.Close()
 	raw, err := io.ReadAll(io.LimitReader(response.Body, (4<<20)+1))
 	if err != nil || len(raw) > 4<<20 || response.StatusCode != 200 {
-		return evidence.ErrScopeUnverified
+		return nil, evidence.ErrScopeUnverified
 	}
 	var envelope struct {
 		Status string `json:"OPT_STATUS"`
@@ -235,11 +270,11 @@ func (m *LiveMapper) refresh(ctx context.Context) error {
 		} `json:"DATA"`
 	}
 	if json.Unmarshal(raw, &envelope) != nil || envelope.Status != "SUCCESS" || !envelope.Data.Verified || envelope.Data.SyncAt.IsZero() || time.Since(envelope.Data.SyncAt) > 5*time.Minute || envelope.Data.SyncAt.After(time.Now().Add(time.Minute)) {
-		return evidence.ErrScopeUnverified
+		return nil, evidence.ErrScopeUnverified
 	}
 	org, err := strconv.Atoi(m.binding.ScopeMapping.Scopes["organization"][0])
 	if err != nil || org < 1 || org > 65535 {
-		return evidence.ErrScopeUnverified
+		return nil, evidence.ErrScopeUnverified
 	}
 	derived := func(uid string) string {
 		if org == 1 {
@@ -263,6 +298,10 @@ func (m *LiveMapper) refresh(ctx context.Context) error {
 		return id, err
 	}
 	for _, native := range before.Pods {
+		canonical := resource.CanonicalID{Domain: "k8s", Tenant: m.binding.Tenant, Scope: m.config.ClusterUID, APIGroup: "core", Kind: "Pod", StableID: native.Metadata.UID}.String()
+		if len(requested) > 0 && !slices.Contains(requested, canonical) {
+			continue
+		}
 		if native.Metadata.UID == "" || native.Metadata.DeletionTimestamp != nil || len(native.Status.ContainerStatuses) == 0 {
 			continue
 		}
@@ -321,21 +360,71 @@ func (m *LiveMapper) refresh(ctx context.Context) error {
 		if err != nil {
 			continue
 		}
-		canonical := resource.CanonicalID{Domain: "k8s", Tenant: m.binding.Tenant, Scope: m.config.ClusterUID, APIGroup: "core", Kind: "Pod", StableID: native.Metadata.UID}.String()
 		endpoints[canonical] = Endpoint{CanonicalID: canonical, Namespace: native.Metadata.Namespace, PodID: podID, ClusterID: clusterID, NamespaceID: namespaceID, IdentityValidFrom: validFrom}
+	}
+	return endpoints, nil
+}
+
+type summaryPairSnapshot struct {
+	native      nativeSnapshot
+	left, right Endpoint
+}
+
+func (m *LiveMapper) beginSummaryPair(ctx context.Context, left, right string) (summaryPairSnapshot, error) {
+	ctx, cancel := context.WithTimeout(ctx, 2500*time.Millisecond)
+	defer cancel()
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.authorize(ctx, m.binding) != nil {
+		return summaryPairSnapshot{}, evidence.ErrScopeUnverified
+	}
+	before, err := m.nativeSnapshot(ctx)
+	if err != nil {
+		return summaryPairSnapshot{}, err
+	}
+	endpoints, err := m.resolveSnapshot(ctx, before, left, right)
+	if err != nil {
+		return summaryPairSnapshot{}, err
+	}
+	l, lok := endpoints[left]
+	r, rok := endpoints[right]
+	if !lok || !rok {
+		return summaryPairSnapshot{}, evidence.ErrScopeUnverified
+	}
+	return summaryPairSnapshot{before, l, r}, nil
+}
+
+// Native snapshots enclose every backend/window read in the batch. No result
+// is published until both native lifetimes and fresh backend IDs still match.
+func (m *LiveMapper) finishSummaryPair(ctx context.Context, snapshot summaryPairSnapshot) (Endpoint, Endpoint, error) {
+	ctx, cancel := context.WithTimeout(ctx, 2500*time.Millisecond)
+	defer cancel()
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.authorize(ctx, m.binding) != nil {
+		return Endpoint{}, Endpoint{}, evidence.ErrScopeUnverified
+	}
+	endpoints, err := m.resolveSnapshot(ctx, snapshot.native, snapshot.left.CanonicalID, snapshot.right.CanonicalID)
+	if err != nil {
+		return Endpoint{}, Endpoint{}, err
 	}
 	after, err := m.nativeSnapshot(ctx)
 	if err != nil {
-		return err
+		return Endpoint{}, Endpoint{}, err
 	}
-	fingerprint := func(s nativeSnapshot) string { raw, _ := json.Marshal(s); return evidence.Digest(raw) }
-	if fingerprint(before) != fingerprint(after) || m.authorize(ctx, m.binding) != nil {
-		return evidence.ErrScopeUnverified
+	beforeRaw, _ := json.Marshal(snapshot.native)
+	afterRaw, _ := json.Marshal(after)
+	if evidence.Digest(beforeRaw) != evidence.Digest(afterRaw) || m.authorize(ctx, m.binding) != nil {
+		return Endpoint{}, Endpoint{}, evidence.ErrScopeUnverified
 	}
-	m.snapshotDigest = fingerprint(after)
-	m.endpoints = endpoints
-	return nil
+	l, lok := endpoints[snapshot.left.CanonicalID]
+	r, rok := endpoints[snapshot.right.CanonicalID]
+	if !lok || !rok {
+		return Endpoint{}, Endpoint{}, evidence.ErrScopeUnverified
+	}
+	return l, r, nil
 }
+
 func safeNativeName(s string) string {
 	if !nativeName.MatchString(s) {
 		return ""

@@ -4,8 +4,10 @@ import (
 	"context"
 	"crypto/ed25519"
 	"encoding/json"
+	"errors"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"io"
+	"log/slog"
 	"net/http"
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/auth"
@@ -127,11 +129,13 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 			plan = candidate
 		}
 		if selected == nil {
+			slog.Warn("Network analysis unavailable", "stage", "compile", "operation", intent.Operation, "dataset", intent.DatasetID)
 			fail(503, "SOURCE_CAPABILITY_UNAVAILABLE")
 			return
 		}
 		result, facts, err := selected.Execute(r.Context(), plan)
 		if err != nil {
+			slog.Warn("Network analysis unavailable", "stage", "execute", "operation", intent.Operation, "scopeUnverified", errors.Is(err, evidence.ErrScopeUnverified), "deadlineExceeded", errors.Is(err, context.DeadlineExceeded), "capabilityDisabled", errors.Is(err, deepflow.ErrDisabled))
 			fail(503, "SOURCE_CAPABILITY_UNAVAILABLE")
 			return
 		}
@@ -143,6 +147,7 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 				return
 			}
 			if err := networkRuntime[0].Archive.Capture(r.Context(), fact, summary.Namespace, fact.EvaluatedAt.Add(181*24*time.Hour)); err != nil {
+				slog.Warn("Network analysis unavailable", "stage", "archive", "operation", intent.Operation, "deadlineExceeded", errors.Is(err, context.DeadlineExceeded), "invalidArgument", errors.Is(err, evidence.ErrArgument))
 				fail(503, "ARCHIVE_UNAVAILABLE")
 				return
 			}

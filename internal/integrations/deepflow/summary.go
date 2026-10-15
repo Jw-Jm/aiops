@@ -4,8 +4,10 @@ import (
 	"context"
 	_ "embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"slices"
@@ -91,9 +93,20 @@ func (a *Adapter) SummaryBatch(ctx context.Context, queries []SummaryQuery) ([]N
 			return nil, nil, evidence.ErrArgument
 		}
 	}
-	left, right, err := a.resolveSummaryPair(ctx, first.Target, first.Peer)
+	resolve := func() (Endpoint, Endpoint, error) { return a.resolveSummaryPair(ctx, first.Target, first.Peer) }
+	var left, right Endpoint
+	var err error
+	if live, ok := a.mapping.(*LiveMapper); ok {
+		var snapshot summaryPairSnapshot
+		snapshot, err = live.beginSummaryPair(ctx, first.Target, first.Peer)
+		left, right = snapshot.left, snapshot.right
+		resolve = func() (Endpoint, Endpoint, error) { return live.finishSummaryPair(ctx, snapshot) }
+	} else {
+		left, right, err = resolve()
+	}
 	if err != nil {
-		return nil, nil, evidence.ErrScopeUnverified
+		slog.Warn("DeepFlow pair fence unavailable", "stage", "initial", "causeType", fmt.Sprintf("%T", err), "scopeRejected", errors.Is(err, evidence.ErrScopeUnverified), "canceled", errors.Is(err, context.Canceled), "deadlineExceeded", errors.Is(err, context.DeadlineExceeded))
+		return nil, nil, fmt.Errorf("%w: initial endpoint pair: %w", evidence.ErrScopeUnverified, err)
 	}
 	frozen := func(context.Context, string, string) (Endpoint, Endpoint, error) { return left, right, nil }
 	summaries := []NetworkSummary{}
@@ -106,8 +119,13 @@ func (a *Adapter) SummaryBatch(ctx context.Context, queries []SummaryQuery) ([]N
 		summaries = append(summaries, s)
 		results = append(results, r)
 	}
-	l2, r2, err := a.resolveSummaryPair(ctx, first.Target, first.Peer)
-	if err != nil || l2 != left || r2 != right || a.authorize(ctx, a.binding) != nil {
+	l2, r2, err := resolve()
+	if err != nil {
+		slog.Warn("DeepFlow pair fence unavailable", "stage", "final", "causeType", fmt.Sprintf("%T", err), "scopeRejected", errors.Is(err, evidence.ErrScopeUnverified), "canceled", errors.Is(err, context.Canceled), "deadlineExceeded", errors.Is(err, context.DeadlineExceeded))
+		return nil, nil, fmt.Errorf("%w: final endpoint pair: %w", evidence.ErrScopeUnverified, err)
+	}
+	if l2 != left || r2 != right || a.authorize(ctx, a.binding) != nil {
+		slog.Warn("DeepFlow pair fence unavailable", "stage", "final", "identityChanged", l2 != left || r2 != right)
 		return nil, nil, evidence.ErrScopeUnverified
 	}
 	return summaries, results, nil
