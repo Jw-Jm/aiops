@@ -157,3 +157,19 @@ func TestFaultChainCorrelationKeepsTemporalAndCausalGaps(t *testing.T) {
 		t.Fatal("out-of-window fact accepted")
 	}
 }
+
+func TestLinkedCheckRetainsStatisticsWithoutCurrentRelation(t *testing.T) {
+	now := time.Now().UTC().Truncate(time.Second)
+	fault := analytics.QueryTimeRange{From: now.Add(-time.Minute), To: now, Timezone: "UTC"}
+	request := FaultChainRequest{TargetCanonicalID: "target", Fault: fault, MaxEdges: 4, ReadOnlyCheck: &FaultChainReadOnlyCheck{Tool: "execute_analysis_query", CanonicalID: "peer", Direction: "outgoing"}}
+	result := analytics.QueryResult{TimeRange: &fault, NetworkContext: &analytics.NetworkContext{Selection: analytics.NetworkSelection{TargetCanonicalID: "target", PeerCanonicalID: "peer", Direction: "outgoing"}}, DerivationEvidenceRefs: []string{uuid.NewString()}}
+	query := BuildStoredQueryResult(result)
+	wrong := result
+	network := *result.NetworkContext
+	network.Selection.PeerCanonicalID = "other"
+	wrong.NetworkContext = &network
+	context, err := EvaluateFaultChain(request, nil, []StoredQueryResult{query, BuildStoredQueryResult(wrong)}, now)
+	if err != nil || len(context.Edges) != 0 || len(context.QueryResultRefs) != 1 || context.QueryResultRefs[0] != query.QueryResultID || len(context.EvidenceRefs) != 1 || !slices.Contains(context.MissingEvidence, "committed_scoped_resource_relations") {
+		t.Fatalf("lost immutable check result or filled gap: %+v %v", context, err)
+	}
+}

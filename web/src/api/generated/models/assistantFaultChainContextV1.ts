@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.4.0
  */
 import type { AssistantFaultChainContextV1EdgesItem } from './assistantFaultChainContextV1EdgesItem.ts';
+import type { AssistantFaultChainContextV1ResourceHealthChecksItem } from './assistantFaultChainContextV1ResourceHealthChecksItem.ts';
 import type { AssistantFaultChainContextV1Status } from './assistantFaultChainContextV1Status.ts';
 import type { AssistantFaultChainRequestV1 } from './assistantFaultChainRequestV1.ts';
 
@@ -25,4 +26,6 @@ export interface AssistantFaultChainContextV1 {
      * @items.maxLength 2048
      */
   missingEvidence: string[];
+  /** @maxItems 40 */
+  resourceHealthChecks?: AssistantFaultChainContextV1ResourceHealthChecksItem[];
 }

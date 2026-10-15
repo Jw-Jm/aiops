@@ -6,6 +6,7 @@
  */
 import type { AssistantFaultChainRequestV1Baseline } from './assistantFaultChainRequestV1Baseline.ts';
 import type { AssistantFaultChainRequestV1Fault } from './assistantFaultChainRequestV1Fault.ts';
+import type { AssistantFaultChainRequestV1ReadOnlyCheck } from './assistantFaultChainRequestV1ReadOnlyCheck.ts';
 import type { AssistantFaultChainRequestV1Recovery } from './assistantFaultChainRequestV1Recovery.ts';
 
 export interface AssistantFaultChainRequestV1 {
@@ -23,4 +24,5 @@ export interface AssistantFaultChainRequestV1 {
      * @maximum 8
      */
   maxEdges: number;
+  readOnlyCheck?: AssistantFaultChainRequestV1ReadOnlyCheck;
 }

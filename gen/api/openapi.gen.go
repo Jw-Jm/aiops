@@ -54,6 +54,27 @@ func (e AssistantCreateConversationV1Mode) Valid() bool {
 	}
 }
 
+// Defines values for AssistantFaultChainRequestV1ReadOnlyCheckDirection.
+const (
+	Either   AssistantFaultChainRequestV1ReadOnlyCheckDirection = "either"
+	Incoming AssistantFaultChainRequestV1ReadOnlyCheckDirection = "incoming"
+	Outgoing AssistantFaultChainRequestV1ReadOnlyCheckDirection = "outgoing"
+)
+
+// Valid indicates whether the value is a known member of the AssistantFaultChainRequestV1ReadOnlyCheckDirection enum.
+func (e AssistantFaultChainRequestV1ReadOnlyCheckDirection) Valid() bool {
+	switch e {
+	case Either:
+		return true
+	case Incoming:
+		return true
+	case Outgoing:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AssistantMessageV1Role.
 const (
 	Assistant AssistantMessageV1Role = "assistant"
@@ -1778,13 +1799,22 @@ type AssistantFaultChainContextV1 struct {
 		RelationDigest     string               `json:"relationDigest"`
 		TemporalAssessment interface{}          `json:"temporalAssessment"`
 	} `json:"edges"`
-	EvidenceRefs    []openapi_types.UUID         `json:"evidenceRefs"`
-	MissingEvidence []string                     `json:"missingEvidence"`
-	QueryResultRefs []openapi_types.UUID         `json:"queryResultRefs"`
-	Request         AssistantFaultChainRequestV1 `json:"request"`
-	RuleVersion     interface{}                  `json:"ruleVersion"`
-	SchemaVersion   interface{}                  `json:"schemaVersion"`
-	Status          interface{}                  `json:"status"`
+	EvidenceRefs         []openapi_types.UUID         `json:"evidenceRefs"`
+	MissingEvidence      []string                     `json:"missingEvidence"`
+	QueryResultRefs      []openapi_types.UUID         `json:"queryResultRefs"`
+	Request              AssistantFaultChainRequestV1 `json:"request"`
+	ResourceHealthChecks *[]struct {
+		CanonicalId     string                   `json:"canonicalId"`
+		ConditionStatus interface{}              `json:"conditionStatus"`
+		ConditionType   interface{}              `json:"conditionType"`
+		Namespace       string                   `json:"namespace"`
+		ObservedAt      time.Time                `json:"observedAt"`
+		Sources         []GraphSourceAuthorityV2 `json:"sources"`
+		StepId          openapi_types.UUID       `json:"stepId"`
+	} `json:"resourceHealthChecks,omitempty"`
+	RuleVersion   interface{} `json:"ruleVersion"`
+	SchemaVersion interface{} `json:"schemaVersion"`
+	Status        interface{} `json:"status"`
 }
 
 // AssistantFaultChainRequestV1 defines model for AssistantFaultChainRequestV1.
@@ -1799,7 +1829,15 @@ type AssistantFaultChainRequestV1 struct {
 		Timezone string    `json:"timezone"`
 		To       time.Time `json:"to"`
 	} `json:"fault"`
-	MaxEdges int `json:"maxEdges"`
+	MaxEdges      int `json:"maxEdges"`
+	ReadOnlyCheck *struct {
+		CanonicalId    string                                              `json:"canonicalId"`
+		Direction      *AssistantFaultChainRequestV1ReadOnlyCheckDirection `json:"direction,omitempty"`
+		GapCode        string                                              `json:"gapCode"`
+		OriginTurnId   openapi_types.UUID                                  `json:"originTurnId"`
+		RelationDigest *string                                             `json:"relationDigest,omitempty"`
+		Tool           interface{}                                         `json:"tool"`
+	} `json:"readOnlyCheck,omitempty"`
 	Recovery *struct {
 		From     time.Time `json:"from"`
 		Timezone string    `json:"timezone"`
@@ -1808,6 +1846,9 @@ type AssistantFaultChainRequestV1 struct {
 	SchemaVersion     interface{} `json:"schemaVersion"`
 	TargetCanonicalId string      `json:"targetCanonicalId"`
 }
+
+// AssistantFaultChainRequestV1ReadOnlyCheckDirection defines model for AssistantFaultChainRequestV1.ReadOnlyCheck.Direction.
+type AssistantFaultChainRequestV1ReadOnlyCheckDirection string
 
 // AssistantFormalEnvelopeV1 defines model for AssistantFormalEnvelopeV1.
 type AssistantFormalEnvelopeV1 struct {

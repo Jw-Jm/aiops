@@ -85,6 +85,9 @@ func EvaluateFaultChainWithResourceHealth(request FaultChainRequest, relations [
 	slices.SortFunc(health, func(a, b FaultChainResourceHealth) int {
 		return strings.Compare(graph.ScopeDigest(a), graph.ScopeDigest(b))
 	})
+	if request.ReadOnlyCheck != nil {
+		out.ResourceHealthChecks = slices.Clone(health)
+	}
 	for index := range out.Edges {
 		edge := &out.Edges[index]
 		known := map[string]bool{}

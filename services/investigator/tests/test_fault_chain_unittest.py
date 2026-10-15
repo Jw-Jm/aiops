@@ -187,3 +187,48 @@ class SharedPathCollection(unittest.TestCase):
         health = [args["canonicalId"] for name, args in ledger.allocations if name == "get_resource_health"]
         self.assertEqual(health, ["shared-node", "target", "peer-0"])
         self.assertIn("remaining_relations_not_checked", answer["missingEvidence"])
+
+class LinkedGapChecks(unittest.TestCase):
+    def test_health_and_dependency_checks_execute_fixed_tool_without_network_or_model(self):
+        for tool in ("get_resource_health", "get_dependencies"):
+            class CheckBridge(Bridge):
+                def call(self, name, args, allocation):
+                    result = self.result(name)
+                    if name == "get_assistant_context":
+                        result["data"]["faultChainRequest"]["readOnlyCheck"] = {"tool": tool, "canonicalId": "peer", "gapCode": "original-gap"}
+                    elif name == "evaluate_fault_chain" and tool == "get_resource_health":
+                        result["data"]["context"]["resourceHealthChecks"] = [{"canonicalId": "peer"}]
+                    return result
+            ledger = Ledger()
+            answer = collect({"budget": {"toolCalls": 20, "rawQueries": 6}}, ledger, CheckBridge())
+            self.assertEqual([name for name, _ in ledger.allocations], ["get_assistant_context", tool, "evaluate_fault_chain"])
+            self.assertEqual(ledger.allocations[1][1], {"canonicalId": "peer", **({"depth": 1} if tool == "get_dependencies" else {})})
+            self.assertIn("original-gap", answer["summary"])
+            if tool == "get_resource_health": self.assertIn("peer", answer["entityRefs"])
+
+    def test_statistics_use_original_peer_direction_and_windows_even_if_graph_changed(self):
+        class CheckBridge(BudgetBridge):
+            def call(self, name, args, allocation):
+                result = super().call(name, args, allocation)
+                if name == "get_assistant_context":
+                    result["data"]["faultChainRequest"]["readOnlyCheck"] = {"tool": "execute_analysis_query", "canonicalId": "old-peer", "direction": "incoming", "gapCode": "network_window_statistics"}
+                return result
+        ledger, bridge = Ledger(), CheckBridge(8, peers=3)
+        answer = collect({"budget": {"toolCalls": 30, "rawQueries": 8}}, ledger, bridge)
+        self.assertEqual(len(bridge.queries), 4)
+        self.assertTrue(all(q["networkSelection"] == {"targetCanonicalId": "target", "peerCanonicalId": "old-peer", "direction": "incoming"} for q in bridge.queries))
+        self.assertFalse(any(name in ("query_deepflow", "get_resource_health") for name, _ in ledger.allocations))
+        self.assertEqual(answer["queryResultRefs"], ["q1", "q2", "q3", "q4"])
+
+    def test_failed_health_check_still_evaluates_and_keeps_gap(self):
+        class CheckBridge(Bridge):
+            def call(self, name, args, allocation):
+                result = self.result(name)
+                if name == "get_assistant_context":
+                    result["data"]["faultChainRequest"]["readOnlyCheck"] = {"tool": "get_resource_health", "canonicalId": "target", "gapCode": "shared_resource_cause_not_checked"}
+                elif name == "get_resource_health":
+                    result["state"] = "failed"
+                return result
+        answer = collect({"budget": {"toolCalls": 10, "rawQueries": 0}}, Ledger(), CheckBridge())
+        self.assertIn("get_resource_health_not_completed", answer["missingEvidence"])
+        self.assertIsNotNone(answer["faultChainContextRef"])

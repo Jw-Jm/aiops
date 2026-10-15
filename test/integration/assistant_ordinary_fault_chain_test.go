@@ -111,11 +111,57 @@ func TestAssistantOrdinaryFaultChainEvaluation(t *testing.T) {
 	if _, err := repo.FaultChainContext(ctx, b.TenantID, turn.TurnID, "other-owner"); err == nil {
 		t.Fatal("ordinary context crossed owner")
 	}
+	// Linked gap checks use the original committed context, current grants and
+	// a separate evidence-only Job. The original answer remains immutable.
+	repo.FaultChainEnabled = true
+	latest, err := repo.Get(ctx, b.TenantID, conversation.ConversationID, rc.OwnerSubject)
+	if err != nil {
+		t.Fatal(err)
+	}
+	linked := stored.Request
+	linked.ReadOnlyCheck = &investigation.FaultChainReadOnlyCheck{OriginTurnID: turn.TurnID, GapCode: "committed_scoped_resource_relations", CanonicalID: target, Tool: "get_dependencies"}
+	for _, bad := range []string{"window", "parent", "target", "tool", "relation"} {
+		candidate := linked
+		check := *linked.ReadOnlyCheck
+		candidate.ReadOnlyCheck = &check
+		parentID := turn.TurnID
+		switch bad {
+		case "window":
+			candidate.Fault.From = candidate.Fault.From.Add(-time.Second)
+		case "parent":
+			parentID = uuid.New()
+		case "target":
+			check.CanonicalID = "undisclosed"
+		case "tool":
+			check.Tool = "get_resource_health"
+		case "relation":
+			check.RelationDigest = graph.ScopeDigest("forged")
+		}
+		_, err = repo.Submit(ctx, b.TenantID, conversation.ConversationID, rc.OwnerSubject, "check-reject-"+bad, assistant.SubmitMessage{Message: "只读缺口检查", ExpectedConversationRevision: latest.Revision, ParentTurnID: &parentID, FaultChainRequest: &candidate})
+		if err == nil {
+			t.Fatal("tampered linked check accepted", bad)
+		}
+	}
+	checked, err := repo.Submit(ctx, b.TenantID, conversation.ConversationID, rc.OwnerSubject, "linked-gap-check", assistant.SubmitMessage{Message: "只读依赖检查", ExpectedConversationRevision: latest.Revision, ParentTurnID: &turn.TurnID, FaultChainRequest: &linked})
+	if err != nil {
+		t.Fatal("linked readonly check unavailable", err)
+	}
+	checkedJob, err := jobs.Get(ctx, b.TenantID, checked.JobID)
+	if err != nil || checkedJob.Assistant.ExecutionMode != "evidence_only" || checkedJob.Budget.ModelRequests != 0 || checkedJob.Assistant.FaultChainRequestDigest != graph.ScopeDigest(linked) {
+		t.Fatal("linked check not frozen evidence-only", err)
+	}
+	if err := repo.Cancel(ctx, b.TenantID, checked.TurnID, rc.OwnerSubject, "stop-linked-gap"); err != nil {
+		t.Fatal(err)
+	}
+	reread, err := repo.FaultChainContext(ctx, b.TenantID, turn.TurnID, rc.OwnerSubject)
+	if err != nil || graph.ScopeDigest(reread) != wire.Data.ContentDigest {
+		t.Fatal("linked check changed original gap/context", err)
+	}
 	if _, err := db.ExecContext(ctx, `DELETE FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2`, b.TenantID, rc.OwnerSubject); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := repo.FaultChainContext(ctx, b.TenantID, turn.TurnID, rc.OwnerSubject); err == nil {
 		t.Fatal("ordinary context survived grant revocation")
 	}
-	t.Log("ordinary mode preserved; frozen resource window evaluated; partial context persisted/read back; cross-owner and revoked-grant reads rejected; no model request executed")
+	t.Log("ordinary mode preserved; frozen resource window evaluated; partial context persisted/read back; linked evidence-only gap check admitted, five tamper cases rejected and original context preserved; cross-owner and revoked-grant reads rejected; no model request executed")
 }
