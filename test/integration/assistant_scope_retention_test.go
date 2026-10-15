@@ -217,7 +217,7 @@ func TestAssistantCleanupProtectsEvidenceClosureAndQueryResults(t *testing.T) {
 		t.Fatal(err)
 	}
 	result, _ := json.Marshal(map[string]any{"evidenceRefs": []string{dependency.String()}})
-	if _, err = db.ExecContext(ctx, `INSERT INTO investigation.steps(tenant_id,job_id,step_id,tool_name,args_digest,state,lease_token,lease_generation,result,started_at) VALUES($1,$2,$3,'query_logs',$4,'succeeded',$5,1,$6,clock_timestamp()-interval '31 days')`, b.TenantID, turn.JobID, uuid.New(), graph.ScopeDigest("{}"), lease.Token, result); err != nil {
+	if _, err = db.ExecContext(ctx, `INSERT INTO investigation.steps(tenant_id,job_id,step_id,tool_name,args_digest,state,lease_token,lease_generation,result,started_at) VALUES($1,$2,$3,'evaluate_fault_chain',$4,'succeeded',$5,1,$6,clock_timestamp()-interval '31 days')`, b.TenantID, turn.JobID, uuid.New(), graph.ScopeDigest("{}"), lease.Token, result); err != nil {
 		t.Fatal(err)
 	}
 	var ttlExpired bool

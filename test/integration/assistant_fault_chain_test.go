@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/assistant"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/httpapi"
 	"ops-platform/internal/investigation"
@@ -43,7 +45,12 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		var pods struct {
 			Items []struct{ Metadata struct{ UID string } }
 		}
-		raw := sp04Kubectl(t, ctx, nil, "-n", namespace, "get", "pods", "-l", "app=fault-chain-client,ops.platform.io/test-release=fault-chain-20261014", "-o", "json")
+		appLabel := "fault-chain-client"
+		multi := os.Getenv("OPS_FAULT_CHAIN_MULTI") == "1"
+		if multi {
+			appLabel = "fault-chain-server"
+		}
+		raw := sp04Kubectl(t, ctx, nil, "-n", namespace, "get", "pods", "-l", "app="+appLabel+",ops.platform.io/test-release=fault-chain-20261014", "-o", "json")
 		if json.Unmarshal(raw, &pods) != nil || len(pods.Items) != 1 {
 			t.Fatal("owned native client missing")
 		}
@@ -96,11 +103,11 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		scope := analytics.CloneScope(grant)
 		scope.Resources = []string{target}
 		scope.Namespaces = []string{namespace}
-		scope.ClusterScoped = false
+		scope.ClusterScoped = multi
 		entity := observation.Nodes[0]
 		rc := assistant.ResourceContext{SchemaVersion: "resource-investigation-context/v1", ContextID: uuid.New(), TenantID: b.TenantID.String(), OwnerSubject: actor.Subject, ClusterUID: b.ClusterUID, Resources: []assistant.Candidate{{CanonicalID: target, Kind: entity.Kind, Name: entity.Name, Namespace: entity.Namespace, ObservedAt: entity.UpdatedAt}}, Symptom: "比较响应异常和依赖证据", TimeRange: assistant.TimeRange{From: window.From, To: window.To, Timezone: window.Timezone}, ResolvedAt: observation.CollectedAt, ObservationRevision: observation.GraphRevision, GrantSnapshotDigest: graph.ScopeDigest(grant), ExecutionScope: scope, ExecutionScopeDigest: graph.ScopeDigest(scope)}
 		rc.ContextDigest = graph.ScopeDigest(rc)
-		conversation, err := repo.Create(requestCtx, assistant.Conversation{TenantID: b.TenantID, OwnerSubject: actor.Subject, Title: "不发模型请求的故障链调查", Mode: "troubleshoot", AuthorizationDomain: "operational", ClusterUID: b.ClusterUID, Binding: assistant.ConversationBinding{Timezone: window.Timezone, Selection: analytics.Selection{Namespaces: []string{namespace}}, ResourceContext: &rc}})
+		conversation, err := repo.Create(requestCtx, assistant.Conversation{TenantID: b.TenantID, OwnerSubject: actor.Subject, Title: "不发模型请求的故障链调查", Mode: "troubleshoot", AuthorizationDomain: "operational", ClusterUID: b.ClusterUID, Binding: assistant.ConversationBinding{Timezone: window.Timezone, Selection: analytics.Selection{Namespaces: []string{namespace}, IncludeClusterScoped: multi}, ResourceContext: &rc}})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -215,6 +222,15 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 				expectedErrors = 0
 			}
 			for _, stat := range stored.Result.Statistics {
+				if multi && stored.Result.NetworkContext != nil {
+					var peerName string
+					if err := db.QueryRowContext(ctx, `SELECT name FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2`, b.TenantID, stored.Result.NetworkContext.Selection.PeerCanonicalID).Scan(&peerName); err != nil {
+						t.Fatal(err)
+					}
+					if strings.HasPrefix(peerName, "fault-chain-client-b-") {
+						expectedErrors = 0
+					}
+				}
 				if stat.Key == "current.responses" && stat.Value != 1000 || stat.Key == "current.5xx" && stat.Value != expectedErrors {
 					t.Fatal("HTTP population differs from independent oracle", stat.Value)
 				}
@@ -223,7 +239,7 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 				if row.Dimension != "current" {
 					continue
 				}
-				if stored.Result.DatasetID == "network.http-5xx-rate" && row.Value != 5 || stored.Result.DatasetID == "network.http-5xx" && row.Value != 50 {
+				if stored.Result.DatasetID == "network.http-5xx-rate" && row.Value != expectedErrors/10 || stored.Result.DatasetID == "network.http-5xx" && row.Value != expectedErrors {
 					t.Fatal("HTTP observation differs from independent oracle", stored.Result.DatasetID, row.Value)
 				}
 			}
@@ -247,6 +263,22 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 					if row.Value != expected[i] {
 						t.Fatal("comparison differs from independent oracle", stored.Result.DatasetID, row.Value, expected[i])
 					}
+				}
+			}
+			for _, ref := range stored.Result.DerivationEvidenceRefs {
+				var parent evidence.Evidence
+				for attempt := 0; attempt < 30; attempt++ {
+					parent, err = (evidence.Repository{Pool: repo.Pool}).Get(requestCtx, b.TenantID, uuid.MustParse(ref), grant)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if parent.ReplayState == "archived_verified" {
+						break
+					}
+					time.Sleep(100 * time.Millisecond)
+				}
+				if parent.ArchiveRef == nil || parent.ArchiveRef.PlaintextDigest != parent.ContentDigest || parent.ArchiveRef.Object.VersionID == "" {
+					t.Fatal("unverified parent archive", ref, parent.ReplayState)
 				}
 			}
 			validated[stored.Result.DatasetID] = true
@@ -275,6 +307,26 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 				}
 			}
 		}
+		if multi {
+			observations := map[string]bool{}
+			peers := map[string]bool{}
+			for _, edge := range context.Edges {
+				for _, ob := range edge.Observations {
+					observations[ob.RuleID] = true
+				}
+			}
+			for _, id := range context.QueryResultRefs {
+				q, e := repo.QueryResult(requestCtx, b.TenantID, id, actor.Subject)
+				if e != nil {
+					t.Fatal(e)
+				}
+				peers[q.Result.NetworkContext.Selection.PeerCanonicalID] = true
+			}
+			if len(peers) != 2 || !observations["R1/observed-http-5xx"] || !observations["R6/no-observed-http-5xx"] || observations["R3/shared-resource-observation"] {
+				t.Fatal("two callers' competing explanations or source gate lost", len(peers), observations)
+			}
+			t.Log("two actual callers: one 5xx path and one nonempty normal path; shared Node graph/health read; R3 remains unavailable for unqualified source time")
+		}
 		if !comparison && (!validated["network.http-5xx-rate"] || !validated["network.http-response-time"]) {
 			t.Fatal("required HTTP datasets not collected")
 		}
@@ -282,8 +334,40 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		if db.QueryRowContext(ctx, `SELECT count(*) FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name='model'`, b.TenantID, turn.JobID).Scan(&calls) != nil || calls != 0 {
 			t.Fatal("model admission occurred")
 		}
-		if profile.BaseURL != "http://127.0.0.1:1/v1" {
+		if os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1" && profile.BaseURL != "http://127.0.0.1:1/v1" {
 			t.Fatal("offline model fixture not configured")
+		}
+		modelReceipt := map[string]any{"attempted": false}
+		if os.Getenv("OPS_FAULT_CHAIN_MODEL") == "1" {
+			latest, err := repo.Get(requestCtx, b.TenantID, conversation.ConversationID, actor.Subject)
+			if err != nil {
+				t.Fatal(err)
+			}
+			follow, err := repo.Submit(requestCtx, b.TenantID, conversation.ConversationID, actor.Subject, "actual-model-explanation", assistant.SubmitMessage{Message: "先调用 get_assistant_context，读取 historicalFaultChainContext 和 historicalFaultChainQueryResults。用中文解释已提交的统计、支持、冲突与缺口，只引用已提交的 Fact/Evidence，不重新查询或修改窗口，不确认根因。", ExpectedConversationRevision: latest.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			var explanation assistant.Turn
+			for attempt := 0; attempt < 150; attempt++ {
+				explanation, err = repo.Turn(requestCtx, b.TenantID, follow.TurnID, actor.Subject)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if explanation.State != "running" && explanation.State != "queued" {
+					break
+				}
+				time.Sleep(time.Second)
+			}
+			var modelCalls, contextReads int
+			if db.QueryRowContext(ctx, `SELECT count(*) FILTER(WHERE tool_name='model'),count(*) FILTER(WHERE tool_name='get_assistant_context' AND state='succeeded') FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2`, b.TenantID, follow.JobID).Scan(&modelCalls, &contextReads) != nil {
+				t.Fatal("model ledger unavailable")
+			}
+			historical, err := repo.FaultChainContext(requestCtx, b.TenantID, turn.TurnID, actor.Subject)
+			if err != nil || graph.ScopeDigest(historical) != graph.ScopeDigest(context) {
+				t.Fatal("model explanation lost committed evidence", err)
+			}
+			modelReceipt = map[string]any{"attempted": true, "turnId": follow.TurnID, "state": explanation.State, "errorCode": explanation.ErrorCode, "modelCalls": modelCalls, "contextReads": contextReads, "evidencePreserved": true, "answer": json.RawMessage(explanation.Answer), "mechanismPassed": modelCalls > 0 && contextReads > 0, "chineseQualityAcceptance": false}
+			t.Log("actual model explanation outcome", explanation.State, explanation.ErrorCode, "modelCalls", modelCalls, "contextReads", contextReads, "evidence preserved")
 		}
 		if _, err = repo.FaultChainContext(requestCtx, b.TenantID, turn.TurnID, "different-operator"); err == nil {
 			t.Fatal("cross-owner context disclosed")
@@ -297,7 +381,7 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		if _, err = repo.QueryResult(requestCtx, b.TenantID, context.QueryResultRefs[0], actor.Subject); err == nil {
 			t.Fatal("revoked grant exposed stored query")
 		}
-		result, _ := json.MarshalIndent(map[string]any{"passed": true, "authorizationRevocation": true, "processRecovery": killedLease.Generation > 0, "killedGeneration": killedLease.Generation, "validatedWindows": validatedWindows, "schemaVersion": "fault-chain-runtime-acceptance/v1", "modelEndpointOffline": true, "modelKeyMissing": true, "modelCalls": calls, "nativePodUid": pods.Items[0].Metadata.UID, "turnId": turn.TurnID, "context": context, "ancillaryFixtures": []string{"tenant/role/PKI bootstrap", "TLS/IAM archive backend"}, "modelQualityAcceptance": false}, "", "  ")
+		result, _ := json.MarshalIndent(map[string]any{"passed": true, "authorizationRevocation": true, "processRecovery": killedLease.Generation > 0, "killedGeneration": killedLease.Generation, "validatedWindows": validatedWindows, "schemaVersion": "fault-chain-runtime-acceptance/v1", "modelExplanation": modelReceipt, "modelEndpointOffline": os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1", "modelKeyMissing": os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1", "modelCalls": calls, "nativePodUid": pods.Items[0].Metadata.UID, "turnId": turn.TurnID, "context": context, "ancillaryFixtures": []string{"tenant/role/PKI bootstrap", "TLS/IAM archive backend"}, "modelQualityAcceptance": false}, "", "  ")
 		if os.WriteFile(os.Getenv("OPS_FAULT_CHAIN_RUNTIME_REPORT"), result, 0600) != nil {
 			t.Fatal("report path required")
 		}

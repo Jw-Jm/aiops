@@ -216,10 +216,29 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 					return err
 				}
 				historical, err := investigation.ReadFaultChainContextTx(ctx, tx, readJob, *prior.FaultChainContextRef)
-				if err == nil {
-					data["historicalFaultChainContext"] = historical
+				if err != nil {
+					return err
 				}
-				return err
+				stored := []investigation.StoredQueryResult{}
+				bytes := 0
+				status := "historical"
+				for _, id := range historical.QueryResultRefs {
+					q, err := investigation.ReadAssistantQueryResultTx(ctx, tx, readJob, id)
+					if err != nil {
+						return err
+					}
+					size := len(rawJSON(q))
+					if len(stored) >= 8 || bytes+size > 24<<10 {
+						status = "partial"
+						break
+					}
+					bytes += size
+					stored = append(stored, q)
+				}
+				data["historicalFaultChainContext"] = historical
+				data["historicalFaultChainQueryResults"] = stored
+				data["historicalFaultChainQueryResultsStatus"] = status
+				return nil
 			})
 			if err != nil {
 				data["historicalFaultChainContextStatus"] = "unavailable"

@@ -6,6 +6,7 @@ import (
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/assistant"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/httpapi"
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/resource"
 	"testing"
@@ -79,7 +80,7 @@ func TestAssistantFaultChainAndClarifiedFollowup(t *testing.T) {
 	if err = jobs.Complete(ctx, lease, raw); err != nil {
 		t.Fatal(err)
 	}
-	third, err := repo.Submit(ctx, b.TenantID, c.ConversationID, c.OwnerSubject, "selection", assistant.SubmitMessage{Message: "继续检查它", ReferentCanonicalID: ids[1], ExpectedConversationRevision: 3, ParentTurnID: &second.TurnID, ClarificationID: &second.TurnID})
+	third, err := repo.Submit(ctx, b.TenantID, c.ConversationID, c.OwnerSubject, "selection", assistant.SubmitMessage{Message: "继续检查它过去5分钟", ReferentCanonicalID: ids[1], ExpectedConversationRevision: 3, ParentTurnID: &second.TurnID, ClarificationID: &second.TurnID})
 	if err != nil {
 		t.Fatal("verified option unusable", err)
 	}
@@ -91,6 +92,18 @@ func TestAssistantFaultChainAndClarifiedFollowup(t *testing.T) {
 	var parsed assistant.TurnInput
 	if err != nil || json.Unmarshal(input, &parsed) != nil || parsed.ReferenceResolution == nil || parsed.ReferenceResolution.CanonicalID != ids[1] {
 		t.Fatal("selected identity not frozen", third, err)
+	}
+	job, err := jobs.Get(ctx, b.TenantID, third.JobID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resultContext, err := (httpapi.AssistantTools{Legacy: httpapi.InvestigationTools{SP04: &httpapi.SP04Handlers{Pool: repo.Pool}}}).Invoke(ctx, job, "get_assistant_context", json.RawMessage(`{}`))
+	encoded, _ := json.Marshal(resultContext.Data)
+	var evaluation struct {
+		Request investigation.FaultChainRequest `json:"faultChainEvaluationRequest"`
+	}
+	if err != nil || json.Unmarshal(encoded, &evaluation) != nil || evaluation.Request.TargetCanonicalID != ids[1] || parsed.RequestedTimeRange == nil || evaluation.Request.Fault != *parsed.RequestedTimeRange {
+		t.Fatal("incident evaluation lost resolved referent or frozen window", err)
 	}
 	if err = jobs.Complete(ctx, lease, assistantEmptyAnswer()); err != nil {
 		t.Fatal(err)

@@ -71,3 +71,5 @@ R3 正反 Fixture 覆盖一个调用方、错 UID、窗口外健康、缺少关�
 普通资源排障工具缺口已修复：evaluate_fault_chain 原先只接受 evidence_only 的 FaultChainRequest，虽然在普通排障中列出却始终被拒绝。现在使用已经校验摘要的当前 TurnInput：单一资源上下文确定目标，优先使用冻结 requestedTimeRange，否则使用已绑定资源上下文的窗口；固定最多 4 边，不由模型传入目标/窗口/边数。没有基线或恢复窗时不构造比较；模糊目标、audit、其他任务、范围外资源/namespace、未来窗口被拒绝。get_assistant_context 显示服务端允许的 faultChainEvaluationRequest，模型仍只能选择当前 Job 成功提交的 Step IDs。原证据专用模式沿用显式请求与摘要校验。
 
 [ordinary-evaluation.log](ordinary-evaluation.log) 为远程 PostgreSQL/最小权限角色的普通模式机制验收：无专用请求的普通 resource_troubleshooting 仍保留普通模式及非零模型预算，实际工具派发得到 partial 上下文，提交 Step 后回答持久化和上下文读回成功；目标/窗口保持冻结，无来源事实时不补数字。跨所有者和授权撤销读取拒绝通过（0.41 秒）。资源身份及租户/角色是协议 Fixture，未执行实际模型请求，不代表模型解释质量或真实来源正向规则证明。相关 Go 单元/合同与 vet 通过，覆盖普通请求的窗口优先级与拒绝条件。Incident follow-up 没有单一资源上下文时仍需现有资源解析；不通过猜测目标开放评估。
+
+2026-10-15 继续开发与当前验收见 [后续记录](../fault-chain-20261015/README.md)。新增恢复条件、历史统计披露、Incident 窗口绑定及取消数字保留；当前多调用方、签名操作/模型与来源资格的失败如实保留。不得把本目录早期通过回执视作后续代码的完整专项验收。

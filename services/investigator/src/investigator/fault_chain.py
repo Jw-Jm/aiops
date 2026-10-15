@@ -64,6 +64,17 @@ def collect(job, job_api, bridge):
         if relation.get("kind")=="communicates_with":directions[peer]="outgoing" if relation["from"]==target else "incoming"
         if peer not in peers:
             peers.append(peer)
+    selected_peers = peers[:request["maxEdges"]]
+    if len(peers) > len(selected_peers):
+        failures.append("remaining_relations_not_checked")
+    # Shared Node paths are each caller's own admitted one-hop graph read.
+    # Do not traverse two hops or silently expand the frozen execution scope.
+    if any(n.get("kind") == "Node" for n in dependencies.get("nodes", [])):
+        for peer in selected_peers:
+            if remaining.get("toolCalls", 0) > 3:
+                call("get_dependencies", {"canonicalId": peer, "depth": 1})
+            else:
+                failures.append("shared_resource_relations_not_completed")
     # Stable stages give every selected edge its primary fault observation
     # before spending budget on transport and recovery. Every read still goes
     # through allocate/call and uses the frozen window, never a private loop.
@@ -92,7 +103,7 @@ def collect(job, job_api, bridge):
             if not tcp:
                 failures.append(label + "_tcp_capability_unavailable")
         for dataset, metric in datasets:
-            for peer in peers[:request["maxEdges"]]:
+            for peer in selected_peers:
                 cost = 2 if compare else 1
                 if remaining.get("rawQueries", 0) < cost or remaining.get("toolCalls", 0) <= 2:
                     failures.append(label + "_remaining_checks_not_completed")
@@ -109,8 +120,8 @@ def collect(job, job_api, bridge):
             # Only already disclosed Nodes may enter a cluster-scoped read.
             health_targets=sorted({n.get("canonicalId") for n in dependencies.get("nodes",[]) if n.get("kind")=="Node" and n.get("canonicalId")})
             health_targets.append(target)
-            health_targets.extend(p for p in peers if p not in health_targets)
-            for resource in health_targets[:request["maxEdges"]]:
+            health_targets.extend(p for p in selected_peers if p not in health_targets)
+            for resource in health_targets[:request["maxEdges"] + 2]:
                 if remaining.get("toolCalls",0)>3:
                     call("get_resource_health", {"canonicalId":resource})
                 else:

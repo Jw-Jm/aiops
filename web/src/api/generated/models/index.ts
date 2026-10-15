@@ -46,6 +46,7 @@ export * from './assistantFaultChainContextV1EdgesItemComparisonStatus.ts';
 export * from './assistantFaultChainContextV1EdgesItemObservationsItem.ts';
 export * from './assistantFaultChainContextV1EdgesItemObservationsItemFactRefsItem.ts';
 export * from './assistantFaultChainContextV1EdgesItemObservationsItemResourceHealth.ts';
+export * from './assistantFaultChainContextV1EdgesItemObservationsItemResourceHealthConditionStatus.ts';
 export * from './assistantFaultChainContextV1EdgesItemTemporalAssessment.ts';
 export * from './assistantFaultChainContextV1Status.ts';
 export * from './assistantFaultChainRequestV1.ts';

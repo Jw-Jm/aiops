@@ -28,6 +28,8 @@ const missingLabels: Record<string, string> = {
   shared_resource_cause_not_checked: "尚未核验共享资源异常",
   shared_resource_causal_mechanism_unverified:
     "共同资源与症状的因果机制尚未验证",
+  recovery_baseline_and_health_unverified:
+    "完整恢复尚未核验：需要同口径基线、合格覆盖和相关健康证据",
   network_window_statistics: "缺少相应窗口的网络统计",
   committed_scoped_resource_relations: "缺少已提交的范围内资源关系",
 };
@@ -35,9 +37,11 @@ const missingLabels: Record<string, string> = {
 export function FaultChainPanel({
   answer,
   turnId,
+  onReadOnlyCheck,
 }: {
   answer: AssistantAnswerV1;
   turnId: string;
+  onReadOnlyCheck?: (message: string) => void;
 }) {
   const { session } = useAuth();
   const scopeKey = JSON.stringify([
@@ -63,12 +67,24 @@ export function FaultChainPanel({
       retry={() => void query.refetch()}
     >
       {context && (
-        <Card title="故障链证据调查">
+        <Card title="故障链证据调查" style={{ overflowWrap: "anywhere" }}>
           <Space orientation="vertical" style={{ width: "100%" }}>
             <Alert
               type="info"
               title="依赖和异常是调查线索；故障传播仍待因果验证。"
             />
+            <Tag color="green">证据已提交；模型解释使用独立轮次</Tag>
+            {onReadOnlyCheck && (
+              <Button
+                onClick={() =>
+                  onReadOnlyCheck(
+                    "请通过 get_assistant_context 读取已授权的历史故障链上下文和统计引用，解释已提交的支持、冲突与缺口。保留原窗口、数字和规则结论，不推断时间先后或确认根因。",
+                  )
+                }
+              >
+                准备解释这些证据
+              </Button>
+            )}
             <Typography.Text>调查观测时间：{context.asOf}</Typography.Text>
             <Timeline
               items={[
@@ -171,11 +187,13 @@ export function FaultChainPanel({
                             <Link
                               to={`/resources/detail?canonicalId=${encodeURIComponent(observation.resourceHealth.canonicalId)}`}
                             >
-                              共同资源候选：
+                              健康观测资源：
                               {observation.resourceHealth.canonicalId}
                             </Link>
                             <Typography.Text>
-                              已提交状态：Ready=False；观测时间：
+                              已提交状态：Ready=
+                              {observation.resourceHealth.conditionStatus}
+                              ；观测时间：
                               {observation.resourceHealth.observedAt}
                             </Typography.Text>
                             <Typography.Text type="secondary">
@@ -222,11 +240,39 @@ export function FaultChainPanel({
                   ；历史窗口内是否成立仍待核验。
                 </Typography.Text>
                 <Typography.Text strong>待补证据</Typography.Text>
+                <a href="#assistant-binding-editor">
+                  通过现有编辑器调整调查范围
+                </a>
                 <List
                   size="small"
                   dataSource={edge.missingEvidence}
                   renderItem={(item) => (
-                    <List.Item>{missingLabels[item] || item}</List.Item>
+                    <List.Item>
+                      <Space wrap>
+                        <span>{missingLabels[item] || item}</span>
+                        {onReadOnlyCheck &&
+                          [
+                            "shared_resource_cause_not_checked",
+                            "recovery_baseline_and_health_unverified",
+                          ].includes(item) && (
+                            <Button
+                              size="small"
+                              onClick={() =>
+                                onReadOnlyCheck(
+                                  `请使用已发布的 get_resource_health 只读检查本会话授权范围内的目标及依赖自身状态，核对历史故障链缺口 ${item}。当前快照不能补造历史窗口健康证明。`,
+                                )
+                              }
+                            >
+                              准备只读健康检查
+                            </Button>
+                          )}
+                        {item.includes("scope") && (
+                          <a href="#assistant-binding-editor">
+                            编辑现有调查范围
+                          </a>
+                        )}
+                      </Space>
+                    </List.Item>
                   )}
                 />
                 <Typography.Text strong>下一步只读检查</Typography.Text>

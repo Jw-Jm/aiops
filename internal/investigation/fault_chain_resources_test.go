@@ -36,12 +36,21 @@ func TestSharedResourceRequiresOwnSnapshotTwoCallersAndQualifiedTime(t *testing.
 	if len(health) != 1 {
 		t.Fatal("qualified own snapshot missing")
 	}
-	for _, name := range []string{"qualified", "one-caller", "wrong-uid", "outside-window", "missing-relation", "wrong-relation-source", "unreliable-network", "partial", "no-own-health"} {
+	for _, name := range []string{"qualified", "one-caller", "wrong-uid", "outside-window", "missing-relation", "wrong-relation-source", "unreliable-network", "partial", "no-own-health", "normal-second-caller", "common-downstream"} {
 		t.Run(name, func(t *testing.T) {
 			hs := slices.Clone(health)
 			rs := slices.Clone(paths)
 			qs := slices.Clone(queries)
 			switch name {
+			case "normal-second-caller":
+				value := qs[1].Result
+				value.Rows = []analytics.Row{{Dimension: "current", Value: 0}}
+				value.Statistics = []analytics.Statistic{{Key: "current.responses", Value: 1000, Unit: "responses"}, {Key: "current.5xx", Value: 0, Unit: "responses"}}
+				qs[1] = BuildStoredQueryResult(value)
+			case "common-downstream":
+				hs[0].CanonicalID = b
+				rs = []resource.Relation{relation, path(c, b, "communicates_with", df)}
+				qs[1] = query(c, b)
 			case "one-caller":
 				qs = qs[:1]
 			case "wrong-uid":
@@ -81,7 +90,7 @@ func TestSharedResourceRequiresOwnSnapshotTwoCallersAndQualifiedTime(t *testing.
 					}
 				}
 			}
-			if found != (name == "qualified") {
+			if found != (name == "qualified" || name == "common-downstream") {
 				t.Fatal("shared resource predicate violated", name, out)
 			}
 			if found {
@@ -91,6 +100,15 @@ func TestSharedResourceRequiresOwnSnapshotTwoCallersAndQualifiedTime(t *testing.
 				}
 			}
 		})
+	}
+	snapshot.Nodes[0].Attributes["status"] = map[string]any{"conditions": []any{map[string]any{"type": "Ready", "status": "Unknown"}}}
+	unknown := CommittedFaultChainResourceHealth(uuid.New(), snapshot)
+	if len(unknown) != 1 || unknown[0].ConditionStatus != "Unknown" {
+		t.Fatal("unknown health lost; could replay earlier Ready=True")
+	}
+	snapshot.Nodes[0].Attributes["status"] = map[string]any{"conditions": []any{map[string]any{"type": "Ready", "status": "False"}, map[string]any{"type": "Ready", "status": "True"}}}
+	if len(CommittedFaultChainResourceHealth(uuid.New(), snapshot)) != 0 {
+		t.Fatal("conflicting Ready conditions accepted")
 	}
 	snapshot.Partial = true
 	if len(CommittedFaultChainResourceHealth(uuid.New(), snapshot)) != 0 {

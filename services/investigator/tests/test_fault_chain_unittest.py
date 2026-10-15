@@ -168,3 +168,22 @@ class FaultChainFixedCollection(unittest.TestCase):
         self.assertEqual(bridge.attempts,2)
         self.assertEqual(sum(name=="execute_analysis_query" for name,_ in ledger.allocations),2)
         self.assertEqual(answer["queryResultRefs"],["q1"])
+
+class SharedPathCollection(unittest.TestCase):
+    def test_selected_peers_get_own_scoped_path_without_querying_extra_peers(self):
+        class SharedBridge(BudgetBridge):
+            def call(self, name, args, allocation):
+                result = super().call(name, args, allocation)
+                if name == "get_assistant_context":
+                    result["data"]["faultChainRequest"]["maxEdges"] = 1
+                if name == "get_dependencies" and args["canonicalId"] == "target":
+                    result["data"]["nodes"].append({"canonicalId": "shared-node", "kind": "Node"})
+                return result
+        bridge, ledger = SharedBridge(10, peers=2), Ledger()
+        answer = collect({"budget": {"toolCalls": 30, "rawQueries": 10}}, ledger, bridge)
+        paths = [args for name, args in ledger.allocations if name == "get_dependencies"]
+        self.assertEqual(paths, [{"canonicalId": "target", "depth": 1}, {"canonicalId": "peer-0", "depth": 1}])
+        self.assertTrue(all(q["networkSelection"]["peerCanonicalId"] == "peer-0" for q in bridge.queries))
+        health = [args["canonicalId"] for name, args in ledger.allocations if name == "get_resource_health"]
+        self.assertEqual(health, ["shared-node", "target", "peer-0"])
+        self.assertIn("remaining_relations_not_checked", answer["missingEvidence"])

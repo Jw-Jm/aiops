@@ -700,16 +700,18 @@ export function AssistantPage() {
                   />
                 )}
                 {conversation.data && (
-                  <BindingEditor
-                    key={id}
-                    conversation={conversation.data.data}
-                    running={Boolean(running)}
-                    onChanged={() => {
-                      setTurn(undefined);
-                      setMessageCursor(undefined);
-                      setReferent(undefined);
-                    }}
-                  />
+                  <div id="assistant-binding-editor">
+                    <BindingEditor
+                      key={id}
+                      conversation={conversation.data.data}
+                      running={Boolean(running)}
+                      onChanged={() => {
+                        setTurn(undefined);
+                        setMessageCursor(undefined);
+                        setReferent(undefined);
+                      }}
+                    />
+                  </div>
                 )}
                 {conversation.data?.data.mode === "troubleshoot" &&
                   capabilities.data?.data.faultChainEnabled && (
@@ -772,12 +774,36 @@ export function AssistantPage() {
                           <DiagnosisAnswer
                             answer={item.content as AssistantAnswerV1}
                             turnId={item.turnId}
+                            onReadOnlyCheck={
+                              item.turnId === active?.turnId
+                                ? (draft) => {
+                                    setMessage(draft);
+                                    document
+                                      .getElementById("assistant-message")
+                                      ?.focus();
+                                  }
+                                : undefined
+                            }
                           />
                         )}
                       </Card>
                     </List.Item>
                   )}
                 />
+                {!messageCursor &&
+                  active?.answer &&
+                  !(messages.data?.data || []).some(
+                    (item) =>
+                      item.role === "assistant" &&
+                      item.turnId === active.turnId,
+                  ) && (
+                    <Card size="small" title="本轮已保留的证据">
+                      <DiagnosisAnswer
+                        answer={active.answer}
+                        turnId={active.turnId}
+                      />
+                    </Card>
+                  )}
                 {active && (
                   <Space>
                     <Tag>{active.state}</Tag>
@@ -846,6 +872,7 @@ export function AssistantPage() {
                 <Input.TextArea
                   aria-label="问题"
                   value={message}
+                  id="assistant-message"
                   onChange={(e) => setMessage(e.target.value)}
                   maxLength={4000}
                   showCount

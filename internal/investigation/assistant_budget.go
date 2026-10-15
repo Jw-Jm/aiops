@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-// Only committed, currently disclosable results survive budget exhaustion.
+// Only committed, currently disclosable results survive cancellation or budget exhaustion.
 // Unsettled requests and model guesses cannot become partial numeric facts.
-func assistantBudgetAnswerTx(ctx context.Context, tx pgx.Tx, j Job) ([]byte, error) {
-	a := AssistantAnswer{SchemaVersion: "assistant-answer/v1", AnswerKind: "unsupported", Summary: "本轮预算已耗尽，保留已提交的查询事实；未完成的检查没有结论。", FactRefs: []FactRef{}, QueryResultRefs: []uuid.UUID{}, EvidenceRefs: []string{}, EntityRefs: []string{}, MissingEvidence: []string{"remaining_checks_not_completed"}, Partial: true, DegradedSources: []string{"budget-exhausted"}, Warnings: []string{"BUDGET_EXHAUSTED"}, Hypotheses: []Hypothesis{}, NextChecks: []string{"缩小范围后发起新一轮检查"}}
+func assistantPartialAnswerTx(ctx context.Context, tx pgx.Tx, j Job, code string) ([]byte, error) {
+	a := AssistantAnswer{SchemaVersion: "assistant-answer/v1", AnswerKind: "unsupported", Summary: "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。", FactRefs: []FactRef{}, QueryResultRefs: []uuid.UUID{}, EvidenceRefs: []string{}, EntityRefs: []string{}, MissingEvidence: []string{"remaining_checks_not_completed"}, Partial: true, DegradedSources: []string{}, Warnings: []string{code}, Hypotheses: []Hypothesis{}, NextChecks: []string{"缩小范围后发起新一轮检查"}}
 	a.ScopeSummary = graph.ScopeDigest(j.Scope)
 	a.AsOf = time.Now().UTC()
-	if j.Assistant.TaskKind == "data_query" || j.Assistant.ExecutionMode == "evidence_only" {
+	if j.Assistant.AuthorizationDomain == "operational" || j.Assistant.TaskKind == "data_query" {
 		rows, err := tx.Query(ctx, `SELECT result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND state='succeeded' AND tool_name='execute_analysis_query' ORDER BY started_at,step_id`, j.TenantID, j.JobID)
 		if err != nil {
 			return nil, err

@@ -4,6 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
+import type { AssistantFaultChainContextV1EdgesItemObservationsItemResourceHealthConditionStatus } from './assistantFaultChainContextV1EdgesItemObservationsItemResourceHealthConditionStatus.ts';
 import type { GraphSourceAuthorityV2 } from './graphSourceAuthorityV2.ts';
 
 export type AssistantFaultChainContextV1EdgesItemObservationsItemResourceHealth = {
@@ -17,7 +18,7 @@ export type AssistantFaultChainContextV1EdgesItemObservationsItemResourceHealth 
   namespace: string;
   observedAt: string;
   conditionType: 'Ready';
-  conditionStatus: 'False';
+  conditionStatus: AssistantFaultChainContextV1EdgesItemObservationsItemResourceHealthConditionStatus;
   /**
      * @minItems 1
      * @maxItems 200

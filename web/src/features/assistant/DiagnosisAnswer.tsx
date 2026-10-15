@@ -8,9 +8,11 @@ import { FaultChainPanel } from "./FaultChainPanel";
 export function DiagnosisAnswer({
   answer,
   turnId,
+  onReadOnlyCheck,
 }: {
   answer: AssistantAnswerV1;
   turnId?: string;
+  onReadOnlyCheck?: (message: string) => void;
 }) {
   return (
     <Space orientation="vertical" style={{ width: "100%" }}>
@@ -47,7 +49,11 @@ export function DiagnosisAnswer({
         />
       )}
       {answer.faultChainContextRef && turnId && (
-        <FaultChainPanel answer={answer} turnId={turnId} />
+        <FaultChainPanel
+          answer={answer}
+          turnId={turnId}
+          onReadOnlyCheck={onReadOnlyCheck}
+        />
       )}
       {!answer.faultChainContextRef &&
         answer.queryResultRefs.map((id) => (

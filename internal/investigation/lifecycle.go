@@ -98,8 +98,24 @@ func (r Repository) Stop(ctx context.Context, tenant, id uuid.UUID, subject stri
 		if expire {
 			state, code = "expired", "TIME_BUDGET_EXHAUSTED"
 		}
-		if _, err = tx.Exec(ctx, `UPDATE investigation.jobs SET state=$3,error_code=$4 WHERE tenant_id=$1 AND job_id=$2`, tenant, id, state, code); err != nil {
+		var answer []byte
+		if j.Assistant != nil && !expire {
+			// Cancellation always fences execution, even when a source has
+			// been revoked and the committed facts can no longer be disclosed.
+			answer, err = assistantPartialAnswerTx(ctx, tx, j, code)
+			if err != nil {
+				answer = nil
+			}
+		}
+		if _, err = tx.Exec(ctx, `UPDATE investigation.jobs SET state=$3,error_code=$4,result=$5 WHERE tenant_id=$1 AND job_id=$2`, tenant, id, state, code, answer); err != nil {
 			return err
+		}
+		if j.Assistant != nil && len(answer) > 0 {
+			// The state trigger already locks this conversation. Publish the
+			// retained answer as a message so normal retention/readback applies.
+			if _, err = tx.Exec(ctx, `INSERT INTO investigation.assistant_messages(tenant_id,message_id,conversation_id,turn_id,sequence,role,content) SELECT $1,$2,$3,$2,COALESCE(max(sequence),0)+1,'assistant',$4 FROM investigation.assistant_messages WHERE tenant_id=$1 AND conversation_id=$3 ON CONFLICT(tenant_id,turn_id,role) DO NOTHING`, j.TenantID, j.Assistant.TurnID, j.Assistant.ConversationID, answer); err != nil {
+				return err
+			}
 		}
 		return event(ctx, tx, j, state, map[string]any{"state": state, "partial": true, "errorCode": code})
 	})
@@ -213,7 +229,7 @@ func exhaustBudgetTx(ctx context.Context, tx pgx.Tx, j Job) error {
 		return err
 	}
 	if j.Assistant != nil {
-		answer, err := assistantBudgetAnswerTx(ctx, tx, j)
+		answer, err := assistantPartialAnswerTx(ctx, tx, j, "BUDGET_EXHAUSTED")
 		if err != nil {
 			return err
 		}
