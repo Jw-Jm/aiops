@@ -1,0 +1,603 @@
+{
+  "ancillaryFixtures": [
+    "tenant/role/PKI bootstrap",
+    "TLS/IAM archive backend"
+  ],
+  "authorizationRevocation": true,
+  "context": {
+    "schemaVersion": "fault-chain-context/v1",
+    "ruleVersion": "fault-chain-rules/v1",
+    "request": {
+      "schemaVersion": "fault-chain-request/v1",
+      "targetCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+      "fault": {
+        "from": "2026-10-15T05:55:25Z",
+        "to": "2026-10-15T05:56:25Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "maxEdges": 4
+    },
+    "asOf": "2026-10-15T05:59:30.505299587Z",
+    "status": "partial",
+    "edges": [
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/13eb1016-d2fb-40d7-952d-15e1d4fa5230",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "09a335cf-aae7-4f46-8596-fee7f8b498c3",
+            "ruleVersion": "deepflow-v7.2.0/GetL7Context",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:58:03Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:58:03Z",
+          "validFrom": "2026-10-15T05:58:03Z",
+          "ttl": 300
+        },
+        "relationDigest": "sha256:38a59ef4960cfd69dd388181bda778af5798de60fbba0d4ae7684a848c4a6559",
+        "callDirection": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/13eb1016-d2fb-40d7-952d-15e1d4fa5230 → k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [
+          "01a13e24-e158-7cb5-a3fb-634004894054",
+          "01a13e24-e865-7725-8d6f-77d45fe0373c"
+        ],
+        "observations": [
+          {
+            "ruleId": "R6/no-observed-http-5xx",
+            "reason": "合格完成会话中未观察到 5xx，仅与该窗口存在 5xx 的候选相矛盾。",
+            "supports": [],
+            "conflicts": [
+              "01a13e24-e012-704a-8033-3747cee98edf"
+            ],
+            "factRefs": [
+              {
+                "queryResultId": "01a13e24-e158-7cb5-a3fb-634004894054",
+                "factId": "sha256:e85bbcdeb465c91341c3d1d8170c0db3edd7ad13583f44a7ca660c72ba802bb4"
+              }
+            ]
+          },
+          {
+            "ruleId": "observation/v1",
+            "reason": "已提交的网络观测；未证明故障原因。",
+            "supports": [],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a13e24-e865-7725-8d6f-77d45fe0373c",
+                "factId": "sha256:8e7ada40f1516dd2fba4b271a3a726b63153ad9bec2d55d0305a76f8520ba611"
+              }
+            ]
+          }
+        ],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      },
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "09a335cf-aae7-4f46-8596-fee7f8b498c3",
+            "ruleVersion": "deepflow-v7.2.0/GetL7Context",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:58:03Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:58:03Z",
+          "validFrom": "2026-10-15T05:58:03Z",
+          "ttl": 300
+        },
+        "relationDigest": "sha256:579103b72c74037a4e719e6a76a6e5682e2db2baf97d6af0c0c6af04fba48be2",
+        "callDirection": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605 → k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [
+          "01a13e24-e478-76f2-9343-5c6112438503",
+          "01a13e24-eb8a-7625-9824-75fceed20118"
+        ],
+        "observations": [
+          {
+            "ruleId": "R1/observed-http-5xx",
+            "reason": "合格完成响应中观察到 HTTP 5xx，支持调查响应异常；缺少可用基线及服务端自身证据，不能确认具体原因。",
+            "supports": [
+              "01a13e24-e30b-7ab7-99ec-953d06203249"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a13e24-e478-76f2-9343-5c6112438503",
+                "factId": "sha256:6d9fdedf54a56fcad5e9b757e2fa692a328efd8e1685edc23c427f5bc9fb826b"
+              }
+            ]
+          },
+          {
+            "ruleId": "observation/v1",
+            "reason": "已提交的网络观测；未证明故障原因。",
+            "supports": [],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a13e24-eb8a-7625-9824-75fceed20118",
+                "factId": "sha256:f3e2c802299cfb6768e111fb8dbdd9c1b292653b91b0232519204af55efbbaeb"
+              }
+            ]
+          }
+        ],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      },
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/2836080c-34fe-4e13-9d34-29d8219b9d5c",
+          "kind": "managed_by",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:59:11.409753623Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:59:11.409753623Z",
+          "validFrom": "2026-10-15T05:59:11.409753623Z",
+          "ttl": 0
+        },
+        "relationDigest": "sha256:09180be8a9d0a4f40ec23819b66710ff85c612d05c509cc8708b73f4fc8cafee",
+        "callDirection": "unknown",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [],
+        "observations": [],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked",
+          "network_window_statistics"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      },
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Service/691cd8bf-e456-4e7b-bae0-9af0e9960faa",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "selects_pod",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/selector/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:59:11.295425428Z"
+          },
+          "confidence": 0.95,
+          "observedAt": "2026-10-15T05:59:11.295425428Z",
+          "validFrom": "2026-10-15T05:59:11.295425428Z",
+          "ttl": 0
+        },
+        "relationDigest": "sha256:6231fabe419d2611018b3a2dd58c8079420ca5e6719fab19e0518165a2bf64b3",
+        "callDirection": "unknown",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [],
+        "observations": [],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked",
+          "network_window_statistics"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      }
+    ],
+    "queryResultRefs": [
+      "01a13e24-e158-7cb5-a3fb-634004894054",
+      "01a13e24-e478-76f2-9343-5c6112438503",
+      "01a13e24-e865-7725-8d6f-77d45fe0373c",
+      "01a13e24-eb8a-7625-9824-75fceed20118"
+    ],
+    "evidenceRefs": [
+      "01a13e24-e012-704a-8033-3747cee98edf",
+      "01a13e24-e30b-7ab7-99ec-953d06203249",
+      "01a13e24-e68f-7260-9e85-d2d3013b7d6e",
+      "01a13e24-ea16-7adb-8d82-d087b7e84864"
+    ],
+    "missingEvidence": [
+      "remaining_relations_not_checked"
+    ]
+  },
+  "killedGeneration": 0,
+  "modelCalls": 0,
+  "modelEndpointOffline": true,
+  "modelExplanation": {
+    "attempted": false
+  },
+  "modelKeyMissing": true,
+  "modelQualityAcceptance": false,
+  "multiCallerScenario": "mixed",
+  "nativePodUid": "d5c42e77-453b-43d0-a541-b266968a1aa2",
+  "passed": true,
+  "processRecovery": false,
+  "schemaVersion": "fault-chain-runtime-acceptance/v1",
+  "sharedNativeChecks": [
+    {
+      "collectedAt": "2026-10-15T13:59:25.355633098+08:00",
+      "health": [],
+      "relations": [
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/2836080c-34fe-4e13-9d34-29d8219b9d5c",
+          "kind": "managed_by",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:59:11.409753623Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:59:11.409753623Z",
+          "validFrom": "2026-10-15T05:59:11.409753623Z",
+          "ttl": 0
+        },
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+          "kind": "scheduled_on",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:59:11.409753623Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:59:11.409753623Z",
+          "validFrom": "2026-10-15T05:59:11.409753623Z",
+          "ttl": 0
+        },
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Service/691cd8bf-e456-4e7b-bae0-9af0e9960faa",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "selects_pod",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/selector/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:59:11.295425428Z"
+          },
+          "confidence": 0.95,
+          "observedAt": "2026-10-15T05:59:11.295425428Z",
+          "validFrom": "2026-10-15T05:59:11.295425428Z",
+          "ttl": 0
+        },
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/13eb1016-d2fb-40d7-952d-15e1d4fa5230",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "09a335cf-aae7-4f46-8596-fee7f8b498c3",
+            "ruleVersion": "deepflow-v7.2.0/GetL7Context",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:58:03Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:58:03Z",
+          "validFrom": "2026-10-15T05:58:03Z",
+          "ttl": 300
+        },
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "09a335cf-aae7-4f46-8596-fee7f8b498c3",
+            "ruleVersion": "deepflow-v7.2.0/GetL7Context",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:58:03Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:58:03Z",
+          "validFrom": "2026-10-15T05:58:03Z",
+          "ttl": 300
+        }
+      ],
+      "sources": [
+        {
+          "sourceRegistrationId": "09a335cf-aae7-4f46-8596-fee7f8b498c3",
+          "revision": 1,
+          "scopeDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5"
+        },
+        {
+          "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+          "revision": 1,
+          "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+        }
+      ],
+      "stepId": "01a13e24-db23-7404-a4c0-e856aa90c3cf",
+      "tool": "get_dependencies"
+    },
+    {
+      "collectedAt": "2026-10-15T13:59:25.556634463+08:00",
+      "health": [],
+      "relations": [
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/13eb1016-d2fb-40d7-952d-15e1d4fa5230",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+          "kind": "scheduled_on",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:59:11.409614057Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:59:11.409614057Z",
+          "validFrom": "2026-10-15T05:59:11.409614057Z",
+          "ttl": 0
+        },
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/13eb1016-d2fb-40d7-952d-15e1d4fa5230",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/f7e117fd-ee3e-43e0-911c-06a66a83f2fd",
+          "kind": "managed_by",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:59:11.409614057Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:59:11.409614057Z",
+          "validFrom": "2026-10-15T05:59:11.409614057Z",
+          "ttl": 0
+        },
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/13eb1016-d2fb-40d7-952d-15e1d4fa5230",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "09a335cf-aae7-4f46-8596-fee7f8b498c3",
+            "ruleVersion": "deepflow-v7.2.0/GetL7Context",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:58:03Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:58:03Z",
+          "validFrom": "2026-10-15T05:58:03Z",
+          "ttl": 300
+        }
+      ],
+      "sources": [
+        {
+          "sourceRegistrationId": "09a335cf-aae7-4f46-8596-fee7f8b498c3",
+          "revision": 1,
+          "scopeDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5"
+        },
+        {
+          "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+          "revision": 1,
+          "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+        }
+      ],
+      "stepId": "01a13e24-dbdd-75f7-89fa-dc1f0acaf6b6",
+      "tool": "get_dependencies"
+    },
+    {
+      "collectedAt": "2026-10-15T13:59:25.757415842+08:00",
+      "health": [],
+      "relations": [
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/d85a8149-2364-47f4-bbc0-26b65bfb83e2",
+          "kind": "managed_by",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:59:11.409473115Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:59:11.409473115Z",
+          "validFrom": "2026-10-15T05:59:11.409473115Z",
+          "ttl": 0
+        },
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+          "kind": "scheduled_on",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:59:11.409473115Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:59:11.409473115Z",
+          "validFrom": "2026-10-15T05:59:11.409473115Z",
+          "ttl": 0
+        },
+        {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "09a335cf-aae7-4f46-8596-fee7f8b498c3",
+            "ruleVersion": "deepflow-v7.2.0/GetL7Context",
+            "sourceValues": null,
+            "observedAt": "2026-10-15T05:58:03Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-15T05:58:03Z",
+          "validFrom": "2026-10-15T05:58:03Z",
+          "ttl": 300
+        }
+      ],
+      "sources": [
+        {
+          "sourceRegistrationId": "09a335cf-aae7-4f46-8596-fee7f8b498c3",
+          "revision": 1,
+          "scopeDigest": "sha256:7308fdff9a2948b62147f49f063d033681ad7b9cc7c5aeae4e1322afa83f1ad5"
+        },
+        {
+          "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+          "revision": 1,
+          "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+        }
+      ],
+      "stepId": "01a13e24-dca5-7d34-a9bb-324a211af543",
+      "tool": "get_dependencies"
+    },
+    {
+      "collectedAt": "2026-10-15T13:59:29.618295174+08:00",
+      "health": [
+        {
+          "stepId": "01a13e24-ebbd-702e-a37d-a8637c64b7a1",
+          "canonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+          "namespace": "",
+          "observedAt": "2026-10-15T05:59:09.887740874Z",
+          "conditionType": "Ready",
+          "conditionStatus": "True",
+          "sources": [
+            {
+              "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+              "revision": 1,
+              "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+            }
+          ]
+        }
+      ],
+      "relations": [],
+      "sources": [
+        {
+          "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+          "revision": 1,
+          "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+        }
+      ],
+      "stepId": "01a13e24-ebbd-702e-a37d-a8637c64b7a1",
+      "tool": "get_resource_health"
+    },
+    {
+      "collectedAt": "2026-10-15T13:59:29.819755365+08:00",
+      "health": [
+        {
+          "stepId": "01a13e24-ec7d-7d23-b638-e375c379f12e",
+          "canonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "namespace": "ops-assistant-deepflow-20261013",
+          "observedAt": "2026-10-15T05:59:11.409753623Z",
+          "conditionType": "Ready",
+          "conditionStatus": "True",
+          "sources": [
+            {
+              "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+              "revision": 1,
+              "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+            }
+          ]
+        }
+      ],
+      "relations": [],
+      "sources": [
+        {
+          "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+          "revision": 1,
+          "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+        }
+      ],
+      "stepId": "01a13e24-ec7d-7d23-b638-e375c379f12e",
+      "tool": "get_resource_health"
+    },
+    {
+      "collectedAt": "2026-10-15T13:59:30.221401032+08:00",
+      "health": [
+        {
+          "stepId": "01a13e24-ed49-7d0c-9196-0b66dc7f0373",
+          "canonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/13eb1016-d2fb-40d7-952d-15e1d4fa5230",
+          "namespace": "ops-assistant-deepflow-20261013",
+          "observedAt": "2026-10-15T05:59:11.409614057Z",
+          "conditionType": "Ready",
+          "conditionStatus": "True",
+          "sources": [
+            {
+              "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+              "revision": 1,
+              "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+            }
+          ]
+        }
+      ],
+      "relations": [],
+      "sources": [
+        {
+          "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+          "revision": 1,
+          "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+        }
+      ],
+      "stepId": "01a13e24-ed49-7d0c-9196-0b66dc7f0373",
+      "tool": "get_resource_health"
+    },
+    {
+      "collectedAt": "2026-10-15T13:59:30.42241574+08:00",
+      "health": [
+        {
+          "stepId": "01a13e24-eedb-7bcd-a02f-975a34c29be9",
+          "canonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "namespace": "ops-assistant-deepflow-20261013",
+          "observedAt": "2026-10-15T05:59:11.409473115Z",
+          "conditionType": "Ready",
+          "conditionStatus": "True",
+          "sources": [
+            {
+              "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+              "revision": 1,
+              "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+            }
+          ]
+        }
+      ],
+      "relations": [],
+      "sources": [
+        {
+          "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+          "revision": 1,
+          "scopeDigest": "sha256:6d10a9d2431325603b531f9344e5c8b61d46c60ae32c4db4f85f0855208c3d32"
+        }
+      ],
+      "stepId": "01a13e24-eedb-7bcd-a02f-975a34c29be9",
+      "tool": "get_resource_health"
+    }
+  ],
+  "turnId": "01a13e24-d227-7b0b-98f9-f0545e3e01da",
+  "validatedWindows": {
+    "network.http-5xx-rate/fault": true,
+    "network.http-response-time/fault": true
+  }
+}

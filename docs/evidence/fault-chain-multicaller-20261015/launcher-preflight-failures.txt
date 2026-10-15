@@ -1,0 +1,11 @@
+Recorded from the tool transcript, not a runtime acceptance receipt.
+
+2026-10-15 launcher r1/r2:
+Traceback (most recent call last):
+  File "/opt/ops-assistant-dev-20261012/fault-chain-multicaller-20261015/runner.py", line 14, in <module>
+    if not any(line.startswith('Test') for line in listing.stdout.splitlines()): raise ValueError('no integration test matches the requested pattern')
+ValueError: no integration test matches the requested pattern
+
+The private runner still referenced runtime-stage.test because the initial shell
+replacement lost literal quotes. No test matched and no runtime acceptance ran.
+The runner was corrected to the dedicated runtime.test; no product gate changed.
