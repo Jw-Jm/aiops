@@ -73,6 +73,35 @@ func assistantPartialAnswerTx(ctx context.Context, tx pgx.Tx, j Job, code string
 			}
 		}
 	}
+	rows, err := tx.Query(ctx, `SELECT step_id,tool_name,result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND state='succeeded' AND tool_name IN('resource_history','resource_changes','resource_findings') ORDER BY started_at,step_id LIMIT 40`, j.TenantID, j.JobID)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var ref ResourceSourceStep
+		var data []byte
+		var wire struct {
+			Data struct {
+				CanonicalID string `json:"canonicalId"`
+			} `json:"data"`
+		}
+		if rows.Scan(&ref.StepID, &ref.Tool, &data) != nil || json.Unmarshal(data, &wire) != nil {
+			rows.Close()
+			return nil, ErrInvalid
+		}
+		ref.CanonicalID = wire.Data.CanonicalID
+		ref.ContentDigest = graph.ScopeDigest(json.RawMessage(data))
+		a.ResourceSourceSteps = append(a.ResourceSourceSteps, ref)
+	}
+	err = rows.Err()
+	rows.Close()
+	if err != nil {
+		return nil, err
+	}
+	if len(a.ResourceSourceSteps) > 0 {
+		a.AnswerKind = "diagnosis"
+		a.Summary = "本轮已停止，保留已提交的运行数据来源与查询事实；未完成的检查没有结论。"
+	}
 	// The validator derives scope/asOf and checks the same committed-reference
 	// manifest as a normal final answer. No model call or extra read path exists.
 	return ValidateAssistantAnswerTx(ctx, tx, j, raw(a))

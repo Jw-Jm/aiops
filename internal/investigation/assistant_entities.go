@@ -12,10 +12,11 @@ func committedAssistantEntities(tool string, data json.RawMessage) []string {
 		Resources []identity `json:"resources"`
 	}
 	var v struct {
-		Nodes      []identity      `json:"nodes"`
-		Candidates []identity      `json:"candidates"`
-		Context    resourceContext `json:"context"`
-		Binding    struct {
+		CanonicalID string          `json:"canonicalId"`
+		Nodes       []identity      `json:"nodes"`
+		Candidates  []identity      `json:"candidates"`
+		Context     resourceContext `json:"context"`
+		Binding     struct {
 			ResourceContext resourceContext `json:"resourceContext"`
 		} `json:"binding"`
 	}
@@ -28,6 +29,8 @@ func committedAssistantEntities(tool string, data json.RawMessage) []string {
 		identities = v.Binding.ResourceContext.Resources
 	case "get_resource_investigation_context":
 		identities = v.Context.Resources
+	case "resource_history", "resource_changes", "resource_findings":
+		identities = []identity{{CanonicalID: v.CanonicalID}}
 	case "resolve_resources":
 		identities = v.Candidates
 	case "get_resource_context", "get_resource_health", "query_kubernetes", "get_dependencies", "get_impact_scope":

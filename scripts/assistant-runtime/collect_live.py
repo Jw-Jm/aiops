@@ -55,13 +55,15 @@ def send(endpoint, path, body, content_type):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--namespace', required=True)
+    p.add_argument('--canary-set', choices=('assistant-live', 'fault-chain'), default='assistant-live')
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--seconds', type=int, default=420)
     p.add_argument('--interval', type=int, default=5)
     p.add_argument('--identity-from', type=Path, help='reuse owned tenant/source identifiers, recheck actual cluster and namespace')
     args = p.parse_args()
-    if not re.fullmatch(r'ops-assistant-live-[0-9]{8}', args.namespace) or not args.output.is_absolute() or args.seconds < 60 or args.seconds > 900 or args.interval < 5:
+    if not (re.fullmatch(r'ops-assistant-live-[0-9]{8}', args.namespace) if args.canary_set == 'assistant-live' else args.namespace == 'ops-assistant-deepflow-20261013') or not args.output.is_absolute() or args.seconds < 60 or args.seconds > 900 or args.interval < 5:
         p.error('bounded owned namespace/output/window required')
+    selector = 'ops.task=assistant-live-20261013' if args.canary_set == 'assistant-live' else 'ops.platform.io/test-release=fault-chain-20261014'
     args.output.mkdir(parents=True, mode=0o700, exist_ok=False)
     tenant = str(uuid.uuid4())
     cluster = json.loads(kube('get', 'namespace', 'kube-system', '-o', 'json'))['metadata']['uid']
@@ -81,14 +83,14 @@ def main():
     while time.monotonic() - start < args.seconds:
         before = time.monotonic()
         try:
-            items = json.loads(kube('get', 'pods', '-n', args.namespace, '-l', 'ops.task=assistant-live-20261013', '-o', 'json'))['items']
+            items = json.loads(kube('get', 'pods', '-n', args.namespace, '-l', selector, '-o', 'json'))['items']
             pods = {(args.namespace, pod['metadata']['name']): pod for pod in items}
             observed = datetime.now(timezone.utc)
             samples = []
             for node in sorted({p['spec'].get('nodeName') for p in items} - {None}):
                 samples.extend(cadvisor(kube('get', '--raw', '/api/v1/nodes/' + node + '/proxy/metrics/cadvisor'), pods))
             # Recheck immutable identity after the cAdvisor read; a name is not UID.
-            current = json.loads(kube('get', 'pods', '-n', args.namespace, '-l', 'ops.task=assistant-live-20261013', '-o', 'json'))['items']
+            current = json.loads(kube('get', 'pods', '-n', args.namespace, '-l', selector, '-o', 'json'))['items']
             identities = {p['metadata']['uid'] for p in current}
             text = []
             for metric, uid, namespace, container, value, timestamp in samples:

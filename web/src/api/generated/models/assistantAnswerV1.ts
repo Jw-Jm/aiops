@@ -11,6 +11,7 @@ import type { AssistantAnswerV1FaultChainContextRef } from './assistantAnswerV1F
 import type { AssistantAnswerV1FaultChainItem } from './assistantAnswerV1FaultChainItem.ts';
 import type { AssistantAnswerV1FormalRefsItem } from './assistantAnswerV1FormalRefsItem.ts';
 import type { AssistantAnswerV1HypothesesItem } from './assistantAnswerV1HypothesesItem.ts';
+import type { AssistantAnswerV1ResourceSourceStepsItem } from './assistantAnswerV1ResourceSourceStepsItem.ts';
 
 export interface AssistantAnswerV1 {
   schemaVersion: 'assistant-answer/v1';
@@ -75,4 +76,6 @@ export interface AssistantAnswerV1 {
   /** @maxItems 8 */
   faultChain?: AssistantAnswerV1FaultChainItem[];
   faultChainContextRef?: AssistantAnswerV1FaultChainContextRef;
+  /** @maxItems 40 */
+  resourceSourceSteps?: AssistantAnswerV1ResourceSourceStepsItem[];
 }

@@ -109,6 +109,9 @@ func TestAssistantActualCollectedSourcesAndCapacity(t *testing.T) {
 			template = "resource-logs/v1"
 		}
 		canonical := resource.CanonicalID{Domain: "k8s", Tenant: cfg.TenantID.String(), Scope: cfg.ClusterUID, APIGroup: "core", Kind: "Pod", StableID: firstUID}.String()
+		if kind == "victorialogs" {
+			canonical = actualPositiveLogResource(t, data, cfg, end)
+		}
 		probe := evidence.Query{ResourceCanonicalID: canonical, Namespace: cfg.Namespace, Template: template, From: end.Add(-time.Minute), To: end, Limit: 200, Scope: scope}
 		if err = repo.VerifyVictoria(ctx, adapter, probe); err != nil {
 			t.Fatal("actual adapter isolation proof", kind, err)
@@ -319,3 +322,26 @@ func splitJSONLines(data []byte) [][]byte {
 }
 
 func rawResultForLive(v any) []byte { b, _ := json.Marshal(v); return b }
+
+// The log isolation canary must be an actually observed log-producing UID.
+// An idle client with no logs cannot qualify or disqualify a different server.
+func actualPositiveLogResource(t *testing.T, data []byte, cfg assistantLiveConfig, end time.Time) string {
+	t.Helper()
+	for _, line := range splitJSONLines(data) {
+		var entry struct {
+			Type string            `json:"type"`
+			Row  map[string]string `json:"row"`
+		}
+		if json.Unmarshal(line, &entry) != nil || entry.Type != "log" {
+			continue
+		}
+		row := entry.Row
+		at, err := time.Parse(time.RFC3339Nano, row["_time"])
+		if err != nil || at.Before(end.Add(-time.Minute)) || !at.Before(end) || row["namespace"] != cfg.Namespace || row["tenant"] != cfg.TenantID.String() || row["cluster"] != cfg.ClusterUID || row["uid"] == "" {
+			continue
+		}
+		return resource.CanonicalID{Domain: "k8s", Tenant: cfg.TenantID.String(), Scope: cfg.ClusterUID, APIGroup: "core", Kind: "Pod", StableID: row["uid"]}.String()
+	}
+	t.Fatal("actual positive log UID missing in probe window")
+	return ""
+}

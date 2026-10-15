@@ -82,6 +82,30 @@ func TestLiveUIDContainerLifetimeAndL7Qualification(t *testing.T) {
 	if err != nil || endpoint.PodID != 1 || !endpoint.IdentityValidFrom.Equal(now.Add(-30*time.Second)) {
 		t.Fatalf("live identity %+v %v", endpoint, err)
 	}
+	// Pair snapshots use no shared flow map; background refresh must not consume
+	// their bounded identity-check time while holding that map's lock.
+	mapper.mu.Lock()
+	pairDone := make(chan error, 1)
+	go func() {
+		ctx, cancel := context.WithTimeout(t.Context(), time.Second)
+		defer cancel()
+		snapshot, err := mapper.beginSummaryPair(ctx, id, id)
+		if err == nil {
+			_, _, err = mapper.finishSummaryPair(ctx, snapshot)
+		}
+		pairDone <- err
+	}()
+	select {
+	case err := <-pairDone:
+		mapper.mu.Unlock()
+		if err != nil {
+			t.Fatal("local pair snapshot blocked by unrelated flow refresh", err)
+		}
+	case <-time.After(2 * time.Second):
+		mapper.mu.Unlock()
+		<-pairDone
+		t.Fatal("pair snapshot waited for unrelated shared flow map")
+	}
 	adapter, err := New(binding, backend.Client(), mapper, authorize, true, "live")
 	if err != nil {
 		t.Fatal(err)

@@ -22,6 +22,7 @@ import {
   FaultChainGapCheck,
   type FaultChainCheckControls,
 } from "./FaultChainGapCheck";
+import { ResourceCorrelation } from "./ResourceCorrelation";
 import { QueryResultView } from "./QueryResultView";
 
 const missingLabels: Record<string, string> = {
@@ -172,6 +173,12 @@ export function FaultChainPanel({
                 </div>
               </Card>
             ))}
+            <ResourceCorrelation
+              onReadOnlyCheck={onReadOnlyCheck}
+              context={context}
+              turnId={turnId}
+              scopeKey={scopeKey}
+            />
             <Tag color="green">证据已提交；模型解释使用独立轮次</Tag>
             {onReadOnlyCheck && (
               <Button

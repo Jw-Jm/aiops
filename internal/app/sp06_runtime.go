@@ -295,7 +295,7 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 			if err != nil {
 				return assistant.Admission{}, err
 			}
-			defs, err := tools.CatalogFor("investigation-job/v3", task, conversation.AuthorizationDomain, "assistant-tools/v1")
+			defs, err := tools.CatalogFor("investigation-job/v3", task, conversation.AuthorizationDomain, "assistant-tools/v2")
 			if err != nil {
 				return assistant.Admission{}, err
 			}
@@ -432,9 +432,17 @@ func StartSP06Worker(ctx context.Context, pool *pgxpool.Pool) (func(), error) {
 						slog.Error("assistant retention cleanup unavailable")
 					}
 				}
+				if cleanupDue {
+					if err := persistence.WithTenantTx(workerCtx, pool, tenant, func(tx pgx.Tx) error {
+						var deleted int
+						return tx.QueryRow(workerCtx, `SELECT platform.resource_history_cleanup($1,100)+platform.resource_coverage_cleanup($1,100)`, tenant).Scan(&deleted)
+					}); err != nil {
+						slog.Error("resource history cleanup unavailable")
+					}
+				}
 				if c.Assistant != nil && c.Assistant.Enabled {
 					err := persistence.WithTenantTx(workerCtx, pool, tenant, func(tx pgx.Tx) error {
-						_, err := tx.Exec(workerCtx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,$2,$3,'assistant-tools/v1',clock_timestamp()+interval '15 seconds') ON CONFLICT(tenant_id,worker_id) DO UPDATE SET model_profile_version=EXCLUDED.model_profile_version,catalog_version=EXCLUDED.catalog_version,expires_at=EXCLUDED.expires_at`, tenant, "sp06-dispatcher:"+c.InvestigatorEndpoint, c.Assistant.ModelProfileVersion)
+						_, err := tx.Exec(workerCtx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,$2,$3,'assistant-tools/v2',clock_timestamp()+interval '15 seconds') ON CONFLICT(tenant_id,worker_id) DO UPDATE SET model_profile_version=EXCLUDED.model_profile_version,catalog_version=EXCLUDED.catalog_version,expires_at=EXCLUDED.expires_at`, tenant, "sp06-dispatcher:"+c.InvestigatorEndpoint, c.Assistant.ModelProfileVersion)
 						return err
 					})
 					if err != nil {

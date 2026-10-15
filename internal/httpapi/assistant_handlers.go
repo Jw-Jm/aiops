@@ -255,6 +255,25 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	if len(parts) == 4 && parts[0] == "turns" && parts[2] == "source-steps" && r.Method == "GET" {
+		turn, err := uuid.Parse(parts[1])
+		if err != nil {
+			fail(investigation.ErrInvalid)
+			return
+		}
+		step, err := uuid.Parse(parts[3])
+		if err != nil {
+			fail(investigation.ErrInvalid)
+			return
+		}
+		out, err := h.Repository.ResourceSourceStep(r.Context(), actor.TenantID, turn, step, actor.Subject)
+		if err != nil {
+			fail(err)
+			return
+		}
+		writeJSON(w, 200, map[string]any{"data": out, "requestId": actor.RequestID})
+		return
+	}
 	if len(parts) == 3 && parts[0] == "turns" && parts[2] == "fault-chain-context" && r.Method == "GET" {
 		turn, err := uuid.Parse(parts[1])
 		if err != nil {

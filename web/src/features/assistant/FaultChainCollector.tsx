@@ -29,6 +29,7 @@ export function FaultChainCollector({
   onSubmitted: (turn: AssistantTurnV1) => void;
 }) {
   const [name, setName] = useState("");
+  const [kind, setKind] = useState("Pod");
   const [target, setTarget] = useState<string>();
   const [options, setOptions] = useState<{ value: string; label: string }[]>(
     [],
@@ -42,9 +43,13 @@ export function FaultChainCollector({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error>();
   const binding = conversation.binding.executionScope as
-    | { namespaces?: string[] }
+    | { namespaces?: string[]; clusterScoped?: boolean }
     | undefined;
   const namespaces = binding?.namespaces || [];
+  const scopeReady =
+    kind === "Node"
+      ? !!binding?.clusterScoped && namespaces.length <= 1
+      : namespaces.length === 1;
   async function run(action: () => Promise<void>) {
     setBusy(true);
     setError(undefined);
@@ -58,7 +63,7 @@ export function FaultChainCollector({
   }
   async function collect() {
     await run(async () => {
-      if (!target) throw new Error("请先查找并选择真实 Pod 身份。");
+      if (!target) throw new Error("请先查找并选择真实资源身份。");
       const start = new Date(from + "Z"),
         end = new Date(to + "Z");
       const duration = end.getTime() - start.getTime();
@@ -76,7 +81,7 @@ export function FaultChainCollector({
         timezone,
       });
       const request: AssistantFaultChainRequestV1 = {
-        schemaVersion: "fault-chain-request/v1",
+        schemaVersion: "fault-chain-request/v2",
         targetCanonicalId: target,
         fault: window(start, end),
         maxEdges: 4,
@@ -113,12 +118,32 @@ export function FaultChainCollector({
       <Typography.Text type="secondary">
         在当前范围内收集观测、比较窗口与检查证据，不需要模型回答。
       </Typography.Text>
-      {namespaces.length !== 1 && (
+      {kind !== "Node" && namespaces.length !== 1 && (
         <Alert type="info" title="请先通过范围编辑选择一个 namespace。" />
       )}
+      <Select
+        aria-label="调查资源类型"
+        value={kind}
+        options={[
+          { value: "Pod", label: "Pod" },
+          { value: "Node", label: "Node" },
+          { value: "PersistentVolumeClaim", label: "PVC" },
+        ]}
+        onChange={(value) => {
+          setKind(value);
+          setTarget(undefined);
+          setOptions([]);
+        }}
+      />
+      {kind === "Node" && !binding?.clusterScoped && (
+        <Alert
+          type="info"
+          title="请通过现有范围编辑器显式选入集群资源；不会自动扩大权限。"
+        />
+      )}
       <Input
-        aria-label="调查 Pod 名称"
-        placeholder="调查 Pod 名称"
+        aria-label="调查资源名称"
+        placeholder="调查资源名称"
         value={name}
         onChange={(event) => {
           setName(event.target.value);
@@ -127,7 +152,7 @@ export function FaultChainCollector({
         }}
       />
       <Button
-        disabled={disabled || busy || !name || namespaces.length !== 1}
+        disabled={disabled || busy || !name || !scopeReady}
         onClick={() =>
           void run(async () => {
             const result = await checked(
@@ -135,8 +160,13 @@ export function FaultChainCollector({
                 {
                   clusterUid: conversation.clusterUid!,
                   namespaceSelection: namespaces,
-                  includeClusterScoped: false,
-                  selector: { kind: "Pod", name, namespace: namespaces[0] },
+                  includeClusterScoped:
+                    kind === "Node" && !!binding?.clusterScoped,
+                  selector: {
+                    kind,
+                    name,
+                    ...(kind === "Node" ? {} : { namespace: namespaces[0] }),
+                  },
                 },
                 requestOptions(),
               ),
@@ -151,11 +181,11 @@ export function FaultChainCollector({
           })
         }
       >
-        查找当前授权范围的 Pod
+        查找当前授权范围的资源
       </Button>
       <Select
-        aria-label="调查目标 Pod"
-        placeholder="选择真实 Pod"
+        aria-label="调查目标资源"
+        placeholder="选择真实资源"
         value={target}
         onChange={setTarget}
         options={options}
@@ -199,7 +229,7 @@ export function FaultChainCollector({
       </label>
       {error && <Alert type="error" title={error.message} />}
       <Button
-        disabled={disabled || busy || !target || namespaces.length !== 1}
+        disabled={disabled || busy || !target || !scopeReady}
         loading={busy}
         onClick={() => void collect()}
       >

@@ -150,3 +150,34 @@ func TestCapabilitiesRequireCurrentQualificationAndScope(t *testing.T) {
 		})
 	}
 }
+
+func TestNodeReadyUIDSelectorDoesNotCountOtherNodes(t *testing.T) {
+	now := time.Now().UTC().Truncate(time.Second)
+	tenant := uuid.NewString()
+	source := evidence.Binding{SourceType: "victoriametrics", Tenant: tenant, SourceID: uuid.NewString(), Revision: 1, Endpoint: "http://127.0.0.1:18428", ScopeMapping: datascope.Mapping{RequiredLabels: map[string]string{"tenant": tenant}, Scopes: map[string][]string{"cluster": {"cluster"}}}}
+	proof := Qualification{DatasetID: "metrics.node-ready", Operation: "aggregate", SourceRevision: 1, BindingDigest: evidence.BindingScopeDigest(source), EvidenceDigest: graph.ScopeDigest("fixture"), CollectorVersion: "fixture/v1", VerifiedUntil: now.Add(time.Minute), CoverageFrom: now.Add(-time.Hour), CoverageTo: now, MaxWindowSeconds: 3600}
+	adapter, err := NewVictoria(source, http.DefaultClient, func(context.Context, evidence.Binding) error { return nil }, []Qualification{proof})
+	if err != nil {
+		t.Fatal(err)
+	}
+	target := "k8s+v1://" + tenant + "/cluster/core/Node/node-uid"
+	binding := Binding{Subject: "operator", Grant: graph.Scope{Tenant: tenant, Cluster: "cluster", ClusterScoped: true, AuthorizationRevision: "fixture"}, Selection: Selection{IncludeClusterScoped: true, CanonicalIDs: []string{target}}}
+	intent := QueryIntent{SchemaVersion: "query-intent/v1", DatasetID: proof.DatasetID, Operation: "aggregate", Metrics: []string{"ready_count"}, Dimensions: []string{}, Filters: []Filter{}, Sort: []Sort{}, Limit: 1, TimeRange: &QueryTimeRange{From: now.Add(-time.Minute), To: now, Timezone: "UTC"}}
+	p, err := adapter.Compile(intent, binding)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(p.query, `uid=~"node-uid"`) {
+		t.Fatal(p.query)
+	}
+	narrowed := binding.Grant
+	narrowed.Resources = []string{target}
+	if caps, err := adapter.Capabilities(t.Context(), narrowed); err != nil || len(caps) != 1 {
+		t.Fatal("Node UID qualification hidden", caps, err)
+	}
+
+	binding.Selection.CanonicalIDs = []string{strings.Replace(target, "/Node/", "/Pod/", 1)}
+	if _, err := adapter.Compile(intent, binding); err == nil {
+		t.Fatal("Pod substituted for Node UID")
+	}
+}

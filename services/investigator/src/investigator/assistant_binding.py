@@ -20,7 +20,7 @@ The server computes every number, ordering, comparison and unit. Reference only
 queryResultRefs and fact IDs from successful committed tools; do not invent values.
 For resource_troubleshooting use the real resource context and bound identities.
 Do not create a placeholder incident or inherit a replacement resource's old UID.
-Historical fault-chain context is an archived observation, not a fresh query. Explain its explicit supports, conflicts, coverage and missing checks without inventing numeric values.
+Use resource_history, resource_findings and resource_changes with a frozen windowRole. Resource assessments are server-owned finite rules; explain their supports, conflicts, gaps and source quality without rewriting them. Object versions, observed field changes, execution success and actual target changes are separate facts. Resource assessment supports/conflicts identify source Step IDs, never Evidence IDs; do not copy them into answer evidenceRefs or hypothesis evidence lists. Historical fault-chain context is an archived observation, not a fresh query. Explain its explicit supports, conflicts, coverage and missing checks without inventing numeric values.
 Relationships show dependency or impact, not causation. Diagnosis is a hypothesis:
 record supports, conflicts, missingEvidence and nextChecks. faultChain links use
 only committed relationReferences with their exact relationDigest; every link is
@@ -91,6 +91,8 @@ def output_schema_for_steps(steps, task_kind):
         identities=[]
         if tool in ("get_resource_context","get_resource_health","query_kubernetes","get_dependencies","get_impact_scope"):
             identities=data.get("nodes",[])
+        elif tool in ("resource_history", "resource_changes", "resource_findings"):
+            identities=[{"canonicalId": data.get("canonicalId")}]
         elif tool=="resolve_resources":identities=data.get("candidates",[])
         elif tool=="get_resource_investigation_context":identities=data.get("context",{}).get("resources",[])
         elif tool=="get_assistant_context":identities=data.get("binding",{}).get("resourceContext",{}).get("resources",[])
@@ -108,6 +110,7 @@ def output_schema_for_steps(steps, task_kind):
     # A model can explain historical context, but cannot invent a new committed
     # context reference. Fixed collection supplies its platform-owned reference.
     if "faultChainContextRef" in props:props["faultChainContextRef"]={"type":"null"}
+    if "resourceSourceSteps" in props:props["resourceSourceSteps"]["maxItems"]=0
     kinds=["clarification","unsupported"]
     if task_kind=="data_query" and facts:kinds.append("data")
     elif task_kind in ("resource_troubleshooting","incident_followup"):kinds.append("diagnosis")
@@ -154,7 +157,7 @@ def validate_dispatch(payload, profile_version=None):
             raise ValueError("INVALID_REQUEST")
         if not profile_version or task.get("modelProfileVersion")!=profile_version:raise ValueError("MODEL_PROFILE_UNAVAILABLE")
         if task["authorizationDomain"]=="audit" and task["taskKind"]!="data_query":raise ValueError("INVALID_REQUEST")
-        if task.get("catalogVersion")!="assistant-tools/v1" or task.get("promptVersion")!="assistant/v1" or task.get("resultSchemaVersion")!="assistant-answer/v1":raise ValueError("ASSISTANT_VERSION_UNSUPPORTED")
+        if task.get("catalogVersion") not in ("assistant-tools/v1", "assistant-tools/v2") or task.get("promptVersion")!="assistant/v1" or task.get("resultSchemaVersion")!="assistant-answer/v1":raise ValueError("ASSISTANT_VERSION_UNSUPPORTED")
         if task["taskKind"]=="incident_followup":
             if not job.get("incidentId") or not isinstance(job.get("triggerRevision"),int) or job["triggerRevision"]<1:raise ValueError("INVALID_REQUEST")
         elif "incidentId" in job or "triggerRevision" in job:raise ValueError("INVALID_REQUEST")

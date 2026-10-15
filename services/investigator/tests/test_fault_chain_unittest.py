@@ -232,3 +232,24 @@ class LinkedGapChecks(unittest.TestCase):
         answer = collect({"budget": {"toolCalls": 10, "rawQueries": 0}}, Ledger(), CheckBridge())
         self.assertIn("get_resource_health_not_completed", answer["missingEvidence"])
         self.assertIsNotNone(answer["faultChainContextRef"])
+
+class OperationalCollectorTests(unittest.TestCase):
+    def test_three_resource_types_share_collector_and_node_pvc_do_not_query_deepflow(self):
+        for kind in ("Pod", "Node", "PersistentVolumeClaim"):
+            class OperationalBridge(BudgetBridge):
+                def call(self, name, args, allocation):
+                    result = super().call(name, args, allocation)
+                    if name == "get_assistant_context":
+                        result["data"]["faultChainRequest"]["schemaVersion"] = "fault-chain-request/v2"
+                        result["data"]["binding"] = {"resourceContext": {"resources": [{"canonicalId": "target", "kind": kind}]}}
+                    return result
+            ledger = Ledger()
+            bridge = OperationalBridge(8, peers=1)
+            result = collect({"budget": {"toolCalls": 30, "rawQueries": 8}}, ledger, bridge)
+            names = [n for n, _ in ledger.allocations]
+            self.assertIn("resource_history", names)
+            self.assertIn("resource_findings", names)
+            self.assertIn("resource_changes", names)
+            self.assertEqual(names.count("evaluate_fault_chain"), 1)
+            if kind != "Pod": self.assertNotIn("query_deepflow", names)
+            self.assertTrue(result["partial"])

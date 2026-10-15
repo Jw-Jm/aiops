@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/resource_changes/v3",
+  "title": "resource_changes",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "canonicalId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+    },
+    "windowRole": {
+      "enum": [
+        "fault",
+        "baseline",
+        "recovery"
+      ],
+      "description": "Server resolves the absolute window from the immutable turn; never a model-owned timestamp."
+    }
+  },
+  "required": [
+    "canonicalId",
+    "windowRole"
+  ],
+  "description": "Read bounded authorized immutable resource observations and references; gaps never prove normality. No command, configuration or arbitrary message payloads."
+}

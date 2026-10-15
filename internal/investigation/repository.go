@@ -275,6 +275,9 @@ func (r Repository) Claim(ctx context.Context, tenant uuid.UUID, owner string, t
 	}
 	var claimError error
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
+		if _, err := tx.Exec(ctx, `SET LOCAL app.assistant_catalog='assistant-tools/v2'`); err != nil {
+			return err
+		}
 		var id uuid.UUID
 		err := tx.QueryRow(ctx, `SELECT j.job_id FROM investigation.jobs j JOIN investigation.worker_queue q USING(tenant_id,job_id) WHERE j.tenant_id=$1 AND (j.schema_version='investigation-job/v2' OR ($2 AND j.schema_version='investigation-job/v3')) AND j.state IN('queued','running') AND j.expires_at>clock_timestamp() AND q.next_attempt_at<=clock_timestamp() AND(q.lease_expires_at IS NULL OR q.lease_expires_at<=clock_timestamp()) ORDER BY j.created_at FOR UPDATE OF j,q SKIP LOCKED LIMIT 1`, tenant, r.AssistantEnabled).Scan(&id)
 		if errors.Is(err, pgx.ErrNoRows) {

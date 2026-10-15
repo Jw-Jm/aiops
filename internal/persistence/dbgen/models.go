@@ -832,6 +832,34 @@ type PlatformResourceEntity struct {
 	DeletedAt   pgtype.Timestamptz `json:"deleted_at"`
 }
 
+type PlatformResourceObservation struct {
+	TenantID          pgtype.UUID        `json:"tenant_id"`
+	ObservationID     pgtype.UUID        `json:"observation_id"`
+	CanonicalID       string             `json:"canonical_id"`
+	Namespace         string             `json:"namespace"`
+	SourceID          pgtype.UUID        `json:"source_id"`
+	SourceRevision    int64              `json:"source_revision"`
+	SourceScopeDigest string             `json:"source_scope_digest"`
+	ResourceVersion   string             `json:"resource_version"`
+	ObservedAt        pgtype.Timestamptz `json:"observed_at"`
+	EventAt           pgtype.Timestamptz `json:"event_at"`
+	Coverage          string             `json:"coverage"`
+	Projection        []byte             `json:"projection"`
+	RetainUntil       pgtype.Timestamptz `json:"retain_until"`
+}
+
+type PlatformResourceObservationCoverage struct {
+	TenantID        pgtype.UUID        `json:"tenant_id"`
+	SourceID        pgtype.UUID        `json:"source_id"`
+	SourceRevision  int64              `json:"source_revision"`
+	Gvr             string             `json:"gvr"`
+	ObservedAt      pgtype.Timestamptz `json:"observed_at"`
+	LastListAt      pgtype.Timestamptz `json:"last_list_at"`
+	WatchConnected  bool               `json:"watch_connected"`
+	WatchContinuous bool               `json:"watch_continuous"`
+	HasError        bool               `json:"has_error"`
+}
+
 type PlatformRoleBinding struct {
 	TenantID        pgtype.UUID        `json:"tenant_id"`
 	BindingID       pgtype.UUID        `json:"binding_id"`

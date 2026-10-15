@@ -79,7 +79,17 @@ func (r FaultChainRequest) Valid(scope graph.Scope, timezone string, now time.Ti
 		}
 	}
 	id, err := resource.ParseCanonicalID(r.TargetCanonicalID)
-	if err != nil || id.Tenant != scope.Tenant || id.Scope != scope.Cluster || id.Domain != "k8s" || id.Kind != "Pod" || len(scope.Resources) > 0 && !slices.Contains(scope.Resources, r.TargetCanonicalID) || r.SchemaVersion != "fault-chain-request/v1" || r.MaxEdges < 1 || r.MaxEdges > 8 || len(scope.Namespaces) != 1 {
+	if err != nil || id.Tenant != scope.Tenant || id.Scope != scope.Cluster || id.Domain != "k8s" || id.APIGroup != "core" {
+		return false
+	}
+	if !slices.Contains([]string{"fault-chain-request/v1", "fault-chain-request/v2"}, r.SchemaVersion) || r.MaxEdges < 1 || r.MaxEdges > 8 || len(scope.Resources) > 0 && !slices.Contains(scope.Resources, r.TargetCanonicalID) {
+		return false
+	}
+	if id.Kind == "Node" {
+		if r.SchemaVersion != "fault-chain-request/v2" || !scope.ClusterScoped || len(scope.Namespaces) > 1 {
+			return false
+		}
+	} else if (id.Kind != "Pod" && (r.SchemaVersion != "fault-chain-request/v2" || id.Kind != "PersistentVolumeClaim")) || len(scope.Namespaces) != 1 {
 		return false
 	}
 	for _, w := range []*analytics.QueryTimeRange{&r.Fault, r.Baseline, r.Recovery} {
@@ -138,6 +148,8 @@ type FaultChainEdge struct {
 	NextChecks         []string           `json:"nextChecks"`
 }
 type FaultChainContext struct {
+	SourceSteps          []ResourceSourceStep       `json:"sourceSteps,omitempty"`
+	ResourceAssessments  []ResourceAssessment       `json:"resourceAssessments,omitempty"`
 	ResourceHealthChecks []FaultChainResourceHealth `json:"resourceHealthChecks,omitempty"`
 	SchemaVersion        string                     `json:"schemaVersion"`
 	RuleVersion          string                     `json:"ruleVersion"`
@@ -363,7 +375,11 @@ func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation
 			}
 		}
 		if len(edge.QueryResultRefs) == 0 {
-			edge.MissingEvidence = append(edge.MissingEvidence, "network_window_statistics")
+			if request.SchemaVersion == "fault-chain-request/v2" && r.Kind != "communicates_with" {
+				edge.NextChecks = []string{"核对授权范围内资源的历史健康、原生事件与 Finding"}
+			} else {
+				edge.MissingEvidence = append(edge.MissingEvidence, "network_window_statistics")
+			}
 		}
 		applyFaultChainChanges(request, &edge, queries, changes, &out)
 		out.Edges = append(out.Edges, edge)
@@ -409,6 +425,11 @@ func ReadFaultChainContextTx(ctx context.Context, tx pgx.Tx, j Job, ref FaultCha
 		return out, ErrDenied
 	}
 	out = wire.Data.Context
+	for _, ref := range out.SourceSteps {
+		if _, err := ReadResourceSourceStepTx(ctx, tx, j, ref); err != nil {
+			return FaultChainContext{}, err
+		}
+	}
 	if contract.Validate("https://ops.local/schemas/fault-chain-context/v1", raw(out)) != nil {
 		return FaultChainContext{}, ErrInvalid
 	}
@@ -470,14 +491,29 @@ func ReadFaultChainContextTx(ctx context.Context, tx pgx.Tx, j Job, ref FaultCha
 
 func readFaultChainHealthTx(ctx context.Context, tx pgx.Tx, j Job, h FaultChainResourceHealth) error {
 	var rawStep []byte
-	if tx.QueryRow(ctx, `SELECT result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND step_id=$3 AND tool_name='get_resource_health' AND state='succeeded'`, j.TenantID, j.JobID, h.StepID).Scan(&rawStep) != nil {
+	if tx.QueryRow(ctx, `SELECT result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND step_id=$3 AND tool_name IN('get_resource_health','resource_history') AND state='succeeded'`, j.TenantID, j.JobID, h.StepID).Scan(&rawStep) != nil {
 		return ErrDenied
 	}
 	var parent struct {
 		Tool string          `json:"tool"`
 		Data json.RawMessage `json:"data"`
 	}
-	if json.Unmarshal(rawStep, &parent) != nil || parent.Tool != "get_resource_health" {
+	if json.Unmarshal(rawStep, &parent) != nil {
+		return ErrDenied
+	}
+	if parent.Tool == "resource_history" {
+		var history ResourceHistory
+		if json.Unmarshal(parent.Data, &history) != nil || authorizeResourceToolTx(ctx, tx, j, parent.Tool, parent.Data) != nil {
+			return ErrDenied
+		}
+		for _, candidate := range CommittedResourceHistoryHealth(h.StepID, history) {
+			if graph.ScopeDigest(candidate) == graph.ScopeDigest(h) {
+				return nil
+			}
+		}
+		return ErrDenied
+	}
+	if parent.Tool != "get_resource_health" {
 		return ErrDenied
 	}
 	snapshot, err := decodeFaultChainHealthSnapshot(parent.Data)

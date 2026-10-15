@@ -20,16 +20,17 @@ type ChainLink struct {
 
 func committedAssistantRelations(tool string, data json.RawMessage) map[string]resource.Relation {
 	out := map[string]resource.Relation{}
-	if tool != "get_dependencies" && tool != "get_impact_scope" && tool != "get_resource_context" {
+	if tool != "get_dependencies" && tool != "get_impact_scope" && tool != "get_resource_context" && tool != "resource_history" {
 		return out
 	}
 	var result struct {
-		Edges []resource.Relation `json:"edges"`
+		Edges     []resource.Relation `json:"edges"`
+		Relations []resource.Relation `json:"relations"`
 	}
 	if json.Unmarshal(data, &result) != nil {
 		return out
 	}
-	for _, r := range result.Edges {
+	for _, r := range append(result.Edges, result.Relations...) {
 		if r.From == "" || r.To == "" || r.Kind == "" || r.ObservedAt.IsZero() || r.Provenance.SourceRegistrationID == "" {
 			continue
 		}

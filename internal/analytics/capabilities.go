@@ -40,7 +40,7 @@ func (v *Victoria) Capabilities(ctx context.Context, scope graph.Scope) ([]Sourc
 	}
 	for _, id := range scope.Resources {
 		parsed, err := resource.ParseCanonicalID(id)
-		if err != nil || parsed.Domain != "k8s" || parsed.Kind != "Pod" || parsed.Tenant != scope.Tenant || parsed.Scope != scope.Cluster {
+		if err != nil || parsed.Domain != "k8s" || !slices.Contains([]string{"Pod", "Node"}, parsed.Kind) || parsed.Tenant != scope.Tenant || parsed.Scope != scope.Cluster {
 			return out, nil
 		}
 	}
@@ -60,8 +60,22 @@ func (v *Victoria) Capabilities(ctx context.Context, scope graph.Scope) ([]Sourc
 			if d.ID != q.DatasetID || d.Source != v.binding.SourceType || !slices.Contains(d.Operations, operation) {
 				continue
 			}
+			resourceKind := "Pod"
 			if d.ID == "metrics.node-ready" {
-				if !scope.ClusterScoped || len(scope.Resources) > 0 {
+				resourceKind = "Node"
+			}
+			compatible := true
+			for _, id := range scope.Resources {
+				parsed, _ := resource.ParseCanonicalID(id)
+				if parsed.Kind != resourceKind {
+					compatible = false
+				}
+			}
+			if !compatible {
+				continue
+			}
+			if d.ID == "metrics.node-ready" {
+				if !scope.ClusterScoped {
 					continue
 				}
 			} else if len(scope.Namespaces) == 0 {

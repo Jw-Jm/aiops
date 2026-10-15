@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	sdkauth "github.com/modelcontextprotocol/go-sdk/auth"
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
+	"log/slog"
 	"net/http"
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/auth"
@@ -178,7 +179,12 @@ func (g Gateway) handlerFor(defs []tools.Definition) (http.Handler, error) {
 			out.Budget.Consumed = j.Consumed.Add(used)
 			out.Budget.Remaining = j.Budget.Usage.Sub(j.Consumed.Add(j.Reserved))
 			result, _ := json.Marshal(out)
-			if tools.ValidateOutput(result) != nil || len(result) > int(reserve.ResultBytes) {
+			if tools.ValidateOutput(result) != nil {
+				slog.Warn("investigation tool output contract rejected", "tool", d.Name)
+				_ = g.Repository.FailStep(ctx, v.Lease, c.StepID, "RESULT_REJECTED")
+				return g.failed(ctx, v, d.Name, investigation.ErrInvalid), nil
+			}
+			if len(result) > int(reserve.ResultBytes) {
 				_ = g.Repository.FailStep(ctx, v.Lease, c.StepID, "RESULT_LIMIT")
 				return g.failed(ctx, v, d.Name, investigation.ErrBudget), nil
 			}
@@ -258,16 +264,18 @@ func (g Gateway) Handler() (http.Handler, error) {
 		return nil, err
 	}
 	handlers := map[string]http.Handler{}
-	for _, key := range []struct{ task, domain string }{{"data_query", "operational"}, {"data_query", "audit"}, {"incident_followup", "operational"}, {"resource_troubleshooting", "operational"}} {
-		defs, err := tools.CatalogFor("investigation-job/v3", key.task, key.domain, "assistant-tools/v1")
-		if err != nil {
-			return nil, err
+	for _, catalogVersion := range []string{"assistant-tools/v1", "assistant-tools/v2"} {
+		for _, key := range []struct{ task, domain string }{{"data_query", "operational"}, {"data_query", "audit"}, {"incident_followup", "operational"}, {"resource_troubleshooting", "operational"}} {
+			defs, err := tools.CatalogFor("investigation-job/v3", key.task, key.domain, catalogVersion)
+			if err != nil {
+				return nil, err
+			}
+			h, err := g.handlerFor(defs)
+			if err != nil {
+				return nil, err
+			}
+			handlers[catalogVersion+"/"+key.task+"/"+key.domain] = h
 		}
-		h, err := g.handlerFor(defs)
-		if err != nil {
-			return nil, err
-		}
-		handlers[key.task+"/"+key.domain] = h
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fields := strings.Fields(r.Header.Get("Authorization"))
@@ -289,7 +297,7 @@ func (g Gateway) Handler() (http.Handler, error) {
 			legacy.ServeHTTP(w, r)
 			return
 		}
-		h := handlers[claims.Assistant.TaskKind+"/"+claims.Assistant.AuthorizationDomain]
+		h := handlers[claims.Assistant.CatalogVersion+"/"+claims.Assistant.TaskKind+"/"+claims.Assistant.AuthorizationDomain]
 		if h == nil {
 			http.Error(w, "FORBIDDEN", 403)
 			return

@@ -66,7 +66,7 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 	}
 	canonical := resource.CanonicalID{Domain: "k8s", Tenant: cfg.TenantID.String(), Scope: cfg.ClusterUID, APIGroup: "core", Kind: "Pod", StableID: uid}.String()
 	sources := map[string]uuid.UUID{"victoriametrics": cfg.MetricsSourceID, "victorialogs": cfg.LogsSourceID}
-	if graphOnly {
+	if graphOnly && os.Getenv("OPS_ASSISTANT_OPERATIONAL_SOURCES") != "1" {
 		sources = map[string]uuid.UUID{}
 	}
 	for kind, id := range sources {
@@ -84,7 +84,11 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 		if kind == "victorialogs" {
 			template = "resource-logs/v1"
 		}
-		probe := evidence.Query{ResourceCanonicalID: canonical, Namespace: cfg.Namespace, Template: template, From: end.Add(-time.Minute), To: end, Limit: 200, Scope: graph.Scope{Tenant: cfg.TenantID.String(), Cluster: cfg.ClusterUID, Namespaces: []string{cfg.Namespace}, AuthorizationRevision: "live-source-probe"}}
+		probeCanonical := canonical
+		if kind == "victorialogs" {
+			probeCanonical = actualPositiveLogResource(t, data, cfg, end)
+		}
+		probe := evidence.Query{ResourceCanonicalID: probeCanonical, Namespace: cfg.Namespace, Template: template, From: end.Add(-time.Minute), To: end, Limit: 200, Scope: graph.Scope{Tenant: cfg.TenantID.String(), Cluster: cfg.ClusterUID, Namespaces: []string{cfg.Namespace}, AuthorizationRevision: "live-source-probe"}}
 		if err = repo.VerifyVictoria(ctx, adapter, probe); err != nil {
 			t.Fatal("live source verification", kind, err)
 		}

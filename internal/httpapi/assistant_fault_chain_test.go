@@ -93,3 +93,19 @@ func TestIncidentFaultChainRequiresResolvedReferentAndFrozenWindow(t *testing.T)
 		})
 	}
 }
+
+func TestFrozenOperationalFollowupKeepsBaselineAndRecovery(t *testing.T) {
+	now := time.Now().UTC().Truncate(time.Second)
+	tenant := uuid.NewString()
+	target := resource.CanonicalID{Domain: "k8s", Tenant: tenant, Scope: "cluster", APIGroup: "core", Kind: "Pod", StableID: "uid"}.String()
+	window := func(minutes int) *analytics.QueryTimeRange {
+		return &analytics.QueryTimeRange{From: now.Add(time.Duration(minutes-1) * time.Minute), To: now.Add(time.Duration(minutes) * time.Minute), Timezone: "UTC"}
+	}
+	request := investigation.FaultChainRequest{SchemaVersion: "fault-chain-request/v2", TargetCanonicalID: target, Fault: *window(-2), Baseline: window(-3), Recovery: window(-1), MaxEdges: 4}
+	input := assistant.TurnInput{FrozenCorrelationRequest: &request, RequestedAt: now, Binding: assistant.ConversationBinding{Timezone: "UTC"}}
+	j := investigation.Job{Scope: graph.Scope{Tenant: tenant, Cluster: "cluster", Namespaces: []string{"apps"}}, Assistant: &investigation.AssistantTask{AuthorizationDomain: "operational"}}
+	got, err := faultChainEvaluationRequest(input, j)
+	if err != nil || graph.ScopeDigest(got) != graph.ScopeDigest(request) {
+		t.Fatal("followup replaced frozen comparison windows", err)
+	}
+}

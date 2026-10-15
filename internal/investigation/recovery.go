@@ -12,7 +12,18 @@ import (
 )
 
 func authorizeResult(ctx context.Context, tx pgx.Tx, j Job, b []byte) error {
+	var resourceWire struct {
+		Tool string          `json:"tool"`
+		Data json.RawMessage `json:"data"`
+	}
+	if json.Unmarshal(b, &resourceWire) != nil {
+		return ErrInvalid
+	}
+	if err := authorizeResourceToolTx(ctx, tx, j, resourceWire.Tool, resourceWire.Data); err != nil {
+		return err
+	}
 	var v struct {
+		ResourceSourceSteps  []ResourceSourceStep  `json:"resourceSourceSteps"`
 		FaultChainContextRef *FaultChainContextRef `json:"faultChainContextRef"`
 		EntityRefs           []string              `json:"entityRefs"`
 		EvidenceRefs         []string              `json:"evidenceRefs"`
@@ -25,6 +36,11 @@ func authorizeResult(ctx context.Context, tx pgx.Tx, j Job, b []byte) error {
 	}
 	if json.Unmarshal(b, &v) != nil {
 		return ErrInvalid
+	}
+	for _, ref := range v.ResourceSourceSteps {
+		if _, err := ReadResourceSourceStepTx(ctx, tx, j, ref); err != nil {
+			return err
+		}
 	}
 	if v.FaultChainContextRef != nil {
 		if _, err := ReadFaultChainContextTx(ctx, tx, j, *v.FaultChainContextRef); err != nil {

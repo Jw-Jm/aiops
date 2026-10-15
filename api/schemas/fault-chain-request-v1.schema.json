@@ -3,7 +3,10 @@
   "additionalProperties": false,
   "properties": {
     "schemaVersion": {
-      "const": "fault-chain-request/v1"
+      "enum": [
+        "fault-chain-request/v1",
+        "fault-chain-request/v2"
+      ]
     },
     "targetCanonicalId": {
       "type": "string",

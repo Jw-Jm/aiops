@@ -146,6 +146,9 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 			t.Fatal(err)
 		}
 		request := assistant.SubmitMessage{Message: "收集故障链证据", ExpectedConversationRevision: conversation.Revision, FaultChainRequest: &investigation.FaultChainRequest{SchemaVersion: "fault-chain-request/v1", TargetCanonicalID: target, Fault: window, Baseline: baseline, Recovery: recovery, MaxEdges: 4}}
+		if os.Getenv("OPS_ASSISTANT_OPERATIONAL_SOURCES") == "1" {
+			request.FaultChainRequest.SchemaVersion = "fault-chain-request/v2"
+		}
 		turn, err := repo.Submit(requestCtx, b.TenantID, conversation.ConversationID, actor.Subject, "fault-chain-explicit", request)
 		if err != nil {
 			t.Fatal(err)
@@ -204,6 +207,9 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		if err != nil || len(context.Edges) == 0 || len(context.QueryResultRefs) == 0 || len(context.EvidenceRefs) == 0 {
 			t.Fatalf("actual context edges=%d queries=%d evidence=%d err=%v", len(context.Edges), len(context.QueryResultRefs), len(context.EvidenceRefs), err)
 		}
+		if os.Getenv("OPS_ASSISTANT_OPERATIONAL_SOURCES") == "1" && len(context.SourceSteps) == 0 {
+			t.Fatal("operational sources did not join committed context")
+		}
 		if comparison && len(context.QueryResultRefs) != 4 {
 			if killedLease.Generation == 0 {
 				t.Fatal("both protocol comparisons for fault and recovery required", len(context.QueryResultRefs))
@@ -239,9 +245,20 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		validatedWindows := map[string]bool{}
 		for _, id := range context.QueryResultRefs {
 			stored, err := repo.QueryResult(requestCtx, b.TenantID, id, actor.Subject)
-			if err != nil || !stored.Result.Exact || stored.Result.Status != "complete" {
-				t.Fatal("qualified stored result unavailable", err)
+			if err != nil {
+				t.Fatal("stored result unavailable", err)
 			}
+			if stored.Result.NetworkContext == nil && os.Getenv("OPS_ASSISTANT_OPERATIONAL_SOURCES") == "1" && (stored.Result.Status != "complete" || !stored.Result.Exact) {
+				if stored.Result.Status == "no_data" && len(stored.Facts) > 0 {
+					t.Fatal("missing source produced numeric facts")
+				}
+				t.Log("operational query remains an explicit gap", stored.Result.DatasetID, stored.Result.Status)
+				continue
+			}
+			if !stored.Result.Exact || stored.Result.Status != "complete" {
+				t.Fatal("qualified network result unavailable")
+			}
+
 			isRecovery := stored.Result.TimeRange.From.Equal(recoveryFrom(recovery))
 			expectedErrors := float64(50)
 			if isRecovery {

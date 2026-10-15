@@ -59,3 +59,27 @@ func TestAssistantMCPInputsCarryClosedEmbeddedIntent(t *testing.T) {
 		t.Fatal("external schema reference accepted")
 	}
 }
+
+func TestOperationalCatalogKeepsV1AndPublishesV2OnlyTools(t *testing.T) {
+	for _, version := range []string{"assistant-tools/v1", "assistant-tools/v2"} {
+		defs, err := CatalogFor("investigation-job/v3", "resource_troubleshooting", "operational", version)
+		if err != nil {
+			t.Fatal(err)
+		}
+		found := false
+		for _, d := range defs {
+			if d.Name == "resource_history" {
+				found = true
+			}
+			if d.Name == "resource_findings" {
+				_, window := d.Schema["properties"].(map[string]any)["windowRole"]
+				if window != (version == "assistant-tools/v2") {
+					t.Fatal("v1 was broadened")
+				}
+			}
+		}
+		if found != (version == "assistant-tools/v2") {
+			t.Fatal(version)
+		}
+	}
+}

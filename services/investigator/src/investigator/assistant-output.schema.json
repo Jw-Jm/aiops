@@ -373,6 +373,44 @@
           "type": "null"
         }
       ]
+    },
+    "resourceSourceSteps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "stepId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tool": {
+            "enum": [
+              "resource_history",
+              "resource_changes",
+              "resource_findings",
+              "execute_analysis_query",
+              "get_dependencies",
+              "get_impact_scope",
+              "get_resource_context"
+            ]
+          },
+          "canonicalId": {
+            "type": "string"
+          },
+          "contentDigest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "stepId",
+          "tool",
+          "canonicalId",
+          "contentDigest"
+        ]
+      },
+      "maxItems": 40
     }
   },
   "required": [
@@ -394,6 +432,7 @@
     "clarification",
     "formalRefs",
     "faultChain",
-    "faultChainContextRef"
+    "faultChainContextRef",
+    "resourceSourceSteps"
   ]
 }

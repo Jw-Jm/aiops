@@ -218,6 +218,9 @@ func (r Repository) SyncSnapshot(ctx context.Context, tenant, source, cluster, k
 		if out.Status != resource.Matched {
 			return previous, resource.ErrIdentity
 		}
+		if err := r.observe(ctx, tenant, source, out.CanonicalID.String(), o, s.State); err != nil {
+			return previous, err
+		}
 	}
 	for uid := range previous {
 		if _, present := current[uid]; present {

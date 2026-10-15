@@ -31,11 +31,52 @@ def collect(job, job_api, bridge):
 
     context, _ = call("get_assistant_context", {})
     request = context.get("faultChainRequest")
-    if not isinstance(request, dict) or request.get("schemaVersion") != "fault-chain-request/v1":
+    if not isinstance(request, dict) or request.get("schemaVersion") not in ("fault-chain-request/v1", "fault-chain-request/v2"):
         raise RuntimeError("FAULT_CHAIN_REQUEST_REQUIRED")
     target = request["targetCanonicalId"]
     fault = request["fault"]
     check = request.get("readOnlyCheck")
+    operational = request.get("schemaVersion") == "fault-chain-request/v2"
+    target_kind = next((r.get("kind") for r in context.get("binding", {}).get("resourceContext", {}).get("resources", []) if r.get("canonicalId") == target), None)
+    if not target_kind and "/" in target:
+        from urllib.parse import unquote
+        target_kind = unquote(target.split("/")[-2])
+    target_kind = target_kind or "Pod"
+    available = {(d.get("datasetId"), d.get("operation")) for d in context.get("sourceCapabilities", []) if d.get("status") == "qualification_configured"}
+    queries = []
+
+    def resource_reads(resource, kind, optional=False):
+        # Reserve the evaluator and primary counterevidence before optional reads.
+        for tool in (("resource_history",) if optional else ("resource_history", "resource_findings", "resource_changes")):
+            if remaining.get("toolCalls", 0) <= 3:
+                failures.append(tool + "_budget_not_collected")
+                continue
+            call(tool, {"canonicalId": resource, "windowRole": "fault"})
+        if optional and request.get("recovery") and remaining.get("toolCalls", 0) > 5:
+            call("resource_history", {"canonicalId": resource, "windowRole": "recovery"})
+        metrics = {"Pod": [("metrics.pod-restarts", "restart_increase"), ("metrics.pod-phase", "phase_count"), ("metrics.pod-memory", "memory_bytes"), ("metrics.pod-cpu", "cpu_cores")], "Node": [("metrics.node-ready", "ready_count")], "PersistentVolumeClaim": []}.get(kind, [])
+        metrics = [] if optional else metrics[:1]
+
+        for dataset, metric in metrics:
+            operation = "compare" if request.get("baseline") else "aggregate"
+            # Structured error level only; samples are never interpreted as totals.
+            filters = [{"field": "level", "operator": "eq", "value": "error"}] if dataset == "logs.records" else []
+            if (dataset, operation) not in available:
+                failures.append(dataset + "_capability_unavailable")
+                continue
+            cost = 2 if operation == "compare" else 1
+            if remaining.get("rawQueries", 0) < cost or remaining.get("toolCalls", 0) <= 3:
+                failures.append(dataset + "_budget_not_collected")
+                continue
+            intent = {"schemaVersion": "query-intent/v1", "datasetId": dataset, "operation": operation, "metrics": [metric], "dimensions": ["comparison"] if operation == "compare" else [], "filters": filters, "sort": [], "limit": 3 if operation == "compare" else 1, "timeRange": fault}
+            if operation == "compare": intent["comparisonTimeRange"] = request["baseline"]
+            data, _ = call("execute_analysis_query", {"canonicalId": resource, "windowRole": "fault", "intent": intent})
+            if data.get("storedQueryResult"): queries.append(data["storedQueryResult"])
+        if kind == "PersistentVolumeClaim":
+            failures.append("pvc_metrics_logs_not_applicable_use_native_and_csi_relations")
+
+    if operational and not check:
+        resource_reads(target, target_kind)
     if check and check["tool"] != "execute_analysis_query":
         args = {"canonicalId": check["canonicalId"]}
         if check["tool"] == "get_dependencies":
@@ -45,13 +86,13 @@ def collect(job, job_api, bridge):
     else:
         # An independently admitted evidence read refreshes only the observed
         # communication overlay. Its original event timestamps are retained.
-        if not check and remaining.get("rawQueries", 0) > 0:
+        if not check and target_kind == "Pod" and remaining.get("rawQueries", 0) > 0:
             anchor=datetime.fromisoformat(context["requestedAt"].replace("Z","+00:00")).astimezone(timezone.utc).replace(microsecond=0)
             relation_window={"from":(anchor-timedelta(seconds=120)).isoformat().replace("+00:00","Z"),"to":anchor.isoformat().replace("+00:00","Z")}
             l7_live=any(c.get("l7")=="live" or c.get("l7")=="fixture_only" for c in context.get("networkCapabilities",[]))
             relation_args={"resourceCanonicalId": target, "operation": "get l7 context" if l7_live else "get network health", "timeRange": relation_window}
-            call("query_deepflow", relation_args)
-            if l7_live and last_error in ("SOURCE_SCOPE_UNVERIFIED","SOURCE_CAPABILITY_UNAVAILABLE") and remaining.get("rawQueries",0)>0 and remaining.get("toolCalls",0)>3:
+            relation_result, _ = call("query_deepflow", relation_args)
+            if l7_live and (last_error in ("SOURCE_SCOPE_UNVERIFIED","SOURCE_CAPABILITY_UNAVAILABLE") or not relation_result.get("evidence")) and remaining.get("rawQueries",0)>0 and remaining.get("toolCalls",0)>3:
                 # Degraded legacy reads are committed too. Use the separately
                 # admitted L4 operation; identical args would replay the same gap.
                 call("query_deepflow", {**relation_args,"operation":"get network health"})
@@ -59,7 +100,6 @@ def collect(job, job_api, bridge):
         # Capability records use datasetId; choose only current operational sources.
         available = {(d.get("datasetId"), d.get("operation")) for d in context.get("sourceCapabilities", []) if d.get("status") == "qualification_configured"}
         relations = sorted(dependencies.get("relationReferences", []), key=lambda r: r["relationDigest"])
-        queries = []
         peers = []
         directions = {}
         node_kinds={n.get("canonicalId"):n.get("kind") for n in dependencies.get("nodes",[])}
@@ -67,12 +107,24 @@ def collect(job, job_api, bridge):
             if target not in (relation.get("from"), relation.get("to")):
                 continue
             peer = relation["to"] if relation["from"] == target else relation["from"]
-            if node_kinds.get(peer) != "Pod":
+            if target_kind != "Pod" or node_kinds.get(peer) != "Pod":
                 continue
             if relation.get("kind")=="communicates_with":directions[peer]="outgoing" if relation["from"]==target else "incoming"
             if peer not in peers:
                 peers.append(peer)
         selected_peers = peers[:request["maxEdges"]]
+        if operational and not check:
+            related = sorted({n.get("canonicalId"): n.get("kind") for n in dependencies.get("nodes", []) if n.get("canonicalId") and n.get("canonicalId") != target and n.get("kind") in ("Pod", "Node", "PersistentVolumeClaim")}.items())
+            for resource, kind in related[:request["maxEdges"]]:
+                if remaining.get("toolCalls", 0) > 6:
+                    resource_reads(resource, kind, optional=True)
+                else:
+                    failures.append("related_resource_budget_not_collected")
+            for role in ("baseline", "recovery"):
+                if request.get(role) and remaining.get("toolCalls", 0) > 4:
+                    call("resource_history", {"canonicalId": target, "windowRole": role})
+            if request.get("baseline") and remaining.get("toolCalls", 0) > 4:
+                call("resource_changes", {"canonicalId": target, "windowRole": "baseline"})
         if check:
             selected_peers = [check["canonicalId"]]
             directions[check["canonicalId"]] = check["direction"]
@@ -90,6 +142,9 @@ def collect(job, job_api, bridge):
         # before spending budget on transport and recovery. Every read still goes
         # through allocate/call and uses the frozen window, never a private loop.
         for label, window in (("fault", fault), ("recovery", request.get("recovery"))):
+            if target_kind != "Pod":
+                failures.append("network_not_applicable_for_" + target_kind)
+                break
             if window is None:
                 continue
             compare = label == "recovery" or request.get("baseline") is not None
@@ -137,12 +192,24 @@ def collect(job, job_api, bridge):
                         call("get_resource_health", {"canonicalId":resource})
                     else:
                         failures.append("shared_resource_health_not_completed")
+    if operational and not check and target_kind == "Pod":
+        for dataset, metric in (("logs.records", "log_count"), ("metrics.pod-memory", "memory_bytes"), ("metrics.pod-cpu", "cpu_cores")):
+            compare = request.get("baseline") is not None and remaining.get("rawQueries", 0) >= 2
+            operation = "compare" if compare else "aggregate"
+            if (dataset, operation) not in available or remaining.get("rawQueries", 0) < (2 if compare else 1) or remaining.get("toolCalls", 0) <= 2:
+                failures.append(dataset + "_optional_not_collected")
+                continue
+            intent = {"schemaVersion": "query-intent/v1", "datasetId": dataset, "operation": operation, "metrics": [metric], "dimensions": ["comparison"] if compare else [], "filters": [{"field": "level", "operator": "eq", "value": "error"}] if dataset == "logs.records" else [], "sort": [], "limit": 3 if compare else 1, "timeRange": fault}
+            if compare: intent["comparisonTimeRange"] = request["baseline"]
+            data, _ = call("execute_analysis_query", {"canonicalId": target, "windowRole": "fault", "intent": intent})
+            if data.get("storedQueryResult"): queries.append(data["storedQueryResult"])
     evaluation, step = call("evaluate_fault_chain", {"stepIds": list(dict.fromkeys(committed))})
     chain = evaluation.get("context")
     if not chain or not step:
         raise RuntimeError("FAULT_CHAIN_EVALUATION_UNAVAILABLE")
     supports, conflicts, links = [], [], []
     entities = {target}
+    entities.update(r["canonicalId"] for r in chain.get("sourceSteps", []))
     entities.update(h["canonicalId"] for h in chain.get("resourceHealthChecks", []))
     for edge in chain["edges"]:
         relation = edge["relation"]
@@ -160,7 +227,7 @@ def collect(job, job_api, bridge):
     # Digest is provided by the platform evaluator, never computed from a
     # different JSON serialization in Python.
     digest = evaluation["contentDigest"]
-    summary = "已完成本轮范围内的故障链证据调查。网络异常与依赖关系属于调查线索，具体因果仍待验证。"
+    summary = "已提交本轮预算内的运行数据关联调查。各来源观察及反证可追溯，缺口保留；共现和时间接近不确认因果。"
     if check:
         summary = f"已执行关联原轮次缺口 {check['gapCode']} 的只读检查 {check['tool']}。结果以已提交数据为准；当前快照不替代历史窗口证明，原缺口保留。"
     refs = [{"queryResultId": q["queryResultId"], "factId": f["factId"]} for q in queries if q["queryResultId"] in chain["queryResultRefs"] for f in q["facts"]]

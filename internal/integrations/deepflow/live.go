@@ -89,8 +89,6 @@ func (m *LiveMapper) ByCanonicalPair(ctx context.Context, left, right string) (E
 			return Endpoint{}, Endpoint{}, evidence.ErrScopeUnverified
 		}
 	}
-	m.mu.Lock()
-	defer m.mu.Unlock()
 	// Pair reads use a local verified snapshot, so they cannot overwrite the
 	// legacy flow reader's backend map while it is resolving returned rows.
 	endpoints, _, err := m.refresh(ctx, left, right)
@@ -373,8 +371,6 @@ type summaryPairSnapshot struct {
 func (m *LiveMapper) beginSummaryPair(ctx context.Context, left, right string) (summaryPairSnapshot, error) {
 	ctx, cancel := context.WithTimeout(ctx, 2500*time.Millisecond)
 	defer cancel()
-	m.mu.Lock()
-	defer m.mu.Unlock()
 	if m.authorize(ctx, m.binding) != nil {
 		return summaryPairSnapshot{}, evidence.ErrScopeUnverified
 	}
@@ -399,8 +395,6 @@ func (m *LiveMapper) beginSummaryPair(ctx context.Context, left, right string) (
 func (m *LiveMapper) finishSummaryPair(ctx context.Context, snapshot summaryPairSnapshot) (Endpoint, Endpoint, error) {
 	ctx, cancel := context.WithTimeout(ctx, 2500*time.Millisecond)
 	defer cancel()
-	m.mu.Lock()
-	defer m.mu.Unlock()
 	if m.authorize(ctx, m.binding) != nil {
 		return Endpoint{}, Endpoint{}, evidence.ErrScopeUnverified
 	}

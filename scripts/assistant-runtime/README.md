@@ -80,3 +80,13 @@ runuser -u ops-sp08-qa -- env HOME=/data/ops-sp08-20261011/browser-home \
 
 Playwright 设置 `OPS_WEB_QA_CDP=http://127.0.0.1:19226`，使用复制后的 Node。
 该浏览器仅用于本专项；收尾按 PID/执行路径/profile 核对后停止，保留日志。
+
+### 运行关联 v2 的同范围来源复验
+
+固定收集入口仍受 `faultChainEnabled` 控制，新请求为 `fault-chain-request/v2`，新任务目录为 `assistant-tools/v2`。先应用增量迁移并同步 API、Go/Python Worker 和 UI；保留旧任务、v1 归档与失败记录。回滚边界见 [开发记录](../../docs/plans/v1.0-operational-analysis-progress.md)。
+
+`collect_live.py --canary-set fault-chain` 只允许既有开发 namespace `ops-assistant-deepflow-20261013` 及固定 `fault-chain-20261014` 标签，复用相同 cAdvisor/UID/日志采集器。新目录保存实际观测，至少采满既有的 60 次/5 分钟门禁。控制 HTTP 流量安排在采集窗口后段，使实际产生日志的服务端 UID 在末分钟内有正样本；闲置客户端没有日志，不能拿它代替服务端正样本验证，也不能伪造日志。
+
+远程测试设置 `OPS_ASSISTANT_OPERATIONAL_SOURCES=1`，使原 native Graph runtime 在同一冻结范围中接入实际 VM/VL 与 DeepFlow；实际模型解释用 `OPS_FAULT_CHAIN_MODEL=1`。`TestAssistantActualFaultChainWithoutModel` 的收集阶段仍断言模型调用为零，后续解释有独立 Job。所有 source qualification 仍需实际正样本、范围隔离和已冻结 proof；无数据保留缺口。
+
+新增历史界面分项使用 `web/tests/e2e/operational_history_runtime.spec.ts`，需要本轮实际 partial 轮次的 `OPS_OPERATIONAL_HISTORY_TURN`，验证缺失历史不被回填、冻结窗口/UID、安全 Step 定位、刷新保留和所有者隔离。其回执显式标记 `networkOracleAcceptance=false`；原 `fault_chain_runtime.spec.ts` 的独立 HTTP 计数断言继续保留，两个结果分别报告，不互相代替。

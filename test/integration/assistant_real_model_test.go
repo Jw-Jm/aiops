@@ -181,7 +181,7 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 	config.PrivateKeyFile = files["ops-worker.key"]
 	write(runtimeFile, config)
 	if os.Getenv("OPS_ASSISTANT_MANUAL_MCP") == "1" {
-		if _, err = db.ExecContext(ctx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,'manual-native-mcp',$2,'assistant-tools/v1',clock_timestamp()+interval '15 minutes')`, b.TenantID, profile); err != nil {
+		if _, err = db.ExecContext(ctx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,'manual-native-mcp',$2,'assistant-tools/v2',clock_timestamp()+interval '15 minutes')`, b.TenantID, profile); err != nil {
 			t.Fatal(err)
 		}
 	} else {

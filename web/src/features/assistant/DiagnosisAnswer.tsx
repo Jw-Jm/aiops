@@ -5,6 +5,7 @@ import { AssistantEvidence } from "./AssistantEvidence";
 import { FormalReferenceView } from "./FormalReferenceView";
 import { QueryResultView } from "./QueryResultView";
 import type { FaultChainCheckControls } from "./FaultChainGapCheck";
+import { ResourceCorrelation } from "./ResourceCorrelation";
 import { FaultChainPanel } from "./FaultChainPanel";
 export function DiagnosisAnswer({
   answer,
@@ -51,6 +52,16 @@ export function DiagnosisAnswer({
           ].join("；")}
         />
       )}
+      {!answer.faultChainContextRef &&
+        !!answer.resourceSourceSteps?.length &&
+        turnId && (
+          <ResourceCorrelation
+            onReadOnlyCheck={onReadOnlyCheck}
+            context={{ sourceSteps: answer.resourceSourceSteps }}
+            turnId={turnId}
+            scopeKey={turnId}
+          />
+        )}
       {answer.faultChainContextRef && turnId && (
         <FaultChainPanel
           answer={answer}
