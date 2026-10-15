@@ -508,6 +508,11 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 			if !q.FaultChainRequest.Valid(c.Binding.ExecutionScope, c.Binding.Timezone, requestedAt) || !c.Binding.ExecutionScope.Allows(q.FaultChainRequest.TargetCanonicalID, c.Binding.ExecutionScope.Namespaces[0]) {
 				return investigation.ErrDenied
 			}
+			if q.FaultChainRequest.ReadOnlyCheck != nil {
+				if err := validateFaultChainCheckTx(ctx, tx, c, q); err != nil {
+					return err
+				}
+			}
 			requestedWindow = &q.FaultChainRequest.Fault
 		}
 		input := TurnInput{FaultChainRequest: q.FaultChainRequest, RequestedTimeRange: requestedWindow, ReferenceResolution: referenceResolution, SchemaVersion: "assistant-input/v1", RequestedAt: requestedAt, Message: tools.RedactText(q.Message), Binding: c.Binding, History: history, HistoryManifestDigest: graph.ScopeDigest(history), ParentTurnID: q.ParentTurnID, ClarificationID: q.ClarificationID}

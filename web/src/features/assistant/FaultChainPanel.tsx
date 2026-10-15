@@ -4,6 +4,7 @@ import {
   Alert,
   Button,
   Card,
+  Drawer,
   List,
   Space,
   Tag,
@@ -17,6 +18,10 @@ import type { AssistantAnswerV1 } from "../../api/generated/models";
 import { useAuth } from "../../auth/AuthProvider";
 import { QueryState } from "../../components/QueryState";
 import { AssistantEvidence } from "./AssistantEvidence";
+import {
+  FaultChainGapCheck,
+  type FaultChainCheckControls,
+} from "./FaultChainGapCheck";
 import { QueryResultView } from "./QueryResultView";
 
 const missingLabels: Record<string, string> = {
@@ -38,10 +43,14 @@ export function FaultChainPanel({
   answer,
   turnId,
   onReadOnlyCheck,
+  checkControls,
+  anchorPrefix,
 }: {
   answer: AssistantAnswerV1;
   turnId: string;
   onReadOnlyCheck?: (message: string) => void;
+  checkControls?: FaultChainCheckControls;
+  anchorPrefix?: string;
 }) {
   const { session } = useAuth();
   const scopeKey = JSON.stringify([
@@ -51,7 +60,18 @@ export function FaultChainPanel({
     session?.clusterScopes,
     session?.namespaceScopes,
   ]);
+  const viewId = anchorPrefix || turnId;
+  const [originOpen, setOriginOpen] = useState(false);
   const [selected, setSelected] = useState(0);
+  const [focusedFact, setFocusedFact] = useState<{
+    queryResultId: string;
+    factId: string;
+  }>();
+  function locateQuery(id: string) {
+    const element = document.getElementById(`fault-chain-${viewId}-${id}`);
+    element?.focus();
+    element?.scrollIntoView?.({ block: "nearest" });
+  }
   const query = useQuery({
     queryKey: ["assistant", scopeKey, "fault-chain", turnId],
     enabled: !!session,
@@ -67,12 +87,91 @@ export function FaultChainPanel({
       retry={() => void query.refetch()}
     >
       {context && (
-        <Card title="故障链证据调查" style={{ overflowWrap: "anywhere" }}>
+        <Card
+          id={`fault-chain-${viewId}`}
+          title="故障链证据调查"
+          style={{ overflowWrap: "anywhere" }}
+        >
           <Space orientation="vertical" style={{ width: "100%" }}>
             <Alert
               type="info"
               title="依赖和异常是调查线索；故障传播仍待因果验证。"
             />
+            {context.request.readOnlyCheck && (
+              <Alert
+                type="info"
+                title={`只读检查：${context.request.readOnlyCheck.tool}`}
+                description={
+                  <>
+                    <Button size="small" onClick={() => setOriginOpen(true)}>
+                      查看原调查轮次与缺口
+                    </Button>
+                    {context.request.readOnlyCheck.relationDigest && (
+                      <div>
+                        原关系：{context.request.readOnlyCheck.relationDigest}
+                      </div>
+                    )}
+                    <div>
+                      原缺口：
+                      {missingLabels[context.request.readOnlyCheck.gapCode] ||
+                        context.request.readOnlyCheck.gapCode}
+                    </div>
+                    <div>
+                      检查目标：{context.request.readOnlyCheck.canonicalId}
+                      ；原缺口不会自动关闭，当前快照不能替代历史证明。
+                    </div>
+                  </>
+                }
+              />
+            )}
+            {context.request.readOnlyCheck && (
+              <Drawer
+                title="原调查已提交证据与缺口"
+                open={originOpen}
+                onClose={() => setOriginOpen(false)}
+                width="min(960px, 100vw)"
+              >
+                {originOpen && (
+                  <FaultChainPanel
+                    answer={answer}
+                    turnId={context.request.readOnlyCheck.originTurnId}
+                    anchorPrefix={`${viewId}-origin`}
+                  />
+                )}
+              </Drawer>
+            )}
+            {context.request.readOnlyCheck?.tool === "get_resource_health" &&
+              !context.resourceHealthChecks?.length && (
+                <Alert
+                  type="warning"
+                  title="未取得可引用的合格健康快照；保留原缺口。"
+                />
+              )}
+            {context.resourceHealthChecks?.map((health) => (
+              <Card
+                key={`${health.stepId}:${health.canonicalId}`}
+                size="small"
+                title="只读健康检查结果"
+              >
+                <Link
+                  to={`/resources/detail?canonicalId=${encodeURIComponent(health.canonicalId)}`}
+                >
+                  {health.canonicalId}
+                </Link>
+                <div>
+                  Ready={health.conditionStatus}；观测：{health.observedAt}
+                </div>
+                <div>
+                  已提交步骤：{health.stepId}；来源：
+                  {health.sources
+                    .map(
+                      (source) =>
+                        `${source.sourceRegistrationId}@${source.revision}`,
+                    )
+                    .join("、")}
+                </div>
+              </Card>
+            ))}
             <Tag color="green">证据已提交；模型解释使用独立轮次</Tag>
             {onReadOnlyCheck && (
               <Button
@@ -109,24 +208,111 @@ export function FaultChainPanel({
                 ...(edge?.relation.observedAt
                   ? [
                       {
-                        content: `所选关系观测：${edge.relation.observedAt}（历史窗口内是否成立仍待核验）`,
+                        content: (
+                          <Button
+                            type="link"
+                            style={{
+                              whiteSpace: "normal",
+                              height: "auto",
+                              textAlign: "left",
+                            }}
+                            onClick={() => {
+                              document
+                                .getElementById(
+                                  `fault-chain-${viewId}-relation`,
+                                )
+                                ?.focus();
+                              if (edge.queryResultRefs[0])
+                                locateQuery(edge.queryResultRefs[0]);
+                            }}
+                          >
+                            所选关系观测：{edge.relation.observedAt}
+                            （历史窗口内是否成立仍待核验）
+                          </Button>
+                        ),
                         color: "gray",
                       },
                     ]
                   : []),
+                ...(edge?.observations.flatMap((observation, index) =>
+                  observation.resourceHealth
+                    ? [
+                        {
+                          content: (
+                            <Button
+                              type="link"
+                              style={{
+                                whiteSpace: "normal",
+                                height: "auto",
+                                textAlign: "left",
+                              }}
+                              onClick={() => {
+                                const element = document.getElementById(
+                                  `fault-chain-${viewId}-observation-${index}`,
+                                );
+                                element?.focus();
+                                element?.scrollIntoView?.({ block: "nearest" });
+                              }}
+                            >
+                              健康观测：{observation.resourceHealth.observedAt}{" "}
+                              · {observation.resourceHealth.canonicalId} Ready=
+                              {observation.resourceHealth.conditionStatus}
+                              （定位已提交状态与来源）
+                            </Button>
+                          ),
+                          color: "gray",
+                        },
+                      ]
+                    : [],
+                ) || []),
                 {
                   content: `调查完成：${context.asOf}（窗口顺序不代表传播顺序）`,
                   color: "gray",
                 },
               ]}
             />
+            <Space wrap aria-label="调查节点">
+              {[
+                ...new Set(
+                  context.edges.flatMap((item) => [
+                    item.relation.from,
+                    item.relation.to,
+                  ]),
+                ),
+              ].map((node) => (
+                <Button
+                  key={node}
+                  style={{
+                    whiteSpace: "normal",
+                    height: "auto",
+                    maxWidth: "100%",
+                  }}
+                  onClick={() => {
+                    setSelected(
+                      context.edges.findIndex(
+                        (item) =>
+                          item.relation.from === node ||
+                          item.relation.to === node,
+                      ),
+                    );
+                    setFocusedFact(undefined);
+                  }}
+                >
+                  定位节点 {node}
+                </Button>
+              ))}
+            </Space>
             <Space wrap>
               {context.edges.map((item, i) => (
                 <Button
                   key={item.relationDigest}
+                  style={{ whiteSpace: "normal", height: "auto" }}
                   type={i === selected ? "primary" : "default"}
                   aria-pressed={i === selected}
-                  onClick={() => setSelected(i)}
+                  onClick={() => {
+                    setSelected(i);
+                    setFocusedFact(undefined);
+                  }}
                 >
                   链路 {i + 1} · {item.relation.kind}
                 </Button>
@@ -140,7 +326,7 @@ export function FaultChainPanel({
             )}
             {edge && (
               <>
-                <Space wrap>
+                <Space id={`fault-chain-${viewId}-relation`} tabIndex={-1} wrap>
                   <Link
                     to={`/resources/detail?canonicalId=${encodeURIComponent(edge.relation.from)}`}
                   >
@@ -175,13 +361,30 @@ export function FaultChainPanel({
                 </Typography.Text>
                 <List
                   dataSource={edge.observations}
-                  renderItem={(observation) => (
+                  renderItem={(observation, index) => (
                     <List.Item>
                       <Space orientation="vertical" style={{ width: "100%" }}>
-                        <Typography.Text>{observation.reason}</Typography.Text>
+                        <Typography.Text
+                          id={`fault-chain-${viewId}-observation-${index}`}
+                          tabIndex={-1}
+                        >
+                          {observation.reason}
+                        </Typography.Text>
                         <Typography.Text type="secondary">
                           规则：{observation.ruleId}
                         </Typography.Text>
+                        {observation.factRefs.map((ref) => (
+                          <Button
+                            key={`${ref.queryResultId}:${ref.factId}`}
+                            size="small"
+                            onClick={() => {
+                              setFocusedFact(ref);
+                              locateQuery(ref.queryResultId);
+                            }}
+                          >
+                            定位统计 Fact {ref.factId}
+                          </Button>
+                        ))}
                         {observation.resourceHealth && (
                           <>
                             <Link
@@ -232,9 +435,7 @@ export function FaultChainPanel({
                     </List.Item>
                   )}
                 />
-                {edge.queryResultRefs.map((id) => (
-                  <QueryResultView key={id} id={id} answer={answer} />
-                ))}
+
                 <Typography.Text type="secondary">
                   关系观测时间：{edge.relation.observedAt}
                   ；历史窗口内是否成立仍待核验。
@@ -250,22 +451,16 @@ export function FaultChainPanel({
                     <List.Item>
                       <Space wrap>
                         <span>{missingLabels[item] || item}</span>
-                        {onReadOnlyCheck &&
-                          [
-                            "shared_resource_cause_not_checked",
-                            "recovery_baseline_and_health_unverified",
-                          ].includes(item) && (
-                            <Button
-                              size="small"
-                              onClick={() =>
-                                onReadOnlyCheck(
-                                  `请使用已发布的 get_resource_health 只读检查本会话授权范围内的目标及依赖自身状态，核对历史故障链缺口 ${item}。当前快照不能补造历史窗口健康证明。`,
-                                )
-                              }
-                            >
-                              准备只读健康检查
-                            </Button>
-                          )}
+                        {checkControls && (
+                          <FaultChainGapCheck
+                            key={`${edge.relationDigest}:${item}`}
+                            context={context}
+                            edge={edge}
+                            gap={item}
+                            turnId={turnId}
+                            controls={checkControls}
+                          />
+                        )}
                         {item.includes("scope") && (
                           <a href="#assistant-binding-editor">
                             编辑现有调查范围
@@ -283,6 +478,33 @@ export function FaultChainPanel({
                 />
               </>
             )}
+            {(edge?.queryResultRefs.length
+              ? edge.queryResultRefs
+              : context.queryResultRefs
+            ).map((id) => (
+              <QueryResultView
+                key={id}
+                id={id}
+                answer={answer}
+                anchorId={`fault-chain-${viewId}-${id}`}
+                focusFactId={
+                  focusedFact?.queryResultId === id
+                    ? focusedFact.factId
+                    : undefined
+                }
+              />
+            ))}
+            {checkControls &&
+              context.missingEvidence.includes(
+                "committed_scoped_resource_relations",
+              ) && (
+                <FaultChainGapCheck
+                  context={context}
+                  gap="committed_scoped_resource_relations"
+                  turnId={turnId}
+                  controls={checkControls}
+                />
+              )}
             {context.missingEvidence.length > 0 && (
               <Alert
                 type="warning"

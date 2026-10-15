@@ -130,7 +130,11 @@ it("links the selected edge to explicit conflict and missing evidence without cl
   render(
     <QueryClientProvider client={client}>
       <MemoryRouter>
-        <FaultChainPanel answer={answer} turnId="fixture-turn" onReadOnlyCheck={prepare} />
+        <FaultChainPanel
+          answer={answer}
+          turnId="fixture-turn"
+          onReadOnlyCheck={prepare}
+        />
       </MemoryRouter>
     </QueryClientProvider>,
   );
@@ -142,6 +146,16 @@ it("links the selected edge to explicit conflict and missing evidence without cl
       .getAttribute("href"),
   ).toContain("canonicalId=shared-node");
   expect(screen.getByText(/已提交状态：Ready=False/)).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: /健康观测：/ }));
+  expect(document.activeElement?.textContent).toBe("竞争原因尚未排除：a");
+  fireEvent.click(
+    screen.getByRole("button", { name: "定位节点 dependency-b" }),
+  );
+  expect(
+    screen
+      .getByRole("button", { name: "链路 2 · communicates_with" })
+      .getAttribute("aria-pressed"),
+  ).toBe("true");
   fireEvent.click(
     screen.getByRole("button", { name: "链路 2 · communicates_with" }),
   );
@@ -149,7 +163,9 @@ it("links the selected edge to explicit conflict and missing evidence without cl
   expect(screen.queryByText("缺少因果证据：a")).toBeNull();
   expect(screen.getByText("恢复未验证")).toBeDefined();
   fireEvent.click(screen.getByRole("button", { name: "准备解释这些证据" }));
-  expect(prepare).toHaveBeenCalledWith(expect.stringContaining("get_assistant_context"));
+  expect(prepare).toHaveBeenCalledWith(
+    expect.stringContaining("get_assistant_context"),
+  );
   expect(screen.getByText("证据已提交；模型解释使用独立轮次")).toBeDefined();
   client.clear();
 });

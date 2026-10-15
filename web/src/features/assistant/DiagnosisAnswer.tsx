@@ -4,15 +4,18 @@ import type { AssistantAnswerV1 } from "../../api/generated/models";
 import { AssistantEvidence } from "./AssistantEvidence";
 import { FormalReferenceView } from "./FormalReferenceView";
 import { QueryResultView } from "./QueryResultView";
+import type { FaultChainCheckControls } from "./FaultChainGapCheck";
 import { FaultChainPanel } from "./FaultChainPanel";
 export function DiagnosisAnswer({
   answer,
   turnId,
   onReadOnlyCheck,
+  checkControls,
 }: {
   answer: AssistantAnswerV1;
   turnId?: string;
   onReadOnlyCheck?: (message: string) => void;
+  checkControls?: FaultChainCheckControls;
 }) {
   return (
     <Space orientation="vertical" style={{ width: "100%" }}>
@@ -53,6 +56,7 @@ export function DiagnosisAnswer({
           answer={answer}
           turnId={turnId}
           onReadOnlyCheck={onReadOnlyCheck}
+          checkControls={checkControls}
         />
       )}
       {!answer.faultChainContextRef &&

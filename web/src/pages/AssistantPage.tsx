@@ -774,6 +774,19 @@ export function AssistantPage() {
                           <DiagnosisAnswer
                             answer={item.content as AssistantAnswerV1}
                             turnId={item.turnId}
+                            checkControls={
+                              capabilities.data?.data.faultChainEnabled
+                                ? {
+                                    conversation: conversation.data!.data,
+                                    disabled: Boolean(running) || busy,
+                                    onSubmitted: (next) => {
+                                      setTurn(next);
+                                      setMessageCursor(undefined);
+                                      reload();
+                                    },
+                                  }
+                                : undefined
+                            }
                             onReadOnlyCheck={
                               item.turnId === active?.turnId
                                 ? (draft) => {
@@ -801,6 +814,19 @@ export function AssistantPage() {
                       <DiagnosisAnswer
                         answer={active.answer}
                         turnId={active.turnId}
+                        checkControls={
+                          capabilities.data?.data.faultChainEnabled
+                            ? {
+                                conversation: conversation.data!.data,
+                                disabled: Boolean(running) || busy,
+                                onSubmitted: (next) => {
+                                  setTurn(next);
+                                  setMessageCursor(undefined);
+                                  reload();
+                                },
+                              }
+                            : undefined
+                        }
                       />
                     </Card>
                   )}

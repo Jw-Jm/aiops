@@ -86,6 +86,51 @@
       "type": "integer",
       "minimum": 1,
       "maximum": 8
+    },
+    "readOnlyCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "originTurnId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "relationDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "gapCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "canonicalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "tool": {
+          "enum": [
+            "get_resource_health",
+            "get_dependencies",
+            "execute_analysis_query"
+          ]
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "incoming",
+            "outgoing",
+            "either"
+          ]
+        }
+      },
+      "required": [
+        "originTurnId",
+        "gapCode",
+        "canonicalId",
+        "tool"
+      ]
     }
   },
   "required": [

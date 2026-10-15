@@ -48,10 +48,15 @@ export * from './assistantFaultChainContextV1EdgesItemObservationsItemFactRefsIt
 export * from './assistantFaultChainContextV1EdgesItemObservationsItemResourceHealth.ts';
 export * from './assistantFaultChainContextV1EdgesItemObservationsItemResourceHealthConditionStatus.ts';
 export * from './assistantFaultChainContextV1EdgesItemTemporalAssessment.ts';
+export * from './assistantFaultChainContextV1ResourceHealthChecksItem.ts';
+export * from './assistantFaultChainContextV1ResourceHealthChecksItemConditionStatus.ts';
 export * from './assistantFaultChainContextV1Status.ts';
 export * from './assistantFaultChainRequestV1.ts';
 export * from './assistantFaultChainRequestV1Baseline.ts';
 export * from './assistantFaultChainRequestV1Fault.ts';
+export * from './assistantFaultChainRequestV1ReadOnlyCheck.ts';
+export * from './assistantFaultChainRequestV1ReadOnlyCheckDirection.ts';
+export * from './assistantFaultChainRequestV1ReadOnlyCheckTool.ts';
 export * from './assistantFaultChainRequestV1Recovery.ts';
 export * from './assistantFormalEnvelopeV1.ts';
 export * from './assistantFormalEnvelopeV1Data.ts';
