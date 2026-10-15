@@ -380,7 +380,10 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 				if snapshot.Partial || snapshot.Freshness != "fresh" || len(snapshot.ObservationSources) == 0 {
 					t.Fatal("native shared checks were not qualified", tool)
 				}
-				health := investigation.CommittedFaultChainResourceHealth(step, snapshot)
+				health := []investigation.FaultChainResourceHealth{}
+				if tool == "get_resource_health" {
+					health = investigation.CommittedFaultChainResourceHealth(step, snapshot)
+				}
 				for _, h := range health {
 					healthy[h.CanonicalID] = h.ConditionStatus == "True"
 				}
