@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "assistant-evaluation-report/v1",
+  "suiteVersion": "zh-assistant-five-20261013/v1",
+  "suiteDigest": "sha256:760cea21e3152c34474e75f5069339607ba4c548578b9628dad9b717c7b1c777",
+  "profileReferences": [
+    "assistant-zh-evaluation/v1@sha256:06c058b74b753b9f54e7e39e0409004641a44981a1b131a856a8edd4ad655ddd"
+  ],
+  "fixtureOnly": true,
+  "observations": 5,
+  "expectedObservations": 5,
+  "coverageComplete": true,
+  "qualityVerdict": "FAIL",
+  "productionAdmission": "NOT_ADMITTED",
+  "samplingLimit": "five independent cases, one run each; no overall accuracy, helpfulness rate, worst-of-three or variance claim",
+  "missingCases": [],
+  "humanReviewPending": [
+    "zh-002",
+    "zh-003",
+    "zh-004"
+  ],
+  "caseResults": [
+    {
+      "caseId": "zh-001",
+      "group": "query",
+      "state": "PASS",
+      "automaticChecksPassed": true,
+      "reasons": [],
+      "metrics": {
+        "intent": {
+          "passed": 1,
+          "total": 1
+        },
+        "deterministic": {
+          "passed": 1,
+          "total": 1
+        },
+        "query": {
+          "passed": 1,
+          "total": 1
+        },
+        "references": {
+          "passed": 2,
+          "total": 2
+        }
+      },
+      "humanReview": null
+    },
+    {
+      "caseId": "zh-002",
+      "group": "diagnosis",
+      "state": "FAIL",
+      "automaticChecksPassed": false,
+      "reasons": [
+        "turn_1:partial"
+      ],
+      "metrics": {
+        "references": {
+          "passed": 2,
+          "total": 2
+        }
+      },
+      "humanReview": null
+    },
+    {
+      "caseId": "zh-003",
+      "group": "diagnosis",
+      "state": "FAIL",
+      "automaticChecksPassed": false,
+      "reasons": [
+        "turn_1:partial"
+      ],
+      "metrics": {
+        "references": {
+          "passed": 3,
+          "total": 3
+        }
+      },
+      "humanReview": null
+    },
+    {
+      "caseId": "zh-004",
+      "group": "multiturn",
+      "state": "FAIL",
+      "automaticChecksPassed": false,
+      "reasons": [
+        "turn_1:partial",
+        "turn_2:partial"
+      ],
+      "metrics": {
+        "multiturn": {
+          "passed": 2,
+          "total": 2
+        },
+        "references": {
+          "passed": 6,
+          "total": 6
+        }
+      },
+      "humanReview": null
+    },
+    {
+      "caseId": "zh-005",
+      "group": "clarification",
+      "state": "PASS",
+      "automaticChecksPassed": true,
+      "reasons": [],
+      "metrics": {
+        "clarification": {
+          "passed": 1,
+          "total": 1
+        }
+      },
+      "humanReview": null
+    }
+  ]
+}

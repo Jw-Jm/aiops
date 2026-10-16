@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -178,18 +179,25 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 	availableEntities := map[string]bool{}
 	freshReferences := map[string]bool{}
 	var historicalAsOf time.Time
-	rows, err := tx.Query(ctx, `SELECT tool_name,result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND state='succeeded' AND tool_name<>'model'`, j.TenantID, j.JobID)
+	rows, err := tx.Query(ctx, `SELECT step_id,tool_name,state,error_code,result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND state IN('succeeded','failed') AND tool_name<>'model' ORDER BY started_at,step_id`, j.TenantID, j.JobID)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var rawResult []byte
 		var toolName string
-		if rows.Scan(&toolName, &rawResult) != nil {
+		var stepID uuid.UUID
+		var state, code string
+		if rows.Scan(&stepID, &toolName, &state, &code, &rawResult) != nil {
 			rows.Close()
 			return nil, ErrInvalid
 		}
+		if state == "failed" {
+			assistantReadStatus(&a, toolName, state, false, code, j.Assistant.ExecutionMode)
+			continue
+		}
 		var v struct {
+			Partial      bool     `json:"partial"`
 			Tool         string   `json:"tool"`
 			EvidenceRefs []string `json:"evidenceRefs"`
 			Data         struct {
@@ -210,6 +218,19 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 		if v.Tool != toolName || json.Unmarshal(rawResult, &envelope) != nil {
 			rows.Close()
 			return nil, ErrInvalid
+		}
+		assistantReadStatus(&a, toolName, state, v.Partial, code, j.Assistant.ExecutionMode)
+		if j.Assistant.ExecutionMode != "evidence_only" && slices.Contains([]string{"resource_history", "resource_findings", "resource_changes"}, toolName) {
+			var source struct {
+				CanonicalID string `json:"canonicalId"`
+			}
+			if json.Unmarshal(envelope.Data, &source) != nil {
+				rows.Close()
+				return nil, ErrInvalid
+			}
+			if source.CanonicalID != "" && !slices.ContainsFunc(a.ResourceSourceSteps, func(ref ResourceSourceStep) bool { return ref.StepID == stepID }) {
+				a.ResourceSourceSteps = append(a.ResourceSourceSteps, ResourceSourceStep{StepID: stepID, Tool: toolName, CanonicalID: source.CanonicalID, ContentDigest: graph.ScopeDigest(json.RawMessage(rawResult))})
+			}
 		}
 		for digest, relation := range committedAssistantRelations(toolName, envelope.Data) {
 			availableRelations[digest] = relation
@@ -312,6 +333,7 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 		queries[ref] = q
 		if !q.Result.Exact {
 			a.Partial = true
+			a.Warnings = append(a.Warnings, "query_result_incomplete")
 		}
 	}
 	facts := map[FactRef]bool{}
@@ -376,6 +398,11 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 	}
 	a.AsOf = assistantObservationTime(a, freshReferences, historicalAsOf, time.Now().UTC())
 	a.ScopeSummary = j.Assistant.AuthorizationDomain + ":" + j.Scope.Cluster
+	if j.Assistant.ExecutionMode != "evidence_only" && a.Partial && !slices.ContainsFunc(a.Warnings, func(w string) bool {
+		return strings.HasPrefix(w, "source_read_") || strings.HasPrefix(w, "model_") || w == "MODEL_OUTPUT_INVALID" || w == "query_not_executed" || w == "query_result_incomplete" || w == "unreliable-event-time" || w == "BUDGET_EXHAUSTED" || w == "TIME_BUDGET_EXHAUSTED" || w == "CANCELLED"
+	}) {
+		a.Warnings = append(a.Warnings, "model_answer_incomplete")
+	}
 	validated := raw(a)
 	if contract.Validate("https://ops.local/schemas/assistant-answer/v1", validated) != nil {
 		return nil, ErrInvalid

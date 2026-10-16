@@ -16,7 +16,7 @@ import (
 // Numeric tool contents are protocol Fixtures, not a real source accuracy proof.
 // PostgreSQL, least-privilege roles, settlement, cancellation and reads are real.
 func TestAssistantCancellationAndBudgetKeepCommittedNumbers(t *testing.T) {
-	for _, terminal := range []string{"cancel", "budget"} {
+	for _, terminal := range []string{"cancel", "budget", "model-output"} {
 		t.Run(terminal, func(t *testing.T) {
 			ctx, _, _, b, repo, jobs := assistantExtendedFixture(t)
 			c, err := repo.Create(ctx, assistant.Conversation{TenantID: b.TenantID, OwnerSubject: "assistant-owner", Title: "Partial numeric protocol fixture", Mode: "data_query", AuthorizationDomain: "operational", ClusterUID: b.ClusterUID, Binding: assistant.ConversationBinding{Timezone: "UTC", Selection: analytics.Selection{Namespaces: []string{"apps"}}}})
@@ -50,6 +50,8 @@ func TestAssistantCancellationAndBudgetKeepCommittedNumbers(t *testing.T) {
 			}
 			if terminal == "cancel" {
 				err = repo.Cancel(ctx, b.TenantID, turn.TurnID, c.OwnerSubject, "cancel-numeric")
+			} else if terminal == "model-output" {
+				err = jobs.CompleteAssistantPartial(ctx, lease, "MODEL_OUTPUT_INVALID")
 			} else {
 				err = jobs.ExhaustBudget(ctx, lease)
 			}
@@ -78,8 +80,11 @@ func TestAssistantCancellationAndBudgetKeepCommittedNumbers(t *testing.T) {
 			if err != nil || read.Facts[0].Value != 7 || read.ContentDigest != stored.ContentDigest {
 				t.Fatal("retained number changed", err)
 			}
-			if terminal == "cancel" && current.State != "cancelled" || terminal == "budget" && current.State != "partial" {
+			if terminal == "cancel" && current.State != "cancelled" || terminal != "cancel" && current.State != "partial" {
 				t.Fatal("terminal state changed", current.State)
+			}
+			if terminal == "model-output" && current.ErrorCode != "MODEL_OUTPUT_INVALID" {
+				t.Fatal("model failure cause lost", current.ErrorCode)
 			}
 		})
 	}

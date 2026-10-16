@@ -69,6 +69,62 @@ const answer = {
     },
   ],
 };
+
+test("partial reasons remain distinct from unexecuted suggestions", async ({
+  page,
+}) => {
+  await routes(page);
+  await page.route(
+    "**/conversations/conversation-fixture/messages**",
+    async (route) => {
+      await route.fulfill({
+        json: {
+          data: [
+            {
+              messageId: "partial-message",
+              turnId: "turn-fixture",
+              sequence: 1,
+              role: "assistant",
+              content: {
+                ...answer,
+                partial: true,
+                queryResultRefs: [],
+                formalRefs: [],
+                faultChain: [],
+                warnings: [
+                  "source_read_failed:query_logs:SOURCE_DEGRADED",
+                  "source_read_partial:resource_history",
+                  "model_answer_incomplete",
+                  "MODEL_OUTPUT_INVALID",
+                  "BUDGET_EXHAUSTED",
+                ],
+                nextChecks: ["核对退出日志"],
+              },
+            },
+          ],
+          meta: { nextCursor: "" },
+        },
+      });
+    },
+  );
+  await page.goto(base + "?conversation=conversation-fixture");
+  await expect(
+    page.getByText("来源读取失败：query_logs:SOURCE_DEGRADED", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("来源证据不完整：resource_history", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("模型回答不完整", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("模型输出格式无效，已保留取证结果", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("本轮预算已耗尽", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("下一步只读检查（尚未执行）", { exact: true }),
+  ).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByText("核对退出日志", { exact: true })).toBeVisible();
+});
 async function routes(page: any, overrides: { clarification?: boolean } = {}) {
   await page.route("**/api/v1/**", async (route: any) => {
     const u = new URL(route.request().url());

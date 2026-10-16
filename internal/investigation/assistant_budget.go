@@ -11,6 +11,25 @@ import (
 
 // Only committed, currently disclosable results survive cancellation or budget exhaustion.
 // Unsettled requests and model guesses cannot become partial numeric facts.
+func (r Repository) CompleteAssistantPartial(ctx context.Context, l Lease, code string) error {
+	if code != "MODEL_OUTPUT_INVALID" {
+		return ErrInvalid
+	}
+	return r.withLease(ctx, l, func(tx pgx.Tx, j Job) error {
+		if j.Assistant == nil || j.Assistant.ExecutionMode == "evidence_only" || j.Reserved != (Usage{}) {
+			return ErrLease
+		}
+		answer, err := assistantPartialAnswerTx(ctx, tx, j, code)
+		if err != nil {
+			return err
+		}
+		if _, err = tx.Exec(ctx, `UPDATE investigation.jobs SET state='partial',error_code=$3,result=$4 WHERE tenant_id=$1 AND job_id=$2`, j.TenantID, j.JobID, code, answer); err != nil {
+			return err
+		}
+		return event(ctx, tx, j, "result", map[string]any{"state": "partial", "errorCode": code, "result": json.RawMessage(answer)})
+	})
+}
+
 func assistantPartialAnswerTx(ctx context.Context, tx pgx.Tx, j Job, code string) ([]byte, error) {
 	a := AssistantAnswer{SchemaVersion: "assistant-answer/v1", AnswerKind: "unsupported", Summary: "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。", FactRefs: []FactRef{}, QueryResultRefs: []uuid.UUID{}, EvidenceRefs: []string{}, EntityRefs: []string{}, MissingEvidence: []string{"remaining_checks_not_completed"}, Partial: true, DegradedSources: []string{}, Warnings: []string{code}, Hypotheses: []Hypothesis{}, NextChecks: []string{"缩小范围后发起新一轮检查"}}
 	a.ScopeSummary = graph.ScopeDigest(j.Scope)
@@ -101,6 +120,11 @@ func assistantPartialAnswerTx(ctx context.Context, tx pgx.Tx, j Job, code string
 	if len(a.ResourceSourceSteps) > 0 {
 		a.AnswerKind = "diagnosis"
 		a.Summary = "本轮已停止，保留已提交的运行数据来源与查询事实；未完成的检查没有结论。"
+	}
+	if code == "MODEL_OUTPUT_INVALID" {
+		a.Summary = "模型未提供格式有效的解释；已提交的来源和查询事实保持可读。"
+		a.MissingEvidence = []string{"model_explanation_not_available"}
+		a.NextChecks = []string{"查看已提交证据，沿用原身份与冻结窗口重试解释"}
 	}
 	// The validator derives scope/asOf and checks the same committed-reference
 	// manifest as a normal final answer. No model call or extra read path exists.

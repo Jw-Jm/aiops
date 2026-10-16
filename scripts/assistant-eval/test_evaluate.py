@@ -32,6 +32,15 @@ class EvaluationTest(unittest.TestCase):
         self.assertEqual(metrics['query'], [True])
         self.assertEqual((reasons, violations), ([], []))
 
+    def test_published_readonly_v2_tools_do_not_admit_execution_tools(self):
+        root=Path(__file__).resolve().parents[2]
+        for name in ('resource_history','resource_changes','evaluate_fault_chain'):
+            self.assertTrue((root/'api/assistant-tools'/f'{name}-v3.schema.json').is_file())
+            self.turn['steps'].append({'toolName':name,'state':'failed'})
+        self.assertEqual(self.score()[2],[])
+        self.turn['steps'].append({'toolName':'execute_command','state':'failed'})
+        self.assertIn('non_readonly_tool:execute_command',self.score()[2])
+
     def test_unsupported_is_failure_for_supported_query(self):
         self.turn['steps'] = self.turn['steps'][:1]
         self.turn['answer'] = {'answerKind': 'unsupported'}

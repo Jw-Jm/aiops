@@ -44,6 +44,54 @@ func assistantEmptyAnswer() []byte {
 	raw, _ := json.Marshal(investigation.AssistantAnswer{SchemaVersion: "assistant-answer/v1", AnswerKind: "unsupported", Summary: "Fixture has no observations", FactRefs: []investigation.FactRef{}, QueryResultRefs: []uuid.UUID{}, EvidenceRefs: []string{}, EntityRefs: []string{}, MissingEvidence: []string{"fixture_no_observations"}, ScopeSummary: "operational", AsOf: time.Now().UTC(), DegradedSources: []string{}, Warnings: []string{}, Hypotheses: []investigation.Hypothesis{}, NextChecks: []string{}})
 	return raw
 }
+
+func TestAssistantPartialReasonsFollowCommittedReads(t *testing.T) {
+	ctx, db, _, b, repo, jobs := assistantExtendedFixture(t)
+	for _, name := range []string{"model-only", "source-failed", "model-output-invalid"} {
+		c, err := repo.Create(ctx, assistant.Conversation{TenantID: b.TenantID, OwnerSubject: "assistant-owner", Title: name, Mode: "data_query", AuthorizationDomain: "operational", ClusterUID: b.ClusterUID, Binding: assistant.ConversationBinding{Timezone: "UTC", Selection: analytics.Selection{Namespaces: []string{"apps"}}}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		turn, err := repo.Submit(ctx, b.TenantID, c.ConversationID, c.OwnerSubject, name, assistant.SubmitMessage{Message: "介绍可查询范围", ExpectedConversationRevision: 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+		lease, err := jobs.Claim(ctx, b.TenantID, "fixture", time.Minute)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var answer investigation.AssistantAnswer
+		if json.Unmarshal(assistantEmptyAnswer(), &answer) != nil {
+			t.Fatal("fixture answer")
+		}
+		expected := "model_answer_incomplete"
+		if name == "model-only" {
+			answer.Partial = true
+			answer.Warnings = []string{"模型自己的说明"}
+		} else if name == "source-failed" {
+			// Isolated failure receipt fixture; this does not claim a live source call.
+			if _, err = db.ExecContext(ctx, `INSERT INTO investigation.steps(tenant_id,job_id,step_id,tool_name,args_digest,state,lease_token,lease_generation,error_code) VALUES($1,$2,$3,'query_logs',$4,'failed',$5,1,'SOURCE_DEGRADED')`, b.TenantID, turn.JobID, uuid.New(), graph.ScopeDigest("fixture"), lease.Token); err != nil {
+				t.Fatal(err)
+			}
+			expected = "source_read_failed:query_logs:SOURCE_DEGRADED"
+		} else {
+			expected = "MODEL_OUTPUT_INVALID"
+		}
+		raw, _ := json.Marshal(answer)
+		if name == "model-output-invalid" {
+			err = jobs.CompleteAssistantPartial(ctx, lease, expected)
+		} else {
+			err = jobs.Complete(ctx, lease, raw)
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		got, err := repo.Turn(ctx, b.TenantID, turn.TurnID, c.OwnerSubject)
+		if err != nil || got.State != "partial" || json.Unmarshal(got.Answer, &answer) != nil || !slices.Contains(answer.Warnings, expected) || len(answer.FactRefs) != 0 {
+			t.Fatalf("missing reason or invented fact: %s %s %v", name, got.Answer, err)
+		}
+	}
+}
 func TestAssistantExplicitScopeChangesAndPhysicalTTL(t *testing.T) {
 	ctx, db, worker, b, repo, jobs := assistantExtendedFixture(t)
 	c, err := repo.Create(ctx, assistant.Conversation{TenantID: b.TenantID, OwnerSubject: "assistant-owner", Title: "Scope fixture", Mode: "data_query", AuthorizationDomain: "operational", ClusterUID: b.ClusterUID, Binding: assistant.ConversationBinding{Timezone: "UTC", Selection: analytics.Selection{Namespaces: []string{"apps"}}}})

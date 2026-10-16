@@ -186,6 +186,19 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		if json.Unmarshal(rawJSON(input), &data) != nil {
 			return out, investigation.ErrInvalid
 		}
+		if j.Assistant.TaskKind == "data_query" {
+			catalog, err := analytics.Catalog()
+			if err != nil {
+				return out, err
+			}
+			datasets := []map[string]string{}
+			for _, dataset := range catalog.Datasets {
+				if dataset.AuthorizationDomain == j.Assistant.AuthorizationDomain {
+					datasets = append(datasets, map[string]string{"datasetId": dataset.ID, "name": dataset.Name, "description": dataset.Description})
+				}
+			}
+			data["analysisDatasets"] = datasets
+		}
 		if j.Assistant.AuthorizationDomain == "operational" {
 			details, err := h.AssistantCapabilityDetails(ctx, j)
 			data["sourceCapabilities"] = []analytics.SourceCapability{}

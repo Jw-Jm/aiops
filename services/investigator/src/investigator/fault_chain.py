@@ -4,6 +4,9 @@ No model, direct source client, mutable relative clock or private tool loop.
 """
 from datetime import datetime, timedelta, timezone
 
+def primary_resource_requests(resource):
+    return [(name,{"canonicalId":resource,"windowRole":"fault"}) for name in ("resource_history","resource_findings","resource_changes")]
+
 def collect(job, job_api, bridge):
     committed = []
     failures = []
@@ -47,11 +50,11 @@ def collect(job, job_api, bridge):
 
     def resource_reads(resource, kind, optional=False):
         # Reserve the evaluator and primary counterevidence before optional reads.
-        for tool in (("resource_history",) if optional else ("resource_history", "resource_findings", "resource_changes")):
+        for tool,args in (primary_resource_requests(resource)[:1] if optional else primary_resource_requests(resource)):
             if remaining.get("toolCalls", 0) <= 3:
                 failures.append(tool + "_budget_not_collected")
                 continue
-            call(tool, {"canonicalId": resource, "windowRole": "fault"})
+            call(tool, args)
         if optional and request.get("recovery") and remaining.get("toolCalls", 0) > 5:
             call("resource_history", {"canonicalId": resource, "windowRole": "recovery"})
         metrics = {"Pod": [("metrics.pod-restarts", "restart_increase"), ("metrics.pod-phase", "phase_count"), ("metrics.pod-memory", "memory_bytes"), ("metrics.pod-cpu", "cpu_cores")], "Node": [("metrics.node-ready", "ready_count")], "PersistentVolumeClaim": []}.get(kind, [])

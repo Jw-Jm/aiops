@@ -16,6 +16,22 @@ class Ledger:
         return []
 
 class InitialToolChoiceTests(unittest.TestCase):
+    def test_frozen_numeric_request_requires_real_query_then_restores_auto(self):
+        llm=self.client();llm.assistant_task=True;llm.needs_initial_tools=False;llm.requires_query=True
+        steps=[];llm.job_api.request=lambda path:steps
+        tools=[{"type":"function","function":{"name":n,"parameters":{"type":"object"}}} for n in ("describe_analysis_dataset","execute_analysis_query")]
+        response=ModelResponse(choices=[{"message":{"role":"assistant","content":"bounded"}}])
+        with patch.object(DefaultLLM,"completion",return_value=response) as provider:
+            llm.completion([],tools=tools,tool_choice="auto")
+            self.assertEqual(provider.call_args.kwargs["tool_choice"]["function"]["name"],"describe_analysis_dataset")
+            steps.append({"toolName":"describe_analysis_dataset","state":"succeeded","result":{"data":{"datasets":[{"requiredFilters":[]}]}}})
+            llm.completion([],tools=tools,tool_choice="auto")
+            self.assertEqual(provider.call_args.kwargs["tool_choice"]["function"]["name"],"execute_analysis_query")
+            steps.append({"toolName":"execute_analysis_query","state":"failed"})
+            llm.completion([],tools=tools,tool_choice="auto")
+            self.assertEqual(provider.call_args.kwargs["tool_choice"],"auto")
+        self.assertEqual(len(llm.job_api.allocations),3)
+
     def client(self):
         llm=BudgetedLLM(model="openai/llama3.1:8b-16k",api_key="unit-input",args={"max_tokens":1024,"num_retries":0})
         llm.job_api=Ledger()

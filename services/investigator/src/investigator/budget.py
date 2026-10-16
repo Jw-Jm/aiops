@@ -46,6 +46,7 @@ class BudgetedLLM(DefaultLLM):
     needs_initial_tools = True
     assistant_task = False
     assistant_task_kind = "data_query"
+    requires_query = False
 
     def completion(self, messages, *args, **kwargs):
         if self.job_api is None:
@@ -58,6 +59,13 @@ class BudgetedLLM(DefaultLLM):
         if context_bound is None:context_bound=16384
         if not isinstance(context_bound,int) or isinstance(context_bound,bool) or not 1024<=context_bound<=65536:raise ModelCallError("MODEL_CONTEXT_LIMIT")
         reserve={"modelRequests":1,"inputTokens":context_bound,"outputTokens":self.args["max_tokens"],"resultBytes":65536}
+        if self.assistant_task and self.requires_query and kwargs.get("tools"):
+            from .assistant_binding import required_query_tool
+            required=required_query_tool(self.job_api.request("/steps"))
+            if required:
+                if not any(t.get("function",{}).get("name")==required for t in kwargs["tools"]):raise ModelCallError("INITIAL_CONTEXT_TOOL_UNAVAILABLE")
+                kwargs["response_format"]=None
+                kwargs["tool_choice"]={"type":"function","function":{"name":required}}
         if self.needs_initial_tools and kwargs.get("tools"):
             # Provider formatting boundary: require the initial semantic read;
             # the upstream loop still owns execution and subsequent iterations.

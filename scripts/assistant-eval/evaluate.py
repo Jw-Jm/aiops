@@ -214,7 +214,7 @@ def score_case(case, observation):
     return metrics, reasons, violations
 
 
-READ_ONLY_TOOLS = set('get_assistant_context describe_analysis_dataset execute_analysis_query get_resource_investigation_context resolve_resources resource_findings get_formal_references get_incident_context get_findings get_resource_context get_resource_health get_dependencies get_impact_scope get_ranked_evidence get_evidence_conflicts get_recent_changes get_root_cause_candidates query_metrics query_logs query_deepflow query_kubernetes query_hardware'.split())
+READ_ONLY_TOOLS = set('get_assistant_context describe_analysis_dataset execute_analysis_query get_resource_investigation_context resolve_resources resource_findings resource_history resource_changes evaluate_fault_chain get_formal_references get_incident_context get_findings get_resource_context get_resource_health get_dependencies get_impact_scope get_ranked_evidence get_evidence_conflicts get_recent_changes get_root_cause_candidates query_metrics query_logs query_deepflow query_kubernetes query_hardware'.split())
 
 
 def evaluate(suite_path, observation_path, review_path=None):
