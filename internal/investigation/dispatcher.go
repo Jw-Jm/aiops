@@ -96,6 +96,11 @@ func (d Dispatcher) RunOne(ctx context.Context, tenant uuid.UUID, owner string) 
 		var failure ModelFailure
 		if errors.As(callErr, &failure) {
 			code = failure.Code
+			if code == "MODEL_OUTPUT_INVALID" && j.Assistant != nil {
+				if err := d.Repository.CompleteAssistantPartial(ctx, l, code); err == nil {
+					return callErr
+				}
+			}
 		}
 		if errors.Is(callErr, ErrBudget) {
 			code = "BUDGET_EXHAUSTED"

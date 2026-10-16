@@ -7,6 +7,31 @@ import { QueryResultView } from "./QueryResultView";
 import type { FaultChainCheckControls } from "./FaultChainGapCheck";
 import { ResourceCorrelation } from "./ResourceCorrelation";
 import { FaultChainPanel } from "./FaultChainPanel";
+
+function warningLabel(value: string) {
+  if (value.startsWith("source_read_failed:"))
+    return `来源读取失败：${value.slice(19)}`;
+  if (value.startsWith("source_read_partial:"))
+    return `来源证据不完整：${value.slice(20)}`;
+  return (
+    (
+      {
+        model_answer_incomplete: "模型回答不完整",
+        model_explanation_incomplete: "模型未提供可用解释",
+        MODEL_OUTPUT_INVALID: "模型输出格式无效，已保留取证结果",
+        model_explanation_not_available: "模型解释不可用，已提交证据仍可读取",
+        remaining_checks_not_completed: "剩余检查尚未完成",
+        model_unsupported_reason_not_provided: "模型未说明无法解释的原因",
+        query_result_incomplete: "查询结果不完整",
+        query_not_executed: "应执行的查询尚未执行",
+        BUDGET_EXHAUSTED: "本轮预算已耗尽",
+        TIME_BUDGET_EXHAUSTED: "本轮执行时间已耗尽",
+        CANCELLED: "本轮已取消",
+        "unreliable-event-time": "事件时间资格不足",
+      } as Record<string, string>
+    )[value] || value
+  );
+}
 export function DiagnosisAnswer({
   answer,
   turnId,
@@ -161,16 +186,27 @@ export function DiagnosisAnswer({
         ...answer.degradedSources,
         ...answer.nextChecks,
       ].length > 0 && (
-        <List
-          size="small"
-          dataSource={[
-            ...answer.missingEvidence,
-            ...answer.warnings,
-            ...answer.degradedSources,
-            ...answer.nextChecks,
-          ]}
-          renderItem={(item) => <List.Item>{item}</List.Item>}
-        />
+        <Space orientation="vertical" style={{ width: "100%" }}>
+          {[
+            {
+              title: "待补证据",
+              items: answer.missingEvidence.map(warningLabel),
+            },
+            { title: "本轮状态原因", items: answer.warnings.map(warningLabel) },
+            { title: "退化来源", items: answer.degradedSources },
+            { title: "下一步只读检查（尚未执行）", items: answer.nextChecks },
+          ]
+            .filter((group) => group.items.length > 0)
+            .map((group) => (
+              <List
+                key={group.title}
+                size="small"
+                header={group.title}
+                dataSource={group.items}
+                renderItem={(item) => <List.Item>{item}</List.Item>}
+              />
+            ))}
+        </Space>
       )}
       <Typography.Text type="secondary">{answer.scopeSummary}</Typography.Text>
     </Space>

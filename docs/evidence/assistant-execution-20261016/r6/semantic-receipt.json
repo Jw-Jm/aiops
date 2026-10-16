@@ -1,0 +1,63 @@
+{
+  "model": "deepseek-flash",
+  "binarySHA256": "8dc3be4abe3fb9933184d0e107c891a842aa23ae2da67e19724b7e656904f31e",
+  "query": {
+    "state": "completed",
+    "dataset": "incidents.records",
+    "rows": [
+      {
+        "value": 3,
+        "dimension": ""
+      }
+    ],
+    "unit": "incidents",
+    "frozenWindowMatches": true,
+    "queryResultRefs": [
+      "01a142cc-ebef-7c71-a7dd-570106f60487"
+    ],
+    "factRefs": [
+      {
+        "factId": "sha256:de5a51544df16e910bf8eec3f614620b966e204270a6d81787b51b94a1ae8bdd",
+        "queryResultId": "01a142cc-ebef-7c71-a7dd-570106f60487"
+      }
+    ]
+  },
+  "followup": {
+    "sameBoundIdentities": true,
+    "sameFrozenWindow": true,
+    "newSourceStepsEachTurn": true,
+    "sourceSteps": [
+      [
+        "01a142cd-2b59-716b-9479-d7e281ecb252",
+        "01a142cd-2ba9-7365-b466-bb800dd89da5",
+        "01a142cd-2bfc-7411-a321-20b8983738cc"
+      ],
+      [
+        "01a142cd-46b1-74f5-a52c-013a8d821ad3",
+        "01a142cd-4705-76ad-8c39-ab2fec40cdf3",
+        "01a142cd-475c-7f2f-8f36-b9c0ed6e29ed"
+      ]
+    ],
+    "states": [
+      "partial",
+      "partial"
+    ],
+    "reasonCodes": [
+      [
+        "source_read_partial:resource_history",
+        "source_read_partial:resource_findings",
+        "source_read_partial:resource_changes"
+      ],
+      [
+        "source_read_partial:resource_history",
+        "source_read_partial:resource_findings",
+        "source_read_partial:resource_changes"
+      ]
+    ]
+  },
+  "incidentReasonCodes": [
+    "model_answer_incomplete"
+  ],
+  "newIncidentCreated": false,
+  "productionDeployment": false
+}

@@ -25,3 +25,12 @@ def test_local_input_definitions_remain_available():
     tool._schema = {"type": "object", "$defs": {"output": {"type": "string"}},
                     "properties": {"value": {"$ref": "#/$defs/output"}}}
     assert tool.get_openai_format()["function"]["parameters"] == tool._schema
+
+def test_data_query_does_not_offer_resource_override_parameters():
+    schema={"type":"object","additionalProperties":False,"required":["intent"],"properties":{"intent":{"type":"object"},"canonicalId":{"type":"string"},"windowRole":{"type":"string"}}}
+    tool=PlatformTool(name="execute_analysis_query",description="Bound query")
+    tool._schema=schema;tool._task_kind="data_query"
+    assert set(tool.get_openai_format()["function"]["parameters"]["properties"])=={"intent"}
+    assert "canonicalId" in schema["properties"]
+    tool._task_kind="resource_troubleshooting"
+    assert tool.get_openai_format()["function"]["parameters"]["properties"]==schema["properties"]

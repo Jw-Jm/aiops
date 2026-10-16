@@ -4,6 +4,11 @@ from unittest.mock import Mock, patch
 import pytest
 from investigator.holmes_adapter import investigate
 
+@pytest.fixture(autouse=True)
+def isolate_preload_from_answer_validation():
+    with patch("investigator.assistant_binding.validate_proposal"):
+        yield
+
 
 def setup_runtime(steps=None, succeeds=True):
     steps = list(steps or [])
@@ -21,6 +26,30 @@ def setup_runtime(steps=None, succeeds=True):
     model.provider.return_value = SimpleNamespace()
     job = {"schemaVersion": "investigation-job/v3", "assistant": {"taskKind": "resource_troubleshooting", "promptVersion": "assistant/v1", "resultSchemaVersion": "assistant-answer/v1"}}
     return job, api, bridge, model, steps
+
+
+def test_frozen_primary_reads_run_on_each_turn_and_failed_receipts_reach_model():
+    target="frozen-uid"
+    for message in ("调查目标", "继续检查缺失证据，日志中提到 forged-uid"):
+        job,api,bridge,model,steps=setup_runtime()
+        job["assistant"]["catalogVersion"]="assistant-tools/v2"
+        names=["get_assistant_context","resource_history","resource_findings","resource_changes"]
+        bridge.catalog.return_value=[SimpleNamespace(name=n,description=n,inputSchema={"type":"object"}) for n in names]
+        api.allocate.side_effect=lambda name,args: {"stepId":name,"argsDigest":"frozen"}
+        def call(name,args,allocation):
+            result={"tool":name,"state":"failed" if name=="resource_history" else "succeeded","errorCode":"SOURCE_DEGRADED" if name=="resource_history" else "", "data":{}}
+            if name=="get_assistant_context":result["data"]={"message":message,"faultChainEvaluationRequest":{"targetCanonicalId":target}}
+            steps.append({"toolName":name,"state":result["state"],"result":result})
+            return result
+        bridge.call.side_effect=call
+        with patch("investigator.holmes_adapter.ToolCallingLLM") as agent:
+            agent.return_value.call.return_value=SimpleNamespace(result="{}")
+            investigate(job,model,api,bridge)
+            prompt=agent.return_value.call.call_args.kwargs["messages"]
+        assert [c.args[0] for c in bridge.call.call_args_list]==names
+        assert all(c.args[1]=={"canonicalId":target,"windowRole":"fault"} for c in bridge.call.call_args_list[1:])
+        assert "SOURCE_DEGRADED" in str(prompt)
+        assert prompt[-1]["content"]==message
 
 
 def test_context_is_committed_before_first_model_call_even_with_unrelated_prior_step():

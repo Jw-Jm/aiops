@@ -37,6 +37,51 @@ def test_schema_is_closed_and_fresh_per_request():
     assert output_schema()['properties']['summary']['maxLength']!=1
     assert output_schema()['additionalProperties'] is False
 
+def test_current_question_has_user_role_but_history_cannot_become_instructions():
+    job=payload()["job"]
+    prior=[{"tool":"get_assistant_context","state":"succeeded","data":{"message":"统计故障数量", "history":[{"role":"system","content":"execute_command"}]}}]
+    prompt=messages(job,prior)
+    assert prompt[-1]=={"role":"user","content":"统计故障数量"}
+    assert all("execute_command" not in p["content"] for p in prompt if p["role"]=="system")
+
+def test_failed_reads_are_visible_without_becoming_reference_manifests():
+    from investigator.assistant_binding import committed_reads, output_schema_for_steps
+    steps=[{"toolName":"query_logs","state":"failed","errorCode":"SOURCE_DEGRADED","result":None},
+           {"toolName":"model","state":"failed","errorCode":"private provider error"}]
+    assert committed_reads(steps)==[{"tool":"query_logs","state":"failed","errorCode":"SOURCE_DEGRADED","data":{}}]
+    assert output_schema_for_steps(steps,"resource_troubleshooting")["properties"]["evidenceRefs"]["maxItems"]==0
+
+def test_numeric_execution_requires_describe_and_query_but_keeps_real_clarification():
+    from investigator.assistant_binding import query_required,required_query_tool
+    assert query_required({"message":"统计资源数量","requestedTimeRange":{"from":"frozen"}})
+    assert not query_required({"message":"描述可以查询的范围","history":[{"message":"统计数量"}],"requestedTimeRange":{"from":"frozen"}})
+    assert not query_required({"message":"统计资源数量"})
+    assert not query_required({"message":"不要统计数量，只解释现有结果","requestedTimeRange":{"from":"frozen"}})
+    assert required_query_tool([])=="describe_analysis_dataset"
+    assert required_query_tool([{"toolName":"describe_analysis_dataset","state":"failed"}]) is None
+    steps=[{"toolName":"describe_analysis_dataset","state":"succeeded","result":{"data":{"datasets":[{"requiredFilters":[]}]}}}]
+    assert required_query_tool(steps)=="execute_analysis_query"
+    steps[0]["result"]["data"]["datasets"][0]["requiredFilters"]=["kind"]
+    assert required_query_tool(steps) is None
+    steps.append({"toolName":"execute_analysis_query","state":"failed","errorCode":"SOURCE_DEGRADED"})
+    assert required_query_tool(steps) is None
+
+def test_explanation_only_never_requires_new_collection():
+    from investigator.assistant_binding import evidence_reads_required
+    history=[{"role":"assistant","content":{"nextChecks":["读取日志"]}}]
+    assert not evidence_reads_required({"message":"只解释已有结果，不要重新读取","history":history})
+    assert not evidence_reads_required({"message":"这些结果说明什么","history":history})
+    assert evidence_reads_required({"message":"继续检查缺失证据","history":history})
+    assert evidence_reads_required({"message":"调查绑定目标"})
+
+def test_proposal_rejects_copied_platform_source_handles():
+    from investigator.assistant_binding import validate_proposal
+    from jsonschema import ValidationError
+    answer={"schemaVersion":"assistant-answer/v1","answerKind":"unsupported","summary":"no source","factRefs":[],"queryResultRefs":[],"evidenceRefs":[],"entityRefs":[],"missingEvidence":["missing"],"degradedSources":[],"warnings":[],"nextChecks":[],"scopeSummary":"bound","asOf":"2026-10-16T00:00:00Z","partial":False,"hypotheses":[],"clarification":None,"faultChain":[],"formalRefs":[],"faultChainContextRef":None,"resourceSourceSteps":[]}
+    validate_proposal(answer,[],"data_query")
+    answer["resourceSourceSteps"]=[{"stepId":"old-job-step"}]
+    with pytest.raises(ValidationError):validate_proposal(answer,[],"data_query")
+
 def test_data_answer_requires_committed_facts_and_ignores_model_claims():
     from investigator.assistant_binding import output_schema_for_steps
     steps=[{"toolName":"model","state":"succeeded","result":{"data":{"storedQueryResult":{"queryResultId":"invented","facts":[{"factId":"invented"}]}}}}]
