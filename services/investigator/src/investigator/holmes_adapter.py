@@ -16,7 +16,13 @@ class PlatformTool(Tool):
     _bridge: object = PrivateAttr()
 
     def get_openai_format(self):
-        return {"type":"function","function":{"name":self.name,"description":self.description,"parameters":self._schema}}
+        parameters={key:value for key,value in self._schema.items() if key not in ("$id","$schema","x-tool-contract")}
+        # Legacy output metadata references private contracts, not tool inputs.
+        if "x-tool-contract" in self._schema and "$defs" in parameters:
+            definitions={key:value for key,value in parameters["$defs"].items() if key!="output"}
+            if definitions:parameters["$defs"]=definitions
+            else:parameters.pop("$defs")
+        return {"type":"function","function":{"name":self.name,"description":self.description,"parameters":parameters}}
 
     def get_parameterized_one_liner(self, params):
         return self.name

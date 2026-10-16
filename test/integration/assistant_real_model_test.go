@@ -98,6 +98,7 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 	if err != nil || json.Unmarshal(profileBytes, &material) != nil {
 		t.Fatal("profile fixture missing", err)
 	}
+	modelKey := assistantAcceptanceModel(t, &material)
 	if evaluation {
 		material.Version = "assistant-zh-evaluation/v1"
 		material.TaskKinds = []string{"data_query", "incident_followup", "resource_troubleshooting"}
@@ -140,7 +141,7 @@ func assistantRealRuntime(t *testing.T, evaluation bool, run func(context.Contex
 	defer stopAPI()
 	investigatorFile := filepath.Join(dir, "investigator.json")
 	keyFile := filepath.Join(dir, "model.key")
-	if os.WriteFile(keyFile, []byte("local-ollama-no-auth"), 0600) != nil {
+	if os.WriteFile(keyFile, []byte(modelKey), 0600) != nil {
 		t.Fatal("model key file")
 	}
 	if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1" && os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1" {

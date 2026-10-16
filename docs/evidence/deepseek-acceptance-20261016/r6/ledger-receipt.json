@@ -1,0 +1,249 @@
+{
+  "model": "deepseek-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "thinking": "disabled",
+  "providerResponseFormat": "json_object",
+  "productionAdmission": false,
+  "runs": [
+    {
+      "database": "sp03_mig_596f2aa474cc4edfb7f5d11af54a5eab",
+      "test": "TestAssistantChineseEvaluation",
+      "contextReads": 5,
+      "modelStates": [
+        {
+          "state": "succeeded",
+          "error": "",
+          "usage": {
+            "total_tokens": 5948,
+            "prompt_tokens": 5277,
+            "completion_tokens": 671,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 3712,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 1565,
+            "completion_tokens_details": null
+          }
+        },
+        {
+          "state": "succeeded",
+          "error": "",
+          "usage": {
+            "total_tokens": 12906,
+            "prompt_tokens": 11823,
+            "completion_tokens": 1083,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 11823,
+            "completion_tokens_details": null
+          }
+        },
+        {
+          "state": "succeeded",
+          "error": "",
+          "usage": {
+            "total_tokens": 12609,
+            "prompt_tokens": 11239,
+            "completion_tokens": 1370,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 11239,
+            "completion_tokens_details": null
+          }
+        },
+        {
+          "state": "succeeded",
+          "error": "",
+          "usage": {
+            "total_tokens": 12187,
+            "prompt_tokens": 11077,
+            "completion_tokens": 1110,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 128,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 128,
+            "prompt_cache_miss_tokens": 10949,
+            "completion_tokens_details": null
+          }
+        },
+        {
+          "state": "succeeded",
+          "error": "",
+          "usage": {
+            "total_tokens": 13643,
+            "prompt_tokens": 12373,
+            "completion_tokens": 1270,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 8832,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 8832,
+            "prompt_cache_miss_tokens": 3541,
+            "completion_tokens_details": null
+          }
+        }
+      ],
+      "turns": [
+        {
+          "state": "awaiting_user",
+          "error": "",
+          "answerKind": "clarification",
+          "partial": false,
+          "missingEvidence": [
+            "未确认“故障记录”对应的数据集：incidents.records / findings.occurrences / executions.records / audit.events 语义不同，无法唯一确定",
+            "未确认分组维度（dimensions），无法确定“最多 50 组”按什么字段分组",
+            "未确认统计口径：是记录条数计数，还是按严重级别/状态等过滤后的计数"
+          ],
+          "warnings": [
+            "在数据集与分组维度确认前不执行查询，以免返回语义错误的统计结果"
+          ]
+        },
+        {
+          "state": "partial",
+          "error": "",
+          "answerKind": "diagnosis",
+          "partial": true,
+          "missingEvidence": [
+            "尚未读取该 Incident 的上下文（get_incident_context），无法确认 Incident 状态、关联资源与当前 RCA 版本",
+            "尚未解析并读取 Node eval-target 的规范资源身份（resolve_resources / get_resource_context），无法确认其 NotReady 的观测时间与来源",
+            "缺少 kubelet 日志：query_logs 未执行，无法判断 kubelet 是否报错或停止上报",
+            "缺少网络采样：query_deepflow 未执行，无法判断是否存在丢包、重传或连接失败",
+            "缺少节点指标（如 metrics.node-ready、pod-phase）与资源历史/变更观测，无法区分是节点自身故障还是上游依赖影响",
+            "缺少该 Incident 的正式 RCA/ActionPlan 版本引用（get_formal_references 未读取）"
+          ],
+          "warnings": [
+            "NotReady 是已观测现象，不等于已确认原因；缺失日志与网络采样不能证明节点正常或故障为零",
+            "关系与依赖只表示依赖/影响，不表示因果；任何根因结论都只能是假设",
+            "本轮未执行任何数据查询，summary 中不含任何数值事实"
+          ]
+        },
+        {
+          "state": "partial",
+          "error": "",
+          "answerKind": "diagnosis",
+          "partial": true,
+          "missingEvidence": [
+            "尚未读取该 Pod 的 resource_history（fault/baseline/recovery 窗口），无法确认重启次数、容器状态与重启时间分布",
+            "尚未读取 resource_findings，无法获得服务器端有限规则给出的资源评估及其 supports/conflicts",
+            "尚未读取 resource_changes，无法区分对象版本变化、字段观测变化与实际目标变更",
+            "尚未获取容器退出码与退出原因（terminated reason/exitCode）等退出日志证据",
+            "尚未获取该 Pod 的依赖关系边（get_dependencies），无法判断上游/下游关系是否存在",
+            "尚未获取影响范围（get_impact_scope），无法判断是否存在间接受影响资源",
+            "sourceCapabilityStatus=unavailable 且 sourceCapabilities/networkCapabilities 为空，日志与网络类证据源当前不可用",
+            "无关联 Incident（incidentId=00000000-0000-0000-0000-000000000000），缺少事件级时间线与恢复记录"
+          ],
+          "warnings": [
+            "缺少观测不等于正常：当前无任何已提交事实，不能据此判定 Pod 健康或重启原因为空",
+            "依赖关系（dependency/impact）不等于因果关系，即使后续取得关系边也只能作为假设",
+            "不得在缺少真实关系边或退出日志的情况下构造传播链"
+          ]
+        },
+        {
+          "state": "partial",
+          "error": "",
+          "answerKind": "diagnosis",
+          "partial": true,
+          "missingEvidence": [
+            "缺少该 Pod 在故障窗口内的容器退出原因（terminated reason / exitCode）观测",
+            "缺少该 Pod 在故障窗口内的重启计数与容器状态（waiting/terminated）观测",
+            "缺少该 Pod 在故障窗口内的资源历史（resource_history）与字段变更（resource_changes）事实",
+            "缺少该 Pod 在故障窗口内的资源发现（resource_findings）与健康评估结果",
+            "缺少基线窗口与恢复窗口的对照观测，无法判断重启是否为窗口内新增异常",
+            "缺少该 Pod 的日志与指标证据（sourceCapabilityStatus 为 unavailable，sourceCapabilities 为空）"
+          ],
+          "warnings": [
+            "已提交结果中 history 为空，且未返回任何 Fact 或 QueryResult，因此本回答不含任何数值事实",
+            "缺失、过期或不可用的观测不能证明正常或零值；当前不能据此判定该 Pod 未发生重启",
+            "关系与依赖只表示依赖或影响，不表示因果；本回答不确认任何根因"
+          ]
+        },
+        {
+          "state": "partial",
+          "error": "",
+          "answerKind": "diagnosis",
+          "partial": true,
+          "missingEvidence": [
+            "缺少该 Pod 在故障窗口内的容器退出原因（terminated reason / exitCode）观测",
+            "缺少该 Pod 在故障窗口内的重启计数与容器状态（waiting/terminated）时间线观测",
+            "缺少该 Pod 在故障窗口内的资源历史（resource_history）与观测字段变更（resource_changes）事实",
+            "缺少该 Pod 在故障窗口内的资源发现（resource_findings）与服务端健康评估结果",
+            "缺少基线窗口与恢复窗口的对照观测，无法判断重启是否为本窗口新增异常",
+            "缺少该 Pod 的日志与指标证据（sourceCapabilityStatus=unavailable，sourceCapabilities 为空）",
+            "缺少网络侧证据（networkCapabilities 为空），无法判断是否存在网络相关影响",
+            "缺少已提交的关系/依赖证据，无法评估上游或下游影响范围"
+          ],
+          "warnings": [
+            "已提交结果中 history 为空，且未返回任何 Fact 或 QueryResult，因此本回答不含任何数值事实",
+            "缺失、过期或不可用的观测不能证明正常或零值；当前不能据此判定该 Pod 未发生重启",
+            "关系与依赖只表示依赖或影响，不表示因果；本回答不确认任何根因",
+            "沿用上一轮冻结窗口，未使用模型时钟重新计算时间范围"
+          ]
+        },
+        {
+          "state": "awaiting_user",
+          "error": "",
+          "answerKind": "clarification",
+          "partial": false,
+          "missingEvidence": [],
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "database": "sp03_mig_3ea9b74619f045dfb85f6ce489d89a47",
+      "test": "TestAssistantRealModelMCP",
+      "contextReads": 1,
+      "modelStates": [
+        {
+          "state": "succeeded",
+          "error": "",
+          "usage": {
+            "total_tokens": 6069,
+            "prompt_tokens": 5141,
+            "completion_tokens": 928,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 3712,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 1429,
+            "completion_tokens_details": null
+          }
+        }
+      ],
+      "turns": [
+        {
+          "state": "partial",
+          "error": "",
+          "answerKind": "unsupported",
+          "partial": true,
+          "missingEvidence": [
+            "授权范围为空：clusterUid 为空字符串、namespaces 为空、resources 为空、clusterScoped=false，无法确定审计数据所属的集群/命名空间/资源边界。",
+            "未绑定 Incident（incidentId=00000000-0000-0000-0000-000000000000），无法确定审计调查的事件上下文。",
+            "尚未读取任何数据集语义定义（describe_analysis_dataset），因此无法说明 audit 域下可用数据集、维度、指标与时间粒度。",
+            "未执行任何 execute_analysis_query，缺少可引用的 queryResultRefs 与 fact ID。",
+            "缺少用户期望的审计范围维度：时间区间、目标资源/命名空间、审计事件类型或操作者等筛选条件。"
+          ],
+          "warnings": [
+            "授权范围为空不等于审计数据为空或为零；缺失观测不能证明正常。",
+            "本次未执行任何数据查询，因此本回答不包含任何数值事实。"
+          ]
+        }
+      ]
+    }
+  ]
+}
