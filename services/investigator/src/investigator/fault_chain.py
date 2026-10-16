@@ -101,7 +101,7 @@ def collect(job, job_api, bridge):
         available = {(d.get("datasetId"), d.get("operation")) for d in context.get("sourceCapabilities", []) if d.get("status") == "qualification_configured"}
         relations = sorted(dependencies.get("relationReferences", []), key=lambda r: r["relationDigest"])
         peers = []
-        directions = {}
+        directions = set()
         node_kinds={n.get("canonicalId"):n.get("kind") for n in dependencies.get("nodes",[])}
         for relation in relations:
             if target not in (relation.get("from"), relation.get("to")):
@@ -109,10 +109,13 @@ def collect(job, job_api, bridge):
             peer = relation["to"] if relation["from"] == target else relation["from"]
             if target_kind != "Pod" or node_kinds.get(peer) != "Pod":
                 continue
-            if relation.get("kind")=="communicates_with":directions[peer]="outgoing" if relation["from"]==target else "incoming"
+            if relation.get("kind") == "communicates_with":
+                directions.add((peer, "outgoing" if relation["from"] == target else "incoming"))
             if peer not in peers:
                 peers.append(peer)
-        selected_peers = peers[:request["maxEdges"]]
+        selections = sorted(directions | {(peer, "either") for peer in peers if not any(p == peer for p, _ in directions)}, key=lambda pair: (pair[0], {"outgoing": 0, "incoming": 1, "either": 2}[pair[1]]))
+        selected = selections[:request["maxEdges"]]
+        selected_peers = list(dict.fromkeys(peer for peer, _ in selected))
         if operational and not check:
             related = sorted({n.get("canonicalId"): n.get("kind") for n in dependencies.get("nodes", []) if n.get("canonicalId") and n.get("canonicalId") != target and n.get("kind") in ("Pod", "Node", "PersistentVolumeClaim")}.items())
             for resource, kind in related[:request["maxEdges"]]:
@@ -127,8 +130,8 @@ def collect(job, job_api, bridge):
                 call("resource_changes", {"canonicalId": target, "windowRole": "baseline"})
         if check:
             selected_peers = [check["canonicalId"]]
-            directions[check["canonicalId"]] = check["direction"]
-        if len(peers) > len(selected_peers):
+            selected = [(check["canonicalId"], check["direction"])]
+        if not check and len(selections) > len(selected):
             failures.append("remaining_relations_not_checked")
         # Shared Node paths are each caller's own admitted one-hop graph read.
         # Do not traverse two hops or silently expand the frozen execution scope.
@@ -169,12 +172,12 @@ def collect(job, job_api, bridge):
                 if not tcp:
                     failures.append(label + "_tcp_capability_unavailable")
             for dataset, metric in datasets:
-                for peer in selected_peers:
+                for peer, direction in selected:
                     cost = 2 if compare else 1
                     if remaining.get("rawQueries", 0) < cost or remaining.get("toolCalls", 0) <= 2:
                         failures.append(label + "_remaining_checks_not_completed")
                         continue
-                    intent = {"schemaVersion": "query-intent/v1", "datasetId": dataset, "operation": operation, "metrics": [metric], "dimensions": ["comparison"] if compare else [], "filters": [], "sort": [], "limit": 3 if compare else 1, "timeRange": window, "networkSelection": {"targetCanonicalId": target, "peerCanonicalId": peer, "direction": directions.get(peer,"either")}}
+                    intent = {"schemaVersion": "query-intent/v1", "datasetId": dataset, "operation": operation, "metrics": [metric], "dimensions": ["comparison"] if compare else [], "filters": [], "sort": [], "limit": 3 if compare else 1, "timeRange": window, "networkSelection": {"targetCanonicalId": target, "peerCanonicalId": peer, "direction": direction}}
                     if compare:
                         intent["comparisonTimeRange"] = fault if label == "recovery" else request["baseline"]
                     result, _ = call("execute_analysis_query", {"intent": intent})

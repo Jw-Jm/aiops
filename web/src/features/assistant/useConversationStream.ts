@@ -31,8 +31,12 @@ export function useConversationStream(
     if (!id) return;
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout> | undefined;
-    const refresh = () => {
-      void client.invalidateQueries({ queryKey: ["assistant", sessionKey] });
+    const refresh = (all = false) => {
+      void client.invalidateQueries({
+        queryKey: all
+          ? ["assistant", sessionKey]
+          : ["assistant", sessionKey, id],
+      });
     };
     const connect = async () => {
       try {
@@ -46,7 +50,9 @@ export function useConversationStream(
         )) {
           if (controller.signal.aborted) return;
           cursor.current = event.id;
-          refresh();
+          // Reading retained evidence is audited, but does not change it.
+          if (event.data.type !== "turn.result_read")
+            refresh(!event.data.type.startsWith("turn.step_"));
           setError(undefined);
         }
       } catch (cause) {
@@ -59,7 +65,7 @@ export function useConversationStream(
         }
         if (err instanceof SSEHttpError && err.status === 410) {
           cursor.current = undefined;
-          refresh();
+          refresh(true);
         }
       }
       if (!controller.signal.aborted)

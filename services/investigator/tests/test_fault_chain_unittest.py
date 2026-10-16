@@ -79,6 +79,24 @@ class FaultChainFixedCollection(unittest.TestCase):
         self.assertIn("recovery_remaining_checks_not_completed", answer["missingEvidence"])
         self.assertEqual(answer["queryResultRefs"], ["q1", "q2"])
 
+    def test_bidirectional_populations_are_stable_and_bounded(self):
+        for reverse in (False, True):
+            for max_edges in (1, 2):
+                class BidirectionalBridge(BudgetBridge):
+                    def call(self, name, args, allocation):
+                        result = super().call(name, args, allocation)
+                        if name == "get_assistant_context":
+                            result["data"]["faultChainRequest"]["maxEdges"] = max_edges
+                        elif name == "get_dependencies":
+                            relations = result["data"]["relationReferences"]
+                            relations.append({**relations[0], "from": "peer-0", "to": "target", "relationDigest": "aaa" if reverse else "zzz"})
+                        return result
+                bridge = BidirectionalBridge(20, peers=1, baseline=False)
+                answer = collect({"budget": {"toolCalls": 30, "rawQueries": 20}}, Ledger(), bridge)
+                primary = [q["networkSelection"]["direction"] for q in bridge.queries if q["datasetId"] == "network.http-summary" and q["timeRange"]["from"] == "2026-10-14T01:00:00Z"]
+                self.assertEqual(primary, ["outgoing", "incoming"][:max_edges])
+                self.assertEqual("remaining_relations_not_checked" in answer["missingEvidence"], max_edges == 1)
+
     def test_recovery_compares_fault_even_without_baseline(self):
         bridge = BudgetBridge(6, peers=1, baseline=False)
         collect({"budget": {"toolCalls": 30, "rawQueries": 6}}, Ledger(), bridge)

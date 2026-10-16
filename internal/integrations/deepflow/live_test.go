@@ -3,10 +3,12 @@ package deepflow
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -23,18 +25,24 @@ func TestLiveUIDContainerLifetimeAndL7Qualification(t *testing.T) {
 	nsUID := "d115d180-d747-4727-8cc9-218024e1a944"
 	cluster := "a94a0648-ce43-4905-b5c7-3d7b937283b5"
 	container := strings.Repeat("a", 64)
-	nativeContainer := container
+	var nativeContainer atomic.Value
+	nativeContainer.Store(container)
+	var allowed atomic.Bool
+	allowed.Store(true)
+	var nativeReads atomic.Int64
+	var onDetailRead atomic.Value
+	onDetailRead.Store(func() {})
 	backendContainer := container
 	duplicateTag := false
-	allowed := true
 	native := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		nativeReads.Add(1)
 		switch r.URL.Path {
 		case "/api/v1/namespaces/kube-system":
 			fmt.Fprintf(w, `{"metadata":{"uid":%q}}`, cluster)
 		case "/api/v1/namespaces/apps":
 			fmt.Fprintf(w, `{"metadata":{"uid":%q}}`, nsUID)
 		case "/api/v1/namespaces/apps/pods":
-			json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]string{"resourceVersion": "1"}, "items": []any{map[string]any{"metadata": map[string]any{"uid": uid, "name": "canary", "namespace": "apps", "creationTimestamp": now.Add(-time.Minute)}, "status": map[string]any{"containerStatuses": []any{map[string]any{"containerID": "containerd://" + nativeContainer, "state": map[string]any{"running": map[string]any{"startedAt": now.Add(-30 * time.Second)}}}}}}}})
+			json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]string{"resourceVersion": "1"}, "items": []any{map[string]any{"metadata": map[string]any{"uid": uid, "name": "canary", "namespace": "apps", "creationTimestamp": now.Add(-time.Minute)}, "status": map[string]any{"containerStatuses": []any{map[string]any{"containerID": "containerd://" + nativeContainer.Load().(string), "state": map[string]any{"running": map[string]any{"startedAt": now.Add(-30 * time.Second)}}}}}}}})
 		default:
 			t.Errorf("unexpected native path %s", r.URL.Path)
 			w.WriteHeader(404)
@@ -62,12 +70,13 @@ func TestLiveUIDContainerLifetimeAndL7Qualification(t *testing.T) {
 		if !strings.Contains(sql, "FROM l7_flow_log") || strings.Contains(sql, "request_resource") || strings.Contains(sql, "trace_id") {
 			t.Error("unbounded L7 template")
 		}
+		onDetailRead.Load().(func())()
 		json.NewEncoder(w).Encode(map[string]any{"OPT_STATUS": "SUCCESS", "result": map[string]any{"columns": []string{"pod_id_0", "pod_id_1", "retrans_tx", "retrans_rx", "status", "tap_side", "observed_at", "l7_protocol", "response_code", "rrt", "request_resource"}, "values": [][]any{{1, 1, 0, 0, 3, "c-p", now.Add(-5 * time.Second).Unix(), 20, 503, 2500, "/secret?password=do-not-export"}}}})
 	}))
 	defer backend.Close()
 	binding := evidence.Binding{SourceType: "deepflow", Tenant: "tenant-a", SourceID: "df-a", Revision: 1, BackendLogicalID: "querier", Endpoint: backend.URL, ScopeMapping: datascope.Mapping{Scopes: map[string][]string{"organization": {"1"}, "cluster": {cluster}, "namespace": {"apps"}}}}
 	authorize := func(context.Context, evidence.Binding) error {
-		if !allowed {
+		if !allowed.Load() {
 			return evidence.ErrScopeUnverified
 		}
 		return nil
@@ -124,6 +133,44 @@ func TestLiveUIDContainerLifetimeAndL7Qualification(t *testing.T) {
 	if strings.Contains(string(result.Evidence[0].Data), "password") || !strings.Contains(string(result.Evidence[0].Data), "responseTimeMicroseconds") {
 		t.Fatal("L7 projection includes payload or misses latency")
 	}
+	// The foreground read must not depend on another query's mutable flow map.
+	mapper.mu.Lock()
+	readCount := nativeReads.Load()
+	completed := make(chan error, 1)
+	go func() {
+		_, err := adapter.Query(t.Context(), query)
+		completed <- err
+	}()
+	select {
+	case err := <-completed:
+		mapper.mu.Unlock()
+		if err != nil {
+			t.Fatal("request-local identity read failed", err)
+		}
+	case <-time.After(time.Second):
+		mapper.mu.Unlock()
+		<-completed
+		t.Fatal("foreground identity read waited for another query's map lock")
+	}
+	if calls := nativeReads.Load() - readCount; calls != 6 {
+		t.Fatal("one native snapshot must enclose the entire backend read", calls)
+	}
+	for _, change := range []string{"restart", "revoke"} {
+		onDetailRead.Store(func() {
+			if change == "restart" {
+				nativeContainer.Store(strings.Repeat("c", 64))
+			} else {
+				allowed.Store(false)
+			}
+		})
+		result, err := adapter.Query(t.Context(), query)
+		onDetailRead.Store(func() {})
+		nativeContainer.Store(container)
+		allowed.Store(true)
+		if !errors.Is(err, evidence.ErrScopeUnverified) || len(result.Evidence) != 0 {
+			t.Fatal("identity/source change during the row read published evidence", change, err)
+		}
+	}
 	query.Template = "GetTraceContext"
 	if _, err = adapter.Query(t.Context(), query); err != ErrDisabled {
 		t.Fatal("Trace enabled")
@@ -146,12 +193,12 @@ func TestLiveUIDContainerLifetimeAndL7Qualification(t *testing.T) {
 	if _, err = mapper.ByCanonical(t.Context(), id); err != nil {
 		t.Fatal(err)
 	}
-	nativeContainer = strings.Repeat("c", 64)
+	nativeContainer.Store(strings.Repeat("c", 64))
 	if err = mapper.ValidateCurrent(t.Context()); err == nil {
 		t.Fatal("container restart during query accepted")
 	}
-	nativeContainer = container
-	allowed = false
+	nativeContainer.Store(container)
+	allowed.Store(false)
 	if _, err = mapper.ByCanonical(t.Context(), id); err == nil {
 		t.Fatal("withdrawn source usable")
 	}

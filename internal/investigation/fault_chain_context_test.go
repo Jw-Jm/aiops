@@ -62,6 +62,37 @@ func TestFaultChainCorrelationKeepsTemporalAndCausalGaps(t *testing.T) {
 	if err != nil || len(out.Edges) != 1 || len(out.Edges[0].Observations) != 1 || out.Edges[0].TemporalAssessment != "unreliable" || out.Edges[0].Observations[0].RuleID != "R1/http-response-increase" || len(out.Edges[0].MissingEvidence) == 0 {
 		t.Fatalf("context %+v %v", out, err)
 	}
+	// Reverse empty populations must not overwrite the caller's direction or statistics.
+	reverseRelation := relation
+	reverseRelation.From, reverseRelation.To = peer, target
+	reverseResult := result
+	reverseNetwork := *result.NetworkContext
+	reverseNetwork.Selection.Direction = "incoming"
+	reverseResult.NetworkContext = &reverseNetwork
+	reverseResult.Exact, reverseResult.Status = false, "no_data"
+	reverseResult.Rows = []analytics.Row{}
+	reverseResult.Statistics = []analytics.Statistic{{Key: "current.responses", Value: 0, Unit: "responses"}}
+	reverseQuery := BuildStoredQueryResult(reverseResult)
+	for _, queries := range [][]StoredQueryResult{{query, reverseQuery}, {reverseQuery, query}} {
+		got, err := EvaluateFaultChain(request, []resource.Relation{relation, reverseRelation}, queries, now)
+		if err != nil || len(got.Edges) != 2 || len(got.QueryResultRefs) != 2 {
+			t.Fatalf("bidirectional reference closure lost: %+v %v", got, err)
+		}
+		for _, edge := range got.Edges {
+			if len(edge.QueryResultRefs) != 1 || edge.CallDirection != edge.Relation.From+" → "+edge.Relation.To {
+				t.Fatalf("opposite populations mixed: %+v", edge)
+			}
+			if edge.Relation.From == target && (edge.QueryResultRefs[0] != query.QueryResultID || len(edge.Observations) != 1) || edge.Relation.From == peer && len(edge.Observations) != 0 {
+				t.Fatalf("reverse empty population became a judgment: %+v", edge)
+			}
+		}
+	}
+	bounded := request
+	bounded.MaxEdges = 1
+	got, err := EvaluateFaultChain(bounded, []resource.Relation{reverseRelation, relation}, []StoredQueryResult{query}, now)
+	if err != nil || len(got.Edges) != 1 || got.Edges[0].Relation.From != target || len(got.QueryResultRefs) != 1 {
+		t.Fatalf("bounded collection and evaluation selected different directions: %+v %v", got, err)
+	}
 	// Fixture clocks are explicitly qualified only for this finite-predicate
 	// test. Actual DeepFlow runtime clocks remain unverified.
 	change := evidence.Evidence{EvidenceID: uuid.NewString(), TenantID: "tenant-a", ResourceCanonicalID: peer, Type: "change_event", SourceRegistrationID: uuid.NewString(), SourceSystem: "fixture-change-collector", SourceRevision: 1, SourceScopeDigest: graph.ScopeDigest("change-source"), TimeReliable: true, ObservedFrom: baseline.From.Add(time.Second), ObservedTo: baseline.From.Add(2 * time.Second), ReplayState: "archived_verified", ContentDigest: graph.ScopeDigest("fixture-change"), ArchiveRef: &evidence.ArchiveRef{Object: archive.ObjectRef{VersionID: "fixture-v1"}, PlaintextDigest: graph.ScopeDigest("fixture-change")}}

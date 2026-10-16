@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"ops-platform/internal/evidence"
@@ -80,7 +81,7 @@ func (a *Adapter) Capabilities(ctx context.Context) (evidence.CapabilitySet, err
 func (a *Adapter) Query(ctx context.Context, q evidence.Query) (evidence.Result, error) {
 	return a.query(ctx, q, false)
 }
-func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool) (evidence.Result, error) {
+func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool) (result evidence.Result, resultErr error) {
 	out := evidence.Result{SchemaVersion: "evidence-result/v2", Evidence: []evidence.Evidence{}, Freshness: "fresh", Warnings: []string{}, DegradedSources: []string{}}
 	if q.Template == "GetTraceContext" || (q.Template == "GetL7Context" && !qualifyingL7 && !a.l7Available()) {
 		return out, ErrDisabled
@@ -95,6 +96,12 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 	}
 	ctx, cancelQuery := context.WithTimeout(ctx, q.TimeBudget())
 	defer cancelQuery()
+	stage, started := "binding", time.Now()
+	defer func() {
+		if resultErr != nil || result.Freshness == "unavailable" {
+			slog.Warn("DeepFlow detail read unavailable", "stage", stage, "template", q.Template, "elapsedMs", time.Since(started).Milliseconds(), "deadlineExceeded", errors.Is(resultErr, context.DeadlineExceeded) || errors.Is(ctx.Err(), context.DeadlineExceeded))
+		}
+	}()
 	if err := a.authorize(ctx, a.binding); err != nil {
 		return out, fmt.Errorf("%w: binding authorization", evidence.ErrScopeUnverified)
 	}
@@ -114,8 +121,26 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 	if err != nil || org == 0 {
 		return out, evidence.ErrScopeUnverified
 	}
-	endpoint, err := a.mapping.ByCanonical(ctx, q.ResourceCanonicalID)
-	if err != nil || endpoint.PodID == 0 || endpoint.ClusterID == 0 || endpoint.NamespaceID == 0 || endpoint.CanonicalID != q.ResourceCanonicalID || endpoint.Namespace != q.Namespace || !q.Scope.Allows(endpoint.CanonicalID, endpoint.Namespace) || q.Scope.Tenant != a.binding.Tenant || !slices.Contains(a.binding.ScopeMapping.Scopes["cluster"], q.Scope.Cluster) || !slices.Contains(a.binding.ScopeMapping.Scopes["namespace"], endpoint.Namespace) {
+	stage = "endpoint_identity"
+	var endpoint Endpoint
+	lookupBackend := a.mapping.ByBackend
+	var validateIdentity func(context.Context) error
+	if live, ok := a.mapping.(*LiveMapper); ok {
+		var endpoints map[string]Endpoint
+		var digest string
+		endpoints, digest, err = live.beginQuery(ctx)
+		endpoint = endpoints[q.ResourceCanonicalID]
+		lookupBackend = func(_ context.Context, id uint64) (Endpoint, error) {
+			return lookupBackendEndpoint(endpoints, id)
+		}
+		validateIdentity = func(ctx context.Context) error { return live.validateSnapshot(ctx, digest) }
+	} else {
+		endpoint, err = a.mapping.ByCanonical(ctx, q.ResourceCanonicalID)
+	}
+	if err != nil {
+		return out, fmt.Errorf("%w: endpoint identity: %w", evidence.ErrScopeUnverified, err)
+	}
+	if endpoint.PodID == 0 || endpoint.ClusterID == 0 || endpoint.NamespaceID == 0 || endpoint.CanonicalID != q.ResourceCanonicalID || endpoint.Namespace != q.Namespace || !q.Scope.Allows(endpoint.CanonicalID, endpoint.Namespace) || q.Scope.Tenant != a.binding.Tenant || !slices.Contains(a.binding.ScopeMapping.Scopes["cluster"], q.Scope.Cluster) || !slices.Contains(a.binding.ScopeMapping.Scopes["namespace"], endpoint.Namespace) {
 		return out, fmt.Errorf("%w: endpoint identity or execution scope", evidence.ErrScopeUnverified)
 	}
 	if a.mode == "live" && (endpoint.IdentityValidFrom.IsZero() || q.From.Before(endpoint.IdentityValidFrom)) {
@@ -154,6 +179,7 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 		out.DegradedSources = []string{"deepflow"}
 		return out, nil
 	}
+	stage = "querier"
 	response, err := a.client.Do(req)
 	if err != nil {
 		return degraded("source_unavailable")
@@ -209,10 +235,11 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 		if value, ok := resolved[id]; ok {
 			return value.endpoint, value.err
 		}
-		endpoint, err := a.mapping.ByBackend(ctx, id)
+		endpoint, err := lookupBackend(ctx, id)
 		resolved[id] = mappedEndpoint{endpoint, err}
 		return endpoint, err
 	}
+	stage = "row_projection"
 	for _, row := range body.Result.Values {
 		if len(row) != len(body.Result.Columns) {
 			return degraded("invalid_columns")
@@ -301,12 +328,14 @@ func (a *Adapter) query(ctx context.Context, q evidence.Query, qualifyingL7 bool
 	if a.mode == "fixture_only" {
 		out.Warnings = append(out.Warnings, "fixture_only")
 	}
+	stage = "final_binding"
 	if err := a.authorize(ctx, a.binding); err != nil {
 		return evidence.Result{}, fmt.Errorf("%w: final binding authorization", evidence.ErrScopeUnverified)
 	}
+	stage = "final_native"
 	if a.mode == "live" {
-		if err := a.mapping.(*LiveMapper).ValidateCurrent(ctx); err != nil {
-			return evidence.Result{}, fmt.Errorf("%w: final native identity", evidence.ErrScopeUnverified)
+		if err := validateIdentity(ctx); err != nil {
+			return evidence.Result{}, fmt.Errorf("%w: final native identity: %w", evidence.ErrScopeUnverified, err)
 		}
 	}
 	if len(rows) == 0 {

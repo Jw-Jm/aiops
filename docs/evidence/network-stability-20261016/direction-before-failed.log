@@ -1,0 +1,48 @@
+
+Running 3 tests using 1 worker
+
+  ✘  1 network_stability_fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation (16.1s)
+  ✓  2 network_stability_fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation (16.2s)
+  ✘  3 network_stability_fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation (12.1s)
+
+
+  1) network_stability_fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      231 |       const query = (await result.json()).data.result;
+      232 |       if (!query.datasetId.startsWith("network.")) continue;
+    > 233 |       expect(query.exact).toBe(true);
+          |                           ^
+      234 |       if (!query.statistics.some((s: any) => s.key === "current.responses"))
+      235 |         continue;
+      236 |       expect(
+        at /opt/ops-assistant-dev-20261012/ui/network_stability_fault_chain_runtime.spec.ts:233:27
+
+    Error Context: network-stability-fixed-results/network_stability_fault_ch-62a6d-oration-and-owner-isolation/error-context.md
+
+  2) network_stability_fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      231 |       const query = (await result.json()).data.result;
+      232 |       if (!query.datasetId.startsWith("network.")) continue;
+    > 233 |       expect(query.exact).toBe(true);
+          |                           ^
+      234 |       if (!query.statistics.some((s: any) => s.key === "current.responses"))
+      235 |         continue;
+      236 |       expect(
+        at /opt/ops-assistant-dev-20261012/ui/network_stability_fault_chain_runtime.spec.ts:233:27
+
+    Error Context: network-stability-fixed-results/network_stability_fault_ch-62a6d-oration-and-owner-isolation-repeat2/error-context.md
+
+  2 failed
+    network_stability_fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation
+    network_stability_fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation
+  1 passed (45.6s)
