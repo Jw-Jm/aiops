@@ -227,6 +227,12 @@ func NewContext(resolution Resolution, symptom string, window TimeRange) (Resour
 	if window.From.IsZero() || window.To.IsZero() || !window.From.Before(window.To) || window.To.Sub(window.From) > time.Hour {
 		return ResourceContext{}, analytics.ErrInvalid
 	}
+	// A window that starts in the future cannot describe an observed incident.
+	// A one-minute allowance covers client clock skew; the absolute nanosecond
+	// rule is enforced later by FaultChainRequest.Valid before any source query.
+	if window.From.After(time.Now().Add(time.Minute)) {
+		return ResourceContext{}, analytics.ErrInvalid
+	}
 	if _, err := time.LoadLocation(window.Timezone); err != nil || window.Timezone == "" || window.Timezone == "Local" {
 		return ResourceContext{}, analytics.ErrInvalid
 	}

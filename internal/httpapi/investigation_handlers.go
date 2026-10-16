@@ -432,6 +432,10 @@ func (h *InvestigationHandlers) InternalHandler() http.Handler {
 			reply(map[string]string{"jobContext": jobToken, "mcpContext": mcpToken})
 			return
 		}
+		if suffix == "/budget" && r.Method == "GET" {
+			reply(j.Budget.Usage.Sub(j.Consumed.Add(j.Reserved)))
+			return
+		}
 		if suffix == "/assistant-context" && r.Method == "GET" {
 			v, err := h.Repository.GetAssistantInput(r.Context(), l)
 			if err != nil {

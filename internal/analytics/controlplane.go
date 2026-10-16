@@ -156,7 +156,7 @@ func (e ControlPlaneExecutor) Execute(ctx context.Context, p ControlPlanePlan) (
 	case "executions.records/v1":
 		base = executionsBase
 	case "incidents.recovery-duration/v1":
-		base = strings.Replace(incidentsBase, "i.created_at AS event_time", "i.resolved_at AS event_time, CASE WHEN i.started_at IS NOT NULL AND i.resolved_at>=i.started_at THEN extract(epoch FROM (i.resolved_at-i.started_at))*1000 ELSE NULL END AS sample", 1) + " AND i.state IN ('resolved','closed')"
+		base = strings.Replace(incidentsBase, "i.created_at AS event_time", "i.resolved_at AS event_time, CASE WHEN i.started_at IS NOT NULL AND i.resolved_at>=i.started_at AND EXISTS(SELECT 1 FROM incident.finding_links start_link JOIN finding.records start_finding USING(tenant_id,finding_id) WHERE start_link.tenant_id=i.tenant_id AND start_link.incident_id=i.incident_id AND start_finding.schema_version='finding-envelope/v2' AND start_finding.payload->>'timeReliable'='true' AND (start_finding.payload->>'startsAt')::timestamptz=i.started_at) THEN extract(epoch FROM (i.resolved_at-i.started_at))*1000 ELSE NULL END AS sample", 1) + " AND i.state IN ('resolved','closed')"
 		suffix = recoverySuffix
 		derived = true
 	case "executions.success-rate/v1":

@@ -120,24 +120,9 @@ func (g Gateway) handlerFor(defs []tools.Definition) (http.Handler, error) {
 			if json.Unmarshal(b, &meta) != nil {
 				return deny(investigation.ErrInvalid)
 			}
-			reserve := investigation.Usage{ToolCalls: 1, ResultBytes: 64 << 10, EvidenceItems: 100}
-			if d.Name == "get_dependencies" || d.Name == "get_impact_scope" {
-				reserve.GraphNodes = 200
-			}
-			if d.RawQuery {
-				reserve.RawQueries = 1
-				if d.Name == "execute_analysis_query" {
-					var args struct {
-						Intent analytics.QueryIntent `json:"intent"`
-					}
-					if json.Unmarshal(r.Params.Arguments, &args) == nil && strings.HasPrefix(args.Intent.DatasetID, "network.") {
-						cost := analytics.NetworkRawQueryCost(args.Intent)
-						if cost < 1 || cost > 10 {
-							return deny(investigation.ErrInvalid)
-						}
-						reserve.RawQueries = cost
-					}
-				}
+			reserve, err := toolReservation(d, r.Params.Arguments)
+			if err != nil {
+				return deny(err)
 			}
 			c := investigation.Call{Arguments: r.Params.Arguments, StepID: meta.StepID, ContextID: v.Claims.ContextID, Seq: meta.Seq, JTI: meta.JTI, Name: d.Name, ArgsDigest: investigation.ArgumentsDigest(r.Params.Arguments), Reserve: reserve, Claims: &v.Claims}
 			if _, err := g.Repository.BeginCall(ctx, v.Lease, c); err != nil {
@@ -304,4 +289,28 @@ func (g Gateway) Handler() (http.Handler, error) {
 		}
 		h.ServeHTTP(w, r)
 	}), nil
+}
+
+func toolReservation(d tools.Definition, args json.RawMessage) (investigation.Usage, error) {
+	reserve := investigation.Usage{ToolCalls: 1, ResultBytes: 64 << 10, EvidenceItems: 100}
+	if d.Name == "get_dependencies" || d.Name == "get_impact_scope" {
+		reserve.GraphNodes = 200
+	}
+	if d.RawQuery {
+		reserve.RawQueries = 1
+		if d.Name == "execute_analysis_query" {
+			var input struct {
+				Intent analytics.QueryIntent `json:"intent"`
+			}
+			if json.Unmarshal(args, &input) != nil {
+				return reserve, investigation.ErrInvalid
+			}
+			cost, err := analytics.SourceRequestCost(input.Intent)
+			if err != nil || cost < 1 || cost > 1<<16 {
+				return reserve, investigation.ErrInvalid
+			}
+			reserve.RawQueries = cost
+		}
+	}
+	return reserve, nil
 }

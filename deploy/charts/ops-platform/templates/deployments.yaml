@@ -64,6 +64,17 @@ spec:
               containerPort: {{ $component.metricsPort | default 9090 }}
               protocol: TCP
             {{ end }}
+          {{ if eq $name "api" }}
+          # The API binds its port before OIDC/database/component initialisation
+          # completes, so readiness must come from the serving loop, not the port.
+          startupProbe: {httpGet: {path: /healthz, port: http, scheme: HTTP}, failureThreshold: 60, periodSeconds: 2}
+          readinessProbe: {httpGet: {path: /readyz, port: http, scheme: HTTP}, periodSeconds: 5, timeoutSeconds: 2}
+          livenessProbe: {httpGet: {path: /healthz, port: http, scheme: HTTP}, initialDelaySeconds: 15, periodSeconds: 10, timeoutSeconds: 3}
+          {{ else if eq $name "worker" }}
+          startupProbe: {httpGet: {path: /readyz, port: metrics, scheme: HTTP}, failureThreshold: 60, periodSeconds: 2}
+          readinessProbe: {httpGet: {path: /readyz, port: metrics, scheme: HTTP}, periodSeconds: 5, timeoutSeconds: 2}
+          livenessProbe: {httpGet: {path: /healthz, port: metrics, scheme: HTTP}, periodSeconds: 10, timeoutSeconds: 3}
+          {{ end }}
           env:
             {{ if and $.Values.sp07.enabled (has $name (list "api" "worker")) }}
             - {name: SP07_RUNTIME_FILE, value: /etc/sp07/runtime/runtime.json}

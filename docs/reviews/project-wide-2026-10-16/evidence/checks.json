@@ -1,0 +1,182 @@
+{
+  "review": "project-wide-2026-10-16",
+  "date": "2026-10-16",
+  "baseline": {
+    "branch": "main",
+    "head": "4dd81de8e7a11b58daf6451af958ade6d6f7fd9f",
+    "tree": "a57a272fed2ebbc491f9340b63596655b64d5d93",
+    "worktree_before_and_after": [
+      "?? docs/plans/project-wide-code-review-prompt.md",
+      "?? docs/plans/v1.0-remaining-work-agent-handoff.md",
+      "?? docs/reviews/"
+    ],
+    "toolchain": {
+      "go": "go1.27.1 darwin/arm64",
+      "node": "v24.21.0",
+      "pnpm": "12.7.0",
+      "python": "3.12.14"
+    },
+    "note": "审查期间未修改任何被审查文件；未提交、未推送、未发布。"
+  },
+  "environment_limitations": [
+    "本机不含 PostgreSQL/Kubernetes/浏览器运行；未访问 192.168.0.63。",
+    "根卷可用空间一度降至 485MB，导致部分 Go 测试二进制链接失败（no space left on device），非代码失败；系统回收后重跑通过。",
+    "本机 Python 未安装 pytest，services/investigator 套件无法在本环境验证。"
+  ],
+  "checks": [
+    {
+      "id": "static.go-vet",
+      "command": "go vet ./internal/... ./cmd/...",
+      "exit_code": 0,
+      "result": "pass",
+      "note": "无诊断输出；空输出不等于完成安全审计。"
+    },
+    {
+      "id": "static.web-tsc",
+      "command": "cd web && ./node_modules/.bin/tsc --noEmit -p tsconfig.json",
+      "exit_code": 0,
+      "result": "pass"
+    },
+    {
+      "id": "static.web-build",
+      "command": "cd web && ./node_modules/.bin/vite build",
+      "exit_code": 0,
+      "result": "pass",
+      "note": "✓ built in 699ms"
+    },
+    {
+      "id": "ledger.generate",
+      "command": "go run /tmp/ops-review-tools (git ls-files + go/ast + regex)",
+      "exit_code": 0,
+      "result": "files=12314 functions=4503",
+      "artifacts": ["coverage.csv", "functions.csv"]
+    },
+    {
+      "id": "test.go-core-packages",
+      "command": "go test -count=1 ./internal/investigation ./internal/analytics ./internal/assistant ./internal/resourcestore ./internal/incident ./internal/finding ./internal/httpapi ./internal/auth",
+      "exit_code": 0,
+      "result": "pass",
+      "durations": {
+        "internal/investigation": "1.641s",
+        "internal/analytics": "2.786s",
+        "internal/assistant": "0.703s",
+        "internal/resourcestore": "1.235s",
+        "internal/incident": "3.238s",
+        "internal/finding": "2.150s",
+        "internal/httpapi": "3.875s",
+        "internal/auth": "4.462s"
+      },
+      "intermediate_failure": "首次以 -count=1 运行时 6 个包因磁盘耗尽链接失败（no space left on device），重跑后通过。"
+    },
+    {
+      "id": "test.contract",
+      "command": "go test -count=1 ./test/contract",
+      "exit_code": 0,
+      "result": "pass",
+      "duration": "39.029s"
+    },
+    {
+      "id": "test.security",
+      "command": "go test -count=1 ./test/security",
+      "exit_code": 0,
+      "result": "pass",
+      "duration": "0.457s"
+    },
+    {
+      "id": "test.no-test-files",
+      "command": "go test -count=1 ./internal/tenant",
+      "exit_code": 0,
+      "result": "no test files"
+    },
+    {
+      "id": "probe.review-defects",
+      "command": "go test -count=1 -v ./docs/reviews/2026-10-15-project-review/_probes/",
+      "exit_code": 0,
+      "result": "pass",
+      "semantics": "PASS 表示缺陷行为被复现，不是修复验收。",
+      "reproduced": [
+        "PWR-003: valid 32768 profile rejected as BUDGET_EXHAUSTED before database access",
+        "PWR-001: logs.records/trend expands to 50 source requests; metrics.pod-memory/compare expands to 2",
+        "PWR-002: filtered absence causes UPDATE deleted_at without native deletion",
+        "PWR-006: first empty snapshot performs zero persistence reads/writes"
+      ]
+    },
+    {
+      "id": "gate.migration-source-admission",
+      "command": "python3 scripts/prepare-migration-source.py --check",
+      "exit_code": 1,
+      "result": "fail",
+      "stderr": "ValueError: migration source/notice closure has drifted; renew admission evidence",
+      "finding": "PWR-004"
+    },
+    {
+      "id": "gate.integration-zero-skip",
+      "command": "go test ./test/integration -run '^TestAssistantCrashWorkerChild$' -count=1 -json > /tmp/r.jsonl; python3 scripts/check-test-report.py /tmp/r.jsonl",
+      "exit_code": 1,
+      "result": "fail",
+      "observed_skip_event": "{\"Action\":\"skip\",\"Package\":\"ops-platform/test/integration\",\"Test\":\"TestAssistantCrashWorkerChild\"}",
+      "stderr": "Acceptance suite did not fully execute: TestAssistantCrashWorkerChild",
+      "finding": "PWR-005"
+    },
+    {
+      "id": "test.python-assistant-eval",
+      "command": "python3 -m unittest discover -s scripts/assistant-eval -p 'test_*.py'",
+      "exit_code": 0,
+      "result": "pass",
+      "detail": "Ran 9 tests — OK"
+    },
+    {
+      "id": "test.python-investigator",
+      "command": "cd services/investigator && PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py'",
+      "exit_code": 1,
+      "result": "blocked",
+      "detail": "Ran 28 tests; 9 errors caused by ModuleNotFoundError: No module named 'pytest' (e.g. tests/test_workload_tls.py:5).",
+      "note": "本环境未安装 pytest，未安装依赖；该套件未通过验证，需在项目锁定环境执行。"
+    },
+    {
+      "id": "test.web-unit",
+      "command": "cd web && ./node_modules/.bin/vitest run",
+      "exit_code": 0,
+      "result": "pass",
+      "detail": "Test Files 23 passed (23).",
+      "note": "首次使用 --reporter=basic 失败（vitest 5 无该 reporter，ERR_LOAD_URL），属命令参数错误，已用默认 reporter 重跑。"
+    },
+    {
+      "id": "ledger.r2-tsx-correction",
+      "command": "cd docs/reviews/project-wide-2026-10-16/_tools/ledger && GOFLAGS=-mod=mod GOPROXY=off go run . <repo> <review-dir>",
+      "exit_code": 0,
+      "result": "files=12314 functions=4643",
+      "note": "r1 工具把 .tsx 分类为 tsx 但调度只匹配 ts，导致 81 个 TSX 文件函数数为 0；修正后 tsx 贡献 140（web/src 126）。该台账只统计文件级顶层声明，非完整函数清单。",
+      "artifacts": ["coverage.csv", "functions.csv"]
+    },
+    {
+      "id": "gate.integration-zero-skip-fix-verification",
+      "command": "go test ./test/integration -run '^TestAssistantCrashWorkerChild$' -skip '^TestAssistantCrashWorkerChild$' -count=1 -json",
+      "exit_code": 0,
+      "result": "pass",
+      "detail": "报告中 skip 事件 0 个、run 事件 0 个；辅助入口被整体排除，不再触发 check-test-report.py 的失败。父测试自行以 os.Executable() 启动子进程（assistant_process_recovery_test.go:133-138），顶层 -skip 不传播给它。",
+      "finding": "PWR-005 的最小修复方案验证"
+    },
+    {
+      "id": "review-self-verification.r2",
+      "command": "只读复核（read_file/search_content）",
+      "exit_code": 0,
+      "result": "9 处结论被复核并更正",
+      "detail": "包括：GraphView :246-255 已有 stale 告警；edgeExpired 依据 validTo/ttl（类别与过期可叠加）；internal/httpapi 有 16 个测试文件；database-migrations.md 已声明 forward-only；db-migrate -to 0 帮助文本已说明；values.yaml SP04 启用时 worker=2；oapi-codegen 同时生成 ServerInterface 与 StrictServerInterface；deployments.yaml 中 web 仅在 sp08 未启用时渲染；tenant 端点挂 RequireRole(PlatformAdmin)。",
+      "note": "详见 corrections.md"
+    }
+  ],
+  "not_executed": [
+    {"item": "make check", "reason": "包含已失败的迁移源码准入；且含生成物/前端全量检查"},
+    {"item": "make test-integration (full)", "reason": "需 PostgreSQL 等真实依赖；另见 PWR-005"},
+    {"item": "make test-e2e / test-replay / test-unit (full)", "reason": "需集群/夹具；test-unit 会静默跳过全部 gated 测试"},
+    {"item": "web/tests/e2e/**", "reason": "需 OPS_WEB_QA_INPUT/OPS_WEB_QA_CDP 与真实浏览器后端；缺环境会报错（PWR-017）"},
+    {"item": "helm template / helm lint", "reason": "本机未确认安装 helm，未执行"},
+    {"item": "离线 Bundle 重建、干净重装、升级/回滚", "reason": "需发行/离线授权与环境"},
+    {"item": "真实 PostgreSQL 迁移前滚/幂等/RLS 行为", "reason": "本机无数据库"},
+    {"item": "192.168.0.63 五来源联合验证、内网/外部模型、浏览器闭环", "reason": "本轮未获授权、未访问"},
+    {"item": "18443/18643 部署环境观察与差异", "reason": "无凭据/授权"},
+    {"item": "依赖漏洞公告核对", "reason": "未做（避免仅凭依赖名称定性）"},
+    {"item": "third_party/bundle/addons 第三方实现逐行", "reason": "明确排除，仅审查来源/锁定/许可/消费关系"}
+  ]
+}

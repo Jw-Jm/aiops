@@ -20,6 +20,7 @@ func collectorSink(ctx context.Context, cluster SP04Cluster, g *graph.Graph, sto
 	previous := map[string]string{}
 	kind, group := "", ""
 	coverageSignature := ""
+	inventoryReconciled := false
 	return func(s kubernetes.Snapshot) error {
 		signature := graph.ScopeDigest(struct {
 			Listed                          time.Time
@@ -45,13 +46,24 @@ func collectorSink(ctx context.Context, cluster SP04Cluster, g *graph.Graph, sto
 			return replaceCurrent(ctx, g, s)
 		}
 		var err error
+		native := s
 		s, err = store.FilterSnapshot(ctx, cluster.Tenant, cluster.SourceID, cluster.ClusterUID, s)
 		if err != nil {
 			s.State.LastError = "source_scope_unverified"
 			_ = g.UpdateSourceState(g.OwnerEpoch(), s.GVR, s.State)
 			return err
 		}
-		next, err := store.SyncSnapshot(ctx, cluster.Tenant, cluster.SourceID, cluster.ClusterUID, kind, group, s, previous)
+		// Retirement is decided against the complete, pre-filter native list so a
+		// source-scope filter change is never mistaken for a native deletion.
+		if !inventoryReconciled && native.State.LastError == "" {
+			if err := store.ReconcileNativeSnapshot(ctx, cluster.Tenant, cluster.SourceID, cluster.ClusterUID, native); err != nil {
+				native.State.LastError = "identity_inventory_unavailable"
+				_ = g.UpdateSourceState(g.OwnerEpoch(), native.GVR, native.State)
+				return err
+			}
+			inventoryReconciled = true
+		}
+		next, err := store.SyncSnapshot(ctx, cluster.Tenant, cluster.SourceID, cluster.ClusterUID, kind, group, s, native, previous)
 		if err != nil {
 			s.State.LastError = "identity_or_metadata_unavailable"
 			_ = g.UpdateSourceState(g.OwnerEpoch(), s.GVR, s.State)

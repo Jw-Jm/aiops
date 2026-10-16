@@ -3291,15 +3291,20 @@ export type createCommandExecutionResponse202 = {
   status: 202
 }
 
+export type createCommandExecutionResponse412 = {
+  data: ErrorEnvelope
+  status: 412
+}
+
 export type createCommandExecutionResponseDefault = {
   data: ErrorEnvelope
-  status: Exclude<HTTPStatusCodes, 202>
+  status: Exclude<HTTPStatusCodes, 202 | 412>
 }
 
 export type createCommandExecutionResponseSuccess = (createCommandExecutionResponse202) & {
   headers: Headers;
 };
-export type createCommandExecutionResponseError = (createCommandExecutionResponseDefault) & {
+export type createCommandExecutionResponseError = (createCommandExecutionResponse412 | createCommandExecutionResponseDefault) & {
   headers: Headers;
 };
 
@@ -3560,15 +3565,20 @@ export type acknowledgeCommandRiskResponse200 = {
   status: 200
 }
 
+export type acknowledgeCommandRiskResponse412 = {
+  data: ErrorEnvelope
+  status: 412
+}
+
 export type acknowledgeCommandRiskResponseDefault = {
   data: ErrorEnvelope
-  status: Exclude<HTTPStatusCodes, 200>
+  status: Exclude<HTTPStatusCodes, 200 | 412>
 }
 
 export type acknowledgeCommandRiskResponseSuccess = (acknowledgeCommandRiskResponse200) & {
   headers: Headers;
 };
-export type acknowledgeCommandRiskResponseError = (acknowledgeCommandRiskResponseDefault) & {
+export type acknowledgeCommandRiskResponseError = (acknowledgeCommandRiskResponse412 | acknowledgeCommandRiskResponseDefault) & {
   headers: Headers;
 };
 

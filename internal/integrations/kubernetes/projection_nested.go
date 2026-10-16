@@ -20,8 +20,7 @@ func safeLabels(v any) map[string]any {
 	out := map[string]any{}
 	m, _ := v.(map[string]any)
 	for k, value := range m {
-		lower := strings.ToLower(k)
-		if strings.Contains(lower, "password") || strings.Contains(lower, "token") || strings.Contains(lower, "secret") || strings.Contains(lower, "credential") {
+		if secretKeyName(k) {
 			continue
 		}
 		if s, ok := safeString(value); ok && len(s) <= 256 && len(k) <= 253 {

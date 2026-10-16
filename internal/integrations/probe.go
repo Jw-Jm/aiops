@@ -56,11 +56,12 @@ func Get(ctx context.Context, client HTTPDoer, endpoint, path, authRef string) (
 	}
 	response, err := client.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("SOURCE_UNAVAILABLE: read-only GET failed (authRef=%q): %w", authRef, err)
+		// AuthRef is an opaque secret reference; never echo it into logs or API errors.
+		return nil, fmt.Errorf("SOURCE_UNAVAILABLE: read-only GET failed: %w", err)
 	}
 	defer response.Body.Close()
 	if response.StatusCode == http.StatusUnauthorized || response.StatusCode == http.StatusForbidden {
-		return nil, fmt.Errorf("SOURCE_UNAUTHORIZED: read-only GET returned HTTP %d (authRef=%q)", response.StatusCode, authRef)
+		return nil, fmt.Errorf("SOURCE_UNAUTHORIZED: read-only GET returned HTTP %d", response.StatusCode)
 	}
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
 		return nil, fmt.Errorf("SOURCE_PROBE_REJECTED: read-only GET returned HTTP %d", response.StatusCode)

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync/atomic"
 	"time"
 )
 
@@ -15,6 +16,7 @@ type Runtime struct {
 	Logger  *slog.Logger
 	Metrics *Metrics
 	Tracing *Tracing
+	Ready   atomic.Bool
 }
 
 func NewRuntime(ctx context.Context, serviceName string) (*Runtime, error) {
@@ -50,7 +52,7 @@ func (r *Runtime) ServeMetrics(ctx context.Context, address string) error {
 	}
 	r.Metrics.SetComponentDegraded("metrics_listener", false)
 	server := &http.Server{
-		Handler:           r.Metrics.Handler(),
+		Handler:           r.probeHandler(),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 	serveErrors := make(chan error, 1)
@@ -83,4 +85,18 @@ func (r *Runtime) Close(ctx context.Context) error {
 		return nil
 	}
 	return r.Tracing.Close(ctx)
+}
+
+func (r *Runtime) probeHandler() http.Handler {
+	mux := http.NewServeMux()
+	mux.Handle("/", r.Metrics.Handler())
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, req *http.Request) { w.WriteHeader(http.StatusOK) })
+	mux.HandleFunc("/readyz", func(w http.ResponseWriter, req *http.Request) {
+		if !r.Ready.Load() {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+	return mux
 }

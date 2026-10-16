@@ -61,7 +61,7 @@ func (h *SP04Handlers) legalHold(w http.ResponseWriter, r *http.Request, request
 		}
 		writeJSON(w, 201, map[string]any{"schemaVersion": "legal-hold-result/v1", "requestId": request.RequestID, "data": body, "protectionSync": "pending", "meta": legalHoldMeta("")})
 	})
-	newTenantIdempotency(h.Pool, "set-evidence-legal-hold")(requireTenantAdminStepUp(handler)).ServeHTTP(w, r)
+	newTenantAdminStepUpIdempotency(h.Pool, "set-evidence-legal-hold")(handler).ServeHTTP(w, r)
 }
 
 func legalHoldMeta(next string) map[string]any {

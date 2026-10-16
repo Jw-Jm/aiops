@@ -109,11 +109,14 @@ func TestSP07CommandTransactionAndClaim(t *testing.T) {
 	}
 	service := action.Service{Pool: pool, Policy: sp07Policy{policyVersion}, Protector: &sp07Protector{plain: map[uuid.UUID][]byte{}}}
 	req := action.CommandRequest{IncidentID: incidentID, ActualCommand: "printf 'operator command'", Target: target, Shell: "bash", ProfileID: profile.ID, ProfileVersion: 1, Options: action.Options{TimeoutSeconds: 900, MaxOutputBytes: 10 << 20, Environment: map[string]string{}}}
+	if _, err := service.PrepareCommandExecution(ctx, actor, req, uuid.Nil, "missing-ack"); !errors.Is(err, action.ErrAckRequired) {
+		t.Fatalf("missing acknowledgement %v", err)
+	}
 	assessment, err := service.AssessRisk(ctx, actor, req, "risk-1")
 	if err != nil {
 		t.Fatal("assess", err)
 	}
-	if _, err = service.AcknowledgeRisk(ctx, actor, assessment.ID, action.Digest([]byte("wrong")), "bad-ack"); !errors.Is(err, action.ErrAcknowledgement) {
+	if _, err = service.AcknowledgeRisk(ctx, actor, assessment.ID, action.Digest([]byte("wrong")), "bad-ack"); !errors.Is(err, action.ErrAckScopeMismatch) {
 		t.Fatalf("digest substitution %v", err)
 	}
 	ack, err := service.AcknowledgeRisk(ctx, actor, assessment.ID, assessment.RequestDigest, "ack-1")
@@ -129,8 +132,23 @@ func TestSP07CommandTransactionAndClaim(t *testing.T) {
 	}
 	changed := req
 	changed.ActualCommand += " "
-	if _, err = service.PrepareCommandExecution(ctx, actor, changed, ack.ID, "bad-command"); !errors.Is(err, action.ErrAcknowledgement) {
+	if _, err = service.PrepareCommandExecution(ctx, actor, changed, ack.ID, "bad-command"); !errors.Is(err, action.ErrAckCommandMismatch) {
 		t.Fatalf("changed bytes %v", err)
+	}
+	changed = req
+	changed.Options.TimeoutSeconds--
+	if _, err = service.PrepareCommandExecution(ctx, actor, changed, ack.ID, "bad-options"); !errors.Is(err, action.ErrAckScopeMismatch) {
+		t.Fatalf("changed options %v", err)
+	}
+	expiredAck, err := service.AcknowledgeRisk(ctx, actor, otherAssessment.ID, otherAssessment.RequestDigest, "expired-ack")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = db.ExecContext(ctx, `UPDATE action.risk_acknowledgements SET confirmed_at=clock_timestamp()-interval '6 minutes',expires_at=clock_timestamp()-interval '1 second' WHERE tenant_id=$1 AND acknowledgement_id=$2`, b.TenantID, expiredAck.ID); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = service.PrepareCommandExecution(ctx, actor, req, expiredAck.ID, "expired-execute"); !errors.Is(err, action.ErrAckExpired) {
+		t.Fatalf("expired acknowledgement %v", err)
 	}
 	e, err := service.PrepareCommandExecution(ctx, actor, req, ack.ID, "execute-1")
 	if err != nil {
@@ -143,7 +161,7 @@ func TestSP07CommandTransactionAndClaim(t *testing.T) {
 	if err != nil || replay.ID != e.ID {
 		t.Fatalf("replay %v", err)
 	}
-	if _, err = service.PrepareCommandExecution(ctx, actor, req, ack.ID, "execute-2"); !errors.Is(err, action.ErrAcknowledgement) {
+	if _, err = service.PrepareCommandExecution(ctx, actor, req, ack.ID, "execute-2"); !errors.Is(err, action.ErrConflict) {
 		t.Fatalf("ack reuse %v", err)
 	}
 	var raw string

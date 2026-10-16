@@ -90,10 +90,13 @@ func (r Repository) AllocateModel(ctx context.Context, l Lease, reserve Usage, a
 	if _, err := hex.DecodeString(strings.TrimPrefix(request.RequestDigest, "sha256:")); err != nil {
 		return out, ErrInvalid
 	}
-	if reserve.ModelRequests != 1 || reserve.ToolCalls != 0 || reserve.RawQueries != 0 || reserve.ResultBytes != 65536 || reserve.InputTokens != 16384 || reserve.OutputTokens < 1 || reserve.OutputTokens > 8192 || reserve.ModelCostMicros != 0 {
+	if reserve.ModelRequests != 1 || reserve.ToolCalls != 0 || reserve.RawQueries != 0 || reserve.ResultBytes != 65536 || reserve.InputTokens < 1024 || reserve.InputTokens > 65536 || reserve.OutputTokens < 1 || reserve.OutputTokens > 8192 || reserve.ModelCostMicros != 0 {
 		return out, ErrBudget
 	}
 	err := r.withLease(ctx, l, func(tx pgx.Tx, j Job) error {
+		if err := r.validateModelReservation(j, reserve); err != nil {
+			return err
+		}
 		err := tx.QueryRow(ctx, `SELECT step_id,result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name='model' AND args_digest=$3 AND state='succeeded' ORDER BY started_at LIMIT 1`, j.TenantID, j.JobID, out.ArgsDigest).Scan(&out.StepID, &out.Result)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil
@@ -130,4 +133,20 @@ func ArgumentsDigest(b []byte) string {
 		return ""
 	}
 	return graph.ScopeDigest(v)
+}
+
+// Bounds come from the admitted server configuration, bound to the frozen Job reference.
+func (r Repository) validateModelReservation(j Job, reserve Usage) error {
+	input, output := int64(16384), int64(8192)
+	if j.SchemaVersion == "investigation-job/v3" {
+		p := r.AssistantModelProfile
+		if j.Assistant == nil || p == nil || p.Reference() != j.Assistant.ModelProfileVersion {
+			return ErrDenied
+		}
+		input, output = int64(p.ContextWindow), int64(p.OutputTokenLimit)
+	}
+	if reserve.ModelRequests != 1 || reserve.ToolCalls != 0 || reserve.RawQueries != 0 || reserve.ResultBytes != 65536 || reserve.InputTokens != input || reserve.OutputTokens < 1 || reserve.OutputTokens > output || reserve.ModelCostMicros != 0 {
+		return ErrBudget
+	}
+	return nil
 }

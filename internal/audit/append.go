@@ -109,10 +109,7 @@ func containsSecretField(value any) bool {
 	case map[string]any:
 		for key, child := range typed {
 			name := strings.NewReplacer("_", "", "-", "").Replace(strings.ToLower(key))
-			if name == "token" || strings.HasSuffix(name, "token") || name == "secret" || strings.HasSuffix(name, "secret") ||
-				name == "password" || strings.HasSuffix(name, "password") || strings.Contains(name, "credential") ||
-				name == "authorization" || name == "ciphertext" || name == "command" || name == "prompt" ||
-				name == "stdout" || name == "stderr" || rawTextField(name) {
+			if sensitiveFieldName(name) || rawTextField(name) {
 				return true
 			}
 			if containsSecretField(child) {
@@ -127,6 +124,21 @@ func containsSecretField(value any) bool {
 		}
 	}
 	return false
+}
+
+// sensitiveFieldName matches credential-bearing keys after normalising case and
+// separators. It covers camelCase aliases such as accessKey/secretKey/apiKey/
+// privateKey that a suffix rule on the raw key would miss.
+func sensitiveFieldName(name string) bool {
+	switch name {
+	case "token", "secret", "password", "passwd", "passphrase", "authorization",
+		"bearer", "ciphertext", "stdout", "stderr",
+		"accesskey", "secretkey", "privatekey", "apikey", "sessionkey":
+		return true
+	}
+	return strings.HasSuffix(name, "token") || strings.HasSuffix(name, "secret") ||
+		strings.HasSuffix(name, "password") || strings.HasSuffix(name, "passwd") ||
+		strings.HasSuffix(name, "credential") || strings.Contains(name, "credential")
 }
 
 func rawTextField(name string) bool {

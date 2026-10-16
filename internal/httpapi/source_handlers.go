@@ -32,10 +32,10 @@ func NewSourceAdminRouter(service *source.Service, pool persistence.TxBeginner) 
 	handlers := SourceAdminHandlers{service: service}
 	router := chi.NewRouter()
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get(adminSourcesPath, handlers.getSources)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "create-source-registration"), requireTenantAdminStepUp).Post(adminSourcesPath, handlers.createSource)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "update-source-registration"), requireTenantAdminStepUp).Patch(adminSourcesPath+"/{sourceId}", handlers.updateSource)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "rotate-source-credential"), requireTenantAdminStepUp).Post(adminSourcesPath+"/{sourceId}/rotate-credential", handlers.rotateSourceCredential)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "rollback-source-registration"), requireTenantAdminStepUp).Post(adminSourcesPath+"/{sourceId}/rollback", handlers.rollbackSourceRegistration)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "create-source-registration")).Post(adminSourcesPath, handlers.createSource)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "update-source-registration")).Patch(adminSourcesPath+"/{sourceId}", handlers.updateSource)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "rotate-source-credential")).Post(adminSourcesPath+"/{sourceId}/rotate-credential", handlers.rotateSourceCredential)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "rollback-source-registration")).Post(adminSourcesPath+"/{sourceId}/rollback", handlers.rollbackSourceRegistration)
 	mountClusterAdminRoutes(router, service, pool)
 	return router, nil
 }

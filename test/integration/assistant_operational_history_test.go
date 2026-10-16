@@ -48,7 +48,9 @@ func TestAssistantOperationalResourceHistory(t *testing.T) {
 					t.Fatal(err)
 				}
 				state := kubernetes.GVRState{LastListCompletedAt: start.Add(-2 * time.Second), LastWatchEventAt: at, WatchConnected: true, WatchContinuous: true}
-				previous, err = store.SyncSnapshot(ctx, b.TenantID.String(), b.SourceID.String(), b.ClusterUID, kind, "core", kubernetes.Snapshot{Objects: []unstructured.Unstructured{object}, State: state}, previous)
+				// The fixture's visible projection equals its complete native list.
+				snapshot := kubernetes.Snapshot{Objects: []unstructured.Unstructured{object}, State: state}
+				previous, err = store.SyncSnapshot(ctx, b.TenantID.String(), b.SourceID.String(), b.ClusterUID, kind, "core", snapshot, snapshot, previous)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -253,7 +255,9 @@ func TestAssistantOperationalActualKubernetesObservations(t *testing.T) {
 		if err := store.ObserveCoverage(ctx, b.TenantID.String(), b.SourceID.String(), gvr, state); err != nil {
 			t.Fatal(err)
 		}
-		if _, err := store.SyncSnapshot(ctx, b.TenantID.String(), b.SourceID.String(), b.ClusterUID, o.GetKind(), "core", kubernetes.Snapshot{GVR: gvr, Objects: []unstructured.Unstructured{projected}, State: state}, nil); err != nil {
+		// The fixture's visible projection equals its complete native list.
+		snapshot := kubernetes.Snapshot{GVR: gvr, Objects: []unstructured.Unstructured{projected}, State: state}
+		if _, err := store.SyncSnapshot(ctx, b.TenantID.String(), b.SourceID.String(), b.ClusterUID, o.GetKind(), "core", snapshot, snapshot, nil); err != nil {
 			t.Fatal(err)
 		}
 		id := resource.CanonicalID{Domain: "k8s", Tenant: b.TenantID.String(), Scope: b.ClusterUID, APIGroup: "core", Kind: o.GetKind(), StableID: string(o.GetUID())}.String()

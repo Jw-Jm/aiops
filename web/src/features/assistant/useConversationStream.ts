@@ -31,6 +31,7 @@ export function useConversationStream(
     if (!id) return;
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout> | undefined;
+    let attempts = 0;
     const refresh = (all = false) => {
       void client.invalidateQueries({
         queryKey: all
@@ -50,6 +51,7 @@ export function useConversationStream(
         )) {
           if (controller.signal.aborted) return;
           cursor.current = event.id;
+          attempts = 0;
           // Reading retained evidence is audited, but does not change it.
           if (event.data.type !== "turn.result_read")
             refresh(!event.data.type.startsWith("turn.step_"));
@@ -68,8 +70,20 @@ export function useConversationStream(
           refresh(true);
         }
       }
-      if (!controller.signal.aborted)
-        timer = setTimeout(() => void connect(), 2000);
+      if (controller.signal.aborted) return;
+      attempts++;
+      if (attempts > 10) {
+        setError(
+          (previous) =>
+            previous ?? new Error("事件连接多次重试失败，请重新加载会话"),
+        );
+        return;
+      }
+      // Back off like the investigation stream instead of a fixed 2s loop.
+      timer = setTimeout(
+        () => void connect(),
+        Math.min(10000, 1000 * 2 ** Math.min(attempts, 4)),
+      );
     };
     void connect();
     return () => {

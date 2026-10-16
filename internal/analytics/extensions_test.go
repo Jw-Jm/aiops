@@ -58,9 +58,12 @@ func TestFixedExtendedTemplatesAndSamples(t *testing.T) {
 				t.Fatal(err)
 			}
 			if entry.operation == "samples" {
-				raw, _ := json.Marshal(result)
-				if result.Exact || result.Status != "partial" || strings.Contains(string(raw), "hidden") || strings.Contains(string(raw), "user:secret") || strings.Contains(string(raw), "abc") {
-					t.Fatalf("unsafe samples: %s", raw)
+				// Assert on the sanitized sample bodies only. Checking the whole
+				// envelope made this test flaky: the random tenant UUID feeds the
+				// digests, and a hex digest occasionally contains "abc".
+				samples, _ := json.Marshal(result.Samples)
+				if result.Exact || result.Status != "partial" || strings.Contains(string(samples), "hidden") || strings.Contains(string(samples), "user:secret") || strings.Contains(string(samples), "abc") {
+					t.Fatalf("unsafe samples: %s", samples)
 				}
 			}
 			if entry.source == "victorialogs" && entry.operation == "trend" && calls != 2 {

@@ -56,3 +56,11 @@ type Incident struct {
 	CreatedAt           time.Time  `json:"createdAt"`
 	UpdatedAt           time.Time  `json:"updatedAt"`
 }
+
+// Unknown source clocks stay NULL in storage and cannot become exact duration samples.
+func reliableStart(f finding.Finding) *time.Time {
+	if !f.TimeReliable || f.StartsAt.IsZero() {
+		return nil
+	}
+	return &f.StartsAt
+}

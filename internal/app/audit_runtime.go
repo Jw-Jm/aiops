@@ -136,6 +136,8 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 		return err
 	}
 	defer stopSP07()
+	runtime.Ready.Store(true)
+	defer runtime.Ready.Store(false)
 	if tokenPath == "" {
 		tokenPath = "/var/run/secrets/ops-platform/openbao/token"
 	}

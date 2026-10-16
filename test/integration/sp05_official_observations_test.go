@@ -99,7 +99,8 @@ func TestSP05OfficialObservationsActualOrbStackAndControlledProbeFailure(t *test
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := repo.SyncSnapshot(ctx, b.TenantID.String(), b.SourceID.String(), collector.ClusterUID, "", "core", filtered, map[string]string{}); err != nil {
+	// filtered is the source-scope projection of the complete native list.
+	if _, err := repo.SyncSnapshot(ctx, b.TenantID.String(), b.SourceID.String(), collector.ClusterUID, "", "core", filtered, snapshot, map[string]string{}); err != nil {
 		t.Fatal(err)
 	}
 	report, err := app.InspectSP05OfficialObservations(ctx, archives, collector, client, 0)

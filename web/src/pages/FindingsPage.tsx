@@ -88,7 +88,7 @@ export function FindingsPage({ incidents = false }: { incidents?: boolean }) {
                   options={(k === "severity"
                     ? ["critical", "warning", "info", "unknown"]
                     : k === "rcaStatus"
-                      ? ["confirmed", "unresolved", "conflicted"]
+                      ? ["confirmed", "probable", "unresolved"]
                       : incidents
                         ? [
                             "open",

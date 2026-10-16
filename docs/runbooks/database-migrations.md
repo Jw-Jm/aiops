@@ -1,6 +1,6 @@
 # PostgreSQL migration runbook
 
-SP-03 migrations are numbered, Goose-managed SQL files in `migrations/`. They are forward-only; no migration contains a `Down` section. Keep the six roles and tenant schemas in `00001` as the privilege boundary for later migrations.
+SP-03 migrations are numbered, Goose-managed SQL files in `migrations/`. The supported execution path is forward-only. New migrations must not contain a `Down` section. Historical migration `00038` retains its original Down text solely to preserve the applied artifact; the static gate permits only its exact recorded file digest, and this does not authorize executing Down. Keep the six roles and tenant schemas in `00001` as the privilege boundary for later migrations.
 
 ## First database bootstrap
 

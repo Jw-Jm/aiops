@@ -125,7 +125,8 @@ func sp05GoldenVertical(t *testing.T, scenario, mode string, reviewFence ...bool
 			objects = append(objects, *object.DeepCopy())
 		}
 		snapshot := kube.Snapshot{GVR: native.GVR, Objects: objects, State: kube.GVRState{LastListCompletedAt: clock, LastConnectivityProbeAt: clock, WatchConnected: true, WatchContinuous: true}}
-		if _, err := repo.SyncSnapshot(ctx, input.Tenant, cluster.SourceID, input.Cluster, "", "core", snapshot, map[string]string{}); err != nil {
+		// This fixture has no source-scope filter, so visible == complete native list.
+		if _, err := repo.SyncSnapshot(ctx, input.Tenant, cluster.SourceID, input.Cluster, "", "core", snapshot, snapshot, map[string]string{}); err != nil {
 			t.Fatal(err)
 		}
 		filtered, err := repo.FilterSnapshot(ctx, input.Tenant, cluster.SourceID, input.Cluster, snapshot)

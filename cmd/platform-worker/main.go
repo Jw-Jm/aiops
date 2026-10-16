@@ -33,6 +33,7 @@ func main() {
 			runtime.Logger.ErrorContext(ctx, "platform-worker metrics listener unavailable", "signal", "metrics")
 		}
 	}()
+	slog.SetDefault(runtime.Logger)
 	runtime.Logger.InfoContext(ctx, "platform-worker started")
 	if err := application.Serve(ctx, runtime); err != nil {
 		runtime.Logger.ErrorContext(ctx, "platform-worker stopped", "error", err)

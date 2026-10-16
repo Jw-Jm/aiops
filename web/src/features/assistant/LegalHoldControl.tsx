@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { Alert, Button, Card, Input, Space } from "antd";
+import { Alert, Button, Card, Input, Popconfirm, Space } from "antd";
 import { checked, requestOptions } from "../../api/client";
 import { setAssistantLegalHold } from "../../api/generated/platform";
 
 export function LegalHoldControl() {
   const [turnId, setTurnId] = useState("");
   const [reason, setReason] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<"hold" | "release">();
   const [status, setStatus] = useState<{ ok: boolean; message: string }>();
   async function apply(held: boolean) {
-    setBusy(true);
+    setPending(held ? "hold" : "release");
     setStatus(undefined);
     try {
       await checked(
@@ -30,7 +30,7 @@ export function LegalHoldControl() {
         message: error instanceof Error ? error.message : "操作失败",
       });
     } finally {
-      setBusy(false);
+      setPending(undefined);
     }
   }
   return (
@@ -51,18 +51,27 @@ export function LegalHoldControl() {
         />
         <Space>
           <Button
-            disabled={!turnId.trim() || !reason.trim() || busy}
-            loading={busy}
+            disabled={!turnId.trim() || !reason.trim() || !!pending}
+            loading={pending === "hold"}
             onClick={() => void apply(true)}
           >
             设置保留
           </Button>
-          <Button
-            disabled={!turnId.trim() || !reason.trim() || busy}
-            onClick={() => void apply(false)}
+          <Popconfirm
+            title="解除法律保留？"
+            description="解除后该轮次不再受法律保留保护，可能被普通 TTL 清理。"
+            okText="解除保留"
+            cancelText="取消"
+            onConfirm={() => void apply(false)}
           >
-            解除保留
-          </Button>
+            <Button
+              danger
+              disabled={!turnId.trim() || !reason.trim() || !!pending}
+              loading={pending === "release"}
+            >
+              解除保留
+            </Button>
+          </Popconfirm>
         </Space>
         {status && (
           <Alert

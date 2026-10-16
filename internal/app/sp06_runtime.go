@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -24,6 +25,7 @@ import (
 	platformmcp "ops-platform/internal/investigation/mcp"
 	"ops-platform/internal/investigation/tools"
 	"ops-platform/internal/modelprofile"
+	"ops-platform/internal/observability"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/policy"
 	"os"
@@ -149,7 +151,7 @@ func sp06Signer(ctx context.Context, serviceAccount string, requireProjected boo
 	}
 	return investigation.ContextSigner{Transit: transit, Key: "investigation-signing"}, nil
 }
-func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Handlers, trust configregistry.SignatureVerifier) (func(), error) {
+func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Handlers, trust configregistry.SignatureVerifier, runtimes ...*observability.Runtime) (func(), error) {
 	c, err := loadSP06()
 	if err != nil || c == nil {
 		return func() {}, err
@@ -238,6 +240,9 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 	}}
 	handlers.Repository.Trust = trust
 	handlers.Repository.AssistantEnabled = c.Assistant != nil && c.Assistant.Enabled
+	if handlers.Repository.AssistantEnabled {
+		handlers.Repository.AssistantModelProfile = c.Assistant.Profile
+	}
 	if sp04.SP05 != nil {
 		handlers.Repository.CurrentRCA = sp04.SP05.CurrentInvestigationRCA
 	}
@@ -342,7 +347,11 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 		sp04.Assistant = &httpapi.AssistantHandlers{Repository: repo, SP04: sp04, CursorKey: sp04.SigningKey, ModelTaskKinds: append([]string(nil), c.Assistant.Profile.TaskKinds...)}
 	}
 
-	go func() { _ = server.Serve(tls.NewListener(listener, tlsConfig)) }()
+	go func() {
+		if err := server.Serve(tls.NewListener(listener, tlsConfig)); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			observeStartupFailure(optionalRuntime(runtimes), "agent", "sp06 api listener stopped", err)
+		}
+	}()
 	return func() { _ = server.Close() }, nil
 }
 func StartSP06Worker(ctx context.Context, pool *pgxpool.Pool) (func(), error) {
@@ -450,7 +459,9 @@ func StartSP06Worker(ctx context.Context, pool *pgxpool.Pool) (func(), error) {
 						continue
 					}
 				}
-				_ = dispatcher.Repository.ExpirePass(workerCtx, tenant)
+				if err := dispatcher.Repository.ExpirePass(workerCtx, tenant); err != nil {
+					slog.Error("investigation expiration failed", "tenant", tenant, "errorType", fmt.Sprintf("%T", err))
+				}
 				select {
 				case slots <- struct{}{}:
 					wg.Go(func() {

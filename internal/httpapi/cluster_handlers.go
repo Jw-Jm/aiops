@@ -20,7 +20,7 @@ type ClusterAdminHandlers struct {
 func mountClusterAdminRoutes(router chi.Router, service *source.Service, pool persistence.TxBeginner) {
 	handlers := ClusterAdminHandlers{service: service}
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get(adminClustersPath, handlers.getClusters)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "create-cluster"), requireTenantAdminStepUp).Post(adminClustersPath, handlers.createCluster)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "create-cluster")).Post(adminClustersPath, handlers.createCluster)
 }
 
 func (h ClusterAdminHandlers) getClusters(w http.ResponseWriter, r *http.Request) {

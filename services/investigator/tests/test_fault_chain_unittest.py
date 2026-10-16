@@ -16,6 +16,7 @@ class Ledger:
         return allocation
 
     def request(self, path):
+        if path == "/budget": return {"toolCalls": 10, "rawQueries": 0}
         return self.saved[path.split("/")[2]]
 
 
@@ -303,3 +304,18 @@ class OperationalCollectorTests(unittest.TestCase):
             self.assertEqual(names.count("evaluate_fault_chain"), 1)
             if kind != "Pod": self.assertNotIn("query_deepflow", names)
             self.assertTrue(result["partial"])
+
+    def test_recovery_uses_live_budget_instead_of_cached_receipt(self):
+        class RecoveredLedger(Ledger):
+            def __init__(self):
+                super().__init__(committed=True)
+                self.budget_reads = 0
+            def request(self, path):
+                if path == "/budget":
+                    self.budget_reads += 1
+                    return {"toolCalls": 2, "rawQueries": 0}
+                return super().request(path)
+        ledger = RecoveredLedger()
+        collect({"budget": {"toolCalls": 40, "rawQueries": 10}}, ledger, Bridge())
+        self.assertGreaterEqual(ledger.budget_reads, 2)
+        self.assertNotIn("resource_history", [name for name, _ in ledger.allocations])

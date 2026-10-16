@@ -119,6 +119,14 @@ func (r Repository) RecoverStep(ctx context.Context, l Lease, id uuid.UUID, dige
 	}
 	return b, err
 }
+
+// ReadSteps backs the public GET /investigations/{id}/steps endpoint.
+//
+// Decision (review PWR-033): reading already committed steps by their owner is
+// deliberately not charged against the job result-byte budget. That budget
+// bounds agent-initiated work that issues source queries; this read issues none
+// and only re-authorizes steps the job already committed. The internal recovery
+// read (Steps) charges the budget because it feeds new model input.
 func (r Repository) ReadSteps(ctx context.Context, tenant, id uuid.UUID, subject string) ([]Step, error) {
 	out := []Step{}
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {

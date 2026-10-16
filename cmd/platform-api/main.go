@@ -44,6 +44,7 @@ func main() {
 		os.Exit(1)
 	}
 	defer listener.Close()
+	slog.SetDefault(runtime.Logger)
 	runtime.Logger.InfoContext(ctx, "platform-api starting")
 	if err := application.Serve(ctx, listener, runtime); err != nil {
 		runtime.Logger.ErrorContext(ctx, "platform-api stopped", "error", err)

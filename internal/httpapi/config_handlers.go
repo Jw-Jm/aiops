@@ -36,12 +36,12 @@ func NewConfigAdminRouter(service *configregistry.Service, pool persistence.TxBe
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get("/api/v1/admin/recipes", handlers.getRecipes)
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get("/api/v1/admin/tools", handlers.getTools)
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get(registryDraftsPath+"/{draftId}", handlers.getDraft)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "create-registry-draft"), requireTenantAdminStepUp).Post(registryDraftsPath, handlers.createDraft)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "update-registry-draft"), requireTenantAdminStepUp).Patch(registryDraftsPath+"/{draftId}", handlers.updateDraft)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "publish-registry-draft"), requireTenantAdminStepUp).Post(registryDraftsPath+"/{draftId}:publish", handlers.publishDraft)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "publish-policy-bundle"), requireTenantAdminStepUp).Post("/api/v1/admin/policy-bundles:publish", handlers.publishPolicyBundle)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "activate-registry-version"), requireTenantAdminStepUp).Post(registryActivationsPath, handlers.activateVersion)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "retire-registry-version"), requireTenantAdminStepUp).Post(registryVersionsPath+"/{versionId}:retire", handlers.retireVersion)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "create-registry-draft")).Post(registryDraftsPath, handlers.createDraft)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "update-registry-draft")).Patch(registryDraftsPath+"/{draftId}", handlers.updateDraft)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "publish-registry-draft")).Post(registryDraftsPath+"/{draftId}:publish", handlers.publishDraft)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "publish-policy-bundle")).Post("/api/v1/admin/policy-bundles:publish", handlers.publishPolicyBundle)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "activate-registry-version")).Post(registryActivationsPath, handlers.activateVersion)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "retire-registry-version")).Post(registryVersionsPath+"/{versionId}:retire", handlers.retireVersion)
 	return router, nil
 }
 

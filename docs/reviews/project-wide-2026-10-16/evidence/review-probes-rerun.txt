@@ -1,0 +1,19 @@
+=== RUN   TestReviewAccepted32KProfileRejectedBeforeModelAdmission
+    review_test.go:54: valid contextWindow=32768; AllocateModel rejects its inputTokens=32768 as BUDGET_EXHAUSTED before database access
+--- PASS: TestReviewAccepted32KProfileRejectedBeforeModelAdmission (0.01s)
+=== RUN   TestReviewVictoriaExpandedRawQueries
+=== RUN   TestReviewVictoriaExpandedRawQueries/logs.records/trend
+    review_test.go:104: one execute_analysis_query expands to 50 source HTTP requests; result rows=50
+=== RUN   TestReviewVictoriaExpandedRawQueries/metrics.pod-memory/compare
+    review_test.go:104: one execute_analysis_query expands to 2 source HTTP requests; result rows=3
+--- PASS: TestReviewVictoriaExpandedRawQueries (0.01s)
+    --- PASS: TestReviewVictoriaExpandedRawQueries/logs.records/trend (0.01s)
+    --- PASS: TestReviewVictoriaExpandedRawQueries/metrics.pod-memory/compare (0.00s)
+=== RUN   TestReviewFilteredAbsenceBecomesTerminalRetirement
+    review_test.go:149: absence from filtered Objects causes UPDATE deleted_at even without a native deletion
+--- PASS: TestReviewFilteredAbsenceBecomesTerminalRetirement (0.00s)
+=== RUN   TestReviewFirstEmptySnapshotDoesNotReconcilePersistentInventory
+    review_test.go:159: first empty snapshot with fresh process-local previous map performs zero persistence reads/writes
+--- PASS: TestReviewFirstEmptySnapshotDoesNotReconcilePersistentInventory (0.00s)
+PASS
+ok  	ops-platform/docs/reviews/2026-10-15-project-review/_probes	0.870s

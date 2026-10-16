@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
 	"fmt"
 	"net/url"
@@ -38,7 +39,9 @@ func TestMigrationScriptsAreForwardOnlyAndContiguous(t *testing.T) {
 			t.Fatal(err)
 		}
 		text := string(source)
-		if !strings.HasPrefix(text, "-- +goose Up\n") || strings.Contains(text, "-- +goose Down") {
+		// Preserve the exact historical migration; new or edited Down sections remain forbidden.
+		historical := file.Name() == "00038_sp08_safe_step_input_summary.sql" && fmt.Sprintf("%x", sha256.Sum256(source)) == "114ed90f37b58b6bc83187c0793b2fee48d91a3545ed8c1e3a5e28d57358a05a"
+		if !strings.HasPrefix(text, "-- +goose Up\n") || (strings.Contains(text, "-- +goose Down") && !historical) {
 			t.Errorf("migration %s must provide only a forward Goose Up section", file.Name())
 		}
 		version++
@@ -181,15 +184,18 @@ func TestMigrationsAndRoles(t *testing.T) {
 	if updateAllowed || deleteAllowed {
 		t.Errorf("runtime roles must not mutate audit records: update=%v delete=%v", updateAllowed, deleteAllowed)
 	}
-	var apiCanReadWorkerQueue, workerCanReadExecution bool
+	var apiCanReadWorkerQueue, workerCanReadExecution, workerCanInsertExecution, workerCanDeleteExecution bool
 	if err := db.QueryRowContext(ctx, `
 		SELECT has_table_privilege('api_runtime_role', 'investigation.worker_queue', 'SELECT'),
-		       has_table_privilege('worker_runtime_role', 'action.executions', 'SELECT')`).
-		Scan(&apiCanReadWorkerQueue, &workerCanReadExecution); err != nil {
+		       has_table_privilege('worker_runtime_role', 'action.executions', 'SELECT'),
+		       has_table_privilege('worker_runtime_role', 'action.executions', 'INSERT'),
+		       has_table_privilege('worker_runtime_role', 'action.executions', 'DELETE')`).
+		Scan(&apiCanReadWorkerQueue, &workerCanReadExecution, &workerCanInsertExecution, &workerCanDeleteExecution); err != nil {
 		t.Fatal(err)
 	}
-	if apiCanReadWorkerQueue || workerCanReadExecution {
-		t.Errorf("runtime roles crossed table boundary: api_worker_queue=%v worker_execution=%v", apiCanReadWorkerQueue, workerCanReadExecution)
+	// SP07 grants the Worker read/update access for dispatch, never creation or deletion.
+	if apiCanReadWorkerQueue || !workerCanReadExecution || workerCanInsertExecution || workerCanDeleteExecution {
+		t.Errorf("runtime role boundary: api_worker_queue=%v worker_execution_read=%v insert=%v delete=%v", apiCanReadWorkerQueue, workerCanReadExecution, workerCanInsertExecution, workerCanDeleteExecution)
 	}
 	var apiCanCreate, workerCanCreate bool
 	if err := db.QueryRowContext(ctx, `

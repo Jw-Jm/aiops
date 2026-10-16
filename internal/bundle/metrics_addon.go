@@ -118,7 +118,11 @@ func metricsCA(raw string) (*x509.CertPool, error) {
 	return pool, nil
 }
 func (c MetricsAddonValues) chartValues() map[string]any {
-	return map[string]any{"image": c.image(), "servingTLSSecret": c.ServingTLSSecret, "servingCA": c.ServingCA, "kubeletCAConfigMap": c.KubeletCAConfigMap, "nodeCIDRs": c.NodeCIDRs, "apiServerCIDRs": c.APIServerCIDRs, "apiServerPort": c.APIServerPort, "networkPolicyOnly": false}
+	architecture := strings.TrimPrefix(c.Architecture, "linux/")
+	if architecture == "" {
+		architecture = "arm64"
+	}
+	return map[string]any{"architecture": architecture, "image": c.image(), "servingTLSSecret": c.ServingTLSSecret, "servingCA": c.ServingCA, "kubeletCAConfigMap": c.KubeletCAConfigMap, "nodeCIDRs": c.NodeCIDRs, "apiServerCIDRs": c.APIServerCIDRs, "apiServerPort": c.APIServerPort, "networkPolicyOnly": false}
 }
 
 func metricsNamespace(ctx context.Context, p profile.ResolvedProfile, c MetricsAddonValues, run CommandRunner) (namespaceIdentity, error) {

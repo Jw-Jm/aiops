@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"strings"
 	"time"
 )
 
@@ -20,8 +19,7 @@ func Project(obj unstructured.Unstructured, observed time.Time) (unstructured.Un
 	out.SetNamespace(obj.GetNamespace())
 	labels := map[string]string{}
 	for key, value := range obj.GetLabels() {
-		lower := strings.ToLower(key)
-		if !strings.Contains(lower, "password") && !strings.Contains(lower, "token") && !strings.Contains(lower, "secret") && !strings.Contains(lower, "credential") && len(value) <= 256 {
+		if !secretKeyName(key) && len(value) <= 256 {
 			labels[key] = value
 		}
 	}

@@ -1,4 +1,5 @@
 """OpenBao workload CSR lifecycle in the existing investigator process."""
+import sys
 import os
 import re
 import ssl
@@ -158,6 +159,7 @@ class WorkloadIdentity:
                     with self.lock:
                         self.crl=crl;self.fetched=time.monotonic()
             except Exception:
+                print("workload-identity-renewal-failed", file=sys.stderr)
                 # Failed renewals must still attempt revocation propagation.
                 try:
                     crl=self._read_crl()

@@ -182,7 +182,9 @@ func (r Repository) Retire(ctx context.Context, tenant uuid.UUID, id string) err
 			return err
 		}
 		if tag.RowsAffected() == 0 {
-			return errors.New("resource identity not found")
+			// Monotonic and idempotent: an already retired (or never persisted)
+			// identity must not abort the remaining GVR synchronisation.
+			return nil
 		}
 		return nil
 	})
@@ -190,12 +192,18 @@ func (r Repository) Retire(ctx context.Context, tenant uuid.UUID, id string) err
 
 // SyncSnapshot persists identity/provenance and UID retirement; it does not
 // persist a graph, adjacency index or full source object payload.
-func (r Repository) SyncSnapshot(ctx context.Context, tenant, source, cluster, kind, apiGroup string, s kubernetes.Snapshot, previous map[string]string) (map[string]string, error) {
-	if s.State.LastListCompletedAt.IsZero() {
+//
+// visible carries the source-scope-filtered objects that may be written and
+// published. native carries the same GVR's complete, pre-filter list. Only a UID
+// that is missing from a complete native list may be retired: a source label or
+// namespace filter change is a visibility change, not a native deletion, and
+// must never create a terminal tombstone for an object that still exists.
+func (r Repository) SyncSnapshot(ctx context.Context, tenant, source, cluster, kind, apiGroup string, visible, native kubernetes.Snapshot, previous map[string]string) (map[string]string, error) {
+	if visible.State.LastListCompletedAt.IsZero() {
 		return previous, nil
 	}
 	current := map[string]string{}
-	for _, o := range s.Objects {
+	for _, o := range visible.Objects {
 		uid := string(o.GetUID())
 		current[uid] = o.GetResourceVersion()
 		if previous[uid] == o.GetResourceVersion() {
@@ -207,7 +215,7 @@ func (r Repository) SyncSnapshot(ctx context.Context, tenant, source, cluster, k
 		}
 		observed, _ := time.Parse(time.RFC3339Nano, o.GetAnnotations()["ops.internal/observed-at"])
 		if observed.IsZero() {
-			observed = s.State.LastListCompletedAt
+			observed = visible.State.LastListCompletedAt
 		}
 		hardwareUUID, _, _ := unstructured.NestedString(o.Object, "status", "nodeInfo", "systemUUID")
 		providerID, _, _ := unstructured.NestedString(o.Object, "spec", "providerID")
@@ -218,19 +226,41 @@ func (r Repository) SyncSnapshot(ctx context.Context, tenant, source, cluster, k
 		if out.Status != resource.Matched {
 			return previous, resource.ErrIdentity
 		}
-		if err := r.observe(ctx, tenant, source, out.CanonicalID.String(), o, s.State); err != nil {
+		if err := r.observe(ctx, tenant, source, out.CanonicalID.String(), o, visible.State); err != nil {
 			return previous, err
 		}
 	}
+	nativeUIDs := map[string]string{}
+	nativeComplete := !native.State.LastListCompletedAt.IsZero() && native.State.LastError == ""
+	if nativeComplete {
+		for _, o := range native.Objects {
+			nativeUIDs[string(o.GetUID())] = o.GetResourceVersion()
+		}
+	}
+	if !nativeComplete {
+		// Without a complete native list there is no proof of deletion: keep the
+		// previous acknowledgements so a later complete list can still detect it.
+		for uid, rv := range previous {
+			if _, present := current[uid]; !present {
+				current[uid] = rv
+			}
+		}
+		return current, nil
+	}
 	for uid := range previous {
-		if _, present := current[uid]; present {
+		if _, present := nativeUIDs[uid]; present {
 			continue
 		}
-		for _, kind := range []string{kind} {
-			id := resource.CanonicalID{Domain: "k8s", Tenant: tenant, Scope: cluster, APIGroup: apiGroup, Kind: kind, StableID: uid}.String()
-			if err := r.Retire(ctx, uuid.MustParse(tenant), id); err != nil {
-				return previous, err
-			}
+		id := resource.CanonicalID{Domain: "k8s", Tenant: tenant, Scope: cluster, APIGroup: apiGroup, Kind: kind, StableID: uid}.String()
+		if err := r.Retire(ctx, uuid.MustParse(tenant), id); err != nil {
+			return previous, err
+		}
+	}
+	// Keep native UIDs in the acknowledgement map so a later real deletion is
+	// still detected after the object left the visible projection.
+	for uid, rv := range nativeUIDs {
+		if _, present := current[uid]; !present {
+			current[uid] = rv
 		}
 	}
 	return current, nil

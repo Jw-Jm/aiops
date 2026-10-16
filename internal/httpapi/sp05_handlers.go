@@ -2,7 +2,7 @@ package httpapi
 
 import (
 	"context"
-	"encoding/base64"
+	"crypto/ed25519"
 	"encoding/json"
 	"errors"
 	"github.com/google/uuid"
@@ -211,12 +211,6 @@ func decodeSP05(r *http.Request, v any) error {
 	return nil
 }
 
-type sp05Cursor struct {
-	After       string `json:"after"`
-	ScopeDigest string `json:"scopeDigest"`
-	Query       string `json:"query"`
-}
-
 func (h *SP05Handlers) read(ctx context.Context, actor auth.RequestContext, r *http.Request) (data any, next string, readErr error) {
 	path := strings.Split(strings.TrimPrefix(r.URL.Path, "/api/v1/"), "/")
 	if len(path) == 0 || (path[0] != "findings" && path[0] != "incidents") {
@@ -325,11 +319,11 @@ func (h *SP05Handlers) read(ctx context.Context, actor auth.RequestContext, r *h
 	query.Del("cursor")
 	digest := graph.ScopeDigest(scope)
 	queryHash := finding.Hash([]string{path[0], query.Encode()})
+	cursorScope := graph.ScopeDigest([]any{actor.TenantID.String(), actor.Subject, scope})
 	after := ""
 	if token := r.URL.Query().Get("cursor"); token != "" {
-		raw, err := base64.RawURLEncoding.DecodeString(token)
-		var cursor sp05Cursor
-		if err != nil || json.Unmarshal(raw, &cursor) != nil || cursor.ScopeDigest != digest || cursor.Query != queryHash {
+		var cursor graphCursor
+		if h.GraphAPI == nil || len(h.GraphAPI.SigningKey) != ed25519.PrivateKeySize || decodeCursor(h.GraphAPI.SigningKey.Public().(ed25519.PublicKey), token, &cursor) != nil || cursor.ScopeDigest != cursorScope || cursor.QueryDigest != queryHash {
 			return nil, "", rca.ErrStale
 		}
 		after = cursor.After
@@ -367,16 +361,14 @@ func (h *SP05Handlers) read(ctx context.Context, actor auth.RequestContext, r *h
 	}
 	next = ""
 	if len(items) > limit {
-		raw, _ := json.Marshal(sp05Cursor{After: ids[limit-1], ScopeDigest: digest, Query: queryHash})
-		next = base64.RawURLEncoding.EncodeToString(raw)
+		if h.GraphAPI == nil || len(h.GraphAPI.SigningKey) != ed25519.PrivateKeySize {
+			return nil, "", errors.New("pagination signing unavailable")
+		}
+		next, err = encodeCursor(h.GraphAPI.SigningKey, graphCursor{After: ids[limit-1], ScopeDigest: cursorScope, QueryDigest: queryHash})
+		if err != nil {
+			return nil, "", err
+		}
 		items = items[:limit]
 	}
 	return items, next, nil
-}
-
-func evidenceNamespace(scope graph.Scope) string {
-	if len(scope.Namespaces) == 1 {
-		return scope.Namespaces[0]
-	}
-	return ""
 }

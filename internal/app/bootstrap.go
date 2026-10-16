@@ -42,26 +42,27 @@ type WorkerApp struct {
 
 // NewAPI validates configuration and constructs the API process skeleton.
 func NewAPI(config AppConfig) (*APIApp, error) {
-	if err := validateConfig(config); err != nil {
+	if err := validateConfig(config, true); err != nil {
 		return nil, err
 	}
 	return &APIApp{config: config}, nil
 }
 
 // NewWorker validates configuration and constructs the worker process skeleton.
+// The worker never authenticates OIDC tokens, so OIDC_ISSUER_URL is not required.
 func NewWorker(config AppConfig) (*WorkerApp, error) {
-	if err := validateConfig(config); err != nil {
+	if err := validateConfig(config, false); err != nil {
 		return nil, err
 	}
 	return &WorkerApp{config: config}, nil
 }
 
-func validateConfig(config AppConfig) error {
+func validateConfig(config AppConfig, requireOIDC bool) error {
 	missing := make([]string, 0, 3)
 	if config.DatabaseURL == "" {
 		missing = append(missing, "database_url")
 	}
-	if config.OIDCIssuerURL == "" {
+	if requireOIDC && config.OIDCIssuerURL == "" {
 		missing = append(missing, "oidc_issuer_url")
 	}
 	if config.ProfilePath == "" {

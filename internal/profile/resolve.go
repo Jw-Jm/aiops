@@ -36,6 +36,11 @@ func Resolve(ctx context.Context, input InputProfile, discovery Discovery) (Reso
 	if input.Selected == "virtualization" || input.Selected == "full" {
 		switch discovery.Kubernetes.KubeVirt {
 		case "supported":
+			// ADR-0008 defers KubeVirt/CDI development and runtime acceptance. A
+			// supported matrix entry must therefore not resolve into a profile the
+			// runtime rejects (api/worker only accept core|deepflow). The frozen
+			// matrix, its fixtures and the failure evidence below are preserved.
+			return ResolvedProfile{}, fmt.Errorf("CAPABILITY_DISABLED: KubeVirt/CDI development and runtime acceptance are deferred; the runtime only accepts core and deepflow")
 		case "unsupported":
 			return ResolvedProfile{}, fmt.Errorf("KUBEVIRT_KUBERNETES_UNSUPPORTED: Kubernetes %s has no supported KubeVirt release in the frozen matrix", discovery.Kubernetes.ServerVersion)
 		default:

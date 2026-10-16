@@ -3,16 +3,24 @@ import json
 import os
 import ssl
 import threading
-import time
 import sys
 import traceback
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from cryptography import x509
-from cryptography.x509.oid import ExtensionOID
-from datetime import datetime, timezone
 from .model_config import ModelContract
 from .runtime_config import RuntimeConfig
+
+
+def _release_job_slot(job_api, bridge, gate):
+    try:
+        for name, client in (("job_api", job_api), ("bridge", bridge)):
+            try:
+                if client is not None:
+                    client.close()
+            except Exception:
+                print("investigator-close-failure", name, file=sys.stderr)
+    finally:
+        gate.release()
 
 
 def serve(config):
@@ -93,9 +101,7 @@ def serve(config):
                 code=error.kind if isinstance(error, ModelCallError) else "INVESTIGATION_FAILED"
                 self.respond(503,{"errorCode":code})
             finally:
-                if job_api is not None:job_api.close()
-                if bridge is not None:bridge.close()
-                gate.release()
+                _release_job_slot(job_api, bridge, gate)
     host,port=config["listenAddress"].rsplit(":",1)
     server=ThreadingHTTPServer((host,int(port)),Handler)
     server.socket.settimeout(5)

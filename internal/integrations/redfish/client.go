@@ -10,12 +10,14 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 )
 
 type Config struct {
 	Endpoint, Tenant, Scope, SourceID, Username, Password string
+	CredentialFile                                        string
 	Client                                                *http.Client
 	Diagnostics                                           bool
 	Clock                                                 func() time.Time
@@ -34,6 +36,7 @@ type readOnlyTransport struct {
 	origin             *url.URL
 	username, password string
 	alarms             map[string]bool
+	credentialFile     string
 }
 
 func (t readOnlyTransport) RoundTrip(r *http.Request) (*http.Response, error) {
@@ -45,8 +48,25 @@ func (t readOnlyTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	// only after the exact origin/method/path guard has accepted the request.
 	copy := r.Clone(r.Context())
 	copy.Header = r.Header.Clone()
-	if t.username != "" {
-		copy.SetBasicAuth(t.username, t.password)
+	username, password := t.username, t.password
+	if t.credentialFile != "" {
+		f, err := os.Open(t.credentialFile)
+		if err != nil {
+			return nil, errors.New("Redfish credential unavailable")
+		}
+		raw, err := io.ReadAll(io.LimitReader(f, (64<<10)+1))
+		f.Close()
+		var credential struct {
+			Username string
+			Password string
+		}
+		if err != nil || len(raw) > 64<<10 || json.Unmarshal(raw, &credential) != nil || credential.Username == "" || credential.Password == "" {
+			return nil, errors.New("Redfish credential invalid")
+		}
+		username, password = credential.Username, credential.Password
+	}
+	if username != "" {
+		copy.SetBasicAuth(username, password)
 	}
 	res, err := t.base.RoundTrip(copy)
 	if err == nil && res.Body != nil {
@@ -100,7 +120,7 @@ func connect(ctx context.Context, c Config) (*gofish.APIClient, context.CancelFu
 	if base == nil {
 		base = http.DefaultTransport
 	}
-	client.Transport = readOnlyTransport{base: base, origin: u, username: c.Username, password: c.Password, alarms: c.alarms}
+	client.Transport = readOnlyTransport{base: base, origin: u, username: c.Username, password: c.Password, alarms: c.alarms, credentialFile: c.CredentialFile}
 	client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
 	fish, err := gofish.ConnectContext(deadline, gofish.ClientConfig{Endpoint: strings.TrimSuffix(c.Endpoint, "/"), Username: c.Username, Password: c.Password, BasicAuth: true, HTTPClient: &client, NoModifyTransport: true, MaxConcurrentRequests: 1})
 	return fish, cancel, err

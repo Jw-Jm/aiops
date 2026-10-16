@@ -10,7 +10,7 @@ def primary_resource_requests(resource):
 def collect(job, job_api, bridge):
     committed = []
     failures = []
-    remaining = dict(job["budget"])
+    remaining = dict(job_api.request("/budget"))
     last_error = ""
 
     def call(name, args):
@@ -18,9 +18,10 @@ def collect(job, job_api, bridge):
         allocation = job_api.allocate(name, args)
         if allocation.get("committed"):
             result = job_api.request("/steps/" + allocation["stepId"] + "/result?argsDigest=" + allocation["argsDigest"])
+            remaining = dict(job_api.request("/budget"))
         else:
             result = bridge.call(name, args, allocation)
-        if result.get("budget", {}).get("remaining"):
+        if not allocation.get("committed") and result.get("budget", {}).get("remaining"):
             remaining = result["budget"]["remaining"]
         # The admitted wrapper reports SOURCE_DEGRADED while preserving the
         # specific source failure in data. Prefer that code for bounded
@@ -233,7 +234,7 @@ def collect(job, job_api, bridge):
     # Digest is provided by the platform evaluator, never computed from a
     # different JSON serialization in Python.
     digest = evaluation["contentDigest"]
-    summary = "已提交本轮预算内的运行数据关联调查。各来源观察及反证可追溯，缺口保留；共现和时间接近不确认因果。"
+    summary = "已提交本轮预算内的运行数据关联调查。已收集内容与证据缺口见关联记录；共现和时间接近不确认因果。"
     if check:
         summary = f"已执行关联原轮次缺口 {check['gapCode']} 的只读检查 {check['tool']}。结果以已提交数据为准；当前快照不替代历史窗口证明，原缺口保留。"
     refs = [{"queryResultId": q["queryResultId"], "factId": f["factId"]} for q in queries if q["queryResultId"] in chain["queryResultRefs"] for f in q["facts"]]

@@ -1,10 +1,5 @@
 import { Alert, Space, Tag, Typography } from "antd";
-
-function object(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object" && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {};
-}
+import { record } from "../../components/data";
 
 // Display only known context fields; arbitrary graph attributes and model text
 // cannot become target identities here. The API reauthorizes this binding.
@@ -17,16 +12,16 @@ export function ConversationContext({
   domain: string;
   cluster?: string;
 }) {
-  const scope = object(binding.executionScope);
-  const context = object(binding.resourceContext);
-  const window = object(context.timeRange || binding.timeRange);
+  const scope = record(binding.executionScope);
+  const context = record(binding.resourceContext);
+  const window = record(context.timeRange || binding.timeRange);
   const namespaces = Array.isArray(scope.namespaces)
     ? scope.namespaces.filter(
         (value): value is string => typeof value === "string",
       )
     : [];
   const targets = Array.isArray(context.resources)
-    ? context.resources.map(object)
+    ? context.resources.map(record)
     : [];
   return (
     <Alert

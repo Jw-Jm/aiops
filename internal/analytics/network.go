@@ -133,14 +133,15 @@ func (n *Network) Compile(input QueryIntent, binding Binding) (NetworkPlan, erro
 }
 
 // RawQueryCost is also used by the MCP admission before any backend query.
+// It delegates to the unified cost function so network and Victoria expansion
+// can never drift apart; an intent that cannot be bounded conservatively counts
+// as one request.
 func NetworkRawQueryCost(intent QueryIntent) int64 {
-	if intent.Operation == "compare" || intent.Operation == "compare_percent" {
-		return 2
+	cost, err := SourceRequestCost(intent)
+	if err != nil {
+		return 1
 	}
-	if intent.Operation == "trend" && intent.TimeRange != nil && intent.StepSeconds >= 60 {
-		return int64(intent.TimeRange.To.Sub(intent.TimeRange.From)/time.Second) / int64(intent.StepSeconds)
-	}
-	return 1
+	return cost
 }
 
 func (n *Network) Execute(ctx context.Context, p NetworkPlan) (QueryResult, []evidence.Evidence, error) {

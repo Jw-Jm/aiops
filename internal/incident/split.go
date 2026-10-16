@@ -80,7 +80,7 @@ func (s Service) Split(ctx context.Context, scope graph.Scope, subject, id, reas
 		if _, err := tx.Exec(ctx, `INSERT INTO incident.correlation_subjects VALUES($1,$2)`, tenant, fp); err != nil {
 			return err
 		}
-		if _, err := tx.Exec(ctx, `INSERT INTO incident.records(tenant_id,incident_id,state,revision,fingerprint,policy_version,cluster_uid,resource_canonical_id,namespace,started_at,last_observed_at) VALUES($1,$2,'open',1,$3,$4,$5,$6,$7,$8,$9)`, tenant, newID, fp, i.PolicyVersion, i.ClusterUID, out.ResourceCanonicalID, out.Namespace, out.StartedAt, out.LastObservedAt); err != nil {
+		if _, err := tx.Exec(ctx, `INSERT INTO incident.records(tenant_id,incident_id,state,revision,fingerprint,policy_version,cluster_uid,resource_canonical_id,namespace,started_at,last_observed_at) VALUES($1,$2,'open',1,$3,$4,$5,$6,$7,$8,$9)`, tenant, newID, fp, i.PolicyVersion, i.ClusterUID, out.ResourceCanonicalID, out.Namespace, reliableStart(first), out.LastObservedAt); err != nil {
 			return err
 		}
 		if _, err := tx.Exec(ctx, `UPDATE incident.finding_links SET incident_id=$4 WHERE tenant_id=$1 AND incident_id=$2 AND finding_id=ANY($3::uuid[])`, tenant, id, refs, newID); err != nil {

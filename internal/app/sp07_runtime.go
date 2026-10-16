@@ -16,6 +16,7 @@ import (
 	platformcrypto "ops-platform/internal/crypto"
 	"ops-platform/internal/httpapi"
 	"ops-platform/internal/integrations/openbao"
+	"ops-platform/internal/observability"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/policy"
 	"os"
@@ -119,7 +120,7 @@ func sp07Service(ctx context.Context, pool persistence.TxBeginner, c *SP07Config
 	}}
 	return out, nil
 }
-func StartSP07API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Handlers, trust configregistry.Ed25519TrustStore) (func(), error) {
+func StartSP07API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Handlers, trust configregistry.Ed25519TrustStore, runtimes ...*observability.Runtime) (func(), error) {
 	c, err := loadSP07()
 	if err != nil {
 		return nil, err
@@ -146,6 +147,10 @@ func StartSP07API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 	}
 	server := &http.Server{TLSConfig: tlsConfig, Handler: handler, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute}
 	sp04.Action = &httpapi.ActionHandlers{Service: s}
-	go func() { _ = server.ServeTLS(listener, "", "") }()
+	go func() {
+		if err := server.ServeTLS(listener, "", ""); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			observeStartupFailure(optionalRuntime(runtimes), "action", "sp07 api listener stopped", err)
+		}
+	}()
 	return func() { _ = server.Close() }, nil
 }

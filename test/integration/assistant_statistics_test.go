@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/contract"
+	"ops-platform/internal/finding"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/resource"
 	"testing"
@@ -44,7 +45,21 @@ func TestAssistantDerivedStatistics(t *testing.T) {
 		ns       string
 		duration time.Duration
 	}{{"apps", time.Minute}, {"apps", 3 * time.Minute}, {"private", time.Hour}} {
-		if _, err := db.ExecContext(ctx, `INSERT INTO incident.records(tenant_id,incident_id,state,cluster_uid,namespace,started_at,resolved_at) VALUES($1,$2,'resolved',$3,$4,$5,$6)`, b.TenantID, uuid.New(), b.ClusterUID, row.ns, now.Add(-10*time.Minute).Add(-row.duration), now.Add(-10*time.Minute)); err != nil {
+		incidentID, findingID := uuid.New(), uuid.New()
+		start := now.Add(-10 * time.Minute).Add(-row.duration)
+		if _, err := db.ExecContext(ctx, `INSERT INTO incident.records(tenant_id,incident_id,state,cluster_uid,namespace,started_at,resolved_at) VALUES($1,$2,'resolved',$3,$4,$5,$6)`, b.TenantID, incidentID, b.ClusterUID, row.ns, start, now.Add(-10*time.Minute)); err != nil {
+			t.Fatal(err)
+		}
+		target := resource.CanonicalID{Domain: "k8s", Tenant: b.TenantID.String(), Scope: b.ClusterUID, APIGroup: "core", Kind: "Pod", StableID: findingID.String()}.String()
+		envelope := finding.Envelope{SchemaVersion: "finding-envelope/v2", EventID: findingID.String(), IdempotencyKey: findingID.String(), ResourceCanonicalID: target, Namespace: row.ns, RuleID: "fixture", RuleFamily: "fixture", NormalizedSymptom: "fixture", OccurrenceID: findingID.String(), StartsAt: start, ObservedAt: start, TimeReliable: true, State: "resolved", Severity: "warning", Payload: json.RawMessage(`{}`), EvidenceRefs: []string{}}
+		if err := envelope.Validate(b.TenantID.String(), b.SourceID.String(), b.ClusterUID); err != nil {
+			t.Fatal(err)
+		}
+		raw, _ := json.Marshal(envelope)
+		if _, err := db.ExecContext(ctx, `INSERT INTO finding.records(tenant_id,finding_id,source_id,cluster_id,schema_version,event_id,payload,observed_at,resource_canonical_id,namespace,cluster_uid,lifecycle_state) VALUES($1,$2,$3,$4,'finding-envelope/v2',$5,$6,$7,$8,$9,$10,'resolved')`, b.TenantID, findingID, b.SourceID, b.ClusterID, findingID.String(), raw, start, target, row.ns, b.ClusterUID); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := db.ExecContext(ctx, `INSERT INTO incident.finding_links(tenant_id,incident_id,finding_id) VALUES($1,$2,$3)`, b.TenantID, incidentID, findingID); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -52,7 +67,7 @@ func TestAssistantDerivedStatistics(t *testing.T) {
 	if !out.Exact || len(out.Rows) != 1 || out.Rows[0].Value != 120000 {
 		t.Fatalf("authorized mean: %+v", out)
 	}
-	if _, err := db.ExecContext(ctx, `INSERT INTO incident.records(tenant_id,incident_id,state,cluster_uid,namespace,resolved_at) VALUES($1,$2,'resolved',$3,'apps',$4)`, b.TenantID, uuid.New(), b.ClusterUID, now.Add(-time.Minute)); err != nil {
+	if _, err := db.ExecContext(ctx, `INSERT INTO incident.records(tenant_id,incident_id,state,cluster_uid,namespace,started_at,resolved_at) VALUES($1,$2,'resolved',$3,'apps',$4::timestamptz-interval '1 minute',$4)`, b.TenantID, uuid.New(), b.ClusterUID, now.Add(-time.Minute)); err != nil {
 		t.Fatal(err)
 	}
 	out = query("incidents.recovery-duration", "mean_recovery_ms")

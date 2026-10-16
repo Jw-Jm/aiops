@@ -11,6 +11,7 @@ import (
 	"ops-platform/internal/configregistry"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/modelprofile"
 	"ops-platform/internal/persistence"
 	"slices"
 	"strconv"
@@ -18,10 +19,11 @@ import (
 )
 
 type Repository struct {
-	Pool             persistence.TxBeginner
-	Trust            configregistry.SignatureVerifier
-	CurrentRCA       func(context.Context, Job) (int64, error)
-	AssistantEnabled bool
+	Pool                  persistence.TxBeginner
+	Trust                 configregistry.SignatureVerifier
+	CurrentRCA            func(context.Context, Job) (int64, error)
+	AssistantEnabled      bool
+	AssistantModelProfile *modelprofile.Profile
 }
 
 func raw(v any) []byte { b, _ := json.Marshal(v); return b }
@@ -371,6 +373,9 @@ func (r Repository) BeginCall(ctx context.Context, l Lease, c Call) (Step, error
 	var admissionError error
 	err := r.withLease(ctx, l, func(tx pgx.Tx, j Job) error {
 		if c.Model {
+			if err := r.validateModelReservation(j, c.Reserve); err != nil {
+				return err
+			}
 			var duplicate bool
 			if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name='model' AND args_digest=$3 AND (state='succeeded' OR (state='running' AND lease_generation=$4)))`, j.TenantID, j.JobID, c.ArgsDigest, l.Generation).Scan(&duplicate); err != nil {
 				return err

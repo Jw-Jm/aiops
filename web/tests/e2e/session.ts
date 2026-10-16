@@ -63,15 +63,21 @@ export async function passwordLogin(
 }
 export const test = base.extend<{ config: LiveInput }>({
   config: async ({}, use) => {
+    // Explicit skip beats an opaque fixture error: "not configured" is not a
+    // failure, so the reason stays visible in the report.
+    test.skip(
+      !process.env.OPS_WEB_QA_INPUT,
+      "需要外部 QA 输入（OPS_WEB_QA_INPUT）；凭据与环境 ID 不得进入仓库",
+    );
     await use(await input());
   },
   page: async ({ config }, use) => {
     const endpoint = process.env.OPS_WEB_QA_CDP;
-    if (!endpoint)
-      throw Error(
-        "Use CA-trusted, sandboxed QA Chromium with explicit CDP endpoint",
-      );
-    const browser = await chromium.connectOverCDP(endpoint);
+    test.skip(
+      !endpoint,
+      "需要 CA 可信的沙箱 Chromium CDP 端点（OPS_WEB_QA_CDP）",
+    );
+    const browser = await chromium.connectOverCDP(endpoint!);
     const context = await browser.newContext({
       viewport: { width: 1440, height: 900 },
     });

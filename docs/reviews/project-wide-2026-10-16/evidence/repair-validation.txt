@@ -1,0 +1,25 @@
+Baseline: main / 4dd81de8; uncommitted workspace repair, 2026-10-16.
+PASS go build ./...
+PASS go vet ./...
+PASS generated artifact reproducibility (including assistant-output.schema.json).
+PASS frontend tsc; Node SSE 5; vitest 23 files / 75 tests.
+PASS Python fault-chain unittest 17; cleanup unittest 2; source AST parse.
+PASS OpenAPI-bound runtime route registration; httpapi/app/contract/security after route change.
+PASS targeted core repair packages; Helm metrics architectures and pending installation stages; values schema rejection cases.
+PASS static migration gate; helper exclusion: exit=0, run=0, skip=0.
+FAIL broad Go suite: 4 internal/bundle tests and 1 cmd/opsctl test due to corresponding-source admission digest mismatch.
+FAIL runtime and migration source admission checks (arm64 default); raw output: repair-source-admission.txt.
+NOT RUN live PostgreSQL/cluster/BMC/model/browser/offline acceptance or full locked pytest suite.
+REMOTE READ-ONLY PROBE: SSH 192.168.0.63:22 timed out; no remote command ran.
+
+REMOTE RETRY: SSH 192.168.0.63:22 is reachable; BatchMode=yes, StrictHostKeyChecking=yes, ConnectTimeout=10; default user mssc rejected with Permission denied (publickey,password), exit 255. No remote command ran.
+
+REMOTE AUTHENTICATED RETRY: root@192.168.0.63:22 succeeded with user-provided credentials; exit 0. Read-only uname returned Linux; existing isolated directories /opt/ops-assistant-dev-20261012 and /data/ops-amd64-validation-20261010 confirmed. No deployment or environment mutation performed. Dynamic acceptance remains pending. Credentials were not written to repository files.
+
+REMOTE CURRENT-WORKSPACE VALIDATION (2026-10-16): /opt/ops-pwr-review-20261016; isolated databases; existing runtime working copy was not overwritten.
+35 selected PostgreSQL integration tests PASS, FAIL=0, SKIP=0, exit=0. Real PostgreSQL 17.11, OpenBao Transit, immutable cached SeaweedFS fixture. Includes forward migration to 43, roles/RLS, resource retirement, finding outbox delivery, atomic budgets, 8K/32K model reservations, risk acknowledgement errors and MCP state matrix.
+Source integration: TestAssistantActualCollectedSourcesAndCapacity PASS, exit=0; 84 actual collection cycles, 1340 metric observations, 1222 log observations, errors=0; 11 result groups and 4x25 concurrent source queries. Comparison test now checks declared direction plus absolute magnitude; raw failure retained.
+Independent DeepFlow HTTP oracle: 1000 responses, 50 HTTP 503, zero transport failures; source proof FAIL because completed HTTP metadata counts absent. Five-source gate remains unpassed.
+Python: uv sync --locked --offline succeeded; Python 3.12.14; uv run --locked --offline pytest -q => 84 passed, 2 dependency deprecation warnings.
+Latest Go build/vet, targeted repair packages, httpapi/app/contract/security and generated-output consistency passed. Actual make check exited 2 on unrenewed runtime source admission, after generated-output check passed. Both amd64 source admission checks exited 1.
+No commits, pushes or production deployment. Audit/Evidence databases and archive fixtures retained according to existing protection rules. Remote raw failures and final receipts are under evidence/remote-validation/.

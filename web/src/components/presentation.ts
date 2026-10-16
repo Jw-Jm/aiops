@@ -29,6 +29,7 @@ export const stateLabels: Record<string, string> = {
   partial: "结果不完整",
   degraded: "服务降级",
   conflicted: "证据冲突",
+  probable: "可能相关",
   unresolved: "根因未确定",
   disabled: "未启用",
   unverified: "待验收",

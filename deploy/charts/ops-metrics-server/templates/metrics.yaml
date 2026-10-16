@@ -76,7 +76,7 @@ spec:
     spec:
       serviceAccountName: {{ $name }}
       securityContext: {fsGroup: 1000, seccompProfile: {type: RuntimeDefault}}
-      nodeSelector: {kubernetes.io/os: linux, kubernetes.io/arch: {{ ternary "amd64" "arm64" (eq .Values.image "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2") }}}
+      nodeSelector: {kubernetes.io/os: linux, kubernetes.io/arch: {{ .Values.architecture }}}
       containers:
         - name: metrics-server
           image: {{ .Values.image | quote }}

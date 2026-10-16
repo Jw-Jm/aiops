@@ -3,8 +3,8 @@ package httpapi
 import (
 	"context"
 	"crypto/ed25519"
-	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"net/http"
@@ -19,7 +19,6 @@ import (
 	"ops-platform/internal/rca"
 	"slices"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -70,12 +69,11 @@ func (h *SP05Handlers) incidentPage(ctx context.Context, actor auth.RequestConte
 	query := r.URL.Query()
 	query.Del("cursor")
 	hash := finding.Hash([]string{r.URL.Path, query.Encode()})
-	digest := graph.ScopeDigest(scope)
+	cursorScope := graph.ScopeDigest([]any{actor.TenantID.String(), actor.Subject, scope})
 	after := ""
 	if token := r.URL.Query().Get("cursor"); token != "" {
-		raw, err := base64.RawURLEncoding.DecodeString(token)
-		var c sp05Cursor
-		if err != nil || json.Unmarshal(raw, &c) != nil || c.Query != hash || c.ScopeDigest != digest {
+		var c graphCursor
+		if h.GraphAPI == nil || len(h.GraphAPI.SigningKey) != ed25519.PrivateKeySize || decodeCursor(h.GraphAPI.SigningKey.Public().(ed25519.PublicKey), token, &c) != nil || c.QueryDigest != hash || c.ScopeDigest != cursorScope {
 			return nil, "", rca.ErrStale
 		}
 		after = c.After
@@ -167,8 +165,13 @@ func (h *SP05Handlers) incidentPage(ctx context.Context, actor auth.RequestConte
 	}
 	next := ""
 	if len(items) > limit {
-		raw, _ := json.Marshal(sp05Cursor{After: ids[limit-1], ScopeDigest: digest, Query: hash})
-		next = base64.RawURLEncoding.EncodeToString(raw)
+		if h.GraphAPI == nil || len(h.GraphAPI.SigningKey) != ed25519.PrivateKeySize {
+			return nil, "", errors.New("pagination signing unavailable")
+		}
+		next, err = encodeCursor(h.GraphAPI.SigningKey, graphCursor{After: ids[limit-1], ScopeDigest: cursorScope, QueryDigest: hash})
+		if err != nil {
+			return nil, "", err
+		}
 		items = items[:limit]
 	}
 	return items, next, nil
@@ -190,8 +193,6 @@ func currentRCAView(i incident.Incident, rev rca.Revision) any {
 	// separate and cannot recycle its old freshness as current causal evidence.
 	return map[string]any{"schemaVersion": "current-rca/v2", "revision": rev, "currentEligible": false, "baseEligible": eligible, "currentDegradedSources": append(reasons, "current-runtime-unverified"), "semantics": "frozen-revision-with-current-reference-authorization"}
 }
-
-var _ = strings.Compare
 
 // Current eligibility requires actual runtime checks. Historical archive reads
 // preserve the immutable evaluation but never recycle its old Graph freshness.

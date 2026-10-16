@@ -287,7 +287,9 @@ const (
 	ErrorEnvelopeCodePROFILECOMPONENTCONFLICT        ErrorEnvelopeCode = "PROFILE_COMPONENT_CONFLICT"
 	ErrorEnvelopeCodeRATELIMITED                     ErrorEnvelopeCode = "RATE_LIMITED"
 	ErrorEnvelopeCodeRISKACKCOMMANDMISMATCH          ErrorEnvelopeCode = "RISK_ACK_COMMAND_MISMATCH"
+	ErrorEnvelopeCodeRISKACKEXPIRED                  ErrorEnvelopeCode = "RISK_ACK_EXPIRED"
 	ErrorEnvelopeCodeRISKACKREQUIRED                 ErrorEnvelopeCode = "RISK_ACK_REQUIRED"
+	ErrorEnvelopeCodeRISKACKSCOPEMISMATCH            ErrorEnvelopeCode = "RISK_ACK_SCOPE_MISMATCH"
 	ErrorEnvelopeCodeSOURCEDEGRADED                  ErrorEnvelopeCode = "SOURCE_DEGRADED"
 	ErrorEnvelopeCodeSOURCENOTCONFIGURED             ErrorEnvelopeCode = "SOURCE_NOT_CONFIGURED"
 	ErrorEnvelopeCodeSTEPUPEXPIRED                   ErrorEnvelopeCode = "STEP_UP_EXPIRED"
@@ -354,7 +356,11 @@ func (e ErrorEnvelopeCode) Valid() bool {
 		return true
 	case ErrorEnvelopeCodeRISKACKCOMMANDMISMATCH:
 		return true
+	case ErrorEnvelopeCodeRISKACKEXPIRED:
+		return true
 	case ErrorEnvelopeCodeRISKACKREQUIRED:
+		return true
+	case ErrorEnvelopeCodeRISKACKSCOPEMISMATCH:
 		return true
 	case ErrorEnvelopeCodeSOURCEDEGRADED:
 		return true
@@ -1211,7 +1217,9 @@ const (
 	SP04ErrorEnvelopeV2CodePROFILECOMPONENTCONFLICT        SP04ErrorEnvelopeV2Code = "PROFILE_COMPONENT_CONFLICT"
 	SP04ErrorEnvelopeV2CodeRATELIMITED                     SP04ErrorEnvelopeV2Code = "RATE_LIMITED"
 	SP04ErrorEnvelopeV2CodeRISKACKCOMMANDMISMATCH          SP04ErrorEnvelopeV2Code = "RISK_ACK_COMMAND_MISMATCH"
+	SP04ErrorEnvelopeV2CodeRISKACKEXPIRED                  SP04ErrorEnvelopeV2Code = "RISK_ACK_EXPIRED"
 	SP04ErrorEnvelopeV2CodeRISKACKREQUIRED                 SP04ErrorEnvelopeV2Code = "RISK_ACK_REQUIRED"
+	SP04ErrorEnvelopeV2CodeRISKACKSCOPEMISMATCH            SP04ErrorEnvelopeV2Code = "RISK_ACK_SCOPE_MISMATCH"
 	SP04ErrorEnvelopeV2CodeSOURCEDEGRADED                  SP04ErrorEnvelopeV2Code = "SOURCE_DEGRADED"
 	SP04ErrorEnvelopeV2CodeSOURCENOTCONFIGURED             SP04ErrorEnvelopeV2Code = "SOURCE_NOT_CONFIGURED"
 	SP04ErrorEnvelopeV2CodeSOURCESCOPEUNVERIFIED           SP04ErrorEnvelopeV2Code = "SOURCE_SCOPE_UNVERIFIED"
@@ -1280,7 +1288,11 @@ func (e SP04ErrorEnvelopeV2Code) Valid() bool {
 		return true
 	case SP04ErrorEnvelopeV2CodeRISKACKCOMMANDMISMATCH:
 		return true
+	case SP04ErrorEnvelopeV2CodeRISKACKEXPIRED:
+		return true
 	case SP04ErrorEnvelopeV2CodeRISKACKREQUIRED:
+		return true
+	case SP04ErrorEnvelopeV2CodeRISKACKSCOPEMISMATCH:
 		return true
 	case SP04ErrorEnvelopeV2CodeSOURCEDEGRADED:
 		return true
@@ -15256,6 +15268,20 @@ func (response CreateCommandExecution202JSONResponse) VisitCreateCommandExecutio
 	return err
 }
 
+type CreateCommandExecution412JSONResponse ErrorEnvelope
+
+func (response CreateCommandExecution412JSONResponse) VisitCreateCommandExecutionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type CreateCommandExecutiondefaultJSONResponse struct {
 	Body       ErrorEnvelope
 	StatusCode int
@@ -15493,6 +15519,20 @@ func (response AcknowledgeCommandRisk200JSONResponse) VisitAcknowledgeCommandRis
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AcknowledgeCommandRisk412JSONResponse ErrorEnvelope
+
+func (response AcknowledgeCommandRisk412JSONResponse) VisitAcknowledgeCommandRiskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(412)
 	_, err := buf.WriteTo(w)
 	return err
 }

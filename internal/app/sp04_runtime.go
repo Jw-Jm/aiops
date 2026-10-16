@@ -533,15 +533,6 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 				}
 
 			} else {
-				var credential struct {
-					Username string `json:"username"`
-					Password string `json:"password"`
-				}
-				raw, err := os.ReadFile(source.CredentialFile)
-				if err != nil || json.Unmarshal(raw, &credential) != nil {
-					cancel()
-					return nil, errors.New("Redfish credential unavailable")
-				}
 				// Basic auth is injected only by Gofish's guarded GET transport.
 				if wrapped, ok := client.Transport.(tokenTransport); ok {
 					client.Transport = wrapped.base
@@ -550,7 +541,7 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 					cancel()
 					return nil, errors.New("Redfish scope unverified")
 				}
-				config := redfish.Config{Endpoint: source.Binding.Endpoint, Tenant: source.Binding.Tenant, Scope: source.Binding.ScopeMapping.Scopes["cluster"][0], SourceID: source.Binding.SourceID, Username: credential.Username, Password: credential.Password, Client: client}
+				config := redfish.Config{Endpoint: source.Binding.Endpoint, Tenant: source.Binding.Tenant, Scope: source.Binding.ScopeMapping.Scopes["cluster"][0], SourceID: source.Binding.SourceID, CredentialFile: source.CredentialFile, Client: client}
 				config.Diagnostics = c.SP05 != nil && c.SP05.Enabled
 				adapter = &redfish.Adapter{Binding: source.Binding, Config: config, Authorize: repo.Authorize, Mode: source.Mode}
 				candidate = &redfish.Adapter{Binding: source.Binding, Config: config, Authorize: repo.CheckBinding, Mode: source.Mode}

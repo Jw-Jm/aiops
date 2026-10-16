@@ -33,14 +33,10 @@ func NewTenantAdminRouter(service *tenant.Service, pool persistence.TxBeginner) 
 	router := chi.NewRouter()
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get(adminTenantsPath, handlers.getTenants)
 	router.With(auth.RequireRole(auth.PlatformAdmin)).Get(adminRoleBindingsPath, handlers.getRoleBindings)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "create-tenant"), requireTenantAdminStepUp).Post(adminTenantsPath, handlers.createTenant)
-	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantIdempotency(pool, "create-role-binding"), requireTenantAdminStepUp).Post(adminRoleBindingsPath, handlers.createRoleBinding)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "create-tenant")).Post(adminTenantsPath, handlers.createTenant)
+	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "create-role-binding")).Post(adminRoleBindingsPath, handlers.createRoleBinding)
 	router.With(auth.RequireRole(auth.PlatformAdmin), newTenantAdminStepUpIdempotency(pool, "set-operator-role-binding-status")).Patch(adminRoleBindingsPath+"/{bindingId}/status", handlers.setOperatorRoleBindingStatus)
 	return router, nil
-}
-
-func newTenantIdempotency(pool persistence.TxBeginner, operation string) func(http.Handler) http.Handler {
-	return tenantIdempotency(pool, operation, nil)
 }
 
 func newTenantAdminStepUpIdempotency(pool persistence.TxBeginner, operation string) func(http.Handler) http.Handler {

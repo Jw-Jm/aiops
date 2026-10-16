@@ -110,7 +110,31 @@ func NewFoundationHandlerWithSP04(pool persistence.TxBeginner, authenticator *au
 			writeTenantError(w, http.StatusNotFound, "NOT_FOUND", "endpoint is unavailable", false, request.RequestID)
 		}
 	})
-	return ObservabilityMiddleware(runtime.Logger, runtime.Metrics, runtime.Tracing)(authenticator.Middleware(dispatch)), nil
+	// Liveness and readiness are intentionally unauthenticated and data-free.
+	// Kubernetes must be able to probe them before any tenant identity exists,
+	// and the listener is bound before dependency initialisation completes, so a
+	// successful probe also proves the serving loop started accepting requests.
+	mux := http.NewServeMux()
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+	})
+	mux.HandleFunc("/readyz", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]string{"status": "ready"})
+	})
+	contractRouter, err := newContractRouter(dispatch)
+	if err != nil {
+		return nil, err
+	}
+	mux.Handle("/", authenticator.Middleware(contractRouter))
+	return ObservabilityMiddleware(runtime.Logger, runtime.Metrics, runtime.Tracing)(mux), nil
 }
 
 func createStepUpSession(w http.ResponseWriter, r *http.Request) {

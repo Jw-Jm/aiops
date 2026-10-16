@@ -193,6 +193,9 @@ func assessmentTx(ctx context.Context, tx pgx.Tx, a auth.RequestContext, id uuid
 	var b, r []byte
 	out.ID = id
 	err := tx.QueryRow(ctx, `SELECT binding,request_digest,risk,created_at,expires_at FROM action.assessments WHERE tenant_id=$1 AND assessment_id=$2 AND subject=$3`, a.TenantID, id, a.Subject).Scan(&b, &out.RequestDigest, &r, &out.CreatedAt, &out.ExpiresAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return out, ErrDenied
+	}
 	if err != nil {
 		return out, err
 	}
@@ -209,7 +212,7 @@ func (s Service) AcknowledgeRisk(ctx context.Context, a auth.RequestContext, id 
 			return err
 		}
 		if digest != assessment.RequestDigest {
-			return ErrAcknowledgement
+			return ErrAckScopeMismatch
 		}
 		p, _, err := profileTx(ctx, tx, a.TenantID, assessment.Binding.ProfileID, assessment.Binding.ProfileVersion)
 		if err != nil {
@@ -231,7 +234,7 @@ func (s Service) AcknowledgeRisk(ctx context.Context, a auth.RequestContext, id 
 		out = Acknowledgement{ID: uuid.Must(uuid.NewV7()), AssessmentID: id, RequestDigest: digest}
 		err = tx.QueryRow(ctx, `INSERT INTO action.risk_acknowledgements(tenant_id,acknowledgement_id,subject,target_canonical_id,shell,command_digest,risk_level,policy_version_id,confirmed_at,expires_at,assessment_id,binding,request_digest) SELECT $1,$2,$3,$4,$5,$6,$7,$8,clock_timestamp(),clock_timestamp()+interval '5 minutes',$9,$10,$11 WHERE EXISTS(SELECT 1 FROM action.assessments WHERE tenant_id=$1 AND assessment_id=$9 AND expires_at>clock_timestamp()) RETURNING expires_at`, a.TenantID, out.ID, a.Subject, assessment.Binding.Target, assessment.Binding.Shell, assessment.Binding.CommandDigest, assessment.Risk.OperationRisk, assessment.Binding.PolicyVersion, id, Canonical(assessment.Binding), digest).Scan(&out.ExpiresAt)
 		if errors.Is(err, pgx.ErrNoRows) {
-			return ErrAcknowledgement
+			return ErrAckExpired
 		}
 		if err != nil {
 			return err
@@ -246,18 +249,29 @@ func (s Service) AcknowledgeRisk(ctx context.Context, a auth.RequestContext, id 
 func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestContext, request CommandRequest, ackID uuid.UUID, key string) (Execution, error) {
 	var out Execution
 	err := s.with(ctx, a, func(tx pgx.Tx) error {
+		if ackID == uuid.Nil {
+			return ErrAckRequired
+		}
 		if s.Protector == nil {
 			return ErrDenied
 		}
 		var ackBinding []byte
 		var assessmentID uuid.UUID
-		err := tx.QueryRow(ctx, `SELECT binding,assessment_id FROM action.risk_acknowledgements WHERE tenant_id=$1 AND acknowledgement_id=$2 AND subject=$3 FOR UPDATE`, a.TenantID, ackID, a.Subject).Scan(&ackBinding, &assessmentID)
+		var owner string
+		var expired bool
+		err := tx.QueryRow(ctx, `SELECT binding,assessment_id,subject,expires_at<=clock_timestamp() FROM action.risk_acknowledgements WHERE tenant_id=$1 AND acknowledgement_id=$2 FOR UPDATE`, a.TenantID, ackID).Scan(&ackBinding, &assessmentID, &owner, &expired)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrAckRequired
+		}
 		if err != nil {
-			return ErrAcknowledgement
+			return err
+		}
+		if owner != a.Subject {
+			return ErrDenied
 		}
 		var confirmed Binding
 		if json.Unmarshal(ackBinding, &confirmed) != nil {
-			return ErrAcknowledgement
+			return ErrConflict
 		}
 		if request.OmitIncident {
 			request.IncidentID = confirmed.IncidentID
@@ -273,8 +287,11 @@ func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestCont
 			return err
 		}
 		b.PolicyVersion = confirmed.PolicyVersion
+		if b.CommandDigest != confirmed.CommandDigest {
+			return ErrAckCommandMismatch
+		}
 		if b.Digest() != confirmed.Digest() {
-			return ErrAcknowledgement
+			return ErrAckScopeMismatch
 		}
 		decision, err := s.authorize(ctx, tx, a, b, p, true)
 		if err != nil {
@@ -293,12 +310,15 @@ func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestCont
 		if d.Kind != persistence.DecisionProceed {
 			return ErrConflict
 		}
+		if expired {
+			return ErrAckExpired
+		}
 		tag, err := tx.Exec(ctx, `UPDATE action.risk_acknowledgements SET consumed_at=clock_timestamp() WHERE tenant_id=$1 AND acknowledgement_id=$2 AND consumed_at IS NULL AND expires_at>clock_timestamp() AND request_digest=$3`, a.TenantID, ackID, b.Digest())
 		if err != nil {
 			return err
 		}
 		if tag.RowsAffected() != 1 {
-			return ErrAcknowledgement
+			return ErrConflict
 		}
 		out = Execution{Iteration: 1, AckID: ackID, PolicyID: decision.DecisionID, ID: uuid.Must(uuid.NewV7()), Binding: b, RequestDigest: b.Digest(), State: "prepared", SuggestionMatch: "not_applicable", ComparatorVersion: ComparatorVersion, PostCheck: "inconclusive"}
 		if b.ActionPlanID != nil {

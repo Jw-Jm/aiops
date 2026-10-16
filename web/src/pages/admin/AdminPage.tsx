@@ -33,7 +33,7 @@ import {
 import { checked, requestOptions, ApiError } from "../../api/client";
 import { PageHeading } from "../../components/PageHeading";
 import { QueryState } from "../../components/QueryState";
-import { Details, JSONView } from "../../components/Details";
+import { Details } from "../../components/Details";
 import { Status } from "../../components/Status";
 import { record, list, text } from "../../components/data";
 export function AdminPage({

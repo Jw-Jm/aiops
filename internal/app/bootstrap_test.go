@@ -13,11 +13,13 @@ func TestBootstrapRequiresConfig(t *testing.T) {
 	}
 
 	constructors := []struct {
-		name string
-		new  func(AppConfig) (any, error)
+		name     string
+		new      func(AppConfig) (any, error)
+		requires []string
 	}{
-		{name: "API", new: func(config AppConfig) (any, error) { return NewAPI(config) }},
-		{name: "worker", new: func(config AppConfig) (any, error) { return NewWorker(config) }},
+		{name: "API", new: func(config AppConfig) (any, error) { return NewAPI(config) }, requires: []string{"database_url", "oidc_issuer_url", "profile_path"}},
+		// The worker never verifies OIDC tokens, so it must not require the issuer.
+		{name: "worker", new: func(config AppConfig) (any, error) { return NewWorker(config) }, requires: []string{"database_url", "profile_path"}},
 	}
 	missingFields := []struct {
 		name  string
@@ -31,11 +33,23 @@ func TestBootstrapRequiresConfig(t *testing.T) {
 
 	for _, constructor := range constructors {
 		for _, missing := range missingFields {
+			required := false
+			for _, field := range constructor.requires {
+				if field == missing.field {
+					required = true
+				}
+			}
 			t.Run(constructor.name+"/missing_"+missing.name, func(t *testing.T) {
 				config := validConfig
 				missing.clear(&config)
 
 				_, err := constructor.new(config)
+				if !required {
+					if err != nil {
+						t.Fatalf("field %q must not be required for %s: %v", missing.field, constructor.name, err)
+					}
+					return
+				}
 				if err == nil {
 					t.Fatal("expected a structured configuration error")
 				}

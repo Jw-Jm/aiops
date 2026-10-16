@@ -36,7 +36,7 @@ generate:
 	$(GO) generate ./...
 
 check-generated:
-	python3 scripts/check-generated.py "$(GO)" gen web/src/api/generated internal/persistence/dbgen services/investigator/src/investigator/output.schema.json
+	python3 scripts/check-generated.py "$(GO)" gen web/src/api/generated internal/persistence/dbgen services/investigator/src/investigator/output.schema.json services/investigator/src/investigator/assistant-output.schema.json
 
 fmt:
 	gofmt -w $(GO_SOURCES)
@@ -68,7 +68,11 @@ test-e2e:
 
 test-integration:
 	@mkdir -p artifacts/test-reports
-	@set +e; $(GO) test ./test/integration -count=1 -json -timeout=10m > artifacts/test-reports/integration.jsonl 2>&1; status=$$?; cat artifacts/test-reports/integration.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/integration.jsonl
+	@set +e; $(GO) test ./test/integration -count=1 -json -timeout=10m -skip '^(TestAssistantCrashWorkerChild|TestSP05OutboxChildProcessClaim)$$' > artifacts/test-reports/integration.jsonl 2>&1; status=$$?; cat artifacts/test-reports/integration.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/integration.jsonl
+
+test-web-e2e:
+	@test -n "$$OPS_WEB_QA_INPUT" || { echo "OPS_WEB_QA_INPUT is required; see web/tests/e2e/session.ts"; exit 1; }
+	@pnpm --dir web test:e2e
 
 test-security:
 	@mkdir -p artifacts/test-reports

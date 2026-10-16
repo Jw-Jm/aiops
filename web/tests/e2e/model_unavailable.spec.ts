@@ -1,12 +1,13 @@
 import { test, expect } from "./session";
+// Guard at file scope so a failing fixture can never hide an intended skip.
+test.skip(
+  process.env.OPS_WEB_QA_MODEL_OUTAGE !== "1",
+  "Requires explicitly injected and recoverable actual model connectivity outage",
+);
 test("actual model outage explains the failure while deterministic diagnosis and evidence remain available", async ({
   page,
   config,
 }) => {
-  test.skip(
-    process.env.OPS_WEB_QA_MODEL_OUTAGE !== "1",
-    "Requires explicitly injected and recoverable actual model connectivity outage",
-  );
   await page.goto(
     config.baseURL + "/incidents/" + config.incidentId + "?tab=investigation",
   );

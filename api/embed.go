@@ -2,9 +2,9 @@ package api
 
 import "embed"
 
-// Schemas contains the versioned public JSON Schema contracts shipped with the platform.
+// Schemas contains the versioned public contracts shipped with the platform.
 //
-//go:embed schemas events mcp/tools assistant-tools
+//go:embed schemas events mcp/tools assistant-tools openapi/platform-v1.yaml
 var Schemas embed.FS
 
 // AnalysisCatalog contains reviewed query semantics shipped with this binary.

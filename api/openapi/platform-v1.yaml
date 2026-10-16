@@ -808,6 +808,8 @@ components:
           - BUDGET_EXHAUSTED
           - POLICY_DENIED
           - RISK_ACK_REQUIRED
+          - RISK_ACK_EXPIRED
+          - RISK_ACK_SCOPE_MISMATCH
           - RISK_ACK_COMMAND_MISMATCH
           - STEP_UP_REQUIRED
           - STEP_UP_EXPIRED
@@ -1569,6 +1571,8 @@ components:
           - BUDGET_EXHAUSTED
           - POLICY_DENIED
           - RISK_ACK_REQUIRED
+          - RISK_ACK_EXPIRED
+          - RISK_ACK_SCOPE_MISMATCH
           - RISK_ACK_COMMAND_MISMATCH
           - STEP_UP_REQUIRED
           - STEP_UP_EXPIRED
@@ -5465,6 +5469,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessEnvelope'
           description: Successful response.
+        '412':
+          description: Risk acknowledgement is required or has expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
         default:
           content:
             application/json:
@@ -5634,6 +5644,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessEnvelope'
           description: Successful response.
+        '412':
+          description: Risk acknowledgement is required or has expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
         default:
           content:
             application/json:

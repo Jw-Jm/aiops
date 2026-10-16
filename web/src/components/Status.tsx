@@ -37,7 +37,11 @@ export function Status({ value, reason }: { value: unknown; reason?: string }) {
     "source_available",
     "archived_verified",
   ].includes(s);
-  const off = ["disabled", "unverified", "null", "not_applicable"].includes(s);
+  // Null/absent values are neutral, not warnings. Compare the value, not the
+  // rendered label ("空值（null）"), which never matched the old "null" entry.
+  const off =
+    value === null || value === undefined ||
+    ["disabled", "unverified", "not_applicable"].includes(s);
   const color = good
     ? "success"
     : off

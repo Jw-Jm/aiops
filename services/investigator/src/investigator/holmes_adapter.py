@@ -42,8 +42,6 @@ class PlatformTool(Tool):
         return StructuredToolResult(status=StructuredToolResultStatus.ERROR if result.get("state")=="failed" else StructuredToolResultStatus.SUCCESS,
                                     data={"untrusted_tool_result":model_tool_result(self.name, result)})
 
-from .mcp_bridge import MCPBridge
-
 def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-api-key"):
     tools=[]
     for definition in bridge.catalog():

@@ -112,7 +112,7 @@ func Consume(ctx context.Context, tx pgx.Tx, d finding.Delivery) error {
 					return err
 				}
 				i = Incident{SchemaVersion: "incident/v2", TenantID: d.TenantID.String(), IncidentID: uuid.Must(uuid.NewV7()).String(), State: "open", Revision: 1, Fingerprint: fingerprint, PolicyVersion: PolicyVersion, ClusterUID: f.ClusterUID, ResourceCanonicalID: f.ResourceCanonicalID, Namespace: f.Namespace, StartedAt: f.StartsAt, LastObservedAt: f.ObservedAt, CreatedAt: now, UpdatedAt: now}
-				_, err = tx.Exec(ctx, `INSERT INTO incident.records(tenant_id,incident_id,state,revision,fingerprint,policy_version,cluster_uid,resource_canonical_id,namespace,created_at,updated_at,started_at,last_observed_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$10,$11,$12)`, d.TenantID, i.IncidentID, i.State, i.Revision, i.Fingerprint, i.PolicyVersion, i.ClusterUID, i.ResourceCanonicalID, i.Namespace, now, f.StartsAt, f.ObservedAt)
+				_, err = tx.Exec(ctx, `INSERT INTO incident.records(tenant_id,incident_id,state,revision,fingerprint,policy_version,cluster_uid,resource_canonical_id,namespace,created_at,updated_at,started_at,last_observed_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$10,$11,$12)`, d.TenantID, i.IncidentID, i.State, i.Revision, i.Fingerprint, i.PolicyVersion, i.ClusterUID, i.ResourceCanonicalID, i.Namespace, now, reliableStart(f), f.ObservedAt)
 				if err != nil {
 					return err
 				}

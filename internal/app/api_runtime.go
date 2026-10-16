@@ -112,12 +112,12 @@ func (application *APIApp) Serve(ctx context.Context, listener net.Listener, run
 	if err != nil {
 		return err
 	}
-	stopSP06, err := StartSP06API(ctx, pool, sp04, trust)
+	stopSP06, err := StartSP06API(ctx, pool, sp04, trust, runtime)
 	if err != nil {
 		return err
 	}
 	defer stopSP06()
-	stopSP07, err := StartSP07API(ctx, pool, sp04, trust)
+	stopSP07, err := StartSP07API(ctx, pool, sp04, trust, runtime)
 	if err != nil {
 		return err
 	}

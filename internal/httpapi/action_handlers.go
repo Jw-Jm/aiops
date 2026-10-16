@@ -38,6 +38,14 @@ func actionError(w http.ResponseWriter, err error, rid string) {
 		status, code = 403, "FORBIDDEN"
 	case errors.Is(err, auth.ErrStepUpInvalid):
 		status, code = 403, "STEP_UP_REQUIRED"
+	case errors.Is(err, action.ErrAckRequired):
+		status, code = 412, "RISK_ACK_REQUIRED"
+	case errors.Is(err, action.ErrAckExpired):
+		status, code = 412, "RISK_ACK_EXPIRED"
+	case errors.Is(err, action.ErrAckScopeMismatch):
+		status, code = 409, "RISK_ACK_SCOPE_MISMATCH"
+	case errors.Is(err, action.ErrAckCommandMismatch):
+		status, code = 409, "RISK_ACK_COMMAND_MISMATCH"
 	case errors.Is(err, action.ErrAcknowledgement):
 		status, code = 409, "RISK_ACK_COMMAND_MISMATCH"
 	case errors.Is(err, action.ErrConflict):

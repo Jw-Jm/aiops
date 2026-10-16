@@ -321,6 +321,22 @@ export function AssistantPage() {
           description="当前环境需要先完成模型 Profile 和 Worker 能力准入。"
         />
       )}
+      {capabilities.error && (
+        <Alert
+          type="error"
+          title="无法读取助手能力信息"
+          description={
+            <>
+              <p>
+                当前无法确认模型 Profile、任务类型和来源能力，因此暂时无法创建会话。这不代表功能未启用。
+              </p>
+              <Button size="small" onClick={() => void capabilities.refetch()}>
+                重新加载能力信息
+              </Button>
+            </>
+          }
+        />
+      )}
       {session?.roles.includes("platform_admin") && <LegalHoldControl />}
       <Row gutter={16}>
         <Col xs={24} lg={7}>
@@ -427,6 +443,7 @@ export function AssistantPage() {
                   ]}
                 />
                 <Select
+                  aria-label="授权域"
                   value={domain}
                   onChange={setDomain}
                   options={[
@@ -442,6 +459,7 @@ export function AssistantPage() {
                 {domain === "operational" && (
                   <>
                     <Select
+                      aria-label="授权集群"
                       placeholder="选择授权集群"
                       value={cluster || undefined}
                       onChange={setCluster}
@@ -451,6 +469,7 @@ export function AssistantPage() {
                       }))}
                     />
                     <Input
+                      aria-label="命名空间子范围"
                       placeholder="命名空间子范围（空表示全部已授权命名空间）"
                       value={namespace}
                       onChange={(e) => setNamespace(e.target.value)}
@@ -671,7 +690,7 @@ export function AssistantPage() {
                                 `${String(source.datasetId)} / ${String(source.operation)} · ${String(source.collectorVersion)} · 覆盖 ${String(source.coverageFrom)} ～ ${String(source.coverageTo)}`,
                             )
                             .join("；")
-                        : "当前没有可用的指标/日志分析准入证明，或 Worker 不可用；目录存在不代表来源可查询。"
+                        : "当前没有可用的指标/日志分析准入证明，或 Worker 不可用；目录存在不代表来源可查询。若上方提示无法读取能力信息，则该状态未知。"
                     }
                   />
                 )}

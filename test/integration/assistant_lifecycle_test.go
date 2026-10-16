@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"ops-platform/internal/assistant"
 	"ops-platform/internal/investigation"
+	"ops-platform/internal/modelprofile"
 	"strings"
 	"testing"
 	"time"
@@ -186,5 +188,58 @@ func TestAssistantConversationLifecycle(t *testing.T) {
 	var incidentID *uuid.UUID
 	if err = db.QueryRowContext(ctx, `SELECT incident_id FROM investigation.jobs WHERE tenant_id=$1 AND job_id=$2`, b.TenantID, turn.JobID).Scan(&incidentID); err != nil || incidentID != nil {
 		t.Fatalf("invented Incident: %v %v", incidentID, err)
+	}
+}
+
+func TestAssistantModelProfileReservationInPostgreSQL(t *testing.T) {
+	ctx, db, pool, b := sp05Database(t)
+	policyVersion := sp06Policy(t, ctx, db, pool, b.TenantID)
+	apiPool, err := pgxpool.NewWithConfig(ctx, runtimePoolConfig(t, ctx, db, pool.Config().ConnConfig.ConnString(), "api_runtime_role"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer apiPool.Close()
+	for _, window := range []int{8192, 32768} {
+		t.Run(fmt.Sprint(window), func(t *testing.T) {
+			profile := modelprofile.Profile{Version: "reservation-fixture/v1", ContextWindow: window, OutputTokenLimit: 2048}
+			jobs := investigation.Repository{Pool: pool, AssistantEnabled: true, AssistantModelProfile: &profile}
+			repo := assistant.Repository{Pool: apiPool, Jobs: jobs, Admit: func(context.Context, assistant.Conversation, string) (assistant.Admission, error) {
+				return assistant.Admission{PolicyVersion: policyVersion, ModelProfileVersion: profile.Reference(), Budget: investigation.DefaultBudget()}, nil
+			}}
+			conversation, err := repo.Create(ctx, assistant.Conversation{TenantID: b.TenantID, OwnerSubject: "sp06-admin", Title: "Profile reservation fixture", Mode: "data_query", AuthorizationDomain: "audit", Binding: assistant.ConversationBinding{Timezone: "UTC"}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err = db.ExecContext(ctx, `INSERT INTO investigation.assistant_worker_capabilities(tenant_id,worker_id,model_profile_version,catalog_version,expires_at) VALUES($1,$2,$3,'assistant-tools/v2',clock_timestamp()+interval '1 minute')`, b.TenantID, fmt.Sprint(window), profile.Reference()); err != nil {
+				t.Fatal(err)
+			}
+			turn, err := repo.Submit(ctx, b.TenantID, conversation.ConversationID, "sp06-admin", fmt.Sprintf("profile-message-%d", window), assistant.SubmitMessage{Message: "统计操作", ExpectedConversationRevision: 1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			lease, err := jobs.Claim(ctx, b.TenantID, fmt.Sprint(window), time.Minute)
+			if err != nil || lease.JobID != turn.JobID {
+				t.Fatal("claim", err)
+			}
+			args := json.RawMessage(`{"requestDigest":"sha256:` + strings.Repeat("a", 64) + `"}`)
+			usage := investigation.Usage{ModelRequests: 1, InputTokens: int64(window), OutputTokens: 2048, ResultBytes: 65536}
+			if _, err = jobs.AllocateModel(ctx, lease, usage, args); err != nil {
+				t.Fatal("profile allocation", err)
+			}
+			job, err := jobs.Get(ctx, b.TenantID, turn.JobID)
+			if err != nil || job.Reserved.InputTokens != int64(window) {
+				t.Fatal("reservation differs from profile", job.Reserved, err)
+			}
+			changed := profile
+			changed.Version = "substituted/v1"
+			wrong := jobs
+			wrong.AssistantModelProfile = &changed
+			if _, err = wrong.AllocateModel(ctx, lease, usage, args); !errors.Is(err, investigation.ErrDenied) {
+				t.Fatal("profile substitution", err)
+			}
+			if err = repo.Cancel(ctx, b.TenantID, turn.TurnID, "sp06-admin", fmt.Sprintf("profile-cancel-%d", window)); err != nil {
+				t.Fatal(err)
+			}
+		})
 	}
 }

@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/httpapi"
 	"ops-platform/internal/persistence"
@@ -26,5 +25,3 @@ func persistenceSourceContext(ctx context.Context, pool persistence.TxBeginner, 
 		return tx.QueryRow(ctx, `SELECT s.cluster_id,c.cluster_uid,s.credential_revision FROM platform.source_registrations s JOIN platform.cluster_registrations c USING(tenant_id,cluster_id) WHERE s.tenant_id=$1 AND s.source_id=$2 AND s.revision=$3 AND s.status='active'`, b.TenantID, b.SourceID, b.RegistrationRevision).Scan(&b.ClusterID, &b.ClusterUID, &b.CredentialRevision)
 	})
 }
-
-var _ = json.Unmarshal

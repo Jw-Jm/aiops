@@ -7,7 +7,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pressly/goose/v3"
 	"ops-platform/internal/contract"
+	"ops-platform/internal/finding"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/incident"
+	"ops-platform/internal/integrations/kubernetes"
 	"ops-platform/internal/resource"
 	"ops-platform/internal/resourcestore"
 	"testing"
@@ -37,7 +40,7 @@ func TestSP04IdentityConflictFindingAndTerminalTombstone(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer pool.Close()
-	repo := resourcestore.Repository{Pool: pool}
+	repo := resourcestore.Repository{Pool: pool, ExpectedRevision: 1, BackendLogicalID: "kubernetes-a"}
 	ref := resource.SourceRef{Domain: "k8s", Tenant: tenant.String(), Scope: "cluster-a", APIGroup: "core", Kind: "Node", UID: "node-a", UUID: "550e8400-e29b-41d4-a716-446655440000", Name: "same-name", Serial: "duplicate-serial", SourceRegistrationID: source.String(), ObservedAt: time.Now().UTC()}
 	matched, err := repo.Resolve(ctx, ref)
 	if err != nil || matched.Status != resource.Matched {
@@ -60,13 +63,29 @@ func TestSP04IdentityConflictFindingAndTerminalTombstone(t *testing.T) {
 	if err = db.QueryRowContext(ctx, `SELECT payload FROM finding.records WHERE tenant_id=$1`, tenant).Scan(&raw); err != nil {
 		t.Fatal(err)
 	}
-	if err = contract.Validate("https://ops.local/schemas/finding-envelope/v1", raw); err != nil {
+	if err = contract.Validate("https://ops.local/schemas/finding/v2", raw); err != nil {
 		t.Fatal(err)
 	}
 	var payload map[string]any
 	json.Unmarshal(raw, &payload)
 	if payload["resourceCanonicalId"] != matched.CanonicalID.String() {
 		t.Fatal("conflict merged or lost observed identity")
+	}
+	if err := (finding.Service{Pool: pool}).RelayPass(ctx, tenant, incident.Consume, 10); err != nil {
+		t.Fatal("identity conflict did not reach incident consumer", err)
+	}
+	var delivered int
+	if err := db.QueryRowContext(ctx, `SELECT count(*) FROM finding.outbox WHERE tenant_id=$1 AND state='delivered'`, tenant).Scan(&delivered); err != nil || delivered != 1 {
+		t.Fatal("conflict outbox was not delivered", delivered, err)
+	}
+	// A fresh Worker has no process-local previous map. The complete empty
+	// native Node list must still retire its persisted pre-restart identity.
+	if err := repo.ReconcileNativeSnapshot(ctx, tenant.String(), source.String(), "cluster-a", kubernetes.Snapshot{GVR: kubernetes.GVR{Version: "v1", Resource: "nodes"}, State: kubernetes.GVRState{LastListCompletedAt: time.Now().UTC()}}); err != nil {
+		t.Fatal(err)
+	}
+	var retired bool
+	if err := db.QueryRowContext(ctx, `SELECT deleted_at IS NOT NULL FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2`, tenant, matched.CanonicalID.String()).Scan(&retired); err != nil || !retired {
+		t.Fatal("restart lost native deletion", err)
 	}
 	if err = repo.Retire(ctx, tenant, matched.CanonicalID.String()); err != nil {
 		t.Fatal(err)

@@ -256,13 +256,6 @@ export function GraphView({
   return (
     <>
       <EnvelopeMeta value={graph} />
-      {stale && (
-        <Alert
-          showIcon
-          type="warning"
-          title="拒绝展示旧 generation 图谱，请刷新观测"
-        />
-      )}
       {!allowed && (
         <Alert
           showIcon
@@ -290,7 +283,9 @@ export function GraphView({
         >
           适配窗口
         </Button>
-        <span>虚线：TTL / 有效期已过期</span>
+        <span>
+          虚线=动态关系（含未过期）；过期边额外淡化并标注已过期
+        </span>
       </Space>
       {mode === "graph" && allowed && !stale && (
         <div

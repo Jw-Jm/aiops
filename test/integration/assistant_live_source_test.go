@@ -257,8 +257,20 @@ func TestAssistantActualCollectedSourcesAndCapacity(t *testing.T) {
 	}
 	for _, id := range []string{"metrics.pod-cpu", "logs.records"} {
 		out := query(id, "compare")
-		if out.Exact && (len(out.Rows) != 3 || math.Abs(out.Rows[2].Value-(out.Rows[1].Value-out.Rows[0].Value)) > 1e-9) {
-			t.Fatal("comparison arithmetic")
+		if out.Exact {
+			if len(out.Rows) != 3 || out.Rows[0].Dimension != "baseline" || out.Rows[1].Dimension != "current" {
+				t.Fatal("comparison operands", id, out.Rows)
+			}
+			delta := out.Rows[1].Value - out.Rows[0].Value
+			direction := "unchanged"
+			if delta > 0 {
+				direction = "increase"
+			} else if delta < 0 {
+				direction = "decrease"
+			}
+			if out.Rows[2].Dimension != direction || math.Abs(out.Rows[2].Value-math.Abs(delta)) > 1e-9 {
+				t.Fatal("comparison direction or magnitude", id, out.Rows)
+			}
 		}
 		report["queries"].(map[string]any)[id+"/compare"] = out
 	}
