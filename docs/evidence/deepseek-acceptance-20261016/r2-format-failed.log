@@ -1,0 +1,245 @@
+=== RUN   TestAssistantChineseEvaluation
+2026/10/16 10:30:14 OK   00001_roles_and_schemas.sql (6.39ms)
+2026/10/16 10:30:14 goose: successfully migrated database to version: 1
+2026/10/16 10:30:14 OK   00002_platform_meta.sql (18.16ms)
+2026/10/16 10:30:14 OK   00003_finding.sql (7.3ms)
+2026/10/16 10:30:14 OK   00004_incident.sql (3.56ms)
+2026/10/16 10:30:14 OK   00005_investigation.sql (4.57ms)
+2026/10/16 10:30:14 OK   00006_action_command.sql (4.33ms)
+2026/10/16 10:30:14 OK   00007_audit.sql (6.73ms)
+2026/10/16 10:30:14 OK   00008_rls.sql (6.53ms)
+2026/10/16 10:30:14 OK   00009_idempotency_ledger.sql (4.42ms)
+2026/10/16 10:30:14 OK   00010_tenant_provisioning.sql (1.47ms)
+2026/10/16 10:30:14 OK   00011_source_registration_history.sql (3.65ms)
+2026/10/16 10:30:14 OK   00012_config_registry_lifecycle.sql (6.45ms)
+2026/10/16 10:30:14 OK   00013_audit_signed_segments.sql (6.73ms)
+2026/10/16 10:30:14 OK   00014_audit_segment_predecessors.sql (2.68ms)
+2026/10/16 10:30:14 OK   00015_source_schema_scope.sql (1.09ms)
+2026/10/16 10:30:14 OK   00016_cluster_registration_metadata.sql (2.41ms)
+2026/10/16 10:30:14 OK   00017_source_data_scope.sql (1.39ms)
+2026/10/16 10:30:14 OK   00018_sp04_resources_evidence.sql (14.18ms)
+2026/10/16 10:30:14 OK   00019_sp04_archive_ciphertext_bytes.sql (1.38ms)
+2026/10/16 10:30:14 OK   00020_sp04_request_ledger.sql (2.99ms)
+2026/10/16 10:30:14 OK   00021_sp04_archive_protection.sql (1.56ms)
+2026/10/16 10:30:14 OK   00022_sp04_legal_hold_dependencies.sql (814.36µs)
+2026/10/16 10:30:14 OK   00023_sp04_archive_query_intent.sql (1.49ms)
+2026/10/16 10:30:14 OK   00024_sp05_finding_incident.sql (24.03ms)
+2026/10/16 10:30:14 OK   00025_sp05_incident_event_time.sql (964.63µs)
+2026/10/16 10:30:14 OK   00026_sp05_source_binding_lock.sql (1.26ms)
+2026/10/16 10:30:14 OK   00027_sp05_rca_and_poll.sql (6.65ms)
+2026/10/16 10:30:14 OK   00028_sp05_operator_lock.sql (1.42ms)
+2026/10/16 10:30:14 OK   00029_sp05_evidence_links.sql (3.03ms)
+2026/10/16 10:30:14 OK   00030_sp05_recipe_fence.sql (980.08µs)
+2026/10/16 10:30:14 OK   00031_sp05_rca_postcheck.sql (742.83µs)
+2026/10/16 10:30:14 OK   00032_sp05_transport_audit.sql (855.12µs)
+2026/10/16 10:30:14 OK   00033_sp05_poll_resolution_clock.sql (1.27ms)
+2026/10/16 10:30:14 OK   00034_sp06_investigation_ledger.sql (16.31ms)
+2026/10/16 10:30:14 OK   00035_sp06_admission_data_classes.sql (1.15ms)
+2026/10/16 10:30:14 OK   00036_sp07_command_binding.sql (16.94ms)
+2026/10/16 10:30:14 OK   00037_sp07_worker_authority.sql (1.28ms)
+2026/10/16 10:30:14 OK   00038_sp08_safe_step_input_summary.sql (993.43µs)
+2026/10/16 10:30:14 OK   00039_assistant_conversations.sql (26.4ms)
+2026/10/16 10:30:14 OK   00040_assistant_job_v3.sql (13.71ms)
+2026/10/16 10:30:14 OK   00041_assistant_binding.sql (2.7ms)
+2026/10/16 10:30:14 OK   00042_assistant_retention.sql (4.61ms)
+2026/10/16 10:30:14 OK   00043_resource_observations.sql (6.35ms)
+2026/10/16 10:30:14 goose: successfully migrated database to version: 43
+    assistant_real_model_test.go:101: external acceptance: deepseek-flash via api.deepseek.com; fixture profile, paid upstream; original 16k/2048/120s limits retained
+2026/10/16 10:30:22 ERROR investigator dispatch failed reason=MODEL_REQUEST_REJECTED
+    assistant_evaluation_test.go:260: evaluation repeat=1 case=zh-001 group=query runState=completed elapsed=2.556s
+2026/10/16 10:30:23 ERROR investigator dispatch failed reason=MODEL_REQUEST_REJECTED
+    assistant_evaluation_test.go:260: evaluation repeat=1 case=zh-002 group=diagnosis runState=completed elapsed=1.032s
+2026/10/16 10:30:24 ERROR investigator dispatch failed reason=MODEL_REQUEST_REJECTED
+    assistant_evaluation_test.go:260: evaluation repeat=1 case=zh-003 group=diagnosis runState=completed elapsed=1.028s
+2026/10/16 10:30:25 ERROR investigator dispatch failed reason=MODEL_REQUEST_REJECTED
+2026/10/16 10:30:26 ERROR investigator dispatch failed reason=MODEL_REQUEST_REJECTED
+    assistant_evaluation_test.go:260: evaluation repeat=1 case=zh-004 group=multiturn runState=completed elapsed=2.053s
+    assistant_evaluation_test.go:260: evaluation repeat=1 case=zh-005 group=clarification runState=completed elapsed=266ms
+    assistant_real_model_test.go:167: investigator diagnostics
+        [1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+        LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+        [1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+        ERROR:root:LLM call failed on model=openai/deepseek-flash (streaming iteration 1): ModelCallError: MODEL_REQUEST_REJECTED
+        Traceback (most recent call last):
+          File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/budget.py", line 102, in completion
+            raise ModelCallError(kind) from None
+        investigator.budget.ModelCallError: MODEL_REQUEST_REJECTED
+        investigator-model-failure MODEL_REQUEST_REJECTED
+        investigator-failure ModelCallError /assistant-src/investigator/worker.py 85
+        investigator-failure ModelCallError /assistant-src/investigator/holmes_adapter.py 70
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        investigator-failure ModelCallError /assistant-src/investigator/budget.py 102
+
+        [1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+        LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+        [1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+        ERROR:root:LLM call failed on model=openai/deepseek-flash (streaming iteration 1): ModelCallError: MODEL_REQUEST_REJECTED
+        Traceback (most recent call last):
+          File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/budget.py", line 102, in completion
+            raise ModelCallError(kind) from None
+        investigator.budget.ModelCallError: MODEL_REQUEST_REJECTED
+        investigator-model-failure MODEL_REQUEST_REJECTED
+        investigator-failure ModelCallError /assistant-src/investigator/worker.py 85
+        investigator-failure ModelCallError /assistant-src/investigator/holmes_adapter.py 70
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        investigator-failure ModelCallError /assistant-src/investigator/budget.py 102
+
+        [1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+        LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+        [1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+        ERROR:root:LLM call failed on model=openai/deepseek-flash (streaming iteration 1): ModelCallError: MODEL_REQUEST_REJECTED
+        Traceback (most recent call last):
+          File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/budget.py", line 102, in completion
+            raise ModelCallError(kind) from None
+        investigator.budget.ModelCallError: MODEL_REQUEST_REJECTED
+        investigator-model-failure MODEL_REQUEST_REJECTED
+        investigator-failure ModelCallError /assistant-src/investigator/worker.py 85
+        investigator-failure ModelCallError /assistant-src/investigator/holmes_adapter.py 70
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        investigator-failure ModelCallError /assistant-src/investigator/budget.py 102
+
+        [1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+        LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+        [1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+        ERROR:root:LLM call failed on model=openai/deepseek-flash (streaming iteration 1): ModelCallError: MODEL_REQUEST_REJECTED
+        Traceback (most recent call last):
+          File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/budget.py", line 102, in completion
+            raise ModelCallError(kind) from None
+        investigator.budget.ModelCallError: MODEL_REQUEST_REJECTED
+        investigator-model-failure MODEL_REQUEST_REJECTED
+        investigator-failure ModelCallError /assistant-src/investigator/worker.py 85
+        investigator-failure ModelCallError /assistant-src/investigator/holmes_adapter.py 70
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        investigator-failure ModelCallError /assistant-src/investigator/budget.py 102
+
+        [1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+        LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+        [1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+        ERROR:root:LLM call failed on model=openai/deepseek-flash (streaming iteration 1): ModelCallError: MODEL_REQUEST_REJECTED
+        Traceback (most recent call last):
+          File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/budget.py", line 102, in completion
+            raise ModelCallError(kind) from None
+        investigator.budget.ModelCallError: MODEL_REQUEST_REJECTED
+        investigator-model-failure MODEL_REQUEST_REJECTED
+        investigator-failure ModelCallError /assistant-src/investigator/worker.py 85
+        investigator-failure ModelCallError /assistant-src/investigator/holmes_adapter.py 70
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        investigator-failure ModelCallError /assistant-src/investigator/budget.py 102
+
+    migrations_test.go:436: retained owned integration database=sp03_mig_9c08462d4bf54d69be6b4df0b45b3aa0 test=TestAssistantChineseEvaluation reason=audit.records; no automatic protected cleanup
+--- PASS: TestAssistantChineseEvaluation (14.77s)
+=== RUN   TestAssistantRealModelMCP
+2026/10/16 10:30:28 OK   00001_roles_and_schemas.sql (5.63ms)
+2026/10/16 10:30:28 goose: successfully migrated database to version: 1
+2026/10/16 10:30:28 OK   00002_platform_meta.sql (17.6ms)
+2026/10/16 10:30:28 OK   00003_finding.sql (6.53ms)
+2026/10/16 10:30:29 OK   00004_incident.sql (4.34ms)
+2026/10/16 10:30:29 OK   00005_investigation.sql (4.32ms)
+2026/10/16 10:30:29 OK   00006_action_command.sql (4.03ms)
+2026/10/16 10:30:29 OK   00007_audit.sql (6.71ms)
+2026/10/16 10:30:29 OK   00008_rls.sql (6.46ms)
+2026/10/16 10:30:29 OK   00009_idempotency_ledger.sql (4.47ms)
+2026/10/16 10:30:29 OK   00010_tenant_provisioning.sql (1.46ms)
+2026/10/16 10:30:29 OK   00011_source_registration_history.sql (3.52ms)
+2026/10/16 10:30:29 OK   00012_config_registry_lifecycle.sql (6.47ms)
+2026/10/16 10:30:29 OK   00013_audit_signed_segments.sql (6.39ms)
+2026/10/16 10:30:29 OK   00014_audit_segment_predecessors.sql (2.76ms)
+2026/10/16 10:30:29 OK   00015_source_schema_scope.sql (1.15ms)
+2026/10/16 10:30:29 OK   00016_cluster_registration_metadata.sql (2.56ms)
+2026/10/16 10:30:29 OK   00017_source_data_scope.sql (1.51ms)
+2026/10/16 10:30:29 OK   00018_sp04_resources_evidence.sql (13.45ms)
+2026/10/16 10:30:29 OK   00019_sp04_archive_ciphertext_bytes.sql (974.11µs)
+2026/10/16 10:30:29 OK   00020_sp04_request_ledger.sql (2.24ms)
+2026/10/16 10:30:29 OK   00021_sp04_archive_protection.sql (1.11ms)
+2026/10/16 10:30:29 OK   00022_sp04_legal_hold_dependencies.sql (808.75µs)
+2026/10/16 10:30:29 OK   00023_sp04_archive_query_intent.sql (856.4µs)
+2026/10/16 10:30:29 OK   00024_sp05_finding_incident.sql (15.26ms)
+2026/10/16 10:30:29 OK   00025_sp05_incident_event_time.sql (875.46µs)
+2026/10/16 10:30:29 OK   00026_sp05_source_binding_lock.sql (1.07ms)
+2026/10/16 10:30:29 OK   00027_sp05_rca_and_poll.sql (5.8ms)
+2026/10/16 10:30:29 OK   00028_sp05_operator_lock.sql (978.3µs)
+2026/10/16 10:30:29 OK   00029_sp05_evidence_links.sql (2.59ms)
+2026/10/16 10:30:29 OK   00030_sp05_recipe_fence.sql (827.43µs)
+2026/10/16 10:30:29 OK   00031_sp05_rca_postcheck.sql (697.96µs)
+2026/10/16 10:30:29 OK   00032_sp05_transport_audit.sql (843.67µs)
+2026/10/16 10:30:29 OK   00033_sp05_poll_resolution_clock.sql (1.22ms)
+2026/10/16 10:30:29 OK   00034_sp06_investigation_ledger.sql (16.16ms)
+2026/10/16 10:30:29 OK   00035_sp06_admission_data_classes.sql (1.13ms)
+2026/10/16 10:30:29 OK   00036_sp07_command_binding.sql (15.59ms)
+2026/10/16 10:30:29 OK   00037_sp07_worker_authority.sql (1.41ms)
+2026/10/16 10:30:29 OK   00038_sp08_safe_step_input_summary.sql (1.13ms)
+2026/10/16 10:30:29 OK   00039_assistant_conversations.sql (15.73ms)
+2026/10/16 10:30:29 OK   00040_assistant_job_v3.sql (8.05ms)
+2026/10/16 10:30:29 OK   00041_assistant_binding.sql (2.14ms)
+2026/10/16 10:30:29 OK   00042_assistant_retention.sql (4.04ms)
+2026/10/16 10:30:29 OK   00043_resource_observations.sql (6.55ms)
+2026/10/16 10:30:29 goose: successfully migrated database to version: 43
+    assistant_real_model_test.go:101: external acceptance: deepseek-flash via api.deepseek.com; fixture profile, paid upstream; original 16k/2048/120s limits retained
+2026/10/16 10:30:36 ERROR investigator dispatch failed reason=MODEL_REQUEST_REJECTED
+    assistant_real_model_test.go:281: actual model turn state=failed error=MODEL_REQUEST_REJECTED
+    assistant_real_model_test.go:167: investigator diagnostics
+        [1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+        LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+        [1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+        ERROR:root:LLM call failed on model=openai/deepseek-flash (streaming iteration 1): ModelCallError: MODEL_REQUEST_REJECTED
+        Traceback (most recent call last):
+          File "/usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py", line 1216, in call_stream
+            full_response = self.llm.completion(
+                            ^^^^^^^^^^^^^^^^^^^^
+          File "/assistant-src/investigator/budget.py", line 102, in completion
+            raise ModelCallError(kind) from None
+        investigator.budget.ModelCallError: MODEL_REQUEST_REJECTED
+        investigator-model-failure MODEL_REQUEST_REJECTED
+        investigator-failure ModelCallError /assistant-src/investigator/worker.py 85
+        investigator-failure ModelCallError /assistant-src/investigator/holmes_adapter.py 70
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/sentry_sdk/tracing_utils.py 1154
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 657
+        investigator-failure ModelCallError /usr/local/lib/python3.12/site-packages/holmes/core/tool_calling_llm.py 1216
+        investigator-failure ModelCallError /assistant-src/investigator/budget.py 102
+
+    migrations_test.go:436: retained owned integration database=sp03_mig_7c4142699b29491596af0ff3191cb92d test=TestAssistantRealModelMCP reason=audit.records; no automatic protected cleanup
+--- FAIL: TestAssistantRealModelMCP (10.34s)
+FAIL
