@@ -3,6 +3,7 @@ package deepflow
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -241,5 +242,18 @@ func TestDetailByteBudgetRetainsOnlyWholeScopedObservations(t *testing.T) {
 	got, err = adapter.Query(t.Context(), q)
 	if err != nil || len(got.Evidence) != 0 || got.Freshness != "unavailable" {
 		t.Fatal("oversized single row emitted", got, err)
+	}
+}
+
+func TestDetailPreservesNativeIdentityDeadline(t *testing.T) {
+	now := time.Now().UTC()
+	binding := evidence.Binding{Tenant: "tenant-a", SourceID: "df", Endpoint: "http://127.0.0.1:1", ScopeMapping: datascope.Mapping{Scopes: map[string][]string{"organization": {"1"}, "cluster": {"cluster-a"}, "namespace": {"apps"}}}}
+	adapter, err := New(binding, http.DefaultClient, expiredPairMapping{}, func(context.Context, evidence.Binding) error { return nil }, false, "fixture_only")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = adapter.Query(t.Context(), evidence.Query{Template: "GetResourceNetworkHealth", ResourceCanonicalID: "target", From: now.Add(-time.Minute), To: now, Limit: 10})
+	if !errors.Is(err, evidence.ErrScopeUnverified) || !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatal("native deadline was flattened to an unexplained scope rejection", err)
 	}
 }

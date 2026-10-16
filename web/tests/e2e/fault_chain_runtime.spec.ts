@@ -26,12 +26,20 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
     viewport: { width: 1440, height: 1000 },
   });
   let token = "",
-    streams = 0;
+    streams = 0,
+    retainedReads = 0,
+    capabilityReads = 0;
   const page = await context.newPage();
   page.setDefaultTimeout(30000);
   page.on("request", (r) => {
     if (r.url().includes("/api/")) token = r.headers().authorization || token;
     if (r.url().includes("/events")) streams++;
+    if (r.url().includes("/assistant/capabilities")) capabilityReads++;
+    if (
+      r.method() === "GET" &&
+      /\/(query-results|source-steps)\//.test(r.url())
+    )
+      retainedReads++;
   });
   async function login(p: any, user: any) {
     await p.goto(base + "/assistant");
@@ -133,10 +141,10 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
       .click();
     await page
       .getByRole("textbox", { name: "故障开始（UTC）", exact: true })
-      .fill(from.slice(0, 19));
+      .fill(from.slice(0, 19).replace(/:00$/, ""));
     await page
       .getByRole("textbox", { name: "故障结束（UTC）", exact: true })
-      .fill(to.slice(0, 19));
+      .fill(to.slice(0, 19).replace(/:00$/, ""));
     await page
       .getByRole("checkbox", { name: "与前一等长窗口比较，间隔 2 分钟" })
       .uncheck();
@@ -177,9 +185,20 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
     );
     expect(chainResponse.status()).toBe(200);
     const chain = (await chainResponse.json()).data;
+    expect(Date.parse(chain.request.fault.from)).toBe(
+      proof.window.fromUnix * 1000,
+    );
+    expect(Date.parse(chain.request.fault.to)).toBe(proof.window.toUnix * 1000);
     await writeFile(
       privateDir + "/browser-collection-" + turn.turnId + ".json",
-      JSON.stringify({ turnId: turn.turnId, answer: complete.answer, chain }),
+      JSON.stringify({
+        turnId: turn.turnId,
+        answer: complete.answer,
+        chain,
+        streams,
+        retainedReads,
+        capabilityReads,
+      }),
       { mode: 0o600 },
     );
     expect(chain.evidenceRefs.length).toBeGreaterThan(0);
@@ -211,6 +230,21 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
       expect(result.status()).toBe(200);
       const query = (await result.json()).data.result;
       if (!query.datasetId.startsWith("network.")) continue;
+      expect(Date.parse(query.timeRange.from)).toBe(
+        proof.window.fromUnix * 1000,
+      );
+      expect(Date.parse(query.timeRange.to)).toBe(proof.window.toUnix * 1000);
+      if (query.networkContext.selection.direction === "incoming") {
+        expect(query.exact).toBe(false);
+        expect(query.status).toBe("no_data");
+        expect(query.rows).toEqual([]);
+        expect(
+          query.statistics.find((s: any) => s.key === "current.responses")
+            .value,
+        ).toBe(0);
+        continue;
+      }
+      expect(query.networkContext.selection.direction).toBe("outgoing");
       expect(query.exact).toBe(true);
       if (!query.statistics.some((s: any) => s.key === "current.responses"))
         continue;
@@ -267,7 +301,10 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
     expect([403, 404]).toContain(foreign.status());
     await adminContext.close();
     await writeFile(
-      privateDir + "/browser-receipt.json",
+      privateDir +
+        (process.env.OPS_FAULT_CHAIN_DEFER_RECEIPT === "1"
+          ? "/fault-chain-receipt-" + turn.turnId + ".json"
+          : "/browser-receipt.json"),
       JSON.stringify({
         passed: true,
         runtimeId: api.runtimeId,
@@ -287,6 +324,8 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
         explanationDraftUsesPublishedContext: true,
         evidenceUnchangedAfterDraft: true,
         streams,
+        retainedReads,
+        capabilityReads,
       }),
       { mode: 0o600 },
     );

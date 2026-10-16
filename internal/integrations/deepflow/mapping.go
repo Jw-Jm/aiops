@@ -20,9 +20,13 @@ func (m FrozenMappings) ByCanonical(_ context.Context, id string) (Endpoint, err
 	return e, nil
 }
 func (m FrozenMappings) ByBackend(_ context.Context, id uint64) (Endpoint, error) {
+	return lookupBackendEndpoint(m, id)
+}
+
+func lookupBackendEndpoint(endpoints map[string]Endpoint, id uint64) (Endpoint, error) {
 	var found Endpoint
 	count := 0
-	for _, e := range m {
+	for _, e := range endpoints {
 		if e.PodID == id {
 			count++
 			found = e

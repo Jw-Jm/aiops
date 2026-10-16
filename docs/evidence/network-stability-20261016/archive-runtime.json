@@ -1,0 +1,160 @@
+{
+  "ancillaryFixtures": [
+    "tenant/role/PKI bootstrap",
+    "TLS/IAM archive backend"
+  ],
+  "authorizationRevocation": true,
+  "context": {
+    "sourceSteps": [
+      {
+        "stepId": "01a14236-fc10-797b-85b0-6d46e5562533",
+        "tool": "get_dependencies",
+        "canonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+        "contentDigest": "sha256:e60c28b4cfc37042f2c40a1540f7a791d915eddf986f4976ad710e4149a04eec"
+      }
+    ],
+    "schemaVersion": "fault-chain-context/v1",
+    "ruleVersion": "fault-chain-rules/v1",
+    "request": {
+      "schemaVersion": "fault-chain-request/v1",
+      "targetCanonicalId": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "fault": {
+        "from": "2026-10-16T00:28:00Z",
+        "to": "2026-10-16T00:28:05Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "maxEdges": 4
+    },
+    "asOf": "2026-10-16T00:57:44.607750788Z",
+    "status": "partial",
+    "edges": [
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+          "kind": "communicates_with",
+          "provenance": {
+            "sourceRegistrationId": "4143c03f-fd95-4c9d-bd96-2074224c05ef",
+            "ruleVersion": "deepflow-v7.2.0/GetResourceNetworkHealth",
+            "sourceValues": null,
+            "observedAt": "2026-10-16T00:56:15Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-16T00:56:15Z",
+          "validFrom": "2026-10-16T00:56:15Z",
+          "ttl": 300
+        },
+        "relationDigest": "sha256:56b7b8094ee13bbe9eb466a4ed66f07aea27e98f014b3dab6e6d5b17bf9cab5b",
+        "callDirection": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605 → k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/d5c42e77-453b-43d0-a541-b266968a1aa2",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [
+          "01a14237-0095-76a2-abcb-769587a14185",
+          "01a14237-03b4-762c-b7d4-faf7e00de866"
+        ],
+        "observations": [
+          {
+            "ruleId": "R1/observed-http-5xx",
+            "reason": "合格完成响应中观察到 HTTP 5xx，支持调查响应异常；缺少可用基线及服务端自身证据，不能确认具体原因。",
+            "supports": [
+              "01a14236-feb7-78af-8227-f0553971cc2b"
+            ],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a14237-0095-76a2-abcb-769587a14185",
+                "factId": "sha256:6f822ca59eb6bb484e79e69c6a9007339c5c1d65115e2826e6e36daff4c045b2"
+              }
+            ]
+          },
+          {
+            "ruleId": "observation/v1",
+            "reason": "已提交的网络观测；未证明故障原因。",
+            "supports": [],
+            "conflicts": [],
+            "factRefs": [
+              {
+                "queryResultId": "01a14237-03b4-762c-b7d4-faf7e00de866",
+                "factId": "sha256:de5732e61eb4328b305c87eaaf587cd2f16ad2a3038c909234bddc629b9c220d"
+              }
+            ]
+          }
+        ],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      },
+      {
+        "relation": {
+          "from": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "to": "k8s+v1://2984df90-08c9-4a6d-8e32-8a7ec5f41db1/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/d85a8149-2364-47f4-bbc0-26b65bfb83e2",
+          "kind": "managed_by",
+          "provenance": {
+            "sourceRegistrationId": "4e1ed555-7613-4304-acb7-2d0ee086c58d",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-16T00:57:28.192064669Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-16T00:57:28.192064669Z",
+          "validFrom": "2026-10-16T00:57:28.192064669Z",
+          "ttl": 0
+        },
+        "relationDigest": "sha256:c2c571df9beff9bce256c5ff80ed80fae2fa67dcd1bbd3b33abc5f3d456a8b81",
+        "callDirection": "unknown",
+        "temporalAssessment": "unreliable",
+        "comparisonStatus": "baseline_missing",
+        "queryResultRefs": [],
+        "observations": [],
+        "missingEvidence": [
+          "causal_mechanism_unverified",
+          "clock_and_event_time_unverified",
+          "historical_relation_unverified",
+          "change_source_not_checked",
+          "shared_resource_cause_not_checked",
+          "network_window_statistics"
+        ],
+        "nextChecks": [
+          "核对两端应用日志与依赖自身状态",
+          "检查符合范围的 Node 与变更证据"
+        ]
+      }
+    ],
+    "queryResultRefs": [
+      "01a14237-0095-76a2-abcb-769587a14185",
+      "01a14237-03b4-762c-b7d4-faf7e00de866"
+    ],
+    "evidenceRefs": [
+      "01a14236-feb7-78af-8227-f0553971cc2b",
+      "01a14237-023e-7bab-b1cd-f14d3f2b86c4"
+    ],
+    "missingEvidence": []
+  },
+  "killedGeneration": 0,
+  "modelCalls": 0,
+  "modelEndpointOffline": true,
+  "modelExplanation": {
+    "attempted": false
+  },
+  "modelKeyMissing": true,
+  "modelQualityAcceptance": false,
+  "multiCallerScenario": "",
+  "nativePodUid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+  "passed": true,
+  "processRecovery": false,
+  "schemaVersion": "fault-chain-runtime-acceptance/v1",
+  "sharedNativeChecks": [],
+  "turnId": "01a14236-f028-7411-9d25-0d5d4613584b",
+  "validatedWindows": {
+    "network.http-5xx-rate/fault": true,
+    "network.http-response-time/fault": true
+  }
+}

@@ -185,6 +185,23 @@ func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation
 			}
 			return 1
 		}
+		if a.Kind == "communicates_with" && b.Kind == "communicates_with" {
+			peer := func(r resource.Relation) string {
+				if r.From == request.TargetCanonicalID {
+					return r.To
+				}
+				return r.From
+			}
+			if order := slices.Compare([]byte(peer(a)), []byte(peer(b))); order != 0 {
+				return order
+			}
+			if (a.From == request.TargetCanonicalID) != (b.From == request.TargetCanonicalID) {
+				if a.From == request.TargetCanonicalID {
+					return -1
+				}
+				return 1
+			}
+		}
 		return slices.Compare([]byte(graph.ScopeDigest(a)), []byte(graph.ScopeDigest(b)))
 	})
 	seen := map[string]bool{}
@@ -212,6 +229,14 @@ func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation
 			}
 			s := n.Selection
 			if !((s.TargetCanonicalID == r.From && s.PeerCanonicalID == r.To) || (s.TargetCanonicalID == r.To && s.PeerCanonicalID == r.From)) {
+				continue
+			}
+			// Each directed relation keeps its own observation population.
+			from, to := s.TargetCanonicalID, s.PeerCanonicalID
+			if s.Direction == "incoming" {
+				from, to = to, from
+			}
+			if r.Kind == "communicates_with" && s.Direction != "either" && (r.From != from || r.To != to) {
 				continue
 			}
 			if !request.Allows(q.Result.TimeRange) || q.Result.ComparisonTimeRange != nil && !request.Allows(q.Result.ComparisonTimeRange) {

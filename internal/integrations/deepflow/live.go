@@ -466,11 +466,25 @@ func (m *LiveMapper) tagID(ctx context.Context, tag, where string) (uint64, erro
 	return id, nil
 }
 
-// ValidateCurrent rechecks native UID/container lifetime once for the whole
-// bounded result, rather than re-resolving every row through the backend.
-func (m *LiveMapper) ValidateCurrent(ctx context.Context) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+// beginQuery uses a request-local mapping. Its native snapshot encloses all
+// backend and row reads; the final check validates that same snapshot.
+func (m *LiveMapper) beginQuery(ctx context.Context) (map[string]Endpoint, string, error) {
+	if err := m.authorize(ctx, m.binding); err != nil {
+		return nil, "", err
+	}
+	before, err := m.nativeSnapshot(ctx)
+	if err != nil {
+		return nil, "", err
+	}
+	endpoints, err := m.resolveSnapshot(ctx, before)
+	if err != nil {
+		return nil, "", err
+	}
+	raw, _ := json.Marshal(before)
+	return endpoints, evidence.Digest(raw), nil
+}
+
+func (m *LiveMapper) validateSnapshot(ctx context.Context, digest string) error {
 	if m.authorize(ctx, m.binding) != nil {
 		return evidence.ErrScopeUnverified
 	}
@@ -479,9 +493,20 @@ func (m *LiveMapper) ValidateCurrent(ctx context.Context) error {
 		return err
 	}
 	raw, _ := json.Marshal(snapshot)
-	if evidence.Digest(raw) != m.snapshotDigest {
-		m.endpoints = map[string]Endpoint{}
+	if evidence.Digest(raw) != digest {
 		return evidence.ErrScopeUnverified
+	}
+	return nil
+}
+
+// ValidateCurrent rechecks native UID/container lifetime once for the whole
+// bounded result, rather than re-resolving every row through the backend.
+func (m *LiveMapper) ValidateCurrent(ctx context.Context) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if err := m.validateSnapshot(ctx, m.snapshotDigest); err != nil {
+		m.endpoints = map[string]Endpoint{}
+		return err
 	}
 	return nil
 }

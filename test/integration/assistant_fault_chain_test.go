@@ -146,6 +146,11 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 			t.Fatal(err)
 		}
 		request := assistant.SubmitMessage{Message: "收集故障链证据", ExpectedConversationRevision: conversation.Revision, FaultChainRequest: &investigation.FaultChainRequest{SchemaVersion: "fault-chain-request/v1", TargetCanonicalID: target, Fault: window, Baseline: baseline, Recovery: recovery, MaxEdges: 4}}
+		if comparison {
+			// The independent window oracle covers one directed edge; retain
+			// both protocol/recovery checks within the original query budget.
+			request.FaultChainRequest.MaxEdges = 1
+		}
 		if os.Getenv("OPS_ASSISTANT_OPERATIONAL_SOURCES") == "1" {
 			request.FaultChainRequest.SchemaVersion = "fault-chain-request/v2"
 		}
@@ -255,6 +260,40 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 				t.Log("operational query remains an explicit gap", stored.Result.DatasetID, stored.Result.Status)
 				continue
 			}
+			for _, ref := range stored.Result.DerivationEvidenceRefs {
+				var parent evidence.Evidence
+				for attempt := 0; attempt < 30; attempt++ {
+					parent, err = (evidence.Repository{Pool: repo.Pool}).Get(requestCtx, b.TenantID, uuid.MustParse(ref), grant)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if parent.ReplayState == "archived_verified" {
+						break
+					}
+					time.Sleep(100 * time.Millisecond)
+				}
+				if parent.ArchiveRef == nil || parent.ArchiveRef.PlaintextDigest != parent.ContentDigest || parent.ArchiveRef.Object.VersionID == "" {
+					t.Fatal("unverified parent archive", ref, parent.ReplayState)
+				}
+			}
+			if n := stored.Result.NetworkContext; n != nil && n.Protocol == "http" && ((!multi && n.Selection.Direction == "incoming") || (multi && n.Selection.Direction == "outgoing")) {
+				if stored.Result.Exact || stored.Result.Status != "no_data" || len(stored.Result.Rows) != 0 {
+					t.Fatal("reverse population must remain explicitly empty")
+				}
+				found := false
+				for _, stat := range stored.Result.Statistics {
+					if stat.Key == "current.responses" {
+						found = true
+						if stat.Value != 0 {
+							t.Fatal("unexpected reverse HTTP population")
+						}
+					}
+				}
+				if !found {
+					t.Fatal("reverse population denominator missing")
+				}
+				continue
+			}
 			if !stored.Result.Exact || stored.Result.Status != "complete" {
 				t.Fatal("qualified network result unavailable")
 			}
@@ -311,22 +350,6 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 					if row.Value != expected[i] {
 						t.Fatal("comparison differs from independent oracle", stored.Result.DatasetID, row.Value, expected[i])
 					}
-				}
-			}
-			for _, ref := range stored.Result.DerivationEvidenceRefs {
-				var parent evidence.Evidence
-				for attempt := 0; attempt < 30; attempt++ {
-					parent, err = (evidence.Repository{Pool: repo.Pool}).Get(requestCtx, b.TenantID, uuid.MustParse(ref), grant)
-					if err != nil {
-						t.Fatal(err)
-					}
-					if parent.ReplayState == "archived_verified" {
-						break
-					}
-					time.Sleep(100 * time.Millisecond)
-				}
-				if parent.ArchiveRef == nil || parent.ArchiveRef.PlaintextDigest != parent.ContentDigest || parent.ArchiveRef.Object.VersionID == "" {
-					t.Fatal("unverified parent archive", ref, parent.ReplayState)
 				}
 			}
 			validated[stored.Result.DatasetID] = true
