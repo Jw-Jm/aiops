@@ -1,0 +1,19 @@
+F
+======================================================================
+FAIL: test_primary_network_observation_precedes_optional_related_history (collector_tests.FaultChainFixedCollection.test_primary_network_observation_precedes_optional_related_history)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mssc/Documents/Code/ops/platform/services/investigator/tests/test_fault_chain_unittest.py", line 97, in test_primary_network_observation_precedes_optional_related_history
+    self.assertTrue(all(i > network[0] for i in related))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+Confirmed: current regression rejects the baseline collector and passes the updated collector.

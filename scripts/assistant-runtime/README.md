@@ -90,3 +90,13 @@ Playwright 设置 `OPS_WEB_QA_CDP=http://127.0.0.1:19226`，使用复制后的 N
 远程测试设置 `OPS_ASSISTANT_OPERATIONAL_SOURCES=1`，使原 native Graph runtime 在同一冻结范围中接入实际 VM/VL 与 DeepFlow；实际模型解释用 `OPS_FAULT_CHAIN_MODEL=1`。`TestAssistantActualFaultChainWithoutModel` 的收集阶段仍断言模型调用为零，后续解释有独立 Job。所有 source qualification 仍需实际正样本、范围隔离和已冻结 proof；无数据保留缺口。
 
 新增历史界面分项使用 `web/tests/e2e/operational_history_runtime.spec.ts`，需要本轮实际 partial 轮次的 `OPS_OPERATIONAL_HISTORY_TURN`，验证缺失历史不被回填、冻结窗口/UID、安全 Step 定位、刷新保留和所有者隔离。其回执显式标记 `networkOracleAcceptance=false`；原 `fault_chain_runtime.spec.ts` 的独立 HTTP 计数断言继续保留，两个结果分别报告，不互相代替。
+
+
+### 模型解释的必需上下文
+
+自然语言助手任务先通过同一已发布 `get_assistant_context` MCP 工具、Job/Step 分配和结算读取冻结输入，再进入原 HolmesGPT 循环。恢复时复用同 Job 已提交上下文；读取失败保留失败 Step，模型不启动。不能把 provider 接受 `tool_choice` 参数当成模型实际完成了工具读取。旧 Incident v2 路径和 evidence-only 收集入口保持原职责。
+
+新模型答案若返回 `unsupported` 且没有说明缺口，服务端将其标为 `partial`，添加 `model_unsupported_reason_not_provided` 和 `model_explanation_incomplete`，明确说明模型未提供可用解释；不能作为正常诊断完成。非法事实引用、身份和来源门禁不变。旧历史结果读取不变。预读机制、模型正常结束、中文解释质量和版本验收分别记录，提示词或校验改变不等于质量通过。
+
+
+模型展示层对上下文来源资格作无损分组，保留各操作的独立有效期；校验摘要在已提交 Step 中保留，解释输入不重复携带。事实、窗口、质量、来源 revision、QueryResult/Fact/Evidence 引用不变，固定收集器和 UI 仍使用原始结果。其目的是在已冻结模型上下文上限内工作，不以扩大上下文或放宽来源门禁解决问题。

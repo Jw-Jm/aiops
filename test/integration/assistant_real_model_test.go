@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -275,12 +276,15 @@ func TestAssistantRealModelMCP(t *testing.T) {
 				t.Fatal(e)
 			}
 			if current.State != "queued" && current.State != "running" {
-				if current.State != "completed" && current.State != "awaiting_user" {
+				if current.State != "completed" && current.State != "awaiting_user" && current.State != "partial" {
 					t.Fatalf("actual model turn state=%s error=%s", current.State, current.ErrorCode)
 				}
 				var answer investigation.AssistantAnswer
 				if json.Unmarshal(current.Answer, &answer) != nil || answer.SchemaVersion != "assistant-answer/v1" {
 					t.Fatal("answer unavailable")
+				}
+				if current.State == "partial" && (!answer.Partial || !slices.Contains(answer.MissingEvidence, "model_unsupported_reason_not_provided") || !slices.Contains(answer.Warnings, "model_explanation_incomplete")) {
+					t.Fatal("unexpected partial model outcome")
 				}
 				var calls int
 				if db.QueryRowContext(ctx, `SELECT count(*) FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name='get_assistant_context' AND state='succeeded'`, b.TenantID, turn.JobID).Scan(&calls) != nil || calls == 0 {

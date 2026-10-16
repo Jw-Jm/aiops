@@ -116,18 +116,6 @@ def collect(job, job_api, bridge):
         selections = sorted(directions | {(peer, "either") for peer in peers if not any(p == peer for p, _ in directions)}, key=lambda pair: (pair[0], {"outgoing": 0, "incoming": 1, "either": 2}[pair[1]]))
         selected = selections[:request["maxEdges"]]
         selected_peers = list(dict.fromkeys(peer for peer, _ in selected))
-        if operational and not check:
-            related = sorted({n.get("canonicalId"): n.get("kind") for n in dependencies.get("nodes", []) if n.get("canonicalId") and n.get("canonicalId") != target and n.get("kind") in ("Pod", "Node", "PersistentVolumeClaim")}.items())
-            for resource, kind in related[:request["maxEdges"]]:
-                if remaining.get("toolCalls", 0) > 6:
-                    resource_reads(resource, kind, optional=True)
-                else:
-                    failures.append("related_resource_budget_not_collected")
-            for role in ("baseline", "recovery"):
-                if request.get(role) and remaining.get("toolCalls", 0) > 4:
-                    call("resource_history", {"canonicalId": target, "windowRole": role})
-            if request.get("baseline") and remaining.get("toolCalls", 0) > 4:
-                call("resource_changes", {"canonicalId": target, "windowRole": "baseline"})
         if check:
             selected_peers = [check["canonicalId"]]
             selected = [(check["canonicalId"], check["direction"])]
@@ -195,6 +183,18 @@ def collect(job, job_api, bridge):
                         call("get_resource_health", {"canonicalId":resource})
                     else:
                         failures.append("shared_resource_health_not_completed")
+        if operational and not check:
+            related = sorted({n.get("canonicalId"): n.get("kind") for n in dependencies.get("nodes", []) if n.get("canonicalId") and n.get("canonicalId") != target and n.get("kind") in ("Pod", "Node", "PersistentVolumeClaim")}.items())
+            for resource, kind in related[:request["maxEdges"]]:
+                if remaining.get("toolCalls", 0) > 6:
+                    resource_reads(resource, kind, optional=True)
+                else:
+                    failures.append("related_resource_budget_not_collected")
+            for role in ("baseline", "recovery"):
+                if request.get(role) and remaining.get("toolCalls", 0) > 4:
+                    call("resource_history", {"canonicalId": target, "windowRole": role})
+            if request.get("baseline") and remaining.get("toolCalls", 0) > 4:
+                call("resource_changes", {"canonicalId": target, "windowRole": "baseline"})
     if operational and not check and target_kind == "Pod":
         for dataset, metric in (("logs.records", "log_count"), ("metrics.pod-memory", "memory_bytes"), ("metrics.pod-cpu", "cpu_cores")):
             compare = request.get("baseline") is not None and remaining.get("rawQueries", 0) >= 2

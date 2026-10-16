@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"path/filepath"
 	"slices"
 	"testing"
 	"time"
@@ -215,9 +216,24 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		if os.Getenv("OPS_ASSISTANT_OPERATIONAL_SOURCES") == "1" && len(context.SourceSteps) == 0 {
 			t.Fatal("operational sources did not join committed context")
 		}
-		if comparison && len(context.QueryResultRefs) != 4 {
+		networkQueries := 0
+		for _, id := range context.QueryResultRefs {
+			q, err := repo.QueryResult(requestCtx, b.TenantID, id, actor.Subject)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if q.Result.NetworkContext != nil {
+				networkQueries++
+			}
+		}
+		expectedNetworkQueries := 4
+		operational := os.Getenv("OPS_ASSISTANT_OPERATIONAL_SOURCES") == "1"
+		if operational {
+			expectedNetworkQueries = 3
+		}
+		if comparison && networkQueries != expectedNetworkQueries {
 			if killedLease.Generation == 0 {
-				t.Fatal("both protocol comparisons for fault and recovery required", len(context.QueryResultRefs))
+				t.Fatal("admitted protocol/window observations not collected", networkQueries, expectedNetworkQueries)
 			}
 			var partial investigation.AssistantAnswer
 			if json.Unmarshal(current.Answer, &partial) != nil || !partial.Partial || len(partial.MissingEvidence) == 0 {
@@ -275,6 +291,18 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 				if parent.ArchiveRef == nil || parent.ArchiveRef.PlaintextDigest != parent.ContentDigest || parent.ArchiveRef.Object.VersionID == "" {
 					t.Fatal("unverified parent archive", ref, parent.ReplayState)
 				}
+			}
+			if comparison && operational && stored.Result.NetworkContext == nil {
+				switch stored.Result.DatasetID {
+				case "metrics.pod-restarts":
+					assertActualStableRestartComparison(t, stored, target)
+				case "logs.records":
+					assertActualErrorLogCount(t, stored, target)
+				default:
+					t.Fatal("unexpected optional comparison dataset", stored.Result.DatasetID)
+				}
+				validated[stored.Result.DatasetID] = true
+				continue
 			}
 			if n := stored.Result.NetworkContext; n != nil && n.Protocol == "http" && ((!multi && n.Selection.Direction == "incoming") || (multi && n.Selection.Direction == "outgoing")) {
 				if stored.Result.Exact || stored.Result.Status != "no_data" || len(stored.Result.Rows) != 0 {
@@ -364,6 +392,15 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		}
 		if comparison && killedLease.Generation == 0 && (!validated["network.http-summary"] || !validated["network.tcp-summary"]) {
 			t.Fatal("qualified protocol snapshots not collected")
+		}
+		if comparison && operational && killedLease.Generation == 0 {
+			if !validated["metrics.pod-restarts"] || !validatedWindows["network.http-summary/fault"] || !validatedWindows["network.tcp-summary/fault"] || !validatedWindows["network.http-summary/recovery"] {
+				t.Fatal("primary resource or admitted network comparison missing")
+			}
+			var answer investigation.AssistantAnswer
+			if json.Unmarshal(current.Answer, &answer) != nil || !answer.Partial || !slices.Contains(answer.MissingEvidence, "recovery_remaining_checks_not_completed") {
+				t.Fatal("uncollected TCP recovery must retain explicit original-budget gap")
+			}
 		}
 		if comparison {
 			expectedRules := map[string]bool{
@@ -527,4 +564,101 @@ func recoveryFrom(w *analytics.QueryTimeRange) time.Time {
 		return time.Time{}
 	}
 	return w.From
+}
+
+// This controlled canary has stable counters; derive zero increases from actual
+// observed per-container values, never from the collector's own QueryResult.
+func assertActualStableRestartComparison(t *testing.T, stored investigation.StoredQueryResult, target string) {
+	t.Helper()
+	id, err := resource.ParseCanonicalID(target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(filepath.Join(os.Getenv("OPS_ASSISTANT_LIVE_SOURCE_DIR"), "observations.jsonl"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, window := range []*analytics.QueryTimeRange{stored.Result.TimeRange, stored.Result.ComparisonTimeRange} {
+		if window == nil {
+			t.Fatal("restart comparison lost frozen window")
+		}
+		counts := map[string]int{}
+		values := map[string]float64{}
+		for _, line := range splitJSONLines(raw) {
+			var row struct {
+				Metric    string
+				Labels    map[string]string
+				Value     float64
+				Timestamp int64 `json:"timestampMs"`
+			}
+			if json.Unmarshal(line, &row) != nil {
+				t.Fatal("invalid independent observation")
+			}
+			if row.Metric != "kube_pod_container_status_restarts_total" || row.Labels["uid"] != id.StableID || row.Labels["tenant"] != id.Tenant || row.Labels["cluster"] != id.Scope {
+				continue
+			}
+			at := time.UnixMilli(row.Timestamp)
+			if at.Before(window.From) || !at.Before(window.To) {
+				continue
+			}
+			container := row.Labels["container"]
+			if counts[container] > 0 && values[container] != row.Value {
+				t.Fatal("independent stable-counter oracle no longer applies")
+			}
+			counts[container]++
+			values[container] = row.Value
+		}
+		if len(counts) == 0 {
+			t.Fatal("restart history absent; cannot infer zero")
+		}
+		for _, count := range counts {
+			if count < 2 {
+				t.Fatal("insufficient independent restart observations")
+			}
+		}
+	}
+	if !stored.Result.Exact || stored.Result.Status != "complete" || len(stored.Result.Rows) != 3 {
+		t.Fatal("restart comparison incomplete")
+	}
+	for _, row := range stored.Result.Rows {
+		if row.Value != 0 {
+			t.Fatal("restart increase differs from independent stable counters")
+		}
+	}
+}
+
+func assertActualErrorLogCount(t *testing.T, stored investigation.StoredQueryResult, target string) {
+	t.Helper()
+	id, err := resource.ParseCanonicalID(target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(filepath.Join(os.Getenv("OPS_ASSISTANT_LIVE_SOURCE_DIR"), "observations.jsonl"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	window := stored.Result.TimeRange
+	if window == nil || stored.Result.ComparisonTimeRange != nil {
+		t.Fatal("expected admitted fault-window log count")
+	}
+	count := 0
+	for _, line := range splitJSONLines(raw) {
+		var record struct {
+			Type string
+			Row  struct {
+				Time                        time.Time `json:"_time"`
+				Tenant, Cluster, UID, Level string
+			}
+		}
+		if json.Unmarshal(line, &record) != nil {
+			t.Fatal("invalid independent log observation")
+		}
+		r := record.Row
+		if record.Type == "log" && r.Tenant == id.Tenant && r.Cluster == id.Scope && r.UID == id.StableID && r.Level == "error" && !r.Time.Before(window.From) && r.Time.Before(window.To) {
+			count++
+		}
+	}
+	if !stored.Result.Exact || stored.Result.Status != "complete" || len(stored.Result.Rows) != 1 || stored.Result.Rows[0].Value != float64(count) {
+		t.Fatal("structured error count differs from independent frozen observations")
+	}
 }
