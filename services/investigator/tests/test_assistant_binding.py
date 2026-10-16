@@ -87,3 +87,55 @@ def test_chain_and_formal_references_only_use_committed_read_manifests():
     data=output_schema_for_steps(steps,"data_query")
     assert data["properties"]["faultChain"]["maxItems"]==0
     assert data["properties"]["formalRefs"]["maxItems"]==0
+
+
+def test_model_projection_keeps_values_references_quality_and_committed_material():
+    from investigator.assistant_binding import model_tool_result
+    capability = {"sourceId": "source", "collectorVersion": "collector", "proofDigest": "digest",
+                  "sourceType": "victoriametrics", "revision": 2, "datasetId": "metrics.pod-memory",
+                  "operation": "compare", "coverageFrom": "from", "coverageTo": "to",
+                  "verifiedUntil": "expiry", "maxWindowSeconds": 60, "status": "qualification_configured"}
+    query = {"queryResultId": "query", "facts": [{"factId": "cell", "value": 3}],
+             "result": {"planDigest": "plan", "scopeDigest": "scope", "catalogDigest": "catalog",
+                        "rows": [{"value": 3}], "timeRange": {"from": "from", "to": "to"},
+                        "sourceManifest": {"sourceId": "source", "revision": 2, "bindingDigest": "bound"},
+                        "exact": False, "warnings": ["partial"], "degradedSources": ["source"],
+                        "statistics": [{"key": "responses", "value": 1000}]}}
+    result = {"tool": "get_assistant_context", "data": {"sourceCapabilities": [capability],
+              "historicalFaultChainQueryResults": [query], "requestedAt": "frozen", "binding": {"uid": "original"}}}
+    original = copy.deepcopy(result)
+    projected = model_tool_result("get_assistant_context", result)
+    assert result == original
+    assert "proofDigest" not in projected["data"]["sourceCapabilities"][0]
+    for key in ("status", "revision", "coverageFrom", "coverageTo", "maxWindowSeconds"):
+        assert projected["data"]["sourceCapabilities"][0][key] == capability[key]
+    assert projected["data"]["sourceCapabilities"][0]["datasets"]["metrics.pod-memory"] == [{"operation": "compare", "verifiedUntil": "expiry"}]
+    stored = projected["data"]["historicalFaultChainQueryResults"][0]
+    assert stored["facts"] == query["facts"] and stored["queryResultId"] == "query"
+    for key in ("rows", "statistics", "timeRange", "sourceManifest", "exact", "warnings", "degradedSources"):
+        assert stored["result"][key] == query["result"][key]
+    assert projected["data"]["binding"] == result["data"]["binding"]
+    assert model_tool_result("resource_history", result) == result
+    prompt = messages(payload()["job"], [result])
+    assert "proofDigest" not in prompt[-1]["content"]
+    assert "bindingDigest" in prompt[-1]["content"]
+
+
+def test_model_projection_preserves_failed_or_null_context_payloads():
+    from investigator.assistant_binding import model_tool_result
+    for data in (None, {"sourceCapabilities": None, "historicalFaultChainQueryResults": None}):
+        result = {"state": "failed", "errorCode": "SOURCE_DEGRADED", "data": data}
+        assert model_tool_result("get_assistant_context", result) == result
+
+
+def test_model_capability_groups_preserve_each_operation_expiry_and_quality():
+    from investigator.assistant_binding import model_tool_result
+    base = {"sourceId": "source", "revision": 2, "status": "qualification_configured", "coverageFrom": "from", "coverageTo": "to", "datasetId": "metrics.pod-memory", "proofDigest": "opaque"}
+    rows = [{**base, "operation": "aggregate", "verifiedUntil": "expiry-a"},
+            {**base, "operation": "compare", "verifiedUntil": "expiry-b"},
+            {**base, "operation": "compare", "verifiedUntil": "expiry-c", "status": "unavailable"}]
+    out = model_tool_result("get_assistant_context", {"data": {"sourceCapabilities": rows}})["data"]["sourceCapabilities"]
+    assert len(out) == 2
+    assert out[0]["datasets"]["metrics.pod-memory"] == [{"operation": "aggregate", "verifiedUntil": "expiry-a"}, {"operation": "compare", "verifiedUntil": "expiry-b"}]
+    assert out[1]["status"] == "unavailable"
+    assert out[1]["datasets"]["metrics.pod-memory"] == [{"operation": "compare", "verifiedUntil": "expiry-c"}]

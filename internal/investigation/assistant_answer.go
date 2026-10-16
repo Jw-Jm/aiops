@@ -165,6 +165,12 @@ func ValidateAssistantAnswerTx(ctx context.Context, tx pgx.Tx, j Job, b []byte) 
 	if (j.Assistant.TaskKind == "data_query" && a.AnswerKind == "diagnosis") || (j.Assistant.TaskKind != "data_query" && a.AnswerKind == "data") {
 		return nil, ErrInvalid
 	}
+	if a.AnswerKind == "unsupported" && len(a.MissingEvidence) == 0 {
+		a.Partial = true
+		a.Summary = "模型未提供可用解释；已提交证据保持可读。"
+		a.MissingEvidence = []string{"model_unsupported_reason_not_provided"}
+		a.Warnings = append(a.Warnings, "model_explanation_incomplete")
+	}
 	availableEvidence := map[string]bool{}
 	availableFormal := map[string]bool{}
 	availableRelations := map[string]resource.Relation{}

@@ -79,6 +79,38 @@ class FaultChainFixedCollection(unittest.TestCase):
         self.assertIn("recovery_remaining_checks_not_completed", answer["missingEvidence"])
         self.assertEqual(answer["queryResultRefs"], ["q1", "q2"])
 
+    def test_primary_network_observation_precedes_optional_related_history(self):
+        class OperationalBridge(BudgetBridge):
+            def call(self, name, args, allocation):
+                result = super().call(name, args, allocation)
+                if name == "get_assistant_context":
+                    result["data"]["faultChainRequest"]["schemaVersion"] = "fault-chain-request/v2"
+                return result
+        ledger = Ledger()
+        bridge = OperationalBridge(10, peers=4)
+        bridge.remaining["toolCalls"] = 18
+        collect({"budget": dict(bridge.remaining)}, ledger, bridge)
+        reads = ledger.allocations
+        network = [i for i, (name, _) in enumerate(reads) if name == "execute_analysis_query"]
+        related = [i for i, (name, args) in enumerate(reads) if name == "resource_history" and args["canonicalId"] != "target"]
+        self.assertTrue(network, "optional history exhausted the primary observation budget")
+        self.assertTrue(all(i > network[0] for i in related))
+
+    def test_non_network_targets_keep_optional_related_history(self):
+        for kind in ("Node", "PersistentVolumeClaim"):
+            class OperationalBridge(BudgetBridge):
+                def call(self, name, args, allocation):
+                    result = super().call(name, args, allocation)
+                    if name == "get_assistant_context":
+                        result["data"]["faultChainRequest"]["schemaVersion"] = "fault-chain-request/v2"
+                        result["data"]["binding"] = {"resourceContext": {"resources": [{"canonicalId": "target", "kind": kind}]}}
+                    return result
+            ledger = Ledger()
+            bridge = OperationalBridge(10, peers=1)
+            collect({"budget": dict(bridge.remaining)}, ledger, bridge)
+            self.assertIn(("resource_history", {"canonicalId": "peer-0", "windowRole": "fault"}), ledger.allocations)
+            self.assertFalse(bridge.queries)
+
     def test_bidirectional_populations_are_stable_and_bounded(self):
         for reverse in (False, True):
             for max_edges in (1, 2):

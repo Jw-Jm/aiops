@@ -27,8 +27,9 @@ class PlatformTool(Tool):
             result=self._job_api.request("/steps/"+allocation["stepId"]+"/result?argsDigest="+allocation["argsDigest"])
         else:
             result=self._bridge.call(self.name,params,allocation)
+        from .assistant_binding import model_tool_result
         return StructuredToolResult(status=StructuredToolResultStatus.ERROR if result.get("state")=="failed" else StructuredToolResultStatus.SUCCESS,
-                                    data={"untrusted_tool_result":sanitize(result)})
+                                    data={"untrusted_tool_result":model_tool_result(self.name, result)})
 
 from .mcp_bridge import MCPBridge
 
@@ -43,14 +44,24 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
         tools.append(tool)
     toolset=Toolset(name="platform",description="Platform read-only semantic MCP",tools=tools,
                     enabled=True,status=ToolsetStatusEnum.ENABLED)
+    from .assistant_binding import is_assistant, messages as assistant_messages, output_schema as assistant_schema
+    assistant=is_assistant(job)
+    steps=job_api.request("/steps")
+    if assistant and not any(step["state"] == "succeeded" and step["toolName"] == "get_assistant_context" for step in steps):
+        # The model may ignore named tool_choice; ground it through the same
+        # admitted MCP/Step path before asking it to interpret the request.
+        context_tool=next((tool for tool in tools if tool.name == "get_assistant_context"), None)
+        if context_tool is None: raise RuntimeError("INITIAL_CONTEXT_TOOL_UNAVAILABLE")
+        result=context_tool._invoke({}, None)
+        if result.status != StructuredToolResultStatus.SUCCESS: raise RuntimeError("ASSISTANT_CONTEXT_UNAVAILABLE")
+        steps=job_api.request("/steps")
+        if not any(step["state"] == "succeeded" and step["toolName"] == "get_assistant_context" for step in steps):
+            raise RuntimeError("ASSISTANT_CONTEXT_UNAVAILABLE")
+    prior=[step["result"] for step in steps if step["state"]=="succeeded" and step["toolName"]!="model"]
     llm=model.provider(BudgetedLLM,api_key_file=api_key_file)
     llm.job_api=job_api
     agent=ToolCallingLLM(tool_executor=ToolExecutor([toolset]),max_steps=8,llm=llm,tool_results_dir=None)
-    steps=job_api.request("/steps")
-    prior=[step["result"] for step in steps if step["state"]=="succeeded" and step["toolName"]!="model"]
     llm.needs_initial_tools=not bool(prior)
-    from .assistant_binding import is_assistant, messages as assistant_messages, output_schema as assistant_schema
-    assistant=is_assistant(job)
     llm.assistant_task=assistant
     if assistant:llm.assistant_task_kind=job["assistant"]["taskKind"]
     prompt=assistant_messages(job,prior) if assistant else messages(job,prior)

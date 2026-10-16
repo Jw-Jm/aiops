@@ -14,6 +14,7 @@ import (
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/source"
+	"slices"
 	"testing"
 	"time"
 )
@@ -40,7 +41,7 @@ func assistantExtendedFixture(t *testing.T) (context.Context, *sql.DB, *pgxpool.
 	return ctx, db, worker, b, repo, jobs
 }
 func assistantEmptyAnswer() []byte {
-	raw, _ := json.Marshal(investigation.AssistantAnswer{SchemaVersion: "assistant-answer/v1", AnswerKind: "unsupported", Summary: "Fixture has no observations", FactRefs: []investigation.FactRef{}, QueryResultRefs: []uuid.UUID{}, EvidenceRefs: []string{}, EntityRefs: []string{}, MissingEvidence: []string{}, ScopeSummary: "operational", AsOf: time.Now().UTC(), DegradedSources: []string{}, Warnings: []string{}, Hypotheses: []investigation.Hypothesis{}, NextChecks: []string{}})
+	raw, _ := json.Marshal(investigation.AssistantAnswer{SchemaVersion: "assistant-answer/v1", AnswerKind: "unsupported", Summary: "Fixture has no observations", FactRefs: []investigation.FactRef{}, QueryResultRefs: []uuid.UUID{}, EvidenceRefs: []string{}, EntityRefs: []string{}, MissingEvidence: []string{"fixture_no_observations"}, ScopeSummary: "operational", AsOf: time.Now().UTC(), DegradedSources: []string{}, Warnings: []string{}, Hypotheses: []investigation.Hypothesis{}, NextChecks: []string{}})
 	return raw
 }
 func TestAssistantExplicitScopeChangesAndPhysicalTTL(t *testing.T) {
@@ -60,8 +61,19 @@ func TestAssistantExplicitScopeChangesAndPhysicalTTL(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = jobs.Complete(ctx, lease, assistantEmptyAnswer()); err != nil {
-		t.Fatal(err)
+	var unsupported investigation.AssistantAnswer
+	if json.Unmarshal(assistantEmptyAnswer(), &unsupported) != nil {
+		t.Fatal("fixture answer")
+	}
+	unsupported.MissingEvidence = []string{}
+	emptyGap, _ := json.Marshal(unsupported)
+	if err = jobs.Complete(ctx, lease, emptyGap); err != nil {
+		t.Fatal("incomplete model explanation did not degrade safely", err)
+	}
+	degraded, err := repo.Turn(ctx, b.TenantID, turn.TurnID, c.OwnerSubject)
+	var answer investigation.AssistantAnswer
+	if err != nil || degraded.State != "partial" || json.Unmarshal(degraded.Answer, &answer) != nil || !answer.Partial || !slices.Contains(answer.MissingEvidence, "model_unsupported_reason_not_provided") || !slices.Contains(answer.Warnings, "model_explanation_incomplete") || len(answer.FactRefs) != 0 {
+		t.Fatal("missing model reason became an unqualified completion", degraded, err)
 	}
 	c, err = repo.Rebind(ctx, b.TenantID, c.ConversationID, c.OwnerSubject, "change", 2, analytics.Selection{Namespaces: []string{"private"}}, nil, nil, graph.ScopeDigest("change"))
 	if err != nil || c.Revision != 3 {
