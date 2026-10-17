@@ -202,6 +202,23 @@ func (r Repository) SyncSnapshot(ctx context.Context, tenant, source, cluster, k
 	if visible.State.LastListCompletedAt.IsZero() {
 		return previous, nil
 	}
+	nativeUIDs := map[string]string{}
+	nativeComplete := !native.State.LastListCompletedAt.IsZero() && native.State.LastError == ""
+	if nativeComplete {
+		for _, o := range native.Objects {
+			nativeUIDs[string(o.GetUID())] = o.GetResourceVersion()
+		}
+		// Retire confirmed deletions before resolving replacements that reuse an alias.
+		for uid := range previous {
+			if _, present := nativeUIDs[uid]; present {
+				continue
+			}
+			id := resource.CanonicalID{Domain: "k8s", Tenant: tenant, Scope: cluster, APIGroup: apiGroup, Kind: kind, StableID: uid}.String()
+			if err := r.Retire(ctx, uuid.MustParse(tenant), id); err != nil {
+				return previous, err
+			}
+		}
+	}
 	current := map[string]string{}
 	for _, o := range visible.Objects {
 		uid := string(o.GetUID())
@@ -230,13 +247,6 @@ func (r Repository) SyncSnapshot(ctx context.Context, tenant, source, cluster, k
 			return previous, err
 		}
 	}
-	nativeUIDs := map[string]string{}
-	nativeComplete := !native.State.LastListCompletedAt.IsZero() && native.State.LastError == ""
-	if nativeComplete {
-		for _, o := range native.Objects {
-			nativeUIDs[string(o.GetUID())] = o.GetResourceVersion()
-		}
-	}
 	if !nativeComplete {
 		// Without a complete native list there is no proof of deletion: keep the
 		// previous acknowledgements so a later complete list can still detect it.
@@ -246,15 +256,6 @@ func (r Repository) SyncSnapshot(ctx context.Context, tenant, source, cluster, k
 			}
 		}
 		return current, nil
-	}
-	for uid := range previous {
-		if _, present := nativeUIDs[uid]; present {
-			continue
-		}
-		id := resource.CanonicalID{Domain: "k8s", Tenant: tenant, Scope: cluster, APIGroup: apiGroup, Kind: kind, StableID: uid}.String()
-		if err := r.Retire(ctx, uuid.MustParse(tenant), id); err != nil {
-			return previous, err
-		}
 	}
 	// Keep native UIDs in the acknowledgement map so a later real deletion is
 	// still detected after the object left the visible projection.

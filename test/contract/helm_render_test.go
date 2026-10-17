@@ -211,7 +211,14 @@ type renderedResource struct {
 				Containers []struct {
 					Image string   `yaml:"image"`
 					Args  []string `yaml:"args"`
-					Env   []struct {
+					Ports []struct {
+						Name          string `yaml:"name"`
+						ContainerPort int    `yaml:"containerPort"`
+					} `yaml:"ports"`
+					StartupProbe   *renderedHTTPProbe `yaml:"startupProbe"`
+					ReadinessProbe *renderedHTTPProbe `yaml:"readinessProbe"`
+					LivenessProbe  *renderedHTTPProbe `yaml:"livenessProbe"`
+					Env            []struct {
 						Name      string `yaml:"name"`
 						Value     string `yaml:"value"`
 						ValueFrom struct {
@@ -246,6 +253,13 @@ type renderedResource struct {
 		} `yaml:"template"`
 	} `yaml:"spec"`
 	Data map[string]string `yaml:"data"`
+}
+
+type renderedHTTPProbe struct {
+	HTTPGet struct {
+		Port string `yaml:"port"`
+		Path string `yaml:"path"`
+	} `yaml:"httpGet"`
 }
 
 func TestHelmRenderComponentModesAreExclusive(t *testing.T) {
