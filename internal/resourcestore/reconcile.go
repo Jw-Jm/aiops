@@ -2,10 +2,9 @@ package resourcestore
 
 import (
 	"context"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"k8s.io/apimachinery/pkg/api/meta"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"ops-platform/internal/integrations/kubernetes"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/resource"
@@ -13,9 +12,18 @@ import (
 
 // ReconcileNativeSnapshot restores deletion knowledge lost across Worker restarts.
 // Only a healthy, complete, unfiltered native list can prove an identity disappeared.
+//
+// The snapshot must carry the exact watched Kind: identity ownership is decided
+// by comparing the stored canonical Kind with it, never by guessing the resource
+// name from the Kind.
 func (r Repository) ReconcileNativeSnapshot(ctx context.Context, tenant, source, cluster string, s kubernetes.Snapshot) error {
 	if s.ObservationOnly || s.State.LastListCompletedAt.IsZero() || s.State.LastError != "" {
 		return nil
+	}
+	if s.GVR.Kind == "" {
+		// Without the exact Kind this list cannot be attributed to a resource, so
+		// failing closed is the only way to avoid retiring the wrong identities.
+		return errors.New("native snapshot is missing its exact resource kind")
 	}
 	tid, err := uuid.Parse(tenant)
 	if err != nil {
@@ -60,8 +68,7 @@ func (r Repository) ReconcileNativeSnapshot(ctx context.Context, tenant, source,
 			if group == "core" {
 				group = ""
 			}
-			gvr, _ := meta.UnsafeGuessKindToResource(schema.GroupVersionKind{Group: group, Version: s.GVR.Version, Kind: id.Kind})
-			if id.Domain == "k8s" && id.Scope == cluster && gvr.Group == s.GVR.Group && gvr.Resource == s.GVR.Resource && !present[id.StableID] {
+			if id.Domain == "k8s" && id.Scope == cluster && group == s.GVR.Group && id.Kind == s.GVR.Kind && !present[id.StableID] {
 				missing = append(missing, raw)
 			}
 		}

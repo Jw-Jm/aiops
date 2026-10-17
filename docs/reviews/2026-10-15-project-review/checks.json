@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-15",
+  "timezone": "Asia/Shanghai",
+  "cwd": "/Users/mssc/Documents/Code/ops/platform",
+  "startHead": "b685d51f2c2f39c71bb33d6fd6cd9af4f82f5c93",
+  "reviewedHead": "56946d32c867c80890ad339bfd192b4848d357f0",
+  "checks": [
+    {
+      "id": "go-targeted",
+      "command": "go test -count=1 -timeout=5m ./internal/auth ./internal/action ./internal/assistant ./internal/analytics ./internal/investigation/... ./internal/httpapi ./internal/graph ./internal/persistence ./internal/evidence",
+      "exitCode": 0,
+      "log": "go-targeted-tests.txt",
+      "interpretation": "10 tested packages pass; mcp has no tests; skip details not enumerated"
+    },
+    {
+      "id": "go-domain",
+      "command": "go test -count=1 -timeout=3m ./internal/rca ./internal/finding ./internal/incident ./internal/resource ./internal/configregistry ./internal/policy ./internal/source ./internal/tenant ./internal/resourcestore ./internal/integrations/deepflow ./internal/integrations/kubernetes ./internal/profile ./internal/supplychain ./internal/archive ./internal/crypto ./internal/modelprofile",
+      "exitCode": 0,
+      "log": "go-domain-tests.txt",
+      "interpretation": "14 tested packages pass; tenant and resourcestore have no tests"
+    },
+    {
+      "id": "go-vet",
+      "command": "go vet ./internal/... ./cmd/...",
+      "exitCode": 0,
+      "log": "go-vet.txt",
+      "interpretation": "no diagnostics"
+    },
+    {
+      "id": "runtime-source",
+      "command": "python3 scripts/prepare-runtime-source.py --check",
+      "exitCode": 0,
+      "log": "runtime-source-check.txt",
+      "interpretation": "linux/arm64 source admission check only; no deployment"
+    },
+    {
+      "id": "migration-source",
+      "command": "python3 scripts/prepare-migration-source.py --check",
+      "exitCode": 1,
+      "log": "migration-source-check.txt",
+      "interpretation": "source/notice closure drift: five added migrations; details in migration-drift-details.json"
+    },
+    {
+      "id": "review-probes",
+      "command": "go test -v -count=1 ./docs/reviews/2026-10-15-project-review/_probes",
+      "exitCode": 0,
+      "log": "review-probes.txt",
+      "interpretation": "4 probes including 2 Victoria subcases; passing reproduces current defects, not a remediation pass"
+    },
+    {
+      "id": "python-fault-chain",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=services/investigator/src python3 -m unittest discover -s services/investigator/tests -p test_fault_chain_unittest.py -v",
+      "exitCode": 0,
+      "log": "python-fault-chain-tests.txt",
+      "interpretation": "12 deterministic local tests pass"
+    },
+    {
+      "id": "python-multicaller",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts/deepflow-dev -p test_multicaller_probe.py -v",
+      "exitCode": 0,
+      "log": "python-multicaller-tests.txt",
+      "interpretation": "2 deterministic local tests pass"
+    },
+    {
+      "id": "canvas-typecheck",
+      "command": "installed web TypeScript compiler with a temporary configuration targeting only the review canvas and the published canvas SDK declarations",
+      "exitCode": 0,
+      "log": "canvas-typecheck.txt",
+      "interpretation": "standalone review artifact type check; not a frontend application build or browser acceptance"
+    }
+  ],
+  "notRun": [
+    "make check full suite",
+    "frontend build/component/Playwright acceptance",
+    "PostgreSQL integration",
+    "live cluster/OIDC/model/DeepFlow validation",
+    "production capacity/HA/DR",
+    "virtualization"
+  ],
+  "dependenciesInstalled": false,
+  "businessFilesModifiedByReview": false
+}

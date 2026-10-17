@@ -35,7 +35,7 @@ PWR-002 的真实标签切换与重新进入来源范围仍待集群验收；PWR
 
 ## 三、处置结论与未完成项
 
-- **PWR-004：发行准入阻塞，尚未修复。** 默认 arm64 的 prepare-runtime-source.py --check 与 prepare-migration-source.py --check 均实测 exit=1。当前 runtime 对应源码也已漂移，不只有迁移工具。不能复制摘要、借用历史验收或放宽校验；需要对应源码/许可证闭包重新准入、目标架构隔离离线重建及运行/迁移证据；发行 Bundle 的签名材料属于后续发行门禁，不能通过修改摘要替代这些证据。原始失败日志见 evidence/repair-source-admission.txt。本轮已补跑 amd64 的 runtime 与 migration 两项 --check，均退出 1。后续 --out 成功准备当前 arm64 来源闭包，99 个模块无增减；相对既有锁仅 k8s.io/apimachinery 多选入 11 个 api/meta 文件，标准库及 in-tree 上游锁未变。候选选定源码在空模块缓存、GOPROXY/GOSUMDB=off 下成功交叉构建 Linux/arm64 的 API/Worker/opsctl；未验证 network=none 容器与 native arm64 运行，不能据此更新 qualified 状态。未以当前摘要直接覆盖旧准入。
+- **PWR-004：已修复（2026-10-17，见第六节）。** 修复前默认 arm64 的 prepare-runtime-source.py --check 与 prepare-migration-source.py --check 均实测 exit=1，internal/bundle 4 个与 cmd/opsctl 1 个测试失败。经诊断，两条链的漂移原因不同，因此处置方式不同：运行时链的漂移来自 PWR-006 新增文件 internal/resourcestore/reconcile.go 对 k8s.io/apimachinery/pkg/api/meta 的依赖（编译闭包多选入 11 个 pkg/api/meta 文件），已通过在该文件中改用快照自带的精确 Kind 比较而消除，运行时源闭包回到已准入状态，**未修改任何运行时准入证据**；迁移链的漂移来自真实的迁移新增（00038–00043），按既有准入流程重签。原始失败日志见 evidence/repair-source-admission.txt 与 evidence/migration-source-check.txt，作为修复前状态保留。
 - **PWR-010：公共路径/方法注册已绑定合同。** api.Schemas 嵌入原始 OpenAPI，foundation 复用既有 YAML 库读取路径/方法并注册 Chi 路由，再复用现有领域处理器；不增加大量手写转发适配。测试验证公开/动态路径可达、未声明路径 404、未声明方法 405，且不进入领域处理器。httpapi/app/contract/security 全部通过。它约束路由注册，不等于自动校验全部请求/响应 schema；逐 operation 的完整领域行为覆盖仍未完成。
 - **PWR-026：硬件命令的完整后检查仍未实现。** 现有后检查只对 Node/PVC 提供受控原生健康判断；不能仅靠命令退出码、BMC 可连接或不完整 DIMM 证据给出 resolved。硬件路径继续诚实返回 inconclusive，需补受支持的 Recipe/来源证据与实际验证。
 - **PWR-031：不添加 selfAttested 标记来暗示测试断言是被测系统自证。** 性能豁免已有“capacity is not passed”等明确日志；不把豁免当容量验收。不为清理磁盘删除合规保留数据库。其它断言覆盖缺口未宣称全部完成。
@@ -61,7 +61,7 @@ PWR-002 的真实标签切换与重新进入来源范围仍待集群验收；PWR
 - 前端 tsc --noEmit 通过；pnpm --dir web test：5 个 Node SSE 测试、23 个 Vitest 文件/75 个测试通过。
 - Python fault-chain 标准库 unittest：17 个通过；生产槽位清理函数测试：2 个通过；调查服务源码 AST 解析通过。后续使用 Python 3.12.14、uv sync --locked --offline 与 uv run --locked --offline pytest -q，完整调查服务测试 84 项通过。
 
-未通过（不是环境门禁，不能宣称全部 Go 测试已绿）：
+修复前未通过（该五项与 make check 的 exit=2 已于 2026-10-17 修复，见第六节；本段保留修复前状态）：
 - internal/bundle 的 TestImportValidatesEveryLayerBeforeAnyRuntimeCall、TestPlanImportReturnsEveryImageWithoutRuntimeSideEffects、TestImportVerifiedOCIArchivesWithoutPull、TestInstallIncompleteBundleNeverRunsHelmOrRuntime。
 - cmd/opsctl 的 TestBundleBuildCLIAndIndependentVerify。
 - 上述 5 项均因当前生成的 opa-sdk-source runtime 源材料与既有准入摘要不一致而失败；必须完成 PWR-004 的对应源码重新准入，不能修改测试绕过校验。
@@ -77,3 +77,32 @@ PWR-002 的真实标签切换与重新进入来源范围仍待集群验收；PWR
 历史 coverage.csv/functions.csv 及旧报告的阅读覆盖声明不因本次修复自动升级为已完成。
 
 最终回执索引：`evidence/remote-validation/validation-summary.json`、`database-complete.log`、`source-capacity-r4.log`；失败尝试保留在同目录。候选离线构建只记作 `evidence/repair-offline-source-build.json`，未晋升发行准入。
+
+## 五之二、PWR-004 修复轮次（2026-10-17）
+
+基线 `main / 55d6e1c`。本轮只处置 PWR-004 及其暴露的运行时源闭包漂移，未恢复虚拟化、Trace 或生产发布；上一节记录的历史结论与失败证据未改写。
+
+### 一、两条准入链的漂移原因与处置
+
+| 链 | 漂移原因（实测） | 处置 |
+|---|---|---|
+| 运行时源 | `internal/resourcestore/reconcile.go`（PWR-006 新增文件）导入 `k8s.io/apimachinery/pkg/api/meta`，其编译闭包相对既有锁多选入 11 个 `pkg/api/meta/*` 文件（`k8s.io/apimachinery` 130→141） | 不再从 Kind 猜测资源复数形式：`kubernetes.GVR` 增加精确 `Kind` 字段（`Key()` 仍只用 group/version/resource，持久化键不变），`CoreRequiredGVRs()` 填充全部 17 项 Kind，`ReconcileNativeSnapshot` 改为比较 canonical 身份的精确 Kind 与 API 组，并在缺少 Kind 时 fail-closed。闭包回到 3043 个模块文件，**运行时准入证据一字未改** |
+| 迁移源 | 真实的迁移新增：既有锁的 `firstPartyFiles` 不含 `00038`–`00043`（其余 modules/标准库/上游文件逐项相同） | 按既有准入流程重签：`prepare-migration-source.py --out`（arm64/amd64）→ 更新 4 份 lock（`bundle/evidence/**` 与 `third_party/admission/**` 双副本）→ 更新 4 份 source 准入 json 的 `sourceBundleSHA256`、`scope` 与证据路径 → 同步 `internal/bundle/migration_admission_test.go` 的摘要常量 |
+
+`binarySHA256` 与 `firstPartySourceSHA256` **未变更**：`cmd/db-migrate` 不内嵌迁移，`main.go` 摘要仍为 `sha256:87571abb…`，且用重签后的归档离线重建逐字节复现了两个架构已准入的二进制。
+
+### 二、本轮验证回执
+
+通过：
+- `prepare-runtime-source.py --check`（arm64）与 `--check --architecture amd64` 均 exit=0，摘要分别为 `sha256:14f4060c…` 与 `sha256:f9530a88…`（与既有 catalog/POC 记录一致）。
+- `prepare-migration-source.py --check`（arm64）与 `--check --architecture amd64` 均 exit=0，摘要分别为 `sha256:6d1a43a6…` 与 `sha256:3ff52bd1…`。
+- 此前失败的 5 个用例（`internal/bundle` 4 个 + `cmd/opsctl` 的 `TestBundleBuildCLIAndIndependentVerify`）全部通过；`go test -count=1 ./internal/... ./cmd/... ./test/contract ./test/security` 无失败。
+- `make check-generated`、`make check-runtime-source`、`make lint` 通过。
+- 隔离离线重建（空 GOMODCACHE、`GOPROXY=off`、`GOSUMDB=off`、`GOTOOLCHAIN=local`、`go build -mod=mod -trimpath -buildvcs=false`）：两架构均 exit=0 且二进制摘要与准入值逐字节一致，见 `docs/evidence/pwr004-migration-renew-20261016/offline-rebuild-{arm64,amd64}.json`。
+- 远程隔离环境（`192.168.0.63`，专属目录 `/opt/ops-pwr004-verify-20261017`）：`--network none` 的 PostgreSQL 17.11 容器内由重签归档重建的 amd64 db-migrate 完成 00001–00043 前滚与幂等重跑，`forwardVersion=43`、`idempotent=true`，见 `docs/evidence/pwr004-migration-renew-20261016/forward-migration-amd64.json`。
+- 同一远程环境中，用当前源码交叉编译的 `test/integration` 二进制（sha256 `6e9b2d52…`）在真实 PostgreSQL/OpenBao/SeaweedFS 上运行 35 个顶层集成用例：PASS 35、FAIL 0、SKIP 0、exit=0，包含直接调用改写后 `ReconcileNativeSnapshot` 的 `TestSP04IdentityConflictFindingAndTerminalTombstone`。
+
+未完成（如实记录）：
+- **arm64 的 native 前滚迁移未在本环境执行**：隔离验证主机为 x86_64 且未注册 aarch64 binfmt/QEMU，本机为 darwin/arm64 且本轮不使用本机容器。已完成的等效证据（归档离线重建复现同一二进制、两个架构同一份迁移 SQL、amd64 native 前滚通过）见 `docs/evidence/pwr004-migration-renew-20261016/forward-migration-arm64.json`。
+- `make check` 的 `test-unit` 目标在无环境主机上仍失败：`go test ./...` 会执行 `test/integration` 的 live gate（要求真实 PostgreSQL/SeaweedFS/K8sGPT 前置），这些用例设计为 fail-closed 而非 skip。本轮在远程真实环境用 35 个用例覆盖了该集合的核心部分，其余 live gate 仍需各自环境。
+- 上一节“四、本轮验证回执”中的动态验收缺口（五来源联合验收、离线 Bundle 重建/干净重装、真实模型调用、BMC 轮换、浏览器交互）状态不变。

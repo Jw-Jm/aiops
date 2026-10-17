@@ -80,7 +80,7 @@ func TestSP04IdentityConflictFindingAndTerminalTombstone(t *testing.T) {
 	}
 	// A fresh Worker has no process-local previous map. The complete empty
 	// native Node list must still retire its persisted pre-restart identity.
-	if err := repo.ReconcileNativeSnapshot(ctx, tenant.String(), source.String(), "cluster-a", kubernetes.Snapshot{GVR: kubernetes.GVR{Version: "v1", Resource: "nodes"}, State: kubernetes.GVRState{LastListCompletedAt: time.Now().UTC()}}); err != nil {
+	if err := repo.ReconcileNativeSnapshot(ctx, tenant.String(), source.String(), "cluster-a", kubernetes.Snapshot{GVR: kubernetes.GVR{Version: "v1", Resource: "nodes", Kind: "Node"}, State: kubernetes.GVRState{LastListCompletedAt: time.Now().UTC()}}); err != nil {
 		t.Fatal(err)
 	}
 	var retired bool

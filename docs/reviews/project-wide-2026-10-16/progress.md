@@ -15,11 +15,23 @@
 
 完整逐条对照见 [corrections.md](corrections.md)。
 
-## 零之二、修复轮次（2026-10-16）
+## 零之二、修复轮次
+
+### 第一轮（2026-10-16）
 
 已按本目录结论实施修复，逐项状态与变更清单见 [fix-status.md](fix-status.md)：**已修复并验证 16 项**（PWR-001、002、005、009、011、013、015、017、019、020、021、022、023、024、032、036）、**部分修复 6 项**（008、029、031、034、035、038）、**已裁定并记录 3 项**（014、030、033）、**未修复 14 项**（003、004、006、007、010、012、016、018、025、026、027、028、037、039，均已在 fix-status.md 说明原因，集中在需要数据库/集群验证、跨包设计改造或契约协同的项）。
 
-回归：`go build ./...`、`go vet`、`go test ./internal/... ./test/contract ./test/security`、前端 `tsc`+`vitest`（23 文件）、Python `compileall` 通过；`make check`（仍受 PWR-004 阻塞）与需要数据库的集成验收未运行。
+回归：`go build ./...`、`go vet`、`go test ./internal/... ./test/contract ./test/security`、前端 `tsc`+`vitest`（23 文件）、Python `compileall` 通过；`make check` 当时受 PWR-004 阻塞，需要数据库的集成验收未运行。
+
+### 第二轮（2026-10-17）：PWR-004 与运行时源闭包
+
+PWR-004 已修复，详见 [fix-status.md](fix-status.md) 第六节。要点：
+
+- **运行时源链未重签**：漂移来自 PWR-006 新增文件 `internal/resourcestore/reconcile.go` 对 `k8s.io/apimachinery/pkg/api/meta` 的依赖（编译闭包多选入 11 个 `pkg/api/meta` 文件）。改为让 `kubernetes.GVR` 携带精确 `Kind`（`Key()` 与持久化键不变）并在闭包内比较，闭包回到 3,043 个模块文件，运行时准入证据未作任何修改。
+- **迁移源链按既有流程重签**：新增迁移 00038–00043 是真实变化；重签 4 份 lock、4 份 source 准入 json 与 `migration_admission_test.go` 摘要常量。`binarySHA256`/`firstPartySourceSHA256` 未变，两架构离线重建逐字节复现了已准入二进制。
+- **验证**：runtime 与 migration 的 arm64/amd64 `--check` 全部 exit=0；此前失败的 5 个 `internal/bundle`/`cmd/opsctl` 用例通过；`go test ./internal/... ./cmd/... ./test/contract ./test/security` 无失败；`check-generated`、`check-runtime-source`、`lint` 通过。
+- **远程验证**（`192.168.0.63`，专属目录 `/opt/ops-pwr004-verify-20261017`）：隔离无网络 PostgreSQL 17.11 中 amd64 `db-migrate` 前滚 00001–00043 并幂等重跑通过；当前源码编译的 `test/integration` 在真实 PostgreSQL/OpenBao/SeaweedFS 上 **PASS 35 / FAIL 0 / SKIP 0**。
+- **未完成**：arm64 的 native 前滚迁移未执行（验证主机 x86_64 无 aarch64 QEMU，本机不使用容器）；`make check` 的 `test-unit` 在无环境主机仍因 `test/integration` live gate 失败（该集合设计为 fail-closed）；其余动态验收缺口不变。
 
 ## 一、已完成
 

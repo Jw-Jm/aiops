@@ -8,7 +8,7 @@ import (
 
 func migrationMaterials() []Material {
 	return []Material{{Name: "db-migrate", Kind: "binary", Version: "1.1.0", Architecture: "linux/arm64", Digest: "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a"},
-		{Name: "db-migrate-source", Kind: "source", Version: "1.1.0", Architecture: "linux/arm64", Digest: "sha256:b9b0d7dd1c827cb8a6401a6dcf2fefe6e9938dab6812ad7e2a4a72f25f001844"}}
+		{Name: "db-migrate-source", Kind: "source", Version: "1.1.0", Architecture: "linux/arm64", Digest: "sha256:6d1a43a649c60a575d0d477d8b9076483eb2d2da36a99ecb69d28eeb28574f7c"}}
 }
 
 func TestOfflineMigrationToolRequiresSeparateExactSourceAdmission(t *testing.T) {
@@ -33,7 +33,7 @@ func TestOfflineMigrationToolRequiresSeparateExactSourceAdmission(t *testing.T) 
 }
 
 func TestAMD64MigrationRequiresIndependentlyRebuiltAndTestedPair(t *testing.T) {
-	materials := []Material{{Name: "db-migrate", Kind: "binary", Version: "1.1.0", Architecture: "linux/amd64", Digest: "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8"}, {Name: "db-migrate-source", Kind: "source", Version: "1.1.0", Architecture: "linux/amd64", Digest: "sha256:0bbf28cf1f2105c44eae6090cfe2deeecfa2688efcf35a2e1a9d8a90476c9be1"}}
+	materials := []Material{{Name: "db-migrate", Kind: "binary", Version: "1.1.0", Architecture: "linux/amd64", Digest: "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8"}, {Name: "db-migrate-source", Kind: "source", Version: "1.1.0", Architecture: "linux/amd64", Digest: "sha256:3ff52bd1bb00fbbc790cc31b9359175173e2e790b7fc74f8a57c348f8cf197d2"}}
 	if err := validateMigrationMaterialAdmission(materials); err != nil {
 		t.Fatal(err)
 	}

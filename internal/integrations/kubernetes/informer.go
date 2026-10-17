@@ -16,8 +16,15 @@ import (
 	"time"
 )
 
-type GVR struct{ Group, Version, Resource string }
+// GVR carries the exact watched resource together with the API Kind it lists.
+// Kind is required because identity reconciliation must recognise the canonical
+// identities of this exact resource without guessing pluralisation from Kind
+// (a guess pulls the whole apimachinery REST mapper into the runtime source
+// closure and can silently pick the wrong resource).
+type GVR struct{ Group, Version, Resource, Kind string }
 
+// Key identifies the watched endpoint. Kind is deliberately excluded so the
+// persisted coverage/state keys stay unchanged.
 func (g GVR) Key() string { return g.Group + "/" + g.Version + "/" + g.Resource }
 func (g GVR) Path() string {
 	if g.Group == "" {
@@ -26,7 +33,7 @@ func (g GVR) Path() string {
 	return "/apis/" + g.Group + "/" + g.Version + "/" + g.Resource
 }
 func CoreRequiredGVRs() []GVR {
-	return []GVR{{"", "v1", "pods"}, {"", "v1", "nodes"}, {"", "v1", "services"}, {"", "v1", "configmaps"}, {"", "v1", "persistentvolumeclaims"}, {"", "v1", "persistentvolumes"}, {"", "v1", "events"}, {"apps", "v1", "deployments"}, {"apps", "v1", "replicasets"}, {"apps", "v1", "statefulsets"}, {"apps", "v1", "daemonsets"}, {"batch", "v1", "jobs"}, {"storage.k8s.io", "v1", "storageclasses"}, {"storage.k8s.io", "v1", "csidrivers"}, {"storage.k8s.io", "v1", "csinodes"}, {"storage.k8s.io", "v1", "volumeattachments"}, {"discovery.k8s.io", "v1", "endpointslices"}}
+	return []GVR{{"", "v1", "pods", "Pod"}, {"", "v1", "nodes", "Node"}, {"", "v1", "services", "Service"}, {"", "v1", "configmaps", "ConfigMap"}, {"", "v1", "persistentvolumeclaims", "PersistentVolumeClaim"}, {"", "v1", "persistentvolumes", "PersistentVolume"}, {"", "v1", "events", "Event"}, {"apps", "v1", "deployments", "Deployment"}, {"apps", "v1", "replicasets", "ReplicaSet"}, {"apps", "v1", "statefulsets", "StatefulSet"}, {"apps", "v1", "daemonsets", "DaemonSet"}, {"batch", "v1", "jobs", "Job"}, {"storage.k8s.io", "v1", "storageclasses", "StorageClass"}, {"storage.k8s.io", "v1", "csidrivers", "CSIDriver"}, {"storage.k8s.io", "v1", "csinodes", "CSINode"}, {"storage.k8s.io", "v1", "volumeattachments", "VolumeAttachment"}, {"discovery.k8s.io", "v1", "endpointslices", "EndpointSlice"}}
 }
 
 type GVRState struct {

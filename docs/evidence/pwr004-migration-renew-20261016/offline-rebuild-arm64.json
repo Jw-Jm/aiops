@@ -1,0 +1,24 @@
+{
+  "architecture": "linux/arm64",
+  "goVersion": "go1.27.1",
+  "buildCommand": "go build -mod=mod -trimpath -buildvcs=false -o db-migrate ./cmd/db-migrate",
+  "target": {
+    "GOOS": "linux",
+    "GOARCH": "arm64",
+    "CGO_ENABLED": "0"
+  },
+  "GOPROXY": "off",
+  "GOSUMDB": "off",
+  "GOTOOLCHAIN": "local",
+  "GOMODCACHE": "task-owned initially empty directory",
+  "moduleSource": "packaged source archive with first-party local replacements only",
+  "sourceBundleSHA256": "sha256:6d1a43a649c60a575d0d477d8b9076483eb2d2da36a99ecb69d28eeb28574f7c",
+  "binarySHA256": "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a",
+  "admittedBinarySHA256": "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a",
+  "binaryMatchesAdmission": true,
+  "migrationSqlIncluded": true,
+  "exitCode": 0,
+  "stderr": "",
+  "observedAt": "2026-10-16T10:29:51Z",
+  "scope": "offline rebuild of the first-party migration CLI from the renewed corresponding-source archive; the renewed archive only adds migrations 00038-00043, which the CLI does not embed"
+}

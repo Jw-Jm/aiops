@@ -1,0 +1,15 @@
+{
+  "architecture": "linux/arm64",
+  "binarySHA256": "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a",
+  "sourceBundleSHA256": "sha256:6d1a43a649c60a575d0d477d8b9076483eb2d2da36a99ecb69d28eeb28574f7c",
+  "migrationCount": 43,
+  "nativeForwardMigrationExecuted": false,
+  "reason": "no Linux/arm64 execution target was available for this renewal: the isolated validation host is x86_64 with no aarch64 binfmt/QEMU registration, and the local machine is darwin/arm64 with local containers out of scope for this round",
+  "equivalentEvidence": [
+    "offline-rebuild-arm64.json: the renewed arm64 source archive rebuilds the already admitted binary byte for byte (sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a)",
+    "forward-migration-amd64.json: the same packaged migrations (identical per-file SHA-256 inventories) completed 00001-00043 and an idempotent rerun on PostgreSQL 17.11",
+    "the migration SQL is architecture independent and is shipped from one archive shared by both targets"
+  ],
+  "historicalNativeEvidence": "docs/evidence/sp07-20261009/migration-cli-live.json (native arm64 forward run through version 36 against the previous archive)",
+  "scope": "renewal record for the arm64 migration source admission: offline rebuild verified, native forward run not executed in this environment"
+}

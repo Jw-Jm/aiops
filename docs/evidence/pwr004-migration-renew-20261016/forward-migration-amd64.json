@@ -1,0 +1,197 @@
+{
+  "architecture": "linux/amd64",
+  "reference": "ops.local/amd64-poc/postgresql-bookworm:17.11",
+  "scope": "native amd64 db-migrate through all current forward-only SQL migrations (00001-00043) in an isolated, network-disabled PostgreSQL instance, followed by an idempotent rerun; not platform bootstrap or source/binary admission",
+  "network": "none",
+  "observedAt": "2026-10-16T10:29:26Z",
+  "finishedAt": "2026-10-16T10:29:28Z",
+  "binarySHA256": "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8",
+  "migrationCount": 43,
+  "migrationInventory": [
+    {
+      "name": "00001_roles_and_schemas.sql",
+      "sha256": "sha256:032375e73829d37cc5f4c2eb7dc02a8272abe9769748c43eb30b68a9219bb489"
+    },
+    {
+      "name": "00002_platform_meta.sql",
+      "sha256": "sha256:fb2368bef14f19fb341d7dd044e432476bf73bfdd3e40e1c13a5811a064c1482"
+    },
+    {
+      "name": "00003_finding.sql",
+      "sha256": "sha256:76bb22e2ec7845205c7c74fd46043d83384bbbdb31e45c67c6063e146c45acb8"
+    },
+    {
+      "name": "00004_incident.sql",
+      "sha256": "sha256:1b955c17ff20072449dbcba10059f67452972746ab9e08e0fcbf2603d2163a8c"
+    },
+    {
+      "name": "00005_investigation.sql",
+      "sha256": "sha256:c5b4bc8291681e6ae84493959a305cc285e8aaec1bf78adb98f7d5d9ce277d12"
+    },
+    {
+      "name": "00006_action_command.sql",
+      "sha256": "sha256:9e65bda817a727f5cf9b4f2ccde35aad3a2dba409c16c4ed3fa335ef5f54423e"
+    },
+    {
+      "name": "00007_audit.sql",
+      "sha256": "sha256:cdc931be2448ddf7908e5efde5a63456f1e8be4f38dfb5150474d9ba570040ff"
+    },
+    {
+      "name": "00008_rls.sql",
+      "sha256": "sha256:998fa0e1abae1f8c5d5ec9e83e5697309fb8720ec56e2058e8b9f2603371ca6e"
+    },
+    {
+      "name": "00009_idempotency_ledger.sql",
+      "sha256": "sha256:e1939bceac42393652f9047e564106ea4ace3a8aaf0b031f29594f55dc97935a"
+    },
+    {
+      "name": "00010_tenant_provisioning.sql",
+      "sha256": "sha256:dbb25a4fb0c836f06489f54f0a692df1ceeeeef589418b80b64afc200a827b91"
+    },
+    {
+      "name": "00011_source_registration_history.sql",
+      "sha256": "sha256:c229e7c4306061bea2761d60ff4f8fea5ae8ae8fb2b94f152c187f1810398da3"
+    },
+    {
+      "name": "00012_config_registry_lifecycle.sql",
+      "sha256": "sha256:4f4b33d65ed6109ef9d3d30233f0a8569bd28a3efd27a54498d1f7fb8c47cbca"
+    },
+    {
+      "name": "00013_audit_signed_segments.sql",
+      "sha256": "sha256:fcf777218563de288ab3ec09bbb4081931f33b9e30b481e004bc1af939babc30"
+    },
+    {
+      "name": "00014_audit_segment_predecessors.sql",
+      "sha256": "sha256:daf60c34a8e041545a948ede9bb3bc024a1e39f000e9baf3e97c7ffff9667534"
+    },
+    {
+      "name": "00015_source_schema_scope.sql",
+      "sha256": "sha256:489463cc491c4fc55d5019f716983aacb18ff0ec42b09a153b5fcc8833e56070"
+    },
+    {
+      "name": "00016_cluster_registration_metadata.sql",
+      "sha256": "sha256:d0c1634b42f73c1363463fd638b1cc522c12035e37e257b5c0433561518b7a8a"
+    },
+    {
+      "name": "00017_source_data_scope.sql",
+      "sha256": "sha256:b81e7d319dad75b35c7497218cfbe6b92cc935c77e95260efd5efb4efdc8b3ba"
+    },
+    {
+      "name": "00018_sp04_resources_evidence.sql",
+      "sha256": "sha256:530b266f0b1a4e798a5d7031adb3562cfe56057cdfddbd348ecd696a76fafcde"
+    },
+    {
+      "name": "00019_sp04_archive_ciphertext_bytes.sql",
+      "sha256": "sha256:8a6964fac98434e998738b185d58323b461e506224eefb964ec72b9fd76be4b7"
+    },
+    {
+      "name": "00020_sp04_request_ledger.sql",
+      "sha256": "sha256:8723ecb633ce46953f5a18bd32926054f370c43ea036c9466987b4ceaa3adc77"
+    },
+    {
+      "name": "00021_sp04_archive_protection.sql",
+      "sha256": "sha256:5536ed1585d096d4a00c8244537c52d8b24d20e2e2de92f0ab810d8b2e1f85ae"
+    },
+    {
+      "name": "00022_sp04_legal_hold_dependencies.sql",
+      "sha256": "sha256:48db045fb6aa3be3c7c5341ea3891cdfcfad3885cd607de1f16e20a9b3a384fc"
+    },
+    {
+      "name": "00023_sp04_archive_query_intent.sql",
+      "sha256": "sha256:9aa9a0eaa422916cd4587fb6b88dec9abda3828688d300f1937d32a6f8c86043"
+    },
+    {
+      "name": "00024_sp05_finding_incident.sql",
+      "sha256": "sha256:9cb99bcc9b0708e45d130132b868f0be22f425d1e72bd8d49bff42b1c82e01f3"
+    },
+    {
+      "name": "00025_sp05_incident_event_time.sql",
+      "sha256": "sha256:060b64e496f87c66ee59583c40a1b6acf9543d97cbeeba72a967d07abb353862"
+    },
+    {
+      "name": "00026_sp05_source_binding_lock.sql",
+      "sha256": "sha256:bc2bba6876396756d4d35d4199fbe7ecc6f8d388679c1e05b9e84ad1813eb23c"
+    },
+    {
+      "name": "00027_sp05_rca_and_poll.sql",
+      "sha256": "sha256:b5331558cc1a7edf3b61012953a552db051e229c7841f9a22940df5c96715e48"
+    },
+    {
+      "name": "00028_sp05_operator_lock.sql",
+      "sha256": "sha256:2239cc0d0ba2f5950c6eac13fb9ccfc8a007800005b833592063a45fb50236b7"
+    },
+    {
+      "name": "00029_sp05_evidence_links.sql",
+      "sha256": "sha256:ade4d630be1eea2b35ca5cbe44ecb4fd8a44216f054ac7ef0ade3fbf83357cf2"
+    },
+    {
+      "name": "00030_sp05_recipe_fence.sql",
+      "sha256": "sha256:62f9df6e3d2bee67c237616eec9c3fc42737309d35d521489a2b78a434d893fd"
+    },
+    {
+      "name": "00031_sp05_rca_postcheck.sql",
+      "sha256": "sha256:ae2acee61aa5d71c25f2187bff2b3b9c9f21720d64a4476d4afe7e893dccb919"
+    },
+    {
+      "name": "00032_sp05_transport_audit.sql",
+      "sha256": "sha256:1ed3e19db640c69e4a256b51356e089a37ae096b57ea315f8dfb1400a61797fb"
+    },
+    {
+      "name": "00033_sp05_poll_resolution_clock.sql",
+      "sha256": "sha256:860d6183772997a6243ef5856d7755b87f3e97590cb4166505818a6e46628e22"
+    },
+    {
+      "name": "00034_sp06_investigation_ledger.sql",
+      "sha256": "sha256:ed6c683b4c0e9be88840c2039ec95cee9819eea51177b06ec49512832aaa1a31"
+    },
+    {
+      "name": "00035_sp06_admission_data_classes.sql",
+      "sha256": "sha256:dd18b02dd9ddfada0de129cc753c63c66f9ec078043c753394f33bbab89d9e24"
+    },
+    {
+      "name": "00036_sp07_command_binding.sql",
+      "sha256": "sha256:f2e288dfe4de479e0654196febd66965cc19b37eeba2ed2d0ecdae9517396412"
+    },
+    {
+      "name": "00037_sp07_worker_authority.sql",
+      "sha256": "sha256:0819a77d4fa0c1a8a2e29987ddf2b5a1b2c1abb9eb817da7722fa6284008d801"
+    },
+    {
+      "name": "00038_sp08_safe_step_input_summary.sql",
+      "sha256": "sha256:114ed90f37b58b6bc83187c0793b2fee48d91a3545ed8c1e3a5e28d57358a05a"
+    },
+    {
+      "name": "00039_assistant_conversations.sql",
+      "sha256": "sha256:befbe3c55ccc536920868de86ca17c5de4e6ee537eeb82a5d072b478f042679a"
+    },
+    {
+      "name": "00040_assistant_job_v3.sql",
+      "sha256": "sha256:a352cbfccfc6b18bc3d0ad73475567ef7962504eab81fca7960d8a073c582452"
+    },
+    {
+      "name": "00041_assistant_binding.sql",
+      "sha256": "sha256:b5903d6d651a7a912d54b9a1cf9cd79754744e791b34e61c9e45202fb7243a7c"
+    },
+    {
+      "name": "00042_assistant_retention.sql",
+      "sha256": "sha256:8bf09511066890c564a2eeedca4f61368819a3829fb23f041804644cedde6f90"
+    },
+    {
+      "name": "00043_resource_observations.sql",
+      "sha256": "sha256:465e3a75e72b1599a914301b237c462bdc758543662cbff51c428c0bc0327297"
+    }
+  ],
+  "createDatabaseExitCode": 0,
+  "bootstrapToVersion1ExitCode": 0,
+  "provisionMigrationLoginExitCode": 0,
+  "forwardExitCode": 0,
+  "forwardVersion": 43,
+  "rerunExitCode": 0,
+  "rerunVersion": 43,
+  "idempotent": true,
+  "forwardMigrationPassed": true,
+  "bootstrapLog": "2026/10/16 10:29:28 OK   00001_roles_and_schemas.sql (5.29ms)\n2026/10/16 10:29:28 goose: successfully migrated database to version: 1\n",
+  "forwardLog": "2026/10/16 10:29:28 OK   00002_platform_meta.sql (17.69ms)\n2026/10/16 10:29:28 OK   00003_finding.sql (6.05ms)\n2026/10/16 10:29:28 OK   00004_incident.sql (3.34ms)\n2026/10/16 10:29:28 OK   00005_investigation.sql (4.17ms)\n2026/10/16 10:29:28 OK   00006_action_command.sql (3.92ms)\n2026/10/16 10:29:28 OK   00007_audit.sql (6.42ms)\n2026/10/16 10:29:28 OK   00008_rls.sql (6.06ms)\n2026/10/16 10:29:28 OK   00009_idempotency_ledger.sql (4.23ms)\n2026/10/16 10:29:28 OK   00010_tenant_provisioning.sql (1.35ms)\n2026/10/16 10:29:28 OK   00011_source_registration_history.sql (3.33ms)\n2026/10/16 10:29:28 OK   00012_config_registry_lifecycle.sql (5.75ms)\n2026/10/16 10:29:28 OK   00013_audit_signed_segments.sql (5.97ms)\n2026/10/16 10:29:28 OK   00014_audit_segment_predecessors.sql (2.44ms)\n2026/10/16 10:29:28 OK   00015_source_schema_scope.sql (972.52µs)\n2026/10/16 10:29:28 OK   00016_cluster_registration_metadata.sql (2.33ms)\n2026/10/16 10:29:28 OK   00017_source_data_scope.sql (1.29ms)\n2026/10/16 10:29:28 OK   00018_sp04_resources_evidence.sql (13.08ms)\n2026/10/16 10:29:28 OK   00019_sp04_archive_ciphertext_bytes.sql (889.85µs)\n2026/10/16 10:29:28 OK   00020_sp04_request_ledger.sql (2.6ms)\n2026/10/16 10:29:28 OK   00021_sp04_archive_protection.sql (991.93µs)\n2026/10/16 10:29:28 OK   00022_sp04_legal_hold_dependencies.sql (597.78µs)\n2026/10/16 10:29:28 OK   00023_sp04_archive_query_intent.sql (720.72µs)\n2026/10/16 10:29:28 OK   00024_sp05_finding_incident.sql (14.36ms)\n2026/10/16 10:29:28 OK   00025_sp05_incident_event_time.sql (793.89µs)\n2026/10/16 10:29:28 OK   00026_sp05_source_binding_lock.sql (919.66µs)\n2026/10/16 10:29:28 OK   00027_sp05_rca_and_poll.sql (5.27ms)\n2026/10/16 10:29:28 OK   00028_sp05_operator_lock.sql (903.91µs)\n2026/10/16 10:29:28 OK   00029_sp05_evidence_links.sql (2.4ms)\n2026/10/16 10:29:28 OK   00030_sp05_recipe_fence.sql (731.3µs)\n2026/10/16 10:29:28 OK   00031_sp05_rca_postcheck.sql (633.9µs)\n2026/10/16 10:29:28 OK   00032_sp05_transport_audit.sql (753.51µs)\n2026/10/16 10:29:28 OK   00033_sp05_poll_resolution_clock.sql (1.15ms)\n2026/10/16 10:29:28 OK   00034_sp06_investigation_ledger.sql (15.75ms)\n2026/10/16 10:29:28 OK   00035_sp06_admission_data_classes.sql (1.25ms)\n2026/10/16 10:29:28 OK   00036_sp07_command_binding.sql (15.2ms)\n2026/10/16 10:29:28 OK   00037_sp07_worker_authority.sql (1.02ms)\n2026/10/16 10:29:28 OK   00038_sp08_safe_step_input_summary.sql (882.47µs)\n2026/10/16 10:29:28 OK   00039_assistant_conversations.sql (15.17ms)\n2026/10/16 10:29:28 OK   00040_assistant_job_v3.sql (8.34ms)\n2026/10/16 10:29:28 OK   00041_assistant_binding.sql (2.03ms)\n2026/10/16 10:29:28 OK   00042_assistant_retention.sql (3.85ms)\n2026/10/16 10:29:28 OK   00043_resource_observations.sql (5.96ms)\n2026/10/16 10:29:28 goose: successfully migrated database to version: 43\n",
+  "rerunLog": "2026/10/16 10:29:28 goose: no migrations to run. current version: 43\n",
+  "rawMigrationCountIncludesRetainedHistory": true
+}

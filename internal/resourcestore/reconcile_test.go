@@ -57,7 +57,7 @@ func TestRestartReconcilesOnlyMissingNativeUIDs(t *testing.T) {
 		"k8s+v1://" + tenant + "/cluster/core/Node/node-a",
 	}}
 	s := nativeSnapshot("filtered")
-	s.GVR = kubernetes.GVR{Version: "v1", Resource: "pods"}
+	s.GVR = kubernetes.GVR{Version: "v1", Resource: "pods", Kind: "Pod"}
 	repo := Repository{Pool: pool, ExpectedRevision: 1, BackendLogicalID: "native"}
 	if err := repo.ReconcileNativeSnapshot(t.Context(), tenant, source, "cluster", s); err != nil {
 		t.Fatal(err)
