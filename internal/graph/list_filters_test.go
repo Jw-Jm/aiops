@@ -2,9 +2,11 @@ package graph
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"ops-platform/internal/contract"
 	"ops-platform/internal/integrations/kubernetes"
 	"ops-platform/internal/resource"
 	"testing"
@@ -120,6 +122,60 @@ func TestEmptyLabelIsDistinctFromMissingLabel(t *testing.T) {
 		q.Label = label
 		if validateList(q) == nil {
 			t.Fatalf("invalid label %q accepted", label)
+		}
+	}
+}
+
+func TestDomainFilterAndSummaryShareScopedPopulation(t *testing.T) {
+	gvr := kubernetes.GVR{Version: "v1", Resource: "pods"}
+	g := New("tenant-a", "cluster-a", "instance", []kubernetes.GVR{gvr})
+	g.SetOwner(1, time.Now().Add(time.Minute))
+	objects := []unstructured.Unstructured{object("Pod", "apps", "visible", "01", nil), object("Pod", "foreign", "hidden", "02", nil)}
+	objects[0].Object["status"] = map[string]any{"phase": "Running"}
+	if err := g.Replace(t.Context(), 1, kubernetes.Snapshot{GVR: gvr, Objects: objects, State: kubernetes.GVRState{LastListCompletedAt: time.Now(), WatchConnected: true, WatchContinuous: true, LastConnectivityProbeAt: time.Now()}}); err != nil {
+		t.Fatal(err)
+	}
+	q := Query{QueryKind: "list", IncludeDomains: true, Domain: "kubernetes", ExpectedOwnerEpoch: 1, MaxDepth: 1, MaxNodes: 1, MaxEdges: 2, Scope: Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps"}}}
+	got, err := g.Query(t.Context(), q)
+	if err != nil || len(got.Nodes) != 1 || got.Summary.ByDomain["kubernetes"].Total != 1 || got.Summary.ByDomain["kubernetes"].ByHealth["normal"] != 1 {
+		t.Fatalf("scope/domain summary %+v %v", got, err)
+	}
+	wire, marshalErr := json.Marshal(got)
+	if marshalErr != nil {
+		t.Fatal(marshalErr)
+	}
+	if err := contract.Validate("https://ops.local/schemas/resource-graph/v2", wire); err != nil {
+		t.Fatal("domain summary wire contract", err)
+	}
+	legacy := q
+	legacy.IncludeDomains = false
+	if QueryDigest(legacy) == QueryDigest(q) {
+		t.Fatal("domain summary flag not bound to cursor")
+	}
+	old, legacyErr := g.Query(t.Context(), legacy)
+	if legacyErr != nil || old.Summary.ByDomain != nil {
+		t.Fatal("legacy response acquired a new closed-schema field", legacyErr)
+	}
+	before := QueryDigest(q)
+	q.Domain = "storage"
+	if before == QueryDigest(q) {
+		t.Fatal("domain not bound to cursor")
+	}
+	got, err = g.Query(t.Context(), q)
+	if err != nil || len(got.Nodes) != 0 || got.Summary.Total != 0 {
+		t.Fatalf("nonmatching domain %+v %v", got, err)
+	}
+	q.Domain = "virtualization"
+	if _, err = g.Query(t.Context(), q); err == nil {
+		t.Fatal("deferred domain admitted")
+	}
+}
+
+func TestResourceDomainDoesNotBorrowPodOrVirtualizationSemantics(t *testing.T) {
+	for _, item := range []struct{ domain, kind, want string }{{"hardware", "Disk", "hardware"}, {"k8s", "PersistentVolumeClaim", "storage"}, {"k8s", "CSIDriver", "storage"}, {"k8s", "Service", "network"}, {"k8s", "Pod", "kubernetes"}, {"k8s", "VirtualMachine", "virtualization"}} {
+		e := resource.Entity{Kind: item.kind, CanonicalID: resource.CanonicalID{Domain: item.domain, Tenant: "tenant", Scope: "cluster", APIGroup: "core", Kind: item.kind, StableID: "uid"}.String()}
+		if actual := entityDomain(e); actual != item.want {
+			t.Fatal(item, actual)
 		}
 	}
 }

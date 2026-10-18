@@ -1,0 +1,4117 @@
+{
+  "schemaVersion": "platform-functional-inventory/v1",
+  "asOf": "2026-10-18",
+  "baseCommit": "b10b2f0bc378f06291dbfc04ddccaae3a555155d",
+  "includesWorkingTreeChanges": true,
+  "purpose": "全平台功能完成清单与下一步开发输入；不是发布/生产/真实验收通过声明",
+  "prdRequirementCount": 144,
+  "supplementCount": 12,
+  "moduleCount": 39,
+  "statusDefinitions": {
+    "implemented": "已确认相关入口及主机制源码；不表示所有验收条件均通过",
+    "partial": "存在主路径，但已确认有具体源码功能/工程缺项",
+    "missing": "该需求要求的具体功能入口/展示未实现；不表示所属模块整体不存在",
+    "needs_review": "已有相关实现，需求覆盖语义尚不足以判定完整或缺失",
+    "deferred": "按明确边界延期、禁用或后续增强；不计本轮前置阻断"
+  },
+  "verificationDefinitions": {
+    "runtime_unverified": "当前版本完整真实运行未验证；可有组件/历史限定证据",
+    "acceptance_unverified": "目标指标或完整场景未证明",
+    "environment_limited": "已记录来源、对象、授权、性能或实机条件限制，具体看备注；不推断全部为性能根因",
+    "disabled_or_deferred": "不运行或保持禁用"
+  },
+  "developmentCounts": {
+    "implemented": 145,
+    "needs_review": 2,
+    "deferred": 8,
+    "partial": 1
+  },
+  "rules": [
+    "测试映射只是覆盖入口，不意味着本次执行或整条需求通过。",
+    "历史运行证据只适用于其提交/环境/范围，不自动继承到本工作区。",
+    "混合虚拟化条目仅核对非虚拟化路径，VM 分项延期。",
+    "FR-141/ACC-012 遵守 ADR-0003：操作者本人确认，非第二人审批。",
+    "远程性能仅作记录；本次不连接远程、不启动容器/集群/浏览器。",
+    "矩阵是需求级追踪索引，未声称逐行审计全部代码或完全覆盖每条验收标准。",
+    "本次不实现完整 SP-09 兼容/复用/发行门禁，不自动发布/部署。"
+  ],
+  "modules": [
+    {
+      "id": "overview",
+      "title": "运行总览",
+      "owner": "overview",
+      "entries": [
+        "GET /api/v1/overview；页面 /overview"
+      ],
+      "implementation": [
+        "internal/httpapi/overview.go",
+        "web/src/pages/OverviewPage.tsx",
+        "internal/httpapi/overview_records.go",
+        "internal/graph/list_filters.go",
+        "internal/graph/ariadne_adapter.go"
+      ],
+      "tests": [
+        "web/tests/overview_resources.test.tsx",
+        "internal/httpapi/overview_test.go",
+        "test/integration/overview_records_test.go",
+        "internal/graph/list_filters_test.go"
+      ],
+      "ui": [
+        "web/src/pages/OverviewPage.tsx"
+      ],
+      "evidence": [
+        "docs/release/core-workflow-closeout.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "授权总览分项、领域健康联动与重点故障主机制已补齐；数据库查询真实执行及整页运行仍未验证。"
+    },
+    {
+      "id": "resources",
+      "title": "资源查询与详情",
+      "owner": "resources",
+      "entries": [
+        "GET /api/v1/resources",
+        "GET /api/v1/resources/by-canonical-id"
+      ],
+      "implementation": [
+        "internal/httpapi/resource_handlers.go",
+        "internal/graph/list_filters.go",
+        "internal/integrations/kubernetes/informer.go"
+      ],
+      "tests": [
+        "internal/graph/list_filters_test.go",
+        "test/integration/sp04_runtime_test.go",
+        "web/tests/overview_resources.test.tsx"
+      ],
+      "ui": [
+        "web/src/pages/ResourcesPage.tsx",
+        "web/src/pages/ResourceDetailPage.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/pre-sp07-20261008/current-native-business-status-r250.json"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "原生 GVR 与授权分页主路径存在；容器、事件、资源详情采用安全投影。"
+    },
+    {
+      "id": "hardware",
+      "title": "硬件采集与诊断",
+      "owner": "hardware",
+      "entries": [
+        "SP04 Redfish 采集；SP05 硬件 Inspection；资源详情"
+      ],
+      "implementation": [
+        "internal/integrations/redfish/inventory.go",
+        "internal/app/sp04_hardware.go",
+        "internal/inspection/hardware/npd_adapter.go",
+        "internal/rca/node_hardware.go"
+      ],
+      "tests": [
+        "internal/integrations/redfish/redfish_test.go",
+        "internal/integrations/redfish/sp05_diagnostics_test.go",
+        "internal/rca/node_hardware_test.go"
+      ],
+      "ui": [
+        "web/src/pages/ResourceDetailPage.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp05-dimm-failure.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "原生 Adapter、硬件投影与 DIMM/CPER 判据存在；真实 BMC 未验证，不能将协议 Fixture 视为实机验收。"
+    },
+    {
+      "id": "virtualization",
+      "title": "KubeVirt/CDI/VM 延期",
+      "owner": "virtualization",
+      "entries": [
+        "能力报告 disabled；不开放 VM 生命周期"
+      ],
+      "implementation": [
+        "internal/app/profile.go",
+        "deploy/profiles/kubernetes-containerd.yaml"
+      ],
+      "tests": [
+        "internal/app/profile_test.go",
+        "test/contract/upstream_graph_nonvirtual_test.go"
+      ],
+      "ui": [
+        "web/src/pages/CapabilitiesPage.tsx"
+      ],
+      "evidence": [
+        "docs/adr/0008-defer-kubevirt-cdi-development.md"
+      ],
+      "profile": "KubeVirt/CDI disabled、candidate、unverified",
+      "note": "既有源码/Fixture/物料保留；不恢复开发、部署或验收。"
+    },
+    {
+      "id": "identity",
+      "title": "资源身份与生命周期",
+      "owner": "identity",
+      "entries": [
+        "采集 → resolver → resource_entities；资源详情"
+      ],
+      "implementation": [
+        "internal/resource/resolver.go",
+        "internal/resourcestore/repository.go",
+        "internal/resourcestore/reconcile.go"
+      ],
+      "tests": [
+        "internal/resource/resolver_test.go",
+        "internal/resourcestore/sync_snapshot_test.go",
+        "internal/resourcestore/reconcile_test.go",
+        "test/integration/sp04_relist_replacement_test.go"
+      ],
+      "ui": [
+        "web/src/pages/ResourceDetailPage.tsx"
+      ],
+      "evidence": [
+        "docs/reviews/project-wide-2026-10-16/p2-followup-20261017.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "重列替换、过滤不等于删除及冷启动注销已有当前回归；不沿用旧 PWR-002/006 未修复状态。"
+    },
+    {
+      "id": "relations",
+      "title": "原生关系与溯源",
+      "owner": "relations",
+      "entries": [
+        "GET /api/v1/resources/neighbors"
+      ],
+      "implementation": [
+        "internal/integrations/kubernetes/projector.go",
+        "internal/graph/ontology_bridge.go",
+        "internal/graph/ariadne_adapter.go"
+      ],
+      "tests": [
+        "test/contract/upstream_graph_nonvirtual_test.go",
+        "internal/graph/upstream_conformance_test.go"
+      ],
+      "ui": [
+        "web/src/features/graph/GraphView.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp04-resource-evidence-runtime.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "非虚拟化原生关系主路径；VM 关系分项延期。"
+    },
+    {
+      "id": "network",
+      "title": "DeepFlow 动态通信与 L4/L7",
+      "owner": "network",
+      "entries": [
+        "query_deepflow；analytics network datasets；/assistant"
+      ],
+      "implementation": [
+        "internal/integrations/deepflow/live.go",
+        "internal/integrations/deepflow/adapter.go",
+        "internal/integrations/deepflow/summary.go",
+        "internal/analytics/network.go"
+      ],
+      "tests": [
+        "internal/integrations/deepflow/live_test.go",
+        "test/integration/assistant_deepflow_live_test.go",
+        "test/integration/assistant_window_proof_test.go"
+      ],
+      "ui": [
+        "web/src/features/assistant/FaultChainPanel.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/five-source-reverify-20261018/round5/acceptance-status.json"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "UID/容器/来源/半开窗与独立 oracle 门禁存在；当前联合 Graph 就绪失败，时间仍 unreliable。"
+    },
+    {
+      "id": "health",
+      "title": "健康与 Kubernetes 异常",
+      "owner": "health",
+      "entries": [
+        "SP05 Inspection；资源/Finding/Incident 页面"
+      ],
+      "implementation": [
+        "internal/graph/health.go",
+        "internal/graph/source_health.go",
+        "internal/inspection/kubernetes/official.go",
+        "internal/app/sp05_worker.go"
+      ],
+      "tests": [
+        "internal/inspection/kubernetes/inspection_test.go",
+        "test/integration/sp05_official_observations_test.go"
+      ],
+      "ui": [
+        "web/src/pages/ResourceDetailPage.tsx",
+        "web/src/components/CapabilityStatus.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp05-node-failure.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "确定性异常判据、健康与缺失/退化区分存在；不自动启用虚拟化。"
+    },
+    {
+      "id": "findings",
+      "title": "Finding 接入与生命周期",
+      "owner": "findings",
+      "entries": [
+        "POST /api/v1/findings:ingest",
+        "GET /api/v1/findings",
+        "GET /api/v1/findings/{findingId}"
+      ],
+      "implementation": [
+        "internal/finding/ingest.go",
+        "internal/finding/domain.go",
+        "internal/httpapi/sp05_list.go"
+      ],
+      "tests": [
+        "internal/finding/ingest_test.go",
+        "test/integration/sp05_finding_test.go",
+        "test/integration/sp05_order_audit_test.go"
+      ],
+      "ui": [
+        "web/src/pages/FindingsPage.tsx"
+      ],
+      "evidence": [
+        "docs/reviews/project-wide-2026-10-16/fix-status.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "幂等、occurrence、迟到/乱序及身份冲突信封修复存在；历史集成证据有明确范围。"
+    },
+    {
+      "id": "incidents",
+      "title": "Incident、恢复与时间线",
+      "owner": "incidents",
+      "entries": [
+        "GET /api/v1/incidents",
+        "POST /api/v1/incidents:merge",
+        "POST /api/v1/incidents/{incidentId}:split",
+        "GET /api/v1/incidents/{incidentId}/timeline"
+      ],
+      "implementation": [
+        "internal/incident/correlator.go",
+        "internal/incident/state_machine.go",
+        "internal/incident/split.go",
+        "internal/httpapi/sp05_reads.go",
+        "internal/httpapi/sp05_mutation.go"
+      ],
+      "tests": [
+        "internal/incident/correlator_test.go",
+        "internal/incident/reliable_start_test.go",
+        "test/integration/sp05_incident_test.go",
+        "web/tests/incident_workspace.test.tsx"
+      ],
+      "ui": [
+        "web/src/pages/IncidentWorkspace.tsx"
+      ],
+      "evidence": [
+        "docs/reviews/project-wide-2026-10-16/fix-status.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "生命周期、Merge/Split、稳定恢复与可靠起始时间门禁已有实现；逐类 timeline 事件展示另按专项 UI 验证。"
+    },
+    {
+      "id": "evidence",
+      "title": "Evidence、归档与重放",
+      "owner": "evidence",
+      "entries": [
+        "POST /api/v1/evidence:query",
+        "GET /api/v1/evidence/{evidenceId}"
+      ],
+      "implementation": [
+        "internal/evidence/domain.go",
+        "internal/evidence/repository.go",
+        "internal/evidence/archive.go",
+        "internal/evidence/recovery.go",
+        "internal/archive/store.go"
+      ],
+      "tests": [
+        "internal/evidence/archive_test.go",
+        "test/integration/sp04_archive_test.go",
+        "test/integration/sp04_archive_roles_test.go"
+      ],
+      "ui": [
+        "web/src/features/evidence/EvidencePanel.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/sp010203-core-final-20261001/README.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。"
+    },
+    {
+      "id": "graph",
+      "title": "诊断图、范围与新鲜度",
+      "owner": "graph",
+      "entries": [
+        "POST /api/v1/diagnostic-graphs:build",
+        "GET /api/v1/resources/neighbors"
+      ],
+      "implementation": [
+        "internal/graph/ariadne_adapter.go",
+        "internal/graph/protocol.go",
+        "internal/graph/lease.go",
+        "internal/graph/response.go"
+      ],
+      "tests": [
+        "internal/graph/graph_test.go",
+        "internal/graph/lease_test.go",
+        "test/contract/graph_replay_test.go",
+        "web/tests/graph_view.test.tsx"
+      ],
+      "ui": [
+        "web/src/features/graph/GraphView.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/five-source-reverify-20261018/round5/identity-timing-diagnostic.json"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "图内核、重建、游标/epoch、来源与前后身份栅栏存在；当前远程 Graph 就绪失败仅记录。"
+    },
+    {
+      "id": "rca",
+      "title": "确定性 RCA 与 Revision",
+      "owner": "rca",
+      "entries": [
+        "GET /api/v1/incidents/{incidentId}/rca",
+        "GET /api/v1/incidents/{incidentId}/rca/revisions"
+      ],
+      "implementation": [
+        "internal/rca/engine.go",
+        "internal/rca/recipe.go",
+        "internal/rca/repository.go",
+        "internal/rca/runtime_fence_test.go"
+      ],
+      "tests": [
+        "internal/rca/recipe_test.go",
+        "internal/rca/causal_test.go",
+        "test/integration/sp05_review_rca_test.go"
+      ],
+      "ui": [
+        "web/src/features/rca/RCAPanel.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp05-golden-slices.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "confirmed/probable/unresolved、证据引用和追加 revision；少时间或关系资格时保留缺口，不构成代码未开发。"
+    },
+    {
+      "id": "investigation",
+      "title": "持久调查与恢复",
+      "owner": "investigation",
+      "entries": [
+        "POST /api/v1/incidents/{incidentId}/investigations",
+        "GET /api/v1/investigations/{jobId}/events",
+        "POST /api/v1/investigations/{jobId}:cancel"
+      ],
+      "implementation": [
+        "internal/investigation/repository.go",
+        "internal/investigation/recovery.go",
+        "internal/app/sp06_runtime.go",
+        "services/investigator/src/investigator/worker.py"
+      ],
+      "tests": [
+        "test/integration/sp06_job_test.go",
+        "test/integration/sp06_recovery_test.go",
+        "test/integration/sp06_sse_live_test.go",
+        "web/tests/investigation.test.tsx"
+      ],
+      "ui": [
+        "web/src/features/investigation/InvestigationPanel.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp06-investigation-runtime.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "持久 Job/Step、租约 generation、取消/接管与模型离线降级已接通。"
+    },
+    {
+      "id": "tools",
+      "title": "语义工具、授权与预算",
+      "owner": "tools",
+      "entries": [
+        "标准 MCP /mcp；调查 Step 账本"
+      ],
+      "implementation": [
+        "internal/investigation/mcp/server.go",
+        "internal/investigation/tools/catalog.go",
+        "internal/investigation/context_signer.go",
+        "internal/investigation/allocation.go"
+      ],
+      "tests": [
+        "internal/investigation/mcp/server_test.go",
+        "test/integration/sp06_mcp_test.go",
+        "test/integration/sp06_review_boundaries_test.go"
+      ],
+      "ui": [
+        "web/src/features/investigation/StepLedger.tsx"
+      ],
+      "evidence": [
+        "docs/reviews/project-wide-2026-10-16/fix-status.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "短时 Context/JTI/序列、真实预算与成功提交复用；历史 token 预留/展开成本缺陷已修复。"
+    },
+    {
+      "id": "impact",
+      "title": "影响范围与分类",
+      "owner": "impact",
+      "entries": [
+        "GET /api/v1/resources/impact-scope"
+      ],
+      "implementation": [
+        "internal/graph/impact.go",
+        "internal/rca/impact.go"
+      ],
+      "tests": [
+        "internal/rca/impact_test.go",
+        "internal/graph/sp05_hardware_impact_test.go",
+        "web/tests/graph_view.test.tsx"
+      ],
+      "ui": [
+        "web/src/features/graph/GraphView.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp05-dimm-failure.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "直接、间接、仅依赖分类已实现；正式 VM 链路分项延期。"
+    },
+    {
+      "id": "plans",
+      "title": "处置建议与 ActionPlan",
+      "owner": "plans",
+      "entries": [
+        "POST /api/v1/action-plans",
+        "POST /api/v1/action-plans/{actionPlanId}:accept",
+        "POST /api/v1/action-plans/{actionPlanId}:dismiss"
+      ],
+      "implementation": [
+        "internal/action/plan.go",
+        "internal/investigation/result.go",
+        "api/schemas/action-plan-v2.schema.json"
+      ],
+      "tests": [
+        "test/integration/sp06_validator_live_test.go",
+        "web/tests/manual_command_flow.test.tsx"
+      ],
+      "ui": [
+        "web/src/features/action/SuggestionCard.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/sp07-20261009/README.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "建议与操作者实际命令分离，ActionPlan 状态不等同执行；真实模型建议质量独立。"
+    },
+    {
+      "id": "commands",
+      "title": "人工确认与受控执行",
+      "owner": "commands",
+      "entries": [
+        "POST /api/v1/commands:risk-assess",
+        "POST /api/v1/commands:risk-acknowledge",
+        "POST /api/v1/command-executions"
+      ],
+      "implementation": [
+        "internal/action/service.go",
+        "internal/action/runner_protocol.go",
+        "internal/auth/stepup.go",
+        "internal/httpapi/action_handlers.go"
+      ],
+      "tests": [
+        "internal/action/service_test.go",
+        "test/integration/sp07_command_test.go",
+        "test/integration/stepup_replay_test.go",
+        "test/security/sp07_execution_profile_test.go",
+        "web/tests/command_authorization.test.tsx"
+      ],
+      "ui": [
+        "web/src/features/action/CommandComposer.tsx",
+        "web/src/features/action/CommandEditor.tsx"
+      ],
+      "evidence": [
+        "docs/adr/0003-manual-command-remediation.md",
+        "docs/evidence/sp07-20261009/README.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "本人实际命令确认、必要 step-up、最多一次 dispatch、不确定结果先对账；无审批人流程、无模型自动执行。"
+    },
+    {
+      "id": "postcheck",
+      "title": "处置后检查与回退",
+      "owner": "postcheck",
+      "entries": [
+        "GET /api/v1/command-executions/{executionId}/post-check"
+      ],
+      "implementation": [
+        "internal/app/sp07_postcheck.go",
+        "internal/action/postcheck.go",
+        "internal/action/plan.go",
+        "internal/action/postcheck_support.go",
+        "web/src/features/action/RiskPanel.tsx",
+        "internal/action/execution_relation.go",
+        "internal/action/postcheck_report.go",
+        "web/src/features/action/CommandComposer.tsx"
+      ],
+      "tests": [
+        "internal/action/kubernetes_executor_test.go",
+        "test/integration/sp07_command_test.go",
+        "web/tests/postcheck.test.tsx",
+        "internal/action/postcheck_support_test.go",
+        "internal/action/execution_relation_test.go",
+        "internal/action/postcheck_report_test.go",
+        "web/tests/command_authorization.test.tsx"
+      ],
+      "ui": [
+        "web/src/features/action/PostCheckPanel.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/sp07-20261009/README.md",
+        "docs/release/core-workflow-closeout.md",
+        "docs/release/disposition-verification-closeout.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "共用冻结报告和人工执行关联已补齐；Node/PVC 的合格原生判据可决断，其他目标 inconclusive。回退关系记录实际尝试，不证明业务回退目标已达成。"
+    },
+    {
+      "id": "audit",
+      "title": "审计与不可抵赖",
+      "owner": "audit",
+      "entries": [
+        "GET /api/v1/audit-records",
+        "GET /api/v1/audit-records/{auditId}"
+      ],
+      "implementation": [
+        "internal/audit/append.go",
+        "internal/audit/segments.go",
+        "internal/audit/merkle.go",
+        "internal/httpapi/audit_handlers.go"
+      ],
+      "tests": [
+        "internal/audit/append_test.go",
+        "internal/audit/segment_test.go",
+        "test/integration/audit_segments_test.go",
+        "web/tests/admin_audit.test.tsx"
+      ],
+      "ui": [
+        "web/src/pages/admin/AuditPage.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/sp010203-core-final-20261001/README.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "租户审计、签名段/Merkle/前驱验证、授权查询存在；不自动宣称所有新增行为均已运行审计。"
+    },
+    {
+      "id": "registration",
+      "title": "来源与集群管理",
+      "owner": "registration",
+      "entries": [
+        "GET /api/v1/admin/source-registrations",
+        "GET /api/v1/admin/clusters"
+      ],
+      "implementation": [
+        "internal/source/service.go",
+        "internal/source/cluster.go",
+        "internal/httpapi/source_handlers.go",
+        "internal/httpapi/cluster_handlers.go"
+      ],
+      "tests": [
+        "internal/source/service_test.go",
+        "test/integration/source_test.go",
+        "web/tests/admin_audit.test.tsx"
+      ],
+      "ui": [
+        "web/src/pages/admin/AdminPage.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp03-foundation-runtime.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "非虚拟化注册、来源版本/范围、凭据轮换和状态；来源配置不等于实际能力已合格。"
+    },
+    {
+      "id": "registry",
+      "title": "策略、配方与工具管理",
+      "owner": "registry",
+      "entries": [
+        "GET /api/v1/admin/tools",
+        "POST /api/v1/admin/registry-drafts",
+        "POST /api/v1/admin/registry-drafts/{draftId}:publish",
+        "POST /api/v1/admin/registry-activations"
+      ],
+      "implementation": [
+        "internal/configregistry/service.go",
+        "internal/httpapi/config_handlers.go"
+      ],
+      "tests": [
+        "internal/configregistry/service_test.go",
+        "internal/configregistry/sp05_recipe_test.go",
+        "web/tests/registry_recovery.test.tsx"
+      ],
+      "ui": [
+        "web/src/pages/admin/RegistryEditor.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp03-foundation-runtime.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "配置草稿、验证/签名发布/激活/退役与双角色边界；清单只证明主路径，不替代每种策略内容验收。"
+    },
+    {
+      "id": "workbench",
+      "title": "统一工作台与证据交互",
+      "owner": "workbench",
+      "entries": [
+        "页面 /incidents/:incidentId、/assistant"
+      ],
+      "implementation": [
+        "web/src/pages/IncidentWorkspace.tsx",
+        "web/src/features/assistant/FaultChainPanel.tsx",
+        "web/src/features/assistant/DiagnosisAnswer.tsx"
+      ],
+      "tests": [
+        "web/tests/incident_workspace.test.tsx",
+        "web/tests/fault_chain.test.tsx",
+        "web/tests/fault_chain_checks.test.tsx",
+        "web/tests/assistant_status.test.tsx"
+      ],
+      "ui": [
+        "web/src/pages/IncidentWorkspace.tsx",
+        "web/src/features/assistant/FaultChainPanel.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/fault-chain-ui-20261015/README.md",
+        "docs/evidence/five-source-reverify-20261018/round5/acceptance-status.json"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "组件交互及真实 API 合同路径已有；最终同轮真实模型页面闭环尚未通过。"
+    },
+    {
+      "id": "victoria",
+      "title": "指标与日志来源",
+      "owner": "victoria",
+      "entries": [
+        "analytics 指标/日志；query_metrics/query_logs"
+      ],
+      "implementation": [
+        "internal/evidence/victoria.go",
+        "internal/analytics/victoria.go",
+        "internal/analytics/log_trend.go"
+      ],
+      "tests": [
+        "internal/evidence/victoria_adapters_test.go",
+        "test/integration/assistant_live_source_test.go"
+      ],
+      "ui": [
+        "web/src/features/assistant/QueryResultView.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/five-source-reverify-20261018/round5/live-source/receipt.json"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "同 UID/租户/窗口与来源 coverage；样例不作总体，历史真实采集有界。"
+    },
+    {
+      "id": "kubeapi",
+      "title": "原生 Kubernetes 来源",
+      "owner": "kubeapi",
+      "entries": [
+        "SP04 list/watch → graph/history；SP05 原生查询"
+      ],
+      "implementation": [
+        "internal/integrations/kubernetes/informer.go",
+        "internal/integrations/kubernetes/projection_nested.go",
+        "internal/app/sp04_collector.go"
+      ],
+      "tests": [
+        "internal/integrations/kubernetes/rate_budget_test.go",
+        "test/integration/sp04_runtime_test.go"
+      ],
+      "ui": [
+        "web/src/pages/CapabilitiesPage.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp04-resource-evidence-runtime.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "共享 QPS、List/Watch、重列与 UID 绑定；远程性能只留档。"
+    },
+    {
+      "id": "model",
+      "title": "模型 Profile 与 HolmesGPT",
+      "owner": "model",
+      "entries": [
+        "SP06 调查；Assistant 解释轮次"
+      ],
+      "implementation": [
+        "internal/modelprofile/profile.go",
+        "services/investigator/src/investigator/holmes_adapter.py",
+        "services/investigator/src/investigator/budget.py"
+      ],
+      "tests": [
+        "internal/modelprofile/profile_test.go",
+        "services/investigator/tests/test_assistant_binding.py",
+        "services/investigator/tests/test_context_projection_unittest.py"
+      ],
+      "ui": [
+        "web/src/pages/AssistantPage.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/deepseek-acceptance-20261016/README.md",
+        "docs/evidence/five-source-reverify-20261018/round5/prior-retention-reassessment.json"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "适配器与配置准入存在；真实机制、外部探针、中文质量分别记录，旧 6/6 已撤回。"
+    },
+    {
+      "id": "persistence",
+      "title": "领域、时间与保留",
+      "owner": "persistence",
+      "entries": [
+        "租户事务、迁移、归档/引用闭包与保留 worker"
+      ],
+      "implementation": [
+        "internal/persistence/tenant_tx.go",
+        "internal/evidence/retention.go",
+        "internal/assistant/retention.go",
+        "internal/incident/reliable_start_test.go",
+        "migrations/00043_resource_observations.sql"
+      ],
+      "tests": [
+        "test/integration/migrations_test.go",
+        "test/integration/assistant_scope_retention_test.go",
+        "internal/incident/reliable_start_test.go"
+      ],
+      "ui": [
+        "web/src/components/EnvelopeMeta.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/database-migrations.md",
+        "docs/reviews/project-wide-2026-10-16/fix-status.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "前向迁移、时间可靠性、tenant/RLS 与引用依赖闭包存在；完整保留恢复仍需独立验收。"
+    },
+    {
+      "id": "authorization",
+      "title": "身份、租户与授权",
+      "owner": "authorization",
+      "entries": [
+        "OIDC → session/role bindings → 每次授权；/auth/callback"
+      ],
+      "implementation": [
+        "internal/auth/oidc.go",
+        "internal/auth/authorize.go",
+        "internal/persistence/tenant_tx.go",
+        "internal/httpapi/contract_routes.go"
+      ],
+      "tests": [
+        "internal/auth/auth_test.go",
+        "test/security/role_isolation_test.go",
+        "test/integration/tenant_test.go",
+        "internal/httpapi/contract_routes_test.go"
+      ],
+      "ui": [
+        "web/src/auth/guards.tsx",
+        "web/src/auth/StepUpControl.tsx"
+      ],
+      "evidence": [
+        "docs/reviews/project-wide-2026-10-16/fix-status.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "operator/platform_admin 无继承，租户/集群/namespace/资源/动作/data_class 边界；应用过滤不等同 RLS。"
+    },
+    {
+      "id": "model-safety",
+      "title": "模型数据边界",
+      "owner": "model-safety",
+      "entries": [
+        "MCP 安全投影 → provider 消息 → Go Validator"
+      ],
+      "implementation": [
+        "services/investigator/src/investigator/redaction.py",
+        "services/investigator/src/investigator/assistant_binding.py",
+        "internal/investigation/result.go",
+        "internal/integrations/kubernetes/projection_nested.go"
+      ],
+      "tests": [
+        "services/investigator/tests/test_assistant_binding.py",
+        "test/integration/sp06_review_boundaries_test.go"
+      ],
+      "ui": [
+        "web/src/features/assistant/DiagnosisAnswer.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp06-investigation-runtime.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "不可信来源降权、敏感投影与输出引用校验存在；安全测试文件存在不等同整个威胁面已穷尽。"
+    },
+    {
+      "id": "runtime-security",
+      "title": "工作负载与网络边界",
+      "owner": "runtime-security",
+      "entries": [
+        "Chart securityContext、NetworkPolicy、mTLS/工作负载证书"
+      ],
+      "implementation": [
+        "deploy/charts/ops-platform/templates/deployments.yaml",
+        "internal/auth/workload.go",
+        "internal/app/workload_identity.go"
+      ],
+      "tests": [
+        "test/security/workload_identity_test.go",
+        "test/integration/sp06_native_chart_test.go",
+        "test/integration/workload_identity_test.go"
+      ],
+      "ui": [],
+      "evidence": [
+        "docs/adr/0026-sp06-nonvirtual-investigation.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "受控身份、来源/模型允许目的地与隔离 Runner；生产环境需按实际发行验证。"
+    },
+    {
+      "id": "supplychain",
+      "title": "供应链与离线交付",
+      "owner": "supplychain",
+      "entries": [
+        "opsctl bundle build/verify/import/install"
+      ],
+      "implementation": [
+        "internal/bundle/importer.go",
+        "internal/bundle/installer.go",
+        "internal/supplychain/catalog.go",
+        "third_party/manifest.yaml"
+      ],
+      "tests": [
+        "internal/bundle/verify_test.go",
+        "internal/bundle/migration_admission_test.go",
+        "test/contract/upstream_reuse_test.go"
+      ],
+      "ui": [],
+      "evidence": [
+        "docs/evidence/sp010203-core-final-20261001/README.md",
+        "docs/reviews/project-wide-2026-10-16/fix-status.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "历史 arm64/core 离线安装与新版迁移源码重签证据分别存在，最新全平台 Bundle/升级回滚未全验。"
+    },
+    {
+      "id": "performance",
+      "title": "时延、吞吐与规模目标",
+      "owner": "performance",
+      "entries": [
+        "API/采集/队列/Graph/Evidence 主路径的性能约束"
+      ],
+      "implementation": [
+        "internal/observability/metrics.go",
+        "internal/finding/ingest.go",
+        "internal/incident/correlator.go",
+        "internal/graph/ariadne_adapter.go"
+      ],
+      "tests": [
+        "internal/graph/upstream_conformance_test.go",
+        "internal/graph/graph_test.go",
+        "test/integration/pre_sp07_concurrency_live_test.go"
+      ],
+      "ui": [],
+      "evidence": [
+        "docs/evidence/five-source-reverify-20261018/round5/identity-timing-host.json",
+        "docs/evidence/sp07-20261009/README.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "机制有代码不代表满足月度 99.9%、20 万对象、100 Finding/s 或 10 并发的端到端目标；按用户要求不追加远程性能测试。"
+    },
+    {
+      "id": "reliability",
+      "title": "持久化与无状态故障",
+      "owner": "reliability",
+      "entries": [
+        "进程重启 → 持久数据库/Step/Outbox 恢复"
+      ],
+      "implementation": [
+        "internal/investigation/recovery.go",
+        "internal/finding/outbox.go",
+        "internal/incident/correlator.go"
+      ],
+      "tests": [
+        "test/integration/sp05_process_crash_test.go",
+        "test/integration/sp06_recovery_test.go"
+      ],
+      "ui": [],
+      "evidence": [
+        "docs/runbooks/sp06-investigation-runtime.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "进程故障恢复有机制；生产多实例故障不等同已有隔离场景验证。"
+    },
+    {
+      "id": "disaster-recovery",
+      "title": "数据库与归档灾备",
+      "owner": "disaster-recovery",
+      "entries": [
+        "后续生产灾备阶段，不在当前功能开发范围"
+      ],
+      "implementation": [
+        "docs/runbooks/database-migrations.md",
+        "docs/runbooks/dev-offline-install.md"
+      ],
+      "tests": [
+        "test/integration/sp04_archive_test.go"
+      ],
+      "ui": [],
+      "evidence": [
+        "docs/plans/v1.0-operational-analysis-completion.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "归档一致性测试不能证明 RPO≤15min/RTO≤4h；生产 HA/灾备独立延期。"
+    },
+    {
+      "id": "degradation",
+      "title": "来源与图降级",
+      "owner": "degradation",
+      "entries": [
+        "source health / graph fresh-partial-stale-rebuilding"
+      ],
+      "implementation": [
+        "internal/evidence/domain.go",
+        "internal/graph/source_health.go",
+        "internal/graph/response.go"
+      ],
+      "tests": [
+        "internal/graph/graph_test.go",
+        "test/integration/sp05_source_domain_test.go"
+      ],
+      "ui": [
+        "web/src/components/CapabilityStatus.tsx",
+        "web/src/features/assistant/DiagnosisAnswer.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/five-source-reverify-20261018/round5/README.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "来源缺失不补零，图不合格不冒充 fresh；远程错误已明确保留。"
+    },
+    {
+      "id": "pyrca",
+      "title": "PyRCA 禁用与降级",
+      "owner": "pyrca",
+      "entries": [
+        "保持 disabled，不阻断确定性 RCA"
+      ],
+      "implementation": [
+        "internal/app/sp05_config.go",
+        "internal/rca/engine.go"
+      ],
+      "tests": [
+        "internal/rca/recipe_test.go"
+      ],
+      "ui": [],
+      "evidence": [
+        "docs/adr/0020-sp05-pyrca-disabled-gain-decision.md"
+      ],
+      "profile": "PyRCA disabled/excluded",
+      "note": "已有明确不准入裁决；不是待自动恢复的业务功能。"
+    },
+    {
+      "id": "operations",
+      "title": "平台自身可观测与 Runbook",
+      "owner": "operations",
+      "entries": [
+        "/healthz、/readyz、metrics；运行日志；Runbook"
+      ],
+      "implementation": [
+        "internal/observability/runtime.go",
+        "internal/observability/metrics.go",
+        "internal/observability/tracing.go",
+        "internal/app/runtime_observe.go",
+        "deploy/charts/ops-platform/templates/deployments.yaml",
+        "internal/observability/business.go",
+        "internal/app/business_metrics.go",
+        "internal/app/audit_runtime.go",
+        "Makefile",
+        "scripts/check-test-report.py"
+      ],
+      "tests": [
+        "test/contract/platform_metrics_port_test.go",
+        "internal/httpapi/observability_middleware_test.go",
+        "internal/observability/business_test.go",
+        "internal/app/business_metrics_test.go",
+        "test/contract/verification_targets_test.go"
+      ],
+      "ui": [
+        "web/src/pages/CapabilitiesPage.tsx"
+      ],
+      "evidence": [
+        "docs/runbooks/sp03-foundation-runtime.md",
+        "docs/runbooks/sp04-resource-evidence-runtime.md",
+        "docs/runbooks/sp07-command-remediation.md",
+        "docs/release/core-workflow-closeout.md",
+        "docs/runbooks/development-tests.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "已有探针与业务指标；Worker 快照总预算两秒，失败 NaN。真实部署、指标性能与 SLO 仍未验证。"
+    },
+    {
+      "id": "accuracy",
+      "title": "准确性目标与黄金数据",
+      "owner": "accuracy",
+      "entries": [
+        "resolver/关系/Inspection/RCA 黄金与回放集合"
+      ],
+      "implementation": [
+        "internal/resource/resolver.go",
+        "internal/graph/ariadne_adapter.go",
+        "internal/finding/precision_test.go",
+        "internal/rca/engine.go"
+      ],
+      "tests": [
+        "internal/resource/resolver_test.go",
+        "test/contract/graph_replay_test.go",
+        "test/contract/inspection_replay_test.go",
+        "internal/rca/recipe_test.go"
+      ],
+      "ui": [],
+      "evidence": [
+        "docs/runbooks/sp05-golden-slices.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "有固定样例与回放入口；不能用单元样例替代规定数据集上的召回率/Top-3 命中率报告。"
+    },
+    {
+      "id": "pvc-scenario",
+      "title": "PVC/CSI 纵向场景",
+      "owner": "pvc-scenario",
+      "entries": [
+        "PVC Finding → 诊断图/recipe → 原生 Post-check"
+      ],
+      "implementation": [
+        "internal/rca/recipe.go",
+        "internal/inspection/kubernetes/official.go",
+        "internal/app/sp07_postcheck.go"
+      ],
+      "tests": [
+        "test/integration/sp05_golden_vertical_test.go",
+        "test/integration/sp07_command_test.go"
+      ],
+      "ui": [
+        "web/src/pages/IncidentWorkspace.tsx"
+      ],
+      "evidence": [
+        "docs/evidence/sp07-20261009/README.md",
+        "docs/runbooks/sp05-pvc-csi-failure.md"
+      ],
+      "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
+      "note": "历史 PVC Pending→Bound 与 Post-check 有实测；不等于本次助手 PVC 实时任务已验证。"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "运行总览",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 420
+      },
+      "source": "PRD",
+      "module": "overview",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "当前主机制源码、本地单元/组件/合同回归；数据库集成仅编译",
+      "scopeNote": "当前授权单集群；活动 Finding、open/critical Incident、当前主体运行中 Investigation 分项已接入。硬件数来自已观测 PhysicalServer，缺观测为未知；VM 分项延期。",
+      "gapIds": [
+        "G-001"
+      ],
+      "testExecution": "核心流程本地回归通过；具体范围见 docs/release/core-workflow-closeout.md。真实 PostgreSQL/远程页面未运行，不等同整条验收通过。"
+    },
+    {
+      "id": "FR-002",
+      "title": "健康分布",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 447
+      },
+      "source": "PRD",
+      "module": "overview",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "当前主机制源码、本地单元/组件/合同回归；数据库集成仅编译",
+      "scopeNote": "Hardware/Kubernetes/Network/Storage 领域健康汇总及过滤链接已接入；按授权后同一资源集合分页前统计。网络资源健康不代表链路质量；未观测领域为未知，KubeVirt 延期。",
+      "gapIds": [
+        "G-002"
+      ],
+      "testExecution": "核心流程本地回归通过；具体范围见 docs/release/core-workflow-closeout.md。真实 PostgreSQL/远程页面未运行，不等同整条验收通过。"
+    },
+    {
+      "id": "FR-003",
+      "title": "重点故障展示",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 465
+      },
+      "source": "PRD",
+      "module": "overview",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "当前主机制源码、本地单元/组件/合同回归；数据库集成仅编译",
+      "scopeNote": "首页显示最多五条当前可见 open critical/warning Incident，严重度/开始时间/ID 排序；真实时间缺失不推算，RCA 影响仅披露当前仍可授权的冻结结果。",
+      "gapIds": [
+        "G-003"
+      ],
+      "testExecution": "核心流程本地回归通过；具体范围见 docs/release/core-workflow-closeout.md。真实 PostgreSQL/远程页面未运行，不等同整条验收通过。"
+    },
+    {
+      "id": "FR-010",
+      "title": "统一资源查询",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 484
+      },
+      "source": "PRD",
+      "module": "resources",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "原生 GVR 与授权分页主路径存在；容器、事件、资源详情采用安全投影。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-011",
+      "title": "资源详情",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 506
+      },
+      "source": "PRD",
+      "module": "resources",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "原生 GVR 与授权分页主路径存在；容器、事件、资源详情采用安全投影。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-012",
+      "title": "物理硬件资源支持",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 524
+      },
+      "source": "PRD",
+      "module": "hardware",
+      "development": "needs_review",
+      "verification": "environment_limited",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "已见 PhysicalServer/CPU/DIMM/NIC/Disk/PSU/Fan 投影，未见独立 BMC 实体投影；需确认 BMC 信息展示是否满足正式条目。真实 BMC 未验另作环境项。",
+      "gapIds": [
+        "C-001"
+      ],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-013",
+      "title": "Kubernetes 资源支持",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 553
+      },
+      "source": "PRD",
+      "module": "resources",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "原生 GVR 与授权分页主路径存在；容器、事件、资源详情采用安全投影。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-014",
+      "title": "KubeVirt 资源支持",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 577
+      },
+      "source": "PRD",
+      "module": "virtualization",
+      "development": "deferred",
+      "verification": "disabled_or_deferred",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "既有源码/Fixture/物料保留；不恢复开发、部署或验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-020",
+      "title": "统一资源身份",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 601
+      },
+      "source": "PRD",
+      "module": "identity",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "重列替换、过滤不等于删除及冷启动注销已有当前回归；不沿用旧 PWR-002/006 未修复状态。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-021",
+      "title": "身份匹配状态",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 609
+      },
+      "source": "PRD",
+      "module": "identity",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "重列替换、过滤不等于删除及冷启动注销已有当前回归；不沿用旧 PWR-002/006 未修复状态。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-022",
+      "title": "基础资源关系",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 629
+      },
+      "source": "PRD",
+      "module": "relations",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "非虚拟化原生关系主路径；VM 关系分项延期。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-023",
+      "title": "动态通信关系",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 650
+      },
+      "source": "PRD",
+      "module": "network",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "UID/容器/来源/半开窗与独立 oracle 门禁存在；当前联合 Graph 就绪失败，时间仍 unreliable。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-024",
+      "title": "关系溯源",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 658
+      },
+      "source": "PRD",
+      "module": "relations",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "非虚拟化原生关系主路径；VM 关系分项延期。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-030",
+      "title": "资源健康状态",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 674
+      },
+      "source": "PRD",
+      "module": "health",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "确定性异常判据、健康与缺失/退化区分存在；不自动启用虚拟化。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-031",
+      "title": "Kubernetes 异常识别",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 693
+      },
+      "source": "PRD",
+      "module": "health",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "确定性异常判据、健康与缺失/退化区分存在；不自动启用虚拟化。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-032",
+      "title": "KubeVirt 异常识别",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 712
+      },
+      "source": "PRD",
+      "module": "virtualization",
+      "development": "deferred",
+      "verification": "disabled_or_deferred",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "既有源码/Fixture/物料保留；不恢复开发、部署或验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-033",
+      "title": "硬件异常识别",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 729
+      },
+      "source": "PRD",
+      "module": "hardware",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "原生 Adapter、硬件投影与 DIMM/CPER 判据存在；真实 BMC 未验证，不能将协议 Fixture 视为实机验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-034",
+      "title": "数据不完整标识",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 746
+      },
+      "source": "PRD",
+      "module": "health",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "确定性异常判据、健康与缺失/退化区分存在；不自动启用虚拟化。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-040",
+      "title": "Finding 标准化",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 760
+      },
+      "source": "PRD",
+      "module": "findings",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "幂等、occurrence、迟到/乱序及身份冲突信封修复存在；历史集成证据有明确范围。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-041",
+      "title": "Finding 生命周期",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 780
+      },
+      "source": "PRD",
+      "module": "findings",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "幂等、occurrence、迟到/乱序及身份冲突信封修复存在；历史集成证据有明确范围。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-042",
+      "title": "Finding 去重",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 794
+      },
+      "source": "PRD",
+      "module": "findings",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "幂等、occurrence、迟到/乱序及身份冲突信封修复存在；历史集成证据有明确范围。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-043",
+      "title": "Finding 再发生",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 802
+      },
+      "source": "PRD",
+      "module": "findings",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "幂等、occurrence、迟到/乱序及身份冲突信封修复存在；历史集成证据有明确范围。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-044",
+      "title": "乱序与迟到处理",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 810
+      },
+      "source": "PRD",
+      "module": "findings",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "幂等、occurrence、迟到/乱序及身份冲突信封修复存在；历史集成证据有明确范围。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-045",
+      "title": "Finding 详情",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 825
+      },
+      "source": "PRD",
+      "module": "findings",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "幂等、occurrence、迟到/乱序及身份冲突信封修复存在；历史集成证据有明确范围。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-050",
+      "title": "Incident 自动生成",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 845
+      },
+      "source": "PRD",
+      "module": "incidents",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "生命周期、Merge/Split、稳定恢复与可靠起始时间门禁已有实现；逐类 timeline 事件展示另按专项 UI 验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-051",
+      "title": "Incident 状态",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 853
+      },
+      "source": "PRD",
+      "module": "incidents",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "生命周期、Merge/Split、稳定恢复与可靠起始时间门禁已有实现；逐类 timeline 事件展示另按专项 UI 验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-052",
+      "title": "Incident 自动恢复",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 870
+      },
+      "source": "PRD",
+      "module": "incidents",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "生命周期、Merge/Split、稳定恢复与可靠起始时间门禁已有实现；逐类 timeline 事件展示另按专项 UI 验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-053",
+      "title": "Incident 重开",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 884
+      },
+      "source": "PRD",
+      "module": "incidents",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "生命周期、Merge/Split、稳定恢复与可靠起始时间门禁已有实现；逐类 timeline 事件展示另按专项 UI 验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-054",
+      "title": "Incident Merge/Split",
+      "priority": "P1",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 892
+      },
+      "source": "PRD",
+      "module": "incidents",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "生命周期、Merge/Split、稳定恢复与可靠起始时间门禁已有实现；逐类 timeline 事件展示另按专项 UI 验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-055",
+      "title": "Incident 详情",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 912
+      },
+      "source": "PRD",
+      "module": "incidents",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "组件/协议和历史页面证据存在；ADR-0037 后续页面变更以及最终同轮联合页面未完整运行验收，不将旧通过覆盖新代码。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-060",
+      "title": "Incident Timeline",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 939
+      },
+      "source": "PRD",
+      "module": "incidents",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "生命周期、Merge/Split、稳定恢复与可靠起始时间门禁已有实现；逐类 timeline 事件展示另按专项 UI 验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-070",
+      "title": "Evidence 类型",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 975
+      },
+      "source": "PRD",
+      "module": "evidence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-071",
+      "title": "Evidence 基本信息",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 994
+      },
+      "source": "PRD",
+      "module": "evidence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-072",
+      "title": "Supporting Evidence",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1013
+      },
+      "source": "PRD",
+      "module": "evidence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-073",
+      "title": "Conflicting Evidence",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1021
+      },
+      "source": "PRD",
+      "module": "evidence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-074",
+      "title": "Missing Evidence",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1029
+      },
+      "source": "PRD",
+      "module": "evidence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-075",
+      "title": "Degraded Source",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1037
+      },
+      "source": "PRD",
+      "module": "evidence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-076",
+      "title": "Ranked Evidence",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1045
+      },
+      "source": "PRD",
+      "module": "evidence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-077",
+      "title": "Evidence 可重放",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1053
+      },
+      "source": "PRD",
+      "module": "evidence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-080",
+      "title": "Diagnostic Graph 构建",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1063
+      },
+      "source": "PRD",
+      "module": "graph",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "图内核、重建、游标/epoch、来源与前后身份栅栏存在；当前远程 Graph 就绪失败仅记录。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-081",
+      "title": "Diagnostic Graph 内容",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1071
+      },
+      "source": "PRD",
+      "module": "graph",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "图内核、重建、游标/epoch、来源与前后身份栅栏存在；当前远程 Graph 就绪失败仅记录。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-082",
+      "title": "图查询边界",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1088
+      },
+      "source": "PRD",
+      "module": "graph",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "图内核、重建、游标/epoch、来源与前后身份栅栏存在；当前远程 Graph 就绪失败仅记录。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-083",
+      "title": "图数据新鲜度",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1105
+      },
+      "source": "PRD",
+      "module": "graph",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "图内核、重建、游标/epoch、来源与前后身份栅栏存在；当前远程 Graph 就绪失败仅记录。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-090",
+      "title": "Root Cause Candidate",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1122
+      },
+      "source": "PRD",
+      "module": "rca",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "confirmed/probable/unresolved、证据引用和追加 revision；少时间或关系资格时保留缺口，不构成代码未开发。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-091",
+      "title": "RCA 状态",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1130
+      },
+      "source": "PRD",
+      "module": "rca",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "confirmed/probable/unresolved、证据引用和追加 revision；少时间或关系资格时保留缺口，不构成代码未开发。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-092",
+      "title": "RCA 证据引用",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1169
+      },
+      "source": "PRD",
+      "module": "rca",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "confirmed/probable/unresolved、证据引用和追加 revision；少时间或关系资格时保留缺口，不构成代码未开发。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-093",
+      "title": "RCA Revision",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1177
+      },
+      "source": "PRD",
+      "module": "rca",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "confirmed/probable/unresolved、证据引用和追加 revision；少时间或关系资格时保留缺口，不构成代码未开发。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-094",
+      "title": "RCA 解释",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1196
+      },
+      "source": "PRD",
+      "module": "rca",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "confirmed/probable/unresolved、证据引用和追加 revision；少时间或关系资格时保留缺口，不构成代码未开发。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-100",
+      "title": "发起 Investigation",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1214
+      },
+      "source": "PRD",
+      "module": "investigation",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "持久 Job/Step、租约 generation、取消/接管与模型离线降级已接通。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-101",
+      "title": "Investigation 状态",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1224
+      },
+      "source": "PRD",
+      "module": "investigation",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "持久 Job/Step、租约 generation、取消/接管与模型离线降级已接通。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-102",
+      "title": "调查进度",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1241
+      },
+      "source": "PRD",
+      "module": "investigation",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "持久 Job/Step、租约 generation、取消/接管与模型离线降级已接通。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-103",
+      "title": "调查继承",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1256
+      },
+      "source": "PRD",
+      "module": "investigation",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "持久 Job/Step、租约 generation、取消/接管与模型离线降级已接通。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-104",
+      "title": "调查取消",
+      "priority": "P1",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1264
+      },
+      "source": "PRD",
+      "module": "investigation",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "持久 Job/Step、租约 generation、取消/接管与模型离线降级已接通。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-105",
+      "title": "Agent 不可用降级",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1272
+      },
+      "source": "PRD",
+      "module": "investigation",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "持久 Job/Step、租约 generation、取消/接管与模型离线降级已接通。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-110",
+      "title": "语义工具优先",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1289
+      },
+      "source": "PRD",
+      "module": "tools",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "短时 Context/JTI/序列、真实预算与成功提交复用；历史 token 预留/展开成本缺陷已修复。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-111",
+      "title": "工具授权",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1312
+      },
+      "source": "PRD",
+      "module": "tools",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "短时 Context/JTI/序列、真实预算与成功提交复用；历史 token 预留/展开成本缺陷已修复。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-112",
+      "title": "工具预算",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1328
+      },
+      "source": "PRD",
+      "module": "tools",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "短时 Context/JTI/序列、真实预算与成功提交复用；历史 token 预留/展开成本缺陷已修复。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-113",
+      "title": "调用记录",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1347
+      },
+      "source": "PRD",
+      "module": "tools",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "短时 Context/JTI/序列、真实预算与成功提交复用；历史 token 预留/展开成本缺陷已修复。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "SEC-010",
+      "title": "Agent 网络隔离",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1364
+      },
+      "source": "PRD",
+      "module": "runtime-security",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "受控身份、来源/模型允许目的地与隔离 Runner；生产环境需按实际发行验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-120",
+      "title": "影响范围",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1379
+      },
+      "source": "PRD",
+      "module": "impact",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "直接、间接、仅依赖分类已实现；正式 VM 链路分项延期。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-121",
+      "title": "影响分类",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1395
+      },
+      "source": "PRD",
+      "module": "impact",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "直接、间接、仅依赖分类已实现；正式 VM 链路分项延期。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-130",
+      "title": "处置建议",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1411
+      },
+      "source": "PRD",
+      "module": "plans",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "建议与操作者实际命令分离，ActionPlan 状态不等同执行；真实模型建议质量独立。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-131",
+      "title": "结构化 ActionPlan",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1430
+      },
+      "source": "PRD",
+      "module": "plans",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "建议与操作者实际命令分离，ActionPlan 状态不等同执行；真实模型建议质量独立。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-132",
+      "title": "ActionPlan 状态",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1438
+      },
+      "source": "PRD",
+      "module": "plans",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "建议与操作者实际命令分离，ActionPlan 状态不等同执行；真实模型建议质量独立。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-140",
+      "title": "策略校验",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1457
+      },
+      "source": "PRD",
+      "module": "commands",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "本人实际命令确认、必要 step-up、最多一次 dispatch、不确定结果先对账；无审批人流程、无模型自动执行。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-141",
+      "title": "操作者风险确认",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1474
+      },
+      "source": "PRD",
+      "module": "commands",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "本人实际命令确认、必要 step-up、最多一次 dispatch、不确定结果先对账；无审批人流程、无模型自动执行。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-142",
+      "title": "执行",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1484
+      },
+      "source": "PRD",
+      "module": "commands",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "本人实际命令确认、必要 step-up、最多一次 dispatch、不确定结果先对账；无审批人流程、无模型自动执行。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-143",
+      "title": "幂等执行",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1494
+      },
+      "source": "PRD",
+      "module": "commands",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "本人实际命令确认、必要 step-up、最多一次 dispatch、不确定结果先对账；无审批人流程、无模型自动执行。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-144",
+      "title": "Post-check",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1504
+      },
+      "source": "PRD",
+      "module": "postcheck",
+      "development": "partial",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "当前主机制源码、本地单元/组件/合同回归；数据库集成仅编译",
+      "scopeNote": "共用冻结报告、可靠执行后证据/归档/Recipe 门禁、结论原因与读取/SSE 授权复查已补齐；原生判据仍限合格 Node/PVC，仅覆盖配方目标异常，其他目标 inconclusive，全目标及新增异常检查仍部分实现。",
+      "gapIds": [
+        "G-004"
+      ],
+      "testExecution": "make check-local 与最终 Action/HTTP/App/Contract 定向回归通过；Web 全量 80+5，通过后另核对缺失时间显示；PostgreSQL 集成仅编译。"
+    },
+    {
+      "id": "FR-145",
+      "title": "回退",
+      "priority": "P1",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1516
+      },
+      "source": "PRD",
+      "module": "postcheck",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "当前共用执行关联/冻结报告源码与本地回归；非真实回退验收",
+      "scopeNote": "已有 rollbackSuggestion；新增经本人确认摘要绑定的 rollback/follow_up 关系，关联原执行、回退尝试状态与独立后检查记录。沿用人工输入/确认，不自动回退，也不把命令成功或原异常消失当成业务回退目标达成。",
+      "gapIds": [
+        "C-002"
+      ],
+      "testExecution": "本地风险摘要/身份隔离/未知副作用/关联交互回归通过；数据库父子关系、幂等与报告保护用例仅编译。",
+      "implementation": [
+        "internal/action/execution_relation.go",
+        "internal/action/postcheck_report.go",
+        "internal/action/service.go",
+        "web/src/features/action/PostCheckPanel.tsx"
+      ],
+      "tests": [
+        "internal/action/execution_relation_test.go",
+        "internal/action/postcheck_report_test.go",
+        "web/tests/postcheck.test.tsx",
+        "test/integration/sp07_command_test.go"
+      ]
+    },
+    {
+      "id": "FR-150",
+      "title": "全链路审计",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1532
+      },
+      "source": "PRD",
+      "module": "audit",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "租户审计、签名段/Merkle/前驱验证、授权查询存在；不自动宣称所有新增行为均已运行审计。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-151",
+      "title": "审计不可抵赖",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1555
+      },
+      "source": "PRD",
+      "module": "audit",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "租户审计、签名段/Merkle/前驱验证、授权查询存在；不自动宣称所有新增行为均已运行审计。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-152",
+      "title": "审计查询",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1563
+      },
+      "source": "PRD",
+      "module": "audit",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "租户审计、签名段/Merkle/前驱验证、授权查询存在；不自动宣称所有新增行为均已运行审计。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-160",
+      "title": "数据源管理",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1583
+      },
+      "source": "PRD",
+      "module": "registration",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "非虚拟化注册、来源版本/范围、凭据轮换和状态；来源配置不等于实际能力已合格。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-161",
+      "title": "集群管理",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1600
+      },
+      "source": "PRD",
+      "module": "registration",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "非虚拟化注册、来源版本/范围、凭据轮换和状态；来源配置不等于实际能力已合格。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-162",
+      "title": "策略管理",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1616
+      },
+      "source": "PRD",
+      "module": "registry",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "配置草稿、验证/签名发布/激活/退役与双角色边界；清单只证明主路径，不替代每种策略内容验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "FR-163",
+      "title": "Tool 管理",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1632
+      },
+      "source": "PRD",
+      "module": "registry",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "配置草稿、验证/签名发布/激活/退役与双角色边界；清单只证明主路径，不替代每种策略内容验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "UI-001",
+      "title": "统一故障工作台",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1648
+      },
+      "source": "PRD",
+      "module": "workbench",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "组件/协议和历史页面证据存在；ADR-0037 后续页面变更以及最终同轮联合页面未完整运行验收，不将旧通过覆盖新代码。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "UI-002",
+      "title": "不确定性展示",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1671
+      },
+      "source": "PRD",
+      "module": "workbench",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "组件/协议和历史页面证据存在；ADR-0037 后续页面变更以及最终同轮联合页面未完整运行验收，不将旧通过覆盖新代码。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "UI-003",
+      "title": "Evidence 可追溯",
+      "priority": "P0",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1689
+      },
+      "source": "PRD",
+      "module": "workbench",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "组件/协议和历史页面证据存在；ADR-0037 后续页面变更以及最终同轮联合页面未完整运行验收，不将旧通过覆盖新代码。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "UI-004",
+      "title": "影响范围可视化",
+      "priority": "P1",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1697
+      },
+      "source": "PRD",
+      "module": "impact",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "组件/协议和历史页面证据存在；ADR-0037 后续页面变更以及最终同轮联合页面未完整运行验收，不将旧通过覆盖新代码。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "INT-001",
+      "title": "VictoriaMetrics",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1707
+      },
+      "source": "PRD",
+      "module": "victoria",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "同 UID/租户/窗口与来源 coverage；样例不作总体，历史真实采集有界。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "INT-002",
+      "title": "VictoriaLogs",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1713
+      },
+      "source": "PRD",
+      "module": "victoria",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "同 UID/租户/窗口与来源 coverage；样例不作总体，历史真实采集有界。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "INT-003",
+      "title": "DeepFlow",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1719
+      },
+      "source": "PRD",
+      "module": "network",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "UID/容器/来源/半开窗与独立 oracle 门禁存在；当前联合 Graph 就绪失败，时间仍 unreliable。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "INT-004",
+      "title": "Kubernetes API",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1725
+      },
+      "source": "PRD",
+      "module": "kubeapi",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "共享 QPS、List/Watch、重列与 UID 绑定；远程性能只留档。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "INT-005",
+      "title": "KubeVirt API",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1731
+      },
+      "source": "PRD",
+      "module": "virtualization",
+      "development": "deferred",
+      "verification": "disabled_or_deferred",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "既有源码/Fixture/物料保留；不恢复开发、部署或验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "INT-006",
+      "title": "Redfish/IPMI",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1737
+      },
+      "source": "PRD",
+      "module": "hardware",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "原生 Adapter、硬件投影与 DIMM/CPER 判据存在；真实 BMC 未验证，不能将协议 Fixture 视为实机验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "INT-007",
+      "title": "模型服务",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1745
+      },
+      "source": "PRD",
+      "module": "model",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "调用与 Profile 机制存在；内网模型质量、外部 DeepSeek 探针和平台运行单独记录；旧长上下文结果已更正为 5/6。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "DATA-001",
+      "title": "核心领域对象",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1755
+      },
+      "source": "PRD",
+      "module": "persistence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "前向迁移、时间可靠性、tenant/RLS 与引用依赖闭包存在；完整保留恢复仍需独立验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "DATA-002",
+      "title": "时间语义",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1776
+      },
+      "source": "PRD",
+      "module": "persistence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "前向迁移、时间可靠性、tenant/RLS 与引用依赖闭包存在；完整保留恢复仍需独立验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "DATA-003",
+      "title": "数据保留",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1788
+      },
+      "source": "PRD",
+      "module": "persistence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "前向迁移、时间可靠性、tenant/RLS 与引用依赖闭包存在；完整保留恢复仍需独立验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "DATA-004",
+      "title": "Evidence 原始数据",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1801
+      },
+      "source": "PRD",
+      "module": "evidence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "DATA-005",
+      "title": "数据完整性",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1809
+      },
+      "source": "PRD",
+      "module": "persistence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "前向迁移、时间可靠性、tenant/RLS 与引用依赖闭包存在；完整保留恢复仍需独立验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "SEC-001",
+      "title": "用户身份",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1817
+      },
+      "source": "PRD",
+      "module": "authorization",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "operator/platform_admin 无继承，租户/集群/namespace/资源/动作/data_class 边界；应用过滤不等同 RLS。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "SEC-002",
+      "title": "多租户隔离",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1823
+      },
+      "source": "PRD",
+      "module": "authorization",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "operator/platform_admin 无继承，租户/集群/namespace/资源/动作/data_class 边界；应用过滤不等同 RLS。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "SEC-003",
+      "title": "权限粒度",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1831
+      },
+      "source": "PRD",
+      "module": "authorization",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "operator/platform_admin 无继承，租户/集群/namespace/资源/动作/data_class 边界；应用过滤不等同 RLS。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "SEC-004",
+      "title": "Agent 最小权限",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1846
+      },
+      "source": "PRD",
+      "module": "tools",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "短时 Context/JTI/序列、真实预算与成功提交复用；历史 token 预留/展开成本缺陷已修复。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "SEC-005",
+      "title": "工具重放防护",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1852
+      },
+      "source": "PRD",
+      "module": "tools",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "短时 Context/JTI/序列、真实预算与成功提交复用；历史 token 预留/展开成本缺陷已修复。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "SEC-006",
+      "title": "Prompt Injection 防护",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1858
+      },
+      "source": "PRD",
+      "module": "model-safety",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "不可信来源降权、敏感投影与输出引用校验存在；安全测试文件存在不等同整个威胁面已穷尽。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "SEC-007",
+      "title": "敏感数据控制",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1864
+      },
+      "source": "PRD",
+      "module": "model-safety",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "不可信来源降权、敏感投影与输出引用校验存在；安全测试文件存在不等同整个威胁面已穷尽。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "SEC-008",
+      "title": "运行时安全",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1876
+      },
+      "source": "PRD",
+      "module": "runtime-security",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "受控身份、来源/模型允许目的地与隔离 Runner；生产环境需按实际发行验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "SEC-009",
+      "title": "供应链安全",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1882
+      },
+      "source": "PRD",
+      "module": "supplychain",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "历史 arm64/core 离线安装与新版迁移源码重签证据分别存在，最新全平台 Bundle/升级回滚未全验。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-001",
+      "title": "API 可用性",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1896
+      },
+      "source": "PRD",
+      "module": "performance",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "机制有代码不代表满足月度 99.9%、20 万对象、100 Finding/s 或 10 并发的端到端目标；按用户要求不追加远程性能测试。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-002",
+      "title": "Finding 接入时延",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1908
+      },
+      "source": "PRD",
+      "module": "performance",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "机制有代码不代表满足月度 99.9%、20 万对象、100 Finding/s 或 10 并发的端到端目标；按用户要求不追加远程性能测试。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-003",
+      "title": "Incident 时延",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1918
+      },
+      "source": "PRD",
+      "module": "performance",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "机制有代码不代表满足月度 99.9%、20 万对象、100 Finding/s 或 10 并发的端到端目标；按用户要求不追加远程性能测试。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-004",
+      "title": "Resource Graph 新鲜度",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1928
+      },
+      "source": "PRD",
+      "module": "performance",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "机制有代码不代表满足月度 99.9%、20 万对象、100 Finding/s 或 10 并发的端到端目标；按用户要求不追加远程性能测试。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-005",
+      "title": "Resource Graph 查询",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1938
+      },
+      "source": "PRD",
+      "module": "performance",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "机制有代码不代表满足月度 99.9%、20 万对象、100 Finding/s 或 10 并发的端到端目标；按用户要求不追加远程性能测试。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-006",
+      "title": "Evidence API",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1955
+      },
+      "source": "PRD",
+      "module": "performance",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "机制有代码不代表满足月度 99.9%、20 万对象、100 Finding/s 或 10 并发的端到端目标；按用户要求不追加远程性能测试。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-007",
+      "title": "调查并发",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1965
+      },
+      "source": "PRD",
+      "module": "performance",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "机制有代码不代表满足月度 99.9%、20 万对象、100 Finding/s 或 10 并发的端到端目标；按用户要求不追加远程性能测试。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-010",
+      "title": "首期验收规模",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1973
+      },
+      "source": "PRD",
+      "module": "performance",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "机制有代码不代表满足月度 99.9%、20 万对象、100 Finding/s 或 10 并发的端到端目标；按用户要求不追加远程性能测试。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-011",
+      "title": "Finding 吞吐",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1985
+      },
+      "source": "PRD",
+      "module": "performance",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "机制有代码不代表满足月度 99.9%、20 万对象、100 Finding/s 或 10 并发的端到端目标；按用户要求不追加远程性能测试。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-020",
+      "title": "无状态服务故障",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1993
+      },
+      "source": "PRD",
+      "module": "reliability",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "进程故障恢复有机制；生产多实例故障不等同已有隔离场景验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-021",
+      "title": "Graph 可重建",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 1999
+      },
+      "source": "PRD",
+      "module": "graph",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "图内核、重建、游标/epoch、来源与前后身份栅栏存在；当前远程 Graph 就绪失败仅记录。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-022",
+      "title": "Investigation 恢复",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2005
+      },
+      "source": "PRD",
+      "module": "investigation",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "持久 Job/Step、租约 generation、取消/接管与模型离线降级已接通。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-023",
+      "title": "PostgreSQL 与 Evidence Archive 恢复",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2015
+      },
+      "source": "PRD",
+      "module": "disaster-recovery",
+      "development": "deferred",
+      "verification": "disabled_or_deferred",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "归档一致性测试不能证明 RPO≤15min/RTO≤4h；生产 HA/灾备独立延期。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-030",
+      "title": "Agent 降级",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2032
+      },
+      "source": "PRD",
+      "module": "investigation",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "持久 Job/Step、租约 generation、取消/接管与模型离线降级已接通。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-031",
+      "title": "Evidence Source 降级",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2038
+      },
+      "source": "PRD",
+      "module": "degradation",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "来源缺失不补零，图不合格不冒充 fresh；远程错误已明确保留。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-032",
+      "title": "Graph 降级",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2044
+      },
+      "source": "PRD",
+      "module": "degradation",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "来源缺失不补零，图不合格不冒充 fresh；远程错误已明确保留。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-033",
+      "title": "PyRCA 降级",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2050
+      },
+      "source": "PRD",
+      "module": "pyrca",
+      "development": "implemented",
+      "verification": "disabled_or_deferred",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "按 ADR-0020 明确禁用 PyRCA；确定性规则不依赖排序器。不是已启用 PyRCA 的证明。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "OPS-001",
+      "title": "平台自身指标",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2058
+      },
+      "source": "PRD",
+      "module": "operations",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "当前主机制源码、本地单元/组件/合同回归；数据库集成仅编译",
+      "scopeNote": "补入真实 Evidence/聚合处理时长与 Worker 有界数据库业务快照，包括队列、终态调查记录均值、工具/准入/命令状态、DB Ping。失败为 NaN，固定标签；统计口径有明确限制，不代表 SLO 或生产可用性验收。",
+      "gapIds": [
+        "G-005"
+      ],
+      "testExecution": "核心流程本地回归通过；具体范围见 docs/release/core-workflow-closeout.md。真实 PostgreSQL/远程页面未运行，不等同整条验收通过。"
+    },
+    {
+      "id": "OPS-002",
+      "title": "全链路关联",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2074
+      },
+      "source": "PRD",
+      "module": "operations",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "当前已具备健康/就绪探针，旧 PWR-008 不再作为未实现；OPS-001 全量业务指标仍有差距。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "OPS-003",
+      "title": "平台自身故障可发现",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2090
+      },
+      "source": "PRD",
+      "module": "operations",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "当前已具备健康/就绪探针，旧 PWR-008 不再作为未实现；OPS-001 全量业务指标仍有差距。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "OPS-004",
+      "title": "Runbook",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2096
+      },
+      "source": "PRD",
+      "module": "operations",
+      "development": "needs_review",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "入口/主机制源码核对；测试文件映射",
+      "scopeNote": "各阶段 Runbook 文件已有，但尚未逐条确认每个关键告警均绑定 Runbook。不能将目录存在等同全量满足。",
+      "gapIds": [
+        "C-003"
+      ],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-040",
+      "title": "目标环境兼容性",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2104
+      },
+      "source": "PRD",
+      "module": "supplychain",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "历史 arm64/core 离线安装与新版迁移源码重签证据分别存在，最新全平台 Bundle/升级回滚未全验。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-041",
+      "title": "禁止浮动版本",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2117
+      },
+      "source": "PRD",
+      "module": "supplychain",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "历史 arm64/core 离线安装与新版迁移源码重签证据分别存在，最新全平台 Bundle/升级回滚未全验。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-042",
+      "title": "兼容性测试",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2129
+      },
+      "source": "PRD",
+      "module": "supplychain",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "历史 arm64/core 离线安装与新版迁移源码重签证据分别存在，最新全平台 Bundle/升级回滚未全验。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-050",
+      "title": "Entity Resolver",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2145
+      },
+      "source": "PRD",
+      "module": "accuracy",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "有固定样例与回放入口；不能用单元样例替代规定数据集上的召回率/Top-3 命中率报告。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-051",
+      "title": "关键 Graph Relation",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2156
+      },
+      "source": "PRD",
+      "module": "accuracy",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "有固定样例与回放入口；不能用单元样例替代规定数据集上的召回率/Top-3 命中率报告。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-052",
+      "title": "Deterministic Finding",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2166
+      },
+      "source": "PRD",
+      "module": "accuracy",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "有固定样例与回放入口；不能用单元样例替代规定数据集上的召回率/Top-3 命中率报告。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "NFR-053",
+      "title": "RCA",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2175
+      },
+      "source": "PRD",
+      "module": "accuracy",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "有固定样例与回放入口；不能用单元样例替代规定数据集上的召回率/Top-3 命中率报告。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-001",
+      "title": "VM 启动失败",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2193
+      },
+      "source": "PRD",
+      "module": "virtualization",
+      "development": "deferred",
+      "verification": "disabled_or_deferred",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "既有源码/Fixture/物料保留；不恢复开发、部署或验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-002",
+      "title": "VM 网络异常",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2207
+      },
+      "source": "PRD",
+      "module": "virtualization",
+      "development": "deferred",
+      "verification": "disabled_or_deferred",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "既有源码/Fixture/物料保留；不恢复开发、部署或验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-003",
+      "title": "DIMM 故障",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2228
+      },
+      "source": "PRD",
+      "module": "hardware",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "原生 Adapter、硬件投影与 DIMM/CPER 判据存在；真实 BMC 未验证，不能将协议 Fixture 视为实机验收。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-004",
+      "title": "PVC/CSI 故障",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2247
+      },
+      "source": "PRD",
+      "module": "pvc-scenario",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "历史 PVC Pending→Bound 与 Post-check 有实测；不等于本次助手 PVC 实时任务已验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-005",
+      "title": "Finding 重复投递",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2259
+      },
+      "source": "PRD",
+      "module": "findings",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "幂等、occurrence、迟到/乱序及身份冲突信封修复存在；历史集成证据有明确范围。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-006",
+      "title": "Finding 恢复后再发生",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2265
+      },
+      "source": "PRD",
+      "module": "findings",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "幂等、occurrence、迟到/乱序及身份冲突信封修复存在；历史集成证据有明确范围。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-007",
+      "title": "Incident 自动恢复",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2271
+      },
+      "source": "PRD",
+      "module": "incidents",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "生命周期、Merge/Split、稳定恢复与可靠起始时间门禁已有实现；逐类 timeline 事件展示另按专项 UI 验证。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-008",
+      "title": "Evidence Source 不可用",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2277
+      },
+      "source": "PRD",
+      "module": "evidence",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "引用/摘要/来源授权、归档保护与明确降级；历史归档运行不代表当前全量恢复演练。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-009",
+      "title": "RCA Unresolved",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2283
+      },
+      "source": "PRD",
+      "module": "rca",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "confirmed/probable/unresolved、证据引用和追加 revision；少时间或关系资格时保留缺口，不构成代码未开发。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-010",
+      "title": "Agent 崩溃恢复",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2289
+      },
+      "source": "PRD",
+      "module": "investigation",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "持久 Job/Step、租约 generation、取消/接管与模型离线降级已接通。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-011",
+      "title": "Tool 越权",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2295
+      },
+      "source": "PRD",
+      "module": "tools",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "短时 Context/JTI/序列、真实预算与成功提交复用；历史 token 预留/展开成本缺陷已修复。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-012",
+      "title": "命令风险确认与 step-up",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2301
+      },
+      "source": "PRD",
+      "module": "commands",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "本人实际命令确认、必要 step-up、最多一次 dispatch、不确定结果先对账；无审批人流程、无模型自动执行。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-013",
+      "title": "Action 幂等",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2307
+      },
+      "source": "PRD",
+      "module": "commands",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "本人实际命令确认、必要 step-up、最多一次 dispatch、不确定结果先对账；无审批人流程、无模型自动执行。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "ACC-014",
+      "title": "Action 执行结果不确定",
+      "priority": "未单列",
+      "requirementRef": {
+        "path": "../02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md",
+        "line": 2313
+      },
+      "source": "PRD",
+      "module": "commands",
+      "development": "implemented",
+      "verification": "acceptance_unverified",
+      "evidenceStrength": "关联实现及场景测试入口；本次未重新验证指标/场景",
+      "scopeNote": "本人实际命令确认、必要 step-up、最多一次 dispatch、不确定结果先对账；无审批人流程、无模型自动执行。",
+      "gapIds": [],
+      "testExecution": "本次未重跑；测试映射不等于该条完整验收通过"
+    },
+    {
+      "id": "DEV-001",
+      "title": "进程装配、初始化与前向迁移",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/adr/0001-modular-monolith.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "persistence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "API/Worker、配置与 tenant/source bootstrap 已存在；不另建服务框架。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "cmd/platform-api/main.go",
+        "cmd/platform-worker/main.go",
+        "internal/app/api_runtime.go",
+        "internal/app/bootstrap.go"
+      ],
+      "tests": [
+        "internal/app/runtime_test.go",
+        "test/integration/migrations_test.go"
+      ]
+    },
+    {
+      "id": "DEV-002",
+      "title": "离线 Bundle、节点导入与能力检测",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/adr/0031-generic-kubernetes-offline-installation.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "supplychain",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "原生 containerd 与库存前置、签名/准入已有；最新全平台 Bundle 与内部 Registry 不由旧安装证明。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "cmd/opsctl/main.go",
+        "internal/bundle/importer.go",
+        "internal/bundle/installer.go"
+      ],
+      "tests": [
+        "internal/bundle/installer_test.go",
+        "internal/bundle/verify_test.go"
+      ]
+    },
+    {
+      "id": "DEV-003",
+      "title": "本地功能检查与真实环境检查分离",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "../10-智能运维平台1.0具体编码实施方案-最终版.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "operations",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "真实本地聚合入口执行、入口合同回归；非真实环境验收",
+      "scopeNote": "Go cmd/internal/gen、Contract、Web、Python 与安全检查可独立运行，并由 test-local/check-local 聚合；真实来源、数据库集成、浏览器、原生工具、回放和容量入口分开，保留拒绝 skip/空报告/失败的门禁。",
+      "gapIds": [
+        "G-006"
+      ],
+      "testExecution": "make check-local 本次通过；新增入口合同使用隔离假执行器验证失败/跳过/空/完整报告、容量豁免及过期浏览器报告。真实环境/容量专项未运行。",
+      "implementation": [
+        "Makefile",
+        "scripts/check-test-report.py"
+      ],
+      "tests": [
+        "test/contract/verification_targets_test.go"
+      ]
+    },
+    {
+      "id": "AI-001",
+      "title": "会话、问数与 operational 分析",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/adr/0038-ai-assistant-development.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "model",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "复用会话、语义数据集、Job v3 与已提交 QueryResult；问数实际执行已有专项证据。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "internal/assistant/repository.go",
+        "internal/httpapi/assistant_handlers.go",
+        "internal/analytics/executor.go"
+      ],
+      "tests": [
+        "internal/analytics/analytics_test.go",
+        "services/investigator/tests/test_assistant_binding.py"
+      ]
+    },
+    {
+      "id": "AI-002",
+      "title": "资源历史、Finding、变更与来源步骤",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/plans/v1.0-operational-analysis-completion.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "persistence",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "窗口/UID/来源绑定、历史覆盖与同 Job 成功引用；Kubernetes 观察时间不自动可靠。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "internal/investigation/resource_history.go",
+        "internal/investigation/resource_changes.go",
+        "internal/investigation/fault_chain_committed.go"
+      ],
+      "tests": [
+        "internal/investigation/resource_changes_test.go",
+        "services/investigator/tests/test_fault_chain_unittest.py"
+      ]
+    },
+    {
+      "id": "AI-003",
+      "title": "Pod/Node/PVC 确定性证据收集",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/plans/v1.0-operational-analysis-completion.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "investigation",
+      "development": "implemented",
+      "verification": "environment_limited",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "三类型共用收集主路径；Node 显式 clusterScoped，PVC 不套用 Pod 网络/指标；实际 Node/PVC 授权/对象仍未具备。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "services/investigator/src/investigator/fault_chain.py",
+        "internal/investigation/resource_correlation.go",
+        "web/src/features/assistant/FaultChainCollector.tsx"
+      ],
+      "tests": [
+        "services/investigator/tests/test_fault_chain_unittest.py",
+        "internal/investigation/resource_correlation_test.go",
+        "web/tests/resource_correlation.test.tsx"
+      ]
+    },
+    {
+      "id": "AI-004",
+      "title": "R1～R6 关联规则、反证与缺口",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/adr/0041-fault-chain-investigation-enhancement.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "rca",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "确定性谓词与来源/时间资格存在；不把共现、模型推断或数值改善写成 confirmed RCA。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "internal/investigation/fault_chain_context.go",
+        "internal/investigation/fault_chain_changes.go",
+        "internal/investigation/fault_chain_recovery.go"
+      ],
+      "tests": [
+        "internal/investigation/fault_chain_context_test.go",
+        "internal/investigation/fault_chain_recovery_test.go"
+      ]
+    },
+    {
+      "id": "AI-005",
+      "title": "独立解释、冻结追问与超时降级",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/plans/v1.0-operational-analysis-completion.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "model",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "上下文和历史已提交引用保留；辅助能力整体 2s 上限在 owning tool 3s 内降级；真实页面最终闭环未运行成功。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "internal/httpapi/assistant_tools.go",
+        "internal/httpapi/assistant_source_capabilities.go",
+        "services/investigator/src/investigator/assistant_binding.py"
+      ],
+      "tests": [
+        "internal/httpapi/assistant_source_capabilities_test.go",
+        "test/integration/assistant_context_timeout_test.go",
+        "services/investigator/tests/test_assistant_context_preload.py"
+      ]
+    },
+    {
+      "id": "AI-006",
+      "title": "证据定位、缺口只读补查与轮次状态",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/evidence/fault-chain-ui-20261015/README.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "workbench",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "独立 evidence_only 补查绑定原缺口/UID/窗口，不覆盖原证据，不自动扩权。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "web/src/features/assistant/FaultChainPanel.tsx",
+        "web/src/features/assistant/FaultChainGapCheck.tsx",
+        "internal/httpapi/assistant_fault_chain.go"
+      ],
+      "tests": [
+        "web/tests/fault_chain_checks.test.tsx",
+        "internal/assistant/fault_chain_check_test.go"
+      ]
+    },
+    {
+      "id": "AI-007",
+      "title": "长上下文投影、Profile 与复核",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/evidence/five-source-reverify-20261018/round5/README.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "model",
+      "development": "implemented",
+      "verification": "runtime_unverified",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "功能和数值方向校验存在；119962-token 旧响应重算 5/6 且拼接范围不一致；917288 仅容量，满 1M 质量未验证。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "services/investigator/src/investigator/assistant_binding.py",
+        "services/investigator/src/investigator/model_profile.py",
+        "scripts/assistant-runtime/verify_long_context.py"
+      ],
+      "tests": [
+        "services/investigator/tests/test_context_projection_unittest.py",
+        "scripts/assistant-runtime/test_verify_long_context.py"
+      ]
+    },
+    {
+      "id": "BOUND-001",
+      "title": "Trace 补全保持禁用",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/adr/0040-deepflow-live-l4-l7-development.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "network",
+      "development": "deferred",
+      "verification": "disabled_or_deferred",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "Trace completion capability_disabled；平台自身 observability tracing 与网络 Trace 补全是不同能力。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "internal/integrations/deepflow/adapter.go",
+        "internal/integrations/deepflow/capabilities.go"
+      ],
+      "tests": [
+        "internal/integrations/deepflow/live_test.go"
+      ]
+    },
+    {
+      "id": "FUTURE-001",
+      "title": "内部 Registry 导入",
+      "priority": "专项/交付",
+      "requirementRef": {
+        "path": "docs/adr/0031-generic-kubernetes-offline-installation.md",
+        "line": 1
+      },
+      "source": "专项/平台工程",
+      "module": "supplychain",
+      "development": "deferred",
+      "verification": "disabled_or_deferred",
+      "evidenceStrength": "专项源码入口与现有检查记录",
+      "scopeNote": "ADR-0031 明确内部 Registry 导入未实现，原生 containerd/库存路径已实现；它是后续增强，不计本轮缺口。",
+      "gapIds": [],
+      "testExecution": "未重跑；已有回执按其源码/范围解释",
+      "implementation": [
+        "internal/bundle/importer.go"
+      ],
+      "tests": [
+        "internal/bundle/importer_test.go"
+      ]
+    }
+  ],
+  "nextDevelopment": [
+    {
+      "id": "G-001",
+      "priority": "P0",
+      "requirements": [
+        "FR-001"
+      ],
+      "classification": "confirmed_functional_gap",
+      "title": "补齐非虚拟化总览计数口径",
+      "evidence": [
+        "internal/httpapi/overview.go",
+        "web/src/pages/OverviewPage.tsx"
+      ],
+      "nextWork": "增加 active Finding、Open/Critical Incident、运行中 Investigation 的授权统计；硬件总数仅用合格硬件来源，未知不能补零；复用现有 overview 合同扩展。",
+      "completion": "API 与详情筛选口径一致；无跨租户/范围泄露；unknown/degraded 组件回归。",
+      "status": "implemented",
+      "resolution": "增加活动告警、未确认/严重故障与我的运行中调查；当前授权过滤覆盖所有关联 Finding。硬件未知不补零。",
+      "resolutionRecord": "docs/release/core-workflow-closeout.md"
+    },
+    {
+      "id": "G-002",
+      "priority": "P0",
+      "requirements": [
+        "FR-002"
+      ],
+      "classification": "confirmed_functional_gap",
+      "title": "健康分布按领域分组并联动资源列表",
+      "evidence": [
+        "web/src/pages/OverviewPage.tsx",
+        "internal/httpapi/overview.go"
+      ],
+      "nextWork": "复用已知资源分类提供 Hardware/Kubernetes/Network/Storage 的可用/未知分布与授权列表链接；KubeVirt 维持延期。",
+      "completion": "分组口径可解释，点击携带范围和健康筛选；未知来源不显示为健康。",
+      "status": "implemented",
+      "resolution": "按请求启用领域汇总，领域/健康链接与列表筛选同源；查询摘要绑定签名游标，旧请求维持返回形状。",
+      "resolutionRecord": "docs/release/core-workflow-closeout.md"
+    },
+    {
+      "id": "G-003",
+      "priority": "P0",
+      "requirements": [
+        "FR-003"
+      ],
+      "classification": "confirmed_functional_gap",
+      "title": "实现首页重点故障列表",
+      "evidence": [
+        "web/src/pages/OverviewPage.tsx",
+        "internal/httpapi/sp05_list.go"
+      ],
+      "nextWork": "复用 Incident 查询展示高严重度待处理故障、资源、状态/开始/时长/RCA/影响摘要及详情入口；有界数量和稳定排序。",
+      "completion": "首页出现真实查询结果、空/错误/权限态正确；不会把记录总数误作 Open 数量。",
+      "status": "implemented",
+      "resolution": "有界重点故障、稳定排序、可信时间与可授权冻结 RCA 影响摘要已接入首页。",
+      "resolutionRecord": "docs/release/core-workflow-closeout.md"
+    },
+    {
+      "id": "G-004",
+      "priority": "P0",
+      "requirements": [
+        "FR-144"
+      ],
+      "classification": "confirmed_functional_gap",
+      "title": "明确并补齐现有执行范围的 Post-check 判据",
+      "evidence": [
+        "internal/app/sp07_postcheck.go",
+        "internal/action/postcheck.go"
+      ],
+      "nextWork": "先列执行 Profile×目标×可信后检查矩阵；复用现有 recipe/source adapter 补适用判据，或显式披露不支持范围，不以退出码或模型判断代替。",
+      "completion": "支持目标验证原异常恢复/新异常及最新 Evidence；不支持者保留 inconclusive；不扩大 BMC 写权限。",
+      "status": "scope_disclosed",
+      "resolution": "采用原计划允许的适用范围披露：Node/PVC 保留可信 Recipe，其余目标确认前明确不支持并保持 inconclusive；不宣称全目标自动 Post-check 已完成。",
+      "resolutionRecord": "docs/release/core-workflow-closeout.md"
+    },
+    {
+      "id": "G-005",
+      "priority": "P1",
+      "requirements": [
+        "OPS-001"
+      ],
+      "classification": "confirmed_functional_gap",
+      "title": "补足平台自身业务运行指标",
+      "evidence": [
+        "internal/observability/metrics.go",
+        "internal/app/runtime_observe.go"
+      ],
+      "nextWork": "在实际主路径接入积压、Incident 聚合时延、调查队列/耗时、Evidence 时延与数据库可达状态等缺项；复用私有 metrics registry，固定低基数标签。",
+      "completion": "指标来自真实事件/当前状态而非占位；本地记录/导出测试覆盖，不展开远程性能调优。",
+      "status": "implemented",
+      "resolution": "实际主路径时长与有界 Worker 业务快照已接入；固定标签、失效 NaN、采样时间/可用性显式提供。",
+      "resolutionRecord": "docs/release/core-workflow-closeout.md"
+    },
+    {
+      "id": "G-006",
+      "priority": "P1",
+      "requirements": [
+        "DEV-003"
+      ],
+      "classification": "confirmed_engineering_gap",
+      "title": "拆分本地功能检查与真实环境门禁",
+      "evidence": [
+        "Makefile",
+        "test/contract/verification_targets_test.go"
+      ],
+      "nextWork": "本地入口只运行无真实环境依赖的单元/合同/前端/Python；真实集成保留独立 fail-closed 入口，不能改为静默 skip。",
+      "completion": "干净开发环境可执行本地检查；缺真实环境的集成明确失败；原 skip/report 门禁不放宽。",
+      "status": "implemented",
+      "resolution": "开发检查入口已拆分并执行 make check-local 通过；真实来源、浏览器、原生工具、回放与容量独立运行，缺环境/跳过不作为 PASS。",
+      "resolutionRecord": "docs/runbooks/development-tests.md"
+    },
+    {
+      "id": "C-001",
+      "priority": "待核对",
+      "requirements": [
+        "FR-012"
+      ],
+      "classification": "needs_semantic_review",
+      "title": "BMC 信息是否满足独立资源要求",
+      "evidence": [
+        "internal/integrations/redfish/inventory.go"
+      ],
+      "nextWork": "对照 FR-012 的 BMC 资源和 Server 管理信息表达，确认是否确缺独立投影；不因无实机先新增硬件框架。",
+      "status": "needs_review"
+    },
+    {
+      "id": "C-002",
+      "priority": "待核对",
+      "requirements": [
+        "FR-145"
+      ],
+      "classification": "needs_semantic_review",
+      "title": "回退结果与原操作关联",
+      "evidence": [
+        "api/schemas/action-plan-v2.schema.json",
+        "internal/action/domain.go",
+        "internal/action/plan.go"
+      ],
+      "nextWork": "核对 rollbackSuggestion、通用 CommandExecution/ActionPlan/Audit 是否已足够表达回退及结果；需要的是可追溯语义和回归，不自动新增回退执行器。",
+      "status": "implemented",
+      "resolution": "已核对并补齐实际执行层的关联：继续处置/回退关系进入本人确认摘要，支持直接父子执行及冻结后检查结果追溯；具体回退判据仍依赖场景。",
+      "resolutionRecord": "docs/release/disposition-verification-closeout.md"
+    },
+    {
+      "id": "C-003",
+      "priority": "待核对",
+      "requirements": [
+        "OPS-004"
+      ],
+      "classification": "needs_coverage_review",
+      "title": "关键告警与 Runbook 的覆盖关系",
+      "evidence": [
+        "docs/runbooks/sp03-foundation-runtime.md",
+        "internal/observability/metrics.go"
+      ],
+      "nextWork": "逐项关联已有关键告警/指标与现有 Runbook，缺绑定才补；不重写整套运维文档。",
+      "status": "needs_review"
+    }
+  ],
+  "runtimeRecords": [
+    {
+      "area": "五来源/页面/新同轮长上下文",
+      "record": "docs/evidence/five-source-reverify-20261018/round5/acceptance-status.json",
+      "state": "联合 FAIL，页面/新同轮长上下文 NOT_RUN；局部采集/oracle PASS 不替代整体验收"
+    },
+    {
+      "area": "模型中文质量/长上下文",
+      "record": "docs/evidence/five-source-reverify-20261018/round5/prior-retention-reassessment.json",
+      "state": "旧内容重算 5/6，租户/窗口不一致，人工 pending；独立容量不作为质量结论"
+    },
+    {
+      "area": "源码修复与历史限定运行",
+      "record": "docs/reviews/project-wide-2026-10-16/fix-status.md",
+      "state": "已修复项按当前源码解释；不复制旧 requirements.md 为当前缺陷"
+    },
+    {
+      "area": "Node/PVC 实时助手任务",
+      "record": "docs/evidence/five-source-reverify-20261018/round5/acceptance-status.json",
+      "state": "实现存在；cluster-scoped 会话授权和专属 PVC 未具备，NOT_RUN，不扩权"
+    }
+  ],
+  "lastDevelopment": {
+    "scope": "第二项核心流程功能开发，G-001～G-005",
+    "record": "docs/release/core-workflow-closeout.md",
+    "implemented": [
+      "G-001",
+      "G-002",
+      "G-003",
+      "G-005"
+    ],
+    "scopeDisclosed": [
+      "G-004"
+    ],
+    "openEngineering": [],
+    "remainingReview": [
+      "C-001",
+      "C-003"
+    ],
+    "remoteAccess": false,
+    "databaseIntegration": "compile_only_not_run",
+    "fullAcceptance": "unverified"
+  },
+  "testingDevelopment": {
+    "gap": "G-006",
+    "status": "implemented",
+    "record": "docs/runbooks/development-tests.md",
+    "localAggregate": "make check-local",
+    "result": "PASS",
+    "remoteAccess": false,
+    "liveAndCapacityExecution": "NOT_RUN"
+  },
+  "dispositionDevelopment": {
+    "record": "docs/release/disposition-verification-closeout.md",
+    "schema": "command-post-check/v1",
+    "relatedRequestDigest": "execution-request/v2",
+    "migrationAdded": false,
+    "remoteAccess": false,
+    "databaseIntegration": "compile_only_not_run"
+  }
+}

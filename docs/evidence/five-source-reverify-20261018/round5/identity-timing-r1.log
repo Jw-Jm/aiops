@@ -1,0 +1,143 @@
+=== RUN   TestAssistantActualFaultChainWithoutModel
+2026/10/18 14:40:44 OK   00001_roles_and_schemas.sql (16.58ms)
+2026/10/18 14:40:44 goose: successfully migrated database to version: 1
+2026/10/18 14:40:44 OK   00002_platform_meta.sql (20.25ms)
+2026/10/18 14:40:44 OK   00003_finding.sql (8.54ms)
+2026/10/18 14:40:44 OK   00004_incident.sql (5.55ms)
+2026/10/18 14:40:44 OK   00005_investigation.sql (6.62ms)
+2026/10/18 14:40:44 OK   00006_action_command.sql (6.17ms)
+2026/10/18 14:40:44 OK   00007_audit.sql (9.44ms)
+2026/10/18 14:40:44 OK   00008_rls.sql (9.12ms)
+2026/10/18 14:40:44 OK   00009_idempotency_ledger.sql (6.89ms)
+2026/10/18 14:40:44 OK   00010_tenant_provisioning.sql (3.65ms)
+2026/10/18 14:40:44 OK   00011_source_registration_history.sql (7.08ms)
+2026/10/18 14:40:44 OK   00012_config_registry_lifecycle.sql (8.57ms)
+2026/10/18 14:40:44 OK   00013_audit_signed_segments.sql (8.56ms)
+2026/10/18 14:40:44 OK   00014_audit_segment_predecessors.sql (5.04ms)
+2026/10/18 14:40:44 OK   00015_source_schema_scope.sql (3.23ms)
+2026/10/18 14:40:44 OK   00016_cluster_registration_metadata.sql (4.68ms)
+2026/10/18 14:40:44 OK   00017_source_data_scope.sql (3.64ms)
+2026/10/18 14:40:44 OK   00018_sp04_resources_evidence.sql (15.6ms)
+2026/10/18 14:40:44 OK   00019_sp04_archive_ciphertext_bytes.sql (3.08ms)
+2026/10/18 14:40:44 OK   00020_sp04_request_ledger.sql (4.43ms)
+2026/10/18 14:40:44 OK   00021_sp04_archive_protection.sql (3.28ms)
+2026/10/18 14:40:44 OK   00022_sp04_legal_hold_dependencies.sql (639.84µs)
+2026/10/18 14:40:44 OK   00023_sp04_archive_query_intent.sql (705.12µs)
+2026/10/18 14:40:44 OK   00024_sp05_finding_incident.sql (17.18ms)
+2026/10/18 14:40:44 OK   00025_sp05_incident_event_time.sql (3.09ms)
+2026/10/18 14:40:44 OK   00026_sp05_source_binding_lock.sql (3.17ms)
+2026/10/18 14:40:44 OK   00027_sp05_rca_and_poll.sql (7.89ms)
+2026/10/18 14:40:44 OK   00028_sp05_operator_lock.sql (3.15ms)
+2026/10/18 14:40:44 OK   00029_sp05_evidence_links.sql (4.85ms)
+2026/10/18 14:40:44 OK   00030_sp05_recipe_fence.sql (2.96ms)
+2026/10/18 14:40:44 OK   00031_sp05_rca_postcheck.sql (2.88ms)
+2026/10/18 14:40:44 OK   00032_sp05_transport_audit.sql (3.05ms)
+2026/10/18 14:40:44 OK   00033_sp05_poll_resolution_clock.sql (3.35ms)
+2026/10/18 14:40:44 OK   00034_sp06_investigation_ledger.sql (18.65ms)
+2026/10/18 14:40:45 OK   00035_sp06_admission_data_classes.sql (3.27ms)
+2026/10/18 14:40:45 OK   00036_sp07_command_binding.sql (22.36ms)
+2026/10/18 14:40:45 OK   00037_sp07_worker_authority.sql (3.4ms)
+2026/10/18 14:40:45 OK   00038_sp08_safe_step_input_summary.sql (3.1ms)
+2026/10/18 14:40:45 OK   00039_assistant_conversations.sql (17.66ms)
+2026/10/18 14:40:45 OK   00040_assistant_job_v3.sql (10.41ms)
+2026/10/18 14:40:45 OK   00041_assistant_binding.sql (4.34ms)
+2026/10/18 14:40:45 OK   00042_assistant_retention.sql (6.43ms)
+2026/10/18 14:40:45 OK   00043_resource_observations.sql (8.63ms)
+2026/10/18 14:40:45 goose: successfully migrated database to version: 43
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/kube-system elapsedMs 3 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/ops-assistant-deepflow-20261013 elapsedMs 0 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/ops-assistant-deepflow-20261013/pods elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /v1/info/6f8c52f5-04b1-5be0-b3cf-3da4e4391a60/ elapsedMs 638 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 2435 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 148 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/kube-system elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/ops-assistant-deepflow-20261013 elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/ops-assistant-deepflow-20261013/pods elapsedMs 1 status 200 failed false
+    assistant_real_model_test.go:135: native fault-chain client mapping 50 ops-assistant-deepflow-20261013 2026-10-18 06:04:01 +0000 UTC <nil>
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/kube-system elapsedMs 4 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/ops-assistant-deepflow-20261013 elapsedMs 0 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/ops-assistant-deepflow-20261013/pods elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /v1/info/6f8c52f5-04b1-5be0-b3cf-3da4e4391a60/ elapsedMs 5 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 278 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 2 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request POST /v1/query/ elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/kube-system elapsedMs 1 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/ops-assistant-deepflow-20261013 elapsedMs 0 status 200 failed false
+    assistant_deepflow_live_test.go:41: identity request GET /api/v1/namespaces/ops-assistant-deepflow-20261013/pods elapsedMs 1 status 200 failed false
+    assistant_real_model_test.go:135: native L4 proof diagnostic evidence 1 freshness fresh partial false warnings [] error <nil>
+    archive_iam_test.go:43: owned TLS/IAM fixture image=sha256:31d61f5e8771cbd5993912cd051be0c7bcdc207faaa12c50e1a3b8371631c927 id=d78aacd13f9b34b70ec71e6ad231c99ba2a7d268d651245bfe57b602959d8122 bucket=assistant-native-64f6a6a2 tenants=1
+2026/10/18 14:41:07 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=13 deadlineExceeded=false
+{"time":"2026-10-18T14:41:07.054676668+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+2026/10/18 14:41:08 WARN DeepFlow native identity read slow path=/api/v1/namespaces/kube-system elapsedMs=1747 contextDone=false
+2026/10/18 14:41:09 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+{"time":"2026-10-18T14:41:09.103992751+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing"}}
+2026/10/18 14:41:10 WARN DeepFlow native identity read slow path="/api/v1/namespaces/ops-assistant-deepflow-20261013/pods?limit=1000" elapsedMs=1604 contextDone=false
+2026/10/18 14:41:11 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:13 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:15 WARN DeepFlow detail read unavailable stage=querier template=GetResourceNetworkHealth elapsedMs=8001 deadlineExceeded=true
+2026/10/18 14:41:15 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:17 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:19 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+{"time":"2026-10-18T14:41:19.989238191+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+2026/10/18 14:41:21 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+{"time":"2026-10-18T14:41:22.989647284+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-18T14:41:22.989709687+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"connectivity_unverified","/v1/events":"connectivity_unverified","/v1/persistentvolumeclaims":"connectivity_unverified","/v1/pods":"connectivity_unverified","discovery.k8s.io/v1/endpointslices":"connectivity_unverified","storage.k8s.io/v1/csidrivers":"connectivity_unverified","storage.k8s.io/v1/csinodes":"connectivity_unverified","storage.k8s.io/v1/volumeattachments":"connectivity_unverified"}}
+2026/10/18 14:41:23 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:23 WARN DeepFlow native identity read slow path=/api/v1/namespaces/kube-system elapsedMs=6822 contextDone=false
+2026/10/18 14:41:25 WARN DeepFlow native identity read slow path=/api/v1/namespaces/ops-assistant-deepflow-20261013 elapsedMs=1177 contextDone=true
+2026/10/18 14:41:25 WARN DeepFlow detail read unavailable stage=endpoint_identity template=GetResourceNetworkHealth elapsedMs=8000 deadlineExceeded=true
+2026/10/18 14:41:25 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:27 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:29 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:31 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:33 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+{"time":"2026-10-18T14:41:33.989852553+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+2026/10/18 14:41:35 WARN DeepFlow detail read unavailable stage=endpoint_identity template=GetResourceNetworkHealth elapsedMs=8000 deadlineExceeded=true
+2026/10/18 14:41:35 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:37 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=1 deadlineExceeded=false
+    assistant_real_model_test.go:135: route diagnostic 1 true <nil>
+    assistant_real_model_test.go:135: source diagnostic victoriametrics <nil>
+    assistant_real_model_test.go:135: source diagnostic victorialogs <nil>
+    assistant_real_model_test.go:135: source diagnostic deepflow SOURCE_SCOPE_UNVERIFIED
+2026/10/18 14:41:39 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:41 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:43 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:45 WARN DeepFlow detail read unavailable stage=endpoint_identity template=GetResourceNetworkHealth elapsedMs=8000 deadlineExceeded=true
+2026/10/18 14:41:45 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:47 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:49 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+{"time":"2026-10-18T14:41:49.988576067+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+2026/10/18 14:41:51 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:53 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+{"time":"2026-10-18T14:41:53.988969743+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+2026/10/18 14:41:55 WARN DeepFlow detail read unavailable stage=endpoint_identity template=GetResourceNetworkHealth elapsedMs=8000 deadlineExceeded=true
+2026/10/18 14:41:55 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+{"time":"2026-10-18T14:41:56.98927517+08:00","level":"WARN","msg":"Graph Lease renewal unavailable","stage":"lease_read"}
+{"time":"2026-10-18T14:41:56.989332084+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/events":"watch_initializing","/v1/nodes":"watch_disconnected","/v1/persistentvolumeclaims":"watch_disconnected","/v1/persistentvolumes":"watch_disconnected","/v1/pods":"watch_initializing","/v1/services":"watch_disconnected","apps/v1/daemonsets":"watch_disconnected","apps/v1/deployments":"watch_disconnected","apps/v1/replicasets":"watch_disconnected","apps/v1/statefulsets":"watch_disconnected","batch/v1/jobs":"watch_disconnected","discovery.k8s.io/v1/endpointslices":"watch_disconnected","storage.k8s.io/v1/storageclasses":"watch_disconnected"}}
+2026/10/18 14:41:57 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:41:59 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=1 deadlineExceeded=false
+2026/10/18 14:41:59 WARN DeepFlow native identity read slow path=/api/v1/namespaces/kube-system elapsedMs=2536 contextDone=false
+2026/10/18 14:42:01 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:42:03 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:42:05 WARN DeepFlow detail read unavailable stage=endpoint_identity template=GetResourceNetworkHealth elapsedMs=8000 deadlineExceeded=true
+2026/10/18 14:42:05 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+2026/10/18 14:42:07 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+    assistant_real_model_test.go:135: actual native Graph owner did not qualify
+2026/10/18 14:42:07 WARN DeepFlow detail read unavailable stage=endpoint_identity template=GetResourceNetworkHealth elapsedMs=166 deadlineExceeded=false
+    archive_iam_test.go:187: retained owned Archive fixture id=d78aacd13f9b34b70ec71e6ad231c99ba2a7d268d651245bfe57b602959d8122 label=ed7687a1-9e4c-4965-bb20-e131e29eaff1 bucket=assistant-native-64f6a6a2 private-material-directory=/root/.cache/ops-protected-integration/archive-iam-1768320646; process stopped, no storage/identity deletion
+    migrations_test.go:442: retained owned integration database=sp03_mig_298b37aa46aa44ff851b1cf2c02dc170 test=TestAssistantActualFaultChainWithoutModel reason=audit.records; no automatic protected cleanup
+--- FAIL: TestAssistantActualFaultChainWithoutModel (115.11s)
+FAIL

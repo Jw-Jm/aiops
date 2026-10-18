@@ -119,12 +119,11 @@ for phase in range(3):
 print(json.dumps(out))
 ''' % ip
     golden = json.loads(kubectl("exec", client["metadata"]["name"], "--", "python3", "-c", program))
-    # Numeric IDs are independent oracle observations, never supplied to product.
-    left = query("SHOW TAG pod VALUES FROM l7_flow_log WHERE pod='%s'" % client["metadata"]["name"])
-    right = query("SHOW TAG pod VALUES FROM l7_flow_log WHERE pod='%s'" % server["metadata"]["name"])
-    if len(left) != 1 or len(right) != 1:
-        raise RuntimeError("UNIQUE_NATIVE_TAGS_REQUIRED")
-    left, right = int(left[0]["value"]), int(right[0]["value"])
+    # Preserve the independent stimulus even if the first backend read fails.
+    Path(args.report).with_suffix(".golden.json").write_text(json.dumps({"golden": golden, "nativePods": [
+        {"name": p["metadata"]["name"], "uid": p["metadata"]["uid"], "containerIds": [s["containerID"] for s in p["status"]["containerStatuses"]]}
+        for p in pods]}, indent=2) + "\n")
+    left = right = None
 
     def measure(g, timeout):
         where = "time >= %d AND time < %d AND pod_id_0 = %d AND pod_id_1 = %d" % (g["fromUnix"], g["toUnix"], left, right)
@@ -169,6 +168,13 @@ print(json.dumps(out))
     while time.time() < deadline:
         polls += 1
         try:
+            if left is None or right is None:
+                # Backend IDs are oracle observations, never product input.
+                l = query("SHOW TAG pod VALUES FROM l7_flow_log WHERE pod='%s'" % client["metadata"]["name"], bounded(20))
+                r = query("SHOW TAG pod VALUES FROM l7_flow_log WHERE pod='%s'" % server["metadata"]["name"], bounded(20))
+                if len(l) != 1 or len(r) != 1:
+                    raise RuntimeError("UNIQUE_NATIVE_TAGS_REQUIRED")
+                left, right = int(l[0]["value"]), int(r[0]["value"])
             measurements = [measure(g, bounded(20)) for g in golden]
         except (RuntimeError, urllib.error.URLError, TimeoutError) as error:
             source_errors.append({"poll": polls, "type": type(error).__name__})

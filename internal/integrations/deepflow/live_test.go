@@ -1,10 +1,12 @@
 package deepflow
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -18,6 +20,33 @@ import (
 	"ops-platform/internal/integrations/kubernetes"
 	"ops-platform/internal/resource"
 )
+
+func TestLiveRefreshFailureRecordsStageTimings(t *testing.T) {
+	var logs bytes.Buffer
+	previous := slog.Default()
+	slog.SetDefault(slog.New(slog.NewJSONHandler(&logs, nil)))
+	defer slog.SetDefault(previous)
+	native := httptest.NewServer(http.NotFoundHandler())
+	defer native.Close()
+	client, _ := kubernetes.NewClient(native.URL, native.Client(), 20, 20)
+	mapper := &LiveMapper{native: client, authorize: func(context.Context, evidence.Binding) error { return nil }}
+	if _, _, err := mapper.refresh(t.Context()); err == nil {
+		t.Fatal("missing native namespace accepted")
+	}
+	var record struct {
+		Stage   string           `json:"stage"`
+		StageMs map[string]int64 `json:"stageMs"`
+	}
+	if err := json.Unmarshal(logs.Bytes(), &record); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := record.StageMs["binding"]; !ok || record.Stage != "native_before" {
+		t.Fatal("completed stage timing or failing stage missing", record)
+	}
+	if _, ok := record.StageMs["native_before"]; !ok {
+		t.Fatal("failing stage duration missing", record)
+	}
+}
 
 func TestLiveUIDContainerLifetimeAndL7Qualification(t *testing.T) {
 	now := time.Now().UTC().Truncate(time.Second)

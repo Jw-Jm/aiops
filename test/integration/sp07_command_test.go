@@ -413,6 +413,74 @@ func TestSP07CommandTransactionAndClaim(t *testing.T) {
 	if err = service.MarkUnknown(ctx, b.TenantID, highExecution.ID, "owned_callback_fault"); err != nil {
 		t.Fatal(err)
 	}
+	t.Run("frozen post-check and manually confirmed execution links", func(t *testing.T) {
+		legacyView, err := service.GetPostCheck(ctx, actor, e.ID)
+		if err != nil || legacyView.Report != nil || legacyView.Status != "pending" {
+			t.Fatalf("unrecorded check fabricated details: %+v %v", legacyView, err)
+		}
+		if err := workerService.RecordPostCheck(ctx, b.TenantID, e.ID, action.PostCheckFacts{Authorized: true, CheckedAt: time.Now().UTC(), EvidenceRefs: []string{}}); err != nil {
+			t.Fatal(err)
+		}
+		view, err := service.GetPostCheck(ctx, actor, e.ID)
+		if err != nil || view.Status != "completed" || view.DetailStatus != "recorded" || view.Report == nil || view.Report.ExecutionID != e.ID || view.Report.Reason != "source_unavailable" || view.Verdict != "inconclusive" {
+			t.Fatalf("frozen report %+v %v", view, err)
+		}
+		linked := req
+		linked.RelatedExecutionID, linked.ExecutionRelation = &e.ID, "follow_up"
+		a, err := service.AssessRisk(ctx, actor, linked, "linked-risk")
+		if err != nil {
+			t.Fatal(err)
+		}
+		ack, err := service.AcknowledgeRisk(ctx, actor, a.ID, a.RequestDigest, "linked-ack")
+		if err != nil {
+			t.Fatal(err)
+		}
+		tampered := linked
+		tampered.ExecutionRelation = "rollback"
+		if _, err := service.PrepareCommandExecution(ctx, actor, tampered, ack.ID, "changed-relation"); !errors.Is(err, action.ErrAckScopeMismatch) {
+			t.Fatal("relation substitution accepted", err)
+		}
+		tampered = linked
+		tampered.RelatedExecutionID = nil
+		tampered.ExecutionRelation = ""
+		if _, err := service.PrepareCommandExecution(ctx, actor, tampered, ack.ID, "removed-relation"); !errors.Is(err, action.ErrAckScopeMismatch) {
+			t.Fatal("linked confirmation reused for an unlinked request", err)
+		}
+		child, err := service.PrepareCommandExecution(ctx, actor, linked, ack.ID, "linked-prepare")
+		if err != nil || child.Binding.RelatedExecutionID == nil || *child.Binding.RelatedExecutionID != e.ID || child.Binding.DigestVersion != "execution-request/v2" {
+			t.Fatal(child, err)
+		}
+		if again, err := service.PrepareCommandExecution(ctx, actor, linked, ack.ID, "linked-prepare"); err != nil || again.ID != child.ID {
+			t.Fatal("linked replay redispatched", err)
+		}
+		parentView, err := service.GetPostCheck(ctx, actor, e.ID)
+		if err != nil || len(parentView.Executions) != 1 || parentView.Executions[0].ExecutionID != child.ID || parentView.Executions[0].Direction != "child" {
+			t.Fatal(parentView, err)
+		}
+		childView, err := service.GetPostCheck(ctx, actor, child.ID)
+		if err != nil || len(childView.Executions) != 1 || childView.Executions[0].ExecutionID != e.ID || childView.Executions[0].Direction != "parent" {
+			t.Fatal(childView, err)
+		}
+		linked.RelatedExecutionID = &uncertain.ID
+		if _, err := service.AssessRisk(ctx, actor, linked, "unknown-parent"); !errors.Is(err, action.ErrConflict) {
+			t.Fatal("uncertain parent accepted", err)
+		}
+		var after int64
+		if err := db.QueryRowContext(ctx, `SELECT event_seq FROM action.executions WHERE tenant_id=$1 AND execution_id=$2`, b.TenantID, e.ID).Scan(&after); err != nil {
+			t.Fatal(err)
+		}
+		// A partial trusted adapter may retain an unavailable reference. Neither
+		// the report endpoint nor SSE may disclose it without current authority.
+		if err := workerService.RecordPostCheck(ctx, b.TenantID, e.ID, action.PostCheckFacts{Authorized: true, CheckedAt: time.Now().UTC(), EvidenceRefs: []string{uuid.NewString()}}); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := service.GetPostCheck(ctx, actor, e.ID); !errors.Is(err, action.ErrDenied) {
+			t.Fatal("unreadable report evidence disclosed", err)
+		}
+		if _, err := service.Events(ctx, actor, e.ID, after); !errors.Is(err, action.ErrDenied) {
+			t.Fatal("unreadable SSE evidence disclosed", err)
+		}
+	})
 	if _, err = db.ExecContext(ctx, `UPDATE platform.role_bindings SET status='disabled' WHERE tenant_id=$1 AND subject=$2`, actor.TenantID, actor.Subject); err != nil {
 		t.Fatal(err)
 	}

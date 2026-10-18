@@ -120,12 +120,16 @@ func collectCommandPostCheck(ctx context.Context, s action.Service, archive *evi
 	if err != nil || i.ResourceCanonicalID != e.Binding.Target {
 		return f
 	}
-	plural, recipeName := "", ""
+	support := action.PostCheckApplicability(e.Binding.Target)
+	if support.Status == "unsupported" || support.TargetKind != kind {
+		return f
+	}
+	plural, recipeName := "", support.Recipe
 	switch kind {
 	case "PersistentVolumeClaim":
-		plural, recipeName = "persistentvolumeclaims", "pvc-csi-failure"
+		plural = "persistentvolumeclaims"
 	case "Node":
-		plural, recipeName = "nodes", "node-failure"
+		plural = "nodes"
 	default:
 		return f
 	}

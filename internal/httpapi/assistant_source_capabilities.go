@@ -31,6 +31,8 @@ func (h *SP04Handlers) AssistantCapabilityDetails(ctx context.Context, j investi
 	if h == nil || h.Client == nil || h.EndpointAllowed == nil || j.Assistant == nil {
 		return nil, investigation.ErrNoJob
 	}
+	ctx, cancel := context.WithTimeout(ctx, capabilityDetailDeadline)
+	defer cancel()
 	route, err := (graph.Repository{Pool: h.Pool}).Load(ctx, j.TenantID.String(), j.Scope.Cluster)
 	if err != nil || !route.ExpiresAt.After(time.Now()) || !h.EndpointAllowed(route.Endpoint) {
 		return nil, graph.ErrNotReady
@@ -39,9 +41,7 @@ func (h *SP04Handlers) AssistantCapabilityDetails(ctx context.Context, j investi
 	// strictly below tools.DeadlineFor("get_assistant_context") so a slow or
 	// fenced worker degrades the capability status instead of consuming the
 	// whole tool deadline and failing the follow-up turn.
-	bounded, cancel := context.WithTimeout(ctx, capabilityDetailDeadline)
-	defer cancel()
-	reply, err := h.callWithGrantDigest(bounded, route.Endpoint, "/internal/v1/analysis:query", "platform-analysis-query", j.Subject, j.Scope, rawJSON(map[string]any{"capabilities": true, "ownerEpoch": route.Epoch}), j.Assistant.GrantSnapshotDigest)
+	reply, err := h.callWithGrantDigest(ctx, route.Endpoint, "/internal/v1/analysis:query", "platform-analysis-query", j.Subject, j.Scope, rawJSON(map[string]any{"capabilities": true, "ownerEpoch": route.Epoch}), j.Assistant.GrantSnapshotDigest)
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,227 @@
+{
+  "schemaVersion": "delivery-preparation/v1",
+  "status": "preparation_only",
+  "asOf": "2026-10-18",
+  "scope": "nonvirtual-core",
+  "versionBasis": {
+    "platformApp": "1.0.0",
+    "chart": "0.1.0",
+    "publicAPI": "1.4.0",
+    "internalGraphAPI": "1.0.0",
+    "investigatorPackage": "0.1.0",
+    "holmesgpt": "0.42.0",
+    "webPackage": null
+  },
+  "sourceBinding": {
+    "state": "working_tree_unfrozen",
+    "finalCommit": null,
+    "bundleId": null,
+    "imageDigests": null,
+    "note": "本文件是源码兼容准备基线，不是 Bundle inventory、签名回执或发行许可。正式冻结后由既有 BuildSpec/Manifest 绑定实际提交、逐架构镜像和源码材料。"
+  },
+  "components": [
+    {
+      "name": "api",
+      "source": "cmd/platform-api",
+      "material": "platform-api",
+      "buildRecipe": "build/images/api/Dockerfile",
+      "pairing": "与 Worker、Schema、迁移来自同一冻结提交"
+    },
+    {
+      "name": "worker",
+      "source": "cmd/platform-worker",
+      "material": "platform-worker",
+      "buildRecipe": "build/images/worker/Dockerfile",
+      "pairing": "与 API 同一冻结提交；原生 K8sGPT 保持精确准入"
+    },
+    {
+      "name": "investigator",
+      "source": "services/investigator",
+      "material": "holmesgpt",
+      "buildRecipe": "build/images/investigator/Dockerfile",
+      "pairing": "平台 wrapper 与锁定 HolmesGPT/对应源码闭包同批制包，不由 Python 包版本单独证明兼容"
+    },
+    {
+      "name": "web",
+      "source": "web",
+      "material": "platform-web",
+      "buildRecipe": "build/images/web/Dockerfile",
+      "pairing": "从同一公开 OpenAPI 生成客户端；无独立 package version，依靠冻结提交与 image digest"
+    },
+    {
+      "name": "runner",
+      "source": "cmd/command-runner",
+      "material": "command-runner",
+      "buildRecipe": "build/images/command-runner/Dockerfile",
+      "pairing": "Profile toolImageDigest 必须等于 Bundle 准入 Runner digest"
+    },
+    {
+      "name": "installer",
+      "source": "cmd/opsctl",
+      "material": "opsctl",
+      "pairing": "独立验签工具包与 core 包需明确配对，不替换未认证二进制"
+    },
+    {
+      "name": "migration",
+      "source": "cmd/db-migrate",
+      "material": "db-migrate",
+      "pairing": "受控 migration LOGIN，精确 db-migrate-source 配对"
+    },
+    {
+      "name": "schemas",
+      "source": "api/schemas",
+      "material": "opsctl-source",
+      "pairing": "API/Worker、Python 输出与 Web 生成物同一源码基线"
+    },
+    {
+      "name": "chart",
+      "source": "deploy/charts/ops-platform",
+      "material": "ops-platform-chart",
+      "pairing": "Chart version 与 appVersion 分别登记，精确 Chart 内容由现有 Bundle payload 摘要绑定"
+    }
+  ],
+  "contracts": [
+    {
+      "path": "api/schemas/bundle-lock.schema.json",
+      "id": "https://ops.local/schemas/bundle-lock/v1"
+    },
+    {
+      "path": "api/schemas/deployment-profile.schema.json",
+      "id": "https://ops.local/schemas/deployment-profile/v1"
+    },
+    {
+      "path": "api/schemas/installation-business-values-v1.schema.json",
+      "id": "https://ops.local/schemas/installation-business-values/v1"
+    },
+    {
+      "path": "api/schemas/platform-capabilities-v1.schema.json",
+      "id": "https://ops.local/schemas/platform-capabilities/v1"
+    },
+    {
+      "path": "api/schemas/internal-graph-query-v1.schema.json",
+      "id": "https://ops.local/schemas/internal-graph-query/v1"
+    },
+    {
+      "path": "api/schemas/resource-graph-v2.schema.json",
+      "id": "https://ops.local/schemas/resource-graph/v2"
+    },
+    {
+      "path": "api/schemas/investigation-job-v2.schema.json",
+      "id": "https://ops.local/schemas/investigation-job/v2"
+    },
+    {
+      "path": "api/schemas/investigation-job-v3.schema.json",
+      "id": "https://ops.local/schemas/investigation-job/v3"
+    },
+    {
+      "path": "api/schemas/investigation-result-v1.schema.json",
+      "id": "https://ops.local/schemas/investigation-result/v1"
+    },
+    {
+      "path": "api/schemas/assistant-answer-v1.schema.json",
+      "id": "https://ops.local/schemas/assistant-answer/v1"
+    },
+    {
+      "path": "api/schemas/tool-response-v2.schema.json",
+      "id": "https://ops.local/schemas/tool-response/v2"
+    },
+    {
+      "path": "api/schemas/tool-response-v3.schema.json",
+      "id": "https://ops.local/schemas/tool-response/v3"
+    },
+    {
+      "path": "api/schemas/assistant-model-profile-v1.schema.json",
+      "id": "https://ops.local/schemas/assistant-model-profile/v1"
+    },
+    {
+      "path": "api/schemas/execution-profile-v2.schema.json",
+      "id": "https://ops.local/schemas/execution-profile/v2"
+    },
+    {
+      "path": "api/schemas/command-execution-v1.schema.json",
+      "id": "https://ops.local/schemas/command-execution/v1"
+    },
+    {
+      "path": "api/schemas/command-post-check-v1.schema.json",
+      "id": "https://ops.local/schemas/command-post-check/v1"
+    }
+  ],
+  "migrations": {
+    "first": 1,
+    "latest": 43,
+    "count": 43,
+    "direction": "forward_only",
+    "rollback": "no_down_no_automatic_binary_downgrade",
+    "runbook": "docs/runbooks/database-migrations.md"
+  },
+  "featureDefaults": {
+    "sp04": false,
+    "sp05": false,
+    "sp06": false,
+    "sp07": false,
+    "sp08": false
+  },
+  "assistantDefault": false,
+  "configurationLimits": {
+    "businessValuesWeb": false,
+    "businessValuesAssistant": false,
+    "webImageRecipeArchitecture": "amd64",
+    "mixedRevisionRuntimeVerified": false
+  },
+  "blockers": [
+    {
+      "id": "DEL-001",
+      "status": "open",
+      "title": "完整安装业务值尚未接通 Web 与助手/故障链配置",
+      "evidence": [
+        "api/schemas/installation-business-values-v1.schema.json",
+        "internal/bundle/installer.go",
+        "internal/bundle/business_values.go"
+      ],
+      "requiredBeforeRelease": "在独立后续开发中复用现有 installer/Chart 接通配置、摘要绑定与阶段回执；本轮不绕过门禁直接 Helm 部署。"
+    },
+    {
+      "id": "DEL-002",
+      "status": "open",
+      "title": "前端镜像配方使用固定 amd64 库路径",
+      "evidence": [
+        "build/images/web/Dockerfile"
+      ],
+      "requiredBeforeRelease": "逐目标架构准备真实镜像/依赖/源码闭包与兼容验证，不能据 API/Worker 的交叉编译宣称完整 ARM64/AMD64 交付。"
+    },
+    {
+      "id": "DEL-003",
+      "status": "pending",
+      "title": "当前源码未冻结，整套新制品及跨版本运行未验证",
+      "evidence": [
+        "internal/bundle/build.go",
+        "internal/bundle/verify.go"
+      ],
+      "requiredBeforeRelease": "冻结提交、独立逐架构 BuildSpec、当前 OCI/Chart/源码/许可证/SBOM 和签名 Bundle；再安排真实升级与回退演练。"
+    },
+    {
+      "id": "DEL-004",
+      "status": "pending",
+      "title": "当前真实闭环与质量/容量证据不能继承旧回执",
+      "evidence": [
+        "docs/evidence/five-source-reverify-20261018/round5/acceptance-status.json",
+        "docs/evidence/five-source-reverify-20261018/round5/prior-retention-reassessment.json"
+      ],
+      "requiredBeforeRelease": "按新源码及实际来源/授权重新安排验收；远程性能仅记录，人工模型质量 pending 不代填。"
+    }
+  ],
+  "qualification": {
+    "deploymentPerformed": false,
+    "upgradePerformed": false,
+    "rollbackPerformed": false,
+    "newBundleBuiltOrSigned": false,
+    "releaseAdmitted": false
+  },
+  "runbooks": [
+    "docs/release/unified-delivery.md",
+    "docs/runbooks/generic-kubernetes-offline-install.md",
+    "docs/runbooks/pre-sp07-current-bootstrap.md",
+    "docs/runbooks/database-migrations.md",
+    "docs/runbooks/development-tests.md"
+  ]
+}

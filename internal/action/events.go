@@ -58,6 +58,11 @@ func (s Service) Events(ctx context.Context, a auth.RequestContext, id uuid.UUID
 			return err
 		}
 		for i := range out {
+			if out[i].EventType == "post_check" {
+				if err = s.postCheckEventReadable(ctx, tx, a, e, out[i].Payload); err != nil {
+					return err
+				}
+			}
 			if out[i].EventType == "output" {
 				var ref struct {
 					Seq int64 `json:"seq"`

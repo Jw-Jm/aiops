@@ -6,9 +6,14 @@
  */
 import type { CanonicalID } from './canonicalID.ts';
 import type { CommandExecutionOptions } from './commandExecutionOptions.ts';
+import type { CommandRiskAssessmentRequestExecutionRelation } from './commandRiskAssessmentRequestExecutionRelation.ts';
 import type { Identifier } from './identifier.ts';
 
 export interface CommandRiskAssessmentRequest {
+  /** Existing completed execution on the same Incident and resource identity; must accompany executionRelation. */
+  relatedExecutionId?: string;
+  /** Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId. */
+  executionRelation?: CommandRiskAssessmentRequestExecutionRelation;
   /** @nullable */
   actionPlanId?: string | null;
   /**

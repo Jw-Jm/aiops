@@ -5,9 +5,12 @@
  * OpenAPI spec version: 1.4.0
  */
 import type { CanonicalID } from './canonicalID.ts';
+import type { GetResourcesDomain } from './getResourcesDomain.ts';
 import type { GetResourcesOrder } from './getResourcesOrder.ts';
 
 export type GetResourcesParams = {
+includeDomains?: boolean;
+domain?: GetResourcesDomain;
 /**
  * Resolve at most 50 exact resource identifiers within current authorization; this filter does not expand scope.
  * @maxItems 50

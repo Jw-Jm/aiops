@@ -32,6 +32,18 @@ export function RiskPanel({
         }
         description="请逐项核对以下命令和执行范围。确认仅对本次请求有效，修改任何内容都需要重新评估。"
       />
+      {typeof record(a.postCheckApplicability).status === "string" && (
+        <Alert
+          showIcon
+          type="info"
+          title="后检查适用范围"
+          description={
+            record(a.postCheckApplicability).status === "unsupported"
+              ? "此目标没有已发布的可信后检查判据，执行后只能保留“尚无定论”。需要人工核对证据，命令成功不等于异常恢复。"
+              : "此目标可使用原生 Node/PVC 判据；仍需当前来源、已激活配方及执行后的归档证据合格，才可判断恢复。"
+          }
+        />
+      )}
       <h4>本次将执行的命令</h4>
       <pre className="command-review">{request.actualCommand}</pre>
       <Descriptions
@@ -39,6 +51,18 @@ export function RiskPanel({
         size="small"
         column={1}
         items={[
+          ...(binding.relatedExecutionId
+            ? [
+                {
+                  key: "execution-relation",
+                  label:
+                    binding.executionRelation === "rollback"
+                      ? "回退关联的原执行"
+                      : "继续处置关联的原执行",
+                  children: <FullText value={binding.relatedExecutionId} />,
+                },
+              ]
+            : []),
           {
             key: "target",
             label: "执行目标",

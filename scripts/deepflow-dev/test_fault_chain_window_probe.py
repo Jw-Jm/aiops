@@ -1,6 +1,10 @@
 import importlib.util
 import unittest
+import json
+import tempfile
+import urllib.error
 from pathlib import Path
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location(
     "fault_chain_window_probe", Path(__file__).with_name("fault-chain-window-probe.py")
@@ -22,6 +26,23 @@ MEASURED = [measurement(1000, 10, 0, 1000), measurement(1000, 50, 100, 1100), me
 
 
 class WindowReconcileTest(unittest.TestCase):
+    def test_initial_backend_failure_preserves_golden_and_failure_report(self):
+        pods = [{"metadata": {"name": name, "uid": name+"-uid", "labels": {"app": name}},
+                 "status": {"phase": "Running", "podIP": "10.0.0.2", "containerStatuses": [{"containerID": "containerd://test"}]}}
+                for name in ("fault-chain-client", "fault-chain-server")]
+        with tempfile.TemporaryDirectory() as directory:
+            report = Path(directory)/"windows.json"
+            with patch('sys.argv', ['probe', '--report', str(report), '--wait-seconds', '30']), \
+                 patch.object(probe, 'kubectl', side_effect=[json.dumps({'items': pods}), json.dumps(GOLDEN)]), \
+                 patch.object(probe, 'query', side_effect=urllib.error.URLError('connection refused')), \
+                 patch.object(probe.time, 'sleep'), patch.object(probe.time, 'time', side_effect=[0, 1, 2, 3, 31, 32]), patch('builtins.print'):
+                self.assertEqual(probe.main(), 1)
+            result = json.loads(report.read_text())
+            self.assertEqual(result['status'], 'FAIL')
+            self.assertFalse(result['stable'])
+            self.assertEqual(result['sourceErrors'], [{'poll': 1, 'type': 'URLError'}])
+            self.assertEqual(json.loads(report.with_suffix('.golden.json').read_text())['golden'], GOLDEN)
+
     def test_three_windows_reconcile_against_their_own_record(self):
         self.assertTrue(probe.reconcile(MEASURED, GOLDEN))
 

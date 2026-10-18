@@ -33,7 +33,7 @@ func ObservabilityMiddleware(logger *slog.Logger, metrics *observability.Metrics
 			if !observability.ValidRequestID(requestID) {
 				requestID = observability.NewRequestID()
 			}
-			ctx := tracing.Extract(request.Context(), request.Header)
+			ctx := observability.WithMetrics(tracing.Extract(request.Context(), request.Header), metrics)
 			ctx = observability.WithRequestID(ctx, requestID)
 			ctx, span := tracer.Start(ctx, "HTTP "+request.Method, trace.WithSpanKind(trace.SpanKindServer))
 			span.SetAttributes(

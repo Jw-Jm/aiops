@@ -165,6 +165,24 @@ func (e AuthSessionV1Roles) Valid() bool {
 	}
 }
 
+// Defines values for CommandExecutionRequestExecutionRelation.
+const (
+	CommandExecutionRequestExecutionRelationFollowUp CommandExecutionRequestExecutionRelation = "follow_up"
+	CommandExecutionRequestExecutionRelationRollback CommandExecutionRequestExecutionRelation = "rollback"
+)
+
+// Valid indicates whether the value is a known member of the CommandExecutionRequestExecutionRelation enum.
+func (e CommandExecutionRequestExecutionRelation) Valid() bool {
+	switch e {
+	case CommandExecutionRequestExecutionRelationFollowUp:
+		return true
+	case CommandExecutionRequestExecutionRelationRollback:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CommandExecutionRequestShell.
 const (
 	CommandExecutionRequestShellBash CommandExecutionRequestShell = "bash"
@@ -174,6 +192,24 @@ const (
 func (e CommandExecutionRequestShell) Valid() bool {
 	switch e {
 	case CommandExecutionRequestShellBash:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CommandRiskAssessmentRequestExecutionRelation.
+const (
+	CommandRiskAssessmentRequestExecutionRelationFollowUp CommandRiskAssessmentRequestExecutionRelation = "follow_up"
+	CommandRiskAssessmentRequestExecutionRelationRollback CommandRiskAssessmentRequestExecutionRelation = "rollback"
+)
+
+// Valid indicates whether the value is a known member of the CommandRiskAssessmentRequestExecutionRelation enum.
+func (e CommandRiskAssessmentRequestExecutionRelation) Valid() bool {
+	switch e {
+	case CommandRiskAssessmentRequestExecutionRelationFollowUp:
+		return true
+	case CommandRiskAssessmentRequestExecutionRelationRollback:
 		return true
 	default:
 		return false
@@ -1436,37 +1472,37 @@ func (e SourceRegistrationRequestAllowedSchemas) Valid() bool {
 
 // Defines values for SourceRegistrationRequestSourceType.
 const (
-	Deepflow        SourceRegistrationRequestSourceType = "deepflow"
-	Ipmi            SourceRegistrationRequestSourceType = "ipmi"
-	Kubernetes      SourceRegistrationRequestSourceType = "kubernetes"
-	Model           SourceRegistrationRequestSourceType = "model"
-	ObjectStorage   SourceRegistrationRequestSourceType = "object_storage"
-	Redfish         SourceRegistrationRequestSourceType = "redfish"
-	Smart           SourceRegistrationRequestSourceType = "smart"
-	Victorialogs    SourceRegistrationRequestSourceType = "victorialogs"
-	Victoriametrics SourceRegistrationRequestSourceType = "victoriametrics"
+	SourceRegistrationRequestSourceTypeDeepflow        SourceRegistrationRequestSourceType = "deepflow"
+	SourceRegistrationRequestSourceTypeIpmi            SourceRegistrationRequestSourceType = "ipmi"
+	SourceRegistrationRequestSourceTypeKubernetes      SourceRegistrationRequestSourceType = "kubernetes"
+	SourceRegistrationRequestSourceTypeModel           SourceRegistrationRequestSourceType = "model"
+	SourceRegistrationRequestSourceTypeObjectStorage   SourceRegistrationRequestSourceType = "object_storage"
+	SourceRegistrationRequestSourceTypeRedfish         SourceRegistrationRequestSourceType = "redfish"
+	SourceRegistrationRequestSourceTypeSmart           SourceRegistrationRequestSourceType = "smart"
+	SourceRegistrationRequestSourceTypeVictorialogs    SourceRegistrationRequestSourceType = "victorialogs"
+	SourceRegistrationRequestSourceTypeVictoriametrics SourceRegistrationRequestSourceType = "victoriametrics"
 )
 
 // Valid indicates whether the value is a known member of the SourceRegistrationRequestSourceType enum.
 func (e SourceRegistrationRequestSourceType) Valid() bool {
 	switch e {
-	case Deepflow:
+	case SourceRegistrationRequestSourceTypeDeepflow:
 		return true
-	case Ipmi:
+	case SourceRegistrationRequestSourceTypeIpmi:
 		return true
-	case Kubernetes:
+	case SourceRegistrationRequestSourceTypeKubernetes:
 		return true
-	case Model:
+	case SourceRegistrationRequestSourceTypeModel:
 		return true
-	case ObjectStorage:
+	case SourceRegistrationRequestSourceTypeObjectStorage:
 		return true
-	case Redfish:
+	case SourceRegistrationRequestSourceTypeRedfish:
 		return true
-	case Smart:
+	case SourceRegistrationRequestSourceTypeSmart:
 		return true
-	case Victorialogs:
+	case SourceRegistrationRequestSourceTypeVictorialogs:
 		return true
-	case Victoriametrics:
+	case SourceRegistrationRequestSourceTypeVictoriametrics:
 		return true
 	default:
 		return false
@@ -1548,6 +1584,30 @@ const (
 func (e UnavailableGraphV2SchemaVersion) Valid() bool {
 	switch e {
 	case RcaGraphUnavailablev2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for GetResourcesParamsDomain.
+const (
+	GetResourcesParamsDomainHardware   GetResourcesParamsDomain = "hardware"
+	GetResourcesParamsDomainKubernetes GetResourcesParamsDomain = "kubernetes"
+	GetResourcesParamsDomainNetwork    GetResourcesParamsDomain = "network"
+	GetResourcesParamsDomainStorage    GetResourcesParamsDomain = "storage"
+)
+
+// Valid indicates whether the value is a known member of the GetResourcesParamsDomain enum.
+func (e GetResourcesParamsDomain) Valid() bool {
+	switch e {
+	case GetResourcesParamsDomainHardware:
+		return true
+	case GetResourcesParamsDomainKubernetes:
+		return true
+	case GetResourcesParamsDomainNetwork:
+		return true
+	case GetResourcesParamsDomainStorage:
 		return true
 	default:
 		return false
@@ -2230,18 +2290,27 @@ type CommandExecutionOptions struct {
 
 // CommandExecutionRequest Additive v1 fields incidentId, executionProfileVersion and executionOptions may be omitted only to reuse the exact values bound in this subject’s RiskAcknowledgement. Explicit values must match; no server-selected defaults or automatic profile upgrades.
 type CommandExecutionRequest struct {
-	ActionPlanId            *string                      `json:"actionPlanId,omitempty"`
-	ActualCommand           string                       `json:"actualCommand"`
-	ExecutionOptions        *CommandExecutionOptions     `json:"executionOptions,omitempty"`
-	ExecutionProfileId      Identifier                   `json:"executionProfileId"`
-	ExecutionProfileVersion *int                         `json:"executionProfileVersion,omitempty"`
-	IncidentId              *Identifier                  `json:"incidentId,omitempty"`
-	RiskAcknowledgementId   Identifier                   `json:"riskAcknowledgementId"`
-	Shell                   CommandExecutionRequestShell `json:"shell"`
+	ActionPlanId            *string                  `json:"actionPlanId,omitempty"`
+	ActualCommand           string                   `json:"actualCommand"`
+	ExecutionOptions        *CommandExecutionOptions `json:"executionOptions,omitempty"`
+	ExecutionProfileId      Identifier               `json:"executionProfileId"`
+	ExecutionProfileVersion *int                     `json:"executionProfileVersion,omitempty"`
+
+	// ExecutionRelation Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId.
+	ExecutionRelation *CommandExecutionRequestExecutionRelation `json:"executionRelation,omitempty"`
+	IncidentId        *Identifier                               `json:"incidentId,omitempty"`
+
+	// RelatedExecutionId Existing completed execution on the same Incident and resource identity; must accompany executionRelation.
+	RelatedExecutionId    *openapi_types.UUID          `json:"relatedExecutionId,omitempty"`
+	RiskAcknowledgementId Identifier                   `json:"riskAcknowledgementId"`
+	Shell                 CommandExecutionRequestShell `json:"shell"`
 
 	// Target RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
 	Target CanonicalID `json:"target"`
 }
+
+// CommandExecutionRequestExecutionRelation Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId.
+type CommandExecutionRequestExecutionRelation string
 
 // CommandExecutionRequestShell defines model for CommandExecutionRequest.Shell.
 type CommandExecutionRequestShell string
@@ -2254,17 +2323,26 @@ type CommandRiskAcknowledgementRequest struct {
 
 // CommandRiskAssessmentRequest defines model for CommandRiskAssessmentRequest.
 type CommandRiskAssessmentRequest struct {
-	ActionPlanId            *string                           `json:"actionPlanId,omitempty"`
-	ActualCommand           string                            `json:"actualCommand"`
-	ExecutionOptions        CommandExecutionOptions           `json:"executionOptions"`
-	ExecutionProfileId      Identifier                        `json:"executionProfileId"`
-	ExecutionProfileVersion int                               `json:"executionProfileVersion"`
-	IncidentId              Identifier                        `json:"incidentId"`
-	Shell                   CommandRiskAssessmentRequestShell `json:"shell"`
+	ActionPlanId            *string                 `json:"actionPlanId,omitempty"`
+	ActualCommand           string                  `json:"actualCommand"`
+	ExecutionOptions        CommandExecutionOptions `json:"executionOptions"`
+	ExecutionProfileId      Identifier              `json:"executionProfileId"`
+	ExecutionProfileVersion int                     `json:"executionProfileVersion"`
+
+	// ExecutionRelation Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId.
+	ExecutionRelation *CommandRiskAssessmentRequestExecutionRelation `json:"executionRelation,omitempty"`
+	IncidentId        Identifier                                     `json:"incidentId"`
+
+	// RelatedExecutionId Existing completed execution on the same Incident and resource identity; must accompany executionRelation.
+	RelatedExecutionId *openapi_types.UUID               `json:"relatedExecutionId,omitempty"`
+	Shell              CommandRiskAssessmentRequestShell `json:"shell"`
 
 	// Target RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
 	Target CanonicalID `json:"target"`
 }
+
+// CommandRiskAssessmentRequestExecutionRelation Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId.
+type CommandRiskAssessmentRequestExecutionRelation string
 
 // CommandRiskAssessmentRequestShell defines model for CommandRiskAssessmentRequest.Shell.
 type CommandRiskAssessmentRequestShell string
@@ -4322,6 +4400,9 @@ type GetOverviewParams struct {
 
 // GetResourcesParams defines parameters for GetResources.
 type GetResourcesParams struct {
+	IncludeDomains *bool                     `form:"includeDomains,omitempty" json:"includeDomains,omitempty"`
+	Domain         *GetResourcesParamsDomain `form:"domain,omitempty" json:"domain,omitempty"`
+
 	// CanonicalIds Resolve at most 50 exact resource identifiers within current authorization; this filter does not expand scope.
 	CanonicalIds *[]CanonicalID `form:"canonicalIds,omitempty" json:"canonicalIds,omitempty"`
 	Kind         *string        `form:"kind,omitempty" json:"kind,omitempty"`
@@ -4337,6 +4418,9 @@ type GetResourcesParams struct {
 	Sort   *string                  `form:"sort,omitempty" json:"sort,omitempty"`
 	Order  *GetResourcesParamsOrder `form:"order,omitempty" json:"order,omitempty"`
 }
+
+// GetResourcesParamsDomain defines parameters for GetResources.
+type GetResourcesParamsDomain string
 
 // GetResourcesParamsOrder defines parameters for GetResources.
 type GetResourcesParamsOrder string
@@ -12232,6 +12316,32 @@ func (siw *ServerInterfaceWrapper) GetResources(w http.ResponseWriter, r *http.R
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetResourcesParams
+
+	// ------------- Optional query parameter "includeDomains" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "includeDomains", r.URL.Query(), &params.IncludeDomains, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "includeDomains"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "includeDomains", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "domain" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "domain", r.URL.Query(), &params.Domain, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "domain"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "domain", Err: err})
+		}
+		return
+	}
 
 	// ------------- Optional query parameter "canonicalIds" -------------
 

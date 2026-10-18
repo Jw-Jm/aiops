@@ -1,6 +1,7 @@
 package observability
 
 import (
+	"math"
 	"net/http"
 	"strconv"
 	"sync"
@@ -12,6 +13,13 @@ import (
 
 type Metrics struct {
 	registry          *prometheus.Registry
+	workDuration      *prometheus.HistogramVec
+	queueDepth        *prometheus.GaugeVec
+	recentResults     *prometheus.GaugeVec
+	jobDuration       prometheus.Gauge
+	databaseUp        prometheus.Gauge
+	businessAvailable prometheus.Gauge
+	businessSampledAt prometheus.Gauge
 	httpRequests      *prometheus.CounterVec
 	httpDuration      *prometheus.HistogramVec
 	operations        *prometheus.CounterVec
@@ -46,7 +54,14 @@ var operationResults = map[string]struct{}{"ok": {}, "error": {}, "retry": {}, "
 func NewMetrics() *Metrics {
 	registry := prometheus.NewRegistry()
 	m := &Metrics{
-		registry: registry,
+		registry:          registry,
+		workDuration:      prometheus.NewHistogramVec(prometheus.HistogramOpts{Namespace: "platform", Name: "work_duration_seconds", Help: "Elapsed work time in the named boundary; incident aggregation excludes queue wait and outer transaction commit.", Buckets: prometheus.DefBuckets}, []string{"area"}),
+		queueDepth:        prometheus.NewGaugeVec(prometheus.GaugeOpts{Namespace: "platform", Name: "queue_depth", Help: "Current database queue counts across tenants; replicated workers observe the same population, use max rather than sum."}, []string{"queue"}),
+		recentResults:     prometheus.NewGaugeVec(prometheus.GaugeOpts{Namespace: "platform", Name: "recent_results", Help: "Current counts of tool Steps/admissions started and command executions updated within five minutes, by fixed area/state; replicated observations must not be summed."}, []string{"area", "state"}),
+		jobDuration:       prometheus.NewGauge(prometheus.GaugeOpts{Namespace: "platform", Name: "investigation_terminal_mean_seconds", Help: "Mean updated_at minus created_at for jobs currently terminal and updated within five minutes; NaN if no observations."}),
+		databaseUp:        prometheus.NewGauge(prometheus.GaugeOpts{Namespace: "platform", Name: "database_up", Help: "Whether the worker's last bounded database ping succeeded."}),
+		businessAvailable: prometheus.NewGauge(prometheus.GaugeOpts{Namespace: "platform", Name: "business_snapshot_available", Help: "Whether all business queue measurements completed in the last bounded pass."}),
+		businessSampledAt: prometheus.NewGauge(prometheus.GaugeOpts{Namespace: "platform", Name: "business_snapshot_timestamp_seconds", Help: "Unix time of the last complete business snapshot."}),
 		httpRequests: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: "platform", Name: "http_requests_total", Help: "HTTP requests handled by the platform process.",
 		}, []string{"method", "status_class"}),
@@ -72,7 +87,9 @@ func NewMetrics() *Metrics {
 		}),
 	}
 	m.processUp.Set(1)
-	registry.MustRegister(m.httpRequests, m.httpDuration, m.operations, m.exportFailures, m.degraded, m.processUp, m.auditDelay, m.queryCompleteness)
+	m.InvalidateBusinessSnapshot()
+	m.databaseUp.Set(math.NaN())
+	registry.MustRegister(m.workDuration, m.queueDepth, m.recentResults, m.jobDuration, m.databaseUp, m.businessAvailable, m.businessSampledAt, m.httpRequests, m.httpDuration, m.operations, m.exportFailures, m.degraded, m.processUp, m.auditDelay, m.queryCompleteness)
 	return m
 }
 

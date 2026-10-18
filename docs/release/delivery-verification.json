@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "delivery-preparation-verification/v1",
+  "asOf": "2026-10-18",
+  "result": "PREPARED_NOT_RELEASE_QUALIFIED",
+  "baseCommit": "b10b2f0bc378f06291dbfc04ddccaae3a555155d",
+  "includesWorkingTreeChanges": true,
+  "finalSourceFrozen": false,
+  "checks": [
+    {
+      "command": "make check-delivery",
+      "result": "PASS",
+      "scope": "declared versions/contracts/migration range/default capability switches and existing generated/runtime/migration source checks"
+    },
+    {
+      "command": "make test-contract",
+      "result": "PASS",
+      "scope": "local Contract selection; excludes explicit replay/capacity suites"
+    },
+    {
+      "command": "go test ./test/contract -run '^TestDeliveryPreparation' -count=1",
+      "result": "PASS",
+      "scope": "final nine-component baseline and architecture/configuration boundaries"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "versions": {
+    "platformApp": "1.0.0",
+    "chart": "0.1.0",
+    "publicAPI": "1.4.0",
+    "internalGraphAPI": "1.0.0",
+    "investigatorPackage": "0.1.0",
+    "holmesgpt": "0.42.0",
+    "webPackage": null
+  },
+  "migrations": {
+    "first": 1,
+    "latest": 43,
+    "count": 43,
+    "direction": "forward_only",
+    "rollback": "no_down_no_automatic_binary_downgrade",
+    "runbook": "docs/runbooks/database-migrations.md"
+  },
+  "components": 9,
+  "versionedContracts": 16,
+  "blockers": [
+    {
+      "id": "DEL-001",
+      "status": "open",
+      "title": "完整安装业务值尚未接通 Web 与助手/故障链配置",
+      "evidence": [
+        "api/schemas/installation-business-values-v1.schema.json",
+        "internal/bundle/installer.go",
+        "internal/bundle/business_values.go"
+      ],
+      "requiredBeforeRelease": "在独立后续开发中复用现有 installer/Chart 接通配置、摘要绑定与阶段回执；本轮不绕过门禁直接 Helm 部署。"
+    },
+    {
+      "id": "DEL-002",
+      "status": "open",
+      "title": "前端镜像配方使用固定 amd64 库路径",
+      "evidence": [
+        "build/images/web/Dockerfile"
+      ],
+      "requiredBeforeRelease": "逐目标架构准备真实镜像/依赖/源码闭包与兼容验证，不能据 API/Worker 的交叉编译宣称完整 ARM64/AMD64 交付。"
+    },
+    {
+      "id": "DEL-003",
+      "status": "pending",
+      "title": "当前源码未冻结，整套新制品及跨版本运行未验证",
+      "evidence": [
+        "internal/bundle/build.go",
+        "internal/bundle/verify.go"
+      ],
+      "requiredBeforeRelease": "冻结提交、独立逐架构 BuildSpec、当前 OCI/Chart/源码/许可证/SBOM 和签名 Bundle；再安排真实升级与回退演练。"
+    },
+    {
+      "id": "DEL-004",
+      "status": "pending",
+      "title": "当前真实闭环与质量/容量证据不能继承旧回执",
+      "evidence": [
+        "docs/evidence/five-source-reverify-20261018/round5/acceptance-status.json",
+        "docs/evidence/five-source-reverify-20261018/round5/prior-retention-reassessment.json"
+      ],
+      "requiredBeforeRelease": "按新源码及实际来源/授权重新安排验收；远程性能仅记录，人工模型质量 pending 不代填。"
+    }
+  ],
+  "notPerformed": [
+    "image build or architecture runtime verification",
+    "new Bundle build/sign/admission",
+    "remote deployment, upgrade or rollback",
+    "real sources/browser/capacity/quality acceptance"
+  ],
+  "qualification": {
+    "deploymentPerformed": false,
+    "upgradePerformed": false,
+    "rollbackPerformed": false,
+    "newBundleBuiltOrSigned": false,
+    "releaseAdmitted": false
+  },
+  "formalDocumentsEdited": false,
+  "functionalVerificationRecord": "docs/release/disposition-verification-closeout.md"
+}

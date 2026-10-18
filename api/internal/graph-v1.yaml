@@ -69,6 +69,8 @@ components:
         relationKinds: {type: array, items: {type: string}}
         cursorRevision: {$ref: '#/components/schemas/GraphRevision'}
         afterCanonicalId: {type: string}
+        includeDomains: {type: boolean}
+        domain: {type: string, enum: [hardware, kubernetes, network, storage]}
         kind: {type: string}
         name: {type: string}
         health: {type: string}

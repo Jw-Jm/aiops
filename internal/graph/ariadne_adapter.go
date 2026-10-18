@@ -59,6 +59,8 @@ func (s Scope) Allows(id, ns string) bool {
 }
 
 type Query struct {
+	IncludeDomains     bool      `json:"includeDomains,omitempty"`
+	Domain             string    `json:"domain,omitempty"`
 	CanonicalIDs       []string  `json:"canonicalIds,omitempty"`
 	Direction          string    `json:"direction,omitempty"`
 	Name               string    `json:"name,omitempty"`
@@ -79,10 +81,15 @@ type Query struct {
 	Kind               string    `json:"kind,omitempty"`
 	Namespace          string    `json:"namespace,omitempty"`
 }
-type ResourceSummary struct {
+type DomainSummary struct {
 	Total    int            `json:"total"`
-	ByKind   map[string]int `json:"byKind"`
 	ByHealth map[string]int `json:"byHealth"`
+}
+type ResourceSummary struct {
+	ByDomain map[string]DomainSummary `json:"byDomain,omitempty"`
+	Total    int                      `json:"total"`
+	ByKind   map[string]int           `json:"byKind"`
+	ByHealth map[string]int           `json:"byHealth"`
 }
 type Result struct {
 	ObservationSources []SourceAuthority        `json:"observationSources,omitempty"`
@@ -407,10 +414,23 @@ func (g *Graph) queryLocked(ctx context.Context, q Query) (Result, error) {
 			}
 		}
 		out.Summary = &ResourceSummary{Total: len(candidates), ByKind: map[string]int{}, ByHealth: map[string]int{}}
+		if q.IncludeDomains {
+			out.Summary.ByDomain = map[string]DomainSummary{}
+		}
 		for _, entity := range candidates {
 			out.Summary.ByKind[entity.Kind]++
 			health := entityHealth(entity)
 			out.Summary.ByHealth[health]++
+			if q.IncludeDomains {
+				domain := entityDomain(entity)
+				group := out.Summary.ByDomain[domain]
+				if group.ByHealth == nil {
+					group.ByHealth = map[string]int{}
+				}
+				group.Total++
+				group.ByHealth[health]++
+				out.Summary.ByDomain[domain] = group
+			}
 		}
 		sort.Slice(candidates, func(i, j int) bool {
 			left, right := listKey(q, candidates[i]), listKey(q, candidates[j])

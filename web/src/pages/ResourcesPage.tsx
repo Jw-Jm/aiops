@@ -24,6 +24,7 @@ export function ResourcesPage() {
     order: url.get("order") === "desc" ? "desc" : "asc",
     ...Object.fromEntries(
       [
+        "domain",
         "kind",
         "clusterUid",
         "namespace",
@@ -63,6 +64,22 @@ export function ResourcesPage() {
             value={params.clusterUid}
             onChange={(v) => update("clusterUid", v)}
           />
+          <div className="filter">
+            <label htmlFor="resource-domain">资源领域</label>
+            <Select
+              id="resource-domain"
+              allowClear
+              value={params.domain}
+              placeholder="全部领域"
+              options={[
+                { value: "hardware", label: "硬件" },
+                { value: "kubernetes", label: "Kubernetes" },
+                { value: "network", label: "网络" },
+                { value: "storage", label: "存储" },
+              ]}
+              onChange={(v) => update("domain", v || "")}
+            />
+          </div>
           {["name", "kind", "namespace", "label"].map((k) => (
             <div className="filter" key={k}>
               <label htmlFor={"resource-" + k}>

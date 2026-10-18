@@ -146,6 +146,12 @@ type nativeSnapshot struct {
 func (m *LiveMapper) nativeSnapshot(ctx context.Context) (nativeSnapshot, error) {
 	out := nativeSnapshot{Namespaces: map[string]string{}}
 	get := func(path string, v any) error {
+		started := time.Now()
+		defer func() {
+			if elapsed := time.Since(started); elapsed >= 500*time.Millisecond {
+				slog.Warn("DeepFlow native identity read slow", "path", path, "elapsedMs", elapsed.Milliseconds(), "contextDone", ctx.Err() != nil)
+			}
+		}()
 		response, err := m.native.Do(ctx, "GET", path, nil)
 		if err != nil {
 			return err
@@ -203,25 +209,32 @@ func (m *LiveMapper) refresh(ctx context.Context, requested ...string) (out map[
 	defer cancel()
 	stage := "binding"
 	started := time.Now()
+	stageStarted := started
+	timings := map[string]int64{}
+	nextStage := func(next string) {
+		timings[stage] = time.Since(stageStarted).Milliseconds()
+		stage, stageStarted = next, time.Now()
+	}
 	defer func() {
 		if err != nil {
-			slog.Warn("DeepFlow identity refresh rejected", "stage", stage, "elapsedMs", time.Since(started).Milliseconds(), "contextDone", ctx.Err() != nil)
+			timings[stage] = time.Since(stageStarted).Milliseconds()
+			slog.Warn("DeepFlow identity refresh rejected", "stage", stage, "elapsedMs", time.Since(started).Milliseconds(), "stageMs", timings, "contextDone", ctx.Err() != nil)
 		}
 	}()
 	if m.authorize(ctx, m.binding) != nil {
 		return nil, "", evidence.ErrScopeUnverified
 	}
-	stage = "native_before"
+	nextStage("native_before")
 	before, err := m.nativeSnapshot(ctx)
 	if err != nil {
 		return nil, "", err
 	}
-	stage = "backend"
+	nextStage("backend")
 	endpoints, err := m.resolveSnapshot(ctx, before, requested...)
 	if err != nil {
 		return nil, "", err
 	}
-	stage = "native_after"
+	nextStage("native_after")
 	after, err := m.nativeSnapshot(ctx)
 	if err != nil {
 		return nil, "", err
@@ -230,7 +243,7 @@ func (m *LiveMapper) refresh(ctx context.Context, requested ...string) (out map[
 	if fingerprint(before) != fingerprint(after) {
 		return nil, "", evidence.ErrScopeUnverified
 	}
-	stage = "binding_after"
+	nextStage("binding_after")
 	if m.authorize(ctx, m.binding) != nil {
 		return nil, "", evidence.ErrScopeUnverified
 	}

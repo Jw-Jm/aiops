@@ -46,3 +46,15 @@ KubeVirt/CDI remain deferred and unverified. This runtime does not install or en
 Migration 00014 preserves previously signed v1 manifests and uses v2 for new segments. The v2 Transit-signed manifest binds the previous segment ID (or null for the first segment). An immutable `audit-proof` S3 object archives the manifest, signature and key version beside the encrypted `audit-segment` object. A retry reuses an existing verified proof, including after signing-key rotation, before completing the database transition.
 
 `VerifyRange` requires its endpoints to be audit sequences belonging to the requested tenant. Empty/missing coverage is an error. It verifies the archived bytes, archived signature proof and signed predecessor chain; removing an entire middle segment cannot become an apparently valid range. Historical v1 manifests remain untouched but have no signed predecessor proof, so ranges relying on their chain fail closed. Do not rewrite historical signatures or report legacy verification as passing; migration of a historical proof boundary requires a separately approved design.
+## 核心业务指标补充（2026-10-18）
+
+指标继续由进程私有 Prometheus registry 导出，沿用现有 metrics 访问边界；没有新增租户、资源、命令或主体标签。
+
+- `platform_work_duration_seconds{area}`：`evidence_query`/`evidence_read` 覆盖实际 HTTP Evidence 操作；`incident_aggregation` 覆盖实际聚合处理，不包含队列等待及外层事务提交，不是端到端 SLO。
+- `platform_queue_depth{queue}`：Finding pending（含 claimed）/deadletter、Incident pending、Investigation queued/running 的当前数据库计数。
+- `platform_recent_results{area,state}`：最近五分钟启动的工具 Step、创建的工具 admission 和更新过的命令执行记录的当前状态计数。`area` 为 `tool`/`tool_admission`/`action`，排除 model Step；这是 Gauge，不能按累计成功事件 Counter 计算增长率。
+- `platform_investigation_terminal_mean_seconds`：最近五分钟更新且当前为终态的调查记录，其 `updated_at-created_at` 均值；没有样本为 NaN。该值含排队时间，可能受终态后更新影响，不代表模型耗时或 P95。
+- `platform_database_up`：Worker 最近一次有界 Ping 是否成功；进程初始尚未采样时为 NaN。Ping 成功不证明业务表权限和全部统计可读。
+- `platform_business_snapshot_available` 与 `platform_business_snapshot_timestamp_seconds`：本轮全量业务统计是否完成、最后一次完整采样时间。
+
+数据库快照复用 Worker 现有每分钟循环，总预算两秒，逐租户使用现有 RLS 事务和已有权限。任一读取失败或超时，available=0、队列/结果/调查均值置 NaN；不能把失败解释为空队列。API 等未运行采样循环的进程保持快照不可用。多个 Worker 观测同一数据库总体，按实例过滤或取 max，不能相加；同时检查 available 和采样时间，不能沿用过期值冒充实时值。本地记录/导出测试不证明远程吞吐、时延或容量达标。

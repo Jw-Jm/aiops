@@ -28,6 +28,30 @@ func (e GraphQueryDirection) Valid() bool {
 	}
 }
 
+// Defines values for GraphQueryDomain.
+const (
+	Hardware   GraphQueryDomain = "hardware"
+	Kubernetes GraphQueryDomain = "kubernetes"
+	Network    GraphQueryDomain = "network"
+	Storage    GraphQueryDomain = "storage"
+)
+
+// Valid indicates whether the value is a known member of the GraphQueryDomain enum.
+func (e GraphQueryDomain) Valid() bool {
+	switch e {
+	case Hardware:
+		return true
+	case Kubernetes:
+		return true
+	case Network:
+		return true
+	case Storage:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GraphQueryOrder.
 const (
 	Asc  GraphQueryOrder = "asc"
@@ -119,8 +143,10 @@ type GraphQuery struct {
 	CanonicalIds       *[]string            `json:"canonicalIds,omitempty"`
 	CursorRevision     *GraphRevision       `json:"cursorRevision,omitempty"`
 	Direction          *GraphQueryDirection `json:"direction,omitempty"`
+	Domain             *GraphQueryDomain    `json:"domain,omitempty"`
 	ExpectedOwnerEpoch int64                `json:"expectedOwnerEpoch"`
 	Health             *string              `json:"health,omitempty"`
+	IncludeDomains     *bool                `json:"includeDomains,omitempty"`
 	Kind               *string              `json:"kind,omitempty"`
 	Label              *string              `json:"label,omitempty"`
 	MaxDepth           int                  `json:"maxDepth"`
@@ -137,6 +163,9 @@ type GraphQuery struct {
 
 // GraphQueryDirection defines model for GraphQuery.Direction.
 type GraphQueryDirection string
+
+// GraphQueryDomain defines model for GraphQuery.Domain.
+type GraphQueryDomain string
 
 // GraphQueryOrder defines model for GraphQuery.Order.
 type GraphQueryOrder string

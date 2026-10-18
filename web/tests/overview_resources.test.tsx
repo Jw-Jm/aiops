@@ -90,7 +90,79 @@ it("shows missing resource counts as unknown and exposes degraded observation on
     await screen.findByText("资源观测暂不可用，资源和健康统计未知"),
   ).toBeVisible();
   expect(screen.getByText("此查询返回部分或来源降级结果")).toBeVisible();
-  expect(screen.getByText("未知")).toBeVisible();
+  expect(screen.getAllByText("未知").length).toBeGreaterThan(0);
   expect(screen.getByText("0")).toBeVisible();
   expect(screen.queryByText("空值（null）")).not.toBeInTheDocument();
+});
+
+it("shows scoped active counts, domain navigation and a bounded priority incident without inventing impact", async () => {
+  const { getOverview } = await import("../src/api/generated/platform");
+  vi.mocked(getOverview).mockResolvedValueOnce({
+    status: 200,
+    headers: new Headers(),
+    data: {
+      requestId: "test",
+      data: {
+        counts: {
+          resource: 7,
+          activeFinding: 3,
+          openIncident: 2,
+          criticalIncident: 1,
+          runningInvestigation: 1,
+          server: null,
+        },
+        distribution: {
+          domains: {
+            kubernetes: { total: 7, byHealth: { normal: 6, abnormal: 1 } },
+          },
+        },
+        priorityIncidents: [
+          {
+            incidentId: "incident-one",
+            title: "节点未就绪",
+            resourceCanonicalId: "k8s+v1://tenant/cluster/core/Node/uid",
+            severity: "critical",
+            state: "open",
+            startedAt: null,
+            durationSeconds: null,
+            rcaStatus: "unverified",
+            impact: null,
+          },
+        ],
+      },
+    },
+  });
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  render(
+    <QueryClientProvider client={client}>
+      <MemoryRouter initialEntries={["/overview?clusterUid=test-cluster"]}>
+        <OverviewPage />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+  expect(
+    await screen.findByRole("link", { name: "节点未就绪" }),
+  ).toHaveAttribute("href", "/incidents/incident-one");
+  expect(screen.getByText("活动告警").closest(".stat")).toHaveTextContent("3");
+  expect(
+    screen.getByText("未确认故障（open）").closest(".stat"),
+  ).toHaveTextContent("2");
+  expect(screen.getByText("我的运行中调查").closest(".stat")).toHaveTextContent(
+    "1",
+  );
+  expect(screen.getByRole("link", { name: "Kubernetes资源" })).toHaveAttribute(
+    "href",
+    "/resources?clusterUid=test-cluster&domain=kubernetes",
+  );
+  const health = screen
+    .getAllByRole("link")
+    .find((link) =>
+      link.getAttribute("href")?.includes("domain=kubernetes&health=abnormal"),
+    );
+  expect(health).toHaveTextContent("异常");
+  expect(screen.getByText("未知（时间未验证）")).toBeVisible();
+  expect(screen.getByText("尚无可授权读取的影响证据")).toBeVisible();
+  client.clear();
 });

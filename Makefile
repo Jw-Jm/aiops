@@ -1,7 +1,17 @@
 GO ?= go
+PYTHON ?= python3
+UV ?= uv
 GO_SOURCES := $(shell find cmd internal gen test -type f -name '*.go' 2>/dev/null)
+GO_UNIT_PACKAGES := ./cmd/... ./internal/... ./gen/...
+# Explicit suite selection keeps local checks independent of live flags and load.
+CAPACITY_TESTS := TestUpstreamConformanceAnd20KPlatformGeneration|TestDiagnosticGraphAt200NodeBudgetLatency|TestPublishedGraphQueriesContinueDuringLargeRebuild|TestAriadneNonVirtualGolden20K
+NATIVE_TESTS := TestSP07ActualBusinessValues|TestNativeFixedCLIThroughScopedReadBroker
+REPLAY_TESTS := TestGraphNonVirtualUpstreamReplay|TestInspectionNonVirtualUpstreamReplay
+BROWSER_RUNTIME_TEST := TestAssistantActualOIDCAndBrowserRuntime
+LIVE_CAPACITY_TESTS := TestAssistantActualCollectedSourcesAndCapacity|TestFormalCurrentTenInvestigationsAndMainline
+LIVE_SOURCE_TESTS := TestAssistantActualDeepFlowL4AndL7|TestAssistantActualFaultChainWithoutModel|TestAssistantOperationalActualKubernetesObservations
 
-.PHONY: bootstrap check-toolchain generate check-generated check-runtime-source fmt lint test-unit test-contract test-integration test-replay test-e2e test-security bundle-dev-arm64 verify-bundle check
+.PHONY: bootstrap check-toolchain generate check-generated check-runtime-source check-delivery fmt lint test-local test-unit test-contract test-web test-python test-integration test-live-sources test-native test-capacity test-capacity-live test-browser-runtime test-web-e2e test-replay test-e2e test-security bundle-dev-arm64 verify-bundle check-local check
 
 bootstrap:
 	@if command -v mise >/dev/null 2>&1; then \
@@ -45,18 +55,32 @@ check-runtime-source:
 	python3 scripts/prepare-runtime-source.py --check
 	python3 scripts/prepare-migration-source.py --check
 
+check-delivery: check-generated check-runtime-source
+	$(GO) test ./test/contract -run '^TestDeliveryPreparation' -count=1
+
 lint:
 	$(GO) vet ./...
 
 test-unit:
 	@mkdir -p artifacts/test-reports
-	@set +e; $(GO) test -timeout=30m ./... > artifacts/test-reports/unit.txt 2>&1; status=$$?; cat artifacts/test-reports/unit.txt; exit $$status
-	@pnpm --dir web test
+	@set +e; $(GO) test -tags='' -timeout=10m $(GO_UNIT_PACKAGES) -skip '^($(CAPACITY_TESTS)|$(NATIVE_TESTS))$$' > artifacts/test-reports/unit.txt 2>&1; status=$$?; cat artifacts/test-reports/unit.txt; exit $$status
+
+test-web:
+	pnpm --dir web exec tsc --noEmit
+	pnpm --dir web test
+
+test-python:
+	cd services/investigator && $(UV) run --offline --locked --group dev python -m pytest
+	$(PYTHON) -m unittest discover -s scripts/deepflow-dev -p 'test_*.py'
+	$(PYTHON) -m unittest discover -s scripts/assistant-eval -p 'test_*.py'
+	$(PYTHON) -m unittest discover -s scripts/assistant-runtime -p 'test_*.py'
+
+test-local: test-unit test-contract test-web test-python test-security
 
 test-contract:
 	@if [ -d test/contract ] && find test/contract -type f -name '*_test.go' -print -quit | grep -q .; then \
 		mkdir -p artifacts/test-reports; \
-		set +e; $(GO) test ./test/contract > artifacts/test-reports/contract.txt 2>&1; status=$$?; \
+		set +e; $(GO) test -tags='' ./test/contract -skip '^($(REPLAY_TESTS)|$(CAPACITY_TESTS))$$' > artifacts/test-reports/contract.txt 2>&1; status=$$?; \
 		cat artifacts/test-reports/contract.txt; exit $$status; \
 	else \
 		echo "No Contract tests are defined yet."; \
@@ -68,11 +92,37 @@ test-e2e:
 
 test-integration:
 	@mkdir -p artifacts/test-reports
-	@set +e; $(GO) test ./test/integration -count=1 -json -timeout=10m -skip '^(TestAssistantCrashWorkerChild|TestSP05OutboxChildProcessClaim)$$' > artifacts/test-reports/integration.jsonl 2>&1; status=$$?; cat artifacts/test-reports/integration.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/integration.jsonl
+	@set +e; $(GO) test ./test/integration -count=1 -json -timeout=10m -skip '^(TestAssistantCrashWorkerChild|TestSP05OutboxChildProcessClaim|$(LIVE_SOURCE_TESTS)|$(BROWSER_RUNTIME_TEST)|$(LIVE_CAPACITY_TESTS))$$' > artifacts/test-reports/integration.jsonl 2>&1; status=$$?; cat artifacts/test-reports/integration.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/integration.jsonl
+
+test-live-sources:
+	@mkdir -p artifacts/test-reports
+	@set +e; $(GO) test ./test/integration -run '^($(LIVE_SOURCE_TESTS))$$' -count=1 -json -timeout=10m > artifacts/test-reports/live-sources.jsonl 2>&1; status=$$?; cat artifacts/test-reports/live-sources.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/live-sources.jsonl
+
+test-native:
+	@mkdir -p artifacts/test-reports
+	@set +e; $(GO) test $(GO_UNIT_PACKAGES) -run '^($(NATIVE_TESTS))$$' -count=1 -json -timeout=10m > artifacts/test-reports/native.jsonl 2>&1; status=$$?; cat artifacts/test-reports/native.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/native.jsonl
+
+test-capacity:
+	@test -z "$$OPS_PERFORMANCE_EXEMPTION" || { echo "capacity acceptance cannot use OPS_PERFORMANCE_EXEMPTION" >&2; exit 1; }
+	@mkdir -p artifacts/test-reports
+	@set +e; $(GO) test ./internal/graph ./test/contract -run '^($(CAPACITY_TESTS))$$' -count=1 -json -timeout=30m > artifacts/test-reports/capacity.jsonl 2>&1; status=$$?; cat artifacts/test-reports/capacity.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/capacity.jsonl
+
+test-capacity-live:
+	@test -z "$$OPS_PERFORMANCE_EXEMPTION" || { echo "capacity acceptance cannot use OPS_PERFORMANCE_EXEMPTION" >&2; exit 1; }
+	@mkdir -p artifacts/test-reports
+	@set +e; $(GO) test -tags=pre_sp07_live ./test/integration -run '^($(LIVE_CAPACITY_TESTS))$$' -count=1 -json -timeout=30m > artifacts/test-reports/capacity-live.jsonl 2>&1; status=$$?; cat artifacts/test-reports/capacity-live.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/capacity-live.jsonl
+
+test-browser-runtime:
+	@mkdir -p artifacts/test-reports
+	@set +e; $(GO) test ./test/integration -run '^$(BROWSER_RUNTIME_TEST)$$' -count=1 -json -timeout=20m > artifacts/test-reports/browser-runtime.jsonl 2>&1; status=$$?; cat artifacts/test-reports/browser-runtime.jsonl; test $$status -eq 0 || exit $$status; python3 scripts/check-test-report.py artifacts/test-reports/browser-runtime.jsonl
 
 test-web-e2e:
 	@test -n "$$OPS_WEB_QA_INPUT" || { echo "OPS_WEB_QA_INPUT is required; see web/tests/e2e/session.ts"; exit 1; }
-	@pnpm --dir web test:e2e
+	@mkdir -p artifacts/test-reports
+	@set -e; report="$${OPS_WEB_QA_REPORT:-$(CURDIR)/artifacts/test-reports/web-e2e.json}"; \
+		rm -f "$$report"; \
+		OPS_WEB_QA_REPORT="$$report" pnpm --dir web test:e2e; \
+		$(PYTHON) scripts/check-test-report.py --playwright "$$report"
 
 test-security:
 	@mkdir -p artifacts/test-reports
@@ -90,4 +140,6 @@ bundle-dev-arm64: check-toolchain check-runtime-source
 	@test -n "$(BUNDLE_SPEC)" && test -n "$(BUNDLE_DIR)" && test -n "$(SIGNING_KEY)" || { echo "BUNDLE_SPEC, BUNDLE_DIR and external SIGNING_KEY are required; inputs must already be qualified" >&2; exit 1; }
 	$(GO) run ./cmd/opsctl bundle build --architecture linux/arm64 --spec "$(BUNDLE_SPEC)" --output "$(BUNDLE_DIR)" --signing-key "$(SIGNING_KEY)"
 
-check: check-generated check-runtime-source lint test-unit test-contract
+check-local: lint test-local
+
+check: check-generated check-runtime-source check-local

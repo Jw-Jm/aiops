@@ -102,6 +102,8 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			fail(err)
 			return
 		}
+		support := action.PostCheckApplicability(out.Binding.Target)
+		out.PostCheckApplicability = &support
 		writeJSON(w, 200, map[string]any{"data": out, "requestId": a.RequestID})
 		return
 	case "/api/v1/commands:risk-acknowledge":
@@ -281,20 +283,12 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if len(parts) == 5 && parts[4] == "post-check" && r.Method == "GET" {
-			out, err := h.Service.Get(r.Context(), a, id)
+			out, err := h.Service.GetPostCheck(r.Context(), a, id)
 			if err != nil {
 				fail(err)
 				return
 			}
-			status := "pending"
-			if out.PostCheckedAt != nil {
-				status = "completed"
-			} else if out.State == "cancelled" {
-				status = "not_applicable"
-			} else if out.State == "execution_unknown" {
-				status = "execution_unknown"
-			}
-			writeJSON(w, 200, map[string]any{"data": map[string]any{"executionId": id, "verdict": out.PostCheck, "status": status, "checkedAt": out.PostCheckedAt}, "requestId": a.RequestID})
+			writeJSON(w, 200, map[string]any{"data": out, "requestId": a.RequestID})
 			return
 		}
 		if len(parts) == 5 && parts[4] == "events" && r.Method == "GET" {

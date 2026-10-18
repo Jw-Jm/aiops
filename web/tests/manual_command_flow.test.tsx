@@ -31,6 +31,14 @@ it("binds target, command, version and options in confirmation identity", () => 
   for (const change of [
     { actualCommand: "kubectl delete pods" },
     { target: "other" },
+    {
+      relatedExecutionId: "previous-execution",
+      executionRelation: "follow_up" as const,
+    },
+    {
+      relatedExecutionId: "previous-execution",
+      executionRelation: "rollback" as const,
+    },
     { executionProfileVersion: 2 },
     { executionOptions: { ...a.executionOptions, timeoutSeconds: 90 } },
   ])
@@ -65,4 +73,54 @@ it("keeps published profile versions distinct in selection and confirmation", ()
   expect(
     candidates.find((p) => profileChoice(p) === profileChoice(v2))?.version,
   ).toBe(2);
+});
+
+import { matchesAssessment } from "../src/features/action/assessmentBinding";
+it("rejects a risk response bound to another execution relation", async () => {
+  const request = {
+    incidentId: "i",
+    actualCommand: "printf done",
+    target: "target",
+    shell: "bash",
+    executionProfileId: "p",
+    executionProfileVersion: 1,
+    executionOptions: {
+      timeoutSeconds: 60,
+      maxOutputBytes: 1024,
+      workingDirectory: "",
+      environment: {},
+    },
+    relatedExecutionId: "parent",
+    executionRelation: "follow_up",
+  } satisfies CommandRiskAssessmentRequest;
+  const hash = Array.from(
+    new Uint8Array(
+      await crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode(request.actualCommand),
+      ),
+    ),
+    (b) => b.toString(16).padStart(2, "0"),
+  ).join("");
+  const binding = {
+    actualCommandDigest: "sha256:" + hash,
+    targetCanonicalId: request.target,
+    shell: request.shell,
+    executionProfileId: request.executionProfileId,
+    executionProfileVersion: 1,
+    incidentId: "i",
+    executionOptions: request.executionOptions,
+    relatedExecutionId: "parent",
+    executionRelation: "follow_up",
+  };
+  expect(await matchesAssessment(request, { binding })).toBe(true);
+  for (const changed of [
+    { relatedExecutionId: "other" },
+    { executionRelation: "rollback" },
+    { relatedExecutionId: undefined, executionRelation: undefined },
+  ]) {
+    expect(
+      await matchesAssessment(request, { binding: { ...binding, ...changed } }),
+    ).toBe(false);
+  }
 });

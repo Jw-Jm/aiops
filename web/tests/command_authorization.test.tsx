@@ -6,7 +6,7 @@ import {
   waitFor,
   act,
 } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useSearchParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CommandComposer } from "../src/features/action/CommandComposer";
 import { authEvents, setCredentials } from "../src/api/client";
@@ -103,6 +103,21 @@ beforeEach(() => {
   });
   setCredentials("fixture-token", "fixture-tenant");
 });
+function ChangeExecutionRelation() {
+  const [, setUrl] = useSearchParams();
+  return (
+    <button
+      onClick={() =>
+        setUrl({
+          relatedExecutionId: "previous",
+          executionRelation: "follow_up",
+        })
+      }
+    >
+      关联已有执行
+    </button>
+  );
+}
 async function setup() {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
@@ -111,6 +126,7 @@ async function setup() {
     <QueryClientProvider client={client}>
       <MemoryRouter>
         <CommandComposer incident={incident} />
+        <ChangeExecutionRelation />
       </MemoryRouter>
     </QueryClientProvider>,
   );
@@ -124,6 +140,33 @@ async function setup() {
   fireEvent.click(screen.getByText("Profile · 版本 2 · Kubernetes 命名空间"));
   return client;
 }
+it("clears actual command and requires a fresh assessment after selecting an execution relation", async () => {
+  const client = await setup();
+  fireEvent.click(screen.getByRole("button", { name: "关联已有执行" }));
+  const command = screen.getByRole("textbox", { name: "实际 Bash 命令" });
+  await waitFor(() => expect(command).toHaveValue(""));
+  expect(api.risk).not.toHaveBeenCalled();
+  expect(api.confirm).not.toHaveBeenCalled();
+  api.risk.mockResolvedValue(
+    response({
+      ...assessment,
+      binding: {
+        ...assessment.binding,
+        relatedExecutionId: "previous",
+        executionRelation: "follow_up",
+      },
+    }),
+  );
+  fireEvent.change(command, { target: { value: "kubectl get pods" } });
+  fireEvent.click(screen.getByRole("button", { name: "2 · 评估实际命令风险" }));
+  await screen.findByText("继续处置关联的原执行");
+  expect(api.risk.mock.calls[0][0]).toMatchObject({
+    relatedExecutionId: "previous",
+    executionRelation: "follow_up",
+    actualCommand: "kubectl get pods",
+  });
+  client.clear();
+});
 it("uses selected immutable profile version and rejects risk response after permission change", async () => {
   let resolve!: (v: unknown) => void;
   api.risk.mockImplementation(

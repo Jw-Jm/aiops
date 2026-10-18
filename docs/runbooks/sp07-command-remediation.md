@@ -31,7 +31,25 @@ Profile 固定 allowedTargets、clusterUid/namespace、工具 image digest、net
 
 旧 v1 请求省略新增字段时，只能从同一主体的不可变确认恢复精确绑定，不重新选 Profile 或使用默认参数。旧 approve/reject/execute 建议路由不产生权限。
 
+## Post-check 适用范围声明
+
+风险评估返回 `postCheckApplicability`，Execution 的 `extensions` 和后检查响应返回同一声明。`requires_qualified_source` 只表示存在适配器，不能当作本次来源、Recipe 或证据已经合格；确认前页面显示该限制。
+
+- `k8s_namespace`：绑定 PVC 可使用 `pvc-csi-failure`；Node 是集群对象，不能借此 Profile 获得集群执行权限。其他目标没有自动可信判据。
+- `k8s_cluster`：绑定 Node 可使用 `node-failure`，绑定 PVC 可使用 `pvc-csi-failure`；仍需原有授权、目标范围与 step-up。其他目标没有自动可信判据。
+- `ssh_user`、`ssh_root`：SSH 执行成功不证明故障恢复。只有绑定目标本身是合格 Kubernetes Node/PVC，且独立原生来源满足下述门禁时，才有对应适配器；普通 Linux/硬件目标没有自动可信判据。
+
+Node/PVC 继续要求目标 UID、当前来源登记和权限、已激活的签名 Recipe、命令完成后的最新原生事实、归档 Evidence 及授权复查。判据仍来自现有 Recipe（Node Ready、PVC Bound 及异常检查），不从 Pod Running、Shell 退出码或模型文本推导恢复。来源缺失、证据不足或目标不适用时保持 `inconclusive`，由操作者检查事实后重新处置。VM 延期、BMC 写操作不在支持范围。本声明补齐适用范围披露，不代表 FR-144 对所有目标的自动检查已完整实现。
+
 ## 取消、接管和不确定执行
+
+共用验证与关联机制的本轮开发记录见 [处置验证与执行关联](../release/disposition-verification-closeout.md)。
+
+`commands:risk-assess` 与 `command-executions` 可同时提供 `relatedExecutionId` 和 `executionRelation`（`follow_up`/`rollback`）。原执行必须属于同一租户、Incident、集群、namespace 与目标 UID，且已明确成功或失败并具有完成时间。未完成、取消或 `execution_unknown` 不能作为关联起点。关联不会继承命令、确认、Profile 权限或已恢复结论；仍重新输入命令、评估风险、本人确认，必要时 step-up。关联字段进入 `execution-request/v2` 摘要，确认后改变、删除字段均失效；无关联的旧请求保持 v1 摘要与原有省略字段规则。
+
+`GET .../{id}/post-check` 保留原 status/verdict/checkedAt 字段，并返回 `command-post-check/v1` 的 report、detailStatus 和直接关联执行。报告记录本次执行/Incident/目标 UID、完成与观测/检查时间、配方、证据及结论原因，持久化在原 `action.events`，与标量结果、审计同事务。合格完成判定要求执行后可靠时间、当前来源、已验证归档与可信签名 Recipe。仅覆盖原配方目标异常，不代表全部新增异常已排除，也不代表当前资源健康。
+
+报告读取与 SSE 均重新检查当前 Evidence/来源和 Recipe 权限。历史仅有标量结论的记录标记 `legacy_detail_unavailable`，不补造配方或证据。页面可进入同一故障的 Evidence 抽屉，查看直接原执行及最近 20 条后续执行；超过数量明确标记截断，不递归展开。回退关系记录一次新的人工回退尝试，其执行状态和验证结果分别查看，不能把退出码或原异常消失直接等同于业务回退目标达成。本轮无新迁移，也未扩大具体目标适配器范围。
 
 `POST .../{id}:cancel` 在 prepared 时安全取消；发出后只能请求终止，副作用未证实时保持 execution_unknown。Job 使用 UID 前置条件删除。每个 execution 只有一次 dispatch attempt 和一次 claim；两个 Worker 可竞争和接管对账，不能自动重发任意 Bash。
 

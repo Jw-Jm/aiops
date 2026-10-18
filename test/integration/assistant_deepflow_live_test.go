@@ -25,6 +25,23 @@ type assistantNativeTokenTransport struct {
 	token string
 }
 
+// Log only request classes and timings, never headers, bodies or query values.
+type assistantIdentityTimingTransport struct {
+	base http.RoundTripper
+	t    *testing.T
+}
+
+func (a assistantIdentityTimingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	started := time.Now()
+	response, err := a.base.RoundTrip(r)
+	status := 0
+	if response != nil {
+		status = response.StatusCode
+	}
+	a.t.Log("identity request", r.Method, r.URL.Path, "elapsedMs", time.Since(started).Milliseconds(), "status", status, "failed", err != nil)
+	return response, err
+}
+
 func (a assistantNativeTokenTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	copy := r.Clone(r.Context())
 	copy.Header = r.Header.Clone()

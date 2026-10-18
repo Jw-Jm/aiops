@@ -21,6 +21,9 @@ func validateList(q Query) error {
 	if !slices.Contains([]string{"", "canonicalId", "name", "kind", "namespace", "health", "updatedAt"}, q.Sort) || !slices.Contains([]string{"", "asc", "desc"}, q.Order) || !slices.Contains([]string{"", "normal", "abnormal", "unknown", "degraded"}, q.Health) {
 		return errors.New("INVALID_ARGUMENT")
 	}
+	if !slices.Contains([]string{"", "hardware", "kubernetes", "network", "storage"}, q.Domain) {
+		return errors.New("INVALID_ARGUMENT")
+	}
 	if len(q.CanonicalIDs) > 50 {
 		return errors.New("INVALID_ARGUMENT")
 	}
@@ -79,7 +82,32 @@ func entityHealth(e resource.Entity) string {
 	}
 	return "unknown"
 }
+func entityDomain(e resource.Entity) string {
+	id, err := resource.ParseCanonicalID(e.CanonicalID)
+	if err != nil {
+		return "unknown"
+	}
+	if id.Domain == "hardware" {
+		return "hardware"
+	}
+	if id.Domain != "k8s" {
+		return "unknown"
+	}
+	switch e.Kind {
+	case "PersistentVolumeClaim", "PersistentVolume", "StorageClass", "CSIDriver", "CSINode", "VolumeAttachment":
+		return "storage"
+	case "Service", "EndpointSlice", "Endpoints", "NetworkPolicy":
+		return "network"
+	case "VirtualMachine", "VirtualMachineInstance", "VirtualMachineInstanceMigration", "DataVolume":
+		return "virtualization"
+	default:
+		return "kubernetes"
+	}
+}
 func listMatches(q Query, e resource.Entity) bool {
+	if q.Domain != "" && entityDomain(e) != q.Domain {
+		return false
+	}
 	if len(q.CanonicalIDs) > 0 && !slices.Contains(q.CanonicalIDs, e.CanonicalID) {
 		return false
 	}

@@ -1,0 +1,144 @@
+{
+  "goPackages": {
+    "command": "go test ./internal/httpapi ./internal/graph ./internal/integrations/deepflow ./internal/investigation/...",
+    "status": "PASS"
+  },
+  "goTargetedRegressions": {
+    "command": "go test ./internal/httpapi ./test/integration -run 'TestCapabilityDeadlineIncludesRouteRead|TestCapabilityDetailDeadlineFitsContextTool|TestAssistantWindowProofRejectsUnboundOrIncompleteEvidence' -count=1",
+    "status": "PASS"
+  },
+  "goVet": {
+    "command": "go vet ./internal/integrations/deepflow ./test/integration",
+    "status": "PASS"
+  },
+  "pythonRuntime": {
+    "command": "python3 -m unittest discover -s scripts/assistant-runtime -p 'test_*.py'",
+    "passed": 6
+  },
+  "pythonDeepFlow": {
+    "command": "python3 -m unittest discover -s scripts/deepflow-dev -p 'test_*.py'",
+    "passed": 10
+  },
+  "remoteContextRegression": {
+    "exit": 0,
+    "passed": true,
+    "skipped": false
+  },
+  "liveAcceptance": {
+    "schemaVersion": "five-source-followup-status/v1",
+    "sourceCollection": {
+      "status": "PASS",
+      "cycles": 126,
+      "metrics": 3024,
+      "logs": 2196,
+      "errors": 0,
+      "identityChangesDiscarded": 0
+    },
+    "windowOracle": {
+      "status": "PASS",
+      "stable": true,
+      "polls": 2,
+      "sourceErrors": [
+        {
+          "poll": 1,
+          "type": "TimeoutError"
+        }
+      ],
+      "timeReliable": false
+    },
+    "joint": {
+      "status": "FAIL",
+      "stage": "native_after",
+      "timeoutSeconds": 6,
+      "code": "native client identity not qualified",
+      "database": "sp03_mig_9e88544a137846fabc473a29e3ec53a6"
+    },
+    "page": {
+      "status": "NOT_RUN",
+      "reason": "latest joint Graph owner did not qualify"
+    },
+    "newRetention": {
+      "status": "NOT_RUN",
+      "reason": "same-run committed context was not produced"
+    },
+    "nodePVC": {
+      "status": "NOT_RUN",
+      "reason": "previously unapproved scope/object prerequisites remain"
+    },
+    "humanQualityReview": "pending",
+    "fullAcceptancePassed": false,
+    "latestDiagnostic": {
+      "nativeIdentityPreflight": "PASS",
+      "nativeL4Preflight": "PASS",
+      "joint": {
+        "status": "FAIL",
+        "stage": "graph_owner_readiness",
+        "elapsedSeconds": 115.11,
+        "code": "actual native Graph owner did not qualify",
+        "database": "sp03_mig_298b37aa46aa44ff851b1cf2c02dc170"
+      },
+      "priorSixSecondFailureReproduced": false,
+      "rootCauseProven": false,
+      "page": "NOT_RUN",
+      "newRetention": "NOT_RUN",
+      "evidence": "identity-timing-diagnostic.json"
+    },
+    "functionalDevelopment": {
+      "status": "COMPLETE",
+      "scope": "current functional changes and local regressions",
+      "localRegressions": "PASS",
+      "userScopeDecision": "2026-10-18: functional development only; remote machine performance issues are recorded only",
+      "remotePerformanceWork": "RECORD_ONLY",
+      "additionalRemoteDiagnosisPlanned": false,
+      "remoteAcceptanceBlocksDevelopmentCompletion": false,
+      "record": "README.md"
+    }
+  },
+  "identityTimingRegression": {
+    "command": "go test ./internal/integrations/deepflow ./internal/httpapi ./test/integration -run 'TestLive|TestCapabilityDeadlineIncludesRouteRead|TestCapabilityDetailDeadlineFitsContextTool|TestAssistantWindowProofRejectsUnboundOrIncompleteEvidence' -count=1",
+    "status": "PASS"
+  },
+  "functionalCloseout": {
+    "scope": "functional development and local verification only",
+    "goFunctional": {
+      "command": "go test ./internal/assistant ./internal/httpapi ./internal/analytics ./internal/investigation/... ./internal/integrations/deepflow ./test/contract ./test/security",
+      "status": "PASS"
+    },
+    "investigator": {
+      "command": "services/investigator/.venv/bin/python -m pytest -q services/investigator/tests",
+      "passed": 93
+    },
+    "web": {
+      "command": "pnpm test (web/)",
+      "testFiles": 23,
+      "componentTests": 75,
+      "sseProtocolTests": 5,
+      "status": "PASS"
+    },
+    "webTypes": {
+      "command": "pnpm exec tsc --noEmit (web/)",
+      "status": "PASS"
+    },
+    "goBuild": {
+      "command": "go build ./...",
+      "status": "PASS"
+    },
+    "goVet": {
+      "command": "go vet ./internal/assistant ./internal/httpapi ./internal/analytics ./internal/investigation/... ./internal/integrations/deepflow ./test/integration",
+      "status": "PASS"
+    },
+    "windowProof": {
+      "command": "go test ./test/integration -run '^TestAssistantWindowProofRejectsUnboundOrIncompleteEvidence$' -count=1",
+      "status": "PASS"
+    },
+    "pythonRuntime": {
+      "passed": 6
+    },
+    "pythonDeepFlow": {
+      "passed": 10
+    },
+    "remoteAccessPerformed": false,
+    "performanceTuningPerformed": false,
+    "remoteAcceptanceRerun": false
+  }
+}

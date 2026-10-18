@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/command-post-check/v1",
+  "title": "Frozen trusted command post-check report",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "command-post-check/v1"
+    },
+    "executionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "incidentId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "targetCanonicalId": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+    },
+    "targetUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "verdict": {
+      "enum": [
+        "resolved",
+        "not_resolved",
+        "inconclusive"
+      ]
+    },
+    "reason": {
+      "enum": [
+        "completion_time_missing",
+        "authorization_unavailable",
+        "source_unavailable",
+        "facts_incomplete",
+        "evidence_missing",
+        "observation_not_after_execution",
+        "check_precedes_observation",
+        "recipe_fault_present",
+        "recipe_fault_absent",
+        "target_unsupported"
+      ]
+    },
+    "coverage": {
+      "const": "recipe_target_only"
+    },
+    "facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "recipeVersion": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "recipeName": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "collectedAfter": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "checkedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "authorized": {
+          "type": "boolean"
+        },
+        "sourceAvailable": {
+          "type": "boolean"
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "faultPresent": {
+          "type": "boolean"
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "required": [
+        "recipeVersion",
+        "recipeName",
+        "collectedAfter",
+        "checkedAt",
+        "authorized",
+        "sourceAvailable",
+        "complete",
+        "faultPresent",
+        "evidenceRefs"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "executionId",
+    "incidentId",
+    "targetCanonicalId",
+    "targetUid",
+    "completedAt",
+    "verdict",
+    "reason",
+    "coverage",
+    "facts"
+  ]
+}

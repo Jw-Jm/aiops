@@ -264,11 +264,13 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 
 		validated := map[string]bool{}
 		validatedWindows := map[string]bool{}
+		committedResults := []analytics.QueryResult{}
 		for _, id := range context.QueryResultRefs {
 			stored, err := repo.QueryResult(requestCtx, b.TenantID, id, actor.Subject)
 			if err != nil {
 				t.Fatal("stored result unavailable", err)
 			}
+			committedResults = append(committedResults, stored.Result)
 			if stored.Result.NetworkContext == nil && os.Getenv("OPS_ASSISTANT_OPERATIONAL_SOURCES") == "1" && (stored.Result.Status != "complete" || !stored.Result.Exact) {
 				if stored.Result.Status == "no_data" && len(stored.Facts) > 0 {
 					t.Fatal("missing source produced numeric facts")
@@ -617,7 +619,7 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 		if _, err = repo.QueryResult(requestCtx, b.TenantID, context.QueryResultRefs[0], actor.Subject); err == nil {
 			t.Fatal("revoked grant exposed stored query")
 		}
-		result, _ := json.MarshalIndent(map[string]any{"passed": true, "authorizationRevocation": true, "processRecovery": killedLease.Generation > 0, "killedGeneration": killedLease.Generation, "validatedWindows": validatedWindows, "schemaVersion": "fault-chain-runtime-acceptance/v1", "modelExplanation": modelReceipt, "modelEndpointOffline": os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1", "modelKeyMissing": os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1", "modelCalls": calls, "sharedNativeChecks": sharedNativeChecks, "multiCallerScenario": proof.Scenario, "nativePodUid": pods.Items[0].Metadata.UID, "turnId": turn.TurnID, "context": context, "ancillaryFixtures": []string{"tenant/role/PKI bootstrap", "TLS/IAM archive backend"}, "modelQualityAcceptance": false}, "", "  ")
+		result, _ := json.MarshalIndent(map[string]any{"passed": true, "authorizationRevocation": true, "processRecovery": killedLease.Generation > 0, "killedGeneration": killedLease.Generation, "validatedWindows": validatedWindows, "schemaVersion": "fault-chain-runtime-acceptance/v1", "modelExplanation": modelReceipt, "modelEndpointOffline": os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1", "modelKeyMissing": os.Getenv("OPS_FAULT_CHAIN_MODEL") != "1", "modelCalls": calls, "sharedNativeChecks": sharedNativeChecks, "multiCallerScenario": proof.Scenario, "nativePodUid": pods.Items[0].Metadata.UID, "turnId": turn.TurnID, "context": context, "committedQueryResults": committedResults, "ancillaryFixtures": []string{"tenant/role/PKI bootstrap", "TLS/IAM archive backend"}, "modelQualityAcceptance": false}, "", "  ")
 		if os.WriteFile(os.Getenv("OPS_FAULT_CHAIN_RUNTIME_REPORT"), result, 0600) != nil {
 			t.Fatal("report path required")
 		}

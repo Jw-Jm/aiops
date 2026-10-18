@@ -21,6 +21,7 @@ import (
 	"ops-platform/internal/auth"
 	"ops-platform/internal/configregistry"
 	"ops-platform/internal/httpapi"
+	"ops-platform/internal/investigation"
 	"ops-platform/internal/modelprofile"
 	"ops-platform/internal/observability"
 	"ops-platform/internal/source"
@@ -106,13 +107,64 @@ func TestAssistantActualOIDCAndBrowserRuntime(t *testing.T) {
 			raw, err := os.ReadFile(receipt)
 			if err == nil {
 				var result struct {
-					Passed       bool   `json:"passed"`
-					RuntimeID    string `json:"runtimeId"`
-					Profile      string `json:"profileReference"`
-					ModelQuality bool   `json:"modelQualityAcceptance"`
+					Passed       bool      `json:"passed"`
+					RuntimeID    string    `json:"runtimeId"`
+					Profile      string    `json:"profileReference"`
+					ModelQuality bool      `json:"modelQualityAcceptance"`
+					TurnID       uuid.UUID `json:"turnId"`
+					ModelTurns   []struct {
+						TurnID uuid.UUID `json:"turnId"`
+						State  string    `json:"state"`
+					} `json:"modelTurns"`
 				}
 				if json.Unmarshal(raw, &result) != nil || !result.Passed || result.RuntimeID != runtimeID || result.Profile != profile.Reference() || result.ModelQuality {
 					t.Fatal("browser receipt failed or belongs to another runtime")
+				}
+				if os.Getenv("OPS_FAULT_CHAIN_RUNTIME") == "1" && os.Getenv("OPS_FAULT_CHAIN_MODEL") == "1" {
+					if len(result.ModelTurns) != 2 || result.ModelTurns[0].TurnID == result.ModelTurns[1].TurnID {
+						t.Fatal("page must execute distinct explanation and follow-up turns")
+					}
+					var conversation uuid.UUID
+					var inputRaw []byte
+					if err := db.QueryRowContext(ctx, `SELECT conversation_id,input FROM investigation.assistant_turns WHERE tenant_id=$1 AND turn_id=$2`, b.TenantID, result.TurnID).Scan(&conversation, &inputRaw); err != nil {
+						t.Fatal(err)
+					}
+					var input assistant.TurnInput
+					if json.Unmarshal(inputRaw, &input) != nil || input.FaultChainRequest == nil {
+						t.Fatal("page collection has no frozen fault-chain request")
+					}
+					ledger := []map[string]any{}
+					for i, turn := range result.ModelTurns {
+						var jobID, turnConversation uuid.UUID
+						var state, errorCode string
+						var reservedRaw []byte
+						if err := db.QueryRowContext(ctx, `SELECT t.job_id,t.conversation_id,t.state,t.error_code,j.budget_reserved FROM investigation.assistant_turns t JOIN investigation.jobs j USING(tenant_id,job_id) WHERE t.tenant_id=$1 AND t.turn_id=$2`, b.TenantID, turn.TurnID).Scan(&jobID, &turnConversation, &state, &errorCode, &reservedRaw); err != nil {
+							t.Fatal(err)
+						}
+						var reserved investigation.Usage
+						if turnConversation != conversation || state != turn.State || (state != "completed" && state != "partial") || errorCode != "" || json.Unmarshal(reservedRaw, &reserved) != nil || reserved != (investigation.Usage{}) {
+							t.Fatal("page turn not terminal, same-conversation or fully settled")
+						}
+						var models, contexts, newReads int
+						if err := db.QueryRowContext(ctx, `SELECT count(*) FILTER(WHERE tool_name='model' AND state='succeeded'),count(*) FILTER(WHERE tool_name='get_assistant_context' AND state='succeeded'),count(*) FILTER(WHERE tool_name NOT IN('model','get_assistant_context')) FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2`, b.TenantID, jobID).Scan(&models, &contexts, &newReads); err != nil || models < 1 || contexts != 1 || i == 0 && newReads != 0 || i == 1 && newReads != 3 {
+							t.Fatal("page model/context/source steps differ from the required explanation and follow-up", err)
+						}
+						if i == 1 {
+							for _, tool := range []string{"resource_history", "resource_findings", "resource_changes"} {
+								var count int
+								if err := db.QueryRowContext(ctx, `SELECT count(*) FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name=$3 AND state='succeeded' AND result->'data'->>'canonicalId'=$4 AND (result->'data'->'window'->>'from')::timestamptz=$5 AND (result->'data'->'window'->>'to')::timestamptz=$6`, b.TenantID, jobID, tool, input.FaultChainRequest.TargetCanonicalID, input.FaultChainRequest.Fault.From, input.FaultChainRequest.Fault.To).Scan(&count); err != nil || count != 1 {
+									t.Fatal("page follow-up did not commit exactly one read for the original UID/window", tool, err)
+								}
+							}
+						}
+						ledger = append(ledger, map[string]any{"turnId": turn.TurnID, "state": state, "modelResponses": models, "contextReads": contexts, "newSourceReads": newReads, "reservedZero": true})
+					}
+					if path := os.Getenv("OPS_FAULT_CHAIN_RUNTIME_REPORT"); path != "" {
+						raw, _ := json.MarshalIndent(map[string]any{"passed": true, "runtimeId": runtimeID, "schemaVersion": "assistant-browser-ledger-verification/v1", "modelTurns": ledger}, "", "  ")
+						if err := os.WriteFile(path, raw, 0600); err != nil {
+							t.Fatal(err)
+						}
+					}
 				}
 				t.Log("actual PKCE OIDC + current DB role bindings + API/Worker + persistent turn/SSE/browser receipt passed; no model quality criterion")
 				return

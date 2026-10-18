@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "five-source-followup-status/v1",
+  "sourceCollection": {
+    "status": "PASS",
+    "cycles": 126,
+    "metrics": 3024,
+    "logs": 2196,
+    "errors": 0,
+    "identityChangesDiscarded": 0
+  },
+  "windowOracle": {
+    "status": "PASS",
+    "stable": true,
+    "polls": 2,
+    "sourceErrors": [
+      {
+        "poll": 1,
+        "type": "TimeoutError"
+      }
+    ],
+    "timeReliable": false
+  },
+  "joint": {
+    "status": "FAIL",
+    "stage": "native_after",
+    "timeoutSeconds": 6,
+    "code": "native client identity not qualified",
+    "database": "sp03_mig_9e88544a137846fabc473a29e3ec53a6"
+  },
+  "page": {
+    "status": "NOT_RUN",
+    "reason": "latest joint Graph owner did not qualify"
+  },
+  "newRetention": {
+    "status": "NOT_RUN",
+    "reason": "same-run committed context was not produced"
+  },
+  "nodePVC": {
+    "status": "NOT_RUN",
+    "reason": "previously unapproved scope/object prerequisites remain"
+  },
+  "humanQualityReview": "pending",
+  "fullAcceptancePassed": false,
+  "latestDiagnostic": {
+    "nativeIdentityPreflight": "PASS",
+    "nativeL4Preflight": "PASS",
+    "joint": {
+      "status": "FAIL",
+      "stage": "graph_owner_readiness",
+      "elapsedSeconds": 115.11,
+      "code": "actual native Graph owner did not qualify",
+      "database": "sp03_mig_298b37aa46aa44ff851b1cf2c02dc170"
+    },
+    "priorSixSecondFailureReproduced": false,
+    "rootCauseProven": false,
+    "page": "NOT_RUN",
+    "newRetention": "NOT_RUN",
+    "evidence": "identity-timing-diagnostic.json"
+  },
+  "functionalDevelopment": {
+    "status": "COMPLETE",
+    "scope": "current functional changes and local regressions",
+    "localRegressions": "PASS",
+    "userScopeDecision": "2026-10-18: functional development only; remote machine performance issues are recorded only",
+    "remotePerformanceWork": "RECORD_ONLY",
+    "additionalRemoteDiagnosisPlanned": false,
+    "remoteAcceptanceBlocksDevelopmentCompletion": false,
+    "record": "README.md"
+  }
+}

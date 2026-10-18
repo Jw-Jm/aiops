@@ -53,6 +53,9 @@ func (s Service) authorize(ctx context.Context, tx pgx.Tx, a auth.RequestContext
 	if a.TenantID != b.TenantID || a.Subject != b.Subject || !p.Allows(b.Target, b.Options) || p.ID != b.ProfileID || p.Version != b.ProfileVersion || p.ClusterUID != b.ClusterUID || s.Policy == nil {
 		return policy.PolicyDecision{}, ErrDenied
 	}
+	if err := relatedExecutionTx(ctx, tx, b); err != nil {
+		return policy.PolicyDecision{}, err
+	}
 	effective, err := graph.EffectiveTx(ctx, tx, a.TenantID.String(), a.Subject, b.ClusterUID, true)
 	ns := ""
 	if b.Namespace != nil {
@@ -119,7 +122,7 @@ func (s Service) authorize(ctx context.Context, tx pgx.Tx, a auth.RequestContext
 // conservative default prevents absence of a risk record reducing authority.
 func ClassifyRiskBinding(Binding) string { return "high" }
 func (s Service) bind(ctx context.Context, tx pgx.Tx, a auth.RequestContext, request CommandRequest) (Binding, Profile, uuid.UUID, error) {
-	if ValidateCommand(request.ActualCommand, request.Shell) != nil || request.IncidentID == uuid.Nil {
+	if ValidateCommand(request.ActualCommand, request.Shell) != nil || request.IncidentID == uuid.Nil || !validExecutionRelation(request.RelatedExecutionID, request.ExecutionRelation) {
 		return Binding{}, Profile{}, uuid.Nil, ErrInvalid
 	}
 	p, vid, err := profileTx(ctx, tx, a.TenantID, request.ProfileID, request.ProfileVersion)
@@ -138,6 +141,10 @@ func (s Service) bind(ctx context.Context, tx pgx.Tx, a auth.RequestContext, req
 		namespace = &ns
 	}
 	b := Binding{DigestVersion: "execution-request/v1", TenantID: a.TenantID, Subject: a.Subject, IncidentID: request.IncidentID, ActionPlanID: request.ActionPlanID, Target: request.Target, TargetUID: targetIdentity(identity), ClusterUID: cluster, Namespace: namespace, Shell: request.Shell, CommandDigest: Digest([]byte(request.ActualCommand)), ProfileID: p.ID, ProfileVersion: p.Version, Options: request.Options, RiskVersion: RiskVersion}
+	if request.RelatedExecutionID != nil {
+		b.DigestVersion = "execution-request/v2"
+		b.RelatedExecutionID, b.ExecutionRelation = request.RelatedExecutionID, request.ExecutionRelation
+	}
 	if request.ActionPlanID != nil {
 		var target, incident string
 		err = tx.QueryRow(ctx, `SELECT content->>'targetCanonicalId',incident_id::text FROM action.plans WHERE tenant_id=$1 AND action_plan_id=$2 FOR SHARE`, a.TenantID, *request.ActionPlanID).Scan(&target, &incident)
@@ -338,7 +345,7 @@ func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestCont
 		if err != nil {
 			return err
 		}
-		if err = appendAudit(ctx, tx, a, out.ID, "command.prepared", map[string]any{"requestDigest": b.Digest(), "commandDigest": b.CommandDigest, "ciphertextRef": out.ID, "acknowledgementId": ackID, "suggestionMatch": out.SuggestionMatch, "comparatorVersion": ComparatorVersion, "policyDecisionId": decision.DecisionID}); err != nil {
+		if err = appendAudit(ctx, tx, a, out.ID, "command.prepared", map[string]any{"requestDigest": b.Digest(), "commandDigest": b.CommandDigest, "ciphertextRef": out.ID, "acknowledgementId": ackID, "suggestionMatch": out.SuggestionMatch, "comparatorVersion": ComparatorVersion, "policyDecisionId": decision.DecisionID, "relatedExecutionId": b.RelatedExecutionID, "executionRelation": b.ExecutionRelation}); err != nil {
 			return err
 		}
 		if err = event(ctx, tx, a.TenantID, out.ID, "state", map[string]any{"state": "prepared"}); err != nil {

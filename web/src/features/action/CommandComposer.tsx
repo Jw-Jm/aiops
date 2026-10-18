@@ -96,6 +96,16 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
   const submissionKey = useRef(crypto.randomUUID());
   const planId = url.get("actionPlanId") || undefined;
   const executionId = url.get("executionId") || undefined;
+  const relatedExecutionId = url.get("relatedExecutionId") || undefined;
+  const executionRelation = url.get("executionRelation") || undefined;
+  const validRelation =
+    executionRelation === "follow_up" || executionRelation === "rollback";
+  const invalidRelation =
+    !!relatedExecutionId !== !!executionRelation ||
+    (!!executionRelation && !validRelation);
+  useEffect(() => {
+    setCommand("");
+  }, [relatedExecutionId, executionRelation]);
   const profileCursor = url.get("profileCursor") || undefined;
   const [selectedConfig, setSelectedConfig] =
     useState<Record<string, unknown>>();
@@ -132,6 +142,12 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
       checked(getActionPlan(planId!, requestOptions(signal))),
   });
   const request: CommandRiskAssessmentRequest = {
+    ...(relatedExecutionId
+      ? {
+          relatedExecutionId,
+          executionRelation: validRelation ? executionRelation : undefined,
+        }
+      : {}),
     incidentId: incident.incidentId,
     actionPlanId: planId ?? null,
     actualCommand: command,
@@ -422,6 +438,42 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
         </Space>
       </details>
       {plan.error && <QueryState loading={false} error={plan.error} />}
+      {relatedExecutionId && (
+        <Alert
+          showIcon
+          type="info"
+          title={
+            executionRelation === "rollback" ? "准备关联回退" : "准备继续处置"
+          }
+          description={
+            <>
+              <p>
+                关联执行：{relatedExecutionId}
+                。仅允许同一故障、同一目标身份；请重新输入实际命令并确认风险，关联不会授予权限或自动执行。
+              </p>
+              <Button
+                disabled={activeExecution || unknown}
+                onClick={() => {
+                  const n = new URLSearchParams(url);
+                  n.delete("relatedExecutionId");
+                  n.delete("executionRelation");
+                  n.delete("executionId");
+                  n.delete("actionPlanId");
+                  setUrl(n);
+                }}
+              >
+                取消关联，开始独立处置
+              </Button>
+            </>
+          }
+        />
+      )}
+      {invalidRelation && (
+        <Alert
+          type="error"
+          title="执行关联参数不完整，请重新选择原执行及关联类型"
+        />
+      )}
       <h3>1 · 输入实际命令</h3>
       <div className="action-grid">
         <div className="field">
@@ -520,7 +572,12 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
         <Button
           type="primary"
           disabled={
-            !command.trim() || !profile || !target || unknown || activeExecution
+            !command.trim() ||
+            !profile ||
+            !target ||
+            unknown ||
+            activeExecution ||
+            invalidRelation
           }
           loading={risk.isPending}
           onClick={() => risk.mutate()}

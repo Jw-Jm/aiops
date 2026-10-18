@@ -15,6 +15,7 @@ import (
 	"ops-platform/internal/contract"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/observability"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/resource"
 	"strconv"
@@ -50,6 +51,10 @@ func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fail(503, "GRAPH_NOT_READY")
 		return
 	}
+	if r.URL.Path == "/api/v1/overview" && r.Method == http.MethodGet {
+		h.getOverview(w, r)
+		return
+	}
 	if strings.HasPrefix(r.URL.Path, "/api/v1/evidence/") && r.Method == "GET" {
 		h.getEvidence(w, r, request)
 		return
@@ -73,6 +78,13 @@ func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/api/v1/resources":
 		q.QueryKind = "list"
 		q.CanonicalIDs = r.URL.Query()["canonicalIds"]
+		value := r.URL.Query().Get("includeDomains")
+		if value != "" && value != "true" && value != "false" {
+			fail(400, "INVALID_ARGUMENT")
+			return
+		}
+		q.IncludeDomains = value == "true"
+		q.Domain = r.URL.Query().Get("domain")
 		q.Kind = r.URL.Query().Get("kind")
 		q.Namespace = r.URL.Query().Get("namespace")
 		q.Name = r.URL.Query().Get("name")
@@ -324,6 +336,10 @@ func decodeCursor(key ed25519.PublicKey, token string, c *graphCursor) error {
 	return json.Unmarshal(payload, c)
 }
 func (h *SP04Handlers) queryEvidence(w http.ResponseWriter, r *http.Request, request auth.RequestContext) {
+	started := time.Now()
+	defer func() {
+		observability.MetricsFromContext(r.Context()).ObserveDuration("evidence_query", time.Since(started))
+	}()
 	var body struct {
 		ResourceCanonicalID string `json:"resourceCanonicalId"`
 		Type                string `json:"type"`
@@ -471,6 +487,10 @@ func (h *SP04Handlers) queryEvidence(w http.ResponseWriter, r *http.Request, req
 	writeJSON(w, 200, map[string]any{"requestId": request.RequestID, "data": result})
 }
 func (h *SP04Handlers) getEvidence(w http.ResponseWriter, r *http.Request, request auth.RequestContext) {
+	started := time.Now()
+	defer func() {
+		observability.MetricsFromContext(r.Context()).ObserveDuration("evidence_read", time.Since(started))
+	}()
 	id, err := uuid.Parse(strings.TrimPrefix(r.URL.Path, "/api/v1/evidence/"))
 	if err != nil {
 		writeSP04Error(w, 400, "INVALID_ARGUMENT", "invalid evidence ID", false, request.RequestID)

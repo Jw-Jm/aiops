@@ -3,6 +3,17 @@
 import json
 import sys
 
+if len(sys.argv) == 3 and sys.argv[1] == "--playwright":
+    with open(sys.argv[2], encoding="utf-8") as report:
+        data = json.load(report)
+    stats = data.get("stats", {})
+    if (stats.get("expected", 0) <= 0 or any(stats.get(key, 0) for key in ("skipped", "unexpected", "flaky"))
+            or data.get("errors")):
+        print("Acceptance suite did not fully execute: browser failures, skips or no tests passed", file=sys.stderr)
+        sys.exit(1)
+    print(f"Browser acceptance report: {stats['expected']} tests passed; zero skips.")
+    sys.exit(0)
+
 passed = 0
 skipped = []
 with open(sys.argv[1], encoding="utf-8") as report:

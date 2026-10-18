@@ -8,6 +8,10 @@
 
 Task 2.6、Task 2.8/2.9 的虚拟化分项，以及后续 VM 功能和 virtualization/full Profile 不在本轮范围内。core 中两组件保持 disabled，运行兼容性为 unverified；已有证据保留。只有用户明确恢复虚拟化阶段后才重新开发。
 
+## 全平台功能追踪
+
+[功能完成清单](docs/release/feature-matrix.md)关联 PRD 条目、专项功能、实际入口、实现、测试和证据，分别记录开发状态与运行验证状态，并列出已确认缺口和待核对项。该清单不代表整个平台或正式发行验收通过；远程性能问题按用户要求仅作记录。
+
 ## Development toolchain
 
 Exact development versions are pinned in `.tool-versions`:
@@ -53,11 +57,14 @@ The accepted architecture decisions are recorded in [docs/adr](docs/adr/):
 
 - `make bootstrap` installs and verifies the pinned toolchain.
 - `make generate` runs available Go generators.
-- `make check` checks generated Go output, runs `go vet`, and runs unit and currently available Contract tests.
+- `make test-local` runs local Go unit/Contract/security, web component/SSE/TypeScript, and Python checks without live services, browser automation, replay or capacity measurements.
+- `make check-local` adds `go vet`. `make check` also checks generated output and locked runtime source materials; it is not live acceptance.
 - `make fmt` formats Go sources.
-- `make test-unit` and `make test-contract` run their respective test suites.
-- `make test-e2e` runs the current suite and prints skips; live tests require their explicit environment flags and prerequisites. A skipped live test is not acceptance evidence.
-- `make test-integration`, `make test-replay`, and `make test-security` are stable suite entry points for the later implementation tasks.
+- `make test-unit`, `make test-contract`, `make test-web`, and `make test-python` run independently. Python uses the locked offline dev environment; install the pinned dependencies first.
+- `make test-integration`, `make test-live-sources`, `make test-native`, `make test-browser-runtime`, `make test-web-e2e`, `make test-capacity`, `make test-capacity-live`, `make test-replay`, and `make test-e2e` are explicit environment/load entry points. Acceptance reports reject skips and empty suites; missing inputs do not become a pass.
+- See [development test entry points](docs/runbooks/development-tests.md) for suite selection, prerequisites and report paths. KubeVirt/CDI remain deferred.
+- `make check-delivery` checks the [unified delivery preparation](docs/release/unified-delivery.md) baseline, generated output and existing runtime/migration source materials. This prepares a reviewable version set; it does not build/sign a new Bundle, deploy or grant release admission.
+- [Shared post-check and execution links](docs/release/disposition-verification-closeout.md) records the frozen verification report and manually confirmed follow-up/rollback association; concrete resource recipes and runtime acceptance remain separately scoped.
 - `make verify-bundle BUNDLE_DIR=/absolute/bundle TRUST_KEY=/outside/bundle/trust.pem` verifies a signed local Bundle against an independently trusted key.
 - `make bundle-dev-arm64 BUNDLE_SPEC=/absolute/build.json BUNDLE_DIR=/absolute/new-bundle SIGNING_KEY=/outside/repository/signing.pem` packages already prepared, qualified local inputs.
 - Core import/install commands, prerequisites and actual acceptance evidence are in [the offline install runbook](docs/runbooks/dev-offline-install.md). Component admission and code checks alone do not establish a live install/reinstall pass.

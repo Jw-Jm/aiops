@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/contract"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/persistence"
@@ -27,18 +28,16 @@ type PostCheckFacts struct {
 // Facts must be supplied by a trusted current Recipe/Investigation adapter,
 // never deserialized from an operator or model-supplied verdict.
 func JudgePostCheck(f PostCheckFacts, completedAt time.Time) string {
-	if !f.Authorized || !f.SourceAvailable || !f.Complete || len(f.EvidenceRefs) == 0 || !f.CollectedAfter.After(completedAt) || f.CheckedAt.Before(f.CollectedAfter) {
-		return "inconclusive"
-	}
-	if f.FaultPresent {
-		return "not_resolved"
-	}
-	return "resolved"
+	verdict, _ := postCheckDecision(f, completedAt)
+	return verdict
 }
 func workerActor(tenant uuid.UUID) auth.RequestContext {
 	return auth.RequestContext{TenantID: tenant, Subject: "platform-worker"}
 }
 func (s Service) RecordPostCheck(ctx context.Context, tenant, id uuid.UUID, f PostCheckFacts) error {
+	if len(f.EvidenceRefs) > 50 {
+		return ErrInvalid
+	}
 	return persistence.WithTenantTx(ctx, s.Pool, tenant, func(tx pgx.Tx) error {
 		e, err := executionTx(ctx, tx, tenant, id)
 		if err != nil {
@@ -68,7 +67,7 @@ func (s Service) RecordPostCheck(ctx context.Context, tenant, id uuid.UUID, f Po
 					break
 				}
 				ev, err := evidence.GetTx(ctx, tx, tenant, refID, scope)
-				if err != nil || !ev.TimeReliable || ev.ResourceCanonicalID != e.Binding.Target || !ev.ObservedFrom.After(completed) || !ev.ObservedTo.After(completed) {
+				if err != nil || !ev.TimeReliable || ev.ReplayState != "archived_verified" || ev.ArchiveRef == nil || ev.ResourceCanonicalID != e.Binding.Target || !ev.ObservedFrom.After(completed) || !ev.ObservedTo.After(completed) {
 					f.Complete = false
 					break
 				}
@@ -83,13 +82,18 @@ func (s Service) RecordPostCheck(ctx context.Context, tenant, id uuid.UUID, f Po
 				}
 			}
 		}
-		verdict := JudgePostCheck(f, completed)
+		report := makePostCheckReport(e, f, completed)
+		if contract.Validate("https://ops.local/schemas/command-post-check/v1", Canonical(report)) != nil {
+			return ErrInvalid
+		}
+		verdict := report.Verdict
 		if _, err = tx.Exec(ctx, `UPDATE action.executions SET post_check=$3,post_checked_at=clock_timestamp() WHERE tenant_id=$1 AND execution_id=$2`, tenant, id, verdict); err != nil {
 			return err
 		}
-		if err = appendAudit(ctx, tx, workerActor(tenant), id, "command.post_checked", map[string]any{"verdict": verdict, "evidenceRefs": f.EvidenceRefs, "checkedAt": f.CheckedAt}); err != nil {
+		reportDigest := Digest(Canonical(report))
+		if err = appendAudit(ctx, tx, workerActor(tenant), id, "command.post_checked", map[string]any{"verdict": verdict, "evidenceRefs": f.EvidenceRefs, "checkedAt": f.CheckedAt, "reportDigest": reportDigest}); err != nil {
 			return err
 		}
-		return event(ctx, tx, tenant, id, "post_check", map[string]any{"verdict": verdict, "evidenceRefs": f.EvidenceRefs})
+		return event(ctx, tx, tenant, id, "post_check", map[string]any{"verdict": verdict, "evidenceRefs": report.Facts.EvidenceRefs, "report": report, "reportDigest": reportDigest})
 	})
 }

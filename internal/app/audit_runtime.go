@@ -77,6 +77,7 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 	if runtime == nil {
 		return errors.New("worker observability is required")
 	}
+	ctx = observability.WithMetrics(ctx, runtime.Metrics)
 	if err := application.config.validateRuntimeProfile(true); err != nil {
 		return err
 	}
@@ -148,6 +149,7 @@ func (application *WorkerApp) Serve(ctx context.Context, runtime *observability.
 		if ctx.Err() != nil {
 			return nil
 		}
+		collectBusinessMetrics(ctx, pool, runtime.Metrics)
 		passContext, cancel := context.WithTimeout(ctx, 45*time.Second)
 		var passErr error
 		if !time.Now().Before(renewAt) {

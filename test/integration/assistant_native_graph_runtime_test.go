@@ -176,11 +176,12 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 			}
 			roots := x509.NewCertPool()
 			roots.AppendCertsFromPEM(ca)
-			native, e := kubernetes.NewClient(collector.Endpoint, &http.Client{Transport: assistantNativeTokenTransport{&http.Transport{TLSClientConfig: &tls.Config{RootCAs: roots, MinVersion: tls.VersionTLS12}}, strings.TrimSpace(string(token))}}, 20, 20)
+			native, e := kubernetes.NewClient(collector.Endpoint, &http.Client{Transport: assistantIdentityTimingTransport{assistantNativeTokenTransport{&http.Transport{TLSClientConfig: &tls.Config{RootCAs: roots, MinVersion: tls.VersionTLS12}}, strings.TrimSpace(string(token))}, t}}, 20, 20)
 			if e != nil {
 				t.Fatal(e)
 			}
-			mapper, e := deepflow.NewLiveMapper(deepflow.LiveConfig{ControllerEndpoint: "http://127.0.0.1:21417", DomainLCUUID: domains.Data[0].LCUUID, ClusterUID: cfg.ClusterUID}, binding, native, http.DefaultClient, (evidence.Repository{Pool: pool}).CheckBinding)
+			identityHTTP := &http.Client{Transport: assistantIdentityTimingTransport{http.DefaultTransport, t}}
+			mapper, e := deepflow.NewLiveMapper(deepflow.LiveConfig{ControllerEndpoint: "http://127.0.0.1:21417", DomainLCUUID: domains.Data[0].LCUUID, ClusterUID: cfg.ClusterUID}, binding, native, identityHTTP, (evidence.Repository{Pool: pool}).CheckBinding)
 			if e != nil {
 				t.Fatal(e)
 			}
@@ -214,24 +215,15 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 				qualifications = append(qualifications, analytics.Qualification{DatasetID: dataset, Operation: "aggregate", SourceRevision: 1, BindingDigest: evidence.BindingScopeDigest(binding), EvidenceDigest: evidence.Digest(raw), CollectorVersion: "deepflow-e567b167453ffa99f08f26def20379b4f831e073/http-session-counts", VerifiedUntil: time.Now().Add(time.Hour), CoverageFrom: time.Unix(proof.Window.From, 0).UTC(), CoverageTo: time.Unix(proof.Window.To, 0).UTC(), MaxWindowSeconds: 3600, ObservationPoint: proof.ObservationPoint, CoverageComplete: true})
 			}
 			if path := os.Getenv("OPS_FAULT_CHAIN_WINDOWS_PROOF"); path != "" {
+				faultRaw := raw
 				raw, err := os.ReadFile(path)
 				if err != nil {
 					t.Fatal(err)
 				}
-				var windows struct {
-					Status string `json:"status"`
-					Golden []struct {
-						From int64 `json:"fromUnix"`
-						To   int64 `json:"toUnix"`
-					} `json:"golden"`
-					Points       struct{ HTTP, TCP string } `json:"observationPoints"`
-					Measurements []struct {
-						Responses, Errors   int
-						FailureObservations int `json:"failureObservations"`
-					} `json:"measurements"`
-				}
-				if json.Unmarshal(raw, &windows) != nil || windows.Status != "PASS" || len(windows.Golden) != 3 || len(windows.Measurements) != 3 || windows.Measurements[0].Errors != 10 || windows.Measurements[1].Errors != 50 || windows.Measurements[2].Errors != 0 || windows.Measurements[1].FailureObservations != 100 {
-					t.Fatal("independent three-window proof required")
+				podsRaw := sp04Kubectl(t, ctx, nil, "-n", cfg.Namespace, "get", "pods", "-l", "ops.platform.io/test-release=fault-chain-20261014", "-o", "json")
+				windows, err := validateAssistantWindowProof(raw, faultRaw, podsRaw, cfg, start, end, path)
+				if err != nil {
+					t.Fatal(err)
 				}
 				for _, item := range []struct{ Dataset, Point string }{{"network.http-summary", windows.Points.HTTP}, {"network.tcp-summary", windows.Points.TCP}} {
 					for _, op := range []string{"aggregate", "compare", "compare_percent", "trend"} {
@@ -297,19 +289,19 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 				}
 			}
 			if !proofsReady {
-					time.Sleep(500 * time.Millisecond)
-					continue
-				}
+				time.Sleep(500 * time.Millisecond)
+				continue
+			}
 
-				// The planner snapshots live source capabilities when the
-				// collection turn starts. The worker establishes the separate
-				// live L7 proof within seconds of the L4 verification row; give
-				// that proof cycle its window so the deterministic collection
-				// plans the aggregate network read instead of degrading to the
-				// L4 detail read.
-				time.Sleep(15 * time.Second)
-				t.Log("actual native Graph informer + Kubernetes Lease route ready; archive dependency fixture explicitly excluded")
-				return handlers
+			// The planner snapshots live source capabilities when the
+			// collection turn starts. The worker establishes the separate
+			// live L7 proof within seconds of the L4 verification row; give
+			// that proof cycle its window so the deterministic collection
+			// plans the aggregate network read instead of degrading to the
+			// L4 detail read.
+			time.Sleep(15 * time.Second)
+			t.Log("actual native Graph informer + Kubernetes Lease route ready; archive dependency fixture explicitly excluded")
+			return handlers
 		}
 		time.Sleep(500 * time.Millisecond)
 	}

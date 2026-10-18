@@ -6,12 +6,17 @@
  */
 import type { CanonicalID } from './canonicalID.ts';
 import type { CommandExecutionOptions } from './commandExecutionOptions.ts';
+import type { CommandExecutionRequestExecutionRelation } from './commandExecutionRequestExecutionRelation.ts';
 import type { Identifier } from './identifier.ts';
 
 /**
  * Additive v1 fields incidentId, executionProfileVersion and executionOptions may be omitted only to reuse the exact values bound in this subject’s RiskAcknowledgement. Explicit values must match; no server-selected defaults or automatic profile upgrades.
  */
 export interface CommandExecutionRequest {
+  /** Existing completed execution on the same Incident and resource identity; must accompany executionRelation. */
+  relatedExecutionId?: string;
+  /** Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId. */
+  executionRelation?: CommandExecutionRequestExecutionRelation;
   /** @nullable */
   actionPlanId?: string | null;
   /**

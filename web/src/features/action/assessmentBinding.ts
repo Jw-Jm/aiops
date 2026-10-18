@@ -23,6 +23,8 @@ export async function matchesAssessment(
     binding.executionProfileVersion === request.executionProfileVersion &&
     binding.incidentId === request.incidentId &&
     binding.actionPlanId === request.actionPlanId &&
+    binding.relatedExecutionId === request.relatedExecutionId &&
+    binding.executionRelation === request.executionRelation &&
     options.timeoutSeconds === request.executionOptions.timeoutSeconds &&
     options.maxOutputBytes === request.executionOptions.maxOutputBytes &&
     options.workingDirectory === request.executionOptions.workingDirectory &&

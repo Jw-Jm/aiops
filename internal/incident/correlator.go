@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/finding"
+	"ops-platform/internal/observability"
 	"time"
 )
 
@@ -21,6 +22,10 @@ func LockSubject(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, fingerprint s
 // Consume handles a replayed or gap event by re-reading the durable aggregate.
 // No assumption about process or delivery order enters the resulting state.
 func Consume(ctx context.Context, tx pgx.Tx, d finding.Delivery) error {
+	started := time.Now()
+	defer func() {
+		observability.MetricsFromContext(ctx).ObserveDuration("incident_aggregation", time.Since(started))
+	}()
 	var supplied finding.Finding
 	if json.Unmarshal(d.Payload, &supplied) != nil || supplied.FindingID != d.FindingID || supplied.TenantID != d.TenantID.String() || supplied.AggregateRevision != d.Revision {
 		return finding.ErrInvalid

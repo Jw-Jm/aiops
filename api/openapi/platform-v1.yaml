@@ -739,6 +739,14 @@ components:
     CommandExecutionRequest:
       additionalProperties: false
       properties:
+        relatedExecutionId:
+          type: string
+          format: uuid
+          description: Existing completed execution on the same Incident and resource identity; must accompany executionRelation.
+        executionRelation:
+          type: string
+          enum: [follow_up, rollback]
+          description: Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId.
         actionPlanId:
           type:
           - string
@@ -3969,6 +3977,14 @@ components:
     CommandRiskAssessmentRequest:
       additionalProperties: false
       properties:
+        relatedExecutionId:
+          type: string
+          format: uuid
+          description: Existing completed execution on the same Incident and resource identity; must accompany executionRelation.
+        executionRelation:
+          type: string
+          enum: [follow_up, rollback]
+          description: Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId.
         actionPlanId:
           type:
           - string
@@ -6652,6 +6668,14 @@ paths:
     get:
       operationId: getResources
       parameters:
+      - in: query
+        name: includeDomains
+        schema: {type: boolean, default: false}
+      - in: query
+        name: domain
+        schema:
+          type: string
+          enum: [hardware, kubernetes, network, storage]
       - in: query
         name: canonicalIds
         description: Resolve at most 50 exact resource identifiers within current authorization; this filter does not expand scope.

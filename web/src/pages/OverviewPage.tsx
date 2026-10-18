@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Button, Alert } from "antd";
+import { Button, Alert, Table, Space } from "antd";
 import { Link, useSearchParams } from "react-router-dom";
 import { ScopeFilter, useClusters } from "../components/ScopeFilter";
 import { getOverview, getCapabilities } from "../api/generated/platform";
@@ -8,7 +8,7 @@ import { PageHeading } from "../components/PageHeading";
 import { QueryState } from "../components/QueryState";
 import { EnvelopeMeta } from "../components/EnvelopeMeta";
 import { Details } from "../components/Details";
-import { record, text } from "../components/data";
+import { record, text, list, displayTime } from "../components/data";
 import { Status } from "../components/Status";
 export function OverviewPage() {
   const [url, setUrl] = useSearchParams();
@@ -28,6 +28,14 @@ export function OverviewPage() {
   });
   const d = record(record(q.data).data);
   const counts = record(d.counts);
+  const domains = record(record(d.distribution).domains);
+  const resourceLink = (domain: string, health?: string) =>
+    "/resources?" +
+    new URLSearchParams({
+      clusterUid: cluster,
+      domain,
+      ...(health ? { health } : {}),
+    }).toString();
   return (
     <>
       <PageHeading
@@ -71,12 +79,16 @@ export function OverviewPage() {
               <small>
                 {(
                   {
-                    finding: "告警记录",
+                    finding: "告警记录总数",
+                    activeFinding: "活动告警",
+                    openIncident: "未确认故障（open）",
+                    criticalIncident: "严重未确认故障",
+                    runningInvestigation: "我的运行中调查",
                     incident: "故障记录",
                     resource: "可见资源",
                     cluster: "当前集群",
                     node: "可见节点",
-                    server: "硬件设备（待验收）",
+                    server: "已观测硬件服务器",
                   } as Record<string, string>
                 )[k] ?? k}
               </small>
@@ -89,23 +101,36 @@ export function OverviewPage() {
         {Object.keys(d).length > 0 && (
           <section className="section">
             <h2 className="section-title">健康分布与资源类型</h2>
-            <div className="filters">
-              {Object.entries(record(record(d.distribution).health)).map(
-                ([k, v]) => (
-                  <span key={k}>
-                    <Status value={k} /> {text(v)}
-                  </span>
-                ),
-              )}
-            </div>
-            <div className="filters">
-              {Object.entries(record(record(d.distribution).resourceKinds)).map(
-                ([k, v]) => (
-                  <span key={k}>
-                    {k}：{text(v)}
-                  </span>
-                ),
-              )}
+            <p className="status-note">
+              按资源归属分组；网络资源的健康不等于链路质量。未取得的分布显示未知。
+            </p>
+            <div className="stats">
+              {(
+                [
+                  ["hardware", "硬件"],
+                  ["kubernetes", "Kubernetes"],
+                  ["network", "网络"],
+                  ["storage", "存储"],
+                ] as const
+              ).map(([domain, label]) => {
+                const group = record(domains[domain]);
+                const health = record(group.byHealth);
+                return (
+                  <div className="stat" key={domain}>
+                    <Link to={resourceLink(domain)}>{label}资源</Link>
+                    <strong>
+                      {typeof group.total === "number" ? group.total : "未知"}
+                    </strong>
+                    <Space wrap>
+                      {Object.entries(health).map(([state, count]) => (
+                        <Link key={state} to={resourceLink(domain, state)}>
+                          <Status value={state} /> {text(count)}
+                        </Link>
+                      ))}
+                    </Space>
+                  </div>
+                );
+              })}
             </div>
             <Details
               value={{
@@ -119,6 +144,91 @@ export function OverviewPage() {
           </section>
         )}
       </QueryState>
+      {Object.keys(d).length > 0 && (
+        <section className="section">
+          <h2 className="section-title">重点待处理故障</h2>
+          <p className="status-note">
+            仅列当前范围内 open 状态的 critical / warning 故障，严重优先，最多 5
+            条。影响范围来自已授权的冻结 RCA Revision。
+          </p>
+          <Table<Record<string, unknown>>
+            rowKey="incidentId"
+            pagination={false}
+            scroll={{ x: 900 }}
+            dataSource={list(d.priorityIncidents).map(record)}
+            locale={{ emptyText: "当前范围内没有符合条件的重点故障" }}
+            columns={[
+              {
+                title: "故障",
+                key: "title",
+                render: (_, row) => (
+                  <Link
+                    to={
+                      "/incidents/" + encodeURIComponent(String(row.incidentId))
+                    }
+                  >
+                    {text(row.title)}
+                  </Link>
+                ),
+              },
+              {
+                title: "主资源",
+                dataIndex: "resourceCanonicalId",
+                render: (id: unknown) => (
+                  <Link
+                    to={
+                      "/resources/detail?canonicalId=" +
+                      encodeURIComponent(String(id))
+                    }
+                  >
+                    {text(id)}
+                  </Link>
+                ),
+              },
+              {
+                title: "严重度",
+                dataIndex: "severity",
+                render: (v: unknown) => <Status value={v} />,
+              },
+              {
+                title: "状态",
+                dataIndex: "state",
+                render: (v: unknown) => <Status value={v} />,
+              },
+              {
+                title: "开始时间",
+                dataIndex: "startedAt",
+                render: displayTime,
+              },
+              {
+                title: "持续时间",
+                dataIndex: "durationSeconds",
+                render: (v: unknown) =>
+                  typeof v === "number"
+                    ? Math.floor(v) + " 秒"
+                    : "未知（时间未验证）",
+              },
+              {
+                title: "RCA",
+                dataIndex: "rcaStatus",
+                render: (v: unknown) => <Status value={v} />,
+              },
+              {
+                title: "影响摘要",
+                dataIndex: "impact",
+                render: (v: unknown) =>
+                  v
+                    ? "直接 " +
+                      text(record(v).direct) +
+                      " / 间接 " +
+                      text(record(v).indirect) +
+                      (record(v).partial ? "（部分）" : "")
+                    : "尚无可授权读取的影响证据",
+              },
+            ]}
+          />
+        </section>
+      )}
       <section className="section">
         <h2 className="section-title">故障处理入口</h2>
         <div className="filters">
