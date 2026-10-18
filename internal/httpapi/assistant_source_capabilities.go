@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+// capabilityDetailDeadline is asserted below the owning tool deadline by
+// TestCapabilityDetailDeadlineFitsContextTool.
+const capabilityDetailDeadline = 2 * time.Second
+
 type AssistantCapabilityDetails struct {
 	Capabilities []analytics.SourceCapability `json:"sourceCapabilities"`
 	Network      []evidence.CapabilitySet     `json:"networkCapabilities"`
@@ -31,7 +35,11 @@ func (h *SP04Handlers) AssistantCapabilityDetails(ctx context.Context, j investi
 	if err != nil || !route.ExpiresAt.After(time.Now()) || !h.EndpointAllowed(route.Endpoint) {
 		return nil, graph.ErrNotReady
 	}
-	bounded, cancel := context.WithTimeout(ctx, 3*time.Second)
+	// The worker call is auxiliary to the committed context: it must stay
+	// strictly below tools.DeadlineFor("get_assistant_context") so a slow or
+	// fenced worker degrades the capability status instead of consuming the
+	// whole tool deadline and failing the follow-up turn.
+	bounded, cancel := context.WithTimeout(ctx, capabilityDetailDeadline)
 	defer cancel()
 	reply, err := h.callWithGrantDigest(bounded, route.Endpoint, "/internal/v1/analysis:query", "platform-analysis-query", j.Subject, j.Scope, rawJSON(map[string]any{"capabilities": true, "ownerEpoch": route.Epoch}), j.Assistant.GrantSnapshotDigest)
 	if err != nil {

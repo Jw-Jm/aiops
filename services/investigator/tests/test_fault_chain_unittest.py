@@ -303,6 +303,52 @@ class OperationalCollectorTests(unittest.TestCase):
             if kind != "Pod": self.assertNotIn("query_deepflow", names)
             self.assertTrue(result["partial"])
 
+    def test_node_and_pvc_state_each_inapplicable_read_explicitly(self):
+        for kind, marker in (("Node", "logs_and_pod_metrics_not_applicable_for_Node"), ("PersistentVolumeClaim", "pvc_metrics_logs_not_applicable")):
+            class OperationalBridge(BudgetBridge):
+                def call(self, name, args, allocation):
+                    result = super().call(name, args, allocation)
+                    if name == "get_assistant_context":
+                        result["data"]["faultChainRequest"]["schemaVersion"] = "fault-chain-request/v2"
+                        result["data"]["binding"] = {"resourceContext": {"resources": [{"canonicalId": "target", "kind": kind}]}}
+                    return result
+            ledger = Ledger()
+            bridge = OperationalBridge(8, peers=1)
+            result = collect({"budget": {"toolCalls": 30, "rawQueries": 8}}, ledger, bridge)
+            names = [n for n, _ in ledger.allocations]
+            failures = result["missingEvidence"]
+            # No Pod-scoped dataset or Pod network template is borrowed.
+            self.assertNotIn("query_deepflow", names)
+            for leaked in ("metrics.pod-restarts", "metrics.pod-memory", "metrics.pod-cpu", "logs.records"):
+                self.assertFalse(
+                    any(args.get("intent", {}).get("datasetId") == leaked
+                        for name, args in ledger.allocations if name == "execute_analysis_query"),
+                    (kind, leaked),
+                )
+            self.assertTrue(any(marker in failure for failure in failures), (kind, failures))
+            self.assertIn("network_not_applicable_for_" + kind, failures)
+            self.assertIn("resource_history", names)
+            self.assertIn("resource_findings", names)
+            self.assertIn("resource_changes", names)
+
+    def test_node_keeps_its_admitted_metric_dataset(self):
+        class OperationalBridge(BudgetBridge):
+            def call(self, name, args, allocation):
+                result = super().call(name, args, allocation)
+                if name == "get_assistant_context":
+                    result["data"]["faultChainRequest"]["schemaVersion"] = "fault-chain-request/v2"
+                    result["data"]["binding"] = {"resourceContext": {"resources": [{"canonicalId": "target", "kind": "Node"}]}}
+                    result["data"]["sourceCapabilities"] = [
+                        {"datasetId": "metrics.node-ready", "operation": "compare", "status": "qualification_configured"}
+                    ]
+                return result
+        ledger = Ledger()
+        bridge = OperationalBridge(8, peers=1)
+        collect({"budget": {"toolCalls": 30, "rawQueries": 8}}, ledger, bridge)
+        intents = [args.get("intent", {}).get("datasetId") for name, args in ledger.allocations if name == "execute_analysis_query"]
+        self.assertIn("metrics.node-ready", intents)
+        self.assertNotIn("metrics.pod-restarts", intents)
+
     def test_recovery_uses_live_budget_instead_of_cached_receipt(self):
         class RecoveredLedger(Ledger):
             def __init__(self):

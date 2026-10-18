@@ -128,11 +128,7 @@ func (g Gateway) handlerFor(defs []tools.Definition) (http.Handler, error) {
 			if _, err := g.Repository.BeginCall(ctx, v.Lease, c); err != nil {
 				return deny(err)
 			}
-			timeout := 3 * time.Second
-			if d.Name == "query_deepflow" {
-				// Includes the bounded 8s native/source identity fence and reply.
-				timeout = 9 * time.Second
-			}
+			timeout := tools.DeadlineFor(d.Name)
 			bounded, cancel := context.WithTimeout(ctx, timeout)
 			defer cancel()
 			out, err := g.API.Invoke(bounded, v.Job, d.Name, r.Params.Arguments)

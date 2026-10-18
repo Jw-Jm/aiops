@@ -44,7 +44,10 @@ type OwnershipRepository interface {
 	Record(context.Context, OwnershipMirror) error
 }
 type Lease struct {
-	mu                        sync.Mutex
+	// gate is a one-slot mutex so the request path can bound its wait for a
+	// renewal that is inside an API-server round trip.
+	gate                      chan struct{}
+	gateOnce                  sync.Once
 	Client                    *kubernetes.Client
 	Graph                     *Graph
 	Mirror                    OwnershipRepository
@@ -57,9 +60,39 @@ type Lease struct {
 
 // Process identity belongs to the Graph and is recreated on every startup.
 // No database CAS, polling or stored route can confer ownership.
+// lock serialises ownership state. A zero wait means "until ctx is done".
+func (l *Lease) lock(ctx context.Context, wait time.Duration) error {
+	l.gateOnce.Do(func() {
+		l.gate = make(chan struct{}, 1)
+		l.gate <- struct{}{}
+	})
+	if wait <= 0 {
+		select {
+		case <-l.gate:
+			return nil
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+	timer := time.NewTimer(wait)
+	defer timer.Stop()
+	select {
+	case <-l.gate:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-timer.C:
+		return ErrNotReady
+	}
+}
+
+func (l *Lease) unlock() { l.gate <- struct{}{} }
+
 func (l *Lease) Tick(ctx context.Context) error {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	if err := l.lock(ctx, 0); err != nil {
+		return err
+	}
+	defer l.unlock()
 	if l.Client == nil || l.Graph == nil || l.Mirror == nil {
 		return ErrNotReady
 	}
@@ -146,9 +179,18 @@ func (l *Lease) Tick(ctx context.Context) error {
 
 // Confirm reads the sole ownership source without renewing it on the query
 // path. Only the background Tick performs Lease CAS and mirror publication.
+// confirmGateWait bounds how long a request path may queue behind one renewal.
+// The renewal holds the fence across a native round trip; inheriting that
+// latency turned a follow-up context read into a 3s deadline kill, so a fenced
+// request fails closed instead of blocking. Ownership is still proven by the
+// Lease document itself, and the renewal loop keeps fencing other requests.
+const confirmGateWait = 300 * time.Millisecond
+
 func (l *Lease) Confirm(ctx context.Context, expected int64) error {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	if err := l.lock(ctx, confirmGateWait); err != nil {
+		return ErrNotReady
+	}
+	defer l.unlock()
 	if l.Client == nil || l.Graph == nil || expected != l.epoch || !l.observed {
 		return ErrNotReady
 	}

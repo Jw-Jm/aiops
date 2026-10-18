@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "long-context-verification/v1",
+  "model": "deepseek-flash",
+  "configuredWindow": 1000000,
+  "configuredOutput": 8192,
+  "humanQualityReview": "pending",
+  "capacity": {
+    "promptBytes": 2020760,
+    "inputTokens": 917288,
+    "stopReason": "max_tokens",
+    "elapsedSeconds": 265.4,
+    "note": "API accepted 917288 input tokens; output truncated at 4096 in that probe, so capacity only, no quality claim"
+  },
+  "retention": {
+    "promptBytes": 258224,
+    "inputTokens": 119962,
+    "outputTokens": 2895,
+    "stopReason": "end_turn",
+    "elapsedSeconds": 31.5,
+    "checks": {
+      "windows": true,
+      "httpFault": true,
+      "tcpFault": true,
+      "httpRecovery": true,
+      "missingEvidence": true,
+      "sourceRole": true
+    },
+    "passed": true
+  }
+}

@@ -335,3 +335,50 @@ func TestLeaseConfirmTransportFailureKeepsConfirmedOwnership(t *testing.T) {
 		t.Fatalf("confirmed ownership stopped confirming after a flaky read: %v", err)
 	}
 }
+
+// The renewal loop holds the fence across one API-server round trip. A request
+// path used to inherit that latency: during the 2026-10-18 page run a follow-up
+// get_assistant_context was killed at 3007ms while the owner was renewing. A
+// fenced request must fail closed instead of blocking behind the renewal.
+func TestConfirmDoesNotInheritRenewalLatency(t *testing.T) {
+	doc := LeaseDocument{APIVersion: "coordination.k8s.io/v1", Kind: "Lease"}
+	doc.Metadata.Name, doc.Metadata.Namespace = "graph", "owned"
+	doc.Metadata.UID = "native"
+	doc.Metadata.ResourceVersion = "2"
+	doc.Metadata.Annotations = map[string]string{"ops.platform/owner-epoch": "1"}
+	doc.Spec.HolderIdentity = "instance"
+	doc.Spec.LeaseDurationSeconds = 15
+	doc.Spec.RenewTime = metav1.NewMicroTime(time.Now())
+	payload, _ := json.Marshal(doc)
+	var first sync.Once
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			first.Do(func() { time.Sleep(1200 * time.Millisecond) })
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(payload)
+	}))
+	defer server.Close()
+	client, err := kubernetes.NewClient(server.URL, server.Client(), 20, 50)
+	if err != nil {
+		t.Fatal(err)
+	}
+	g := New("tenant-a", "cluster-a", "instance", nil)
+	g.SetOwner(1, time.Now().Add(8*time.Second))
+	lease := &Lease{Client: client, Graph: g, Mirror: &faultMirror{}, Namespace: "owned", Name: "graph", Endpoint: "https://127.0.0.1:9444", leaseUID: "native", epoch: 1, observed: true}
+	renewed := make(chan error, 1)
+	go func() { renewed <- lease.Tick(context.Background()) }()
+	time.Sleep(100 * time.Millisecond)
+	started := time.Now()
+	err = lease.Confirm(context.Background(), 1)
+	elapsed := time.Since(started)
+	if err == nil {
+		t.Fatal("request path accepted ownership proof without reading the native Lease")
+	}
+	if elapsed > 700*time.Millisecond {
+		t.Fatalf("request path blocked %s behind one renewal", elapsed)
+	}
+	if tickErr := <-renewed; tickErr != nil {
+		t.Fatalf("renewal itself failed: %v", tickErr)
+	}
+}

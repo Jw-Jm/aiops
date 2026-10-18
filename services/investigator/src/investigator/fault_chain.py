@@ -59,6 +59,11 @@ def collect(job, job_api, bridge):
             call("resource_history", {"canonicalId": resource, "windowRole": "recovery"})
         metrics = {"Pod": [("metrics.pod-restarts", "restart_increase"), ("metrics.pod-phase", "phase_count"), ("metrics.pod-memory", "memory_bytes"), ("metrics.pod-cpu", "cpu_cores")], "Node": [("metrics.node-ready", "ready_count")], "PersistentVolumeClaim": []}.get(kind, [])
         metrics = [] if optional else metrics[:1]
+        # Applicability is stated per kind instead of silently skipping: a
+        # target with no admitted metric dataset keeps an explicit gap and never
+        # borrows a Pod dataset.
+        if not optional and not metrics:
+            failures.append(kind + "_metrics_not_applicable")
 
         for dataset, metric in metrics:
             operation = "compare" if request.get("baseline") else "aggregate"
@@ -192,6 +197,10 @@ def collect(job, job_api, bridge):
                     call("resource_history", {"canonicalId": target, "windowRole": role})
             if request.get("baseline") and remaining.get("toolCalls", 0) > 4:
                 call("resource_changes", {"canonicalId": target, "windowRole": "baseline"})
+    if operational and not check and target_kind != "Pod":
+        # Pod-scoped logs and container metrics do not describe a Node or a PVC;
+        # keep the inapplicability explicit instead of issuing Pod queries.
+        failures.append("logs_and_pod_metrics_not_applicable_for_" + target_kind)
     if operational and not check and target_kind == "Pod":
         for dataset, metric in (("logs.records", "log_count"), ("metrics.pod-memory", "memory_bytes"), ("metrics.pod-cpu", "cpu_cores")):
             compare = request.get("baseline") is not None and remaining.get("rawQueries", 0) >= 2

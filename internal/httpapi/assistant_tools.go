@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"slices"
 	"strings"
 	"time"
@@ -290,6 +291,9 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			if err != nil {
 				data["sourceCapabilities"] = []analytics.SourceCapability{}
 				data["sourceCapabilityStatus"] = "unavailable"
+				// The committed history still answers the turn; record why the
+				// auxiliary capability read degraded instead of hiding it.
+				slog.Warn("assistant context capability unavailable", "error", err.Error())
 			}
 		}
 		if request, err := faultChainEvaluationRequest(input, j); err == nil {

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "fault-chain-http-proof/v1",
+  "status": "PASS",
+  "namespace": "ops-assistant-deepflow-20261013",
+  "release": "fault-chain-20261014",
+  "nativePods": [
+    {
+      "name": "fault-chain-client-79ff8cbd6b-225l8",
+      "uid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "containerIds": [
+        "containerd://6bffad1d11aeaf4a29a11e5c573656160e02234bb3206fde54993e744d96d4de"
+      ]
+    },
+    {
+      "name": "fault-chain-server-66b747979c-xmgl7",
+      "uid": "d5c42e77-453b-43d0-a541-b266968a1aa2",
+      "containerIds": [
+        "containerd://d945c1559f8232e5e9ca39bfc81babc966e12c335d8c5dd03a91f58d2a6027d8"
+      ]
+    }
+  ],
+  "window": {
+    "fromUnix": 1792292212,
+    "toUnix": 1792292272
+  },
+  "golden": {
+    "responses": 1000,
+    "errors": 50,
+    "transportFailures": 0
+  },
+  "observationPoint": "s-p",
+  "timeReliable": false,
+  "scope": "fault window projection of fully reconciled three-window oracle",
+  "sourceProofFile": "windows-r4.json",
+  "sourceProofDigest": "sha256:4cca3ba525d6e2f6de30c4e3367960db3029fab0178cad71d1d41eaeb9d1b50a",
+  "stable": true,
+  "confirmMatches": true,
+  "tenantId": "2984df90-08c9-4a6d-8e32-8a7ec5f41db1"
+}
