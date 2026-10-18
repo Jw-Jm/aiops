@@ -6,6 +6,7 @@ from litellm import (
 from openai import APIConnectionError as OpenAIConnectionError, APITimeoutError as OpenAITimeoutError
 import json
 import hashlib
+import logging
 from .redaction import sanitize
 from .prompt_binding import output_schema_for_steps
 
@@ -48,6 +49,10 @@ class BudgetedLLM(DefaultLLM):
     assistant_task_kind = "data_query"
     requires_query = False
 
+    def get_maximum_output_token(self):
+        # Context packing must reserve the frozen output cap, not a catalog guess.
+        return self.args["max_tokens"]
+
     def completion(self, messages, *args, **kwargs):
         if self.job_api is None:
             raise RuntimeError("MODEL_ADMISSION_REQUIRED")
@@ -57,7 +62,7 @@ class BudgetedLLM(DefaultLLM):
         # construction. Read the upstream attribute used for context sizing.
         context_bound=getattr(self,"max_context_size",None)
         if context_bound is None:context_bound=16384
-        if not isinstance(context_bound,int) or isinstance(context_bound,bool) or not 1024<=context_bound<=65536:raise ModelCallError("MODEL_CONTEXT_LIMIT")
+        if not isinstance(context_bound,int) or isinstance(context_bound,bool) or not 1024<=context_bound<=1000000:raise ModelCallError("MODEL_CONTEXT_LIMIT")
         reserve={"modelRequests":1,"inputTokens":context_bound,"outputTokens":self.args["max_tokens"],"resultBytes":65536}
         if self.assistant_task and self.requires_query and kwargs.get("tools"):
             from .assistant_binding import required_query_tool
@@ -102,6 +107,7 @@ class BudgetedLLM(DefaultLLM):
             result=super().completion(messages,*args,**kwargs)
         except Exception as error:
             kind = _failure_kind(error)
+            logging.warning("model completion failed kind=%s exception=%s", kind, type(error).__name__)
             try:
                 # The existing Go Contract conservatively charges unknown use.
                 self.job_api.settle(allocation["stepId"],None,None,"MODEL_FAILURE")

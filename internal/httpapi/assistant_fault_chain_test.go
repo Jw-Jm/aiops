@@ -63,6 +63,49 @@ func TestFaultChainEvaluationUsesFrozenOrdinaryTurn(t *testing.T) {
 	}
 }
 
+func TestFaultChainRelationReadKeepsFrozenIdentityWindowAndSelection(t *testing.T) {
+	now := time.Now().UTC().Truncate(time.Second)
+	target := resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: "pod-a"}.String()
+	window := analytics.QueryTimeRange{From: now.Add(-20 * time.Minute), To: now.Add(-19 * time.Minute), Timezone: "UTC"}
+	input := assistant.TurnInput{RequestedAt: now, FaultChainRequest: &investigation.FaultChainRequest{SchemaVersion: "fault-chain-request/v2", TargetCanonicalID: target, Fault: window, MaxEdges: 1}}
+	j := investigation.Job{Scope: graph.Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps", "other"}, ClusterScoped: true}, Assistant: &investigation.AssistantTask{AuthorizationDomain: "operational"}}
+	for _, restricted := range []bool{false, true} {
+		if restricted {
+			j.Scope.Resources = []string{target}
+		}
+		scope, err := faultChainRelationScope(input, j, target, &window, "apps")
+		if err != nil || scope.ClusterScoped || len(scope.Namespaces) != 1 || scope.Namespaces[0] != "apps" || !graph.ContainsScope(j.Scope, scope) || len(scope.Resources) != len(j.Scope.Resources) {
+			t.Fatal("relation read expanded the frozen selection", scope, err)
+		}
+		if len(j.Scope.Namespaces) != 2 || !j.Scope.ClusterScoped {
+			t.Fatal("read mutated job scope")
+		}
+	}
+	for _, name := range []string{"new-window", "other-target", "outside-namespace", "node", "missing-window"} {
+		t.Run(name, func(t *testing.T) {
+			id, ns, w := target, "apps", &window
+			copy := window
+			switch name {
+			case "new-window":
+				copy.From = now.Add(-time.Minute)
+				copy.To = now
+				w = &copy
+			case "other-target":
+				id = target + "-replacement"
+			case "outside-namespace":
+				ns = "unselected"
+			case "node":
+				id = "k8s+v1://tenant-a/cluster-a/core/Node/node-a"
+			case "missing-window":
+				w = nil
+			}
+			if _, err := faultChainRelationScope(input, j, id, w, ns); err == nil {
+				t.Fatal("unfrozen relation request admitted")
+			}
+		})
+	}
+}
+
 func TestIncidentFaultChainRequiresResolvedReferentAndFrozenWindow(t *testing.T) {
 	now := time.Now().UTC().Truncate(time.Second)
 	target := resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: "pod-a"}.String()

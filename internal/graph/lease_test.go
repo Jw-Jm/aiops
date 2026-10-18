@@ -289,3 +289,49 @@ func TestLeaseResponseCancellationStillFencesKnownOwnershipChange(t *testing.T) 
 		})
 	}
 }
+
+// One flaky read of a loaded API server is not evidence that ownership
+// changed: the read fails closed, and a following confirm of the same still
+// valid lease must succeed instead of cascading degraded in-flight queries.
+type flakyLeaseTransport struct {
+	payload []byte
+	failed  *bool
+}
+
+func (t flakyLeaseTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	if !*t.failed {
+		*t.failed = true
+		return nil, errors.New("get \"https://api.test\": connection reset by peer")
+	}
+	return &http.Response{StatusCode: 200, Header: http.Header{}, Body: io.NopCloser(bytes.NewReader(t.payload))}, nil
+}
+
+func TestLeaseConfirmTransportFailureKeepsConfirmedOwnership(t *testing.T) {
+	doc := LeaseDocument{APIVersion: "coordination.k8s.io/v1", Kind: "Lease"}
+	doc.Metadata.UID = "native"
+	doc.Metadata.Annotations = map[string]string{"ops.platform/owner-epoch": "1"}
+	doc.Spec.HolderIdentity = "instance"
+	doc.Spec.LeaseDurationSeconds = 15
+	doc.Spec.RenewTime = metav1.NewMicroTime(time.Now())
+	payload, _ := json.Marshal(doc)
+	failed := false
+	client, err := kubernetes.NewClient("http://lease.test", &http.Client{Transport: flakyLeaseTransport{payload, &failed}}, 20, 50)
+	if err != nil {
+		t.Fatal(err)
+	}
+	g := New("tenant-a", "cluster-a", "instance", nil)
+	g.SetOwner(1, time.Now().Add(8*time.Second))
+	lease := &Lease{Client: client, Graph: g, Namespace: "owned", Name: "graph", leaseUID: "native", epoch: 1, observed: true}
+	if err := lease.Confirm(context.Background(), 1); err == nil {
+		t.Fatal("transport failure accepted as ownership proof")
+	}
+	g.mu.RLock()
+	deadline := g.deadline
+	g.mu.RUnlock()
+	if deadline.IsZero() {
+		t.Fatal("one flaky lease read destroyed confirmed ownership")
+	}
+	if err := lease.Confirm(context.Background(), 1); err != nil {
+		t.Fatalf("confirmed ownership stopped confirming after a flaky read: %v", err)
+	}
+}

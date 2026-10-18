@@ -1,0 +1,73 @@
+=== RUN   TestAssistantActualFaultChainWithoutModel
+2026/10/17 14:57:05 OK   00001_roles_and_schemas.sql (7.83ms)
+2026/10/17 14:57:05 goose: successfully migrated database to version: 1
+2026/10/17 14:57:05 OK   00002_platform_meta.sql (17.32ms)
+2026/10/17 14:57:05 OK   00003_finding.sql (6.34ms)
+2026/10/17 14:57:05 OK   00004_incident.sql (3.54ms)
+2026/10/17 14:57:05 OK   00005_investigation.sql (4.65ms)
+2026/10/17 14:57:05 OK   00006_action_command.sql (4.29ms)
+2026/10/17 14:57:05 OK   00007_audit.sql (6.87ms)
+2026/10/17 14:57:05 OK   00008_rls.sql (6.87ms)
+2026/10/17 14:57:05 OK   00009_idempotency_ledger.sql (4.68ms)
+2026/10/17 14:57:05 OK   00010_tenant_provisioning.sql (1.62ms)
+2026/10/17 14:57:05 OK   00011_source_registration_history.sql (3.79ms)
+2026/10/17 14:57:05 OK   00012_config_registry_lifecycle.sql (6.5ms)
+2026/10/17 14:57:05 OK   00013_audit_signed_segments.sql (6.4ms)
+2026/10/17 14:57:05 OK   00014_audit_segment_predecessors.sql (2.87ms)
+2026/10/17 14:57:05 OK   00015_source_schema_scope.sql (1.15ms)
+2026/10/17 14:57:05 OK   00016_cluster_registration_metadata.sql (2.55ms)
+2026/10/17 14:57:05 OK   00017_source_data_scope.sql (1.56ms)
+2026/10/17 14:57:05 OK   00018_sp04_resources_evidence.sql (13.27ms)
+2026/10/17 14:57:05 OK   00019_sp04_archive_ciphertext_bytes.sql (979.51µs)
+2026/10/17 14:57:05 OK   00020_sp04_request_ledger.sql (2.27ms)
+2026/10/17 14:57:05 OK   00021_sp04_archive_protection.sql (1.18ms)
+2026/10/17 14:57:05 OK   00022_sp04_legal_hold_dependencies.sql (772.49µs)
+2026/10/17 14:57:05 OK   00023_sp04_archive_query_intent.sql (889.01µs)
+2026/10/17 14:57:05 OK   00024_sp05_finding_incident.sql (19.79ms)
+2026/10/17 14:57:05 OK   00025_sp05_incident_event_time.sql (926.09µs)
+2026/10/17 14:57:05 OK   00026_sp05_source_binding_lock.sql (1.87ms)
+2026/10/17 14:57:05 OK   00027_sp05_rca_and_poll.sql (13.95ms)
+2026/10/17 14:57:05 OK   00028_sp05_operator_lock.sql (1.17ms)
+2026/10/17 14:57:05 OK   00029_sp05_evidence_links.sql (3ms)
+2026/10/17 14:57:05 OK   00030_sp05_recipe_fence.sql (1.01ms)
+2026/10/17 14:57:05 OK   00031_sp05_rca_postcheck.sql (774.1µs)
+2026/10/17 14:57:05 OK   00032_sp05_transport_audit.sql (1.38ms)
+2026/10/17 14:57:05 OK   00033_sp05_poll_resolution_clock.sql (1.34ms)
+2026/10/17 14:57:05 OK   00034_sp06_investigation_ledger.sql (16.88ms)
+2026/10/17 14:57:05 OK   00035_sp06_admission_data_classes.sql (1.21ms)
+2026/10/17 14:57:05 OK   00036_sp07_command_binding.sql (16.91ms)
+2026/10/17 14:57:05 OK   00037_sp07_worker_authority.sql (1.36ms)
+2026/10/17 14:57:05 OK   00038_sp08_safe_step_input_summary.sql (1.06ms)
+2026/10/17 14:57:05 OK   00039_assistant_conversations.sql (16.4ms)
+2026/10/17 14:57:05 OK   00040_assistant_job_v3.sql (8.83ms)
+2026/10/17 14:57:05 OK   00041_assistant_binding.sql (2.24ms)
+2026/10/17 14:57:05 OK   00042_assistant_retention.sql (4.17ms)
+2026/10/17 14:57:05 OK   00043_resource_observations.sql (7.1ms)
+2026/10/17 14:57:05 goose: successfully migrated database to version: 43
+    assistant_real_model_test.go:101: external acceptance: deepseek-flash via api.deepseek.com; fixture profile, paid upstream; original 16k/2048/120s limits retained
+    assistant_real_model_test.go:135: native fault-chain client mapping 45 ops-assistant-deepflow-20261013 2026-10-17 04:07:32 +0000 UTC <nil>
+    assistant_real_model_test.go:135: native L4 proof diagnostic evidence 1 freshness fresh partial false warnings [] error <nil>
+    archive_iam_test.go:43: owned TLS/IAM fixture image=sha256:31d61f5e8771cbd5993912cd051be0c7bcdc207faaa12c50e1a3b8371631c927 id=42111ca8232299bc26a3fac9866f71d064f1fc15e3fcf2837704339561aaa2c7 bucket=assistant-native-49f614a9 tenants=1
+2026/10/17 14:57:12 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=9 deadlineExceeded=false
+{"time":"2026-10-17T14:57:12.644735823+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+2026/10/17 14:57:14 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=1 deadlineExceeded=false
+{"time":"2026-10-17T14:57:14.746960311+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+2026/10/17 14:57:16 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=1 deadlineExceeded=false
+    assistant_real_model_test.go:135: actual native Graph informer + Kubernetes Lease route ready; archive dependency fixture explicitly excluded
+    assistant_fault_chain_test.go:144: API role source selection count 1
+2026/10/17 14:57:39 INFO deepflow relation projection edges=87 error=<nil>
+2026/10/17 14:58:09 ERROR investigator dispatch failed reason=MODEL_CONTEXT_LIMIT
+    assistant_fault_chain_test.go:541: actual model explanation outcome partial BUDGET_EXHAUSTED modelCalls 1 contextReads 1 evidence preserved
+    assistant_fault_chain_test.go:544: explanation did not use only the committed context 1 1 0
+    assistant_real_model_test.go:167: investigator diagnostics WARNING:root:Compaction: primary summarization attempt unusable (summarization request failed: MODEL_RESULT_SETTLEMENT_REJECTED); retrying with tool messages flattened to text and no tools attached
+        ERROR:root:Failed to compact conversation history. Unexpected LLM's response for compaction
+        ERROR:root:Failed to reduce token count when compacting conversation history. Original tokens:15668. Compacted tokens:15668
+        ERROR:root:Conversation history compaction failed to reduce tokens sufficiently. Current: 15668 tokens + 2048 max output = 17716, but context window is 16384. Please start a new conversation.
+        investigator-model-failure MODEL_CONTEXT_LIMIT 
+        investigator-failure ModelCallError /assistant-src/investigator/worker.py 93
+        investigator-failure ModelCallError /assistant-src/investigator/holmes_adapter.py 103
+        
+    archive_iam_test.go:187: retained owned Archive fixture id=42111ca8232299bc26a3fac9866f71d064f1fc15e3fcf2837704339561aaa2c7 label=84167452-173d-492e-97f9-134cba1c8ed4 bucket=assistant-native-49f614a9 private-material-directory=/root/.cache/ops-protected-integration/archive-iam-2878942425; process stopped, no storage/identity deletion
+    migrations_test.go:442: retained owned integration database=sp03_mig_cf7de07770ee473286013de61e6c29ad test=TestAssistantActualFaultChainWithoutModel reason=audit.records; no automatic protected cleanup
+--- FAIL: TestAssistantActualFaultChainWithoutModel (79.31s)
+FAIL

@@ -134,7 +134,42 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
     await page
       .getByRole("textbox", { name: "调查资源名称", exact: true })
       .fill(pod.name);
-    await page.getByRole("button", { name: "查找当前授权范围的资源" }).click();
+    const findResource = page.getByRole("button", {
+      name: "查找当前授权范围的资源",
+    });
+    let lookupAttempts = 0;
+    await expect
+      .poll(
+        async () => {
+          await expect(findResource).toBeEnabled();
+          const [lookedUp] = await Promise.all([
+            page.waitForResponse(
+              (r) =>
+                r.url().endsWith("/resources:resolve") &&
+                r.request().method() === "POST",
+            ),
+            findResource.click(),
+          ]);
+          lookupAttempts++;
+          expect(lookedUp.status()).toBe(200);
+          const requested = lookedUp.request().postDataJSON();
+          expect(requested.selector).toEqual({
+            kind: "Pod",
+            name: pod.name,
+            namespace: api.namespace,
+          });
+          expect(requested.namespaceSelection).toEqual([api.namespace]);
+          expect(requested.clusterUid).toBe(api.clusterUid);
+          expect(requested.includeClusterScoped).toBe(false);
+          await expect(findResource).toBeEnabled();
+          return (await lookedUp.json()).data.candidates.map(
+            (c: any) => c.canonicalId,
+          );
+        },
+        { timeout: 30000, intervals: [1000] },
+      )
+      .toEqual([candidates[0].canonicalId]);
+    console.info("exact resource lookup attempts", lookupAttempts);
     await page.getByRole("combobox", { name: "调查目标资源" }).click();
     await page
       .getByTitle(api.namespace + "/" + pod.name, { exact: true })
@@ -258,7 +293,9 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
         (r: any) => r.dimension === "current",
       ).value;
     }
-    expect(datasets["network.http-5xx-rate"]).toBe(5);
+    expect(
+      datasets["network.http-summary"] ?? datasets["network.http-5xx-rate"],
+    ).toBe(5);
     expect(datasets["network.http-5xx"]).toBe(50);
     await page.reload();
     await expect(
@@ -280,12 +317,73 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
       /get_assistant_context/,
     );
     await expect(page.locator("#assistant-message")).toBeFocused();
+    const modelTurns: any[] = [];
+    if (process.env.OPS_FAULT_CHAIN_MODEL === "1") {
+      async function sendModelTurn(message: string) {
+        await page.locator("#assistant-message").fill(message);
+        const send = page.getByRole("button", { name: /^发\s*送$/ });
+        await expect(send).toBeEnabled();
+        if (process.env.OPS_FAULT_CHAIN_SCREENSHOT) {
+          await page.screenshot({
+            path: process.env.OPS_FAULT_CHAIN_SCREENSHOT.replace(
+              ".png",
+              "-before-model.png",
+            ),
+          });
+        }
+        const [response] = await Promise.all([
+          page.waitForResponse(
+            (r) =>
+              r.url().endsWith("/messages") && r.request().method() === "POST",
+            { timeout: 60000 },
+          ),
+          send.click(),
+        ]);
+        expect(response.status()).toBe(202);
+        const turn = (await response.json()).data;
+        let result: any;
+        await expect
+          .poll(
+            async () => {
+              const response = await context.request.get(
+                base + "/api/v1/assistant/turns/" + turn.turnId,
+                { headers: headers() },
+              );
+              expect(response.status()).toBe(200);
+              result = (await response.json()).data;
+              return ["completed", "partial"].includes(result.state);
+            },
+            { timeout: 150000, intervals: [1000] },
+          )
+          .toBe(true);
+        expect(result.answer.summary).toBeTruthy();
+        await expect(
+          page.getByText(result.answer.summary, { exact: true }).last(),
+        ).toBeVisible();
+        modelTurns.push({
+          turnId: turn.turnId,
+          state: result.state,
+          errorCode: result.errorCode,
+          answer: result.answer,
+        });
+      }
+      await sendModelTurn(
+        "只解释已提交证据：先读取 get_assistant_context 中的历史故障链与查询结果，用中文说明支持、反证和缺口；不要重新查询，不确认根因。",
+      );
+      await sendModelTurn(
+        "继续补证：沿用原目标 UID 和冻结窗口，读取 resource_history、resource_findings、resource_changes，再解释新增观察，不确认根因。",
+      );
+    }
     const retained = await context.request.get(
       base + "/api/v1/assistant/turns/" + turn.turnId + "/fault-chain-context",
       { headers: headers() },
     );
     expect((await retained.json()).data).toEqual(chain);
     expect(streams).toBeGreaterThan(0);
+    if (process.env.OPS_FAULT_CHAIN_SCREENSHOT) {
+      await page.setViewportSize({ width: 1440, height: 1000 });
+      await page.screenshot({ path: process.env.OPS_FAULT_CHAIN_SCREENSHOT });
+    }
     const adminContext = await browser.newContext();
     const admin = await adminContext.newPage();
     let adminToken = "";
@@ -321,6 +419,8 @@ test("actual OIDC fault-chain collection, stored counts, restoration and owner i
         ownerIsolation: true,
         keyboard: true,
         narrowScreen: true,
+        lookupAttempts,
+        modelTurns,
         explanationDraftUsesPublishedContext: true,
         evidenceUnchangedAfterDraft: true,
         streams,

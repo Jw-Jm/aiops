@@ -831,6 +831,9 @@ func serveWorkerEvidence(w http.ResponseWriter, r *http.Request, trust auth.Work
 			if edgeErr == nil {
 				edgeErr = handler.Graph.ObserveExternalSource(handler.Graph.OwnerEpoch(), q.SourceID, edges)
 			}
+			// A missing communicates_with projection silently degrades every
+			// later network plan to L4 detail reads, so record why it failed.
+			slog.Info("deepflow relation projection", "edges", len(edges), "error", fmt.Sprint(edgeErr))
 			if edgeErr != nil {
 				result.Partial = true
 				result.Warnings = append(result.Warnings, "network_graph_projection_unavailable")
@@ -900,7 +903,9 @@ func renewSourceProof(ctx context.Context, group *sync.WaitGroup, source string,
 	go func() {
 		defer group.Done()
 		for ctx.Err() == nil {
-			bounded, cancel := context.WithTimeout(ctx, 5*time.Second)
+			// One verification attempt covers a complete identity fence on a
+			// loaded single-node host; the retry cadence below still applies.
+			bounded, cancel := context.WithTimeout(ctx, 12*time.Second)
 			err := verify(bounded)
 			cancel()
 			delay := 15 * time.Minute

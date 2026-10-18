@@ -25,6 +25,9 @@ type networkAnalysisRuntime struct {
 
 func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.WorkloadTrust, key ed25519.PublicKey, pool *pgxpool.Pool, adapters map[string]*analytics.Victoria, owners map[string]graph.InternalHandler, evidenceAdapters map[string]evidence.Adapter, networkRuntime ...networkAnalysisRuntime) {
 	fail := func(status int, code string) {
+		// A rejected internal analysis call must stay attributable: the caller
+		// only surfaces a generic public code, so record the exact rejection.
+		slog.Warn("internal analysis query rejected", "status", status, "code", code)
 		w.WriteHeader(status)
 		json.NewEncoder(w).Encode(map[string]string{"code": code})
 	}
@@ -79,9 +82,12 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 		}
 		if len(networkRuntime) > 0 {
 			for _, adapter := range networkRuntime[0].Adapters {
-				if entries, err := adapter.Capabilities(r.Context(), claims.Scope); err == nil {
-					capabilities = append(capabilities, entries...)
+				entries, err := adapter.Capabilities(r.Context(), claims.Scope)
+				if err != nil {
+					slog.Warn("Network capabilities unavailable", "error", err.Error(), "namespaces", claims.Scope.Namespaces)
+					continue
 				}
+				capabilities = append(capabilities, entries...)
 			}
 		}
 		refreshed, err := (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
@@ -111,6 +117,7 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 	binding := analytics.Binding{Subject: claims.Subject, Grant: current, Selection: analytics.Selection{Namespaces: claims.Scope.Namespaces, CanonicalIDs: claims.Scope.Resources, IncludeClusterScoped: claims.Scope.ClusterScoped}}
 	if strings.HasPrefix(intent.DatasetID, "network.") {
 		if len(networkRuntime) == 0 || networkRuntime[0].Archive == nil {
+			slog.Warn("Network analysis unavailable", "stage", "runtime", "dataset", intent.DatasetID, "operation", intent.Operation)
 			fail(503, "SOURCE_CAPABILITY_UNAVAILABLE")
 			return
 		}
@@ -181,11 +188,13 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 		plan = candidate
 	}
 	if selected == nil {
+		slog.Warn("Victoria analysis unavailable", "stage", "compile", "dataset", intent.DatasetID, "operation", intent.Operation)
 		fail(503, "SOURCE_CAPABILITY_UNAVAILABLE")
 		return
 	}
 	result, err := selected.Execute(r.Context(), plan)
 	if err != nil {
+		slog.Warn("Victoria analysis unavailable", "stage", "execute", "dataset", intent.DatasetID, "operation", intent.Operation, "deadlineExceeded", errors.Is(err, context.DeadlineExceeded))
 		fail(503, "SOURCE_CAPABILITY_UNAVAILABLE")
 		return
 	}

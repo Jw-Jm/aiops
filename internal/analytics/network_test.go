@@ -141,3 +141,160 @@ func TestNetworkComparisonDenominatorsAndQualification(t *testing.T) {
 		t.Fatal("expired proof accepted")
 	}
 }
+
+// An empty backend response must not become an exact numeric observation. The
+// DeepFlow summary query cannot distinguish "no traffic in the window" from
+// "the collector missed it", so a zero-row answer keeps the explicit zero
+// population but stops being exact and stops producing a value row.
+func TestNetworkEmptyPopulationIsNotAnExactObservation(t *testing.T) {
+	now := time.Now().UTC().Truncate(time.Second)
+	id := func(uid string) string {
+		return resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: uid}.String()
+	}
+	target, peer := id("a"), id("b")
+	var payload string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		fmt.Fprint(w, payload)
+	}))
+	defer server.Close()
+	binding := evidence.Binding{SourceType: "deepflow", Tenant: "tenant-a", SourceID: "52c73f53-20d5-4e55-b33a-f7e97dccae74", Revision: 1, BackendLogicalID: "df", Endpoint: server.URL, ScopeMapping: datascope.Mapping{Scopes: map[string][]string{"organization": {"1"}, "cluster": {"cluster-a"}, "namespace": {"apps"}}}}
+	mapper := networkTestMapper{target: {CanonicalID: target, Namespace: "apps", PodID: 1, ClusterID: 2, NamespaceID: 3}, peer: {CanonicalID: peer, Namespace: "apps", PodID: 2, ClusterID: 2, NamespaceID: 3}}
+	adapter, _ := deepflow.New(binding, server.Client(), mapper, func(context.Context, evidence.Binding) error { return nil }, true, "fixture_only")
+	auth := Binding{Subject: "operator", Grant: graph.Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps"}, AuthorizationRevision: "grant"}, Selection: Selection{Namespaces: []string{"apps"}}}
+	window := &QueryTimeRange{now.Add(-time.Minute), now, "UTC"}
+	for _, test := range []struct{ dataset, metric string }{{"network.http-5xx", "http_5xx_count"}, {"network.http-responses", "response_count"}, {"network.tcp-retransmissions", "retransmission_count"}, {"network.connection-failure-observations", "connection_failure_observation_count"}} {
+		proof := Qualification{Operation: "aggregate", DatasetID: test.dataset, SourceRevision: 1, BindingDigest: evidence.BindingScopeDigest(binding), EvidenceDigest: graph.ScopeDigest("independent-golden-fixture"), CollectorVersion: "fixture/v1", VerifiedUntil: now.Add(time.Hour), CoverageFrom: now.Add(-time.Hour), CoverageTo: now, MaxWindowSeconds: 3600, ObservationPoint: "s-p", CoverageComplete: true}
+		n := NewNetwork(adapter, []Qualification{proof})
+		intent := QueryIntent{SchemaVersion: "query-intent/v1", DatasetID: test.dataset, Operation: "aggregate", Metrics: []string{test.metric}, Dimensions: []string{}, Filters: []Filter{}, Sort: []Sort{}, Limit: 1, TimeRange: window, NetworkSelection: &NetworkSelection{target, peer, "outgoing"}}
+		plan, err := n.Compile(intent, auth)
+		if err != nil {
+			t.Fatal(test.dataset, err)
+		}
+		// The query succeeds with no completed-observation rows at all.
+		payload = `{"OPT_STATUS":"SUCCESS","result":{"columns":["response_code","observations","duration_us"],"values":[]}}`
+		if test.dataset == "network.tcp-retransmissions" || test.dataset == "network.connection-failure-observations" {
+			payload = `{"OPT_STATUS":"SUCCESS","result":{"columns":["status","observations","retrans_tx","retrans_rx"],"values":[]}}`
+		}
+		empty, _, err := n.Execute(t.Context(), plan)
+		if err != nil || empty.Exact || empty.Status != "no_data" || len(empty.Rows) != 0 {
+			t.Fatalf("%s empty population became an exact observation: %+v %v", test.dataset, empty, err)
+		}
+		found := false
+		for _, warning := range empty.Warnings {
+			found = found || warning == "current_empty_observation_population"
+		}
+		if !found || empty.Freshness != "fresh" {
+			t.Fatalf("%s missing empty population warning: %+v", test.dataset, empty.Warnings)
+		}
+		// The population stays explicit whether or not any session completed.
+		expected := 3
+		if test.dataset == "network.tcp-retransmissions" || test.dataset == "network.connection-failure-observations" {
+			expected = 1
+		}
+		if len(empty.Statistics) != expected || empty.Statistics[0].Key != "current.observations" || empty.Statistics[0].Value != 0 {
+			t.Fatalf("%s empty population statistics: %+v", test.dataset, empty.Statistics)
+		}
+		if expected == 3 && (empty.Statistics[1].Key != "current.responses" || empty.Statistics[1].Value != 0 || empty.Statistics[2].Key != "current.5xx") {
+			t.Fatalf("%s empty population lost its HTTP population: %+v", test.dataset, empty.Statistics)
+		}
+		encoded, _ := json.Marshal(empty)
+		if err := contract.Validate("https://ops.local/schemas/query-result/v1", encoded); err != nil {
+			t.Fatalf("%s empty population violates the wire contract: %v", test.dataset, err)
+		}
+	}
+	// The complementary case stays exact: a recorded population with zero 5xx.
+	proof := Qualification{Operation: "aggregate", DatasetID: "network.http-5xx", SourceRevision: 1, BindingDigest: evidence.BindingScopeDigest(binding), EvidenceDigest: graph.ScopeDigest("independent-golden-fixture"), CollectorVersion: "fixture/v1", VerifiedUntil: now.Add(time.Hour), CoverageFrom: now.Add(-time.Hour), CoverageTo: now, MaxWindowSeconds: 3600, ObservationPoint: "s-p", CoverageComplete: true}
+	intent := QueryIntent{SchemaVersion: "query-intent/v1", DatasetID: "network.http-5xx", Operation: "aggregate", Metrics: []string{"http_5xx_count"}, Dimensions: []string{}, Filters: []Filter{}, Sort: []Sort{}, Limit: 1, TimeRange: window, NetworkSelection: &NetworkSelection{target, peer, "outgoing"}}
+	plan, err := NewNetwork(adapter, []Qualification{proof}).Compile(intent, auth)
+	if err != nil {
+		t.Fatal(err)
+	}
+	payload = `{"OPT_STATUS":"SUCCESS","result":{"columns":["response_code","observations","duration_us"],"values":[[200,950,0]]}}`
+	observed, _, err := NewNetwork(adapter, []Qualification{proof}).Execute(t.Context(), plan)
+	if err != nil || !observed.Exact || observed.Status != "complete" || len(observed.Rows) != 1 || observed.Rows[0].Value != 0 {
+		t.Fatalf("recorded population without 5xx lost its exact zero: %+v %v", observed, err)
+	}
+}
+
+// The empty population is a per-window property. A comparison with one empty
+// side must not fabricate a delta from a zero baseline, and a trend must not
+// fill missing buckets with zeros.
+func TestNetworkEmptyWindowKeepsComparisonAndTrendHonest(t *testing.T) {
+	now := time.Now().UTC().Truncate(time.Second)
+	id := func(uid string) string {
+		return resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: uid}.String()
+	}
+	target, peer := id("a"), id("b")
+	const emptyHTTP = `{"OPT_STATUS":"SUCCESS","result":{"columns":["response_code","observations","duration_us"],"values":[]}}`
+	var responses []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		payload := emptyHTTP
+		if len(responses) > 0 {
+			payload = responses[0]
+			responses = responses[1:]
+		}
+		fmt.Fprint(w, payload)
+	}))
+	defer server.Close()
+	binding := evidence.Binding{SourceType: "deepflow", Tenant: "tenant-a", SourceID: "52c73f53-20d5-4e55-b33a-f7e97dccae74", Revision: 1, BackendLogicalID: "df", Endpoint: server.URL, ScopeMapping: datascope.Mapping{Scopes: map[string][]string{"organization": {"1"}, "cluster": {"cluster-a"}, "namespace": {"apps"}}}}
+	mapper := networkTestMapper{target: {CanonicalID: target, Namespace: "apps", PodID: 1, ClusterID: 2, NamespaceID: 3}, peer: {CanonicalID: peer, Namespace: "apps", PodID: 2, ClusterID: 2, NamespaceID: 3}}
+	adapter, _ := deepflow.New(binding, server.Client(), mapper, func(context.Context, evidence.Binding) error { return nil }, true, "fixture_only")
+	auth := Binding{Subject: "operator", Grant: graph.Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps"}, AuthorizationRevision: "grant"}, Selection: Selection{Namespaces: []string{"apps"}}}
+	baselineWindow := &QueryTimeRange{now.Add(-3 * time.Minute), now.Add(-2 * time.Minute), "UTC"}
+	window := &QueryTimeRange{now.Add(-time.Minute), now, "UTC"}
+	proof := Qualification{Operation: "compare", DatasetID: "network.http-summary", SourceRevision: 1, BindingDigest: evidence.BindingScopeDigest(binding), EvidenceDigest: graph.ScopeDigest("independent-golden-fixture"), CollectorVersion: "fixture/v1", VerifiedUntil: now.Add(time.Hour), CoverageFrom: now.Add(-time.Hour), CoverageTo: now, MaxWindowSeconds: 3600, ObservationPoint: "s-p", CoverageComplete: true}
+	intent := QueryIntent{SchemaVersion: "query-intent/v1", DatasetID: "network.http-summary", Operation: "compare", Metrics: []string{"http_5xx_percent"}, Dimensions: []string{"comparison"}, Filters: []Filter{}, Sort: []Sort{}, Limit: 3, TimeRange: window, ComparisonTimeRange: baselineWindow, NetworkSelection: &NetworkSelection{target, peer, "outgoing"}}
+	plan, err := NewNetwork(adapter, []Qualification{proof}).Compile(intent, auth)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Baseline is empty, current has a recorded population.
+	responses = []string{emptyHTTP, `{"OPT_STATUS":"SUCCESS","result":{"columns":["response_code","observations","duration_us"],"values":[[200,950,0],[503,50,0]]}}`}
+	emptyBaseline, _, err := NewNetwork(adapter, []Qualification{proof}).Execute(t.Context(), plan)
+	if err != nil || emptyBaseline.Exact || emptyBaseline.Status != "partial" || len(emptyBaseline.Rows) != 1 || emptyBaseline.Rows[0].Dimension != "current" || emptyBaseline.Rows[0].Value != 5 {
+		t.Fatalf("empty baseline produced a fabricated comparison: %+v %v", emptyBaseline, err)
+	}
+	if len(emptyBaseline.Statistics) != 7 || emptyBaseline.Statistics[0].Key != "baseline.observations" || emptyBaseline.Statistics[0].Value != 0 {
+		t.Fatalf("empty baseline lost its explicit zero population: %+v", emptyBaseline.Statistics)
+	}
+	encoded, _ := json.Marshal(emptyBaseline)
+	if err := contract.Validate("https://ops.local/schemas/query-result/v1", encoded); err != nil {
+		t.Fatalf("partial comparison violates the wire contract: %v", err)
+	}
+	trendProof := proof
+	trendProof.Operation = "trend"
+	trendProof.DatasetID = "network.http-5xx"
+	trendIntent := QueryIntent{SchemaVersion: "query-intent/v1", DatasetID: "network.http-5xx", Operation: "trend", Metrics: []string{"http_5xx_count"}, Dimensions: []string{"time"}, Filters: []Filter{}, Sort: []Sort{}, Limit: 3, TimeRange: &QueryTimeRange{now.Add(-3 * time.Minute), now, "UTC"}, StepSeconds: 60, NetworkSelection: &NetworkSelection{target, peer, "outgoing"}}
+	trendPlan, err := NewNetwork(adapter, []Qualification{trendProof}).Compile(trendIntent, auth)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Three buckets: the middle one has no completed sessions at all.
+	responses = []string{
+		`{"OPT_STATUS":"SUCCESS","result":{"columns":["response_code","observations","duration_us"],"values":[[200,900,0],[503,100,0]]}}`,
+		`{"OPT_STATUS":"SUCCESS","result":{"columns":["response_code","observations","duration_us"],"values":[]}}`,
+		`{"OPT_STATUS":"SUCCESS","result":{"columns":["response_code","observations","duration_us"],"values":[[200,1000,0]]}}`,
+	}
+	trend, _, err := NewNetwork(adapter, []Qualification{trendProof}).Execute(t.Context(), trendPlan)
+	if err != nil || trend.Exact || trend.Status != "partial" || len(trend.Rows) != 2 {
+		t.Fatalf("empty trend bucket was filled or accepted as exact: %+v %v", trend, err)
+	}
+	for index, bucket := range []time.Time{now.Add(-3 * time.Minute), now.Add(-time.Minute)} {
+		if trend.Rows[index].Dimension != bucket.Format(time.RFC3339) {
+			t.Fatalf("empty trend bucket was filled instead of skipped: %+v", trend.Rows)
+		}
+	}
+	found := false
+	for _, warning := range trend.Warnings {
+		found = found || strings.HasSuffix(warning, "_empty_observation_population") && warning != "current_empty_observation_population"
+	}
+	if !found {
+		t.Fatalf("empty trend bucket missing its bucket-scoped gap warning: %+v", trend.Warnings)
+	}
+	encoded, _ = json.Marshal(trend)
+	if err := contract.Validate("https://ops.local/schemas/query-result/v1", encoded); err != nil {
+		t.Fatalf("partial trend violates the wire contract: %v", err)
+	}
+}

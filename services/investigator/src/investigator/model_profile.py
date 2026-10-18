@@ -16,7 +16,7 @@ class AssistantModelProfile(BaseModel):
     modelVersion: str=Field(pattern=r'^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,127}$')
     baseURL: str=Field(max_length=512)
     apiKeyRef: Literal['secret://model/api-key']
-    contextWindow: int=Field(ge=1024,le=65536)
+    contextWindow: int=Field(ge=1024,le=1000000)
     outputTokenLimit: int=Field(ge=1,le=8192)
     tokenAccounting: Literal['reserve-context-bound']
     costPolicy: Literal['zero-charge']

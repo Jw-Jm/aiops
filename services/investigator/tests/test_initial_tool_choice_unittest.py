@@ -37,12 +37,19 @@ class InitialToolChoiceTests(unittest.TestCase):
         llm.job_api=Ledger()
         return llm
     def test_profile_context_bound_is_reserved_and_unknown_usage_is_charged(self):
-        llm=self.client();llm.needs_initial_tools=False
-        llm.max_context_size=32768
-        response=ModelResponse(choices=[{"message":{"role":"assistant","content":"bounded"}}])
-        with patch.object(DefaultLLM,"completion",return_value=response):llm.completion([])
-        self.assertEqual(llm.job_api.allocations[0][3]["inputTokens"],32768)
-        self.assertEqual(llm.job_api.settlements[0][2]["inputTokens"],32768)
+        for bound, output in ((16384, 2048), (131072, 4096), (1000000, 8192)):
+            with self.subTest(context=bound):
+                llm=self.client();llm.needs_initial_tools=False
+                llm.max_context_size=bound
+                llm.args["max_tokens"]=output
+                self.assertEqual(llm.get_maximum_output_token(),output)
+                self.assertEqual(llm.get_context_window_size(),bound)
+                response=ModelResponse(choices=[{"message":{"role":"assistant","content":"bounded"}}])
+                with patch.object(DefaultLLM,"completion",return_value=response):llm.completion([])
+                self.assertEqual(llm.job_api.allocations[0][3]["inputTokens"],bound)
+                self.assertEqual(llm.job_api.settlements[0][2]["inputTokens"],bound)
+                self.assertEqual(llm.job_api.allocations[0][3]["outputTokens"],output)
+                self.assertEqual(llm.job_api.settlements[0][2]["outputTokens"],output)
     def test_initial_choice_then_upstream_auto(self):
         response=ModelResponse(choices=[{"message":{"role":"assistant","content":"bounded"}}],usage={"prompt_tokens":8,"completion_tokens":2,"total_tokens":10})
         llm=self.client();tools=[{"type":"function","function":{"name":"get_incident_context","parameters":{"type":"object"}}}]

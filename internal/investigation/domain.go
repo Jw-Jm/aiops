@@ -69,7 +69,7 @@ type Budget struct {
 }
 
 func DefaultBudget() Budget {
-	return Budget{Usage: Usage{ToolCalls: 40, RawQueries: 10, ResultBytes: 40 << 20, GraphNodes: 8000, EvidenceItems: 4000, ModelRequests: 8, InputTokens: 32768, OutputTokens: 8192, ModelCostMicros: 0}, DurationSeconds: 600, AllowedDataClasses: []string{"D0", "D1"}}
+	return Budget{Usage: Usage{ToolCalls: 40, RawQueries: 10, ResultBytes: 40 << 20, GraphNodes: 8000, EvidenceItems: 4000, ModelRequests: 8, InputTokens: 8000000, OutputTokens: 65536, ModelCostMicros: 0}, DurationSeconds: 600, AllowedDataClasses: []string{"D0", "D1"}}
 }
 func (b Budget) Valid() bool {
 	if len(b.AllowedDataClasses) < 1 || len(b.AllowedDataClasses) > 2 {

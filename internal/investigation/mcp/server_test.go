@@ -6,6 +6,7 @@ import (
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/investigation/tools"
+	"strings"
 	"testing"
 	"time"
 )
@@ -37,5 +38,23 @@ func TestGatewayRejectsUnauthenticatedRequestsBeforePersistence(t *testing.T) {
 	h.ServeHTTP(w, r)
 	if w.Code != 403 {
 		t.Fatal(w.Code)
+	}
+}
+
+func TestAssistantContextReservationKeepsCommittedHistory(t *testing.T) {
+	context, err := toolReservation(tools.Definition{Name: "get_assistant_context", Version: "v3"}, json.RawMessage(`{}`))
+	if err != nil || context.ResultBytes != 1<<20 || context.RawQueries != 0 || context.ToolCalls != 1 {
+		t.Fatal("context envelope still discards a complete follow-up", context, err)
+	}
+	original := tools.Result{SchemaVersion: "tool-response/v3", Tool: "get_assistant_context", State: "succeeded", Data: map[string]any{"message": "keep frozen question", "history": strings.Repeat("fact-reference ", 6000)}}
+	preserved, err := tools.Sanitize(original, int(context.ResultBytes))
+	if err != nil || preserved.State != "succeeded" || preserved.Data.(map[string]any)["history"] != original.Data.(map[string]any)["history"] {
+		t.Fatal("committed history was truncated", err)
+	}
+	for _, name := range []string{"query_deepflow", "get_incident_context", "get_resource_context"} {
+		source, err := toolReservation(tools.Definition{Name: name}, json.RawMessage(`{}`))
+		if err != nil || source.ResultBytes != 64<<10 {
+			t.Fatal("source capture bound expanded", name, source, err)
+		}
 	}
 }

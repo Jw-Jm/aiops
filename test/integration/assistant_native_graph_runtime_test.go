@@ -297,12 +297,19 @@ func assistantNativeGraphRuntime(t *testing.T, ctx context.Context, db *sql.DB, 
 				}
 			}
 			if !proofsReady {
-				time.Sleep(500 * time.Millisecond)
-				continue
-			}
+					time.Sleep(500 * time.Millisecond)
+					continue
+				}
 
-			t.Log("actual native Graph informer + Kubernetes Lease route ready; archive dependency fixture explicitly excluded")
-			return handlers
+				// The planner snapshots live source capabilities when the
+				// collection turn starts. The worker establishes the separate
+				// live L7 proof within seconds of the L4 verification row; give
+				// that proof cycle its window so the deterministic collection
+				// plans the aggregate network read instead of degrading to the
+				// L4 detail read.
+				time.Sleep(15 * time.Second)
+				t.Log("actual native Graph informer + Kubernetes Lease route ready; archive dependency fixture explicitly excluded")
+				return handlers
 		}
 		time.Sleep(500 * time.Millisecond)
 	}

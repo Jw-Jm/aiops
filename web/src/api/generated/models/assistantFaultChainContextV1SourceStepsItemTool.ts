@@ -13,6 +13,7 @@ export const AssistantFaultChainContextV1SourceStepsItemTool = {
   resource_changes: 'resource_changes',
   resource_findings: 'resource_findings',
   execute_analysis_query: 'execute_analysis_query',
+  query_deepflow: 'query_deepflow',
   get_dependencies: 'get_dependencies',
   get_impact_scope: 'get_impact_scope',
   get_resource_context: 'get_resource_context',

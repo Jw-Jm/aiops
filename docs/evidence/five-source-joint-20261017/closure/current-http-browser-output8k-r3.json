@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "fault-chain-http-proof/v1",
+  "namespace": "ops-assistant-deepflow-20261013",
+  "release": "fault-chain-20261014",
+  "golden": {
+    "startedAt": 1792225869.2642293,
+    "endedAt": 1792225870.4069822,
+    "responses": 300,
+    "errors": 15,
+    "transportFailures": 0
+  },
+  "window": {
+    "fromUnix": 1792225869,
+    "toUnix": 1792225872
+  },
+  "nativePods": [
+    {
+      "name": "fault-chain-client-79ff8cbd6b-225l8",
+      "uid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "containerIds": [
+        "containerd://6bffad1d11aeaf4a29a11e5c573656160e02234bb3206fde54993e744d96d4de"
+      ]
+    },
+    {
+      "name": "fault-chain-server-66b747979c-xmgl7",
+      "uid": "d5c42e77-453b-43d0-a541-b266968a1aa2",
+      "containerIds": [
+        "containerd://d945c1559f8232e5e9ca39bfc81babc966e12c335d8c5dd03a91f58d2a6027d8"
+      ]
+    }
+  ],
+  "metadataCounts": [
+    {
+      "pod_id_0": 45,
+      "pod_id_1": 46,
+      "pod_cluster_id_0": 1,
+      "pod_cluster_id_1": 1,
+      "pod_ns_id_0": 12,
+      "pod_ns_id_1": 12,
+      "tap_side": "s",
+      "l7_protocol": 20,
+      "type": 2,
+      "response_code": 200,
+      "observations": 285
+    },
+    {
+      "pod_id_0": 45,
+      "pod_id_1": 46,
+      "pod_cluster_id_0": 1,
+      "pod_cluster_id_1": 1,
+      "pod_ns_id_0": 12,
+      "pod_ns_id_1": 12,
+      "tap_side": "s",
+      "l7_protocol": 20,
+      "type": 2,
+      "response_code": 503,
+      "observations": 15
+    },
+    {
+      "pod_id_0": 45,
+      "pod_id_1": 46,
+      "pod_cluster_id_0": 1,
+      "pod_cluster_id_1": 1,
+      "pod_ns_id_0": 12,
+      "pod_ns_id_1": 12,
+      "tap_side": "s-p",
+      "l7_protocol": 20,
+      "type": 2,
+      "response_code": 503,
+      "observations": 15
+    },
+    {
+      "pod_id_0": 45,
+      "pod_id_1": 46,
+      "pod_cluster_id_0": 1,
+      "pod_cluster_id_1": 1,
+      "pod_ns_id_0": 12,
+      "pod_ns_id_1": 12,
+      "tap_side": "s-p",
+      "l7_protocol": 20,
+      "type": 2,
+      "response_code": 200,
+      "observations": 285
+    }
+  ],
+  "status": "PASS",
+  "timeReliable": false,
+  "scope": "single_point_completed_http_session_observations",
+  "pollSeconds": 20,
+  "confirmSeconds": 10,
+  "ingestLagSeconds": 20,
+  "matchingPoints": [
+    "s",
+    "s-p"
+  ],
+  "failureClass": "",
+  "confirmMatches": true,
+  "pairObservations": 600,
+  "namespaceOtherObservations": 1942,
+  "agentRestarts": {
+    "before": 260,
+    "after": 260
+  },
+  "observationPoint": "s",
+  "aggregate": [
+    {
+      "response_code": 503,
+      "observations": 15,
+      "duration_us": 1571
+    },
+    {
+      "response_code": 200,
+      "observations": 285,
+      "duration_us": 27562
+    }
+  ]
+}

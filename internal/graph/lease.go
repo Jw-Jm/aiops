@@ -152,19 +152,15 @@ func (l *Lease) Confirm(ctx context.Context, expected int64) error {
 	if l.Client == nil || l.Graph == nil || expected != l.epoch || !l.observed {
 		return ErrNotReady
 	}
-	failure := func() error {
-		// A cancelled caller proves nothing about native Lease ownership. Fail
-		// this read closed; the independent renewal loop and owner deadline
-		// continue to fence other requests. Actual Lease failures still revoke.
-		if ctx.Err() == nil {
-			l.Graph.InvalidateOwner()
-		}
-		return ErrNotReady
-	}
 	path := "/apis/coordination.k8s.io/v1/namespaces/" + url.PathEscape(l.Namespace) + "/leases/" + url.PathEscape(l.Name)
 	response, err := l.Client.Do(ctx, "GET", path, nil)
 	if err != nil {
-		return failure()
+		// A transport failure proves as little about native Lease ownership as
+		// a cancelled caller: fail this read closed while the independent
+		// renewal loop and owner deadline keep fencing other requests.
+		// Destroying confirmed ownership here would turn one flaky read of a
+		// loaded API server into a cascade of degraded in-flight queries.
+		return ErrNotReady
 	}
 	defer response.Body.Close()
 	if response.StatusCode != 200 {
@@ -173,7 +169,9 @@ func (l *Lease) Confirm(ctx context.Context, expected int64) error {
 	}
 	var lease LeaseDocument
 	if json.NewDecoder(io.LimitReader(response.Body, 64<<10)).Decode(&lease) != nil {
-		return failure()
+		// Same as a transport failure: an unreadable body is not evidence that
+		// ownership changed, and the renewal loop still holds the fence.
+		return ErrNotReady
 	}
 	epoch, err := strconv.ParseInt(lease.Metadata.Annotations["ops.platform/owner-epoch"], 10, 64)
 	now := time.Now()

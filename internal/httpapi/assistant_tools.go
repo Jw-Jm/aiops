@@ -15,6 +15,7 @@ import (
 	"ops-platform/internal/contract"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
+	"ops-platform/internal/integrations/deepflow"
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/investigation/tools"
 	"ops-platform/internal/persistence"
@@ -141,6 +142,84 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		})
 	}
 	switch name {
+	case "query_deepflow":
+		var p struct {
+			Operation  string                    `json:"operation"`
+			ResourceID string                    `json:"resourceCanonicalId"`
+			TimeRange  *analytics.QueryTimeRange `json:"timeRange"`
+		}
+		if json.Unmarshal(args, &p) != nil {
+			return out, investigation.ErrInvalid
+		}
+		if p.Operation != "get dependencies" {
+			return a.Legacy.Invoke(ctx, j, name, args)
+		}
+		if err := load(); err != nil {
+			return out, err
+		}
+		var namespace string
+		err := persistence.WithTenantTx(ctx, h.Pool, j.TenantID, func(tx pgx.Tx) error {
+			return tx.QueryRow(ctx, `SELECT namespace FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, j.TenantID, p.ResourceID).Scan(&namespace)
+		})
+		if err != nil {
+			return out, investigation.ErrDenied
+		}
+		j.Scope, err = faultChainRelationScope(input, j, p.ResourceID, p.TimeRange, namespace)
+		if err != nil {
+			return out, err
+		}
+		result, err := a.Legacy.Invoke(ctx, j, name, args)
+		if err != nil || result.State != "succeeded" && result.State != "partial" {
+			return result, err
+		}
+		var observations evidence.Result
+		if json.Unmarshal(rawJSON(result.Data), &observations) != nil {
+			return out, investigation.ErrInvalid
+		}
+		edges, err := deepflow.NetworkRelations(observations)
+		if err != nil {
+			return out, err
+		}
+		// Detail rows are observations, not additional edges or population counts.
+		// Retain the latest original timestamp for each directed pair.
+		unique := []resource.Relation{}
+		pairs := map[[2]string]int{}
+		for _, edge := range edges {
+			key := [2]string{edge.From, edge.To}
+			if i, ok := pairs[key]; ok {
+				if edge.ObservedAt.After(unique[i].ObservedAt) {
+					unique[i] = edge
+				}
+			} else {
+				pairs[key] = len(unique)
+				unique = append(unique, edge)
+			}
+		}
+		edges = unique
+		nodes := []map[string]string{}
+		refs := []map[string]any{}
+		seen := map[string]bool{}
+		for _, edge := range edges {
+			for _, canonical := range []string{edge.From, edge.To} {
+				if seen[canonical] {
+					continue
+				}
+				parsed, err := resource.ParseCanonicalID(canonical)
+				if err != nil || parsed.Kind != "Pod" || !j.Scope.Allows(canonical, namespace) {
+					return out, investigation.ErrDenied
+				}
+				seen[canonical] = true
+				nodes = append(nodes, map[string]string{"canonicalId": canonical, "namespace": namespace, "kind": "Pod"})
+			}
+			refs = append(refs, map[string]any{"from": edge.From, "to": edge.To, "kind": edge.Kind, "relationDigest": graph.ScopeDigest(edge), "observedAt": edge.ObservedAt})
+		}
+		data := map[string]any{}
+		_ = json.Unmarshal(rawJSON(result.Data), &data)
+		data["nodes"], data["edges"], data["relationReferences"] = nodes, edges, refs
+		result.Data = data
+		// A bounded prefix can establish individual relations, never coverage.
+		result.State = "succeeded"
+		return result, nil
 	case "evaluate_fault_chain":
 		if err := load(); err != nil {
 			return out, err

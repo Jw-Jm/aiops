@@ -233,6 +233,15 @@ func (n *Network) Execute(ctx context.Context, p NetworkPlan) (QueryResult, []ev
 		} else if p.dataset.ID == "network.tcp-summary" {
 			out.Statistics = append(out.Statistics, Statistic{label + ".retransmissions", float64(summary.Retransmissions), "retransmissions"}, Statistic{label + ".failure_observations", float64(summary.Failures), "observations"})
 		}
+		// No completed-session row is an absence of observation, not an exact
+		// zero. The backend cannot distinguish "no traffic in this window" from
+		// "the collector missed it", so the explicit population is kept and the
+		// window is never published as an exact count.
+		if summary.Observations == 0 {
+			out.Exact = false
+			out.Warnings = append(out.Warnings, label+"_empty_observation_population")
+			return 0, false, nil
+		}
 		if !valid {
 			out.Warnings = append(out.Warnings, label+"_denominator_zero")
 			out.Exact = false

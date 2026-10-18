@@ -128,7 +128,12 @@ func (g Gateway) handlerFor(defs []tools.Definition) (http.Handler, error) {
 			if _, err := g.Repository.BeginCall(ctx, v.Lease, c); err != nil {
 				return deny(err)
 			}
-			bounded, cancel := context.WithTimeout(ctx, 3*time.Second)
+			timeout := 3 * time.Second
+			if d.Name == "query_deepflow" {
+				// Includes the bounded 8s native/source identity fence and reply.
+				timeout = 9 * time.Second
+			}
+			bounded, cancel := context.WithTimeout(ctx, timeout)
 			defer cancel()
 			out, err := g.API.Invoke(bounded, v.Job, d.Name, r.Params.Arguments)
 			if err == nil && bounded.Err() != nil {
@@ -293,6 +298,10 @@ func (g Gateway) Handler() (http.Handler, error) {
 
 func toolReservation(d tools.Definition, args json.RawMessage) (investigation.Usage, error) {
 	reserve := investigation.Usage{ToolCalls: 1, ResultBytes: 64 << 10, EvidenceItems: 100}
+	// Conversation history is already committed; source capture stays at 64KiB.
+	if d.Version == "v3" && d.Name == "get_assistant_context" {
+		reserve.ResultBytes = 1 << 20
+	}
 	if d.Name == "get_dependencies" || d.Name == "get_impact_scope" {
 		reserve.GraphNodes = 200
 	}

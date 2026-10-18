@@ -199,7 +199,7 @@ func TestAssistantModelProfileReservationInPostgreSQL(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer apiPool.Close()
-	for _, window := range []int{8192, 32768} {
+	for _, window := range []int{8192, 32768, 1000000} {
 		t.Run(fmt.Sprint(window), func(t *testing.T) {
 			profile := modelprofile.Profile{Version: "reservation-fixture/v1", ContextWindow: window, OutputTokenLimit: 2048}
 			jobs := investigation.Repository{Pool: pool, AssistantEnabled: true, AssistantModelProfile: &profile}

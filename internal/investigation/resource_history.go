@@ -188,7 +188,7 @@ func canonicalUID(id string) string { p, _ := resource.ParseCanonicalID(id); ret
 
 func authorizeResourceToolTx(ctx context.Context, tx pgx.Tx, j Job, tool string, data json.RawMessage) error {
 	switch tool {
-	case "get_dependencies", "get_impact_scope", "get_resource_context", "get_resource_health":
+	case "query_deepflow", "get_dependencies", "get_impact_scope", "get_resource_context", "get_resource_health":
 		var snapshot graph.Result
 		if json.Unmarshal(data, &snapshot) != nil {
 			return ErrInvalid

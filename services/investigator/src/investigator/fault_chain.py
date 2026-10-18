@@ -2,7 +2,6 @@
 
 No model, direct source client, mutable relative clock or private tool loop.
 """
-from datetime import datetime, timedelta, timezone
 
 def primary_resource_requests(resource):
     return [(name,{"canonicalId":resource,"windowRole":"fault"}) for name in ("resource_history","resource_findings","resource_changes")]
@@ -88,19 +87,13 @@ def collect(job, job_api, bridge):
         call(check["tool"], args)
         queries = []
     else:
-        # An independently admitted evidence read refreshes only the observed
-        # communication overlay. Its original event timestamps are retained.
-        if not check and target_kind == "Pod" and remaining.get("rawQueries", 0) > 0:
-            anchor=datetime.fromisoformat(context["requestedAt"].replace("Z","+00:00")).astimezone(timezone.utc).replace(microsecond=0)
-            relation_window={"from":(anchor-timedelta(seconds=120)).isoformat().replace("+00:00","Z"),"to":anchor.isoformat().replace("+00:00","Z")}
-            l7_live=any(c.get("l7")=="live" or c.get("l7")=="fixture_only" for c in context.get("networkCapabilities",[]))
-            relation_args={"resourceCanonicalId": target, "operation": "get l7 context" if l7_live else "get network health", "timeRange": relation_window}
-            relation_result, _ = call("query_deepflow", relation_args)
-            if l7_live and (last_error in ("SOURCE_SCOPE_UNVERIFIED","SOURCE_CAPABILITY_UNAVAILABLE") or not relation_result.get("evidence")) and remaining.get("rawQueries",0)>0 and remaining.get("toolCalls",0)>3:
-                # Degraded legacy reads are committed too. Use the separately
-                # admitted L4 operation; identical args would replay the same gap.
-                call("query_deepflow", {**relation_args,"operation":"get network health"})
+        # One ledgered relation read uses the frozen fault window. Historical
+        # observations keep their timestamps and do not renew the live overlay.
+        relation_result = {}
+        if not check and target_kind == "Pod" and remaining.get("rawQueries", 0) > 0 and remaining.get("toolCalls", 0) > 3:
+            relation_result, _ = call("query_deepflow", {"resourceCanonicalId": target, "operation": "get dependencies", "timeRange": {k: fault[k] for k in ("from", "to")}})
         dependencies, _ = call("get_dependencies", {"canonicalId": target, "depth": 1})
+        dependencies = {**dependencies, "nodes": dependencies.get("nodes", []) + relation_result.get("nodes", []), "relationReferences": dependencies.get("relationReferences", []) + relation_result.get("relationReferences", [])}
         # Capability records use datasetId; choose only current operational sources.
         available = {(d.get("datasetId"), d.get("operation")) for d in context.get("sourceCapabilities", []) if d.get("status") == "qualification_configured"}
         relations = sorted(dependencies.get("relationReferences", []), key=lambda r: r["relationDigest"])

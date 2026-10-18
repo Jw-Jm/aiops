@@ -2,11 +2,14 @@ package integration
 
 import (
 	"bytes"
+	"context"
+	"crypto/tls"
 	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"net/http/httptrace"
 	"net/http/httputil"
 	"net/url"
 	"os"
@@ -47,16 +50,35 @@ func assistantAcceptanceModel(t *testing.T, p *modelprofile.Profile) string {
 	p.ModelID = "deepseek-flash"
 	p.ModelVersion = "deepseek-flash"
 	p.BaseURL = gateway.URL + "/v1"
-	t.Log("external acceptance: deepseek-flash via api.deepseek.com; fixture profile, paid upstream; original 16k/2048/120s limits retained")
+	p.ContextWindow = 1000000
+	p.OutputTokenLimit = 8192
+	t.Log("external acceptance: deepseek-flash via api.deepseek.com; fixture profile, paid upstream; 1M context with 8192 output and 120s deadline")
 	return token
+}
+
+type acceptanceTraceKey struct{}
+type acceptanceTransportTrace struct {
+	reused      atomic.Bool
+	connected   atomic.Bool
+	tlsComplete atomic.Bool
+	written     atomic.Bool
 }
 
 func assistantAcceptanceGateway(endpoint, key, token string, diagnostics io.Writer) http.Handler {
 	target, _ := url.Parse(endpoint)
 	proxy := httputil.NewSingleHostReverseProxy(target)
-	proxy.Transport = &http.Transport{Proxy: nil, TLSHandshakeTimeout: 10 * time.Second, ResponseHeaderTimeout: 120 * time.Second}
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.Proxy = nil
+	transport.TLSHandshakeTimeout = 10 * time.Second
+	transport.ResponseHeaderTimeout = 120 * time.Second
+	proxy.Transport = transport
 	proxy.ErrorLog = log.New(io.Discard, "", 0)
-	proxy.ErrorHandler = func(w http.ResponseWriter, _ *http.Request, _ error) {
+	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+		detail := map[string]any{"stage": "transport", "error": strings.ReplaceAll(strings.ReplaceAll(err.Error(), key, "[redacted]"), token, "[redacted]")}
+		if trace, ok := r.Context().Value(acceptanceTraceKey{}).(*acceptanceTransportTrace); ok {
+			detail["connected"], detail["reused"], detail["tlsComplete"], detail["requestWritten"] = trace.connected.Load(), trace.reused.Load(), trace.tlsComplete.Load(), trace.written.Load()
+		}
+		_ = json.NewEncoder(diagnostics).Encode(detail)
 		http.Error(w, "acceptance upstream unavailable", http.StatusBadGateway)
 	}
 	proxy.ModifyResponse = func(r *http.Response) error {
@@ -118,7 +140,14 @@ func assistantAcceptanceGateway(endpoint, key, token string, diagnostics io.Writ
 		raw, _ := json.Marshal(body)
 		r.Body = io.NopCloser(bytes.NewReader(raw))
 		r.ContentLength = int64(len(raw))
-		proxy.ServeHTTP(w, r)
+		trace := &acceptanceTransportTrace{}
+		traceContext := context.WithValue(r.Context(), acceptanceTraceKey{}, trace)
+		traceContext = httptrace.WithClientTrace(traceContext, &httptrace.ClientTrace{
+			GotConn:          func(info httptrace.GotConnInfo) { trace.connected.Store(true); trace.reused.Store(info.Reused) },
+			TLSHandshakeDone: func(_ tls.ConnectionState, err error) { trace.tlsComplete.Store(err == nil) },
+			WroteRequest:     func(info httptrace.WroteRequestInfo) { trace.written.Store(info.Err == nil) },
+		})
+		proxy.ServeHTTP(w, r.WithContext(traceContext))
 	})
 }
 
@@ -169,5 +198,27 @@ func TestAssistantAcceptanceGateway(t *testing.T) {
 	}
 	if calls != 24 {
 		t.Fatalf("upstream calls %d", calls)
+	}
+}
+
+func TestAssistantAcceptanceGatewayTransportFailureIsPrivate(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
+	endpoint := upstream.URL
+	upstream.Close()
+	var diagnostic bytes.Buffer
+	h := assistantAcceptanceGateway(endpoint, "upstream-secret", "local-token", &diagnostic)
+	r := httptest.NewRequest(http.MethodPost, "/v1/chat/completions", strings.NewReader(`{"model":"deepseek-flash"}`))
+	r.Header.Set("Authorization", "Bearer local-token")
+	w := httptest.NewRecorder()
+	h.ServeHTTP(w, r)
+	var detail struct {
+		Stage string `json:"stage"`
+		Error string `json:"error"`
+	}
+	if w.Code != http.StatusBadGateway || json.Unmarshal(diagnostic.Bytes(), &detail) != nil || detail.Stage != "transport" || detail.Error == "" {
+		t.Fatal("transport failure lost its private diagnostic")
+	}
+	if strings.Contains(w.Body.String(), endpoint) || strings.Contains(w.Body.String(), "secret") || strings.Contains(w.Body.String(), detail.Error) {
+		t.Fatal("private transport diagnostic escaped into the response")
 	}
 }

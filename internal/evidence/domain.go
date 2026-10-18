@@ -80,9 +80,13 @@ func (q Query) ByteBudget() int {
 	}
 	return min(q.MaxBytes, 64<<10)
 }
+// The budget bounds one upstream source read, including its native identity
+// fence. A loaded single-node API server plus controller round trips measured
+// above 3s for a correct read, so the allowance is 8s; byte, row and ledger
+// budgets are unchanged.
 func (q Query) TimeBudget() time.Duration {
 	if q.TimeoutMillis < 1 {
-		return 3 * time.Second
+		return 8 * time.Second
 	}
-	return time.Duration(min(q.TimeoutMillis, 3000)) * time.Millisecond
+	return time.Duration(min(q.TimeoutMillis, 8000)) * time.Millisecond
 }

@@ -90,7 +90,7 @@ func (r Repository) AllocateModel(ctx context.Context, l Lease, reserve Usage, a
 	if _, err := hex.DecodeString(strings.TrimPrefix(request.RequestDigest, "sha256:")); err != nil {
 		return out, ErrInvalid
 	}
-	if reserve.ModelRequests != 1 || reserve.ToolCalls != 0 || reserve.RawQueries != 0 || reserve.ResultBytes != 65536 || reserve.InputTokens < 1024 || reserve.InputTokens > 65536 || reserve.OutputTokens < 1 || reserve.OutputTokens > 8192 || reserve.ModelCostMicros != 0 {
+	if reserve.ModelRequests != 1 || reserve.ToolCalls != 0 || reserve.RawQueries != 0 || reserve.ResultBytes != 65536 || reserve.InputTokens < 1024 || reserve.InputTokens > 1000000 || reserve.OutputTokens < 1 || reserve.OutputTokens > 8192 || reserve.ModelCostMicros != 0 {
 		return out, ErrBudget
 	}
 	err := r.withLease(ctx, l, func(tx pgx.Tx, j Job) error {

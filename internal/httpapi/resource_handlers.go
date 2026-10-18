@@ -250,7 +250,7 @@ func (h *SP04Handlers) call(ctx context.Context, endpoint, path, audience, subje
 	return h.callWithGrantDigest(ctx, endpoint, path, audience, subject, scope, payload, "")
 }
 func (h *SP04Handlers) callWithGrantDigest(ctx context.Context, endpoint, path, audience, subject string, scope graph.Scope, payload []byte, grantDigest string) ([]byte, error) {
-	deadline, cancel := context.WithTimeout(ctx, 4*time.Second)
+	deadline, cancel := context.WithTimeout(ctx, 9*time.Second)
 	defer cancel()
 	expires, _ := deadline.Deadline()
 	token, err := graph.SignContext(h.SigningKey, graph.Claims{GrantSnapshotDigest: grantDigest, Audience: audience, Subject: subject, Scope: scope, Deadline: expires, QueryDigest: graph.ScopeDigest(json.RawMessage(payload))})
@@ -358,7 +358,8 @@ func (h *SP04Handlers) queryEvidence(w http.ResponseWriter, r *http.Request, req
 		writeSP04Error(w, 429, "BUDGET_EXHAUSTED", "row limit invalid", false, request.RequestID)
 		return
 	}
-	q.Query = evidence.Query{ResourceCanonicalID: body.ResourceCanonicalID, Namespace: body.Namespace, Template: body.Template, From: body.TimeRange.From, To: body.TimeRange.To, Limit: limit, MaxBytes: min(body.Budget.MaxBytes, 64<<10), TimeoutMillis: min(body.Budget.TimeoutMillis, 3000)}
+	q.Query = evidence.Query{ResourceCanonicalID: body.ResourceCanonicalID, Namespace: body.Namespace, Template: body.Template, From: body.TimeRange.From, To: body.TimeRange.To, Limit: limit, MaxBytes: min(body.Budget.MaxBytes, 64<<10), TimeoutMillis: body.Budget.TimeoutMillis}
+	q.Query.TimeoutMillis = int(q.Query.TimeBudget() / time.Millisecond)
 	id, err := resource.ParseCanonicalID(q.Query.ResourceCanonicalID)
 	if err != nil || id.Tenant != request.TenantID.String() {
 		writeSP04Error(w, 403, "FORBIDDEN", "resource scope denied", false, request.RequestID)

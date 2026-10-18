@@ -1,0 +1,59 @@
+..../usr/local/lib/python3.12/site-packages/typer/__init__.py:24: DeprecationWarning: 'click.utils.get_binary_stream' is deprecated and will be removed in Click 9.0.
+  from click.utils import get_binary_stream as get_binary_stream
+/usr/local/lib/python3.12/site-packages/typer/__init__.py:25: DeprecationWarning: 'click.utils.get_text_stream' is deprecated and will be removed in Click 9.0.
+  from click.utils import get_text_stream as get_text_stream
+F..WARNING:root:model completion failed kind=MODEL_UNAVAILABLE exception=RuntimeError
+WARNING:root:model completion failed kind=MODEL_TIMEOUT exception=RuntimeError
+.........................WARNING:root:model completion failed kind=MODEL_FAILURE exception=RuntimeError
+..E.....
+======================================================================
+ERROR: test_one_official_runner_handles_parallel_holmes_calls (test_mcp_bridge_unittest.ConcurrentMCPCalls.test_one_official_runner_handles_parallel_holmes_calls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/services/investigator/tests/test_mcp_bridge_unittest.py", line 24, in test_one_official_runner_handles_parallel_holmes_calls
+    self.assertEqual(list(executor.map(call, range(4))), list(range(4)))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/local/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/services/investigator/tests/test_mcp_bridge_unittest.py", line 21, in call
+    return bridge.call("resource_history", {"index": index}, {})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/services/investigator/src/investigator/mcp_bridge.py", line 33, in call
+    def call(self,name,params,allocation):return self._runner.run(self._request(name,params,allocation))
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/asyncio/base_events.py", line 667, in run_until_complete
+    self._check_running()
+  File "/usr/local/lib/python3.12/asyncio/base_events.py", line 626, in _check_running
+    raise RuntimeError('This event loop is already running')
+RuntimeError: This event loop is already running
+
+======================================================================
+FAIL: test_truncated_context_cannot_start_model_or_fresh_reads (test_context_projection_unittest.HistoricalContextProjection.test_truncated_context_cannot_start_model_or_fresh_reads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/services/investigator/tests/test_context_projection_unittest.py", line 23, in test_truncated_context_cannot_start_model_or_fresh_reads
+    self.assertEqual(caught.exception.kind, "MODEL_CONTEXT_LIMIT")
+AssertionError: 'MODEL_OUTPUT_INVALID' != 'MODEL_CONTEXT_LIMIT'
+- MODEL_OUTPUT_INVALID
++ MODEL_CONTEXT_LIMIT
+
+
+----------------------------------------------------------------------
+Ran 40 tests in 0.226s
+
+FAILED (failures=1, errors=1)

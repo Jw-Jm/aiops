@@ -1,0 +1,224 @@
+{
+  "database": "sp03_mig_b7c34a52f5124cda86307ec936577471",
+  "passed": true,
+  "targetCanonicalId": "k8s+v1://3fb34947-dbd0-4fca-9979-e4ef5ac12c0a/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+  "frozenWindow": {
+    "from": "2026-10-17T04:21:10Z",
+    "to": "2026-10-17T04:22:10Z",
+    "timezone": "UTC"
+  },
+  "turns": [
+    {
+      "turnId": "01a148fd-ce54-7f3f-b42c-26e838cd9d5a",
+      "jobId": "01a148fd-ce54-7f40-8de9-46b1c9da849f",
+      "state": "partial",
+      "errorCode": "",
+      "answerKind": "diagnosis",
+      "factCount": 13,
+      "reserved": {
+        "toolCalls": 0,
+        "graphNodes": 0,
+        "rawQueries": 0,
+        "inputTokens": 0,
+        "resultBytes": 0,
+        "outputTokens": 0,
+        "evidenceItems": 0,
+        "modelRequests": 0,
+        "modelCostMicros": 0
+      },
+      "consumed": {
+        "toolCalls": 1,
+        "graphNodes": 0,
+        "rawQueries": 0,
+        "inputTokens": 37983,
+        "resultBytes": 555887,
+        "outputTokens": 5509,
+        "evidenceItems": 0,
+        "modelRequests": 2,
+        "modelCostMicros": 0
+      },
+      "steps": [
+        {
+          "tool": "get_assistant_context",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": null,
+          "window": null,
+          "usage": null,
+          "finishReason": null
+        },
+        {
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": null,
+          "window": null,
+          "usage": {
+            "total_tokens": 21752,
+            "prompt_tokens": 18957,
+            "completion_tokens": 2795,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 18957,
+            "completion_tokens_details": null
+          },
+          "finishReason": "stop"
+        },
+        {
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": null,
+          "window": null,
+          "usage": {
+            "total_tokens": 21740,
+            "prompt_tokens": 19026,
+            "completion_tokens": 2714,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 18816,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 18816,
+            "prompt_cache_miss_tokens": 210,
+            "completion_tokens_details": null
+          },
+          "finishReason": "stop"
+        }
+      ],
+      "successfulModelResponses": 2
+    },
+    {
+      "turnId": "01a148fe-3e7b-7306-8f4b-b125e158b35e",
+      "jobId": "01a148fe-3e7b-7307-9d39-036cb19b576e",
+      "state": "partial",
+      "errorCode": "",
+      "answerKind": "diagnosis",
+      "factCount": 8,
+      "reserved": {
+        "toolCalls": 0,
+        "graphNodes": 0,
+        "rawQueries": 0,
+        "inputTokens": 0,
+        "resultBytes": 0,
+        "outputTokens": 0,
+        "evidenceItems": 0,
+        "modelRequests": 0,
+        "modelCostMicros": 0
+      },
+      "consumed": {
+        "toolCalls": 4,
+        "graphNodes": 0,
+        "rawQueries": 0,
+        "inputTokens": 22794,
+        "resultBytes": 360565,
+        "outputTokens": 2392,
+        "evidenceItems": 0,
+        "modelRequests": 1,
+        "modelCostMicros": 0
+      },
+      "steps": [
+        {
+          "tool": "get_assistant_context",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": null,
+          "window": null,
+          "usage": null,
+          "finishReason": null
+        },
+        {
+          "tool": "resource_history",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": "k8s+v1://3fb34947-dbd0-4fca-9979-e4ef5ac12c0a/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "window": {
+            "to": "2026-10-17T04:22:10Z",
+            "from": "2026-10-17T04:21:10Z",
+            "timezone": "UTC"
+          },
+          "usage": null,
+          "finishReason": null
+        },
+        {
+          "tool": "resource_findings",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": "k8s+v1://3fb34947-dbd0-4fca-9979-e4ef5ac12c0a/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "window": {
+            "to": "2026-10-17T04:22:10Z",
+            "from": "2026-10-17T04:21:10Z",
+            "timezone": "UTC"
+          },
+          "usage": null,
+          "finishReason": null
+        },
+        {
+          "tool": "resource_changes",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": "k8s+v1://3fb34947-dbd0-4fca-9979-e4ef5ac12c0a/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "window": {
+            "to": "2026-10-17T04:22:10Z",
+            "from": "2026-10-17T04:21:10Z",
+            "timezone": "UTC"
+          },
+          "usage": null,
+          "finishReason": null
+        },
+        {
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": null,
+          "window": null,
+          "usage": {
+            "total_tokens": 25186,
+            "prompt_tokens": 22794,
+            "completion_tokens": 2392,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 3968,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 3968,
+            "prompt_cache_miss_tokens": 18826,
+            "completion_tokens_details": null
+          },
+          "finishReason": "stop"
+        }
+      ],
+      "successfulModelResponses": 1
+    }
+  ],
+  "collectedQueries": [
+    {
+      "queryResultId": "01a148fd-a9b4-731a-be70-6ba9b038b671",
+      "datasetId": "metrics.pod-restarts"
+    },
+    {
+      "queryResultId": "01a148fd-b1c8-75ac-849c-7153aa6a0ec9",
+      "datasetId": "network.http-summary"
+    },
+    {
+      "queryResultId": "01a148fd-bc62-74d2-bf9a-32de39ae9061",
+      "datasetId": "network.tcp-summary"
+    },
+    {
+      "queryResultId": "01a148fd-bfc9-7853-8f9c-8d384285c27e",
+      "datasetId": "logs.records"
+    },
+    {
+      "queryResultId": "01a148fd-c092-7792-b255-7b15aeb7f579",
+      "datasetId": "metrics.pod-memory"
+    },
+    {
+      "queryResultId": "01a148fd-c15c-7f0e-b475-8d611f6ea2dd",
+      "datasetId": "metrics.pod-cpu"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation (10.3s)
+
+
+  1) fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 503
+
+      152 |           ]);
+      153 |           lookupAttempts++;
+    > 154 |           expect(lookedUp.status()).toBe(200);
+          |                                     ^
+      155 |           const requested = lookedUp.request().postDataJSON();
+      156 |           expect(requested.selector).toEqual({
+      157 |             kind: "Pod",
+        at _test.expect.poll.timeout (/opt/ops-five-source-reverify-20261018/e2e/fault_chain_runtime.spec.ts:154:37)
+        at /opt/ops-five-source-reverify-20261018/e2e/fault_chain_runtime.spec.ts:141:5
+
+    Error Context: fault-chain-results/fault_chain_runtime-actual-c3362-oration-and-owner-isolation/error-context.md
+
+  1 failed
+    fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 

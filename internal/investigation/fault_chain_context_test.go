@@ -1,6 +1,7 @@
 package investigation
 
 import (
+	"encoding/json"
 	"github.com/google/uuid"
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/archive"
@@ -167,6 +168,30 @@ func TestFaultChainCorrelationKeepsTemporalAndCausalGaps(t *testing.T) {
 	if err != nil || len(out.Edges[0].Observations) != 0 {
 		t.Fatal("empty population treated as conflict")
 	}
+	// An exactness loss caused by an empty population is reported as a missing
+	// population, not as unverified collector coverage: the collector did answer
+	// the window, there was simply nothing observed in it.
+	result.Rows = []analytics.Row{}
+	result.Status = "no_data"
+	result.Exact = false
+	stored := BuildStoredQueryResult(result)
+	if err := validateStoredQueryResult(stored); err != nil {
+		raw, _ := json.Marshal(result)
+		t.Fatalf("no_data query result rejected by its own contract: %v %s", err, raw)
+	}
+	out, err = EvaluateFaultChain(request, []resource.Relation{relation}, []StoredQueryResult{stored}, now)
+	if err != nil {
+		t.Fatalf("no_data observation rejected: %v", err)
+	}
+	if len(out.Edges[0].Observations) != 0 || out.Edges[0].ComparisonStatus != "coverage_insufficient" {
+		t.Fatalf("no_data observation became an association: %+v", out.Edges[0])
+	}
+	if !slices.Contains(out.Edges[0].MissingEvidence, "nonempty_observation_population") || slices.Contains(out.Edges[0].MissingEvidence, "complete_collector_coverage") {
+		t.Fatalf("empty population gap attributed to collector coverage: %+v", out.Edges[0].MissingEvidence)
+	}
+	result.Rows = []analytics.Row{{Dimension: "current", Value: 0}}
+	result.Status = "complete"
+	result.Exact = true
 	result.Statistics[0].Value = 1000
 	out, err = EvaluateFaultChain(request, []resource.Relation{relation}, []StoredQueryResult{BuildStoredQueryResult(result)}, now)
 	if err != nil || len(out.Edges[0].Observations) != 1 || len(out.Edges[0].Observations[0].Conflicts) != 1 {

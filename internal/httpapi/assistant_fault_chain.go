@@ -7,8 +7,10 @@ import (
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/assistant"
+	"ops-platform/internal/graph"
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/persistence"
+	"ops-platform/internal/resource"
 )
 
 // faultChainEvaluationRequest uses only the API-frozen turn context. Models
@@ -75,4 +77,18 @@ func (a AssistantTools) evaluateFaultChain(ctx context.Context, j investigation.
 		return err
 	})
 	return out, err
+}
+
+// A relation read is explicit in the ledger and bound to the original Pod/window.
+// Keep resource restrictions; never inherit the worker's broader namespace grant.
+func faultChainRelationScope(input assistant.TurnInput, j investigation.Job, target string, window *analytics.QueryTimeRange, namespace string) (graph.Scope, error) {
+	request, err := faultChainEvaluationRequest(input, j)
+	id, parseErr := resource.ParseCanonicalID(target)
+	if err != nil || parseErr != nil || id.Domain != "k8s" || id.Kind != "Pod" || target != request.TargetCanonicalID || window == nil || !window.From.Equal(request.Fault.From) || !window.To.Equal(request.Fault.To) || namespace == "" || !j.Scope.Allows(target, namespace) {
+		return graph.Scope{}, investigation.ErrDenied
+	}
+	scope := analytics.CloneScope(j.Scope)
+	scope.Namespaces = []string{namespace}
+	scope.ClusterScoped = false
+	return scope, nil
 }

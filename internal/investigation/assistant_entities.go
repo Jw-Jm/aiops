@@ -33,7 +33,7 @@ func committedAssistantEntities(tool string, data json.RawMessage) []string {
 		identities = []identity{{CanonicalID: v.CanonicalID}}
 	case "resolve_resources":
 		identities = v.Candidates
-	case "get_resource_context", "get_resource_health", "query_kubernetes", "get_dependencies", "get_impact_scope":
+	case "query_deepflow", "get_resource_context", "get_resource_health", "query_kubernetes", "get_dependencies", "get_impact_scope":
 		identities = v.Nodes
 	default:
 		return nil

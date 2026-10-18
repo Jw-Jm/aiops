@@ -1,0 +1,34 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation (7.1s)
+
+
+  1) fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: /创建会话/ })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: /创建会话/ }) with timeout 5000ms
+      - waiting for getByRole('button', { name: /创建会话/ })
+
+
+      55 |     );
+      56 |     await p.goto(base + "/assistant");
+    > 57 |     await expect(p.getByRole("button", { name: /创建会话/ })).toBeVisible();
+         |                                                           ^
+      58 |   }
+      59 |   try {
+      60 |     await login(page, identities.operator);
+        at login (/opt/ops-five-source-closure-20261017/e2e/fault_chain_runtime.spec.ts:57:59)
+        at /opt/ops-five-source-closure-20261017/e2e/fault_chain_runtime.spec.ts:60:5
+
+    Error Context: fault-chain-results/fault_chain_runtime-actual-c3362-oration-and-owner-isolation/error-context.md
+
+  1 failed
+    fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 

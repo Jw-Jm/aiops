@@ -257,7 +257,15 @@ func EvaluateFaultChain(request FaultChainRequest, relations []resource.Relation
 			}
 			if !q.Result.Exact || !n.CoverageComplete || q.Result.Truncated {
 				edge.ComparisonStatus = "coverage_insufficient"
-				edge.MissingEvidence = append(edge.MissingEvidence, "complete_collector_coverage")
+				// An observation with no population is a gap in what was
+				// observed, not proof that the collector coverage is unknown.
+				// Name the reason that applies so the gap check does not send
+				// the caller to re-read a window that has nothing to read.
+				if len(q.Result.Rows) == 0 && q.Result.Status == "no_data" {
+					edge.MissingEvidence = append(edge.MissingEvidence, "nonempty_observation_population")
+				} else {
+					edge.MissingEvidence = append(edge.MissingEvidence, "complete_collector_coverage")
+				}
 				continue
 			}
 			values := map[string]float64{}

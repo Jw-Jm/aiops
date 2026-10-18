@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "five-source-artifact-binding/v1",
+  "date": "2026-10-18",
+  "connection": "mssc-direct",
+  "modelID": "deepseek-flash",
+  "contextWindow": 1000000,
+  "outputTokenLimit": 8192,
+  "files": {
+    "ops-five-source-20261017.test": "b672e3bfd481337c2d261bd2972a0c58498a6785f2cd64503057a7b9862bd307",
+    "dispatcher": "36717b038c2830717d1ef5eadc494fc77f0faa58cc38e4bf9f7ef72e68b91fea",
+    "run-fault-chain-joint.py": "aef9cf27b2b80ade94b3929385fd993aa42fc9241b59ae9246d1b9ee45451ba1",
+    "collect_live.py": "ff7cb66f00cad00e7d1ba4a5f88047582582cd0e9fa8fa1ac984733ef135866f",
+    "fault-chain-probe.py": "e25df17c516741ec49fc9d16cacd674b72f7e4b82a18fd9e87556c34f8bb8db3",
+    "fault-chain-window-probe.py": "3ecf635eb37355bd2ec4957a404c22c3bccc6b9583d698ffcb08168061ea8898",
+    "e2e/fault_chain_runtime.spec.ts": "966d5e22aa4f0cad5f6c897454a5626d6f81be41337d7a901aec403965ddbabf",
+    "repo/services/investigator/src/investigator/fault_chain.py": "a2a3971d764cca610b88cf9bcb1b6f29b4eae4b35b5b4d24248b44f45d431971",
+    "repo/services/investigator/src/investigator/assistant_binding.py": "92edba7b2eb51a5a19c590cc01482b51c88bd3c5559d1cea2f5c7be658a5ff9d",
+    "repo/services/investigator/src/investigator/holmes_adapter.py": "654467c1775c086b3294ab2b1f0734c042bb6b926b5a20a745745a32b446c37b",
+    "repo/services/investigator/src/investigator/budget.py": "8275047bf61a75523824bb130d1393f23df96631741a504af58e77de07356cc7",
+    "repo/services/investigator/src/investigator/mcp_bridge.py": "9df7c2fad7f370cad28cd9ad136d596382ada2631e6dbbc252b8ef2ce161440f",
+    "repo/services/investigator/src/investigator/model_profile.py": "88268cbfb9b8745e46b03708c4c23d1cdb3db55cd4229050e1b8d227d673e43a",
+    "repo/services/investigator/src/investigator/assistant-output.schema.json": "126881e3b71ae92a82fc704a1143f6594e7c499377d53af72f05e3ea0bad04b0",
+    "repo/internal/integrations/deepflow/live.go": "627a5f7088ca85bf55f3396955452257138d8df58cc19556f6ef2c92041665f6",
+    "repo/internal/investigation/mcp/server.go": "64fde85efb19896f09b51002ddc800a36a2ef3b16bbf502ee417b5f81cbb3dc1",
+    "repo/test/integration/assistant_fault_chain_test.go": "4b057c51b1ed8659e17d811ded2855c0542c5becb82deff70fad23d4e33e303e",
+    "ui-dist/index.html": "27f2447cea8c29525ee3df8bda6d7d8ae8ad901791964ef696b78d0a4c91744a",
+    "repo/scripts/deepflow-dev/fault-chain-window-probe.py": "3ecf635eb37355bd2ec4957a404c22c3bccc6b9583d698ffcb08168061ea8898"
+  },
+  "sourceDirectory": "live-source-r2",
+  "investigatorImageID": "sha256:cf86e1d1f2b83e27a5dbe842710bd1eb96b2e330168a147d9056952d85ad2fec",
+  "stimulusCalibration": {
+    "requestIntervalSeconds": 0.005,
+    "requestsPerWindow": 1000,
+    "windowSeconds": 60,
+    "faultRefusedAttempts": 100,
+    "firstPopulationMismatchRetained": true
+  }
+}

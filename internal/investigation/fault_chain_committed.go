@@ -138,7 +138,12 @@ func EvaluateCommittedFaultChainTx(ctx context.Context, tx pgx.Tx, j Job, reques
 						return ErrInvalid
 					}
 				}
-			case "get_dependencies", "get_impact_scope", "get_resource_context":
+			case "query_deepflow", "get_dependencies", "get_impact_scope", "get_resource_context":
+				if tool == "query_deepflow" {
+					if err := authorizeResult(ctx, tx, j, raw); err != nil {
+						return err
+					}
+				}
 				if err := authorizeResourceToolTx(ctx, tx, j, tool, wire.Data); err != nil {
 					return err
 				}

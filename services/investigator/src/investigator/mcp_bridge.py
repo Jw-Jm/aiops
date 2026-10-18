@@ -1,5 +1,6 @@
 """Official MCP SDK bridge shared by fixed collection and HolmesGPT."""
 import asyncio
+from threading import Lock
 from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 
@@ -9,6 +10,7 @@ class MCPBridge:
         self._token=token
         self._client=http_client
         self._runner=asyncio.Runner()
+        self._lock=Lock() # Holmes may invoke sync tools concurrently; Runner cannot overlap.
         self.token_provider=lambda: self._token
 
     async def _request(self, name=None, params=None, allocation=None):
@@ -26,8 +28,14 @@ class MCPBridge:
                 return result.structuredContent
 
     def close(self):
-        self._runner.run(self._client.aclose())
-        self._runner.close()
+        with self._lock:
+            self._runner.run(self._client.aclose())
+            self._runner.close()
 
-    def catalog(self):return self._runner.run(self._request())
-    def call(self,name,params,allocation):return self._runner.run(self._request(name,params,allocation))
+    def catalog(self):
+        with self._lock:
+            return self._runner.run(self._request())
+
+    def call(self,name,params,allocation):
+        with self._lock:
+            return self._runner.run(self._request(name,params,allocation))

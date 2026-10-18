@@ -1,0 +1,225 @@
+{
+  "database": "sp03_mig_31db2a666ff944e8a9fc33897aaaee39",
+  "passed": true,
+  "targetCanonicalId": "k8s+v1://3fb34947-dbd0-4fca-9979-e4ef5ac12c0a/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+  "frozenWindow": {
+    "from": "2026-10-17T04:21:10Z",
+    "to": "2026-10-17T04:22:10Z",
+    "timezone": "UTC"
+  },
+  "turns": [
+    {
+      "turnId": "01a148d1-8252-759d-98b8-ed4b356d4306",
+      "jobId": "01a148d1-8252-759e-8cfd-5f62ddc99e94",
+      "state": "partial",
+      "errorCode": "",
+      "answerKind": "diagnosis",
+      "factCount": 9,
+      "reserved": {
+        "toolCalls": 0,
+        "graphNodes": 0,
+        "rawQueries": 0,
+        "inputTokens": 0,
+        "resultBytes": 0,
+        "outputTokens": 0,
+        "evidenceItems": 0,
+        "modelRequests": 0,
+        "modelCostMicros": 0
+      },
+      "consumed": {
+        "toolCalls": 1,
+        "graphNodes": 0,
+        "rawQueries": 0,
+        "inputTokens": 34787,
+        "resultBytes": 519192,
+        "outputTokens": 4729,
+        "evidenceItems": 0,
+        "modelRequests": 2,
+        "modelCostMicros": 0
+      },
+      "steps": [
+        {
+          "tool": "get_assistant_context",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": null,
+          "window": null,
+          "usage": null,
+          "finishReason": null
+        },
+        {
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": null,
+          "window": null,
+          "usage": {
+            "total_tokens": 19768,
+            "prompt_tokens": 17359,
+            "completion_tokens": 2409,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 17359,
+            "completion_tokens_details": null
+          },
+          "finishReason": "stop"
+        },
+        {
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": null,
+          "window": null,
+          "usage": {
+            "total_tokens": 19748,
+            "prompt_tokens": 17428,
+            "completion_tokens": 2320,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 17280,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 17280,
+            "prompt_cache_miss_tokens": 148,
+            "completion_tokens_details": null
+          },
+          "finishReason": "stop"
+        }
+      ],
+      "successfulModelResponses": 2
+    },
+    {
+      "turnId": "01a148d1-fe13-756d-b9b5-ba94ae9e9f97",
+      "jobId": "01a148d1-fe13-756e-aefe-df5ad1a5e344",
+      "state": "partial",
+      "errorCode": "",
+      "answerKind": "diagnosis",
+      "factCount": 9,
+      "reserved": {
+        "toolCalls": 0,
+        "graphNodes": 0,
+        "rawQueries": 0,
+        "inputTokens": 0,
+        "resultBytes": 0,
+        "outputTokens": 0,
+        "evidenceItems": 0,
+        "modelRequests": 0,
+        "modelCostMicros": 0
+      },
+      "consumed": {
+        "toolCalls": 4,
+        "graphNodes": 0,
+        "rawQueries": 0,
+        "inputTokens": 20799,
+        "resultBytes": 336024,
+        "outputTokens": 2371,
+        "evidenceItems": 0,
+        "modelRequests": 1,
+        "modelCostMicros": 0
+      },
+      "steps": [
+        {
+          "tool": "get_assistant_context",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": null,
+          "window": null,
+          "usage": null,
+          "finishReason": null
+        },
+        {
+          "tool": "resource_history",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": "k8s+v1://3fb34947-dbd0-4fca-9979-e4ef5ac12c0a/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "window": {
+            "to": "2026-10-17T04:22:10Z",
+            "from": "2026-10-17T04:21:10Z",
+            "timezone": "UTC"
+          },
+          "usage": null,
+          "finishReason": null
+        },
+        {
+          "tool": "resource_findings",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": "k8s+v1://3fb34947-dbd0-4fca-9979-e4ef5ac12c0a/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "window": {
+            "to": "2026-10-17T04:22:10Z",
+            "from": "2026-10-17T04:21:10Z",
+            "timezone": "UTC"
+          },
+          "usage": null,
+          "finishReason": null
+        },
+        {
+          "tool": "resource_changes",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": "k8s+v1://3fb34947-dbd0-4fca-9979-e4ef5ac12c0a/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+          "window": {
+            "to": "2026-10-17T04:22:10Z",
+            "from": "2026-10-17T04:21:10Z",
+            "timezone": "UTC"
+          },
+          "usage": null,
+          "finishReason": null
+        },
+        {
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "canonicalId": null,
+          "window": null,
+          "usage": {
+            "total_tokens": 23170,
+            "prompt_tokens": 20799,
+            "completion_tokens": 2371,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 3968,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 3968,
+            "prompt_cache_miss_tokens": 16831,
+            "completion_tokens_details": null
+          },
+          "finishReason": "stop"
+        }
+      ],
+      "successfulModelResponses": 1
+    }
+  ],
+  "collectedQueries": [
+    {
+      "dataset": "metrics.pod-restarts",
+      "exact": true,
+      "status": "complete"
+    },
+    {
+      "dataset": "network.http-summary",
+      "exact": true,
+      "status": "complete"
+    },
+    {
+      "dataset": "metrics.pod-memory",
+      "exact": true,
+      "status": "complete"
+    },
+    {
+      "dataset": "logs.records",
+      "exact": true,
+      "status": "complete"
+    },
+    {
+      "dataset": "metrics.pod-cpu",
+      "exact": true,
+      "status": "complete"
+    }
+  ]
+}

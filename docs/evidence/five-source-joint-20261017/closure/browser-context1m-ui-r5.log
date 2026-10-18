@@ -1,0 +1,26 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation (35.2s)
+
+
+  1) fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByTitle('ops-assistant-deepflow-20261013/fault-chain-client-79ff8cbd6b-225l8', { exact: true })
+
+
+      139 |     await page
+      140 |       .getByTitle(api.namespace + "/" + pod.name, { exact: true })
+    > 141 |       .click();
+          |        ^
+      142 |     await page
+      143 |       .getByRole("textbox", { name: "故障开始（UTC）", exact: true })
+      144 |       .fill(from.slice(0, 19).replace(/:00$/, ""));
+        at /opt/ops-five-source-closure-20261017/e2e/fault_chain_runtime.spec.ts:141:8
+
+    Error Context: fault-chain-results/fault_chain_runtime-actual-c3362-oration-and-owner-isolation/error-context.md
+
+  1 failed
+    fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 

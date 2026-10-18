@@ -128,6 +128,18 @@ def evidence_reads_required(context):
         return bool(re.search(r"检查|补证|读取|查询|调查|排查|继续|\b(check|read|investigate|continue)\b",message,re.I))
     return True
 
+def model_tool_names(context, available):
+    """An explicit explanation/read list does not need the entire query catalog."""
+    available = set(available)
+    if not context.get("historicalFaultChainContext"): return available
+    if not evidence_reads_required(context) and not query_required(context):
+        return set()
+    requested = {name for name in available if re.search(r"\b" + re.escape(name) + r"\b", context.get("message", ""))}
+    preloaded = {"get_assistant_context", "resource_history", "resource_findings", "resource_changes", "get_incident_context", "get_formal_references"}
+    if requested and requested <= preloaded and not query_required(context):
+        return set()  # Requested reads were committed before the model phase.
+    return available
+
 def required_query_tool(steps):
     if any(s.get("toolName")=="execute_analysis_query" and s.get("state") in ("succeeded","failed") for s in steps):return None
     if any(s.get("toolName")=="describe_analysis_dataset" and s.get("state")=="failed" for s in steps):return None
@@ -173,11 +185,11 @@ def output_schema_for_steps(steps, task_kind):
                 if isinstance(ref,dict):
                     frozen=copy.deepcopy(ref);frozen.setdefault("actionPlanId",None)
                     formal[json.dumps(frozen,sort_keys=True)]=frozen
-        if tool in ("get_dependencies","get_impact_scope","get_resource_context"):
+        if tool in ("query_deepflow","get_dependencies","get_impact_scope","get_resource_context"):
             for link in data.get("relationReferences",[]):
                 if isinstance(link,dict) and link.get("relationDigest"):relations[link["relationDigest"]]=link
         identities=[]
-        if tool in ("get_resource_context","get_resource_health","query_kubernetes","get_dependencies","get_impact_scope"):
+        if tool in ("query_deepflow","get_resource_context","get_resource_health","query_kubernetes","get_dependencies","get_impact_scope"):
             identities=data.get("nodes",[])
         elif tool in ("resource_history", "resource_changes", "resource_findings"):
             identities=[{"canonicalId": data.get("canonicalId")}]

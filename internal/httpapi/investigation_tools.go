@@ -5,8 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/jackc/pgx/v5"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"ops-platform/internal/auth"
@@ -308,7 +310,10 @@ func (a InvestigationTools) Invoke(ctx context.Context, j investigation.Job, nam
 			return out, investigation.ErrInvalid
 		}
 		templates := map[string]string{"get network health": "GetResourceNetworkHealth", "get dependencies": "GetNetworkDependencies", "find retransmission": "FindTCPRetransmission", "find packet loss": "FindPacketLoss", "find connection failure": "FindConnectionFailure", "get network path": "GetNetworkPath", "get l7 context": "GetL7Context"}
-		data, err = a.read(ctx, j, "/api/v1/evidence:query", q, map[string]any{"resourceCanonicalId": id, "type": "deepflow", "timeRange": p.TimeRange, "queryTemplate": templates[p.Operation], "budget": map[string]int{"maxBytes": 32 << 10, "timeoutMs": 2500}, "limit": 100})
+		// The DeepFlow read includes a two-sided native identity fence; on a
+		// loaded single-node host that fence alone measured above 2.5s, so the
+		// bounded read allowance is 9s. Byte and row budgets are unchanged.
+		data, err = a.read(ctx, j, "/api/v1/evidence:query", q, map[string]any{"resourceCanonicalId": id, "type": "deepflow", "timeRange": p.TimeRange, "queryTemplate": templates[p.Operation], "budget": map[string]int{"maxBytes": 32 << 10, "timeoutMs": 9000}, "limit": 100})
 	default:
 		return out, investigation.ErrDenied
 	}
@@ -324,6 +329,9 @@ func (a InvestigationTools) Invoke(ctx context.Context, j investigation.Job, nam
 		if errors.As(err, &sourceErr) {
 			out.Data = map[string]any{"sourceErrorCode": sourceErr.Code}
 		}
+		// A degraded operational read must stay attributable: the envelope only
+		// carries a generic code, so record which source code failed and why.
+		slog.Warn("operational read degraded", "source", name, "operation", p.Operation, "reason", fmt.Sprint(err))
 		return out, nil
 	}
 	if data != nil {

@@ -1,0 +1,31 @@
+
+Running 1 test using 1 worker
+
+exact resource lookup attempts 1
+  ✘  1 fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation (2.8m)
+
+
+  1) fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 150000ms exceeded while waiting on the predicate
+
+      356 |             { timeout: 150000, intervals: [1000] },
+      357 |           )
+    > 358 |           .toBe(true);
+          |            ^
+      359 |         expect(result.answer.summary).toBeTruthy();
+      360 |         await expect(
+      361 |           page.getByText(result.answer.summary, { exact: true }).last(),
+        at sendModelTurn (/opt/ops-five-source-closure-20261017/e2e/fault_chain_runtime.spec.ts:358:12)
+        at /opt/ops-five-source-closure-20261017/e2e/fault_chain_runtime.spec.ts:370:7
+
+    Error Context: fault-chain-results/fault_chain_runtime-actual-c3362-oration-and-owner-isolation/error-context.md
+
+  1 failed
+    fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 

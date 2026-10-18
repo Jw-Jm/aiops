@@ -196,7 +196,10 @@ type cloudPod struct {
 }
 
 func (m *LiveMapper) refresh(ctx context.Context, requested ...string) (out map[string]Endpoint, digest string, err error) {
-	ctx, cancel := context.WithTimeout(ctx, 2500*time.Millisecond)
+	// The fence covers native snapshots before and after the controller round
+	// trip; on a loaded single-node host that measured above 2.5s, so the
+	// bounded allowance is 6s and every caller still bounds it further.
+	ctx, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
 	stage := "binding"
 	started := time.Now()
@@ -369,7 +372,10 @@ type summaryPairSnapshot struct {
 }
 
 func (m *LiveMapper) beginSummaryPair(ctx context.Context, left, right string) (summaryPairSnapshot, error) {
-	ctx, cancel := context.WithTimeout(ctx, 2500*time.Millisecond)
+	// One fence pass covers authorize, two native snapshots' worth of work and
+	// the per-container tag resolution; on a loaded single-node host that
+	// measured above 2.5s, and the caller's batch budget still bounds the pair.
+	ctx, cancel := context.WithTimeout(ctx, 3500*time.Millisecond)
 	defer cancel()
 	if m.authorize(ctx, m.binding) != nil {
 		return summaryPairSnapshot{}, evidence.ErrScopeUnverified
@@ -393,7 +399,7 @@ func (m *LiveMapper) beginSummaryPair(ctx context.Context, left, right string) (
 // Native snapshots enclose every backend/window read in the batch. No result
 // is published until both native lifetimes and fresh backend IDs still match.
 func (m *LiveMapper) finishSummaryPair(ctx context.Context, snapshot summaryPairSnapshot) (Endpoint, Endpoint, error) {
-	ctx, cancel := context.WithTimeout(ctx, 2500*time.Millisecond)
+	ctx, cancel := context.WithTimeout(ctx, 3500*time.Millisecond)
 	defer cancel()
 	if m.authorize(ctx, m.binding) != nil {
 		return Endpoint{}, Endpoint{}, evidence.ErrScopeUnverified

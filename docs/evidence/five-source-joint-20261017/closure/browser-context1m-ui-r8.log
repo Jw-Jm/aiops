@@ -1,0 +1,31 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation (5.4s)
+
+
+  1) fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 1
+
+    - Array [
+    -   "k8s+v1://3fb34947-dbd0-4fca-9979-e4ef5ac12c0a/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+    - ]
+    + Array []
+
+      142 |     const lookedUp = await lookup;
+      143 |     expect(lookedUp.status()).toBe(200);
+    > 144 |     expect((await lookedUp.json()).data.candidates.map((c: any) => c.canonicalId)).toEqual([candidates[0].canonicalId]);
+          |                                                                                    ^
+      145 |     await expect(findResource).toBeEnabled();
+      146 |     await page.getByRole("combobox", { name: "调查目标资源" }).click();
+      147 |     await page
+        at /opt/ops-five-source-closure-20261017/e2e/fault_chain_runtime.spec.ts:144:84
+
+    Error Context: fault-chain-results/fault_chain_runtime-actual-c3362-oration-and-owner-isolation/error-context.md
+
+  1 failed
+    fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 

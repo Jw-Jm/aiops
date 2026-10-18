@@ -1,0 +1,64 @@
+=== RUN   TestAssistantActualFaultChainWithoutModel
+2026/10/17 13:17:00 OK   00001_roles_and_schemas.sql (5.56ms)
+2026/10/17 13:17:00 goose: successfully migrated database to version: 1
+2026/10/17 13:17:00 OK   00002_platform_meta.sql (17.44ms)
+2026/10/17 13:17:00 OK   00003_finding.sql (6.18ms)
+2026/10/17 13:17:00 OK   00004_incident.sql (3.46ms)
+2026/10/17 13:17:00 OK   00005_investigation.sql (4.23ms)
+2026/10/17 13:17:00 OK   00006_action_command.sql (3.98ms)
+2026/10/17 13:17:00 OK   00007_audit.sql (6.56ms)
+2026/10/17 13:17:00 OK   00008_rls.sql (6.23ms)
+2026/10/17 13:17:00 OK   00009_idempotency_ledger.sql (4.31ms)
+2026/10/17 13:17:00 OK   00010_tenant_provisioning.sql (1.42ms)
+2026/10/17 13:17:00 OK   00011_source_registration_history.sql (3.69ms)
+2026/10/17 13:17:00 OK   00012_config_registry_lifecycle.sql (5.85ms)
+2026/10/17 13:17:00 OK   00013_audit_signed_segments.sql (6.13ms)
+2026/10/17 13:17:00 OK   00014_audit_segment_predecessors.sql (2.67ms)
+2026/10/17 13:17:00 OK   00015_source_schema_scope.sql (1.1ms)
+2026/10/17 13:17:00 OK   00016_cluster_registration_metadata.sql (2.5ms)
+2026/10/17 13:17:00 OK   00017_source_data_scope.sql (1.43ms)
+2026/10/17 13:17:00 OK   00018_sp04_resources_evidence.sql (13.38ms)
+2026/10/17 13:17:00 OK   00019_sp04_archive_ciphertext_bytes.sql (900.94µs)
+2026/10/17 13:17:00 OK   00020_sp04_request_ledger.sql (2.32ms)
+2026/10/17 13:17:00 OK   00021_sp04_archive_protection.sql (1.09ms)
+2026/10/17 13:17:00 OK   00022_sp04_legal_hold_dependencies.sql (694.21µs)
+2026/10/17 13:17:00 OK   00023_sp04_archive_query_intent.sql (826.11µs)
+2026/10/17 13:17:00 OK   00024_sp05_finding_incident.sql (15.12ms)
+2026/10/17 13:17:00 OK   00025_sp05_incident_event_time.sql (837.01µs)
+2026/10/17 13:17:00 OK   00026_sp05_source_binding_lock.sql (1.15ms)
+2026/10/17 13:17:00 OK   00027_sp05_rca_and_poll.sql (5.56ms)
+2026/10/17 13:17:00 OK   00028_sp05_operator_lock.sql (1.02ms)
+2026/10/17 13:17:00 OK   00029_sp05_evidence_links.sql (2.58ms)
+2026/10/17 13:17:00 OK   00030_sp05_recipe_fence.sql (831.46µs)
+2026/10/17 13:17:00 OK   00031_sp05_rca_postcheck.sql (742.99µs)
+2026/10/17 13:17:00 OK   00032_sp05_transport_audit.sql (848.52µs)
+2026/10/17 13:17:00 OK   00033_sp05_poll_resolution_clock.sql (1.21ms)
+2026/10/17 13:17:00 OK   00034_sp06_investigation_ledger.sql (16.32ms)
+2026/10/17 13:17:00 OK   00035_sp06_admission_data_classes.sql (1.08ms)
+2026/10/17 13:17:00 OK   00036_sp07_command_binding.sql (15.56ms)
+2026/10/17 13:17:00 OK   00037_sp07_worker_authority.sql (1.06ms)
+2026/10/17 13:17:00 OK   00038_sp08_safe_step_input_summary.sql (993.36µs)
+2026/10/17 13:17:00 OK   00039_assistant_conversations.sql (15ms)
+2026/10/17 13:17:00 OK   00040_assistant_job_v3.sql (8.09ms)
+2026/10/17 13:17:00 OK   00041_assistant_binding.sql (2.18ms)
+2026/10/17 13:17:00 OK   00042_assistant_retention.sql (4.09ms)
+2026/10/17 13:17:00 OK   00043_resource_observations.sql (6.2ms)
+2026/10/17 13:17:00 goose: successfully migrated database to version: 43
+    assistant_real_model_test.go:135: native fault-chain client mapping 45 ops-assistant-deepflow-20261013 2026-10-17 04:07:32 +0000 UTC <nil>
+    assistant_real_model_test.go:135: native L4 proof diagnostic evidence 1 freshness fresh partial false warnings [] error <nil>
+    archive_iam_test.go:43: owned TLS/IAM fixture image=sha256:31d61f5e8771cbd5993912cd051be0c7bcdc207faaa12c50e1a3b8371631c927 id=26ea8947a7ab75980ae3ef9841453cc650505d39e23aa165ae04093734a26ed8 bucket=assistant-native-d8a1200e tenants=1
+{"time":"2026-10-17T13:17:08.8441411+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","/v1/services":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing","storage.k8s.io/v1/volumeattachments":"list_missing"}}
+2026/10/17 13:17:08 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=11 deadlineExceeded=false
+2026/10/17 13:17:10 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=1 deadlineExceeded=false
+{"time":"2026-10-17T13:17:10.94671014+08:00","level":"WARN","msg":"Graph ownership not ready","qualification":{"/v1/configmaps":"list_missing","/v1/events":"list_missing","/v1/nodes":"list_missing","/v1/persistentvolumeclaims":"list_missing","/v1/persistentvolumes":"list_missing","/v1/pods":"list_missing","apps/v1/daemonsets":"list_missing","apps/v1/deployments":"list_missing","apps/v1/replicasets":"list_missing","apps/v1/statefulsets":"list_missing","batch/v1/jobs":"list_missing","discovery.k8s.io/v1/endpointslices":"list_missing","storage.k8s.io/v1/csidrivers":"list_missing","storage.k8s.io/v1/csinodes":"list_missing","storage.k8s.io/v1/storageclasses":"list_missing"}}
+2026/10/17 13:17:12 WARN DeepFlow detail read unavailable stage=binding template=GetL7Context elapsedMs=0 deadlineExceeded=false
+    assistant_real_model_test.go:135: actual native Graph informer + Kubernetes Lease route ready; archive dependency fixture explicitly excluded
+    assistant_fault_chain_test.go:144: API role source selection count 1
+2026/10/17 13:17:37 INFO deepflow relation projection edges=0 error=<nil>
+2026/10/17 13:17:38 INFO deepflow relation projection edges=0 error=<nil>
+    assistant_fault_chain_test.go:214: actual context edges=1 queries=4 evidence=0 err=<nil>
+    assistant_real_model_test.go:167: investigator diagnostics 
+    archive_iam_test.go:187: retained owned Archive fixture id=26ea8947a7ab75980ae3ef9841453cc650505d39e23aa165ae04093734a26ed8 label=d75324f6-77f0-4d7c-b711-0f40ef178471 bucket=assistant-native-d8a1200e private-material-directory=/root/.cache/ops-protected-integration/archive-iam-437576335; process stopped, no storage/identity deletion
+    migrations_test.go:442: retained owned integration database=sp03_mig_979934f4aabe49ba9848a7eddab372d3 test=TestAssistantActualFaultChainWithoutModel reason=audit.records; no automatic protected cleanup
+--- FAIL: TestAssistantActualFaultChainWithoutModel (53.56s)
+FAIL

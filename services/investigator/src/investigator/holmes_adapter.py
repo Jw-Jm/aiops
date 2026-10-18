@@ -7,6 +7,7 @@ from mcp.client.streamable_http import streamable_http_client
 from holmes.core.tools import Tool, Toolset, ToolsetStatusEnum, StructuredToolResult, StructuredToolResultStatus
 from holmes.core.tools_utils.tool_executor import ToolExecutor
 from holmes.core.tool_calling_llm import ToolCallingLLM
+from holmes.core.truncation.input_context_window_limiter import CompactionInsufficientError
 from .budget import BudgetedLLM, ModelCallError
 from .prompt_binding import messages, OUTPUT_JSON_SCHEMA
 from .redaction import sanitize
@@ -54,7 +55,7 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
         tools.append(tool)
     toolset=Toolset(name="platform",description="Platform read-only semantic MCP",tools=tools,
                     enabled=True,status=ToolsetStatusEnum.ENABLED)
-    from .assistant_binding import is_assistant, messages as assistant_messages, output_schema as assistant_schema, committed_reads, query_required, required_query_tool, evidence_reads_required
+    from .assistant_binding import is_assistant, messages as assistant_messages, output_schema as assistant_schema, committed_reads, query_required, required_query_tool, evidence_reads_required, model_tool_names
     assistant=is_assistant(job)
     steps=job_api.request("/steps")
     if assistant and not any(step["state"] == "succeeded" and step["toolName"] == "get_assistant_context" for step in steps):
@@ -69,6 +70,8 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
             raise RuntimeError("ASSISTANT_CONTEXT_UNAVAILABLE")
     if assistant:
         context=next(step["result"].get("data",{}) for step in steps if step["state"]=="succeeded" and step["toolName"]=="get_assistant_context")
+        if context.get("truncated"):
+            raise ModelCallError("MODEL_CONTEXT_LIMIT")
         reads=[]
         if evidence_reads_required(context) and job["assistant"]["taskKind"]=="incident_followup":
             reads=[("get_incident_context",{"incidentId":job["incidentId"]}),("get_formal_references",{})]
@@ -82,6 +85,9 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
             # Allocation reuses committed reads on takeover; a new turn has a new Job.
             tool._invoke(args,None)
         steps=job_api.request("/steps")
+        if job["assistant"]["taskKind"] in ("resource_troubleshooting", "incident_followup"):
+            visible = model_tool_names(context, (tool.name for tool in tools))
+            toolset.tools = [tool for tool in tools if tool.name in visible]
     prior=committed_reads(steps) if assistant else [step["result"] for step in steps if step["state"]=="succeeded" and step["toolName"]!="model"]
     llm=model.provider(BudgetedLLM,api_key_file=api_key_file)
     llm.job_api=job_api
@@ -93,7 +99,10 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
     prompt=assistant_messages(job,prior) if assistant else messages(job,prior)
     schema=assistant_schema() if assistant else OUTPUT_JSON_SCHEMA
     response_format={"type":"json_schema","json_schema":{"name":"AssistantAnswer" if assistant else "InvestigationResult","strict":True,"schema":schema}}
-    result=agent.call(messages=prompt,response_format=response_format)
+    try:
+        result=agent.call(messages=prompt,response_format=response_format)
+    except CompactionInsufficientError:
+        raise ModelCallError("MODEL_CONTEXT_LIMIT") from None
     def decode(text):
         proposal=json.loads(text)
         if assistant:
@@ -109,7 +118,10 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
         repair_steps=job_api.request("/steps")
         repair_prior=committed_reads(repair_steps)
         repair_prompt=assistant_messages(job,repair_prior)+[{"role":"user","content":"The previous response was invalid JSON or violated the output/reference schema. Return one object matching the required schema. resourceSourceSteps must be [], faultChainContextRef must be null: the platform attaches its own references. Use only permitted committed references. Historical checks are not checks executed in this Job. Do not copy platform-owned fields from prior answers."}]
-        repaired=agent.call(messages=repair_prompt,response_format=response_format)
+        try:
+            repaired=agent.call(messages=repair_prompt,response_format=response_format)
+        except CompactionInsufficientError:
+            raise ModelCallError("MODEL_CONTEXT_LIMIT") from None
         try:proposal=decode(repaired.result)
         except (ValueError,TypeError,ValidationError):raise ModelCallError("MODEL_OUTPUT_INVALID") from None
     if llm.requires_query and required_query_tool(job_api.request("/steps")):

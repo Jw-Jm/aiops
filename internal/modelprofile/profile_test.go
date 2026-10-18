@@ -55,3 +55,15 @@ func TestProfileCanonicalReference(t *testing.T) {
 		t.Fatal("canonical digest changed")
 	}
 }
+
+func TestProfileMillionTokenContextBoundary(t *testing.T) {
+	p := fixture(t)
+	p.ContextWindow = 1000000
+	if !p.Valid("127.0.0.1:8083") {
+		t.Fatal("DeepSeek context rejected")
+	}
+	p.ContextWindow++
+	if p.Valid("127.0.0.1:8083") {
+		t.Fatal("unbounded context accepted")
+	}
+}

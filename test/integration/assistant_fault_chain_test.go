@@ -514,12 +514,15 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			follow, err := repo.Submit(requestCtx, b.TenantID, conversation.ConversationID, actor.Subject, "actual-model-explanation", assistant.SubmitMessage{Message: "先调用 get_assistant_context，读取 historicalFaultChainContext 和 historicalFaultChainQueryResults。用中文解释已提交的统计、支持、冲突与缺口，只引用已提交的 Fact/Evidence，不重新查询或修改窗口，不确认根因。", ExpectedConversationRevision: latest.Revision})
+			follow, err := repo.Submit(requestCtx, b.TenantID, conversation.ConversationID, actor.Subject, "actual-model-explanation", assistant.SubmitMessage{Message: "只解释已提交证据：先调用 get_assistant_context，读取 historicalFaultChainContext 和 historicalFaultChainQueryResults。用中文解释已提交的统计、支持、冲突与缺口，只引用已提交的 Fact/Evidence，不重新查询或修改窗口，不确认根因。", ExpectedConversationRevision: latest.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
 			var explanation assistant.Turn
-			for attempt := 0; attempt < 150; attempt++ {
+			// Each model call is bounded by the profile deadline (120s); a turn
+			// may legitimately need several of them plus tool overhead, so the
+			// wait exceeds the worst case instead of racing the deadline.
+			for attempt := 0; attempt < 480; attempt++ {
 				explanation, err = repo.Turn(requestCtx, b.TenantID, follow.TurnID, actor.Subject)
 				if err != nil {
 					t.Fatal(err)
@@ -529,16 +532,78 @@ func TestAssistantActualFaultChainWithoutModel(t *testing.T) {
 				}
 				time.Sleep(time.Second)
 			}
-			var modelCalls, contextReads int
-			if db.QueryRowContext(ctx, `SELECT count(*) FILTER(WHERE tool_name='model'),count(*) FILTER(WHERE tool_name='get_assistant_context' AND state='succeeded') FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2`, b.TenantID, follow.JobID).Scan(&modelCalls, &contextReads) != nil {
+			var modelCalls, modelResponses, contextReads int
+			if db.QueryRowContext(ctx, `SELECT count(*) FILTER(WHERE tool_name='model'),count(*) FILTER(WHERE tool_name='model' AND state='succeeded'),count(*) FILTER(WHERE tool_name='get_assistant_context' AND state='succeeded') FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2`, b.TenantID, follow.JobID).Scan(&modelCalls, &modelResponses, &contextReads) != nil {
 				t.Fatal("model ledger unavailable")
 			}
 			historical, err := repo.FaultChainContext(requestCtx, b.TenantID, turn.TurnID, actor.Subject)
 			if err != nil || graph.ScopeDigest(historical) != graph.ScopeDigest(context) {
 				t.Fatal("model explanation lost committed evidence", err)
 			}
-			modelReceipt = map[string]any{"attempted": true, "turnId": follow.TurnID, "state": explanation.State, "errorCode": explanation.ErrorCode, "modelCalls": modelCalls, "contextReads": contextReads, "evidencePreserved": true, "answer": json.RawMessage(explanation.Answer), "mechanismPassed": modelCalls > 0 && contextReads > 0, "chineseQualityAcceptance": false}
+			modelReceipt = map[string]any{"attempted": true, "turnId": follow.TurnID, "state": explanation.State, "errorCode": explanation.ErrorCode, "modelCalls": modelCalls, "contextReads": contextReads, "evidencePreserved": true, "answer": json.RawMessage(explanation.Answer), "modelResponses": modelResponses, "mechanismPassed": modelResponses > 0 && contextReads > 0, "chineseQualityAcceptance": false}
 			t.Log("actual model explanation outcome", explanation.State, explanation.ErrorCode, "modelCalls", modelCalls, "contextReads", contextReads, "evidence preserved")
+			var newReads int
+			if modelResponses < 1 || (explanation.State != "partial" && explanation.State != "completed") || contextReads < 1 || db.QueryRowContext(ctx, `SELECT count(*) FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name NOT IN('model','get_assistant_context')`, b.TenantID, follow.JobID).Scan(&newReads) != nil || newReads != 0 {
+				t.Fatal("explanation did not use only the committed context", modelCalls, contextReads, newReads)
+			}
+			latest, err = repo.Get(requestCtx, b.TenantID, conversation.ConversationID, actor.Subject)
+			if err != nil {
+				t.Fatal(err)
+			}
+			supplement, err := repo.Submit(requestCtx, b.TenantID, conversation.ConversationID, actor.Subject, "actual-model-supplement", assistant.SubmitMessage{Message: "继续补证：保持同一目标 UID、授权范围和冻结故障窗口，读取该目标的 resource_history、resource_findings、resource_changes，再用中文说明新增观察、反证与缺口，不确认根因。", ExpectedConversationRevision: latest.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			var supplemented assistant.Turn
+			// Same worst-case bound as the explanation turn: several model
+			// calls at the profile deadline plus tool overhead.
+			for attempt := 0; attempt < 480; attempt++ {
+				supplemented, err = repo.Turn(requestCtx, b.TenantID, supplement.TurnID, actor.Subject)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if supplemented.State != "queued" && supplemented.State != "running" {
+					break
+				}
+				time.Sleep(time.Second)
+			}
+			rows, err := db.QueryContext(ctx, `SELECT tool_name,result FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND state='succeeded' AND tool_name IN('resource_history','resource_findings','resource_changes')`, b.TenantID, supplement.JobID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			reads := map[string]int{}
+			for rows.Next() {
+				var tool string
+				var raw []byte
+				var wire struct {
+					Data struct {
+						CanonicalID string                   `json:"canonicalId"`
+						Window      analytics.QueryTimeRange `json:"window"`
+					} `json:"data"`
+				}
+				if rows.Scan(&tool, &raw) != nil || json.Unmarshal(raw, &wire) != nil || wire.Data.CanonicalID != target || wire.Data.Window != window {
+					rows.Close()
+					t.Fatal("supplement changed frozen identity/window", tool)
+				}
+				reads[tool]++
+			}
+			if err := rows.Err(); err != nil {
+				t.Fatal(err)
+			}
+			rows.Close()
+			for _, tool := range []string{"resource_history", "resource_findings", "resource_changes"} {
+				if reads[tool] != 1 {
+					t.Fatal("follow-up did not create exactly one new committed read", tool, reads)
+				}
+			}
+			var supplementCalls, supplementResponses int
+			if db.QueryRowContext(ctx, `SELECT count(*),count(*) FILTER(WHERE state='succeeded') FROM investigation.steps WHERE tenant_id=$1 AND job_id=$2 AND tool_name='model'`, b.TenantID, supplement.JobID).Scan(&supplementCalls, &supplementResponses) != nil || supplementResponses < 1 || (supplemented.State != "partial" && supplemented.State != "completed") {
+				t.Fatal("follow-up never reached actual model")
+			}
+			modelReceipt["supplement"] = map[string]any{"turnId": supplement.TurnID, "state": supplemented.State, "errorCode": supplemented.ErrorCode, "newSourceReads": reads, "frozenIdentityAndWindow": true, "modelCalls": supplementCalls, "modelResponses": supplementResponses, "answer": json.RawMessage(supplemented.Answer)}
+			modelReceipt["explanationNewSourceReads"] = newReads
+			t.Log("actual follow-up new reads", reads, "state", supplemented.State, "modelCalls", supplementCalls)
+
 		}
 		if _, err = repo.FaultChainContext(requestCtx, b.TenantID, turn.TurnID, "different-operator"); err == nil {
 			t.Fatal("cross-owner context disclosed")

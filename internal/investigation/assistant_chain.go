@@ -20,7 +20,7 @@ type ChainLink struct {
 
 func committedAssistantRelations(tool string, data json.RawMessage) map[string]resource.Relation {
 	out := map[string]resource.Relation{}
-	if tool != "get_dependencies" && tool != "get_impact_scope" && tool != "get_resource_context" && tool != "resource_history" {
+	if tool != "query_deepflow" && tool != "get_dependencies" && tool != "get_impact_scope" && tool != "get_resource_context" && tool != "resource_history" {
 		return out
 	}
 	var result struct {

@@ -20,7 +20,11 @@ func NetworkRelations(result evidence.Result) ([]resource.Relation, error) {
 			To                  string    `json:"to"`
 			ObservedAt          time.Time `json:"observedAt"`
 		}
-		if json.Unmarshal(fact.Data, &rows) != nil {
+		payload := fact.Data
+		if len(payload) == 0 {
+			payload = fact.FactSlice // HTTP/archive transport omits the private Data field.
+		}
+		if json.Unmarshal(payload, &rows) != nil {
 			return nil, evidence.ErrArgument
 		}
 		for _, row := range rows {

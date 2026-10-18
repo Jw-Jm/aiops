@@ -85,7 +85,10 @@ func (a *Adapter) SummaryBatch(ctx context.Context, queries []SummaryQuery) ([]N
 	if len(queries) < 1 || len(queries) > 10 {
 		return nil, nil, evidence.ErrBudget
 	}
-	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	// One verified batch covers identity resolution before and after every
+	// window read; on a loaded single-node host that fence alone measured above
+	// 3s, so the batch allowance is 8s. Row and byte budgets are unchanged.
+	ctx, cancel := context.WithTimeout(ctx, 8*time.Second)
 	defer cancel()
 	first := queries[0]
 	for _, q := range queries {

@@ -1,0 +1,34 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation (2.3s)
+
+
+  1) fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 
+
+    Error: apiRequestContext.post: unable to verify the first certificate; if the root CA is installed locally, try running Node.js with --use-system-ca
+    Call log:
+      - → POST https://192.168.0.63:18643/api/v1/assistant/resources:resolve
+        - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+        - Authorization: Bearer [redacted-token]
+        - X-Tenant-ID: 3fb34947-dbd0-4fca-9979-e4ef5ac12c0a
+        - content-type: application/json
+        - content-length: 256
+
+
+      67 |       .poll(
+      68 |         async () => {
+    > 69 |           const resolved = await context.request.post(
+         |                                                  ^
+      70 |             base + "/api/v1/assistant/resources:resolve",
+      71 |             {
+      72 |               headers: headers(),
+        at _test.expect.poll.timeout (/opt/ops-five-source-closure-20261017/e2e/fault_chain_runtime.spec.ts:69:50)
+        at /opt/ops-five-source-closure-20261017/e2e/fault_chain_runtime.spec.ts:66:5
+
+    Error Context: fault-chain-results/fault_chain_runtime-actual-c3362-oration-and-owner-isolation/error-context.md
+
+  1 failed
+    fault_chain_runtime.spec.ts:4:5 › actual OIDC fault-chain collection, stored counts, restoration and owner isolation 

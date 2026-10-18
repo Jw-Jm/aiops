@@ -1,0 +1,38 @@
+..../usr/local/lib/python3.12/site-packages/typer/__init__.py:24: DeprecationWarning: 'click.utils.get_binary_stream' is deprecated and will be removed in Click 9.0.
+  from click.utils import get_binary_stream as get_binary_stream
+/usr/local/lib/python3.12/site-packages/typer/__init__.py:25: DeprecationWarning: 'click.utils.get_text_stream' is deprecated and will be removed in Click 9.0.
+  from click.utils import get_text_stream as get_text_stream
+..WARNING:root:model completion failed kind=MODEL_UNAVAILABLE exception=RuntimeError
+WARNING:root:model completion failed kind=MODEL_TIMEOUT exception=RuntimeError
+.......................WARNING:root:Couldn't find model openai/llama3.1:8b-16k in litellm's model list (tried: openai/llama3.1:8b-16k, llama3.1:8b-16k), using default 200000 tokens for max_input_tokens. To override, set OVERRIDE_MAX_CONTENT_SIZE environment variable to the correct value for your model.
+WARNING:root:Couldn't find model openai/llama3.1:8b-16k in litellm's model list (tried: openai/llama3.1:8b-16k, llama3.1:8b-16k), using 64000 tokens for max_output_tokens. To override, set OVERRIDE_MAX_OUTPUT_TOKEN environment variable to the correct value for your model.
+.FFFWARNING:root:model completion failed kind=MODEL_FAILURE exception=RuntimeError
+.......
+======================================================================
+FAIL: test_profile_context_bound_is_reserved_and_unknown_usage_is_charged (test_initial_tool_choice_unittest.InitialToolChoiceTests.test_profile_context_bound_is_reserved_and_unknown_usage_is_charged) (context=16384)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/services/investigator/tests/test_initial_tool_choice_unittest.py", line 45, in test_profile_context_bound_is_reserved_and_unknown_usage_is_charged
+    self.assertEqual(llm.get_maximum_output_token(),output)
+AssertionError: 64000 != 2048
+
+======================================================================
+FAIL: test_profile_context_bound_is_reserved_and_unknown_usage_is_charged (test_initial_tool_choice_unittest.InitialToolChoiceTests.test_profile_context_bound_is_reserved_and_unknown_usage_is_charged) (context=131072)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/services/investigator/tests/test_initial_tool_choice_unittest.py", line 45, in test_profile_context_bound_is_reserved_and_unknown_usage_is_charged
+    self.assertEqual(llm.get_maximum_output_token(),output)
+AssertionError: 64000 != 4096
+
+======================================================================
+FAIL: test_profile_context_bound_is_reserved_and_unknown_usage_is_charged (test_initial_tool_choice_unittest.InitialToolChoiceTests.test_profile_context_bound_is_reserved_and_unknown_usage_is_charged) (context=1000000)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/services/investigator/tests/test_initial_tool_choice_unittest.py", line 45, in test_profile_context_bound_is_reserved_and_unknown_usage_is_charged
+    self.assertEqual(llm.get_maximum_output_token(),output)
+AssertionError: 120000 != 8192
+
+----------------------------------------------------------------------
+Ran 38 tests in 0.366s
+
+FAILED (failures=3)

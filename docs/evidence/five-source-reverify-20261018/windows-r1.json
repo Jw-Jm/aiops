@@ -1,0 +1,543 @@
+{
+  "schemaVersion": "fault-chain-window-proof/v1",
+  "status": "FAIL",
+  "namespace": "ops-assistant-deepflow-20261013",
+  "release": "fault-chain-20261014",
+  "nativePods": [
+    {
+      "name": "fault-chain-client-79ff8cbd6b-225l8",
+      "uid": "2b9bb954-cb7b-42c7-8bde-665ffeba8605",
+      "containerIds": [
+        "containerd://6bffad1d11aeaf4a29a11e5c573656160e02234bb3206fde54993e744d96d4de"
+      ]
+    },
+    {
+      "name": "fault-chain-server-66b747979c-xmgl7",
+      "uid": "d5c42e77-453b-43d0-a541-b266968a1aa2",
+      "containerIds": [
+        "containerd://d945c1559f8232e5e9ca39bfc81babc966e12c335d8c5dd03a91f58d2a6027d8"
+      ]
+    }
+  ],
+  "golden": [
+    {
+      "fromUnix": 1792285394,
+      "toUnix": 1792285454,
+      "codes": {
+        "503": 10,
+        "200": 990
+      },
+      "transportFailures": 0,
+      "refused": 0,
+      "finishedAt": 1792285396.8040295
+    },
+    {
+      "fromUnix": 1792285454,
+      "toUnix": 1792285514,
+      "codes": {
+        "503": 50,
+        "200": 950
+      },
+      "transportFailures": 0,
+      "refused": 100,
+      "finishedAt": 1792285474.3728302
+    },
+    {
+      "fromUnix": 1792285514,
+      "toUnix": 1792285574,
+      "codes": {
+        "200": 1000
+      },
+      "transportFailures": 0,
+      "refused": 0,
+      "finishedAt": 1792285516.6087472
+    }
+  ],
+  "measurements": [
+    {
+      "http": [
+        {
+          "tap_side": "c-p",
+          "response_code": 200,
+          "observations": 990,
+          "duration_us": 1886313
+        },
+        {
+          "tap_side": "s",
+          "response_code": 200,
+          "observations": 990,
+          "duration_us": 102310
+        },
+        {
+          "tap_side": "c",
+          "response_code": 503,
+          "observations": 10,
+          "duration_us": 1301
+        },
+        {
+          "tap_side": "c-p",
+          "response_code": 503,
+          "observations": 10,
+          "duration_us": 1458
+        },
+        {
+          "tap_side": "s-p",
+          "response_code": 200,
+          "observations": 990,
+          "duration_us": 72637
+        },
+        {
+          "tap_side": "c",
+          "response_code": 200,
+          "observations": 990,
+          "duration_us": 111527
+        },
+        {
+          "tap_side": "s-p",
+          "response_code": 503,
+          "observations": 10,
+          "duration_us": 851
+        },
+        {
+          "tap_side": "s",
+          "response_code": 503,
+          "observations": 10,
+          "duration_us": 1209
+        }
+      ],
+      "tcp": [
+        {
+          "tap_side": "c",
+          "status": 2,
+          "close_type": 0,
+          "observations": 38,
+          "retrans_tx": 38,
+          "retrans_rx": 38
+        },
+        {
+          "tap_side": "c",
+          "status": 0,
+          "close_type": 1,
+          "observations": 924,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "s",
+          "status": 0,
+          "close_type": 1,
+          "observations": 924,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "s",
+          "status": 2,
+          "close_type": 0,
+          "observations": 38,
+          "retrans_tx": 38,
+          "retrans_rx": 38
+        }
+      ],
+      "responses": 1000,
+      "errors": 10,
+      "meanMs": 0.073488,
+      "failureObservations": 0,
+      "tcpRecords": 962,
+      "retransmissions": 76
+    },
+    {
+      "http": [
+        {
+          "tap_side": "c-p",
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 20129285
+        },
+        {
+          "tap_side": "s",
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 20103423
+        },
+        {
+          "tap_side": "c",
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 5105
+        },
+        {
+          "tap_side": "c-p",
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 5852
+        },
+        {
+          "tap_side": "s-p",
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 20076614
+        },
+        {
+          "tap_side": "c",
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 20112399
+        },
+        {
+          "tap_side": "s-p",
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 3399
+        },
+        {
+          "tap_side": "s",
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 4664
+        }
+      ],
+      "tcp": [
+        {
+          "tap_side": "s",
+          "status": 3,
+          "close_type": 15,
+          "observations": 100,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "c",
+          "status": 0,
+          "close_type": 1,
+          "observations": 1000,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "c",
+          "status": 3,
+          "close_type": 15,
+          "observations": 100,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "s",
+          "status": 0,
+          "close_type": 1,
+          "observations": 1000,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        }
+      ],
+      "responses": 1000,
+      "errors": 50,
+      "meanMs": 20.080012999999997,
+      "failureObservations": 100,
+      "tcpRecords": 1100,
+      "retransmissions": 0
+    },
+    {
+      "http": [
+        {
+          "tap_side": "c-p",
+          "response_code": 200,
+          "observations": 1000,
+          "duration_us": 2234600
+        },
+        {
+          "tap_side": "s",
+          "response_code": 200,
+          "observations": 1000,
+          "duration_us": 100815
+        },
+        {
+          "tap_side": "s-p",
+          "response_code": 200,
+          "observations": 1000,
+          "duration_us": 71555
+        },
+        {
+          "tap_side": "c",
+          "response_code": 200,
+          "observations": 1000,
+          "duration_us": 110084
+        }
+      ],
+      "tcp": [
+        {
+          "tap_side": "c",
+          "status": 0,
+          "close_type": 1,
+          "observations": 1000,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "s",
+          "status": 0,
+          "close_type": 1,
+          "observations": 1000,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        }
+      ],
+      "responses": 1000,
+      "errors": 0,
+      "meanMs": 0.07155500000000001,
+      "failureObservations": 0,
+      "tcpRecords": 1000,
+      "retransmissions": 0
+    }
+  ],
+  "previousMeasurements": [
+    {
+      "http": [
+        {
+          "tap_side": "c-p",
+          "response_code": 200,
+          "observations": 990,
+          "duration_us": 1886313
+        },
+        {
+          "tap_side": "s",
+          "response_code": 200,
+          "observations": 990,
+          "duration_us": 102310
+        },
+        {
+          "tap_side": "c",
+          "response_code": 503,
+          "observations": 10,
+          "duration_us": 1301
+        },
+        {
+          "tap_side": "c-p",
+          "response_code": 503,
+          "observations": 10,
+          "duration_us": 1458
+        },
+        {
+          "tap_side": "s-p",
+          "response_code": 200,
+          "observations": 990,
+          "duration_us": 72637
+        },
+        {
+          "tap_side": "c",
+          "response_code": 200,
+          "observations": 990,
+          "duration_us": 111527
+        },
+        {
+          "tap_side": "s-p",
+          "response_code": 503,
+          "observations": 10,
+          "duration_us": 851
+        },
+        {
+          "tap_side": "s",
+          "response_code": 503,
+          "observations": 10,
+          "duration_us": 1209
+        }
+      ],
+      "tcp": [
+        {
+          "tap_side": "c",
+          "status": 2,
+          "close_type": 0,
+          "observations": 38,
+          "retrans_tx": 38,
+          "retrans_rx": 38
+        },
+        {
+          "tap_side": "c",
+          "status": 0,
+          "close_type": 1,
+          "observations": 924,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "s",
+          "status": 0,
+          "close_type": 1,
+          "observations": 924,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "s",
+          "status": 2,
+          "close_type": 0,
+          "observations": 38,
+          "retrans_tx": 38,
+          "retrans_rx": 38
+        }
+      ],
+      "responses": 1000,
+      "errors": 10,
+      "meanMs": 0.073488,
+      "failureObservations": 0,
+      "tcpRecords": 962,
+      "retransmissions": 76
+    },
+    {
+      "http": [
+        {
+          "tap_side": "c-p",
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 20129285
+        },
+        {
+          "tap_side": "s",
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 20103423
+        },
+        {
+          "tap_side": "c",
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 5105
+        },
+        {
+          "tap_side": "c-p",
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 5852
+        },
+        {
+          "tap_side": "s-p",
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 20076614
+        },
+        {
+          "tap_side": "c",
+          "response_code": 200,
+          "observations": 950,
+          "duration_us": 20112399
+        },
+        {
+          "tap_side": "s-p",
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 3399
+        },
+        {
+          "tap_side": "s",
+          "response_code": 503,
+          "observations": 50,
+          "duration_us": 4664
+        }
+      ],
+      "tcp": [
+        {
+          "tap_side": "s",
+          "status": 3,
+          "close_type": 15,
+          "observations": 100,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "c",
+          "status": 0,
+          "close_type": 1,
+          "observations": 1000,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "c",
+          "status": 3,
+          "close_type": 15,
+          "observations": 100,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "s",
+          "status": 0,
+          "close_type": 1,
+          "observations": 1000,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        }
+      ],
+      "responses": 1000,
+      "errors": 50,
+      "meanMs": 20.080012999999997,
+      "failureObservations": 100,
+      "tcpRecords": 1100,
+      "retransmissions": 0
+    },
+    {
+      "http": [
+        {
+          "tap_side": "c-p",
+          "response_code": 200,
+          "observations": 1000,
+          "duration_us": 2234600
+        },
+        {
+          "tap_side": "s",
+          "response_code": 200,
+          "observations": 1000,
+          "duration_us": 100815
+        },
+        {
+          "tap_side": "s-p",
+          "response_code": 200,
+          "observations": 1000,
+          "duration_us": 71555
+        },
+        {
+          "tap_side": "c",
+          "response_code": 200,
+          "observations": 1000,
+          "duration_us": 110084
+        }
+      ],
+      "tcp": [
+        {
+          "tap_side": "c",
+          "status": 0,
+          "close_type": 1,
+          "observations": 1000,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        },
+        {
+          "tap_side": "s",
+          "status": 0,
+          "close_type": 1,
+          "observations": 1000,
+          "retrans_tx": 0,
+          "retrans_rx": 0
+        }
+      ],
+      "responses": 1000,
+      "errors": 0,
+      "meanMs": 0.07155500000000001,
+      "failureObservations": 0,
+      "tcpRecords": 1000,
+      "retransmissions": 0
+    }
+  ],
+  "observationPoints": {
+    "http": "s-p",
+    "tcp": "s"
+  },
+  "timeReliable": false,
+  "polls": 35,
+  "settleSeconds": 180,
+  "stable": false,
+  "sourceErrors": [],
+  "tcpFailureDefinition": "status 3/4 records; not unique failed connections or failed user requests",
+  "retransmissionDefinition": "sum of per-report-period tx/rx counts, one observation point; not packet-loss rate"
+}

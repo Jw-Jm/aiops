@@ -79,3 +79,35 @@ kubectl -n ops-assistant-deepflow-20261013 rollout status deployment/network-cli
 同步脚本递归核对指定叶值，保留现有 metric、recovery_threshold 等配置。
 绕过只影响 Agent 系统负载保护，不绕过平台原生 UID、范围、权限、来源新鲜度
 或非空 L7 证明；仍须以实际数据复验。
+
+## 独立对账探针
+
+`fault-chain-probe.py` 与 `fault-chain-window-probe.py` 是来源对账的独立
+oracle：真实记录来自 owned client Pod 内部，探针只读取 DeepFlow 的 D1 元数据
+（`tap_side`、`l7_protocol`、`type`、`response_code`、`status`、计数与耗时），
+不读取 URL、header 或正文。
+
+- 判据仍是“某单一观测点的完成 HTTP 会话数恰好等于独立记录”，不放宽为近似或
+  区间；`--count` 下界 200，`--wait-seconds` 两个脚本统一为 30～600，默认 240。
+- 三窗口刺激对每个 HTTP/refused 连接绑定本轮未用的源端口，并记录
+  `uniqueClientPorts=1000+refused`。否则短连接复用四元组时，HTTP 请求数不能
+  直接作为 L4 记录数的独立 oracle；2026-10-18 实测 1000 响应/962 端口/962 L4。
+  保留每请求 5ms 间隔降低峰值，所有精确总体与稳定性复读条件不变。
+- 入库是渐进的：首轮为空只记为一次轮询，探针在有界窗口内重试；命中后 10 秒复读
+  一次，只有复读完全一致才写 PASS，`ingestLagSeconds` 与 `confirmSeconds` 分开记录。
+- 失败必须可归因，`failureClass` 区分
+  `collector_blackout_downstream_of_agent_or_ingest`（同 namespace 其它 Pod 也没有
+  L7，属于采集/入库空洞）、`namespace_without_pair`（同 namespace 有其它采集，
+  pair 没有）、`count_unstable_late_rows`（复读与首读不一致，窗口仍在增长）、
+  `count_mismatch`、`group_budget_exceeded` 等；报告同时保留 `pairObservations`、
+  `namespaceOtherObservations` 与 `agentRestarts` 前后值。
+- 一次源错误不会让三窗口探针丢失报告：`sourceErrors` 记录失败轮次，`stable`
+  明确是否经过复读确认，`previousMeasurements` 保留上一轮测量。
+- Agent 重新附加 eBPF 期间没有任何 L7 记录，两个探针都不会把它读成“0 个 5xx”；
+  采集空洞只能等下一次独立窗口，不能用历史或放宽判据补。
+
+```sh
+python3 scripts/deepflow-dev/fault-chain-probe.py --report reports/http-proof.json --count 1000
+python3 scripts/deepflow-dev/fault-chain-window-probe.py --report reports/window-proof.json
+python3 -m unittest discover -s scripts/deepflow-dev -p 'test_*.py'
+```

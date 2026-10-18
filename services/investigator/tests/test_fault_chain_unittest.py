@@ -152,26 +152,24 @@ class FaultChainFixedCollection(unittest.TestCase):
         self.assertIn(("get_resource_health", {"canonicalId": "peer"}), ledger.allocations)
         self.assertEqual(answer["entityRefs"], ["other-caller", "peer", "shared-node", "target"])
 
-    def test_l7_scope_failure_uses_distinct_admitted_l4_fallback(self):
-        class DegradedL7Bridge(Bridge):
+    def test_relation_read_uses_frozen_fault_window_and_plans_historical_peer(self):
+        class RelationBridge(BudgetBridge):
             def call(self, name, args, allocation):
-                result = self.result(name)
-                result["budget"]["remaining"] = {"toolCalls": 15, "rawQueries": 5}
-                if name == "get_assistant_context":
-                    result["data"]["requestedAt"] = "2026-10-14T01:01:00Z"
-                    result["data"]["networkCapabilities"] = [{"l7": "live"}]
-                elif name == "query_deepflow" and args["operation"] == "get l7 context":
-                    # Legacy degradation is committed as succeeded by the
-                    # ledger; identical arguments would replay this result.
-                    result["errorCode"] = "SOURCE_DEGRADED"
-                    result["data"] = {"sourceErrorCode": "SOURCE_SCOPE_UNVERIFIED"}
+                result = super().call(name, args, allocation)
+                if name == "query_deepflow":
+                    # The live overlay has expired; only this admitted projection
+                    # knows the peer that communicated during the frozen window.
+                    result["data"] = {"nodes": [{"canonicalId": "peer-0", "kind": "Pod"}], "relationReferences": [{"from": "target", "to": "peer-0", "kind": "communicates_with", "relationDigest": "frozen"}]}
+                elif name == "get_dependencies":
+                    result["data"] = {"nodes": [], "relationReferences": []}
                 return result
         ledger = Ledger()
-        collect({"budget": {"toolCalls": 20, "rawQueries": 6}}, ledger, DegradedL7Bridge())
+        bridge = RelationBridge(5, peers=1)
+        collect({}, ledger, bridge)
         reads = [args for name, args in ledger.allocations if name == "query_deepflow"]
-        self.assertEqual([r["operation"] for r in reads], ["get l7 context", "get network health"])
-        self.assertEqual(reads[0]["timeRange"], reads[1]["timeRange"])
-        self.assertEqual(reads[0]["resourceCanonicalId"], reads[1]["resourceCanonicalId"])
+        self.assertEqual(reads, [{"resourceCanonicalId": "target", "operation": "get dependencies", "timeRange": {"from": "2026-10-14T01:00:00Z", "to": "2026-10-14T01:01:00Z"}}])
+        self.assertTrue(bridge.queries)
+        self.assertTrue(all(q["networkSelection"]["peerCanonicalId"] == "peer-0" for q in bridge.queries))
 
     def test_missing_network_data_preserves_causal_gaps_without_model(self):
         ledger = Ledger()
