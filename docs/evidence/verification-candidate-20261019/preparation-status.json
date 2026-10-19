@@ -32,12 +32,18 @@
   },
   "environmentObservations": [
     {
+      "command": "ctr image inventory piped to rg",
+      "result": "INCOMPLETE_INTERRUPTED",
+      "reason": "remote rg unavailable; initial read session interrupted",
+      "performanceTuned": false
+    },
+    {
       "command": "ctr -n k8s.io images list -q",
       "result": "TIMEOUT",
       "boundSeconds": 15,
       "rootCause": "not_established",
-      "retried": false,
-      "performanceTuned": false
+      "performanceTuned": false,
+      "furtherRetries": 0
     }
   ],
   "blockers": [

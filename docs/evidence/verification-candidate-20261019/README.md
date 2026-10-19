@@ -6,7 +6,7 @@
 
 源归档与测试二进制传至独立远程目录后重新核对 SHA256，在原专用测试 PostgreSQL 端点上，由现有 fixture 创建随机新数据库执行 `TestSP07CommandTransactionAndClaim`。冻结报告/人工关联和受控探测的两个子用例均通过，未跳过。数据库真实运行，Policy、Protector、传输仍使用测试替身；不是实际 Kubernetes、Transit、模型、TCP/HTTP Service 或 PVC 写读验收。详见 [数据库结果](database-verification.json) 和 [测试日志](database-verification.log)。测试数据库含审计记录，按已有保留逻辑保留，未删库或清除 Evidence/Audit。
 
-远程 `ctr -n k8s.io images list -q` 有界查询 15 秒超时，未重复、重启、扩容或性能调优；根因尚未建立，不直接归因为机器性能。旧签名包不含 Web 且版本为历史源码，不能配上新二进制直接用于当前安装。当前候选尚缺新 OCI、源码/许可证/SBOM 配对与完整签名 Bundle，所以没有直接 Helm 更新或替换既有服务。
+首次远程镜像清单筛选因目标没有 `rg` 未完成，已中止该读取会话；随后用 Python 筛选的 `ctr -n k8s.io images list -q` 有界读取 15 秒超时，之后未继续查询、重启、扩容或性能调优；根因尚未建立，不直接归因为机器性能。旧签名包不含 Web 且版本为历史源码，不能配上新二进制直接用于当前安装。当前候选尚缺新 OCI、源码/许可证/SBOM 配对与完整签名 Bundle，所以没有直接 Helm 更新或替换既有服务。
 
 后续仍按原 Bundle 机制完成新 OCI 与发行材料、独立验签，再在开发环境验证三阶段安装和实际受控 TCP/HTTP/专用 PVC 场景；不得扩大为业务生产卷或集群级授权。历史失败/未覆盖及人工质量 pending 保留，虚拟化/Trace 延期不变。
 
