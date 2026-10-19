@@ -54,7 +54,7 @@ spec:
             - {name: runtime, mountPath: /etc/nginx/conf.d, readOnly: true}
             - {name: runtime, mountPath: /usr/share/nginx/html/runtime-config.json, subPath: runtime-config.json, readOnly: true}
             - {name: tls, mountPath: /etc/ops-tls, readOnly: true}
-            - {name: oidc-ca, mountPath: /etc/ops-tls/oidc-ca.pem, subPath: oidc-ca.pem, readOnly: true}
+            - {name: oidc-ca, mountPath: /etc/ops-oidc-ca, readOnly: true}
       volumes:
         - {name: tmp, emptyDir: {medium: Memory, sizeLimit: 32Mi}}
         - {name: runtime, configMap: {name: ops-web-runtime}}
