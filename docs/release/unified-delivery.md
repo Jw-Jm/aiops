@@ -63,3 +63,5 @@ DEL-003：最终提交和整套制品尚未冻结；本轮只整理源代码合�
 受控探测增补（2026-10-19）：可选 verification 使用 execution-request/v4，Runner claim/finish 和 command-post-check/v1 增加认证回执；普通 v1/v2/v3 保持。API、Worker、Runner 镜像、Web、Schema 和已准入 ops-verify Profile 必须同批冻结。没有新增迁移或自动扩大权限；专用 PVC 另需同 Runner namespace 的显式准备。详见[受控验证记录](controlled-verification-closeout.md)。统一安装 DEL-001/002 和远程运行准入继续待后续阶段。
 
 统一安装增补（2026-10-19）：DEL-001 的功能接线已完成，详见[本轮功能记录](unified-installer-closeout.md)。DEL-002 仍待逐架构交付；远程部署、性能、质量、发行状态不因本地开发检查改变。
+
+开发候选增补（2026-10-19）：功能源码快照 `1a7c7da` 已生成 5 个 Linux/amd64 二进制、Web 静态构建与两个 Chart，41 个文件摘要通过；远程独立 PostgreSQL 的执行关联/受控回执事务用例通过。新 OCI/源码许可证SBOM配对、完整签名 Bundle 与实际三阶段安装/探测仍未完成，详见[候选记录](../evidence/verification-candidate-20261019/README.md)。远程镜像清单有界查询超时仅记录，未作性能调优或替换服务。

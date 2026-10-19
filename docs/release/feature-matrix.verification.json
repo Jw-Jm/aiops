@@ -33,7 +33,7 @@
     "docs/release/unified-installer-closeout.md"
   ],
   "localChecks": "PASS_BOUNDED_LOCAL",
-  "databaseIntegration": "COMPILE_ONLY_NOT_RUN",
+  "databaseIntegration": "SP07_TRANSACTION_PASS_OTHER_SUITES_NOT_RUN",
   "scenarioDevelopment": {
     "record": "docs/release/scenario-postcheck-closeout.md",
     "runtime": "not_run",
@@ -64,5 +64,12 @@
     "runtime": "not_run",
     "newBundleBuiltOrSigned": false,
     "remoteAccess": false
+  },
+  "candidateVerification": {
+    "record": "docs/evidence/verification-candidate-20261019/preparation-status.json",
+    "sourceCommit": "1a7c7da4af7d74d80df0df0aec72868cbe2785cc",
+    "databaseIntegration": "PASS_ISOLATED_SP07_TRANSACTIONS",
+    "liveProbe": "not_run",
+    "deployment": "not_run"
   }
 }

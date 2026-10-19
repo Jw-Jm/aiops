@@ -1,0 +1,61 @@
+{
+  "sourceCommit": "1a7c7da4af7d74d80df0df0aec72868cbe2785cc",
+  "result": "CANDIDATE_PREPARED_DATABASE_PASS_RUNTIME_NOT_RUN",
+  "localCandidatePath": "/Users/mssc/Documents/Code/ops/.artifacts/release-candidates/20261019-1a7c7da",
+  "remoteTestPath": "/opt/ops-verification-20261019-1a7c7da",
+  "checks": [
+    {
+      "command": "make check-local",
+      "result": "PASS",
+      "scope": "Go unit/contract/vet/security, Python, Web components/SSE and TypeScript"
+    },
+    {
+      "command": "pnpm --dir web build",
+      "result": "PASS",
+      "note": "chunk size warning retained; no performance work"
+    },
+    {
+      "command": "isolated remote TestSP07CommandTransactionAndClaim",
+      "result": "PASS",
+      "scope": "PostgreSQL transactions with existing policy/protector/transport doubles"
+    },
+    {
+      "command": "candidate file SHA256/size verification",
+      "result": "PASS",
+      "fileCount": 41
+    }
+  ],
+  "retention": {
+    "database": "sp03_mig_053565bcca454b258f96d4c12bdc57d6",
+    "reason": "audit.records",
+    "deleted": false
+  },
+  "environmentObservations": [
+    {
+      "command": "ctr -n k8s.io images list -q",
+      "result": "TIMEOUT",
+      "boundSeconds": 15,
+      "rootCause": "not_established",
+      "retried": false,
+      "performanceTuned": false
+    }
+  ],
+  "blockers": [
+    "latest source OCI images and corresponding source/license/SBOM pairing not prepared",
+    "existing signed amd64-sp01-sp07-20261010-r12 lacks Web and contains historical API/Worker/Runner/Chart",
+    "remote container image inventory unavailable within the bounded read"
+  ],
+  "qualification": {
+    "newBundleBuiltOrSigned": false,
+    "liveDeploymentPerformed": false,
+    "liveTCPHTTPPVCProbePerformed": false,
+    "releaseAdmitted": false
+  },
+  "next": [
+    "complete exact per-component OCI and distribution materials from this candidate source",
+    "build and independently verify new signed Bundle using existing mechanisms",
+    "then run three-stage development installation and controlled TCP/HTTP/dedicated PVC scenarios"
+  ],
+  "candidateCopyReceipt": "candidate-copy-receipt.json",
+  "remoteCandidatePath": "/opt/ops-verification-20261019-1a7c7da/candidate"
+}

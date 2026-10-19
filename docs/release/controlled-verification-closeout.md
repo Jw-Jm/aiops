@@ -42,3 +42,5 @@ TCP 建立实际连接；连接被拒绝为 not_resolved，超时、无权限、
 本地 `make check-local` 通过：Go 单元/合同、安全、vet、Python 及 Web；Web 82 个组件用例、5 个 SSE 协议测试及 TypeScript 通过。`make check-delivery` 的生成物、既有源码材料和交付合同通过。新增网络/文件、回执与 Runner 分支定向测试通过；Go 全仓构建与受影响包/Integration vet 通过，Runner Linux/amd64 交叉编译通过。
 
 数据库集成新增参数绑定/变更拒绝、回执缺失拒绝、精确输出、幂等回放与未归档拒绝用例，仅完成编译，未在 PostgreSQL 执行。上述网络用例使用本地测试服务，文件用例使用临时目录；不是远程 Service、PVC 或应用验收。历史失败、未运行、人工模型质量 pending 不改写；KubeVirt/CDI、Trace 和 PyRCA 边界不变。
+
+后续验证（2026-10-19）：源码候选 `1a7c7da` 已在远程专用 PostgreSQL 上执行完整 `TestSP07CommandTransactionAndClaim`，包含关联/冻结报告与受控回执两个子用例，均通过且无跳过；原本轮“仅编译”的说明为前一阶段记录。真实 Kubernetes/TCP/HTTP/PVC/Transit 路径仍未验收，见[候选与实际范围](../evidence/verification-candidate-20261019/README.md)。

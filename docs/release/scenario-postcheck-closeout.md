@@ -37,3 +37,5 @@ API、Worker、Schema 和 Web 必须同批交付；未验证新旧混合运行�
 没有访问远程机器、部署、调优或追加容量/浏览器运行。历史失败、未运行项和人工质量 pending 保留；KubeVirt/CDI、Trace 补全和 PyRCA 边界不变。
 
 后续功能增补：[受控 TCP/HTTP 与专用 PVC 文件写读](controlled-verification-closeout.md) 已加入显式关联探测执行。该增补不追认本记录当时未覆盖的运行验收，也不改变原生判据本身的证明范围。
+
+后续验证（2026-10-19）：源码候选 `1a7c7da` 已在远程专用 PostgreSQL 上执行完整 `TestSP07CommandTransactionAndClaim`，包含关联/冻结报告与受控回执两个子用例，均通过且无跳过；原本轮“仅编译”的说明为前一阶段记录。真实 Kubernetes/TCP/HTTP/PVC/Transit 路径仍未验收，见[候选与实际范围](../evidence/verification-candidate-20261019/README.md)。
