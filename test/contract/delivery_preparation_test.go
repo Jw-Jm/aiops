@@ -54,9 +54,16 @@ func TestDeliveryPreparationSourceBaseline(t *testing.T) {
 	if baseline.SchemaVersion != "delivery-preparation/v1" || baseline.Status != "preparation_only" || baseline.Scope != "nonvirtual-core" {
 		t.Fatal("preparation must not claim release qualification")
 	}
-	for _, key := range []string{"deploymentPerformed", "upgradePerformed", "rollbackPerformed", "newBundleBuiltOrSigned", "releaseAdmitted"} {
+	for _, key := range []string{"deploymentPerformed", "upgradePerformed", "rollbackPerformed", "releaseAdmitted"} {
 		if value, ok := baseline.Qualification[key]; !ok || value {
 			t.Fatalf("preparation claims %s", key)
+		}
+	}
+	if baseline.Qualification["newBundleBuiltOrSigned"] {
+		candidate := baseline.SourceBinding["signedCandidate"].(map[string]any)
+		record := read(candidate["evidence"].(string))
+		if record["runtimeBundle"].(map[string]any)["builtAndSigned"] != true || record["toolsBundle"].(map[string]any)["previousTrustedInstallerVerification"] != "PASS" || record["releaseAdmitted"] != false {
+			t.Fatal("signed candidate must have bounded preparation evidence without claiming release admission")
 		}
 	}
 	for _, key := range []string{"finalCommit", "bundleId", "imageDigests"} {

@@ -13,13 +13,21 @@
     "webPackage": null
   },
   "sourceBinding": {
-    "state": "candidate_prepared_release_unfrozen",
+    "state": "signed_candidates_full_independent_verification_incomplete",
     "finalCommit": null,
     "bundleId": null,
     "imageDigests": null,
     "note": "本文件是源码兼容准备基线，不是 Bundle inventory、签名回执或发行许可。正式冻结后由既有 BuildSpec/Manifest 绑定实际提交、逐架构镜像和源码材料。",
     "candidateCommit": "1a7c7da4af7d74d80df0df0aec72868cbe2785cc",
-    "candidateManifest": "docs/evidence/verification-candidate-20261019/candidate-manifest.json"
+    "candidateManifest": "docs/evidence/verification-candidate-20261019/candidate-manifest.json",
+    "signedCandidate": {
+      "runtimeCommit": "1a7c7da4af7d74d80df0df0aec72868cbe2785cc",
+      "installerCommit": "9ade735",
+      "installerBundleId": "unified-amd64-installer-20261019-r2",
+      "runtimeBundleId": "unified-amd64-20261019-r2",
+      "evidence": "docs/evidence/unified-amd64-20261019/material-status.json",
+      "independentFullPayloadVerification": "incomplete_no_completion_receipt"
+    }
   },
   "components": [
     {
@@ -197,12 +205,12 @@
     {
       "id": "DEL-003",
       "status": "pending",
-      "title": "当前源码未冻结，整套新制品及跨版本运行未验证",
+      "title": "候选包已签名，完整独立复核与整套运行未完成",
       "evidence": [
         "internal/bundle/build.go",
         "internal/bundle/verify.go"
       ],
-      "requiredBeforeRelease": "冻结提交、独立逐架构 BuildSpec、当前 OCI/Chart/源码/许可证/SBOM 和签名 Bundle；再安排真实升级与回退演练。"
+      "requiredBeforeRelease": "先取得 Core 完整 payload 的独立复核完成回执，再以同一签名包完成独立环境的安装与功能闭环；升级回退和发行仍按各自阶段安排。"
     },
     {
       "id": "DEL-004",
@@ -219,7 +227,7 @@
     "deploymentPerformed": false,
     "upgradePerformed": false,
     "rollbackPerformed": false,
-    "newBundleBuiltOrSigned": false,
+    "newBundleBuiltOrSigned": true,
     "releaseAdmitted": false
   },
   "runbooks": [
