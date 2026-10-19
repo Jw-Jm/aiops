@@ -30,7 +30,7 @@ sp08:
   ingressCIDRs: [192.0.2.0/24]
 ```
 
-端点、客户端、CIDR 和端口须替换成实际已登记环境值；示例域名不证明可连通。OIDC realm 初始化 callback 应等于 `publicOrigin + /api/v1/auth/callback`，回调/origin/PKCE/LoA-2 仍按现有初始化流程核对，不自动重写 realm。
+端点、客户端、CIDR 和端口须替换成实际已登记环境值；示例域名不证明可连通。OIDC realm 初始化应显式设置 `clientMode: browser-pkce`，callback 等于 `publicOrigin + /auth/callback`，不传 clientSecret；另登记同源 `/auth/silent-callback`，回调/origin/PKCE/LoA-2 仍按现有初始化流程核对，不自动重写 realm。
 
 ## 阶段和回执
 

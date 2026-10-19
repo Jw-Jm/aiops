@@ -20,6 +20,7 @@ var RealmTemplate []byte
 type OIDCInput struct {
 	SchemaVersion int       `json:"schemaVersion"`
 	CallbackURL   string    `json:"callbackURL"`
+	ClientMode    string    `json:"clientMode,omitempty"`
 	TenantID      uuid.UUID `json:"tenantId"`
 	Username      string    `json:"username"`
 	Email         string    `json:"email"`
@@ -35,10 +36,16 @@ type OIDCPrivateInput struct {
 
 func (c OIDCInput) Validate(private OIDCPrivateInput) error {
 	u, err := url.Parse(c.CallbackURL)
-	if c.SchemaVersion != 1 || err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.Path != "/api/v1/auth/callback" || strings.Contains(u.Host, "*") || c.TenantID == uuid.Nil || len(c.Username) < 3 || len(c.Username) > 200 || strings.TrimSpace(c.FirstName) == "" || strings.TrimSpace(c.LastName) == "" || !strings.Contains(c.Email, "@") {
+	callback := "/api/v1/auth/callback"
+	if c.ClientMode == "browser-pkce" {
+		callback = "/auth/callback"
+	} else if c.ClientMode != "" && c.ClientMode != "confidential" {
+		return errors.New("unknown OIDC client mode")
+	}
+	if c.SchemaVersion != 1 || err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.Path != callback || strings.Contains(u.Host, "*") || c.TenantID == uuid.Nil || len(c.Username) < 3 || len(c.Username) > 200 || strings.TrimSpace(c.FirstName) == "" || strings.TrimSpace(c.LastName) == "" || !strings.Contains(c.Email, "@") {
 		return errors.New("explicit HTTPS callback, tenant and named initial subject required")
 	}
-	if len(private.BootstrapUsername) < 1 || len(private.BootstrapPassword) < 24 || len(private.ClientSecret) < 24 || len(private.SubjectPassword) < 24 || private.BootstrapPassword == private.SubjectPassword {
+	if len(private.BootstrapUsername) < 1 || len(private.BootstrapPassword) < 24 || len(private.SubjectPassword) < 24 || private.BootstrapPassword == private.SubjectPassword || (c.ClientMode == "browser-pkce" && private.ClientSecret != "") || (c.ClientMode != "browser-pkce" && len(private.ClientSecret) < 24) {
 		return errors.New("separate explicit bootstrap, client and subject credentials required")
 	}
 	return nil
@@ -58,6 +65,12 @@ func BuildOIDCRealm(c OIDCInput, private OIDCPrivateInput) ([]byte, error) {
 			client["redirectUris"] = []string{c.CallbackURL}
 			client["webOrigins"] = []string{callback.Scheme + "://" + callback.Host}
 			client["secret"] = private.ClientSecret
+			if c.ClientMode == "browser-pkce" {
+				client["publicClient"] = true
+				delete(client, "secret")
+				delete(client, "clientAuthenticatorType")
+				client["redirectUris"] = []string{c.CallbackURL, callback.Scheme + "://" + callback.Host + "/auth/silent-callback"}
+			}
 		}
 	}
 	return json.Marshal(realm)

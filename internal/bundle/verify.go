@@ -26,6 +26,7 @@ var firstPartyMaterialNames = map[string]struct{}{
 	"platform-api":             {},
 	"platform-worker":          {},
 	"platform-web":             {},
+	"platform-web-source":      {},
 	"opsctl":                   {},
 	"ops-platform-chart":       {},
 	"ops-dependencies-chart":   {},

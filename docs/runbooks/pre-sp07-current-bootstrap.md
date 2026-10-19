@@ -185,3 +185,5 @@ Archive IAM 激活时使用滚动重启新增了 StatefulSet 的 `kubectl.kubern
 ## 可选 Web 与助手统一输入（2026-10-19）
 
 在 dependencies 前固定完整 `sp08` 与 `sp06.assistant` 输入，后两阶段保持相同摘要；不得修改旧回执启用能力。配置示例、独立 TLS/OIDC CA 准备、模型 Profile、阶段隔离和 amd64 限制见[统一安装配置说明](../release/unified-installer-closeout.md)。business 前预置 Web Secret `web.crt/web.key` 及 OIDC CA ConfigMap `oidc-ca.pem`，OIDC callback/origin 与 publicOrigin 一致；仍按现有命令完成身份与来源注册，不直接 Helm 部署。
+
+浏览器 Web 使用 `bootstrap oidc-realm` 的显式 `clientMode: browser-pkce`：callbackURL 为 `publicOrigin + /auth/callback`，私有输入不提供 clientSecret；CLI 固定公有 S256 PKCE、同源 silent callback、关闭 implicit/direct grant，保留原 LoA/tenant 配置。旧默认 confidential 模式仍使用 `/api/v1/auth/callback` 和独立 clientSecret，不把旧 realm 自动修改为新模式。

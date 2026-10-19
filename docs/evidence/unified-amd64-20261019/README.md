@@ -7,3 +7,5 @@
 Web 源码原文与 notice 摘要核对记录于 `web-source-verification.json`；nginx 发布 GPG 签名未验证的原始状态保留。调查服务/Runner 的当前 amd64 有限许可身份仅重新绑定精确镜像/对应源码，所有 1,773 个原 notice 与 ADR 摘要均已复核，依赖身份和条款不变，见 `native-admission-renewal.json`。ARM64 不变。源归档、构建配方和原文共同随后续签名物料交付，不把组件升级或 Fixture 当成延期能力恢复。
 
 下一阶段仍须使用既有签名 Bundle 和独立验签入口，再验证独立环境三阶段安装、真实登录/助手/故障链及实际 Service/PVC 执行链。远程性能问题仅记录，不关闭身份、来源、时间、保留和签名门禁；根目录正式文档与既有用户修改未动。
+
+正式包准备发现并修复浏览器初始化模式缺口：新 `clientMode=browser-pkce` 与前端 `/auth/callback` 一致、无 client secret，并登记同源 silent callback；原 confidential 模式保持兼容。Web 对应源码通过明确的 `platform-web-source` 物料登记，避免添加未声明的 payload 文件；旧原生测试失败与首轮制包拒绝仍保留。
