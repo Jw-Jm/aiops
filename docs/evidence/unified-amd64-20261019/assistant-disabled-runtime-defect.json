@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "unified-amd64-runtime-defect/v1",
+  "observedAt": "2026-10-19",
+  "bundle": {
+    "bundleId": "unified-amd64-20261019-r2",
+    "runtimeSource": "1a7c7da4af7d74d80df0df0aec72868cbe2785cc",
+    "installerSource": "9ade735",
+    "apiMaterialDigest": "sha256:9c6b3b8f421889b8ac980ce09f16b90d0689625f32efc4fffcf7b5f8a15a417d",
+    "independentlyVerified": true
+  },
+  "summary": "The delivered platform-api image cannot start whenever the assistant capability is disabled. install --stage bootstrap-api creates the release, then Helm times out because ops-api crash-loops with a nil pointer dereference in StartSP06API.",
+  "crash": {
+    "type": "panic: runtime error: invalid memory address or nil pointer dereference",
+    "function": "ops-platform/internal/app.StartSP06API",
+    "sourceLine": "internal/app/sp06_runtime.go:347",
+    "statement": "sp04.Assistant = &httpapi.AssistantHandlers{..., ModelTaskKinds: append([]string(nil), c.Assistant.Profile.TaskKinds...)}",
+    "guard": "the enclosing branch only checks `c.Assistant != nil` (line 283); it never checks `c.Assistant.Enabled` or `c.Assistant.Profile != nil` before dereferencing Profile",
+    "observed": "5+ consecutive restarts, CrashLoopBackOff, helm checkpoint=install-chart context deadline exceeded"
+  },
+  "renderedConfiguration": {
+    "source": "installer-normalized business values rendered into ConfigMap ops-sp06-runtime",
+    "assistant": {
+      "enabled": false,
+      "faultChainEnabled": false,
+      "modelProfileVersion": "",
+      "profile": null
+    },
+    "note": "This disabled shape is produced by the installer itself, not by operator input; the operator business values contain no assistant block at all"
+  },
+  "whyItCannotBeWorkedAround": [
+    "dropping the assistant key from operator business values does not help: the installer normalizes and injects the disabled block, so the API still receives a non-nil Assistant with a nil Profile",
+    "enabling the assistant instead requires an admitted frozen model profile (installation-business-values/v1 and the Chart both reject anything but admissionState=admitted), and no admitted profile exists: the only evaluation report is qualityVerdict=FAIL with productionAdmission=NOT_ADMITTED and an unfilled human review",
+    "fabricating an admitted profile or an evaluation digest is prohibited, and a fixture_only profile is rejected by both the installer and the Chart for Helm activation",
+    "patching the cluster ConfigMap or the running image would bypass the signed checkpoint and is not an accepted verification path"
+  ],
+  "impact": {
+    "dependenciesStage": "PASS (postgresql, keycloak, seaweedfs, openbao, victoria-metrics, victoria-logs, vmalert all Running)",
+    "environmentBootstrap": "PASS (dedicated namespace, 5 public trust keys, 8 dependency secrets)",
+    "victoriaTrust": "PASS",
+    "archiveIamAndBucket": "PASS (versioning + COMPLIANCE object lock, tenant-scoped IAM live)",
+    "openbao": "PASS (init 3/2 shares, unseal, configure with investigation signing)",
+    "database": "PASS (empty database, 43 migrations, 3 restricted logins, idempotent rerun)",
+    "oidc": "PASS (realm ops, browser-pkce client, real CONFIGURE_TOTP enrollment and LoA-2 login with acr=urn:ops:loa:2 and matching tenant claim)",
+    "firstTenant": "PASS (platform_admin binding 01a152d8-029e-7da3-925e-81bf486ba6c7)",
+    "graphLeases": "PASS",
+    "bootstrapApi": "FAIL",
+    "businessStage": "NOT_RUN",
+    "webLogin": "NOT_RUN",
+    "assistantFaultChain": "NOT_RUN",
+    "executionProbes": "NOT_RUN"
+  },
+  "requiredFix": "guard the assistant handler wiring with the enabled flag and a non-nil profile, then rebuild the API image and re-sign the bundle; the fix cannot be applied to an already signed runtime material without a new build and admission round",
+  "assessment": "Not a gate relaxation and not an environment limit: the signed runtime material itself is defective for the documented assistant-disabled branch of SP-02 non-virtualized verification"
+}

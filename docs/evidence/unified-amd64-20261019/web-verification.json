@@ -1,0 +1,84 @@
+{
+  "origin": "https://192.168.0.63:30444",
+  "checks": [
+    {
+      "check": "web-index",
+      "status": 200,
+      "bytes": 653,
+      "hasAppRoot": true
+    },
+    {
+      "check": "web-runtime-config",
+      "status": 200,
+      "authority": "https://ops-keycloak.ops-amd64-unified-r4-20261019.svc.cluster.local:8443/realms/ops",
+      "clientId": "ops-web",
+      "proxyPath": "/oidc"
+    },
+    {
+      "check": "oidc-discovery-via-proxy",
+      "status": 200,
+      "issuer": "https://ops-keycloak.ops-amd64-unified-r4-20261019.svc.cluster.local:8443/realms/ops"
+    },
+    {
+      "check": "pkce-login-code",
+      "status": 200,
+      "callback": "https://192.168.0.63:30444/auth/callback"
+    },
+    {
+      "check": "pkce-token-exchange",
+      "status": 200,
+      "acr": "urn:ops:loa:2",
+      "tenantClaim": true,
+      "roles": [
+        "offline_access",
+        "uma_authorization",
+        "default-roles-ops"
+      ]
+    },
+    {
+      "check": "api-proxy-authenticated",
+      "status": 201
+    },
+    {
+      "check": "api-proxy-unauthenticated-rejected",
+      "status": 401
+    },
+    {
+      "check": "capabilities",
+      "status": 200,
+      "investigation": "unverified",
+      "commandExecution": "unverified"
+    }
+  ],
+  "capabilities": {
+    "apiReady": true,
+    "cdi": {
+      "reason": "ADR0008-development-deferred",
+      "status": "disabled",
+      "verification": "unverified"
+    },
+    "commandExecution": {
+      "reason": "SP07-configured; execution-authorization-required",
+      "status": "unverified",
+      "verification": "unverified"
+    },
+    "graphReady": null,
+    "investigation": {
+      "enabled": true,
+      "readOnly": true,
+      "reason": "configured-awaiting-successful-job",
+      "status": "unverified"
+    },
+    "kubevirt": {
+      "reason": "ADR0008-development-deferred",
+      "status": "disabled",
+      "verification": "unverified"
+    },
+    "pyrca": {
+      "reason": "ADR0020-not-admitted",
+      "status": "disabled"
+    },
+    "schemaVersion": "platform-capabilities/v1",
+    "sourceDegraded": null
+  }
+}

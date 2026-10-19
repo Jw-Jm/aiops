@@ -1,56 +1,79 @@
 {
-  "runtimeSourceCommit": "1a7c7da4af7d74d80df0df0aec72868cbe2785cc",
+  "runtimeSourceCommit": "04cae431c50d98f175a826623f130287eb35f7da",
+  "runtimeSourceCommitPrevious": "1a7c7da4af7d74d80df0df0aec72868cbe2785cc",
+  "chartFixCommit": "ae82c80df15b6fb531c03d801b3cbb2eecc04b54",
   "architecture": "linux/amd64",
   "OCI": "FIVE_BUILT",
   "nativeMaterialTests": "PASS_BOUNDED_SCOPE",
-  "bundle": "NOT_BUILT_YET",
-  "installation": "NOT_RUN",
+  "bundle": "BUILT_AND_SIGNED_R4",
+  "installation": "THREE_STAGE_PASS_ON_R4",
   "realProbe": "NOT_RUN",
   "releaseAdmitted": false,
   "remotePerformanceFixes": false,
   "installerSourceCommit": "9ade735",
   "toolsBundle": {
-    "id": "unified-amd64-installer-20261019-r2",
+    "id": "unified-amd64-installer-20261019-r4",
     "signed": true,
     "previousTrustedInstallerVerification": "PASS",
     "independentOpenSSLSignature": "PASS",
     "executableSHA256": "sha256:c7d2dcaee95d1f9caddd50c2eceb664c9aa5a601bd2a4c5ed60a6c497efe28c0"
   },
   "runtimeBundle": {
-    "id": "unified-amd64-20261019-r2",
+    "id": "unified-amd64-20261019-r4",
     "builtAndSigned": true,
     "builderSelfVerification": "PASS",
     "independentOpenSSLSignature": "PASS",
-    "independentFullPayloadVerification": "NO_COMPLETION_RECEIPT_WITHIN_600S",
-    "verificationAcceptance": "INCOMPLETE_NOT_PASS"
+    "independentFullPayloadVerification": "PASS",
+    "verificationAcceptance": "PASS",
+    "changedMaterialsVersusR2": [
+      "platform-api (assistant-disabled wiring fix, source 04cae43)",
+      "opsctl-source (corresponding platform source archive)",
+      "ops-platform-chart (Web OIDC CA mount fix, source ae82c80)"
+    ],
+    "unchangedMaterials": 33
   },
   "targetPreflight": {
+    "hostRecovery": "host rebooted by operator; WiFi interface renamed wlp3s0->wlp4s0 and lost the node address; netplan/NetworkManager match repaired with backups, kubelet restarted",
     "storageProvisioner": "kubernetes.io/no-provisioner",
-    "availablePVCount": 0,
-    "newSSHObservation": "banner exchange timeout at 8-second connect bound; no host restart/expansion/tuning",
-    "deploymentStarted": false,
-    "namespaceOrPVCreated": false,
-    "existingServicesReplaced": false,
-    "verificationConnectionWaitStopped": true,
-    "remoteVerificationFinalState": "unknown; no completed receipt received, do not infer pass/fail"
+    "dedicatedStorage": "created per installation with deterministic claimRef binding; existing PV/PVC/data untouched",
+    "deploymentStarted": true,
+    "namespaceOrPVCreated": true,
+    "existingServicesReplaced": false
   },
-  "browserInitializationFix": {
-    "clientMode": "browser-pkce",
-    "callback": "/auth/callback",
-    "silentCallback": "/auth/silent-callback",
-    "sharedClientSecret": "rejected",
-    "legacyConfidentialMode": "preserved"
+  "highLoadRootCause": {
+    "primary": "install/bundle-import extract the whole 8.9 GB payload into $TMPDIR; /tmp is a 7.5 GiB RAM-backed tmpfs, so the first import exhausted memory and made the host unresponsive",
+    "mitigation": "TMPDIR pointed at a disk-backed directory for every bundle operation; no timeout, memory or gate relaxation",
+    "secondary": "kubelet node.status.images reported only 50 images so the 5.1 MiB platform-web digest was invisible to the offline admission check; nodeStatusMaxImages raised to 200 without changing digest verification"
+  },
+  "runtimeDefectsFound": {
+    "assistantDisabledPanic": {
+      "file": "internal/app/sp06_runtime.go",
+      "fixedIn": "04cae43",
+      "evidence": "api-crash.log, sp06-runtime-config.json, assistant-disabled-runtime-defect.json"
+    },
+    "webOidcMount": {
+      "file": "deploy/charts/ops-platform/templates/sp08.yaml",
+      "fixedIn": "ae82c80",
+      "evidence": "nginx refused to start because a ConfigMap file subPath was mounted inside the read-only TLS Secret volume"
+    }
+  },
+  "verificationOutcome": {
+    "webLogin": "PASS (real PKCE + TOTP through the nginx /oidc proxy, acr=urn:ops:loa:2, authenticated API 201, unauthenticated 401)",
+    "assistantFaultChain": "NOT_RUN (no admitted assistant model profile exists; audit report is FAIL/NOT_ADMITTED with unfilled human review and fabricating admission is prohibited)",
+    "executionProbes": "NOT_RUN (no incident exists; the graph holds 46 resources but neither the dedicated Service nor the PVC because the registered source namespace scope is the targets namespace only, and PVC verification requires the installation namespace)",
+    "postCheck": "NOT_RUN"
   },
   "nextRequired": [
-    "obtain completed independent full-payload verification receipt on responsive target",
-    "prepare dedicated storage without adopting existing PVC/PV/data",
-    "only then execute dependencies/bootstrap-api/business and actual login/assistant/probe/archive/post-check scenarios"
+    "register the installation namespace in the Kubernetes source scope when PVC verification is required, and obtain a real incident (finding ingestion or analyzer output) before executing commands",
+    "supply an admitted assistant model profile only from a real, human-reviewed evaluation; never fabricate admission",
+    "keep production release, ARM64, KubeVirt/CDI, Trace and PyRCA out of scope"
   ],
   "localValidation": {
     "goBootstrapAndBundleTests": "PASS",
     "supplychainAndBundleAdmissionTests": "PASS",
     "generatedAndSourceAndDeliveryChecks": "PASS",
     "affectedGoVet": "PASS",
-    "deliveryBaselineAfterSignedCandidateUpdate": "PASS"
+    "deliveryBaselineAfterSignedCandidateUpdate": "PASS",
+    "newRegressionTest": "internal/app/sp06_assistant_wiring_test.go PASS"
   }
 }

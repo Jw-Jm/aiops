@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "unified-amd64-remote-blockage/v1",
+  "observedOn": "2026-10-19",
+  "environment": "independent development host 192.168.0.63 / direct link 10.10.10.2",
+  "state": "BLOCKED_UNREACHABLE",
+  "scope": "SP-02 non-virtualized independent install verification; no production, ARM64, KubeVirt/CDI, Trace or PyRCA work",
+  "actionsBeforeBlockage": [
+    "verified tools bundle extraction (8 files, 526678693 bytes) against signed inventory",
+    "verified core bundle extraction (102 files, 8922903289 bytes) against signed inventory",
+    "created dedicated namespace via official bootstrap environment entry, dedicated no-provisioner StorageClass and six dedicated local PVs under /data/ops-amd64-unified-20261019",
+    "detected and resolved the amd64 Deployment Profile against the amd64 Component Catalog",
+    "created dedicated verification Service/PVC and collected source target, prepared business values",
+    "started opsctl bundle import of unified-amd64-20261019-r2 (8922903289 bytes payload, 35 materials) into node-local containerd"
+  ],
+  "suspectedCauseChain": {
+    "primary": "bundle import first verifies the whole Bundle through a temporary extraction root created by os.MkdirTemp, so the complete 8922903289-byte payload is unpacked into $TMPDIR (internal/bundle/importer.go Import -> prepare -> internal/bundle/verify.go temporary root); on this host /tmp is a 7.5 GiB RAM-backed tmpfs and only about 5 GiB was reclaimable, so the extraction alone exceeds both tmp and memory headroom. The same code path was used by the earlier independent core verification that failed to return a completion receipt within 600 seconds, so the two stalls share one mechanism rather than being unrelated slowness.",
+    "contributing": [
+      "the payload is then written a second time into containerd root on /data (/dev/sda1, mechanical disk), doubling the I/O volume on the slowest device",
+      "the host already ran 5 host-level Keycloak JVMs plus investigator workers outside Kubernetes; node usage was 10.3 GiB of 15.5 GiB allocatable and load average was 66 before the import started",
+      "dependency and business install steps were therefore executed on a host already under sustained memory and I/O pressure"
+    ],
+    "notClaimed": [
+      "no kernel log, OOM record or post-mortem was collected because the host became unreachable",
+      "the exact trigger of the final network loss is unconfirmed; it is not attributed to a specific process without evidence"
+    ]
+  },
+  "observedSymptoms": [
+    "sshd accepted TCP on 22 while banner exchange timed out repeatedly",
+    "one client attempt failed with 'bind 10.10.10.1: Can't assign requested address'",
+    "en10 (10.10.10.1/24, direct link) transitioned to status inactive with no media and lost its address",
+    "192.168.0.63 stopped answering ARP on en0 (arp entry incomplete); TCP 22 and NodePort 30443 closed",
+    "local gateway 192.168.0.1 remained reachable, so the local LAN path was healthy"
+  ],
+  "notDone": [
+    "no reboot, power cycle, kernel parameter change, memory resize or storage tuning was performed or requested",
+    "no verification gate, timeout, signature, identity, source or retention check was relaxed",
+    "no existing service, data, PVC/PV, audit record or Evidence was deleted",
+    "no installation stage was reported as passed"
+  ],
+  "evidenceRetained": {
+    "remote": "/opt/ops-verification-20261019-1a7c7da (distribution, materials extraction receipts, install private inputs, evidence/bundle-import.log)",
+    "expectedButUnreadable": "bundle-import.log tail, dedicated namespace objects and the import process final state stay unverified until the host returns"
+  },
+  "recoveryPlan": [
+    "wait for operator-side host recovery; do not treat an unreachable host as a failed or passed gate",
+    "after recovery, first read the real state of the import process and the dedicated namespace without re-running heavy operations",
+    "if import did not finish, re-run the same signed bundle import with TMPDIR on a disk-backed path so the payload is not extracted into RAM-backed /tmp",
+    "keep the same signed bundle, resolved profile and business values; no gate weakening or path substitution"
+  ],
+  "assessment": {
+    "independentBundleVerification": "PASS (both bundles fully re-extracted and digest-verified against the signed inventory)",
+    "threeStageInstall": "NOT_RUN",
+    "webLogin": "NOT_RUN",
+    "assistantFaultChain": "NOT_RUN (additionally blocked: no admitted assistant model profile exists; the only evaluation report is FAIL/NOT_ADMITTED with unfilled human review, and fabricating admission is prohibited)",
+    "executionProbes": "NOT_RUN"
+  }
+}

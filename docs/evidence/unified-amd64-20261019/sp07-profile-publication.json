@@ -1,0 +1,60 @@
+{
+  "profilesPublished": 1,
+  "listing": [
+    {
+      "schemaVersion": "execution-profile/v2",
+      "executionProfileId": "40f7244d-c9bf-43b7-87e9-d8f6a5fe4524",
+      "version": 1,
+      "name": "unified-r4-namespace",
+      "type": "k8s_namespace",
+      "allowedTargets": [
+        "k8s+v1://31a7e7ed-6dee-47f4-8e2b-6bf112fe9ad3/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/2ac109d5-984d-42e9-9944-2323b88a3c22",
+        "k8s+v1://31a7e7ed-6dee-47f4-8e2b-6bf112fe9ad3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/d937f31f-7053-4cc9-932a-6a9f7a7f86e0"
+      ],
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespace": "ops-amd64-unified-r4-20261019",
+      "toolImageDigest": "ops.local/verification-20261019/command-runner@sha256:90c61be5eca27f8c8a9aed37a91bb4f74f9f5c6b7b7af2a24eea1772bce99d9e",
+      "tools": [
+        "bash",
+        "kubectl",
+        "ops-verify"
+      ],
+      "networkPolicyRef": "ops-sp07-k8s-namespace",
+      "credentialRef": "serviceaccount:/ops-amd64-unified-r4-20261019/sp07-k8s-namespace",
+      "timeoutSeconds": 900,
+      "maxOutputBytes": 10485760,
+      "principal": "",
+      "hostOnboardingRef": "",
+      "developmentFallback": false
+    }
+  ],
+  "commands": [
+    {
+      "operation": "stepup",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-sessions",
+      "status": 201,
+      "responseSHA256": "sha256:3566ccced34519429cff0d881e535c7f809232d4b40c884e1b77593aa9a66cf9",
+      "error": null,
+      "message": ""
+    },
+    {
+      "operation": "profile-0",
+      "method": "POST",
+      "path": "/api/v1/admin/execution-profiles",
+      "status": 201,
+      "responseSHA256": "sha256:a894d2dca4200a81373854fd978faa0f837f02323f3f786472d80e40653ed54c",
+      "error": null,
+      "message": ""
+    },
+    {
+      "operation": "list-profiles",
+      "method": "GET",
+      "path": "/api/v1/admin/execution-profiles",
+      "status": 200,
+      "responseSHA256": "sha256:a1500c34dffe6562f40cfb4282adda4edb667773b7236ecf986a19ea480a9ee1",
+      "error": null,
+      "message": ""
+    }
+  ]
+}
