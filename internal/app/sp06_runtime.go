@@ -54,6 +54,16 @@ type SP06Config struct {
 	Tenants              []uuid.UUID             `json:"tenants"`
 }
 
+// assistantTaskKinds reports the frozen task kinds only when the assistant is
+// explicitly enabled and carries a Profile. A disabled assistant block is a
+// normal, supported configuration and must never reach Profile dereferences.
+func assistantTaskKinds(a *AssistantRuntimeConfig) ([]string, bool) {
+	if a == nil || !a.Enabled || a.Profile == nil {
+		return nil, false
+	}
+	return append([]string(nil), a.Profile.TaskKinds...), true
+}
+
 func loadSP06() (*SP06Config, error) {
 	path := os.Getenv("SP06_RUNTIME_FILE")
 	if path == "" {
@@ -280,7 +290,10 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 	}
 	server := &http.Server{Handler: mux, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute}
 	sp04.Investigation = handlers
-	if c.Assistant != nil {
+	// An assistant block that is present but disabled carries no frozen Profile,
+	// so the handler wiring must key on the enabled flag and the Profile itself
+	// rather than on the block's presence.
+	if taskKinds, ok := assistantTaskKinds(c.Assistant); ok {
 		repo := assistant.Repository{Pool: pool, Jobs: handlers.Repository, FaultChainEnabled: c.Assistant.FaultChainEnabled}
 		repo.Admit = func(ctx context.Context, conversation assistant.Conversation, task string) (assistant.Admission, error) {
 			if !c.Assistant.Enabled {
@@ -344,7 +357,7 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 			}
 			return assistant.Admission{PolicyVersion: decision.PolicyVersion, ModelProfileVersion: c.Assistant.ModelProfileVersion, Budget: budget}, nil
 		}
-		sp04.Assistant = &httpapi.AssistantHandlers{Repository: repo, SP04: sp04, CursorKey: sp04.SigningKey, ModelTaskKinds: append([]string(nil), c.Assistant.Profile.TaskKinds...)}
+		sp04.Assistant = &httpapi.AssistantHandlers{Repository: repo, SP04: sp04, CursorKey: sp04.SigningKey, ModelTaskKinds: taskKinds}
 	}
 
 	go func() {
