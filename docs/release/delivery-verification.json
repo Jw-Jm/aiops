@@ -1,8 +1,8 @@
 {
   "schemaVersion": "delivery-preparation-verification/v1",
-  "asOf": "2026-10-18",
+  "asOf": "2026-10-19",
   "result": "PREPARED_NOT_RELEASE_QUALIFIED",
-  "baseCommit": "b10b2f0bc378f06291dbfc04ddccaae3a555155d",
+  "baseCommit": "50be7df2b5579317c0f694f96ea821a9927c69f7",
   "includesWorkingTreeChanges": true,
   "finalSourceFrozen": false,
   "checks": [
@@ -24,6 +24,21 @@
     {
       "command": "git diff --check",
       "result": "PASS"
+    },
+    {
+      "command": "go test ./internal/bundle ./internal/modelprofile",
+      "result": "PASS",
+      "scope": "optional capability configuration, signed image pairing, receipt changes, presence queries, three-phase Helm render and assistant model availability proof"
+    },
+    {
+      "command": "go build ./...",
+      "result": "PASS",
+      "scope": "compile all Go binaries"
+    },
+    {
+      "command": "go vet ./internal/bundle ./internal/modelprofile",
+      "result": "PASS",
+      "scope": "affected Go packages"
     }
   ],
   "versions": {
@@ -48,14 +63,17 @@
   "blockers": [
     {
       "id": "DEL-001",
-      "status": "open",
-      "title": "完整安装业务值尚未接通 Web 与助手/故障链配置",
+      "status": "development_complete_runtime_pending",
+      "title": "Web 与助手/故障链统一安装开发完成，真实安装待验收",
       "evidence": [
         "api/schemas/installation-business-values-v1.schema.json",
         "internal/bundle/installer.go",
-        "internal/bundle/business_values.go"
+        "internal/bundle/business_values.go",
+        "internal/bundle/business_capabilities.go",
+        "internal/bundle/business_capabilities_test.go",
+        "docs/release/unified-installer-closeout.md"
       ],
-      "requiredBeforeRelease": "在独立后续开发中复用现有 installer/Chart 接通配置、摘要绑定与阶段回执；本轮不绕过门禁直接 Helm 部署。"
+      "requiredBeforeRelease": "使用当前冻结源码与新签名 Bundle 完成真实三阶段安装、OIDC/TLS、助手和故障链运行验证；本地配置/渲染检查不替代运行准入。"
     },
     {
       "id": "DEL-002",
@@ -64,7 +82,7 @@
       "evidence": [
         "build/images/web/Dockerfile"
       ],
-      "requiredBeforeRelease": "逐目标架构准备真实镜像/依赖/源码闭包与兼容验证，不能据 API/Worker 的交叉编译宣称完整 ARM64/AMD64 交付。"
+      "requiredBeforeRelease": "逐目标架构准备真实镜像/依赖/源码闭包与兼容验证，不能据 API/Worker 的交叉编译宣称完整 ARM64/AMD64 交付。 当前 Installer 对启用 Web 的非 amd64 目标提前拒绝，不宣称多架构已完成。"
     },
     {
       "id": "DEL-003",
@@ -101,5 +119,19 @@
     "releaseAdmitted": false
   },
   "formalDocumentsEdited": false,
-  "functionalVerificationRecord": "docs/release/disposition-verification-closeout.md"
+  "functionalVerificationRecord": "docs/release/disposition-verification-closeout.md",
+  "installerDevelopment": {
+    "record": "docs/release/unified-installer-closeout.md",
+    "status": "development_complete_runtime_pending",
+    "capabilities": [
+      "sp08",
+      "sp06.assistant",
+      "sp06.assistant.faultChainEnabled"
+    ],
+    "receiptBinding": "existing_full_business_and_registered_business_digests",
+    "webArchitecture": "amd64_only_other_architectures_rejected",
+    "runtime": "not_run",
+    "newBundleBuiltOrSigned": false,
+    "remoteAccess": false
+  }
 }

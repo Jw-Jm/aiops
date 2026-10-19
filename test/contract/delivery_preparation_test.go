@@ -148,11 +148,11 @@ func TestDeliveryPreparationSourceBaseline(t *testing.T) {
 		}
 	}
 	business := read("api/schemas/installation-business-values-v1.schema.json")["properties"].(map[string]any)
-	if _, present := business["sp08"]; present || baseline.ConfigurationLimits["businessValuesWeb"] != false {
+	if _, present := business["sp08"]; !present || baseline.ConfigurationLimits["businessValuesWeb"] != true {
 		t.Fatal("Web installation boundary changed; update delivery preparation")
 	}
 	for _, raw := range business["sp06"].(map[string]any)["oneOf"].([]any) {
-		if _, present := raw.(map[string]any)["properties"].(map[string]any)["assistant"]; present || baseline.ConfigurationLimits["businessValuesAssistant"] != false {
+		if _, present := raw.(map[string]any)["properties"].(map[string]any)["assistant"]; !present || baseline.ConfigurationLimits["businessValuesAssistant"] != true {
 			t.Fatal("assistant installation boundary changed; update delivery preparation")
 		}
 	}

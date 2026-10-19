@@ -11,20 +11,23 @@ import (
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/rca"
+	"ops-platform/internal/resource"
+	"slices"
 	"time"
 )
 
 type PostCheckReport struct {
-	SchemaVersion string         `json:"schemaVersion"`
-	ExecutionID   uuid.UUID      `json:"executionId"`
-	IncidentID    uuid.UUID      `json:"incidentId"`
-	Target        string         `json:"targetCanonicalId"`
-	TargetUID     string         `json:"targetUid"`
-	CompletedAt   time.Time      `json:"completedAt"`
-	Verdict       string         `json:"verdict"`
-	Reason        string         `json:"reason"`
-	Coverage      string         `json:"coverage"`
-	Facts         PostCheckFacts `json:"facts"`
+	RollbackSpecDigest string         `json:"rollbackSpecDigest,omitempty"`
+	SchemaVersion      string         `json:"schemaVersion"`
+	ExecutionID        uuid.UUID      `json:"executionId"`
+	IncidentID         uuid.UUID      `json:"incidentId"`
+	Target             string         `json:"targetCanonicalId"`
+	TargetUID          string         `json:"targetUid"`
+	CompletedAt        time.Time      `json:"completedAt"`
+	Verdict            string         `json:"verdict"`
+	Reason             string         `json:"reason"`
+	Coverage           string         `json:"coverage"`
+	Facts              PostCheckFacts `json:"facts"`
 }
 
 func postCheckDecision(f PostCheckFacts, completed time.Time) (string, string) {
@@ -54,26 +57,94 @@ func postCheckDecision(f PostCheckFacts, completed time.Time) (string, string) {
 	return "resolved", "recipe_fault_absent"
 }
 
-func makePostCheckReport(e Execution, f PostCheckFacts, completed time.Time) PostCheckReport {
+func postCheckEvidenceTarget(b Binding, target string) bool {
+	if target == b.Target {
+		return true
+	}
+	id, err := resource.ParseCanonicalID(target)
+	if err != nil || id.Domain != "k8s" || id.Tenant != b.TenantID.String() || id.Scope != b.ClusterUID {
+		return false
+	}
+	switch id.APIGroup + "/" + id.Kind {
+	case "core/Pod", "core/Service", "core/PersistentVolume", "core/Event", "apps/ReplicaSet", "apps/Deployment", "discovery.k8s.io/EndpointSlice", "storage.k8s.io/CSIDriver", "storage.k8s.io/VolumeAttachment":
+		return true
+	}
+	return false
+}
+func postCheckGoalDecision(b Binding, f PostCheckFacts, completed time.Time, checkGoal bool) (string, string) {
 	verdict, reason := postCheckDecision(f, completed)
+	if verdict != "inconclusive" && len(f.NewAnomalies) > 0 {
+		verdict, reason = "not_resolved", "new_anomalies_observed"
+	}
+	if b.Verification != nil && verdict != "inconclusive" {
+		if f.Verification == nil {
+			return "inconclusive", "verification_missing"
+		}
+		switch f.Verification.Verdict {
+		case "inconclusive":
+			return "inconclusive", "verification_unavailable"
+		case "not_resolved":
+			return "not_resolved", "verification_failed"
+		case "resolved":
+			if verdict == "resolved" {
+				reason = "verification_passed"
+			}
+		default:
+			return "inconclusive", "verification_unavailable"
+		}
+	}
+	if checkGoal && b.ExecutionRelation == "rollback" {
+		if b.RollbackSpecDigest == "" {
+			return "inconclusive", "rollback_goal_missing"
+		}
+		if verdict == "resolved" {
+			if f.ObservedSpecDigest == "" {
+				return "inconclusive", "rollback_observation_missing"
+			}
+			if f.ObservedSpecDigest != b.RollbackSpecDigest {
+				return "not_resolved", "rollback_goal_not_met"
+			}
+			return "resolved", "rollback_goal_met"
+		}
+	}
+	return verdict, reason
+}
+
+func makePostCheckReport(e Execution, f PostCheckFacts, completed time.Time) PostCheckReport {
+	verdict, reason := postCheckGoalDecision(e.Binding, f, completed, true)
 	if PostCheckApplicability(e.Binding.Target).Status == "unsupported" {
 		verdict, reason = "inconclusive", "target_unsupported"
 	}
+	if f.Verification != nil {
+		snapshot := *f.Verification
+		f.Verification = &snapshot
+	}
 	f.EvidenceRefs = append([]string{}, f.EvidenceRefs...)
-	return PostCheckReport{SchemaVersion: "command-post-check/v1", ExecutionID: e.ID, IncidentID: e.Binding.IncidentID, Target: e.Binding.Target, TargetUID: e.Binding.TargetUID, CompletedAt: completed, Verdict: verdict, Reason: reason, Coverage: "recipe_target_only", Facts: f}
+	f.NewAnomalies = append([]string(nil), f.NewAnomalies...)
+	coverage := "recipe_target_only"
+	if f.Adapter == "native-related-health/v1" {
+		coverage = "native_related_health"
+	}
+	return PostCheckReport{SchemaVersion: "command-post-check/v1", RollbackSpecDigest: e.Binding.RollbackSpecDigest, ExecutionID: e.ID, IncidentID: e.Binding.IncidentID, Target: e.Binding.Target, TargetUID: e.Binding.TargetUID, CompletedAt: completed, Verdict: verdict, Reason: reason, Coverage: coverage, Facts: f}
 }
 
 func validatePostCheckReport(report PostCheckReport, e Execution) error {
 	if e.CompletedAt == nil || report.ExecutionID != e.ID || report.IncidentID != e.Binding.IncidentID || report.Target != e.Binding.Target || report.TargetUID != e.Binding.TargetUID || !report.CompletedAt.Equal(*e.CompletedAt) {
 		return ErrInvalid
 	}
-	verdict, reason := postCheckDecision(report.Facts, *e.CompletedAt)
+	if report.Facts.Verification != nil && !report.Facts.Verification.Valid(e) {
+		return ErrInvalid
+	}
+	if report.RollbackSpecDigest != e.Binding.RollbackSpecDigest {
+		return ErrInvalid
+	}
+	verdict, reason := postCheckGoalDecision(e.Binding, report.Facts, *e.CompletedAt, report.RollbackSpecDigest != "" || report.Reason == "rollback_goal_missing")
 	// Adapter coverage is frozen at recording time. Adding an adapter later
 	// must not reinterpret an old unsupported-target report.
 	if report.Reason == "target_unsupported" {
 		verdict, reason = "inconclusive", "target_unsupported"
 	}
-	if report.Verdict != verdict || report.Reason != reason || report.Coverage != "recipe_target_only" {
+	if report.Verdict != verdict || report.Reason != reason || (report.Coverage != "recipe_target_only" && report.Coverage != "native_related_health") {
 		return ErrInvalid
 	}
 	return nil
@@ -101,11 +172,26 @@ func (s Service) postCheckEventReadable(ctx context.Context, tx pgx.Tx, a auth.R
 			return ErrDenied
 		}
 		ev, err := evidence.GetTx(ctx, tx, a.TenantID, id, scope)
-		if err != nil || ev.ResourceCanonicalID != binding.Target {
+		if err != nil || !postCheckEvidenceTarget(binding, ev.ResourceCanonicalID) {
 			return ErrDenied
 		}
 	}
 	if r := stored.Report; r != nil {
+		if binding.Verification != nil {
+			p, _, err := profileTx(ctx, tx, a.TenantID, binding.ProfileID, binding.ProfileVersion)
+			if err != nil || !slices.Contains(p.Tools, "ops-verify") {
+				return ErrDenied
+			}
+			if r.Facts.Verification != nil {
+				result, err := verificationResultTx(ctx, tx, execution)
+				if err != nil || string(Canonical(result)) != string(Canonical(r.Facts.Verification)) {
+					return ErrDenied
+				}
+			} else if r.Verdict != "inconclusive" {
+				return ErrInvalid
+			}
+		}
+
 		if contract.Validate("https://ops.local/schemas/command-post-check/v1", Canonical(r)) != nil || Digest(Canonical(r)) != stored.ReportDigest || validatePostCheckReport(*r, execution) != nil || len(r.Facts.EvidenceRefs) != len(stored.EvidenceRefs) {
 			return ErrInvalid
 		}

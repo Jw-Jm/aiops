@@ -739,6 +739,35 @@ components:
     CommandExecutionRequest:
       additionalProperties: false
       properties:
+        verification:
+          type: object
+          additionalProperties: false
+          required: [kind]
+          description: Explicit associated probe execution. Requires a signed ops-verify namespaced Profile; PVC probes require a dedicated marked PVC in the configured Runner namespace.
+          properties:
+            kind:
+              type: string
+              enum: [tcp, http, pvc_read_write]
+            port:
+              type: integer
+              minimum: 1
+              maximum: 65535
+            path:
+              type: string
+              maxLength: 1024
+            https:
+              type: boolean
+            expectedStatus:
+              type: integer
+              minimum: 200
+              maximum: 599
+            expectedBodyDigest:
+              type: string
+              pattern: "^sha256:[a-f0-9]{64}$"
+        rollbackSpecDigest:
+          type: string
+          pattern: "^sha256:[a-f0-9]{64}$"
+          description: Required for new rollback executions; desired reviewed native configuration digest, bound to personal risk confirmation. Recovery additionally requires the signed native health checks.
         relatedExecutionId:
           type: string
           format: uuid
@@ -3977,6 +4006,35 @@ components:
     CommandRiskAssessmentRequest:
       additionalProperties: false
       properties:
+        verification:
+          type: object
+          additionalProperties: false
+          required: [kind]
+          description: Explicit associated probe execution. Requires a signed ops-verify namespaced Profile; PVC probes require a dedicated marked PVC in the configured Runner namespace.
+          properties:
+            kind:
+              type: string
+              enum: [tcp, http, pvc_read_write]
+            port:
+              type: integer
+              minimum: 1
+              maximum: 65535
+            path:
+              type: string
+              maxLength: 1024
+            https:
+              type: boolean
+            expectedStatus:
+              type: integer
+              minimum: 200
+              maximum: 599
+            expectedBodyDigest:
+              type: string
+              pattern: "^sha256:[a-f0-9]{64}$"
+        rollbackSpecDigest:
+          type: string
+          pattern: "^sha256:[a-f0-9]{64}$"
+          description: Required for new rollback executions; desired reviewed native configuration digest, bound to personal risk confirmation. Recovery additionally requires the signed native health checks.
         relatedExecutionId:
           type: string
           format: uuid

@@ -47,3 +47,31 @@ func TestPostCheckIsIndependentOfExitCode(t *testing.T) {
 		t.Fatal("historical evidence passed")
 	}
 }
+
+func TestPVCVerificationJobConfinesMountAndDoesNotChownBusinessVolume(t *testing.T) {
+	ns := "runners"
+	target := probeTarget("PersistentVolumeClaim")
+	d := Dispatch{TenantID: uuid.New(), ExecutionID: uuid.New(), Token: strings.Repeat("a", 43), Profile: Profile{SchemaVersion: "execution-profile/v2", ID: uuid.New(), Version: 1, Name: "probe", Type: "k8s_namespace", AllowedTargets: []string{target}, ClusterUID: "cluster", Namespace: ns, ToolImageDigest: "local/tool@" + Digest([]byte("tool")), Tools: []string{"ops-verify"}, NetworkPolicyRef: "probe", CredentialRef: "serviceaccount:execution-target", TimeoutSeconds: 30, MaxOutputBytes: 4096}, Binding: Binding{Target: target, Namespace: &ns, VerificationNamespace: ns, VerificationTargetName: "probe-pvc", Verification: &VerificationSpec{Kind: "pvc_read_write"}, Options: Options{TimeoutSeconds: 30}}}
+	k := KubernetesExecutor{RunnerNamespace: ns, APIEndpoint: "https://api", TrustConfigMap: "trust"}
+	raw, err := k.Job(d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var job map[string]any
+	_ = json.Unmarshal(raw, &job)
+	pod := job["spec"].(map[string]any)["template"].(map[string]any)["spec"].(map[string]any)
+	if _, ok := pod["securityContext"].(map[string]any)["fsGroup"]; ok {
+		t.Fatal("probe can recursively change volume ownership")
+	}
+	container := pod["containers"].([]any)[0].(map[string]any)
+	mounts := container["volumeMounts"].([]any)
+	mount := mounts[len(mounts)-1].(map[string]any)
+	if mount["subPath"] != VerificationSubPath || mount["mountPath"] != VerificationMount {
+		t.Fatal("unbounded volume mount", mount)
+	}
+	other := "business"
+	d.Binding.Namespace = &other
+	if _, err := k.Job(d); err == nil {
+		t.Fatal("cross namespace PVC allowed")
+	}
+}

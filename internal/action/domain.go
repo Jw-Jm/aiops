@@ -19,8 +19,10 @@ type Options struct {
 	Environment      map[string]string `json:"environment"`
 }
 type CommandRequest struct {
-	RelatedExecutionID *uuid.UUID `json:"relatedExecutionId,omitempty"`
-	ExecutionRelation  string     `json:"executionRelation,omitempty"`
+	Verification       *VerificationSpec `json:"verification,omitempty"`
+	RelatedExecutionID *uuid.UUID        `json:"relatedExecutionId,omitempty"`
+	ExecutionRelation  string            `json:"executionRelation,omitempty"`
+	RollbackSpecDigest string            `json:"rollbackSpecDigest,omitempty"`
 	// Only the HTTP legacy decoder sets these flags. Omitted additive v1
 	// fields resolve from this subject's immutable confirmation, never defaults.
 	OmitIncident   bool       `json:"-"`
@@ -36,24 +38,28 @@ type CommandRequest struct {
 	Options        Options    `json:"executionOptions"`
 }
 type Binding struct {
-	RelatedExecutionID *uuid.UUID `json:"relatedExecutionId,omitempty"`
-	ExecutionRelation  string     `json:"executionRelation,omitempty"`
-	DigestVersion      string     `json:"digestVersion"`
-	TenantID           uuid.UUID  `json:"tenantId"`
-	Subject            string     `json:"subject"`
-	IncidentID         uuid.UUID  `json:"incidentId"`
-	ActionPlanID       *uuid.UUID `json:"actionPlanId"`
-	Target             string     `json:"targetCanonicalId"`
-	TargetUID          string     `json:"targetUid"`
-	ClusterUID         string     `json:"clusterUid"`
-	Namespace          *string    `json:"namespace"`
-	Shell              string     `json:"shell"`
-	CommandDigest      string     `json:"actualCommandDigest"`
-	ProfileID          uuid.UUID  `json:"executionProfileId"`
-	ProfileVersion     int        `json:"executionProfileVersion"`
-	Options            Options    `json:"executionOptions"`
-	PolicyVersion      string     `json:"policyVersion"`
-	RiskVersion        string     `json:"riskAssessmentVersion"`
+	VerificationNamespace  string            `json:"verificationNamespace,omitempty"`
+	VerificationTargetName string            `json:"verificationTargetName,omitempty"`
+	Verification           *VerificationSpec `json:"verification,omitempty"`
+	RelatedExecutionID     *uuid.UUID        `json:"relatedExecutionId,omitempty"`
+	ExecutionRelation      string            `json:"executionRelation,omitempty"`
+	RollbackSpecDigest     string            `json:"rollbackSpecDigest,omitempty"`
+	DigestVersion          string            `json:"digestVersion"`
+	TenantID               uuid.UUID         `json:"tenantId"`
+	Subject                string            `json:"subject"`
+	IncidentID             uuid.UUID         `json:"incidentId"`
+	ActionPlanID           *uuid.UUID        `json:"actionPlanId"`
+	Target                 string            `json:"targetCanonicalId"`
+	TargetUID              string            `json:"targetUid"`
+	ClusterUID             string            `json:"clusterUid"`
+	Namespace              *string           `json:"namespace"`
+	Shell                  string            `json:"shell"`
+	CommandDigest          string            `json:"actualCommandDigest"`
+	ProfileID              uuid.UUID         `json:"executionProfileId"`
+	ProfileVersion         int               `json:"executionProfileVersion"`
+	Options                Options           `json:"executionOptions"`
+	PolicyVersion          string            `json:"policyVersion"`
+	RiskVersion            string            `json:"riskAssessmentVersion"`
 }
 
 func Canonical(v any) []byte {

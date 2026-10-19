@@ -5,9 +5,7 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"io"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"net/url"
 	"ops-platform/internal/action"
 	"ops-platform/internal/configregistry"
 	"ops-platform/internal/evidence"
@@ -24,7 +22,7 @@ import (
 func commandPostCheckPass(ctx context.Context, s action.Service, archive *evidence.ArchiveService, tenant uuid.UUID) error {
 	ids := []uuid.UUID{}
 	err := persistence.WithTenantTx(ctx, s.Pool, tenant, func(tx pgx.Tx) error {
-		rows, err := tx.Query(ctx, `SELECT execution_id FROM action.executions WHERE tenant_id=$1 AND state IN('succeeded','failed') AND post_checked_at IS NULL ORDER BY completed_at LIMIT 5`, tenant)
+		rows, err := tx.Query(ctx, `SELECT execution_id FROM action.executions WHERE tenant_id=$1 AND state IN('succeeded','failed') AND post_checked_at IS NULL AND (NOT(binding ? 'verification') OR archived_at IS NOT NULL) ORDER BY completed_at LIMIT 5`, tenant)
 		if err != nil {
 			return err
 		}
@@ -124,15 +122,7 @@ func collectCommandPostCheck(ctx context.Context, s action.Service, archive *evi
 	if support.Status == "unsupported" || support.TargetKind != kind {
 		return f
 	}
-	plural, recipeName := "", support.Recipe
-	switch kind {
-	case "PersistentVolumeClaim":
-		plural = "persistentvolumeclaims"
-	case "Node":
-		plural = "nodes"
-	default:
-		return f
-	}
+	recipeName := support.Recipe
 	activationScope := configregistry.Scope{Type: configregistry.ScopeCluster, ClusterID: clusterID}
 	if ns != "" {
 		activationScope.Type = configregistry.ScopeNamespace
@@ -150,29 +140,9 @@ func collectCommandPostCheck(ctx context.Context, s action.Service, archive *evi
 	if err != nil {
 		return f
 	}
-	path := "/api/v1/"
-	if ns != "" {
-		path += "namespaces/" + url.PathEscape(ns) + "/"
-	}
-	path += plural + "/" + url.PathEscape(name)
-	response, err := client.Do(ctx, "GET", path, nil)
-	if err != nil {
-		return f
-	}
-	defer response.Body.Close()
-	if response.StatusCode != 200 {
-		return f
-	}
-	raw, err := io.ReadAll(io.LimitReader(response.Body, (64<<10)+1))
-	if err != nil || len(raw) > 64<<10 {
-		return f
-	}
-	var object unstructured.Unstructured
-	if json.Unmarshal(raw, &object.Object) != nil || string(object.GetUID()) != e.Binding.TargetUID || object.GetNamespace() != ns {
-		return f
-	}
-	now := time.Now().UTC()
-	if !now.After(completed) {
+	path := postCheckPath(kind, ns, name)
+	object, err := readPostCheckObject(ctx, client, path)
+	if err != nil || object.GetKind() != kind || object.GetName() != name || string(object.GetUID()) != e.Binding.TargetUID || object.GetNamespace() != ns {
 		return f
 	}
 	group := object.GroupVersionKind().Group
@@ -183,36 +153,90 @@ func collectCommandPostCheck(ctx context.Context, s action.Service, archive *evi
 	if canonical.String() != e.Binding.Target {
 		return f
 	}
-	object.SetAnnotations(nil)
-	data, err := json.Marshal(object.Object)
-	if err != nil {
+	f.SourceAvailable = true
+	// PVC v1 proved only Bound, never mount/CSI recovery. New collection needs
+	// explicit signed v2 activation; historical v1 reports remain unchanged.
+	if kind == "PersistentVolumeClaim" && recipe.Version != "v2" {
 		return f
 	}
-	ev := evidence.Evidence{SchemaVersion: "evidence/v2", EvidenceID: uuid.Must(uuid.NewV7()).String(), TenantID: tenant.String(), ResourceCanonicalID: e.Binding.Target, Type: "resource_state", DataClass: "D0", SourceRegistrationID: cluster.SourceID, SourceRevision: cluster.SourceRevision, SourceSystem: "kubernetes", BackendLogicalID: cluster.BackendLogicalID, SourceScopeDigest: cluster.SourceScopeDigest, QueryTemplateVersion: "kubernetes-projection/v1", QueryHash: evidence.Digest([]byte(path)), EffectiveScope: scope, EvaluatedAt: now, ObservedFrom: now, ObservedTo: now, SourceRetentionUntil: now, TimeReliable: true, ReplayState: "archive_pending", ContentDigest: evidence.Digest(data), IndependenceGroup: cluster.SourceID, DerivationEvidenceRefs: []string{}, Data: data}
-	if archive.Capture(ctx, ev, ns, now.Add(365*24*time.Hour)) != nil {
-		return f
+	objects := []unstructured.Unstructured{object}
+	if recipe.PostCheck == "native-related-health/v1" {
+		collectionCtx, cancel := context.WithTimeout(ctx, time.Duration(recipe.Budget.TimeoutMs)*time.Millisecond)
+		objects, err = nativePostCheckObjects(object, tenant.String(), cluster.ClusterUID, scope, func(path string) (unstructured.Unstructured, error) {
+			return readPostCheckObject(collectionCtx, client, path)
+		})
+		cancel()
+		if err != nil {
+			return f
+		}
 	}
-	ev.ReplayState = "archived_verified"
-	verdict, err := rca.PostCheckResource(recipe, ev, completed)
-	if err != nil || verdict == "inconclusive" {
-		return f
+	es := []evidence.Evidence{}
+	for _, object := range objects {
+		object = postCheckProjection(object)
+		now := time.Now().UTC()
+		if !now.After(completed) {
+			return f
+		}
+		group := object.GroupVersionKind().Group
+		if group == "" {
+			group = "core"
+		}
+		target := resource.CanonicalID{Domain: "k8s", Tenant: tenant.String(), Scope: cluster.ClusterUID, APIGroup: group, Kind: object.GetKind(), StableID: string(object.GetUID())}.String()
+		data, err := json.Marshal(object.Object)
+		if err != nil {
+			return f
+		}
+		template := "kubernetes-projection/v1"
+		if recipe.PostCheck == "native-related-health/v1" {
+			template = "command-kubernetes-post-check/v1"
+		}
+		ev := evidence.Evidence{SchemaVersion: "evidence/v2", EvidenceID: uuid.Must(uuid.NewV7()).String(), TenantID: tenant.String(), ResourceCanonicalID: target, Type: "resource_state", DataClass: "D0", SourceRegistrationID: cluster.SourceID, SourceRevision: cluster.SourceRevision, SourceSystem: "kubernetes", BackendLogicalID: cluster.BackendLogicalID, SourceScopeDigest: cluster.SourceScopeDigest, QueryTemplateVersion: template, QueryHash: evidence.Digest([]byte(postCheckPath(object.GetKind(), object.GetNamespace(), object.GetName()))), EffectiveScope: scope, EvaluatedAt: now, ObservedFrom: now, ObservedTo: now, SourceRetentionUntil: now, TimeReliable: true, ReplayState: "archive_pending", ContentDigest: evidence.Digest(data), IndependenceGroup: cluster.SourceID, DerivationEvidenceRefs: []string{}, Data: data}
+		if archive.Capture(ctx, ev, object.GetNamespace(), now.Add(365*24*time.Hour)) != nil {
+			return f
+		}
+		ev.ReplayState = "archived_verified"
+		es = append(es, ev)
 	}
-	// Recheck current source and Recipe after the live read and archive commit.
-	if _, err = (evidence.Repository{Pool: s.Pool}).Get(ctx, tenant, uuid.MustParse(ev.EvidenceID), scope); err != nil {
-		return f
+	verdict := "inconclusive"
+	if recipe.PostCheck == "native-related-health/v1" {
+		result, evalErr := rca.NativePostCheckResources(recipe, es, completed)
+		if evalErr != nil {
+			return f
+		}
+		verdict, f.ObservedSpecDigest, f.NewAnomalies = result.Verdict, result.SpecDigest, result.NewAnomalies
+		f.Adapter = recipe.PostCheck
+	} else {
+		verdict, err = rca.PostCheckResource(recipe, es[0], completed)
+		if err != nil {
+			return f
+		}
+		f.ObservedSpecDigest = rca.SpecDigest(postCheckProjection(object))
+	}
+	// Recheck every dependency's current source/scope after archival.
+	for _, ev := range es {
+		if _, err = (evidence.Repository{Pool: s.Pool}).Get(ctx, tenant, uuid.MustParse(ev.EvidenceID), scope); err != nil {
+			return f
+		}
 	}
 	if persistence.WithTenantTx(ctx, s.Pool, tenant, func(tx pgx.Tx) error {
 		return rca.VerifyRecipeForRead(ctx, tx, tenant, &version.VersionID, cluster.ClusterUID, ns, recipe, trust)
 	}) != nil {
 		return f
 	}
-	f.RecipeVersion = version.VersionID
-	f.RecipeName = recipe.Name
-	f.CollectedAfter = now
-	f.CheckedAt = time.Now().UTC()
-	f.SourceAvailable = true
-	f.Complete = true
+	f.RecipeVersion, f.RecipeName = version.VersionID, recipe.Name
+	f.CollectedAfter, f.CheckedAt = es[0].ObservedFrom, time.Now().UTC()
+	if e.Binding.Verification != nil {
+		result, err := s.VerificationResult(ctx, tenant, e.ID)
+		if err != nil {
+			return f
+		}
+		f.Verification = result
+	}
+	f.Complete = verdict != "inconclusive"
 	f.FaultPresent = verdict == "not_resolved"
-	f.EvidenceRefs = []string{ev.EvidenceID}
+	f.EvidenceRefs = []string{}
+	for _, ev := range es {
+		f.EvidenceRefs = append(f.EvidenceRefs, ev.EvidenceID)
+	}
 	return f
 }

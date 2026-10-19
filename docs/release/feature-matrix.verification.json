@@ -1,6 +1,6 @@
 {
   "schemaVersion": "platform-functional-inventory-check/v1",
-  "asOf": "2026-10-18",
+  "asOf": "2026-10-19",
   "result": "PASS",
   "checked": {
     "prdNumberedRequirements": 144,
@@ -29,8 +29,40 @@
   "developmentRecords": [
     "docs/release/core-workflow-closeout.md",
     "docs/runbooks/development-tests.md",
-    "docs/release/disposition-verification-closeout.md"
+    "docs/release/disposition-verification-closeout.md",
+    "docs/release/unified-installer-closeout.md"
   ],
   "localChecks": "PASS_BOUNDED_LOCAL",
-  "databaseIntegration": "COMPILE_ONLY_NOT_RUN"
+  "databaseIntegration": "COMPILE_ONLY_NOT_RUN",
+  "scenarioDevelopment": {
+    "record": "docs/release/scenario-postcheck-closeout.md",
+    "runtime": "not_run",
+    "databaseIntegration": "compile_only",
+    "newScope": "native_related_health",
+    "rollbackBinding": "execution-request/v3"
+  },
+  "probeDevelopment": {
+    "record": "docs/release/controlled-verification-closeout.md",
+    "binding": "execution-request/v4",
+    "receipt": "command-verification/v1",
+    "runtime": "not_run",
+    "databaseIntegration": "compile_only",
+    "scope": "runner_location_and_dedicated_pvc",
+    "newPermissionsGranted": false,
+    "unifiedInstallerChanged": false
+  },
+  "installerDevelopment": {
+    "record": "docs/release/unified-installer-closeout.md",
+    "status": "development_complete_runtime_pending",
+    "capabilities": [
+      "sp08",
+      "sp06.assistant",
+      "sp06.assistant.faultChainEnabled"
+    ],
+    "receiptBinding": "existing_full_business_and_registered_business_digests",
+    "webArchitecture": "amd64_only_other_architectures_rejected",
+    "runtime": "not_run",
+    "newBundleBuiltOrSigned": false,
+    "remoteAccess": false
+  }
 }

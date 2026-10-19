@@ -2,12 +2,25 @@ package action
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/auth"
+	"strings"
 	"time"
 )
+
+func validRollbackGoal(relation, digest string) bool {
+	if relation != "rollback" {
+		return digest == ""
+	}
+	if !strings.HasPrefix(digest, "sha256:") || len(digest) != 71 {
+		return false
+	}
+	_, err := hex.DecodeString(strings.TrimPrefix(digest, "sha256:"))
+	return err == nil && digest == strings.ToLower(digest)
+}
 
 func validExecutionRelation(id *uuid.UUID, relation string) bool {
 	if id == nil {

@@ -38,6 +38,9 @@ func InstallCurrent(ctx context.Context, manifest Manifest, trust TrustRoot, p p
 	if business.initializeCommands && stage != "business" {
 		return ImportReport{}, errors.New("command initialization requires business activation")
 	}
+	if err := validateWebProfile(business, p); err != nil {
+		return ImportReport{}, err
+	}
 	business.installStage = stage
 	report, err := install(ctx, manifest, trust, p, runtime, run, &business)
 	if business.ModelPending() {
@@ -178,6 +181,11 @@ func install(ctx context.Context, manifest Manifest, trust TrustRoot, p profile.
 	if business != nil && !business.ModelPending() {
 		if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace, "rollout", "status", "deployment/ops-investigator", "--timeout=90s"); err != nil {
 			return report, fmt.Errorf("checkpoint=investigator-health: %w", err)
+		}
+	}
+	if business != nil && business.WebEnabled() {
+		if _, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", installationNamespace, "rollout", "status", "deployment/ops-web", "--timeout=90s"); err != nil {
+			return report, fmt.Errorf("checkpoint=web-health: %w", err)
 		}
 	}
 	return report, nil
@@ -425,6 +433,18 @@ func planCharts(ctx context.Context, installationNamespace string, v *verifiedPa
 			if business != nil {
 				if err := applyBusinessValues(values, *business, imageNames); err != nil {
 					return nil, err
+				}
+				if business.WebEnabled() {
+					if err := validateWebProfile(*business, p); err != nil {
+						return nil, err
+					}
+					web := map[string]any{}
+					for k, value := range object(business.values, "sp08") {
+						web[k] = value
+					}
+					web["apiHost"] = "ops-api." + installationNamespace + ".svc.cluster.local"
+					web["release"] = map[string]any{"version": v.manifest.PlatformVersion, "digest": v.manifest.Payload.Digest, "signature": ""}
+					values["sp08"] = web
 				}
 				if business.installStage == "dependencies" {
 					values["networkPolicyOnly"] = true

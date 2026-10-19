@@ -62,3 +62,13 @@ Runner 内临时明文、kubeconfig、SSH 私钥/证书与 Ansible private data 
 原始证据和 Task 账本位于 `docs/evidence/sp07-20261009`。ARM64 为真实滚动部署和有限业务验收；amd64 仅源码/构建兼容，部署 UNVERIFIED。真实 llama3.1:8b-16k 功能测试不代表 RCA 准确率，模型未生成建议时如实记录。十并发、模型吞吐/P95/持续压测/容量及机器扩容均为 USER_WAIVED_NOT_PASS。
 
 历史完整 amd64 离线包、DeepFlow、缺失历史 Transit 恢复继续保留，不自动扩大为本轮前置。历史上游 replay 的缺失离线 SDK 镜像与未受影响的 20K Graph 测试超时单列失败；不删除断言、不调整正式阈值、不冒充生产容量或原 SP-02～SP-06 全部重新验收通过。
+
+### 场景后检查与回退配置目标（2026-10-19）
+
+已增加 Pod、Deployment、Service/EndpointSlice 后端及 PVC/CSI 场景判据；需通过原有注册、签名发布和激活流程启用对应新 Recipe，不能手动绕过来源或授权门禁。PVC 挂载判据使用 v2，旧 v1 归档保留。
+
+新人工回退必须填写 `rollbackSpecDigest` 并重新评估/本人确认；配置目标匹配和场景健康同时通过才报告目标达成。原生来源不能证明真实 TCP/HTTP 连通和应用读写；详细覆盖字段、适用范围和操作边界见[场景功能记录](../release/scenario-postcheck-closeout.md)。
+
+### 受控实际验证（2026-10-19）
+
+关联执行可以显式选择 TCP、HTTP 或专用 PVC 文件写读。必须本人重新确认，并使用包含 `ops-verify`、已签名且进入运行准入名单的 namespace Profile；API/Worker/Runner/Web 同批交付。PVC 必须位于配置的 Runner namespace，带 `ops.platform/verification-only: "true"` 注解，并准备 `.ops-verification` 专属子目录；不得以业务卷代替。实际网络位置是 Runner，不代表所有业务客户端。参数、归档门禁、清理和启用顺序见[受控验证记录](../release/controlled-verification-closeout.md)。

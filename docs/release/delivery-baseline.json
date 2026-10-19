@@ -1,7 +1,7 @@
 {
   "schemaVersion": "delivery-preparation/v1",
   "status": "preparation_only",
-  "asOf": "2026-10-18",
+  "asOf": "2026-10-19",
   "scope": "nonvirtual-core",
   "versionBasis": {
     "platformApp": "1.0.0",
@@ -163,22 +163,25 @@
   },
   "assistantDefault": false,
   "configurationLimits": {
-    "businessValuesWeb": false,
-    "businessValuesAssistant": false,
+    "businessValuesWeb": true,
+    "businessValuesAssistant": true,
     "webImageRecipeArchitecture": "amd64",
     "mixedRevisionRuntimeVerified": false
   },
   "blockers": [
     {
       "id": "DEL-001",
-      "status": "open",
-      "title": "完整安装业务值尚未接通 Web 与助手/故障链配置",
+      "status": "development_complete_runtime_pending",
+      "title": "Web 与助手/故障链统一安装开发完成，真实安装待验收",
       "evidence": [
         "api/schemas/installation-business-values-v1.schema.json",
         "internal/bundle/installer.go",
-        "internal/bundle/business_values.go"
+        "internal/bundle/business_values.go",
+        "internal/bundle/business_capabilities.go",
+        "internal/bundle/business_capabilities_test.go",
+        "docs/release/unified-installer-closeout.md"
       ],
-      "requiredBeforeRelease": "在独立后续开发中复用现有 installer/Chart 接通配置、摘要绑定与阶段回执；本轮不绕过门禁直接 Helm 部署。"
+      "requiredBeforeRelease": "使用当前冻结源码与新签名 Bundle 完成真实三阶段安装、OIDC/TLS、助手和故障链运行验证；本地配置/渲染检查不替代运行准入。"
     },
     {
       "id": "DEL-002",
@@ -187,7 +190,7 @@
       "evidence": [
         "build/images/web/Dockerfile"
       ],
-      "requiredBeforeRelease": "逐目标架构准备真实镜像/依赖/源码闭包与兼容验证，不能据 API/Worker 的交叉编译宣称完整 ARM64/AMD64 交付。"
+      "requiredBeforeRelease": "逐目标架构准备真实镜像/依赖/源码闭包与兼容验证，不能据 API/Worker 的交叉编译宣称完整 ARM64/AMD64 交付。 当前 Installer 对启用 Web 的非 amd64 目标提前拒绝，不宣称多架构已完成。"
     },
     {
       "id": "DEL-003",

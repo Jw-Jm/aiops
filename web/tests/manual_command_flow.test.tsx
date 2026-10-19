@@ -115,12 +115,78 @@ it("rejects a risk response bound to another execution relation", async () => {
   };
   expect(await matchesAssessment(request, { binding })).toBe(true);
   for (const changed of [
+    { rollbackSpecDigest: "sha256:" + "a".repeat(64) },
     { relatedExecutionId: "other" },
     { executionRelation: "rollback" },
     { relatedExecutionId: undefined, executionRelation: undefined },
   ]) {
     expect(
       await matchesAssessment(request, { binding: { ...binding, ...changed } }),
+    ).toBe(false);
+  }
+});
+
+it("binds probe protocol and HTTP assertions into confirmation matching", async () => {
+  const request = {
+    incidentId: "i",
+    actualCommand: "ops-verify http",
+    target: "target",
+    shell: "bash",
+    executionProfileId: "p",
+    executionProfileVersion: 1,
+    relatedExecutionId: "parent",
+    executionRelation: "follow_up",
+    executionOptions: {
+      timeoutSeconds: 30,
+      maxOutputBytes: 4096,
+      workingDirectory: "",
+      environment: {},
+    },
+    verification: {
+      kind: "http",
+      port: 80,
+      path: "/healthz",
+      https: false,
+      expectedStatus: 200,
+    },
+  } satisfies CommandRiskAssessmentRequest;
+  const hash = Array.from(
+    new Uint8Array(
+      await crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode(request.actualCommand),
+      ),
+    ),
+    (b) => b.toString(16).padStart(2, "0"),
+  ).join("");
+  const binding = {
+    actualCommandDigest: "sha256:" + hash,
+    targetCanonicalId: request.target,
+    shell: "bash",
+    executionProfileId: "p",
+    executionProfileVersion: 1,
+    incidentId: "i",
+    relatedExecutionId: "parent",
+    executionRelation: "follow_up",
+    executionOptions: request.executionOptions,
+    verification: {
+      kind: "http",
+      port: 80,
+      path: "/healthz",
+      expectedStatus: 200,
+    },
+  };
+  expect(await matchesAssessment(request, { binding })).toBe(true);
+  for (const verification of [
+    undefined,
+    { ...binding.verification, port: 443 },
+    { ...binding.verification, path: "/other" },
+    { ...binding.verification, expectedStatus: 201 },
+  ]) {
+    expect(
+      await matchesAssessment(request, {
+        binding: { ...binding, verification },
+      }),
     ).toBe(false);
   }
 });

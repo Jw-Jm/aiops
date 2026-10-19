@@ -198,6 +198,27 @@ func (e CommandExecutionRequestShell) Valid() bool {
 	}
 }
 
+// Defines values for CommandExecutionRequestVerificationKind.
+const (
+	CommandExecutionRequestVerificationKindHttp         CommandExecutionRequestVerificationKind = "http"
+	CommandExecutionRequestVerificationKindPvcReadWrite CommandExecutionRequestVerificationKind = "pvc_read_write"
+	CommandExecutionRequestVerificationKindTcp          CommandExecutionRequestVerificationKind = "tcp"
+)
+
+// Valid indicates whether the value is a known member of the CommandExecutionRequestVerificationKind enum.
+func (e CommandExecutionRequestVerificationKind) Valid() bool {
+	switch e {
+	case CommandExecutionRequestVerificationKindHttp:
+		return true
+	case CommandExecutionRequestVerificationKindPvcReadWrite:
+		return true
+	case CommandExecutionRequestVerificationKindTcp:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CommandRiskAssessmentRequestExecutionRelation.
 const (
 	CommandRiskAssessmentRequestExecutionRelationFollowUp CommandRiskAssessmentRequestExecutionRelation = "follow_up"
@@ -225,6 +246,27 @@ const (
 func (e CommandRiskAssessmentRequestShell) Valid() bool {
 	switch e {
 	case CommandRiskAssessmentRequestShellBash:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CommandRiskAssessmentRequestVerificationKind.
+const (
+	CommandRiskAssessmentRequestVerificationKindHttp         CommandRiskAssessmentRequestVerificationKind = "http"
+	CommandRiskAssessmentRequestVerificationKindPvcReadWrite CommandRiskAssessmentRequestVerificationKind = "pvc_read_write"
+	CommandRiskAssessmentRequestVerificationKindTcp          CommandRiskAssessmentRequestVerificationKind = "tcp"
+)
+
+// Valid indicates whether the value is a known member of the CommandRiskAssessmentRequestVerificationKind enum.
+func (e CommandRiskAssessmentRequestVerificationKind) Valid() bool {
+	switch e {
+	case CommandRiskAssessmentRequestVerificationKindHttp:
+		return true
+	case CommandRiskAssessmentRequestVerificationKindPvcReadWrite:
+		return true
+	case CommandRiskAssessmentRequestVerificationKindTcp:
 		return true
 	default:
 		return false
@@ -2301,12 +2343,25 @@ type CommandExecutionRequest struct {
 	IncidentId        *Identifier                               `json:"incidentId,omitempty"`
 
 	// RelatedExecutionId Existing completed execution on the same Incident and resource identity; must accompany executionRelation.
-	RelatedExecutionId    *openapi_types.UUID          `json:"relatedExecutionId,omitempty"`
-	RiskAcknowledgementId Identifier                   `json:"riskAcknowledgementId"`
-	Shell                 CommandExecutionRequestShell `json:"shell"`
+	RelatedExecutionId    *openapi_types.UUID `json:"relatedExecutionId,omitempty"`
+	RiskAcknowledgementId Identifier          `json:"riskAcknowledgementId"`
+
+	// RollbackSpecDigest Required for new rollback executions; desired reviewed native configuration digest, bound to personal risk confirmation. Recovery additionally requires the signed native health checks.
+	RollbackSpecDigest *string                      `json:"rollbackSpecDigest,omitempty"`
+	Shell              CommandExecutionRequestShell `json:"shell"`
 
 	// Target RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
 	Target CanonicalID `json:"target"`
+
+	// Verification Explicit associated probe execution. Requires a signed ops-verify namespaced Profile; PVC probes require a dedicated marked PVC in the configured Runner namespace.
+	Verification *struct {
+		ExpectedBodyDigest *string                                 `json:"expectedBodyDigest,omitempty"`
+		ExpectedStatus     *int                                    `json:"expectedStatus,omitempty"`
+		Https              *bool                                   `json:"https,omitempty"`
+		Kind               CommandExecutionRequestVerificationKind `json:"kind"`
+		Path               *string                                 `json:"path,omitempty"`
+		Port               *int                                    `json:"port,omitempty"`
+	} `json:"verification,omitempty"`
 }
 
 // CommandExecutionRequestExecutionRelation Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId.
@@ -2314,6 +2369,9 @@ type CommandExecutionRequestExecutionRelation string
 
 // CommandExecutionRequestShell defines model for CommandExecutionRequest.Shell.
 type CommandExecutionRequestShell string
+
+// CommandExecutionRequestVerificationKind defines model for CommandExecutionRequest.Verification.Kind.
+type CommandExecutionRequestVerificationKind string
 
 // CommandRiskAcknowledgementRequest defines model for CommandRiskAcknowledgementRequest.
 type CommandRiskAcknowledgementRequest struct {
@@ -2334,11 +2392,24 @@ type CommandRiskAssessmentRequest struct {
 	IncidentId        Identifier                                     `json:"incidentId"`
 
 	// RelatedExecutionId Existing completed execution on the same Incident and resource identity; must accompany executionRelation.
-	RelatedExecutionId *openapi_types.UUID               `json:"relatedExecutionId,omitempty"`
+	RelatedExecutionId *openapi_types.UUID `json:"relatedExecutionId,omitempty"`
+
+	// RollbackSpecDigest Required for new rollback executions; desired reviewed native configuration digest, bound to personal risk confirmation. Recovery additionally requires the signed native health checks.
+	RollbackSpecDigest *string                           `json:"rollbackSpecDigest,omitempty"`
 	Shell              CommandRiskAssessmentRequestShell `json:"shell"`
 
 	// Target RFC 3986 percent-encoded in query parameters; JSON body values carry the decoded canonical identifier.
 	Target CanonicalID `json:"target"`
+
+	// Verification Explicit associated probe execution. Requires a signed ops-verify namespaced Profile; PVC probes require a dedicated marked PVC in the configured Runner namespace.
+	Verification *struct {
+		ExpectedBodyDigest *string                                      `json:"expectedBodyDigest,omitempty"`
+		ExpectedStatus     *int                                         `json:"expectedStatus,omitempty"`
+		Https              *bool                                        `json:"https,omitempty"`
+		Kind               CommandRiskAssessmentRequestVerificationKind `json:"kind"`
+		Path               *string                                      `json:"path,omitempty"`
+		Port               *int                                         `json:"port,omitempty"`
+	} `json:"verification,omitempty"`
 }
 
 // CommandRiskAssessmentRequestExecutionRelation Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId.
@@ -2346,6 +2417,9 @@ type CommandRiskAssessmentRequestExecutionRelation string
 
 // CommandRiskAssessmentRequestShell defines model for CommandRiskAssessmentRequest.Shell.
 type CommandRiskAssessmentRequestShell string
+
+// CommandRiskAssessmentRequestVerificationKind defines model for CommandRiskAssessmentRequest.Verification.Kind.
+type CommandRiskAssessmentRequestVerificationKind string
 
 // CreateInvestigationV2 defines model for CreateInvestigationV2.
 type CreateInvestigationV2 struct {

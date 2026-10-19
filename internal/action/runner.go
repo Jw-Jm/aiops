@@ -102,6 +102,11 @@ func (c RunnerClient) Run(ctx context.Context) error {
 	if claim.ExecutionID != c.ExecutionID || ValidateCommand(claim.Command, "bash") != nil || claim.TimeoutSeconds < 1 || claim.TimeoutSeconds > 900 || claim.MaxOutputBytes < 1 || claim.MaxOutputBytes > DefaultMaxOutputBytes {
 		return ErrInvalid
 	}
+	if claim.VerificationBinding != nil {
+		probeCtx, stop := context.WithTimeout(ctx, time.Duration(claim.TimeoutSeconds)*time.Second)
+		defer stop()
+		return c.runVerification(probeCtx, claim)
+	}
 	runCtx, cancel := context.WithTimeout(ctx, time.Duration(claim.TimeoutSeconds)*time.Second)
 	defer cancel()
 	dir, err := os.MkdirTemp("/run/ops", "execution-")

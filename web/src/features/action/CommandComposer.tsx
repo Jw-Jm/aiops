@@ -63,6 +63,14 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
   const [url, setUrl] = useSearchParams();
   const auth = useAuth();
   const [command, setCommand] = useState("");
+  const [verificationMode, setVerificationMode] = useState<
+    "command" | "tcp" | "http" | "pvc_read_write"
+  >("command");
+  const [probePort, setProbePort] = useState(80);
+  const [probePath, setProbePath] = useState("/healthz");
+  const [probeHTTPS, setProbeHTTPS] = useState(false);
+  const [probeStatus, setProbeStatus] = useState(200);
+  const [probeBodyDigest, setProbeBodyDigest] = useState("");
   const [target, setTarget] = useState(incident.resourceCanonicalId);
   const [verifiedTarget, setVerifiedTarget] = useState(
     incident.resourceCanonicalId,
@@ -100,12 +108,23 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
   const executionRelation = url.get("executionRelation") || undefined;
   const validRelation =
     executionRelation === "follow_up" || executionRelation === "rollback";
+  const [rollbackSpecDigest, setRollbackSpecDigest] = useState("");
   const invalidRelation =
     !!relatedExecutionId !== !!executionRelation ||
-    (!!executionRelation && !validRelation);
+    (!!executionRelation && !validRelation) ||
+    (executionRelation === "rollback" &&
+      !/^sha256:[a-f0-9]{64}$/.test(rollbackSpecDigest));
   useEffect(() => {
     setCommand("");
-  }, [relatedExecutionId, executionRelation]);
+    setRollbackSpecDigest("");
+    const mode = url.get("verificationMode");
+    setVerificationMode(
+      mode === "tcp" || mode === "http" || mode === "pvc_read_write"
+        ? mode
+        : "command",
+    );
+    setProbeBodyDigest("");
+  }, [relatedExecutionId, executionRelation, url.get("verificationMode")]);
   const profileCursor = url.get("profileCursor") || undefined;
   const [selectedConfig, setSelectedConfig] =
     useState<Record<string, unknown>>();
@@ -141,6 +160,23 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
     queryFn: ({ signal }) =>
       checked(getActionPlan(planId!, requestOptions(signal))),
   });
+  const verification: CommandRiskAssessmentRequest["verification"] =
+    verificationMode === "command"
+      ? undefined
+      : verificationMode === "pvc_read_write"
+        ? { kind: verificationMode }
+        : verificationMode === "tcp"
+          ? { kind: verificationMode, port: probePort }
+          : {
+              kind: verificationMode,
+              port: probePort,
+              path: probePath,
+              https: probeHTTPS,
+              expectedStatus: probeStatus,
+              ...(probeBodyDigest
+                ? { expectedBodyDigest: probeBodyDigest }
+                : {}),
+            };
   const request: CommandRiskAssessmentRequest = {
     ...(relatedExecutionId
       ? {
@@ -148,9 +184,11 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
           executionRelation: validRelation ? executionRelation : undefined,
         }
       : {}),
+    ...(executionRelation === "rollback" ? { rollbackSpecDigest } : {}),
     incidentId: incident.incidentId,
     actionPlanId: planId ?? null,
-    actualCommand: command,
+    ...(verification ? { verification } : {}),
+    actualCommand: verification ? "ops-verify " + verification.kind : command,
     target,
     shell: "bash",
     executionProfileId:
@@ -468,10 +506,25 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
           }
         />
       )}
+      {executionRelation === "rollback" && (
+        <div className="field">
+          <label htmlFor="rollback-goal">期望回退配置摘要</label>
+          <Input
+            id="rollback-goal"
+            value={rollbackSpecDigest}
+            disabled={activeExecution || unknown}
+            placeholder="sha256:…"
+            onChange={(e) => setRollbackSpecDigest(e.target.value)}
+          />
+          <p>
+            请从已核对的历史验证报告选取期望配置摘要；摘要只覆盖场景声明的配置字段。配置匹配和健康判据均通过后才表示回退目标达成。不会自动选取原执行后的异常配置。
+          </p>
+        </div>
+      )}
       {invalidRelation && (
         <Alert
           type="error"
-          title="执行关联参数不完整，请重新选择原执行及关联类型"
+          title="执行关联参数或回退目标摘要不完整，请核对后重新评估"
         />
       )}
       <h3>1 · 输入实际命令</h3>
@@ -566,13 +619,97 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
       <p className="status-note">
         Shell：Bash · 工作目录：默认空值 · 额外环境变量：无。建议不会自动填入。
       </p>
-      <CommandEditor value={command} onChange={setCommand} />
+      {relatedExecutionId && (
+        <div className="field">
+          <label htmlFor="verification-mode">执行内容</label>
+          <Select
+            id="verification-mode"
+            value={verificationMode}
+            disabled={activeExecution || unknown}
+            options={[
+              { value: "command", label: "人工命令" },
+              { value: "tcp", label: "TCP 实际连接" },
+              { value: "http", label: "HTTP 响应断言" },
+              { value: "pvc_read_write", label: "专属 PVC 写读校验" },
+            ]}
+            onChange={(mode) => {
+              setVerificationMode(mode);
+              setCommand("");
+            }}
+          />
+        </div>
+      )}
+      {verification ? (
+        <>
+          <Alert
+            type="info"
+            showIcon
+            title="这是一次需要本人确认的实际探测"
+            description="从独立 Runner 的网络位置执行，不等同于业务客户端位置。需要已签名且包含 ops-verify 的执行配置；不运行 Bash，不自动重试。PVC 仅限 Runner 同 namespace 的专用标记卷和 .ops-verification 子目录，不得使用业务卷。"
+          />
+          {verificationMode !== "pvc_read_write" && (
+            <label>
+              Service 端口
+              <InputNumber
+                aria-label="探测端口"
+                min={1}
+                max={65535}
+                value={probePort}
+                onChange={(n) => setProbePort(Number(n))}
+              />
+            </label>
+          )}
+          {verificationMode === "http" && (
+            <>
+              <p>仅填写已批准、无副作用的健康检查路径，不得填写业务凭据。</p>
+              <label>
+                HTTP 路径
+                <Input
+                  aria-label="探测 HTTP 路径"
+                  value={probePath}
+                  onChange={(e) => setProbePath(e.target.value)}
+                />
+              </label>
+              <label>
+                期望状态码
+                <InputNumber
+                  aria-label="期望 HTTP 状态码"
+                  min={200}
+                  max={599}
+                  value={probeStatus}
+                  onChange={(n) => setProbeStatus(Number(n))}
+                />
+              </label>
+              <Checkbox
+                checked={probeHTTPS}
+                onChange={(e) => setProbeHTTPS(e.target.checked)}
+              >
+                HTTPS（校验证书，不跟随重定向）
+              </Checkbox>
+              <label>
+                期望响应摘要（可选）
+                <Input
+                  aria-label="期望响应摘要"
+                  value={probeBodyDigest}
+                  onChange={(e) => setProbeBodyDigest(e.target.value)}
+                  placeholder="sha256:…"
+                />
+              </label>
+            </>
+          )}
+        </>
+      ) : (
+        <CommandEditor value={command} onChange={setCommand} />
+      )}
       <QueryState loading={profiles.isPending} error={profiles.error} />
       <Space wrap className="status-note">
         <Button
           type="primary"
           disabled={
-            !command.trim() ||
+            !request.actualCommand.trim() ||
+            (!!verification &&
+              (!relatedExecutionId ||
+                !list(config?.tools).includes("ops-verify"))) ||
             !profile ||
             !target ||
             unknown ||

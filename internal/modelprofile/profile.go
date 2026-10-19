@@ -2,11 +2,12 @@
 package modelprofile
 
 import (
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"net"
 	"net/url"
 	"ops-platform/internal/contract"
-	"ops-platform/internal/graph"
 	"strings"
 )
 
@@ -40,7 +41,8 @@ func (p Profile) Reference() string {
 	b, _ := json.Marshal(p)
 	var canonical map[string]any
 	json.Unmarshal(b, &canonical)
-	return p.Version + "@" + graph.ScopeDigest(canonical)
+	raw, _ := json.Marshal(canonical)
+	return fmt.Sprintf("%s@sha256:%x", p.Version, sha256.Sum256(raw))
 }
 func (p Profile) Valid(listen string) bool {
 	b, _ := json.Marshal(p)

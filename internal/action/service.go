@@ -22,12 +22,13 @@ type PolicyEvaluator interface {
 	Evaluate(context.Context, policy.PolicyInput) (policy.PolicyDecision, error)
 }
 type Service struct {
-	AdmitHost   func(context.Context, HostOnboarding) error
-	Credentials CredentialProvider
-	Pool        persistence.TxBeginner
-	Protector   platformcrypto.Protector
-	Policy      PolicyEvaluator
-	Trust       configregistry.SignatureVerifier
+	RunnerNamespace string
+	AdmitHost       func(context.Context, HostOnboarding) error
+	Credentials     CredentialProvider
+	Pool            persistence.TxBeginner
+	Protector       platformcrypto.Protector
+	Policy          PolicyEvaluator
+	Trust           configregistry.SignatureVerifier
 	// AdmitProfile verifies admitted material, installed target permissions and
 	// network/credential boundaries. Missing verification keeps publication closed.
 	AdmitProfile func(context.Context, Profile) error
@@ -51,6 +52,9 @@ func profileTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, version int
 }
 func (s Service) authorize(ctx context.Context, tx pgx.Tx, a auth.RequestContext, b Binding, p Profile, touch bool) (policy.PolicyDecision, error) {
 	if a.TenantID != b.TenantID || a.Subject != b.Subject || !p.Allows(b.Target, b.Options) || p.ID != b.ProfileID || p.Version != b.ProfileVersion || p.ClusterUID != b.ClusterUID || s.Policy == nil {
+		return policy.PolicyDecision{}, ErrDenied
+	}
+	if b.Verification != nil && (!b.Verification.Valid(b.Target) || p.Type != "k8s_namespace" || !slices.Contains(p.Tools, "ops-verify") || b.VerificationNamespace != s.RunnerNamespace || b.VerificationTargetName == "" || b.Namespace == nil || b.Verification.Kind == "pvc_read_write" && *b.Namespace != b.VerificationNamespace) {
 		return policy.PolicyDecision{}, ErrDenied
 	}
 	if err := relatedExecutionTx(ctx, tx, b); err != nil {
@@ -122,7 +126,7 @@ func (s Service) authorize(ctx context.Context, tx pgx.Tx, a auth.RequestContext
 // conservative default prevents absence of a risk record reducing authority.
 func ClassifyRiskBinding(Binding) string { return "high" }
 func (s Service) bind(ctx context.Context, tx pgx.Tx, a auth.RequestContext, request CommandRequest) (Binding, Profile, uuid.UUID, error) {
-	if ValidateCommand(request.ActualCommand, request.Shell) != nil || request.IncidentID == uuid.Nil || !validExecutionRelation(request.RelatedExecutionID, request.ExecutionRelation) {
+	if ValidateCommand(request.ActualCommand, request.Shell) != nil || request.IncidentID == uuid.Nil || !validExecutionRelation(request.RelatedExecutionID, request.ExecutionRelation) || !validRollbackGoal(request.ExecutionRelation, request.RollbackSpecDigest) {
 		return Binding{}, Profile{}, uuid.Nil, ErrInvalid
 	}
 	p, vid, err := profileTx(ctx, tx, a.TenantID, request.ProfileID, request.ProfileVersion)
@@ -144,6 +148,26 @@ func (s Service) bind(ctx context.Context, tx pgx.Tx, a auth.RequestContext, req
 	if request.RelatedExecutionID != nil {
 		b.DigestVersion = "execution-request/v2"
 		b.RelatedExecutionID, b.ExecutionRelation = request.RelatedExecutionID, request.ExecutionRelation
+	}
+	if request.RollbackSpecDigest != "" {
+		if PostCheckApplicability(b.Target).Status == "unsupported" {
+			return b, p, vid, ErrInvalid
+		}
+		b.DigestVersion, b.RollbackSpecDigest = "execution-request/v3", request.RollbackSpecDigest
+	}
+	if request.Verification != nil {
+		if !namePattern.MatchString(s.RunnerNamespace) || !request.Verification.Valid(b.Target) || request.ActualCommand != request.Verification.Intent() || request.RelatedExecutionID == nil || (request.ExecutionRelation != "follow_up" && request.ExecutionRelation != "rollback") || p.Type != "k8s_namespace" || !slices.Contains(p.Tools, "ops-verify") || b.Namespace == nil || request.Options.MaxOutputBytes < 4096 {
+			return b, p, vid, ErrInvalid
+		}
+		if request.Verification.Kind == "pvc_read_write" && *b.Namespace != s.RunnerNamespace {
+			return b, p, vid, ErrDenied
+		}
+		b.VerificationNamespace = s.RunnerNamespace
+		b.Verification = request.Verification
+		if err = tx.QueryRow(ctx, `SELECT name FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, a.TenantID, b.Target).Scan(&b.VerificationTargetName); err != nil {
+			return b, p, vid, ErrDenied
+		}
+		b.DigestVersion = "execution-request/v4"
 	}
 	if request.ActionPlanID != nil {
 		var target, incident string
@@ -345,7 +369,7 @@ func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestCont
 		if err != nil {
 			return err
 		}
-		if err = appendAudit(ctx, tx, a, out.ID, "command.prepared", map[string]any{"requestDigest": b.Digest(), "commandDigest": b.CommandDigest, "ciphertextRef": out.ID, "acknowledgementId": ackID, "suggestionMatch": out.SuggestionMatch, "comparatorVersion": ComparatorVersion, "policyDecisionId": decision.DecisionID, "relatedExecutionId": b.RelatedExecutionID, "executionRelation": b.ExecutionRelation}); err != nil {
+		if err = appendAudit(ctx, tx, a, out.ID, "command.prepared", map[string]any{"requestDigest": b.Digest(), "commandDigest": b.CommandDigest, "ciphertextRef": out.ID, "acknowledgementId": ackID, "suggestionMatch": out.SuggestionMatch, "comparatorVersion": ComparatorVersion, "policyDecisionId": decision.DecisionID, "relatedExecutionId": b.RelatedExecutionID, "executionRelation": b.ExecutionRelation, "rollbackSpecDigest": b.RollbackSpecDigest}); err != nil {
 			return err
 		}
 		if err = event(ctx, tx, a.TenantID, out.ID, "state", map[string]any{"state": "prepared"}); err != nil {

@@ -22,7 +22,8 @@
       "enum": [
         "dimm_hardware_fault",
         "csi_provisioner_failure",
-        "node_runtime_failure"
+        "node_runtime_failure",
+        "native_post_check"
       ]
     },
     "entry": {
@@ -146,7 +147,10 @@
       }
     },
     "postCheck": {
-      "const": "fresh-required-evidence/v1"
+      "enum": [
+        "fresh-required-evidence/v1",
+        "native-related-health/v1"
+      ]
     },
     "graphPlan": {
       "enum": [
@@ -172,7 +176,7 @@
     "postCheck",
     "graphPlan"
   ],
-  "$comment": "SP05 v2 admits only the three reviewed executable declarations. New versions require matching consumer admission; virtualization recipes remain deferred.",
+  "$comment": "Reviewed RCA declarations and native post-check-only declarations. New activations require signed registry admission; virtualization remains deferred.",
   "allOf": [
     {
       "oneOf": [
@@ -418,6 +422,230 @@
             },
             "postCheck": "fresh-required-evidence/v1",
             "graphPlan": "single-query/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "pod-health",
+            "version": "v1",
+            "candidateType": "native_post_check",
+            "entry": [
+              "Pod"
+            ],
+            "graphDepth": 1,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "target-state",
+                "predicate": "native-target/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "related-state",
+                "predicate": "native-relations/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "recent-warnings",
+                "predicate": "native-warnings/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [],
+            "confirm": [
+              "target-state",
+              "related-state",
+              "recent-warnings"
+            ],
+            "exclude": [
+              "incomplete-snapshot",
+              "identity-changed",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence"
+            ],
+            "budget": {
+              "maxEvidence": 40,
+              "maxNodes": 40,
+              "maxEdges": 40,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "deployment-health",
+            "version": "v1",
+            "candidateType": "native_post_check",
+            "entry": [
+              "Deployment"
+            ],
+            "graphDepth": 1,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "target-state",
+                "predicate": "native-target/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "related-state",
+                "predicate": "native-relations/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "recent-warnings",
+                "predicate": "native-warnings/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [],
+            "confirm": [
+              "target-state",
+              "related-state",
+              "recent-warnings"
+            ],
+            "exclude": [
+              "incomplete-snapshot",
+              "identity-changed",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence"
+            ],
+            "budget": {
+              "maxEvidence": 40,
+              "maxNodes": 40,
+              "maxEdges": 40,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "service-endpoints-health",
+            "version": "v1",
+            "candidateType": "native_post_check",
+            "entry": [
+              "Service",
+              "EndpointSlice"
+            ],
+            "graphDepth": 1,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "target-state",
+                "predicate": "native-target/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "related-state",
+                "predicate": "native-relations/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "recent-warnings",
+                "predicate": "native-warnings/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [],
+            "confirm": [
+              "target-state",
+              "related-state",
+              "recent-warnings"
+            ],
+            "exclude": [
+              "incomplete-snapshot",
+              "identity-changed",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence"
+            ],
+            "budget": {
+              "maxEvidence": 40,
+              "maxNodes": 40,
+              "maxEdges": 40,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "pvc-csi-failure",
+            "version": "v2",
+            "candidateType": "csi_provisioner_failure",
+            "entry": [
+              "PersistentVolumeClaim",
+              "Pod"
+            ],
+            "graphDepth": 2,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "pvc-pending",
+                "predicate": "pvc-pending/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "csi-error",
+                "predicate": "csi-error/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "storage-path",
+                "predicate": "storage-path/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "pvc-pending",
+              "csi-error",
+              "storage-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
           }
         }
       ]

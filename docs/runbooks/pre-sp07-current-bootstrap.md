@@ -181,3 +181,7 @@ Archive IAM 激活时使用滚动重启新增了 StatefulSet 的 `kubectl.kubern
 当前 Operator binding 的撤权/恢复入口：`PATCH /api/v1/admin/role-bindings/{bindingId}/status`，请求仅为 `expectedRevision` 和 `status: disabled|active`。用当前租户的真实平台管理员 LoA2 身份及幂等键请求。先查询当前 binding revision；状态更新推进 revision，恢复时必须重新查询并使用新 revision。不能在该请求带 subject/role/tenant/scopes，也不能使用旧 revision 恢复。该入口只操作 Operator；其他角色返回 INVALID_ARGUMENT。step-up 在幂等重放前复核。当前 R9 的真实请求仍返回 404；修复源码的 OpenAPI 版本为 1.4.0，必须生成新签名 Bundle 并完成真实部署回归后才报告此入口交付。见 [ADR-0030](../adr/0030-pre-sp07-operator-role-status-contract.md)。
 
 范围探针须引用确实存在、与指定 UID/namespace 对应的已采集样本及原时间窗。空 Victoria 存储或缺失日志不能证明 scope，运行时继续 SOURCE_SCOPE_UNVERIFIED/partial。首次安装前准备有界真实采集条件，并记录原始事实来源；不能虚构样本、回填当前时间、自动换 UID 或修改初始化回执绕过身份绑定。新准备目标的 startup stdout 不等于原探针目标的日志。真实历史 canary 只证明来源范围，不用于最新恢复或 RCA 判断。
+
+## 可选 Web 与助手统一输入（2026-10-19）
+
+在 dependencies 前固定完整 `sp08` 与 `sp06.assistant` 输入，后两阶段保持相同摘要；不得修改旧回执启用能力。配置示例、独立 TLS/OIDC CA 准备、模型 Profile、阶段隔离和 amd64 限制见[统一安装配置说明](../release/unified-installer-closeout.md)。business 前预置 Web Secret `web.crt/web.key` 及 OIDC CA ConfigMap `oidc-ca.pem`，OIDC callback/origin 与 publicOrigin 一致；仍按现有命令完成身份与来源注册，不直接 Helm 部署。

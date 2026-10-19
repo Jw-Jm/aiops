@@ -22,11 +22,13 @@ export function PostCheckPanel({ executionId }: { executionId: string }) {
     }
     setUrl(n);
   };
-  const startRelated = (relation: "follow_up" | "rollback") => {
+  const startRelated = (relation: "follow_up" | "rollback", probe?: string) => {
     const n = new URLSearchParams(url);
     n.set("tab", "action");
     n.set("relatedExecutionId", executionId);
     n.set("executionRelation", relation);
+    if (probe) n.set("verificationMode", probe);
+    else n.delete("verificationMode");
     n.delete("executionId");
     n.delete("actionPlanId");
     setUrl(n);
@@ -63,6 +65,10 @@ export function PostCheckPanel({ executionId }: { executionId: string }) {
   const report = record(data.report),
     facts = record(report.facts);
   const reasons: Record<string, string> = {
+    verification_missing: "缺少已归档的实际探测回执",
+    verification_unavailable: "实际探测未取得可靠结果",
+    verification_failed: "实际连接或写读断言未通过",
+    verification_passed: "实际探测和原生场景判据均通过",
     completion_time_missing: "缺少可信的执行完成时间",
     authorization_unavailable: "验证时授权不可用",
     source_unavailable: "未取得合格来源事实",
@@ -72,6 +78,11 @@ export function PostCheckPanel({ executionId }: { executionId: string }) {
     check_precedes_observation: "验证与观测时间不一致",
     recipe_fault_present: "配方所检查的原异常仍存在",
     recipe_fault_absent: "配方所检查的原异常已消失",
+    new_anomalies_observed: "执行后观测到新的 Warning 异常，不能判为恢复",
+    rollback_goal_missing: "此历史回退没有明确的配置目标，无法验证效果",
+    rollback_observation_missing: "缺少用于比较回退目标的配置观测",
+    rollback_goal_not_met: "健康判据已通过，但配置尚未达到声明的回退目标",
+    rollback_goal_met: "声明的回退配置匹配且场景健康判据通过",
     target_unsupported: "当前目标没有可信后检查适配器",
   };
   return (
@@ -119,6 +130,46 @@ export function PostCheckPanel({ executionId }: { executionId: string }) {
             {text(facts.recipeName) && (
               <p>
                 验证配方：{text(facts.recipeName)} · {text(facts.recipeVersion)}
+              </p>
+            )}
+            {record(facts.verification).schemaVersion ===
+              "command-verification/v1" && (
+              <>
+                <h4>实际探测回执</h4>
+                <p>
+                  位置：{text(record(facts.verification).vantage)}；类型：
+                  {text(record(facts.verification).kind)}；结论：
+                  {text(record(facts.verification).verdict)}；原因：
+                  {text(record(facts.verification).reason)}
+                </p>
+                <p>
+                  开始：{recordedTime(record(facts.verification).startedAt)}
+                  ；结束：{recordedTime(record(facts.verification).finishedAt)}
+                </p>
+                <p>
+                  这是一条已归档的 Runner
+                  执行回执；仅证明该位置、该时刻的连接/响应或专用文件写读，不证明所有客户端、持久耐久性或业务语义。
+                </p>
+              </>
+            )}
+            {text(facts.observedSpecDigest) && (
+              <p>观测配置摘要：{text(facts.observedSpecDigest)}</p>
+            )}
+            {text(report.rollbackSpecDigest) && (
+              <p>期望回退配置摘要：{text(report.rollbackSpecDigest)}</p>
+            )}
+            {list(facts.newAnomalies).length > 0 && (
+              <p>
+                执行后 Warning：
+                {list(facts.newAnomalies).map(String).join("、")}
+              </p>
+            )}
+            {report.coverage === "native_related_health" && (
+              <p>
+                验证当前目标与已授权关联资源的场景健康，并检查执行后
+                Warning。Service/EndpointSlice
+                原生事实仅证明后端就绪；实际网络结论另看已归档探测回执。PVC
+                验证原生挂载/CSI 状态，不证明应用读写成功。
               </p>
             )}
             <Space wrap>
@@ -173,6 +224,25 @@ export function PostCheckPanel({ executionId }: { executionId: string }) {
             关联本次执行，准备下一轮处置
           </Button>
           <Button onClick={() => reviewNext("rca")}>复核根因</Button>
+          {["Service", "PersistentVolumeClaim"].includes(
+            text(record(data.applicability).targetKind),
+          ) && (
+            <Button
+              disabled={
+                !["succeeded", "failed"].includes(text(data.executionState))
+              }
+              onClick={() =>
+                startRelated(
+                  "follow_up",
+                  record(data.applicability).targetKind === "Service"
+                    ? "tcp"
+                    : "pvc_read_write",
+                )
+              }
+            >
+              关联本次执行，准备实际探测
+            </Button>
+          )}
           <Button
             disabled={
               !["succeeded", "failed"].includes(text(data.executionState))

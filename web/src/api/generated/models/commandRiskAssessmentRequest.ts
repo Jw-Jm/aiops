@@ -7,9 +7,17 @@
 import type { CanonicalID } from './canonicalID.ts';
 import type { CommandExecutionOptions } from './commandExecutionOptions.ts';
 import type { CommandRiskAssessmentRequestExecutionRelation } from './commandRiskAssessmentRequestExecutionRelation.ts';
+import type { CommandRiskAssessmentRequestVerification } from './commandRiskAssessmentRequestVerification.ts';
 import type { Identifier } from './identifier.ts';
 
 export interface CommandRiskAssessmentRequest {
+  /** Explicit associated probe execution. Requires a signed ops-verify namespaced Profile; PVC probes require a dedicated marked PVC in the configured Runner namespace. */
+  verification?: CommandRiskAssessmentRequestVerification;
+  /**
+     * Required for new rollback executions; desired reviewed native configuration digest, bound to personal risk confirmation. Recovery additionally requires the signed native health checks.
+     * @pattern ^sha256:[a-f0-9]{64}$
+     */
+  rollbackSpecDigest?: string;
   /** Existing completed execution on the same Incident and resource identity; must accompany executionRelation. */
   relatedExecutionId?: string;
   /** Records a new manually confirmed execution; grants no authority and must accompany relatedExecutionId. */

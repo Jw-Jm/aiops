@@ -3,6 +3,7 @@ package action
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/persistence"
@@ -64,6 +65,9 @@ func (s Service) AppendOutput(ctx context.Context, tenant, id uuid.UUID, token s
 	})
 }
 func (s Service) Finish(ctx context.Context, tenant, id uuid.UUID, token string, exitCode int, finalSeq int64, truncated bool) error {
+	return s.FinishVerification(ctx, tenant, id, token, exitCode, finalSeq, truncated, nil)
+}
+func (s Service) FinishVerification(ctx context.Context, tenant, id uuid.UUID, token string, exitCode int, finalSeq int64, truncated bool, verification *VerificationResult) error {
 	if exitCode < 0 || exitCode > 255 || len(token) != 43 {
 		return ErrInvalid
 	}
@@ -79,6 +83,27 @@ func (s Service) Finish(ctx context.Context, tenant, id uuid.UUID, token string,
 		}
 		if !valid {
 			return ErrDenied
+		}
+		if e.Binding.Verification != nil || verification != nil {
+			if verification == nil || !verification.Valid(e) || truncated || finalSeq != 1 || seq != 1 || exitCode != verificationExit(*verification) {
+				return ErrInvalid
+			}
+			var raw []byte
+			if err = tx.QueryRow(ctx, `SELECT bytes FROM action.output_chunks WHERE tenant_id=$1 AND execution_id=$2 AND seq=1 AND stream='stdout'`, tenant, id).Scan(&raw); err != nil || string(raw) != string(Canonical(verification)) {
+				return ErrInvalid
+			}
+			if e.State == "succeeded" || e.State == "failed" {
+				var payload []byte
+				if err = tx.QueryRow(ctx, `SELECT payload FROM action.events WHERE tenant_id=$1 AND execution_id=$2 AND event_type='state' AND payload ? 'verification' ORDER BY event_seq DESC LIMIT 1`, tenant, id).Scan(&payload); err != nil {
+					return ErrConflict
+				}
+				var previous struct {
+					Verification *VerificationResult `json:"verification"`
+				}
+				if json.Unmarshal(payload, &previous) != nil || string(Canonical(previous.Verification)) != string(Canonical(verification)) {
+					return ErrConflict
+				}
+			}
 		}
 		if e.State == "succeeded" || e.State == "failed" {
 			if e.ExitCode != nil && *e.ExitCode == exitCode && seq == finalSeq {
@@ -109,9 +134,22 @@ func (s Service) Finish(ctx context.Context, tenant, id uuid.UUID, token string,
 		if err != nil {
 			return err
 		}
-		if err = appendAudit(ctx, tx, workerActor(tenant), id, "command.completed", map[string]any{"state": state, "exitCode": exitCode, "outputSeq": seq}); err != nil {
+		if err = appendAudit(ctx, tx, workerActor(tenant), id, "command.completed", map[string]any{"state": state, "exitCode": exitCode, "outputSeq": seq, "verificationDigest": verificationDigest(verification)}); err != nil {
 			return err
 		}
-		return event(ctx, tx, tenant, id, "state", map[string]any{"state": state, "exitCode": exitCode, "postCheck": "inconclusive"})
+		return event(ctx, tx, tenant, id, "state", map[string]any{"state": state, "exitCode": exitCode, "postCheck": "inconclusive", "verification": verification})
 	})
+}
+
+func verificationExit(r VerificationResult) int {
+	if r.Verdict == "resolved" {
+		return 0
+	}
+	return 1
+}
+func verificationDigest(r *VerificationResult) string {
+	if r == nil {
+		return ""
+	}
+	return Digest(Canonical(r))
 }

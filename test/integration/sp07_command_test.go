@@ -16,6 +16,7 @@ import (
 	"ops-platform/internal/httpapi"
 	"ops-platform/internal/incident"
 	"ops-platform/internal/policy"
+	"ops-platform/internal/resource"
 	"strings"
 	"sync"
 	"testing"
@@ -437,6 +438,7 @@ func TestSP07CommandTransactionAndClaim(t *testing.T) {
 		}
 		tampered := linked
 		tampered.ExecutionRelation = "rollback"
+		tampered.RollbackSpecDigest = "sha256:" + strings.Repeat("a", 64)
 		if _, err := service.PrepareCommandExecution(ctx, actor, tampered, ack.ID, "changed-relation"); !errors.Is(err, action.ErrAckScopeMismatch) {
 			t.Fatal("relation substitution accepted", err)
 		}
@@ -461,6 +463,33 @@ func TestSP07CommandTransactionAndClaim(t *testing.T) {
 		if err != nil || len(childView.Executions) != 1 || childView.Executions[0].ExecutionID != e.ID || childView.Executions[0].Direction != "parent" {
 			t.Fatal(childView, err)
 		}
+		rollback := req
+		rollback.RelatedExecutionID, rollback.ExecutionRelation = &e.ID, "rollback"
+		if _, err := service.AssessRisk(ctx, actor, rollback, "rollback-without-goal"); !errors.Is(err, action.ErrInvalid) {
+			t.Fatal("rollback accepted without a goal", err)
+		}
+		rollback.RollbackSpecDigest = "sha256:" + strings.Repeat("a", 64)
+		assessment, err := service.AssessRisk(ctx, actor, rollback, "rollback-goal-risk")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if assessment.Binding.DigestVersion != "execution-request/v3" || assessment.Binding.RollbackSpecDigest != rollback.RollbackSpecDigest {
+			t.Fatal("goal missing from confirmation", assessment)
+		}
+		confirmation, err := service.AcknowledgeRisk(ctx, actor, assessment.ID, assessment.RequestDigest, "rollback-goal-ack")
+		if err != nil {
+			t.Fatal(err)
+		}
+		changed := rollback
+		changed.RollbackSpecDigest = "sha256:" + strings.Repeat("b", 64)
+		if _, err := service.PrepareCommandExecution(ctx, actor, changed, confirmation.ID, "rollback-goal-changed"); !errors.Is(err, action.ErrAckScopeMismatch) {
+			t.Fatal("changed rollback goal reused confirmation", err)
+		}
+		goalExecution, err := service.PrepareCommandExecution(ctx, actor, rollback, confirmation.ID, "rollback-goal-prepare")
+		if err != nil || goalExecution.Binding.RollbackSpecDigest != rollback.RollbackSpecDigest {
+			t.Fatal(goalExecution, err)
+		}
+
 		linked.RelatedExecutionID = &uncertain.ID
 		if _, err := service.AssessRisk(ctx, actor, linked, "unknown-parent"); !errors.Is(err, action.ErrConflict) {
 			t.Fatal("uncertain parent accepted", err)
@@ -480,6 +509,108 @@ func TestSP07CommandTransactionAndClaim(t *testing.T) {
 		if _, err := service.Events(ctx, actor, e.ID, after); !errors.Is(err, action.ErrDenied) {
 			t.Fatal("unreadable SSE evidence disclosed", err)
 		}
+	})
+	t.Run("typed probe requires confirmation, exact receipt and verified archive", func(t *testing.T) {
+		svcTarget := resource.CanonicalID{Domain: "k8s", Tenant: b.TenantID.String(), Scope: b.ClusterUID, APIGroup: "core", Kind: "Service", StableID: "probe-service"}.String()
+		if _, err := db.ExecContext(ctx, `INSERT INTO platform.resource_entities(tenant_id,canonical_id,cluster_id,kind,namespace,name,metadata,observed_at) VALUES($1,$2,$3,'Service','test-ns','probe-service','{"sourceValues":{"uid":"probe-service"}}',clock_timestamp())`, b.TenantID, svcTarget, b.ClusterID); err != nil {
+			t.Fatal(err)
+		}
+		probeProfile := profile
+		probeProfile.ID = uuid.New()
+		probeProfile.Name = "probe-profile"
+		probeProfile.AllowedTargets = []string{svcTarget}
+		probeProfile.Tools = []string{"bash", "ops-verify"}
+		if _, err := db.ExecContext(ctx, `INSERT INTO platform.execution_profile_versions(tenant_id,profile_version_id,logical_name,version_number,content,digest,signature,signer_key_id,status,published_by) VALUES($1,$2,'probe-profile',1,$3,$4,'x','test','published','test')`, b.TenantID, uuid.New(), action.Canonical(probeProfile), action.Digest(action.Canonical(probeProfile))); err != nil {
+			t.Fatal(err)
+		}
+		probeService := service
+		probeService.RunnerNamespace = "test-ns"
+		parentRequest := req
+		parentRequest.Target = svcTarget
+		parentRequest.ProfileID = probeProfile.ID
+		parentRequest.ActionPlanID = nil
+		assessment, err := probeService.AssessRisk(ctx, actor, parentRequest, "probe-parent-risk")
+		if err != nil {
+			t.Fatal(err)
+		}
+		ack, err := probeService.AcknowledgeRisk(ctx, actor, assessment.ID, assessment.RequestDigest, "probe-parent-ack")
+		if err != nil {
+			t.Fatal(err)
+		}
+		parent, err := probeService.PrepareCommandExecution(ctx, actor, parentRequest, ack.ID, "probe-parent-prepare")
+		if err != nil {
+			t.Fatal(err)
+		}
+		dispatch, err := probeService.BeginDispatch(ctx, b.TenantID, parent.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := probeService.Claim(ctx, b.TenantID, parent.ID, dispatch.Token); err != nil {
+			t.Fatal(err)
+		}
+		if err := probeService.Finish(ctx, b.TenantID, parent.ID, dispatch.Token, 0, 0, false); err != nil {
+			t.Fatal(err)
+		}
+		request := parentRequest
+		request.ActualCommand = "ops-verify http"
+		request.RelatedExecutionID = &parent.ID
+		request.ExecutionRelation = "follow_up"
+		request.Verification = &action.VerificationSpec{Kind: "http", Port: 80, Path: "/healthz", ExpectedStatus: 200}
+		assessment, err = probeService.AssessRisk(ctx, actor, request, "probe-risk")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if assessment.Binding.DigestVersion != "execution-request/v4" || assessment.Binding.VerificationNamespace != "test-ns" {
+			t.Fatal(assessment)
+		}
+		ack, err = probeService.AcknowledgeRisk(ctx, actor, assessment.ID, assessment.RequestDigest, "probe-ack")
+		if err != nil {
+			t.Fatal(err)
+		}
+		changed := request
+		spec := *request.Verification
+		spec.ExpectedStatus = 201
+		changed.Verification = &spec
+		if _, err := probeService.PrepareCommandExecution(ctx, actor, changed, ack.ID, "probe-changed"); !errors.Is(err, action.ErrAckScopeMismatch) {
+			t.Fatal("assertion changed without confirmation", err)
+		}
+		execution, err := probeService.PrepareCommandExecution(ctx, actor, request, ack.ID, "probe-prepare")
+		if err != nil {
+			t.Fatal(err)
+		}
+		dispatch, err = probeService.BeginDispatch(ctx, b.TenantID, execution.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		claim, err := probeService.Claim(ctx, b.TenantID, execution.ID, dispatch.Token)
+		if err != nil || claim.VerificationBinding == nil {
+			t.Fatal(claim, err)
+		}
+		result := action.VerificationResult{SchemaVersion: "command-verification/v1", ExecutionID: execution.ID, RequestDigest: execution.RequestDigest, TargetUID: "probe-service", Kind: "http", Vantage: "runner/test-ns", StartedAt: time.Now().UTC(), Verdict: "resolved", Reason: "http_assertions_met", HTTPStatus: 200, BodyDigest: action.Digest([]byte("healthy"))}
+		result.FinishedAt = time.Now().UTC()
+		if err := probeService.AppendOutput(ctx, b.TenantID, execution.ID, dispatch.Token, action.OutputChunk{ExecutionID: execution.ID, Stream: "stdout", Seq: 1, Bytes: action.Canonical(result)}); err != nil {
+			t.Fatal(err)
+		}
+		if err := probeService.Finish(ctx, b.TenantID, execution.ID, dispatch.Token, 0, 1, false); !errors.Is(err, action.ErrInvalid) {
+			t.Fatal("probe finish accepted without receipt", err)
+		}
+		if err := probeService.FinishVerification(ctx, b.TenantID, execution.ID, dispatch.Token, 0, 1, false, &result); err != nil {
+			t.Fatal(err)
+		}
+		if err := probeService.FinishVerification(ctx, b.TenantID, execution.ID, dispatch.Token, 0, 1, false, &result); err != nil {
+			t.Fatal("receipt replay", err)
+		}
+		if _, err := probeService.VerificationResult(ctx, b.TenantID, execution.ID); !errors.Is(err, action.ErrDenied) {
+			t.Fatal("unarchived probe became trusted", err)
+		}
+		if err := probeService.RecordPostCheck(ctx, b.TenantID, execution.ID, action.PostCheckFacts{Authorized: true, CheckedAt: time.Now().UTC(), EvidenceRefs: []string{}}); err != nil {
+			t.Fatal(err)
+		}
+		unavailable, err := probeService.GetPostCheck(ctx, actor, execution.ID)
+		if err != nil || unavailable.Verdict != "inconclusive" || unavailable.Report == nil || unavailable.Report.Facts.Verification != nil {
+			t.Fatal("unavailable proof was fabricated or unreadable", unavailable, err)
+		}
+
 	})
 	if _, err = db.ExecContext(ctx, `UPDATE platform.role_bindings SET status='disabled' WHERE tenant_id=$1 AND subject=$2`, actor.TenantID, actor.Subject); err != nil {
 		t.Fatal(err)

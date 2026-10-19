@@ -195,3 +195,54 @@ it("discloses unsupported post-check targets instead of treating command success
   client.clear();
   vi.unstubAllGlobals();
 });
+
+it("shows rollback configuration mismatch and the native coverage limits", async () => {
+  setCredentials("TEST-FIXTURE");
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            data: {
+              status: "completed",
+              verdict: "not_resolved",
+              executionState: "succeeded",
+              report: {
+                schemaVersion: "command-post-check/v1",
+                reason: "rollback_goal_not_met",
+                coverage: "native_related_health",
+                rollbackSpecDigest: "sha256:" + "a".repeat(64),
+                facts: {
+                  observedSpecDigest: "sha256:" + "b".repeat(64),
+                  newAnomalies: ["FailedMount"],
+                  evidenceRefs: [],
+                },
+              },
+            },
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+    ),
+  );
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  render(
+    <QueryClientProvider client={client}>
+      <MemoryRouter>
+        <PostCheckPanel executionId="rollback" />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+  expect(
+    await screen.findByText("健康判据已通过，但配置尚未达到声明的回退目标"),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/实际网络结论另看已归档探测回执/),
+  ).toBeInTheDocument();
+  expect(screen.getByText(/期望回退配置摘要：/)).toBeInTheDocument();
+  cleanup();
+  client.clear();
+  vi.unstubAllGlobals();
+});

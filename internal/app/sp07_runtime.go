@@ -103,7 +103,7 @@ func sp07Service(ctx context.Context, pool persistence.TxBeginner, c *SP07Config
 	if err != nil {
 		return out, err
 	}
-	out = action.Service{AdmitHost: func(ctx context.Context, h action.HostOnboarding) error {
+	out = action.Service{RunnerNamespace: c.Namespace, AdmitHost: func(ctx context.Context, h action.HostOnboarding) error {
 		for _, admitted := range c.HostReports {
 			if bytes.Equal(action.Canonical(admitted), action.Canonical(h)) {
 				return nil

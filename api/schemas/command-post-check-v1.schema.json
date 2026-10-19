@@ -46,11 +46,23 @@
         "check_precedes_observation",
         "recipe_fault_present",
         "recipe_fault_absent",
-        "target_unsupported"
+        "target_unsupported",
+        "new_anomalies_observed",
+        "rollback_goal_missing",
+        "rollback_observation_missing",
+        "rollback_goal_not_met",
+        "rollback_goal_met",
+        "verification_missing",
+        "verification_unavailable",
+        "verification_failed",
+        "verification_passed"
       ]
     },
     "coverage": {
-      "const": "recipe_target_only"
+      "enum": [
+        "recipe_target_only",
+        "native_related_health"
+      ]
     },
     "facts": {
       "type": "object",
@@ -91,6 +103,110 @@
             "type": "string",
             "format": "uuid"
           }
+        },
+        "observedSpecDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "newAnomalies": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "adapter": {
+          "const": "native-related-health/v1"
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schemaVersion": {
+              "const": "command-verification/v1"
+            },
+            "executionId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "executionRequestDigest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            "targetUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "kind": {
+              "enum": [
+                "tcp",
+                "http",
+                "pvc_read_write"
+              ]
+            },
+            "vantage": {
+              "type": "string",
+              "pattern": "^runner/[a-z0-9][a-z0-9-]{0,62}$"
+            },
+            "startedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "finishedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "verdict": {
+              "enum": [
+                "resolved",
+                "not_resolved",
+                "inconclusive"
+              ]
+            },
+            "reason": {
+              "enum": [
+                "tcp_connected",
+                "http_assertions_met",
+                "read_write_verified",
+                "connection_refused",
+                "http_status_mismatch",
+                "http_body_mismatch",
+                "read_back_mismatch",
+                "probe_unavailable",
+                "probe_timeout",
+                "identity_changed",
+                "cleanup_failed"
+              ]
+            },
+            "httpStatus": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 599
+            },
+            "bodyDigest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            "cleanup": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schemaVersion",
+            "executionId",
+            "executionRequestDigest",
+            "targetUid",
+            "kind",
+            "vantage",
+            "startedAt",
+            "finishedAt",
+            "verdict",
+            "reason",
+            "cleanup"
+          ]
         }
       },
       "required": [
@@ -104,6 +220,10 @@
         "faultPresent",
         "evidenceRefs"
       ]
+    },
+    "rollbackSpecDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
     }
   },
   "required": [

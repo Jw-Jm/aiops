@@ -111,6 +111,9 @@ func ReadBusinessValues(r io.Reader) (BusinessValues, error) {
 	if err := validateBusinessNetwork(document); err != nil {
 		return BusinessValues{}, err
 	}
+	if err := validateBusinessCapabilities(document); err != nil {
+		return BusinessValues{}, err
+	}
 	return BusinessValues{values: document}, nil
 }
 func object(m map[string]any, k string) map[string]any { v, _ := m[k].(map[string]any); return v }
@@ -361,11 +364,19 @@ func applyBusinessValues(values map[string]any, b BusinessValues, images map[str
 	for _, name := range []string{"sp04", "sp05", "sp06"} {
 		values[name] = b.values[name]
 	}
+	sp06 := map[string]any{}
+	for k, v := range object(b.values, "sp06") {
+		sp06[k] = v
+	}
+	if object(sp06, "assistant") == nil {
+		sp06["assistant"] = map[string]any{"enabled": false, "faultChainEnabled": false}
+	}
+	values["sp06"] = sp06
 	// Explicitly clear Helm defaults in pending mode. No loopback placeholder,
 	// inherited model credential or model egress may survive the values merge.
 	if b.ModelPending() {
 		pending := map[string]any{}
-		for k, v := range object(b.values, "sp06") {
+		for k, v := range sp06 {
 			pending[k] = v
 		}
 		for _, k := range []string{"model", "modelKeySecret", "modelPort", "modelNetworkMode"} {
@@ -377,6 +388,15 @@ func applyBusinessValues(values map[string]any, b BusinessValues, images map[str
 	values["workloadIdentity"] = b.values["workloadIdentity"]
 	components := object(values, "components")
 	components["investigator"] = map[string]any{"enabled": !b.ModelPending(), "image": images["holmesgpt"]}
+	values["sp08"] = map[string]any{"enabled": false}
+	components["web"] = map[string]any{"enabled": false}
+	if b.WebEnabled() {
+		if images["platform-web"] == "" {
+			return errors.New("SP08 requires an authenticated platform-web material")
+		}
+		values["sp08"] = object(b.values, "sp08")
+		components["web"] = map[string]any{"enabled": true, "image": images["platform-web"]}
+	}
 	return nil
 }
 func preflightBusinessSecrets(ctx context.Context, p profile.ResolvedProfile, b BusinessValues, run CommandRunner) error {
@@ -391,6 +411,15 @@ func preflightBusinessSecrets(ctx context.Context, p profile.ResolvedProfile, b 
 	}
 	if !b.ModelPending() {
 		required[textValue(sp06, "modelKeySecret")] = []string{"apiKey"}
+	}
+	if b.WebEnabled() && b.installStage == "business" {
+		secret := textValue(object(b.values, "sp08"), "tlsSecretName")
+		required[secret] = append(required[secret], "web.crt", "web.key")
+		template := `go-template={{if index .data "oidc-ca.pem"}}present{{else}}absent{{end}}`
+		raw, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", b.Namespace(), "get", "configmap", textValue(object(b.values, "sp08"), "oidcCAConfigMapName"), "-o", template)
+		if err != nil || strings.TrimSpace(string(raw)) != "present" {
+			return errors.New("Web OIDC CA ConfigMap lacks oidc-ca.pem")
+		}
 	}
 	for _, x := range sp04["sources"].([]any) {
 		s := x.(map[string]any)

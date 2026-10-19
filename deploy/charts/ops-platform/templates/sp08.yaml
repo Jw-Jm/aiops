@@ -1,4 +1,4 @@
-{{- if and .Values.sp08.enabled (not .Values.networkPolicyOnly) }}
+{{- if and .Values.sp08.enabled (not .Values.networkPolicyOnly) (not .Values.bootstrapAPIOnly) }}
 {{- if not .Values.components.web.enabled }}{{ fail "SP08 requires components.web.enabled" }}{{- end }}
 {{- $image := required "Web image digest is required" .Values.components.web.image }}
 {{- if not (regexMatch "^.+@sha256:[0-9a-f]{64}$" $image) }}{{ fail "Web image must be digest pinned" }}{{- end }}

@@ -31,7 +31,11 @@ func verifyCurrentModel(ctx context.Context, p profile.ResolvedProfile, b Busine
 		return errors.New("authenticated investigator probe image required")
 	}
 	name := fmt.Sprintf("ops-model-check-%x", time.Now().UnixNano())
-	input, _ := json.Marshal(map[string]any{"endpoint": textValue(object(sp06, "model"), "base_url"), "model": textValue(object(sp06, "model"), "model"), "cidrs": sp06["modelCIDRs"]})
+	assistantModel := ""
+	if object(sp06, "assistant")["enabled"] == true {
+		assistantModel = textValue(object(object(sp06, "assistant"), "profile"), "modelID")
+	}
+	input, _ := json.Marshal(map[string]any{"endpoint": textValue(object(sp06, "model"), "base_url"), "model": textValue(object(sp06, "model"), "model"), "assistantModel": assistantModel, "cidrs": sp06["modelCIDRs"]})
 	overrides, _ := json.Marshal(map[string]any{"spec": map[string]any{
 		"automountServiceAccountToken": false,
 		"securityContext":              map[string]any{"runAsNonRoot": true, "runAsUser": 65532, "runAsGroup": 65532, "fsGroup": 65532, "seccompProfile": map[string]any{"type": "RuntimeDefault"}},
@@ -51,8 +55,9 @@ try:
  with urllib.request.build_opener(urllib.request.ProxyHandler({})).open(request,timeout=10) as response:raw=response.read(65537)
  if len(raw)>65536:raise ValueError('bound')
  data=json.loads(raw)
- if c['model'] not in {x.get('id') for x in data.get('data',[]) if isinstance(x,dict)}:raise ValueError('model')
- print(json.dumps({'status':'MODEL_ENDPOINT_SCOPE_AND_AVAILABILITY_VERIFIED','addresses':addresses,'model':c['model']}))
+ models={x.get('id') for x in data.get('data',[]) if isinstance(x,dict)}
+ if c['model'] not in models or (c['assistantModel'] and c['assistantModel'] not in models):raise ValueError('model')
+ print(json.dumps({'status':'MODEL_ENDPOINT_SCOPE_AND_AVAILABILITY_VERIFIED','addresses':addresses,'model':c['model'],'assistantModel':c['assistantModel']}))
 except Exception:
  print('MODEL_ENDPOINT_SCOPE_OR_AVAILABILITY_REJECTED')
  raise SystemExit(1)`
@@ -89,11 +94,12 @@ except Exception:
 	}
 	raw, err = run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", b.Namespace(), "logs", "pod/"+name)
 	var proof struct {
-		Status    string   `json:"status"`
-		Addresses []string `json:"addresses"`
-		Model     string   `json:"model"`
+		Status         string   `json:"status"`
+		Addresses      []string `json:"addresses"`
+		Model          string   `json:"model"`
+		AssistantModel string   `json:"assistantModel"`
 	}
-	if err != nil || len(raw) > 4096 || json.Unmarshal(raw, &proof) != nil || proof.Status != "MODEL_ENDPOINT_SCOPE_AND_AVAILABILITY_VERIFIED" || len(proof.Addresses) == 0 || proof.Model != textValue(object(sp06, "model"), "model") || strings.Contains(string(raw), "Bearer") {
+	if err != nil || len(raw) > 4096 || json.Unmarshal(raw, &proof) != nil || proof.Status != "MODEL_ENDPOINT_SCOPE_AND_AVAILABILITY_VERIFIED" || len(proof.Addresses) == 0 || proof.Model != textValue(object(sp06, "model"), "model") || proof.AssistantModel != assistantModel || strings.Contains(string(raw), "Bearer") {
 		return errors.New("native model probe failed")
 	}
 	return nil

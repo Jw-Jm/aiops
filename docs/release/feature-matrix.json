@@ -1,6 +1,6 @@
 {
   "schemaVersion": "platform-functional-inventory/v1",
-  "asOf": "2026-10-18",
+  "asOf": "2026-10-19",
   "baseCommit": "b10b2f0bc378f06291dbfc04ddccaae3a555155d",
   "includesWorkingTreeChanges": true,
   "purpose": "全平台功能完成清单与下一步开发输入；不是发布/生产/真实验收通过声明",
@@ -553,7 +553,10 @@
         "web/src/features/action/RiskPanel.tsx",
         "internal/action/execution_relation.go",
         "internal/action/postcheck_report.go",
-        "web/src/features/action/CommandComposer.tsx"
+        "web/src/features/action/CommandComposer.tsx",
+        "internal/app/sp07_postcheck_objects.go",
+        "internal/rca/postcheck_native.go",
+        "internal/action/verification.go"
       ],
       "tests": [
         "internal/action/kubernetes_executor_test.go",
@@ -562,7 +565,10 @@
         "internal/action/postcheck_support_test.go",
         "internal/action/execution_relation_test.go",
         "internal/action/postcheck_report_test.go",
-        "web/tests/command_authorization.test.tsx"
+        "web/tests/command_authorization.test.tsx",
+        "internal/app/sp07_postcheck_objects_test.go",
+        "internal/rca/postcheck_native_test.go",
+        "internal/action/verification_test.go"
       ],
       "ui": [
         "web/src/features/action/PostCheckPanel.tsx"
@@ -570,7 +576,9 @@
       "evidence": [
         "docs/evidence/sp07-20261009/README.md",
         "docs/release/core-workflow-closeout.md",
-        "docs/release/disposition-verification-closeout.md"
+        "docs/release/disposition-verification-closeout.md",
+        "docs/release/scenario-postcheck-closeout.md",
+        "docs/release/controlled-verification-closeout.md"
       ],
       "profile": "非虚拟化 core；来源/模型/执行能力按配置与资格启用",
       "note": "共用冻结报告和人工执行关联已补齐；Node/PVC 的合格原生判据可决断，其他目标 inconclusive。回退关系记录实际尝试，不证明业务回退目标已达成。"
@@ -2286,12 +2294,26 @@
       "module": "postcheck",
       "development": "partial",
       "verification": "runtime_unverified",
-      "evidenceStrength": "当前主机制源码、本地单元/组件/合同回归；数据库集成仅编译",
-      "scopeNote": "共用冻结报告、可靠执行后证据/归档/Recipe 门禁、结论原因与读取/SSE 授权复查已补齐；原生判据仍限合格 Node/PVC，仅覆盖配方目标异常，其他目标 inconclusive，全目标及新增异常检查仍部分实现。",
+      "evidenceStrength": "当前原生场景适配、签名 Recipe/冻结报告与本地回归；数据库集成仅编译",
+      "scopeNote": "共用冻结报告与证据/来源/Recipe 门禁已实现；增加 Pod、Deployment、Service/EndpointSlice 后端和 PVC/CSI 原生关联健康判据及执行后 Warning。真实网络连通、应用读写、其他目标及全部新增故障仍未覆盖，保持部分实现。 已增加经本人确认的 TCP/HTTP 和专用 PVC 文件写读执行，回执须认证、逐参数绑定且输出归档验证后，才与原生场景事实共同用于结论；仅证明 Runner 位置和专用测试卷，不等同全部客户端或业务数据验收。",
       "gapIds": [
         "G-004"
       ],
-      "testExecution": "make check-local 与最终 Action/HTTP/App/Contract 定向回归通过；Web 全量 80+5，通过后另核对缺失时间显示；PostgreSQL 集成仅编译。"
+      "testExecution": "make check-local、check-delivery 和定向回归通过；Web 82+5/TypeScript 通过；Runner Linux/amd64 编译通过；数据库集成仅编译，未远程部署。",
+      "implementation": [
+        "internal/app/sp07_postcheck_objects.go",
+        "internal/rca/postcheck_native.go",
+        "internal/action/verification.go",
+        "internal/action/runner.go",
+        "internal/action/output.go"
+      ],
+      "tests": [
+        "internal/app/sp07_postcheck_objects_test.go",
+        "internal/rca/postcheck_native_test.go",
+        "internal/action/postcheck_report_test.go",
+        "internal/action/verification_test.go",
+        "internal/action/kubernetes_executor_test.go"
+      ]
     },
     {
       "id": "FR-145",
@@ -2305,23 +2327,32 @@
       "module": "postcheck",
       "development": "implemented",
       "verification": "runtime_unverified",
-      "evidenceStrength": "当前共用执行关联/冻结报告源码与本地回归；非真实回退验收",
-      "scopeNote": "已有 rollbackSuggestion；新增经本人确认摘要绑定的 rollback/follow_up 关系，关联原执行、回退尝试状态与独立后检查记录。沿用人工输入/确认，不自动回退，也不把命令成功或原异常消失当成业务回退目标达成。",
+      "evidenceStrength": "当前原生场景适配、签名 Recipe/冻结报告与本地回归；数据库集成仅编译",
+      "scopeNote": "回退与原执行关联并纳入本人确认；新回退要求明确的评审配置摘要，只有摘要匹配且可信场景健康通过、无新增 Warning 才判目标达成。仍是人工输入/确认，不自动回退，不证明未覆盖配置字段或业务数据恢复。 已增加经本人确认的 TCP/HTTP 和专用 PVC 文件写读执行，回执须认证、逐参数绑定且输出归档验证后，才与原生场景事实共同用于结论；仅证明 Runner 位置和专用测试卷，不等同全部客户端或业务数据验收。",
       "gapIds": [
         "C-002"
       ],
-      "testExecution": "本地风险摘要/身份隔离/未知副作用/关联交互回归通过；数据库父子关系、幂等与报告保护用例仅编译。",
+      "testExecution": "make check-local、check-delivery 和定向回归通过；Web 82+5/TypeScript 通过；Runner Linux/amd64 编译通过；数据库集成仅编译，未远程部署。",
       "implementation": [
         "internal/action/execution_relation.go",
         "internal/action/postcheck_report.go",
         "internal/action/service.go",
-        "web/src/features/action/PostCheckPanel.tsx"
+        "web/src/features/action/PostCheckPanel.tsx",
+        "internal/app/sp07_postcheck_objects.go",
+        "internal/rca/postcheck_native.go",
+        "internal/action/verification.go",
+        "internal/action/runner.go",
+        "internal/action/output.go"
       ],
       "tests": [
         "internal/action/execution_relation_test.go",
         "internal/action/postcheck_report_test.go",
         "web/tests/postcheck.test.tsx",
-        "test/integration/sp07_command_test.go"
+        "test/integration/sp07_command_test.go",
+        "internal/app/sp07_postcheck_objects_test.go",
+        "internal/rca/postcheck_native_test.go",
+        "internal/action/verification_test.go",
+        "internal/action/kubernetes_executor_test.go"
       ]
     },
     {
@@ -3967,8 +3998,8 @@
       "nextWork": "先列执行 Profile×目标×可信后检查矩阵；复用现有 recipe/source adapter 补适用判据，或显式披露不支持范围，不以退出码或模型判断代替。",
       "completion": "支持目标验证原异常恢复/新异常及最新 Evidence；不支持者保留 inconclusive；不扩大 BMC 写权限。",
       "status": "scope_disclosed",
-      "resolution": "采用原计划允许的适用范围披露：Node/PVC 保留可信 Recipe，其余目标确认前明确不支持并保持 inconclusive；不宣称全目标自动 Post-check 已完成。",
-      "resolutionRecord": "docs/release/core-workflow-closeout.md"
+      "resolution": "已增加原生场景及相关 Warning 验证；真实网络连通、应用读写和未覆盖目标仍明确不支持，不宣称全目标 Post-check 完成。",
+      "resolutionRecord": "docs/release/scenario-postcheck-closeout.md"
     },
     {
       "id": "G-005",
@@ -4035,8 +4066,8 @@
       ],
       "nextWork": "核对 rollbackSuggestion、通用 CommandExecution/ActionPlan/Audit 是否已足够表达回退及结果；需要的是可追溯语义和回归，不自动新增回退执行器。",
       "status": "implemented",
-      "resolution": "已核对并补齐实际执行层的关联：继续处置/回退关系进入本人确认摘要，支持直接父子执行及冻结后检查结果追溯；具体回退判据仍依赖场景。",
-      "resolutionRecord": "docs/release/disposition-verification-closeout.md"
+      "resolution": "已实现本人确认绑定的原执行关联和明确回退配置目标，冻结报告比较配置摘要与场景健康；没有自动回退。",
+      "resolutionRecord": "docs/release/scenario-postcheck-closeout.md"
     },
     {
       "id": "C-003",
@@ -4113,5 +4144,36 @@
     "migrationAdded": false,
     "remoteAccess": false,
     "databaseIntegration": "compile_only_not_run"
+  },
+  "scenarioDevelopment": {
+    "record": "docs/release/scenario-postcheck-closeout.md",
+    "runtime": "not_run",
+    "databaseIntegration": "compile_only",
+    "newScope": "native_related_health",
+    "rollbackBinding": "execution-request/v3"
+  },
+  "probeDevelopment": {
+    "record": "docs/release/controlled-verification-closeout.md",
+    "binding": "execution-request/v4",
+    "receipt": "command-verification/v1",
+    "runtime": "not_run",
+    "databaseIntegration": "compile_only",
+    "scope": "runner_location_and_dedicated_pvc",
+    "newPermissionsGranted": false,
+    "unifiedInstallerChanged": false
+  },
+  "installerDevelopment": {
+    "record": "docs/release/unified-installer-closeout.md",
+    "status": "development_complete_runtime_pending",
+    "capabilities": [
+      "sp08",
+      "sp06.assistant",
+      "sp06.assistant.faultChainEnabled"
+    ],
+    "receiptBinding": "existing_full_business_and_registered_business_digests",
+    "webArchitecture": "amd64_only_other_architectures_rejected",
+    "runtime": "not_run",
+    "newBundleBuiltOrSigned": false,
+    "remoteAccess": false
   }
 }

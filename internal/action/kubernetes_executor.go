@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/google/uuid"
+	"slices"
 )
 
 // KubernetesTransport is a dedicated execution control-plane client. The
@@ -40,11 +41,36 @@ func (k KubernetesExecutor) Job(d Dispatch) ([]byte, error) {
 				"volumeMounts":    []any{map[string]any{"name": "runtime", "mountPath": "/run/ops"}, map[string]any{"name": "trust", "mountPath": "/etc/ops/trust", "readOnly": true}, map[string]any{"name": "identity", "mountPath": "/var/run/ops-identity", "readOnly": true}}}},
 			"volumes": []any{map[string]any{"name": "runtime", "emptyDir": map[string]any{"medium": "Memory", "sizeLimit": "32Mi"}}, map[string]any{"name": "trust", "configMap": map[string]any{"name": k.TrustConfigMap}}, map[string]any{"name": "identity", "projected": map[string]any{"sources": []any{map[string]any{"serviceAccountToken": map[string]any{"path": "token", "audience": "openbao", "expirationSeconds": 600}}}}}},
 		}}}}
+	if d.Binding.Verification != nil {
+		if d.Binding.VerificationNamespace != k.RunnerNamespace || !d.Binding.Verification.Valid(d.Binding.Target) || d.Profile.Type != "k8s_namespace" || !slices.Contains(d.Profile.Tools, "ops-verify") {
+			return nil, ErrDenied
+		}
+		pod := job["spec"].(map[string]any)["template"].(map[string]any)["spec"].(map[string]any)
+		pod["containers"].([]any)[0].(map[string]any)["env"] = []any{map[string]any{"name": "OPS_VERIFICATION_NAMESPACE", "valueFrom": map[string]any{"fieldRef": map[string]any{"fieldPath": "metadata.namespace"}}}}
+	}
+	if d.Binding.Verification != nil && d.Binding.Verification.Kind == "pvc_read_write" {
+		if d.Binding.Namespace == nil || *d.Binding.Namespace != k.RunnerNamespace || d.Profile.Type != "k8s_namespace" || d.Profile.Namespace != k.RunnerNamespace || d.Binding.VerificationTargetName == "" || !namePattern.MatchString(d.Binding.VerificationTargetName) {
+			return nil, ErrDenied
+		}
+		pod := job["spec"].(map[string]any)["template"].(map[string]any)["spec"].(map[string]any)
+		delete(pod["securityContext"].(map[string]any), "fsGroup")
+		pod["volumes"] = append(pod["volumes"].([]any), map[string]any{"name": "verification", "persistentVolumeClaim": map[string]any{"claimName": d.Binding.VerificationTargetName}})
+		container := pod["containers"].([]any)[0].(map[string]any)
+		container["volumeMounts"] = append(container["volumeMounts"].([]any), map[string]any{"name": "verification", "mountPath": VerificationMount, "subPath": VerificationSubPath, "readOnly": false})
+	}
 	return json.Marshal(job)
 }
 func (k KubernetesExecutor) Dispatch(ctx context.Context, d Dispatch) (string, error) {
 	if k.Client == nil {
 		return "", ErrDenied
+	}
+	if d.Binding.Verification != nil && d.Binding.Verification.Kind == "pvc_read_write" {
+		admit, ok := k.Client.(interface {
+			VerifyProbePVC(context.Context, string, string, string) error
+		})
+		if !ok || d.Binding.Namespace == nil || admit.VerifyProbePVC(ctx, *d.Binding.Namespace, d.Binding.VerificationTargetName, d.Binding.TargetUID) != nil {
+			return "", ErrDenied
+		}
 	}
 	job, err := k.Job(d)
 	if err != nil {

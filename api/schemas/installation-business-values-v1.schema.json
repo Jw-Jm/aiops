@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ops.local/schemas/installation-business-values/v1",
-  "title": "Explicit nonvirtual SP03\u2013SP07 operator installation values",
+  "title": "Explicit nonvirtual SP03–SP07 operator installation values",
   "type": "object",
   "properties": {
     "schemaVersion": {
@@ -684,6 +684,50 @@
             },
             "modelState": {
               "const": "ready"
+            },
+            "assistant": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "const": false
+                    },
+                    "faultChainEnabled": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "enabled"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "const": true
+                    },
+                    "faultChainEnabled": {
+                      "type": "boolean"
+                    },
+                    "modelProfileVersion": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "profile": {
+                      "$ref": "https://ops.local/schemas/assistant-model-profile/v1"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "modelProfileVersion",
+                    "profile"
+                  ]
+                }
+              ]
             }
           },
           "required": [
@@ -786,6 +830,21 @@
             },
             "modelState": {
               "const": "pending"
+            },
+            "assistant": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "const": false
+                },
+                "faultChainEnabled": {
+                  "const": false
+                }
+              },
+              "required": [
+                "enabled"
+              ]
             }
           },
           "required": [
@@ -1201,6 +1260,136 @@
         "workloadCABundle",
         "kubernetesEndpoint",
         "kubernetesCredentials"
+      ]
+    },
+    "sp08": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "const": false
+            }
+          },
+          "required": [
+            "enabled"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "const": true
+            },
+            "publicOrigin": {
+              "type": "string",
+              "pattern": "^https://[A-Za-z0-9.-]+(:[0-9]+)?$",
+              "maxLength": 253
+            },
+            "tlsSecretName": {
+              "type": "string",
+              "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+              "maxLength": 63
+            },
+            "oidcCAConfigMapName": {
+              "type": "string",
+              "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+              "maxLength": 63
+            },
+            "oidc": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "authority": {
+                  "type": "string",
+                  "maxLength": 512
+                },
+                "clientId": {
+                  "const": "ops-web"
+                },
+                "proxyHost": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9.-]{0,252}$"
+                }
+              },
+              "required": [
+                "authority",
+                "clientId",
+                "proxyHost"
+              ]
+            },
+            "service": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "enum": [
+                    "ClusterIP",
+                    "NodePort"
+                  ]
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 65535
+                },
+                "nodePort": {
+                  "type": "integer",
+                  "minimum": 30000,
+                  "maximum": 32767
+                }
+              },
+              "required": [
+                "type",
+                "port"
+              ],
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "NodePort"
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "nodePort"
+                    ]
+                  },
+                  "else": {
+                    "not": {
+                      "required": [
+                        "nodePort"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "ingressCIDRs": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 43
+              }
+            }
+          },
+          "required": [
+            "enabled",
+            "publicOrigin",
+            "tlsSecretName",
+            "oidcCAConfigMapName",
+            "oidc",
+            "service",
+            "ingressCIDRs"
+          ]
+        }
       ]
     }
   },

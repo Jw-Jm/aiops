@@ -18,14 +18,20 @@ func PostCheckApplicability(target string) PostCheckSupport {
 		return out
 	}
 	out.TargetKind = id.Kind
-	if id.Domain != "k8s" || id.APIGroup != "core" {
+	if id.Domain != "k8s" {
 		return out
 	}
-	switch id.Kind {
-	case "Node":
+	switch id.APIGroup + "/" + id.Kind {
+	case "core/Node":
 		out.Recipe = "node-failure"
-	case "PersistentVolumeClaim":
+	case "core/PersistentVolumeClaim":
 		out.Recipe = "pvc-csi-failure"
+	case "core/Pod":
+		out.Recipe = "pod-health"
+	case "apps/Deployment":
+		out.Recipe = "deployment-health"
+	case "core/Service", "discovery.k8s.io/EndpointSlice":
+		out.Recipe = "service-endpoints-health"
 	default:
 		return out
 	}

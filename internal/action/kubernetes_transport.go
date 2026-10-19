@@ -119,3 +119,22 @@ func (k *KubernetesREST) JobState(ctx context.Context, ns, ref string) (string, 
 	}
 	return "active", nil
 }
+
+func (k *KubernetesREST) VerifyProbePVC(ctx context.Context, namespace, name, uid string) error {
+	if !namePattern.MatchString(namespace) || !namePattern.MatchString(name) || uid == "" {
+		return ErrDenied
+	}
+	var pvc struct {
+		Metadata struct {
+			UID         string            `json:"uid"`
+			Annotations map[string]string `json:"annotations"`
+		}
+		Status struct {
+			Phase string `json:"phase"`
+		}
+	}
+	if k.coreRequest(ctx, "GET", "/api/v1/namespaces/"+namespace+"/persistentvolumeclaims/"+name, nil, &pvc) != nil || pvc.Metadata.UID != uid || pvc.Metadata.Annotations["ops.platform/verification-only"] != "true" || pvc.Status.Phase != "Bound" {
+		return ErrDenied
+	}
+	return nil
+}

@@ -26,7 +26,7 @@ func TestSP05RegistryRejectsSchemaValidButUnexecutableRecipe(t *testing.T) {
 }
 
 func TestSP05RegistryAcceptsExplicitHistoricalAndNodeV2Predicates(t *testing.T) {
-	for _, path := range []string{"dimm-failure/v1", "pvc-csi-failure/v1", "node-failure/v1", "node-failure/v2"} {
+	for _, path := range []string{"dimm-failure/v1", "pvc-csi-failure/v1", "node-failure/v1", "node-failure/v2", "pod-health/v1", "deployment-health/v1", "service-endpoints-health/v1", "pvc-csi-failure/v2"} {
 		raw, err := os.ReadFile("../../recipes/" + path + "/recipe.yaml")
 		if err != nil {
 			t.Fatal(err)

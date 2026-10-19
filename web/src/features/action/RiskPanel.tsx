@@ -40,7 +40,29 @@ export function RiskPanel({
           description={
             record(a.postCheckApplicability).status === "unsupported"
               ? "此目标没有已发布的可信后检查判据，执行后只能保留“尚无定论”。需要人工核对证据，命令成功不等于异常恢复。"
-              : "此目标可使用原生 Node/PVC 判据；仍需当前来源、已激活配方及执行后的归档证据合格，才可判断恢复。"
+              : "此目标可使用已声明的原生场景判据；仍需当前来源、已激活配方及执行后的归档证据合格，才可判断恢复。"
+          }
+        />
+      )}
+      {text(binding.rollbackSpecDigest) && (
+        <p>期望回退配置摘要：{text(binding.rollbackSpecDigest)}</p>
+      )}
+      {!!binding.verification && (
+        <Alert
+          type="warning"
+          title="本次执行实际探测"
+          description={
+            <>
+              <p>
+                探测位置：Runner namespace {text(binding.verificationNamespace)}
+                ；类型：{text(record(binding.verification).kind)}
+              </p>
+              <Details value={binding.verification} />
+              <p>
+                HTTP 只发送固定 GET，不发送业务凭据；PVC
+                会创建、同步、读取并删除一个随机文件。缺权限、超时或清理失败均不能判为通过。
+              </p>
+            </>
           }
         />
       )}

@@ -1,6 +1,6 @@
 # 全平台功能完成清单
 
-日期：2026-10-18。基线：`b10b2f0bc378f06291dbfc04ddccaae3a555155d` 加当前工作区改动。
+日期：2026-10-19。基线：`b10b2f0bc378f06291dbfc04ddccaae3a555155d` 加当前工作区改动。
 
 本清单按真实需求编号关联产品入口、实现、测试、UI、运行 Profile 与证据。它是后续开发输入，不是整个平台功能、运行验收或发行通过声明。
 
@@ -67,7 +67,7 @@
 
 源码依据：[sp07_postcheck.go](/Users/mssc/Documents/Code/ops/platform/internal/app/sp07_postcheck.go)、[postcheck.go](/Users/mssc/Documents/Code/ops/platform/internal/action/postcheck.go)。
 
-**当前处理：** 采用原计划允许的适用范围披露：Node/PVC 保留可信 Recipe，其余目标确认前明确不支持并保持 inconclusive；不宣称全目标自动 Post-check 已完成。 [补齐与验证记录](/Users/mssc/Documents/Code/ops/platform/docs/release/core-workflow-closeout.md)。
+**当前处理：** 已增加原生场景及相关 Warning 验证；真实网络连通、应用读写和未覆盖目标仍明确不支持，不宣称全目标 Post-check 完成。 [补齐与验证记录](/Users/mssc/Documents/Code/ops/platform/docs/release/core-workflow-closeout.md)。
 
 ### G-005 · P1 · 补足平台自身业务运行指标
 
@@ -103,7 +103,7 @@
 
 ### C-002 · 回退结果与原操作关联
 
-对应：FR-145。已核对并补齐实际执行层的关联：继续处置/回退关系进入本人确认摘要，支持直接父子执行及冻结后检查结果追溯；具体回退判据仍依赖场景。
+对应：FR-145。已实现本人确认绑定的原执行关联和明确回退配置目标，冻结报告比较配置摘要与场景健康；没有自动回退。
 
 依据：[action-plan-v2.schema.json](/Users/mssc/Documents/Code/ops/platform/api/schemas/action-plan-v2.schema.json)、[domain.go](/Users/mssc/Documents/Code/ops/platform/internal/action/domain.go)、[plan.go](/Users/mssc/Documents/Code/ops/platform/internal/action/plan.go)。
 
@@ -506,8 +506,8 @@
 
 **证据或边界：** [README.md](/Users/mssc/Documents/Code/ops/platform/docs/evidence/sp07-20261009/README.md)、[core-workflow-closeout.md](/Users/mssc/Documents/Code/ops/platform/docs/release/core-workflow-closeout.md)、[disposition-verification-closeout.md](/Users/mssc/Documents/Code/ops/platform/docs/release/disposition-verification-closeout.md)。
 
-- **FR-144 Post-check**（P0）：部分实现；完整运行未验证。[需求依据](/Users/mssc/Documents/Code/ops/02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md:1504)。共用冻结报告、可靠执行后证据/归档/Recipe 门禁、结论原因与读取/SSE 授权复查已补齐；原生判据仍限合格 Node/PVC，仅覆盖配方目标异常，其他目标 inconclusive，全目标及新增异常检查仍部分实现。 对应 G-004。
-- **FR-145 回退**（P1）：主机制已实现；完整运行未验证。[需求依据](/Users/mssc/Documents/Code/ops/02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md:1516)。已有 rollbackSuggestion；新增经本人确认摘要绑定的 rollback/follow_up 关系，关联原执行、回退尝试状态与独立后检查记录。沿用人工输入/确认，不自动回退，也不把命令成功或原异常消失当成业务回退目标达成。 对应 C-002。
+- **FR-144 Post-check**（P0）：部分实现；完整运行未验证。[需求依据](/Users/mssc/Documents/Code/ops/02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md:1504)。共用冻结报告与证据/来源/Recipe 门禁已实现；增加 Pod、Deployment、Service/EndpointSlice 后端和 PVC/CSI 原生关联健康判据及执行后 Warning。真实网络连通、应用读写、其他目标及全部新增故障仍未覆盖，保持部分实现。 已增加经本人确认的 TCP/HTTP 和专用 PVC 文件写读执行，回执须认证、逐参数绑定且输出归档验证后，才与原生场景事实共同用于结论；仅证明 Runner 位置和专用测试卷，不等同全部客户端或业务数据验收。 对应 G-004。
+- **FR-145 回退**（P1）：主机制已实现；完整运行未验证。[需求依据](/Users/mssc/Documents/Code/ops/02-智能运维平台1.0产品需求规格说明书-PRD-正式版.md:1516)。回退与原执行关联并纳入本人确认；新回退要求明确的评审配置摘要，只有摘要匹配且可信场景健康通过、无新增 Warning 才判目标达成。仍是人工输入/确认，不自动回退，不证明未覆盖配置字段或业务数据恢复。 已增加经本人确认的 TCP/HTTP 和专用 PVC 文件写读执行，回执须认证、逐参数绑定且输出归档验证后，才与原生场景事实共同用于结论；仅证明 Runner 位置和专用测试卷，不等同全部客户端或业务数据验收。 对应 C-002。
   专项实现：[execution_relation.go](/Users/mssc/Documents/Code/ops/platform/internal/action/execution_relation.go)、[postcheck_report.go](/Users/mssc/Documents/Code/ops/platform/internal/action/postcheck_report.go)、[service.go](/Users/mssc/Documents/Code/ops/platform/internal/action/service.go)、[PostCheckPanel.tsx](/Users/mssc/Documents/Code/ops/platform/web/src/features/action/PostCheckPanel.tsx)；专项测试：[execution_relation_test.go](/Users/mssc/Documents/Code/ops/platform/internal/action/execution_relation_test.go)、[postcheck_report_test.go](/Users/mssc/Documents/Code/ops/platform/internal/action/postcheck_report_test.go)、[postcheck.test.tsx](/Users/mssc/Documents/Code/ops/platform/web/tests/postcheck.test.tsx)、[sp07_command_test.go](/Users/mssc/Documents/Code/ops/platform/test/integration/sp07_command_test.go)。
 
 ### 审计与不可抵赖 · `audit`
@@ -885,3 +885,9 @@
 后续修复应更新对应需求和 G/C 编号，附实际受影响测试结果；新源码与历史证据分开。没有真实运行回执时保留“未验证”。新的生产目标、延期能力或额外授权另行决策。
 
 全平台清单已同步第二项核心流程补齐状态。正式 Task 9.1 的完整 Contract owner、开源复用逐项物料映射和发行兼容门禁仍需单独建设；本清单不能使 SP-09 自动通过。根目录 00～10 与旧审查/失败记录保持原样。
+
+2026-10-19 已补充[原生场景验证与回退目标](scenario-postcheck-closeout.md)；FR-144 保持部分实现，不把服务后端就绪当成真实网络连通，也不把 PVC 原生状态当成应用读写验证。
+
+受控探测已补充[认证回执与专用 PVC 写读](controlled-verification-closeout.md)；远程运行仍未验证，统一安装功能补齐仍是后续阶段。
+
+统一安装[功能接线已完成](unified-installer-closeout.md)：可选 Web/助手/故障链复用签名 Bundle 与三阶段配置回执，默认禁用；Web 当前仅 amd64。前述探测阶段的后续安装开发已完成，真实安装、逐架构交付和发行验收仍未执行，需求完成统计不因此扩大。

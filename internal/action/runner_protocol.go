@@ -21,11 +21,13 @@ type Dispatch struct {
 	Binding     Binding   `json:"binding"`
 }
 type ClaimedCommand struct {
-	Credentials    RunnerCredentials `json:"credentials"`
-	ExecutionID    uuid.UUID         `json:"executionId"`
-	Command        string            `json:"command"`
-	TimeoutSeconds int               `json:"timeoutSeconds"`
-	MaxOutputBytes int64             `json:"maxOutputBytes"`
+	VerificationBinding    *Binding          `json:"verificationBinding,omitempty"`
+	VerificationTargetName string            `json:"verificationTargetName,omitempty"`
+	Credentials            RunnerCredentials `json:"credentials"`
+	ExecutionID            uuid.UUID         `json:"executionId"`
+	Command                string            `json:"command"`
+	TimeoutSeconds         int               `json:"timeoutSeconds"`
+	MaxOutputBytes         int64             `json:"maxOutputBytes"`
 }
 
 // BeginDispatch commits one attempt before external side effects. Worker takeover
@@ -143,6 +145,12 @@ func (s Service) ClaimWithKey(ctx context.Context, tenant, id uuid.UUID, token, 
 			return err
 		}
 		out = ClaimedCommand{ExecutionID: id, Command: string(plain), TimeoutSeconds: e.Binding.Options.TimeoutSeconds, MaxOutputBytes: e.Binding.Options.MaxOutputBytes}
+		if e.Binding.Verification != nil {
+			out.VerificationBinding = &e.Binding
+			if err = tx.QueryRow(ctx, `SELECT name FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, tenant, e.Binding.Target).Scan(&out.VerificationTargetName); err != nil {
+				return err
+			}
+		}
 		if s.Credentials != nil {
 			out.Credentials, err = s.Credentials.Issue(ctx, p, e.Binding, publicKey)
 			if err != nil {

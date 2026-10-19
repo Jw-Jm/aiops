@@ -14,15 +14,19 @@ import (
 )
 
 type PostCheckFacts struct {
-	RecipeVersion   uuid.UUID `json:"recipeVersion"`
-	RecipeName      string    `json:"recipeName"`
-	CollectedAfter  time.Time `json:"collectedAfter"`
-	CheckedAt       time.Time `json:"checkedAt"`
-	Authorized      bool      `json:"authorized"`
-	SourceAvailable bool      `json:"sourceAvailable"`
-	Complete        bool      `json:"complete"`
-	FaultPresent    bool      `json:"faultPresent"`
-	EvidenceRefs    []string  `json:"evidenceRefs"`
+	Verification       *VerificationResult `json:"verification,omitempty"`
+	ObservedSpecDigest string              `json:"observedSpecDigest,omitempty"`
+	NewAnomalies       []string            `json:"newAnomalies,omitempty"`
+	Adapter            string              `json:"adapter,omitempty"`
+	RecipeVersion      uuid.UUID           `json:"recipeVersion"`
+	RecipeName         string              `json:"recipeName"`
+	CollectedAfter     time.Time           `json:"collectedAfter"`
+	CheckedAt          time.Time           `json:"checkedAt"`
+	Authorized         bool                `json:"authorized"`
+	SourceAvailable    bool                `json:"sourceAvailable"`
+	Complete           bool                `json:"complete"`
+	FaultPresent       bool                `json:"faultPresent"`
+	EvidenceRefs       []string            `json:"evidenceRefs"`
 }
 
 // Facts must be supplied by a trusted current Recipe/Investigation adapter,
@@ -35,7 +39,7 @@ func workerActor(tenant uuid.UUID) auth.RequestContext {
 	return auth.RequestContext{TenantID: tenant, Subject: "platform-worker"}
 }
 func (s Service) RecordPostCheck(ctx context.Context, tenant, id uuid.UUID, f PostCheckFacts) error {
-	if len(f.EvidenceRefs) > 50 {
+	if len(f.EvidenceRefs) > 50 || len(f.NewAnomalies) > 40 {
 		return ErrInvalid
 	}
 	return persistence.WithTenantTx(ctx, s.Pool, tenant, func(tx pgx.Tx) error {
@@ -60,6 +64,7 @@ func (s Service) RecordPostCheck(ctx context.Context, tenant, id uuid.UUID, f Po
 			f.Authorized = false
 		}
 		if f.Complete {
+			rootFound := false
 			for _, ref := range f.EvidenceRefs {
 				refID, err := uuid.Parse(ref)
 				if err != nil {
@@ -67,19 +72,35 @@ func (s Service) RecordPostCheck(ctx context.Context, tenant, id uuid.UUID, f Po
 					break
 				}
 				ev, err := evidence.GetTx(ctx, tx, tenant, refID, scope)
-				if err != nil || !ev.TimeReliable || ev.ReplayState != "archived_verified" || ev.ArchiveRef == nil || ev.ResourceCanonicalID != e.Binding.Target || !ev.ObservedFrom.After(completed) || !ev.ObservedTo.After(completed) {
+				if err != nil || !ev.TimeReliable || ev.ReplayState != "archived_verified" || ev.ArchiveRef == nil || !postCheckEvidenceTarget(e.Binding, ev.ResourceCanonicalID) || !ev.ObservedFrom.After(completed) || !ev.ObservedTo.After(completed) {
 					f.Complete = false
 					break
 				}
+				rootFound = rootFound || ev.ResourceCanonicalID == e.Binding.Target
+			}
+			if !rootFound {
+				f.Complete = false
 			}
 			var raw []byte
 			if tx.QueryRow(ctx, `SELECT content FROM platform.registry_versions WHERE tenant_id=$1 AND version_id=$2 AND logical_name=$3`, tenant, f.RecipeVersion, f.RecipeName).Scan(&raw) != nil {
 				f.Complete = false
 			} else {
 				recipe, err := rca.DecodeRecipe(raw)
-				if err != nil || rca.VerifyRecipeForRead(ctx, tx, tenant, &f.RecipeVersion, e.Binding.ClusterUID, ns, recipe, s.Trust) != nil {
+				if err != nil || recipe.Name != PostCheckApplicability(e.Binding.Target).Recipe || (recipe.PostCheck == "native-related-health/v1") != (f.Adapter == "native-related-health/v1") || rca.VerifyRecipeForRead(ctx, tx, tenant, &f.RecipeVersion, e.Binding.ClusterUID, ns, recipe, s.Trust) != nil {
 					f.Complete = false
 				}
+			}
+		}
+		if e.Binding.Verification == nil {
+			f.Verification = nil
+		}
+		if e.Binding.Verification != nil {
+			result, err := verificationResultTx(ctx, tx, e)
+			if err != nil {
+				f.Complete = false
+				f.Verification = nil
+			} else {
+				f.Verification = result
 			}
 		}
 		report := makePostCheckReport(e, f, completed)

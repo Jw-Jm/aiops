@@ -15,7 +15,22 @@ export async function matchesAssessment(
     Array.from(new Uint8Array(hash), (b) =>
       b.toString(16).padStart(2, "0"),
     ).join("");
+  const actualProbe = record(binding.verification),
+    expectedProbe = request.verification;
+  const probeMatches =
+    (!binding.verification && !expectedProbe) ||
+    (!!binding.verification &&
+      !!expectedProbe &&
+      actualProbe.kind === expectedProbe.kind &&
+      (actualProbe.port ?? 0) === (expectedProbe.port ?? 0) &&
+      (actualProbe.path ?? "") === (expectedProbe.path ?? "") &&
+      (actualProbe.https ?? false) === (expectedProbe.https ?? false) &&
+      (actualProbe.expectedStatus ?? 0) ===
+        (expectedProbe.expectedStatus ?? 0) &&
+      (actualProbe.expectedBodyDigest ?? "") ===
+        (expectedProbe.expectedBodyDigest ?? ""));
   return (
+    probeMatches &&
     binding.actualCommandDigest === digest &&
     binding.targetCanonicalId === request.target &&
     binding.shell === request.shell &&
@@ -25,6 +40,7 @@ export async function matchesAssessment(
     binding.actionPlanId === request.actionPlanId &&
     binding.relatedExecutionId === request.relatedExecutionId &&
     binding.executionRelation === request.executionRelation &&
+    binding.rollbackSpecDigest === request.rollbackSpecDigest &&
     options.timeoutSeconds === request.executionOptions.timeoutSeconds &&
     options.maxOutputBytes === request.executionOptions.maxOutputBytes &&
     options.workingDirectory === request.executionOptions.workingDirectory &&

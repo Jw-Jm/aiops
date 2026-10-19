@@ -24,7 +24,7 @@
 - 一份 `installation-business-values/v1`：SP04 的 Graph/来源/Lease/归档范围；SP05 的绑定与分析器；SP06 的租户、策略、预算、身份与明确模型状态；需要处置时再提供完整 SP07 Profile/主机接入/凭据/网络目标。实际值由其 Schema 和 `ReadBusinessValues` 校验；Secret 内容、DSN、私钥、Token 和恢复材料留在仓库及 Bundle 外。
 - 原独立 CA、工作负载 PKI、OpenBao 恢复材料、历史 Transit key、Archive IAM/COMPLIANCE、OIDC/LoA2 与已注册租户/来源/策略。升级不重新 init OpenBao、创建首租户或覆盖旧归档；来源/资源 UID 变化须重新核对，不继承旧凭据和窗口证明。
 
-**DEL-001：统一安装覆盖尚有缺口。** 当前业务值 Schema 根层没有 `sp08`，SP06 两个闭合分支也没有 `assistant`；installer 仍将 `components.web.enabled` 固定为 false。Chart 虽已有 Web、助手和 `faultChainEnabled` 配置，不能因此宣称正式三阶段安装已经包含这些能力。完整统一交付前须另行开发其业务输入校验、Bundle 物料配对和阶段回执绑定；本轮仅登记，不手工绕过 installer 部署。
+**DEL-001：统一安装配置开发完成，运行验收待安排。** 业务 Schema/Installer 已接入可选 Web、助手 Profile 和故障链开关，复用签名镜像配对、完整配置摘要与阶段回执。Web 只在 business 阶段创建并等待 rollout，TLS/OIDC CA 由运维独立准备；当前只允许 amd64 Web 及与 resolved Profile 匹配的 HTTPS/8443 Keycloak，旧输入默认关闭新增能力。详见[配置、阶段和限制](unified-installer-closeout.md)。本地测试不代表真实三阶段安装或发行准入通过。
 
 **DEL-002：完整多架构交付未证明。** Web Dockerfile 复制固定 `ld-musl-x86_64.so.1`；不能直接用于 ARM64。API/Worker 的 TARGETARCH 或双架构编译成功不能替代 Web、Python/native 依赖和 Runner 的逐架构闭包、镜像与实际验证。现有 arm64/amd64 Catalog 继续独立使用，拒绝混合架构安装。
 
@@ -54,6 +54,12 @@ KubeVirt/CDI 保持 disabled/candidate/unverified，VM/full Profile 开发延期
 
 DEL-003：最终提交和整套制品尚未冻结；本轮只整理源代码合同与配置，未生成或签名新的发行 Bundle，未改现有准入为 qualified。DEL-004：历史联合验收 FAIL、页面/新同轮长上下文 NOT_RUN、Node/PVC 真实助手授权/对象不足、人工质量 pending 继续保留。远程超时根因未证明时不统一归因于性能；按用户要求，远程性能问题仅作记录。
 
-当前本地检查和历史结果只覆盖各自源码/范围。下阶段输入为：先处理 DEL-001/002 的安装与架构缺口，再冻结提交、准备逐架构材料和外部签名密钥、复用现有 Bundle 验签/安装机制；实际部署、升级回退演练、发行准入仍另作阶段安排。根目录 00～10 正式文档未修改。
+当前本地检查和历史结果只覆盖各自源码/范围。下阶段输入为：完成 DEL-001 的真实安装验收并处理 DEL-002 的逐架构交付缺口，再冻结提交、准备逐架构材料和外部签名密钥、复用现有 Bundle 验签/安装机制；实际部署、升级回退演练、发行准入仍另作阶段安排。根目录 00～10 正式文档未修改。
 
 本轮 `make check-delivery`、本地 `make test-contract`、最终基线专项和 `git diff --check` 通过；详见 [限定范围检查记录](delivery-verification.json)。没有运行镜像构建、签名、新 Bundle 制作、实际部署/升级/回退或远程验收。结果为 `PREPARED_NOT_RELEASE_QUALIFIED`。
+
+2026-10-19 场景后检查增补：新回退目标使用 `execution-request/v3`，后检查报告增加可选配置摘要、适配器与异常字段/结论原因；Recipe registry/v2 增加闭合的后检查专用声明与 PVC v2。普通 v1/v2 请求及历史 Recipe/报告保留。API/Worker/Web/Schema 同批冻结，旧消费者不视为支持新判据；没有新增迁移。详见[场景功能记录](scenario-postcheck-closeout.md)，不因此关闭 DEL-001/002 或运行准入缺口。
+
+受控探测增补（2026-10-19）：可选 verification 使用 execution-request/v4，Runner claim/finish 和 command-post-check/v1 增加认证回执；普通 v1/v2/v3 保持。API、Worker、Runner 镜像、Web、Schema 和已准入 ops-verify Profile 必须同批冻结。没有新增迁移或自动扩大权限；专用 PVC 另需同 Runner namespace 的显式准备。详见[受控验证记录](controlled-verification-closeout.md)。统一安装 DEL-001/002 和远程运行准入继续待后续阶段。
+
+统一安装增补（2026-10-19）：DEL-001 的功能接线已完成，详见[本轮功能记录](unified-installer-closeout.md)。DEL-002 仍待逐架构交付；远程部署、性能、质量、发行状态不因本地开发检查改变。

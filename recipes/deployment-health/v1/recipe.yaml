@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "recipe-registry/v2",
+  "name": "deployment-health",
+  "version": "v1",
+  "candidateType": "native_post_check",
+  "entry": [
+    "Deployment"
+  ],
+  "graphDepth": 1,
+  "graphPlan": "single-query/v1",
+  "requiredEvidence": [
+    {
+      "key": "target-state",
+      "predicate": "native-target/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "related-state",
+      "predicate": "native-relations/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "recent-warnings",
+      "predicate": "native-warnings/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    }
+  ],
+  "optionalEvidence": [],
+  "confirm": [
+    "target-state",
+    "related-state",
+    "recent-warnings"
+  ],
+  "exclude": [
+    "incomplete-snapshot",
+    "identity-changed",
+    "unreliable-clock"
+  ],
+  "toolAllowlist": [
+    "read_evidence"
+  ],
+  "budget": {
+    "maxEvidence": 40,
+    "maxNodes": 40,
+    "maxEdges": 40,
+    "timeoutMs": 3000
+  },
+  "postCheck": "native-related-health/v1"
+}

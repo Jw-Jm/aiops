@@ -73,15 +73,16 @@ func (h RunnerHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	case "finish":
 		var in struct {
-			ExitCode  int   `json:"exitCode"`
-			FinalSeq  int64 `json:"finalSeq"`
-			Truncated bool  `json:"truncated"`
+			Verification *action.VerificationResult `json:"verification"`
+			ExitCode     int                        `json:"exitCode"`
+			FinalSeq     int64                      `json:"finalSeq"`
+			Truncated    bool                       `json:"truncated"`
 		}
 		if decodeAction(r, &in) != nil {
 			actionError(w, action.ErrInvalid, "")
 			return
 		}
-		if err = h.Service.Finish(r.Context(), tenant, id, token, in.ExitCode, in.FinalSeq, in.Truncated); err != nil {
+		if err = h.Service.FinishVerification(r.Context(), tenant, id, token, in.ExitCode, in.FinalSeq, in.Truncated, in.Verification); err != nil {
 			actionError(w, err, "")
 			return
 		}

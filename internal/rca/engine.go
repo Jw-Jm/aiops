@@ -57,7 +57,7 @@ type Result struct {
 
 func Evaluate(r Recipe, input Input) (Result, error) {
 	baseline, err := BuiltinVersion(r.Name, r.Version)
-	if err != nil || !sameJSON(baseline, r) {
+	if err != nil || !sameJSON(baseline, r) || r.CandidateType == "native_post_check" {
 		return Result{}, ErrRecipe
 	}
 	out := Result{SchemaVersion: "rca-evaluation/v2", Status: "unresolved", Partial: input.Graph.Partial, RecipeVersion: r.Version, RecipeDigest: finding.Hash(r), Impact: input.Graph, GraphPlan: r.GraphPlan, Bundle: Bundle{Supporting: []string{}, Contradicting: []string{}, Missing: []string{}, DegradedSources: append([]string{}, input.Graph.DegradedSources...), Ranked: []api.RankedEvidence{}, Conflicts: []api.DiagnosticConflict{}}}
