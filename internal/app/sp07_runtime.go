@@ -34,6 +34,7 @@ type SP07Config struct {
 	KubernetesCAFile    string      `json:"kubernetesCAFile"`
 	KubernetesTokenFile string      `json:"kubernetesTokenFile"`
 	TrustConfigMap      string      `json:"trustConfigMap"`
+	IdentitySecret      string      `json:"identitySecret"`
 	Tenants             []uuid.UUID `json:"tenants"`
 	// These are deployment admission inputs, not business records. Profile
 	// publication still uses signed, audited, tenant-admin product APIs.
@@ -55,7 +56,7 @@ func loadSP07() (*SP07Config, error) {
 	d := json.NewDecoder(bytes.NewReader(b))
 	d.DisallowUnknownFields()
 	var extra any
-	if d.Decode(&c) != nil || d.Decode(&extra) != io.EOF || c.SchemaVersion != "sp07-runtime/v1" || c.Namespace == "" || len(c.Tenants) == 0 || c.PolicyName == "" || c.ListenAddress == "" || c.WorkloadCAFile == "" || len(c.AdmittedProfiles) == 0 {
+	if d.Decode(&c) != nil || d.Decode(&extra) != io.EOF || c.SchemaVersion != "sp07-runtime/v1" || c.Namespace == "" || len(c.Tenants) == 0 || c.PolicyName == "" || c.ListenAddress == "" || c.WorkloadCAFile == "" || c.TrustConfigMap == "" || c.IdentitySecret == "" || len(c.AdmittedProfiles) == 0 {
 		return nil, errors.New("SP07 configuration invalid")
 	}
 	for _, p := range c.AdmittedProfiles {

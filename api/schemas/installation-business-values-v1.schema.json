@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ops.local/schemas/installation-business-values/v1",
-  "title": "Explicit nonvirtual SP03–SP07 operator installation values",
+  "title": "Explicit nonvirtual SP03\u2013SP07 operator installation values",
   "type": "object",
   "properties": {
     "schemaVersion": {
@@ -1169,7 +1169,9 @@
         "workloadCABundle": {
           "type": "string",
           "minLength": 100,
-          "maxLength": 65536
+          "maxLength": 65536,
+          "deprecated": true,
+          "description": "Deprecated and ignored: the Runner projects the workload CA from the API identity Secret at run time."
         },
         "kubernetesEndpoint": {
           "type": "string",
@@ -1257,7 +1259,6 @@
         "admittedProfiles",
         "hosts",
         "hostReports",
-        "workloadCABundle",
         "kubernetesEndpoint",
         "kubernetesCredentials"
       ]

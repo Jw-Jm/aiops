@@ -17,7 +17,7 @@
 
 遗漏 Transit 时风险评估与确认仍会成功，但提交执行在命令加密处失败并回落到 `503 SOURCE_DEGRADED`（该码是未映射错误的兜底，不能据此判断来源降级）。重复初始化保留已显式配置的 SSH 权限，未知策略漂移仍拒绝覆盖。必须使用现有受控初始化身份，凭据和恢复材料留在仓库外；调查 Agent 的 PKI/只读策略不增加执行、Transit 或 SSH 签名权限。
 
-`sp07.workloadCABundle` 必须使用该安装 OpenBao PKI 的工作负载 CA（`GET /v1/pki/ca/pem`），与 API/Worker 的工作负载信任一致；OpenBao HTTPS bootstrap CA 仅用于 `openbao-ca.pem`，不能替代 `workload-ca.pem`。混用会导致 Job 已创建但 Runner 报 `RUNNER_IDENTITY_UNAVAILABLE`，执行保持 `execution_unknown`。Chart 现在直接拒绝两者相同的取值（`SP07 workload CA must be the OpenBao PKI workload CA`），把错误挡在渲染阶段而不是运行期。修正后先核对 claim/目标事实，再重新评估、确认并创建独立执行；不得重放旧执行。
+Runner 的工作负载 CA 不再由操作者提供。`sp07.workloadCABundle` 已弃用并被忽略（Schema 保留字段仅为兼容，不再必填）；Runner 的 trust 卷改为 projected：`runner.json`/`openbao-ca.pem` 取自 `ops-command-runner-trust`，`workload-ca.pem` 直接投影自 API 使用的身份 Secret（`sp04.apiIdentitySecret`，键 `ca.pem`）。这样 CA 与 API 服务端证书必然一致，也避免了新装时 PKI 根尚未生成、无法提前填写的问题。OpenBao HTTPS bootstrap CA 仍只用于 `openbao-ca.pem`。若历史安装执行停在 `execution_unknown` 且报 `RUNNER_IDENTITY_UNAVAILABLE`，修正后先核对 claim/目标事实，再重新评估、确认并创建独立执行；不得重放旧执行。
 
 ## 接入 Linux 主机和 Profile
 

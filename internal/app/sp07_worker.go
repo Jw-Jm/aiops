@@ -39,7 +39,7 @@ func StartSP07Worker(ctx context.Context, pool *pgxpool.Pool, store *archive.Sto
 	if err != nil {
 		return nil, err
 	}
-	executor := action.KubernetesExecutor{Client: kube, RunnerNamespace: c.Namespace, APIEndpoint: c.APIEndpoint, TrustConfigMap: c.TrustConfigMap}
+	executor := action.KubernetesExecutor{Client: kube, RunnerNamespace: c.Namespace, APIEndpoint: c.APIEndpoint, TrustConfigMap: c.TrustConfigMap, IdentitySecret: c.IdentitySecret}
 	run, cancel := context.WithCancel(ctx)
 	done := make(chan struct{})
 	go func() {

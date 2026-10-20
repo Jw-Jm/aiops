@@ -1,9 +1,8 @@
 {{- if .Values.sp07.enabled }}
 {{- if not (and .Values.sp06.enabled .Values.sp04.enabled .Values.sp05.enabled (eq .Values.workloadIdentity.mode "openbao-kubernetes")) }}{{ fail "SP07 requires SP04–SP06 and native projected PKI" }}{{- end }}
 {{- if not (and .Values.sp07.tenants .Values.sp07.admittedProfiles .Values.sp04.kubernetesAPI.cidrs) }}{{ fail "SP07 requires explicit tenants, admitted profiles and exact Kubernetes API endpoints" }}{{- end }}
-{{- if and .Values.sp07.workloadCABundle (eq .Values.sp07.workloadCABundle .Values.runtime.openbaoCABundle) }}{{ fail "SP07 workload CA must be the OpenBao PKI workload CA; the OpenBao HTTPS bootstrap CA is not interchangeable and leaves commands at execution_unknown" }}{{- end }}
 {{- if not .Values.networkPolicyOnly }}
-{{- $config := dict "schemaVersion" "sp07-runtime/v1" "namespace" .Release.Namespace "listenAddress" (printf ":%d" (int .Values.sp07.gatewayPort)) "apiEndpoint" (printf "https://ops-api.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.sp07.gatewayPort)) "workloadCAFile" "/etc/sp04/identity/ca.pem" "policyName" .Values.sp07.policyName "kubernetesEndpoint" .Values.sp07.kubernetesEndpoint "kubernetesCAFile" "/var/run/secrets/ops-platform/execution/ca.pem" "kubernetesTokenFile" "/var/run/secrets/ops-platform/execution/token" "trustConfigMap" "ops-command-runner-trust" "tenants" .Values.sp07.tenants "admittedProfiles" .Values.sp07.admittedProfiles "hosts" .Values.sp07.hosts "hostReports" .Values.sp07.hostReports }}
+{{- $config := dict "schemaVersion" "sp07-runtime/v1" "namespace" .Release.Namespace "listenAddress" (printf ":%d" (int .Values.sp07.gatewayPort)) "apiEndpoint" (printf "https://ops-api.%s.svc.cluster.local:%d" .Release.Namespace (int .Values.sp07.gatewayPort)) "workloadCAFile" "/etc/sp04/identity/ca.pem" "policyName" .Values.sp07.policyName "kubernetesEndpoint" .Values.sp07.kubernetesEndpoint "kubernetesCAFile" "/var/run/secrets/ops-platform/execution/ca.pem" "kubernetesTokenFile" "/var/run/secrets/ops-platform/execution/token" "trustConfigMap" "ops-command-runner-trust" "identitySecret" .Values.sp04.apiIdentitySecret "tenants" .Values.sp07.tenants "admittedProfiles" .Values.sp07.admittedProfiles "hosts" .Values.sp07.hosts "hostReports" .Values.sp07.hostReports }}
 apiVersion: v1
 kind: ConfigMap
 metadata: {name: ops-sp07-runtime, labels: {ops.platform.io/release: {{ $.Release.Name }}}}
@@ -16,7 +15,6 @@ metadata: {name: ops-command-runner-trust, labels: {ops.platform.io/release: {{ 
 data:
   runner.json: {{ dict "Namespace" .Release.Namespace "OpenBaoAddress" (.Values.runtime.openbaoAddress | default (printf "https://ops-openbao.%s.svc.cluster.local:8200" .Release.Namespace)) "OpenBaoServerName" (printf "ops-openbao.%s.svc.cluster.local" .Release.Namespace) | toJson | quote }}
   openbao-ca.pem: {{ .Values.runtime.openbaoCABundle | quote }}
-  workload-ca.pem: {{ required "SP07 pinned public workload CA required" .Values.sp07.workloadCABundle | quote }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role

@@ -16,12 +16,14 @@ type KubernetesTransport interface {
 	JobState(context.Context, string, string) (string, error)
 }
 type KubernetesExecutor struct {
-	Client                                       KubernetesTransport
-	RunnerNamespace, APIEndpoint, TrustConfigMap string
+	Client KubernetesTransport
+	// IdentitySecret carries the same workload CA the API serves with, so the
+	// Runner cannot be pinned to a CA an operator guessed before the PKI exists.
+	RunnerNamespace, APIEndpoint, TrustConfigMap, IdentitySecret string
 }
 
 func (k KubernetesExecutor) Job(d Dispatch) ([]byte, error) {
-	if d.Profile.Validate() != nil || d.Token == "" || d.ExecutionID == uuid.Nil || !namePattern.MatchString(k.RunnerNamespace) || k.APIEndpoint == "" || !namePattern.MatchString(k.TrustConfigMap) {
+	if d.Profile.Validate() != nil || d.Token == "" || d.ExecutionID == uuid.Nil || !namePattern.MatchString(k.RunnerNamespace) || k.APIEndpoint == "" || !namePattern.MatchString(k.TrustConfigMap) || !namePattern.MatchString(k.IdentitySecret) {
 		return nil, ErrInvalid
 	}
 	if d.Profile.Type != "k8s_namespace" && d.Profile.Type != "k8s_cluster" && d.Profile.Type != "ssh_user" && d.Profile.Type != "ssh_root" {
@@ -39,7 +41,7 @@ func (k KubernetesExecutor) Job(d Dispatch) ([]byte, error) {
 				"securityContext": map[string]any{"allowPrivilegeEscalation": false, "readOnlyRootFilesystem": true, "capabilities": map[string]any{"drop": []string{"ALL"}}},
 				"resources":       map[string]any{"requests": map[string]string{"cpu": "100m", "memory": "64Mi"}, "limits": map[string]string{"cpu": "1", "memory": "256Mi"}},
 				"volumeMounts":    []any{map[string]any{"name": "runtime", "mountPath": "/run/ops"}, map[string]any{"name": "trust", "mountPath": "/etc/ops/trust", "readOnly": true}, map[string]any{"name": "identity", "mountPath": "/var/run/ops-identity", "readOnly": true}}}},
-			"volumes": []any{map[string]any{"name": "runtime", "emptyDir": map[string]any{"medium": "Memory", "sizeLimit": "32Mi"}}, map[string]any{"name": "trust", "configMap": map[string]any{"name": k.TrustConfigMap}}, map[string]any{"name": "identity", "projected": map[string]any{"sources": []any{map[string]any{"serviceAccountToken": map[string]any{"path": "token", "audience": "openbao", "expirationSeconds": 600}}}}}},
+			"volumes": []any{map[string]any{"name": "runtime", "emptyDir": map[string]any{"medium": "Memory", "sizeLimit": "32Mi"}}, map[string]any{"name": "trust", "projected": map[string]any{"sources": []any{map[string]any{"configMap": map[string]any{"name": k.TrustConfigMap, "items": []any{map[string]any{"key": "runner.json", "path": "runner.json"}, map[string]any{"key": "openbao-ca.pem", "path": "openbao-ca.pem"}}}}, map[string]any{"secret": map[string]any{"name": k.IdentitySecret, "items": []any{map[string]any{"key": "ca.pem", "path": "workload-ca.pem"}}}}}}}, map[string]any{"name": "identity", "projected": map[string]any{"sources": []any{map[string]any{"serviceAccountToken": map[string]any{"path": "token", "audience": "openbao", "expirationSeconds": 600}}}}}},
 		}}}}
 	if d.Binding.Verification != nil {
 		if d.Binding.VerificationNamespace != k.RunnerNamespace || !d.Binding.Verification.Valid(d.Binding.Target) || d.Profile.Type != "k8s_namespace" || !slices.Contains(d.Profile.Tools, "ops-verify") {
