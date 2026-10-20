@@ -10,9 +10,14 @@
 
 `kubernetesCredentials` 的 Role/ClusterRole 必须是已核验的目标权限。namespace Profile 使用 namespace ServiceAccount；cluster Profile 使用单独 cluster ServiceAccount，并仍需 step-up。不能因为 AST 分类低风险就省略 RBAC、SSH principal 或 NetworkPolicy。示例验收仅授权自有 PVC，以及修复时对一个自有 PV 的 get/patch；不代表通用集群管理员权限。
 
-启用 Kubernetes 命令执行后，使用 `opsctl openbao configure-commands --profile <resolved> --ca-file <ca> --recovery-file <recovery> --bundle-dir <bundle>` 初始化 API/Worker workload 的 `evidence-archive` Transit 加解密权限；不带 `--command-ssh-user` 时不创建 SSH 角色或增加 SSH 签发权限。普通 `configure --investigation-signing` 不包含此步骤，遗漏时风险评估及确认仍可成功，但提交执行会在命令加密处失败。显式加上 `--command-ssh-user <principal>` 才配置专用 `ops-sp07-user`/`ops-sp07-root` 短期签名角色。重复 Transit 初始化保留已显式配置的 SSH 权限，未知策略漂移仍拒绝覆盖。必须使用现有受控初始化身份，凭据和恢复材料留在仓库外；调查 Agent 的 PKI/只读策略不增加执行、Transit 或 SSH 签名权限。
+启用 Kubernetes 命令执行后，API/Worker workload 需要 `evidence-archive` 的 Transit 加解密权限。`opsctl openbao configure` 现在会一并配置这两条策略（幂等，且不授予任何 SSH 签发权），因此标准初始化不会遗漏；`openbao configure-commands` 仍保留，用于只补 Transit 或显式配置 SSH：
 
-`sp07.workloadCABundle` 必须使用该安装 OpenBao PKI 的工作负载 CA，与 API/Worker 的工作负载信任一致；OpenBao HTTPS bootstrap CA 仅用于 `openbao-ca.pem`，不能替代 `workload-ca.pem`。混用会导致 Job 已创建但 Runner 报 `RUNNER_IDENTITY_UNAVAILABLE`，执行保持 `execution_unknown`。修正后先核对 claim/目标事实，再重新评估、确认并创建独立执行；不得重放旧执行。
+- 只补 Transit（不启用 SSH）：`opsctl openbao configure-commands --profile <resolved> --ca-file <ca> --recovery-file <recovery> --bundle-dir <bundle>`，不带 `--command-ssh-user`。
+- 配置 host 执行：显式加 `--command-ssh-user <principal>`，才会创建专用 `ops-sp07-user`/`ops-sp07-root` 短期签名角色。
+
+遗漏 Transit 时风险评估与确认仍会成功，但提交执行在命令加密处失败并回落到 `503 SOURCE_DEGRADED`（该码是未映射错误的兜底，不能据此判断来源降级）。重复初始化保留已显式配置的 SSH 权限，未知策略漂移仍拒绝覆盖。必须使用现有受控初始化身份，凭据和恢复材料留在仓库外；调查 Agent 的 PKI/只读策略不增加执行、Transit 或 SSH 签名权限。
+
+`sp07.workloadCABundle` 必须使用该安装 OpenBao PKI 的工作负载 CA（`GET /v1/pki/ca/pem`），与 API/Worker 的工作负载信任一致；OpenBao HTTPS bootstrap CA 仅用于 `openbao-ca.pem`，不能替代 `workload-ca.pem`。混用会导致 Job 已创建但 Runner 报 `RUNNER_IDENTITY_UNAVAILABLE`，执行保持 `execution_unknown`。Chart 现在直接拒绝两者相同的取值（`SP07 workload CA must be the OpenBao PKI workload CA`），把错误挡在渲染阶段而不是运行期。修正后先核对 claim/目标事实，再重新评估、确认并创建独立执行；不得重放旧执行。
 
 ## 接入 Linux 主机和 Profile
 

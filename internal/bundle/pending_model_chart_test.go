@@ -22,7 +22,7 @@ func TestPendingModelChartKeepsSP07WithoutInvestigatorOrModelEgress(t *testing.T
 	image := "example.invalid/runner@sha256:" + strings.Repeat("a", 64)
 	// Minimal chart fixture: installer admission of complete execution Profiles
 	// remains covered separately; this test exercises stage rendering and defaults.
-	b.values["sp07"] = map[string]any{"enabled": true, "gatewayPort": 8084, "policyName": "pending-command", "tenants": b.Tenants(), "admittedProfiles": []any{map[string]any{"toolImageDigest": image}}, "workloadCABundle": "TEST-PUBLIC-CA", "kubernetesEndpoint": "https://kubernetes.default.svc.cluster.local", "hosts": []any{}, "hostReports": []any{}, "kubernetesCredentials": []any{}}
+	b.values["sp07"] = map[string]any{"enabled": true, "gatewayPort": 8084, "policyName": "pending-command", "tenants": b.Tenants(), "admittedProfiles": []any{map[string]any{"toolImageDigest": image}}, "workloadCABundle": "TEST-WORKLOAD-CA", "kubernetesEndpoint": "https://kubernetes.default.svc.cluster.local", "hosts": []any{}, "hostReports": []any{}, "kubernetesCredentials": []any{}}
 	values := map[string]any{"workloadsEnabled": true, "runtime": map[string]any{"openbaoCABundle": "TEST-PUBLIC-CA", "oidcIssuerURL": "https://oidc.example.invalid/realm", "profile": "kind: test-profile"}, "observability": map[string]any{"scrapeKind": "none"}, "components": map[string]any{"api": map[string]any{"image": image}, "worker": map[string]any{"image": image}, "web": map[string]any{"enabled": false}}}
 	if err := applyBusinessValues(values, b, map[string]string{"holmesgpt": image, "command-runner": image}); err != nil {
 		t.Fatal(err)
@@ -84,5 +84,34 @@ func TestPendingModelChartKeepsSP07WithoutInvestigatorOrModelEgress(t *testing.T
 				t.Fatal("Helm model defaults survived")
 			}
 		})
+	}
+}
+
+// TestSP07RejectsBootstrapCAAsWorkloadCA pins the failure that leaves committed
+// executions at execution_unknown: reusing the OpenBao HTTPS listener CA where
+// the workload PKI CA is required must stop at render time, not at runtime.
+func TestSP07RejectsBootstrapCAAsWorkloadCA(t *testing.T) {
+	helm, err := exec.LookPath("helm")
+	if err != nil {
+		t.Skip("helm required for actual chart rendering")
+	}
+	b := readBusinessTest(t, pendingModelDocument())
+	image := "example.invalid/runner@sha256:" + strings.Repeat("a", 64)
+	b.values["sp07"] = map[string]any{"enabled": true, "gatewayPort": 8084, "policyName": "pending-command", "tenants": b.Tenants(), "admittedProfiles": []any{map[string]any{"toolImageDigest": image}}, "workloadCABundle": "SAME-CA", "kubernetesEndpoint": "https://kubernetes.default.svc.cluster.local", "hosts": []any{}, "hostReports": []any{}, "kubernetesCredentials": []any{}}
+	values := map[string]any{"workloadsEnabled": true, "runtime": map[string]any{"openbaoCABundle": "SAME-CA", "oidcIssuerURL": "https://oidc.example.invalid/realm", "profile": "kind: test-profile"}, "observability": map[string]any{"scrapeKind": "none"}, "components": map[string]any{"api": map[string]any{"image": image}, "worker": map[string]any{"image": image}, "web": map[string]any{"enabled": false}}}
+	if err := applyBusinessValues(values, b, map[string]string{"holmesgpt": image, "command-runner": image}); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := yaml.Marshal(values)
+	if err != nil {
+		t.Fatal(err)
+	}
+	file := filepath.Join(t.TempDir(), "values.yaml")
+	if err = os.WriteFile(file, raw, 0600); err != nil {
+		t.Fatal(err)
+	}
+	out, err := exec.Command(helm, "template", "ops-platform", "../../deploy/charts/ops-platform", "--namespace", b.Namespace(), "--values", file).CombinedOutput()
+	if err == nil || !bytes.Contains(out, []byte("SP07 workload CA must be the OpenBao PKI workload CA")) {
+		t.Fatalf("shared CA accepted: err=%v out=%s", err, out)
 	}
 }

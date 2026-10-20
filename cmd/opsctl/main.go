@@ -394,6 +394,13 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 		if err := client.Configure(ctx); err != nil {
 			return err
 		}
+		// Kubernetes command execution encrypts archived output through the
+		// evidence-archive Transit paths. Provision them with the standard
+		// configuration so an installation cannot silently omit them; the call is
+		// idempotent and grants no SSH signing authority.
+		if err := client.ConfigureCommandExecutionTransit(ctx); err != nil {
+			return err
+		}
 		if *investigationSigning {
 			if err := client.ConfigureInvocationSigning(ctx); err != nil {
 				return err
