@@ -1,0 +1,49 @@
+{
+  "observedAt": "2026-10-20T00:45:00Z",
+  "namespace": "ops-amd64-unified-r6-20261019",
+  "incidentId": "01a15394-4a06-7a25-af4c-b83369c0567b",
+  "parentExecution": "01a156bd-8c47-7ca0-89d0-63661c19d532",
+  "serviceBaseExecution": "01a156bf-7b32-7adb-8f8d-43f09fbc98f5",
+  "results": {
+    "pvcReadWrite": {
+      "executionId": "01a156c3-0180-707e-a201-1cbddda7c5ce",
+      "state": "succeeded",
+      "exitCode": 0,
+      "verdict": "resolved",
+      "reason": "read_write_verified",
+      "cleanup": true,
+      "target": "ops-verification-probe (dedicated 2Gi local PV)"
+    },
+    "tcp": {
+      "executionId": "01a156bf-b4e1-7b2b-8fca-09f2ca375278",
+      "state": "failed",
+      "exitCode": 1,
+      "verdict": "not_resolved",
+      "reason": "connection_refused",
+      "port": 8080
+    },
+    "http": {
+      "executionId": "01a156c0-3ad4-73df-9cf5-7e48989a06ca",
+      "state": "failed",
+      "exitCode": 1,
+      "verdict": "not_resolved",
+      "reason": "connection_refused",
+      "port": 8080
+    }
+  },
+  "tcpHttpBlockedBy": {
+    "networkPolicy": "ops-sp07-k8s-namespace egress allows only api:8084, openbao:8200, kube-dns:53 and kube-apiserver:6443",
+    "admissionCeiling": "publishing an execution profile version with the ops-api Service added to allowedTargets was refused with 403, so targets cannot be widened after admission",
+    "conclusion": "the dedicated probe Service on 8080 is outside both the admitted target set and the shipped runner egress rule; no failure of the runner or the probe path was observed"
+  },
+  "serviceReachabilityControl": {
+    "fromPod": "ops-postgresql-0",
+    "serviceTcp": "ok",
+    "podTcp": "ok",
+    "httpStatus": 200
+  },
+  "notes": [
+    "the volume initially reported probe_unavailable because the runner subPath .ops-verification did not exist or was not writable by uid 65532; creating it with mode 0777 in the dedicated volume made the probe succeed",
+    "the earlier tcp/http refusals were measured, not assumed; they are policy outcomes rather than connectivity defects"
+  ]
+}

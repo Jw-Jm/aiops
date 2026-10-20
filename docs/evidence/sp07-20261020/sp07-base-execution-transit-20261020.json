@@ -1,0 +1,305 @@
+{
+  "execution": {
+    "acknowledgementId": "01a156bc-1d22-731b-aa53-3850005ef799",
+    "actionPlanId": null,
+    "actualCommandDigest": "sha256:675994584a961bbbc6ac4753d16030e108c80a1b1daa0c02fbb0382f844bbbd1",
+    "completedAt": "2026-10-20T00:36:10.97847Z",
+    "executionId": "01a156bc-1d37-7713-ada6-751072236a53",
+    "executionProfileId": "d826a5e6-af3a-49e0-8a7e-d177bf545245",
+    "exitCode": null,
+    "extensions": {
+      "binding": {
+        "digestVersion": "execution-request/v1",
+        "tenantId": "c6c4c65c-91ef-48ff-82df-b108e9b12e2e",
+        "subject": "0f1c2d3e-4a5b-4c6d-8e7f-901234567890",
+        "incidentId": "01a15394-4a06-7a25-af4c-b83369c0567b",
+        "actionPlanId": null,
+        "targetCanonicalId": "k8s+v1://c6c4c65c-91ef-48ff-82df-b108e9b12e2e/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/6b07a039-89ac-4fe2-903a-1e6921ecbc9c",
+        "targetUid": "6b07a039-89ac-4fe2-903a-1e6921ecbc9c",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "namespace": "ops-amd64-unified-r6-20261019",
+        "shell": "bash",
+        "actualCommandDigest": "sha256:675994584a961bbbc6ac4753d16030e108c80a1b1daa0c02fbb0382f844bbbd1",
+        "executionProfileId": "d826a5e6-af3a-49e0-8a7e-d177bf545245",
+        "executionProfileVersion": 1,
+        "executionOptions": {
+          "timeoutSeconds": 120,
+          "maxOutputBytes": 10485760,
+          "workingDirectory": "",
+          "environment": {}
+        },
+        "policyVersion": "01a1538f-64a8-7907-a58d-e225355684d6",
+        "riskAssessmentVersion": "bash-risk/v1-mvdan-3.14.1"
+      },
+      "createdAt": "2026-10-20T00:35:31.425405Z",
+      "executionRequestDigest": "sha256:4956145e07fbe81a8f19c839e440f7e408a4300a0ff07e2ba4e3c653f81cdb22",
+      "outputBytes": 0,
+      "outputComplete": false,
+      "outputFormat": "ordered-mixed-stream/v1",
+      "outputPreviews": {
+        "stderr": {
+          "last": "",
+          "first": "",
+          "encoding": "base64"
+        },
+        "stdout": {
+          "last": "",
+          "first": "",
+          "encoding": "base64"
+        }
+      },
+      "postCheck": "inconclusive",
+      "postCheckApplicability": {
+        "status": "requires_qualified_source",
+        "targetKind": "PersistentVolumeClaim",
+        "recipe": "pvc-csi-failure",
+        "reason": "native_recipe_and_evidence_required"
+      },
+      "postCheckedAt": null
+    },
+    "incidentId": "01a15394-4a06-7a25-af4c-b83369c0567b",
+    "iteration": 1,
+    "outputDigest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "outputTruncated": false,
+    "policyDecisionId": "sha256:9d86718ae95b5f9bcbb50aac6f3c5f7fcc6c820412f781aeffda57b7fe815302",
+    "schemaVersion": "command-execution/v1",
+    "shell": "bash",
+    "startedAt": null,
+    "state": "execution_unknown",
+    "stderrObjectRef": "{\"category\":\"command-output\",\"contentType\":\"application/json\",\"digest\":\"sha256:264e510ebabd913b3cf4bbc368cd98f5e5125db1cdcd67303844d9f0a1edcf33\",\"etag\":\"\\\"a5fef59f9a87c927c8332892eaa88144\\\"\",\"key\":\"tenants/a11445e54174c2e93ff53a6a7018485cd2946bddc679618317d8672ca6075070/command-output/01a156bc-1d37-7713-ada6-751072236a53\",\"objectId\":\"01a156bc-1d37-7713-ada6-751072236a53\",\"retainUntil\":\"2027-10-20T00:36:15Z\",\"size\":336,\"tenantId\":\"c6c4c65c-91ef-48ff-82df-b108e9b12e2e\",\"versionId\":\"671fea3e1522a65c39932e042324a4e9\"}",
+    "stdoutObjectRef": "{\"category\":\"command-output\",\"contentType\":\"application/json\",\"digest\":\"sha256:264e510ebabd913b3cf4bbc368cd98f5e5125db1cdcd67303844d9f0a1edcf33\",\"etag\":\"\\\"a5fef59f9a87c927c8332892eaa88144\\\"\",\"key\":\"tenants/a11445e54174c2e93ff53a6a7018485cd2946bddc679618317d8672ca6075070/command-output/01a156bc-1d37-7713-ada6-751072236a53\",\"objectId\":\"01a156bc-1d37-7713-ada6-751072236a53\",\"retainUntil\":\"2027-10-20T00:36:15Z\",\"size\":336,\"tenantId\":\"c6c4c65c-91ef-48ff-82df-b108e9b12e2e\",\"versionId\":\"671fea3e1522a65c39932e042324a4e9\"}",
+    "subject": "0f1c2d3e-4a5b-4c6d-8e7f-901234567890",
+    "suggestedCommandDigest": null,
+    "suggestionMatch": "not_applicable",
+    "suggestionMatchVersion": "bash-target-v1-mvdan-3.14.1",
+    "tenantId": "c6c4c65c-91ef-48ff-82df-b108e9b12e2e"
+  },
+  "postCheck": null,
+  "commands": [
+    {
+      "operation": "stepup",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-sessions",
+      "status": 201,
+      "responseSHA256": "sha256:4d09b3b1271ad7f9dd9a5428f2b15a0b00c4b82509a7841922adbb208f83cea4",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-assess",
+      "method": "POST",
+      "path": "/api/v1/commands:risk-assess",
+      "status": 200,
+      "responseSHA256": "sha256:0f3bebba41a65d78a201a76268b755c0ea4800be6f27a9cc29f2242d07f8e42c",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-ack",
+      "method": "POST",
+      "path": "/api/v1/commands:risk-acknowledge",
+      "status": 200,
+      "responseSHA256": "sha256:0acf23072bca22d73ecab2d4586842889139b0feda588b2567f95cb1b8e482e7",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-execute",
+      "method": "POST",
+      "path": "/api/v1/command-executions",
+      "status": 202,
+      "responseSHA256": "sha256:7d3bb452096c9d7890b12366f6da4a4ee936dd59033d301f8a86819dc24f3118",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:de4f01fbb1ce867a9b311bf834941cb957bac0ac92dd5f473604e79ea1029d61",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:cc735c0cbd34225b8a6bb5c6f1106dd29319627b581793cd29ca0686394c7347",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:d3de857659df3c94269d3c658838926e7d26992f88ecd9a5e07cade89e8c99af",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:821224495c6adb51a755df4624091b30ccbafe6a16779e09725b4c67dfc50b3b",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:0d792356e1786dc01d4fa3c4db9a92c5139666b3871678e3f58138f70ab4aef8",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:cd5e52ce0acdd6749447be8be68b8e7d2e48dd5a94c0e7b088312c23a8fa7bf3",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:4aa5b6380fa63466b0e0897dc025f07ab1e698c2a286c1ad8b0a47a1c0f47c92",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:1a6a7d1dfd03ccf875d1d3678ce06d760950bcd3deedfdd28715fb1fb7884247",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:dea8e6083dad55ae5f1cc5398989432df44ca3b325373d42c1a8c2dc61344720",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:4a623014ae3c86888a7271ca64c7408b3876a23554e7e62706969789e46f5efa",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:c37ec5050b9cc0fac893cc7d7a1a71dff1329cf9ca41df93ce741f3d2fb10d32",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:f02dd6f148e4690dbb981f8640f619f6d8debe9f0d5f64110f459493e9e32eea",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:948a4e45e99e6ad4c20a96b3c698dc10ec943f9a6763672e39ebd3ec05a8447f",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:9835421485982db92ca779410cff226a3ef5dbf717d8625e3e83caffb0ff6dbc",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:e36b3177d7b4a5e932852a37548ceebb7de3b3926e7f2c1c8788def01a3d41eb",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:5ed1e01c8336e427d526daee97b0003e5b91a2e7a3bfda42be095f3ee1f2c7e8",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:9fdf6bead38802e9b0c8c076fa8f037641a336281174ce39193ae41f69d6cdbd",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:f0f0469b2b5c0841e82415ab500613c5abfc3f6469287cbcd12ef1069d91eaef",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:ed0883f2efac9766464067d5dc45a993c75ad99bc77035284247cefc283f5f9d",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:fa2719ee8499c276e52980338ffb8379fc923462d8f98b292381f190fc771b07",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-final",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bc-1d37-7713-ada6-751072236a53",
+      "status": 200,
+      "responseSHA256": "sha256:4fb1cb55fb0cfe9fa996fb04547aa42533f53f9ec3313a22ac9d50e947e40a56",
+      "code": null,
+      "message": ""
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "observedAt": "2026-10-20T00:35:06.457911+00:00",
+  "namespace": "ops-amd64-unified-r6-20261019",
+  "binarySHA256": "bc13d1a708981c945ef4589a655a457c717ba66137c6bf8446ae535c429cb5da",
+  "configureExitCodes": [
+    0,
+    0
+  ],
+  "before": {
+    "sys/policies/acl/ops-api-workload": {
+      "status": 200,
+      "data": {
+        "allow_slashes_in_identity_templates": false,
+        "allow_wildcards_in_identity_templates": false,
+        "cas_required": false,
+        "modified": "2026-10-19T09:42:09.757885137Z",
+        "name": "ops-api-workload",
+        "policy": "path \"pki/sign/platform-workload-ops-api\" { capabilities = [\"update\"] }\npath \"transit/keys/investigation-signing\" { capabilities = [\"read\"] }\npath \"transit/sign/investigation-signing\" { capabilities = [\"update\"] }",
+        "version": 1
+      }
+    },
+    "sys/policies/acl/ops-worker-workload": {
+      "status": 200,
+      "data": {
+        "allow_slashes_in_identity_templates": false,
+        "allow_wildcards_in_identity_templates": false,
+        "cas_required": false,
+        "modified": "2026-10-19T09:42:09.437223957Z",
+        "name": "ops-worker-workload",
+        "policy": "path \"pki/sign/platform-workload-ops-worker\" { capabilities = [\"update\"] }\npath \"transit/keys/investigation-signing\" { capabilities = [\"read\"] }\npath \"transit/sign/investigation-signing\" { capabilities = [\"update\"] }",
+        "version": 1
+      }
+    },
+    "sys/policies/acl/ops-investigator-workload": {
+      "status": 200,
+      "data": {
+        "allow_slashes_in_identity_templates": false,
+        "allow_wildcards_in_identity_templates": false,
+        "cas_required": false,
+        "modified": "2026-10-19T09:42:09.484029316Z",
+        "name": "ops-investigator-workload",
+        "policy": "path \"pki/sign/platform-workload-ops-investigator\" { capabilities = [\"update\"] }",
+        "version": 1
+      }
+    },
+    "ssh/roles/ops-sp07-user": {
+      "status": 404,
+      "data": null
+    },
+    "ssh/roles/ops-sp07-root": {
+      "status": 404,
+      "data": null
+    }
+  },
+  "after": {
+    "sys/policies/acl/ops-api-workload": {
+      "status": 200,
+      "data": {
+        "allow_slashes_in_identity_templates": false,
+        "allow_wildcards_in_identity_templates": false,
+        "cas_required": false,
+        "modified": "2026-10-20T00:35:05.122920863Z",
+        "name": "ops-api-workload",
+        "policy": "path \"pki/sign/platform-workload-ops-api\" { capabilities = [\"update\"] }\npath \"transit/keys/investigation-signing\" { capabilities = [\"read\"] }\npath \"transit/sign/investigation-signing\" { capabilities = [\"update\"] }\npath \"transit/encrypt/evidence-archive\" { capabilities = [\"update\"] }\npath \"transit/decrypt/evidence-archive\" { capabilities = [\"update\"] }",
+        "version": 2
+      }
+    },
+    "sys/policies/acl/ops-worker-workload": {
+      "status": 200,
+      "data": {
+        "allow_slashes_in_identity_templates": false,
+        "allow_wildcards_in_identity_templates": false,
+        "cas_required": false,
+        "modified": "2026-10-20T00:35:06.093626685Z",
+        "name": "ops-worker-workload",
+        "policy": "path \"pki/sign/platform-workload-ops-worker\" { capabilities = [\"update\"] }\npath \"transit/keys/investigation-signing\" { capabilities = [\"read\"] }\npath \"transit/sign/investigation-signing\" { capabilities = [\"update\"] }\npath \"transit/encrypt/evidence-archive\" { capabilities = [\"update\"] }\npath \"transit/decrypt/evidence-archive\" { capabilities = [\"update\"] }",
+        "version": 2
+      }
+    },
+    "sys/policies/acl/ops-investigator-workload": {
+      "status": 200,
+      "data": {
+        "allow_slashes_in_identity_templates": false,
+        "allow_wildcards_in_identity_templates": false,
+        "cas_required": false,
+        "modified": "2026-10-19T09:42:09.484029316Z",
+        "name": "ops-investigator-workload",
+        "policy": "path \"pki/sign/platform-workload-ops-investigator\" { capabilities = [\"update\"] }",
+        "version": 1
+      }
+    },
+    "ssh/roles/ops-sp07-user": {
+      "status": 404,
+      "data": null
+    },
+    "ssh/roles/ops-sp07-root": {
+      "status": 404,
+      "data": null
+    }
+  },
+  "sshAndInvestigatorUnchanged": true,
+  "apiImageChanged": false
+}

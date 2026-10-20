@@ -1,0 +1,152 @@
+{
+  "execution": {
+    "acknowledgementId": "01a156bd-8c2f-79be-86a2-74234adc59ad",
+    "actionPlanId": null,
+    "actualCommandDigest": "sha256:675994584a961bbbc6ac4753d16030e108c80a1b1daa0c02fbb0382f844bbbd1",
+    "completedAt": "2026-10-20T00:37:09.173662Z",
+    "executionId": "01a156bd-8c47-7ca0-89d0-63661c19d532",
+    "executionProfileId": "d826a5e6-af3a-49e0-8a7e-d177bf545245",
+    "exitCode": 0,
+    "extensions": {
+      "binding": {
+        "digestVersion": "execution-request/v1",
+        "tenantId": "c6c4c65c-91ef-48ff-82df-b108e9b12e2e",
+        "subject": "0f1c2d3e-4a5b-4c6d-8e7f-901234567890",
+        "incidentId": "01a15394-4a06-7a25-af4c-b83369c0567b",
+        "actionPlanId": null,
+        "targetCanonicalId": "k8s+v1://c6c4c65c-91ef-48ff-82df-b108e9b12e2e/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/6b07a039-89ac-4fe2-903a-1e6921ecbc9c",
+        "targetUid": "6b07a039-89ac-4fe2-903a-1e6921ecbc9c",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "namespace": "ops-amd64-unified-r6-20261019",
+        "shell": "bash",
+        "actualCommandDigest": "sha256:675994584a961bbbc6ac4753d16030e108c80a1b1daa0c02fbb0382f844bbbd1",
+        "executionProfileId": "d826a5e6-af3a-49e0-8a7e-d177bf545245",
+        "executionProfileVersion": 1,
+        "executionOptions": {
+          "timeoutSeconds": 120,
+          "maxOutputBytes": 10485760,
+          "workingDirectory": "",
+          "environment": {}
+        },
+        "policyVersion": "01a1538f-64a8-7907-a58d-e225355684d6",
+        "riskAssessmentVersion": "bash-risk/v1-mvdan-3.14.1"
+      },
+      "createdAt": "2026-10-20T00:37:05.224983Z",
+      "executionRequestDigest": "sha256:4956145e07fbe81a8f19c839e440f7e408a4300a0ff07e2ba4e3c653f81cdb22",
+      "outputBytes": 5,
+      "outputComplete": true,
+      "outputFormat": "ordered-mixed-stream/v1",
+      "outputPreviews": {
+        "stderr": {
+          "last": "",
+          "first": "",
+          "encoding": "base64"
+        },
+        "stdout": {
+          "last": "Qm91bmQ=",
+          "first": "Qm91bmQ=",
+          "encoding": "base64"
+        }
+      },
+      "postCheck": "inconclusive",
+      "postCheckApplicability": {
+        "status": "requires_qualified_source",
+        "targetKind": "PersistentVolumeClaim",
+        "recipe": "pvc-csi-failure",
+        "reason": "native_recipe_and_evidence_required"
+      },
+      "postCheckedAt": "2026-10-20T00:37:11.416153Z"
+    },
+    "incidentId": "01a15394-4a06-7a25-af4c-b83369c0567b",
+    "iteration": 1,
+    "outputDigest": "sha256:cad2006c700ff1d907e4e9266bf1509a4083a5dd1c9577307c4a2c29204fe895",
+    "outputTruncated": false,
+    "policyDecisionId": "sha256:9d86718ae95b5f9bcbb50aac6f3c5f7fcc6c820412f781aeffda57b7fe815302",
+    "schemaVersion": "command-execution/v1",
+    "shell": "bash",
+    "startedAt": "2026-10-20T00:37:08.690971Z",
+    "state": "succeeded",
+    "stderrObjectRef": "{\"category\":\"command-output\",\"contentType\":\"application/json\",\"digest\":\"sha256:c3492e3c085be0b22c16464962f9a30da9bea13d6fd64150bdce618e5f3c98f3\",\"etag\":\"\\\"e66366b07e85fb90e683aa938d840869\\\"\",\"key\":\"tenants/a11445e54174c2e93ff53a6a7018485cd2946bddc679618317d8672ca6075070/command-output/01a156bd-8c47-7ca0-89d0-63661c19d532\",\"objectId\":\"01a156bd-8c47-7ca0-89d0-63661c19d532\",\"retainUntil\":\"2027-10-20T00:37:10Z\",\"size\":528,\"tenantId\":\"c6c4c65c-91ef-48ff-82df-b108e9b12e2e\",\"versionId\":\"671fea311bdf969ef47878f5241b6cd0\"}",
+    "stdoutObjectRef": "{\"category\":\"command-output\",\"contentType\":\"application/json\",\"digest\":\"sha256:c3492e3c085be0b22c16464962f9a30da9bea13d6fd64150bdce618e5f3c98f3\",\"etag\":\"\\\"e66366b07e85fb90e683aa938d840869\\\"\",\"key\":\"tenants/a11445e54174c2e93ff53a6a7018485cd2946bddc679618317d8672ca6075070/command-output/01a156bd-8c47-7ca0-89d0-63661c19d532\",\"objectId\":\"01a156bd-8c47-7ca0-89d0-63661c19d532\",\"retainUntil\":\"2027-10-20T00:37:10Z\",\"size\":528,\"tenantId\":\"c6c4c65c-91ef-48ff-82df-b108e9b12e2e\",\"versionId\":\"671fea311bdf969ef47878f5241b6cd0\"}",
+    "subject": "0f1c2d3e-4a5b-4c6d-8e7f-901234567890",
+    "suggestedCommandDigest": null,
+    "suggestionMatch": "not_applicable",
+    "suggestionMatchVersion": "bash-target-v1-mvdan-3.14.1",
+    "tenantId": "c6c4c65c-91ef-48ff-82df-b108e9b12e2e"
+  },
+  "postCheck": null,
+  "commands": [
+    {
+      "operation": "stepup",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-sessions",
+      "status": 201,
+      "responseSHA256": "sha256:b6cd68a29d5c1ed9b25915d8181732365753950e8433ecd5bd4c6c98fc37938d",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-assess",
+      "method": "POST",
+      "path": "/api/v1/commands:risk-assess",
+      "status": 200,
+      "responseSHA256": "sha256:1aa37fb7ba197e7a8ba9c2a89d2aaa235bbe9832d019bdc585c81e467608c098",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-ack",
+      "method": "POST",
+      "path": "/api/v1/commands:risk-acknowledge",
+      "status": 200,
+      "responseSHA256": "sha256:6af4ed3e029fb71dd7e5b670d300a957be6fb7d71599e838495d82586566e3f9",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-execute",
+      "method": "POST",
+      "path": "/api/v1/command-executions",
+      "status": 202,
+      "responseSHA256": "sha256:63003da781f0f14bae835c26a9ba93c558a4a074fb03f05b6173316d4359bc6d",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bd-8c47-7ca0-89d0-63661c19d532",
+      "status": 200,
+      "responseSHA256": "sha256:c38ece95e3393b9e95a7a0773d01391172eeb37b1956dd8fba6cd147490f0ed4",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bd-8c47-7ca0-89d0-63661c19d532",
+      "status": 200,
+      "responseSHA256": "sha256:0a9016e5b440d84feac41e6f456934322b6dea53bf65d29a13fc698a91adb903",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-poll",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bd-8c47-7ca0-89d0-63661c19d532",
+      "status": 200,
+      "responseSHA256": "sha256:9c3bb35d6b85b52ea574dd64b10d0913a77d97aea72f2d85ed7f6a567639aab5",
+      "code": null,
+      "message": ""
+    },
+    {
+      "operation": "base-pvc-read-final",
+      "method": "GET",
+      "path": "/api/v1/command-executions/01a156bd-8c47-7ca0-89d0-63661c19d532",
+      "status": 200,
+      "responseSHA256": "sha256:b83bb5affb858c1671670f14a342ef97062dea37cfef5fb918433a29bf228b33",
+      "code": null,
+      "message": ""
+    }
+  ]
+}
