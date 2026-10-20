@@ -25,7 +25,7 @@ func runBootstrapOIDC(ctx context.Context, args []string, stdout, stderr io.Writ
 	flags := flag.NewFlagSet("opsctl bootstrap oidc-realm", flag.ContinueOnError)
 	flags.SetOutput(stderr)
 	profilePath := flags.String("profile", "", "current resolved Profile")
-	configPath := flags.String("config", "", "explicit OIDC subject/callback JSON")
+	configPath := flags.String("config", "", "explicit OIDC subject/callback JSON; optional subjectId preallocates the ingestion identity")
 	privatePath := flags.String("secrets-file", "", "repository-external private OIDC bootstrap inputs")
 	caPath := flags.String("ca", "", "independent Keycloak public CA")
 	if err := flags.Parse(args); err != nil {

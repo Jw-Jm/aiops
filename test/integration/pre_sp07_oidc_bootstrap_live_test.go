@@ -199,6 +199,9 @@ func freshFormalOIDCLogin(t *testing.T) (keycloak.TokenSet, bootstrap.OIDCInput,
 	if !completed || tokens.ACR != auth.StepUpACRLevel2 || tokens.TenantID != input.TenantID.String() || tokens.AuthTime.IsZero() {
 		t.Fatal("real step-up or tenant claims missing")
 	}
+	if input.SubjectID != "" && tokens.Subject != input.SubjectID {
+		t.Fatal("real login subject differs from the preallocated ingestion identity")
+	}
 	// Runtime tokens and OTP secrets stay only in this external controlled directory.
 	if err := os.WriteFile(filepath.Join(privateDir, "fresh-loa2.token"), []byte(tokens.AccessToken), 0600); err != nil {
 		t.Fatal(err)

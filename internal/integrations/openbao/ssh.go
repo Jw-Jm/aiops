@@ -11,6 +11,24 @@ import (
 
 var sshPrincipal = regexp.MustCompile(`^[a-z_][a-z0-9_-]{0,31}$`)
 
+const commandTransitPolicy = `
+path "transit/encrypt/evidence-archive" { capabilities = ["update"] }
+path "transit/decrypt/evidence-archive" { capabilities = ["update"] }`
+
+const commandSSHPolicy = `
+path "ssh/sign/ops-sp07-user" { capabilities = ["update"] }
+path "ssh/sign/ops-sp07-root" { capabilities = ["update"] }`
+
+// Kubernetes execution needs Transit without granting SSH signing authority.
+func (c *Client) ConfigureCommandExecutionTransit(ctx context.Context) error {
+	for _, name := range []string{"ops-api-workload", "ops-worker-workload"} {
+		if err := c.extendCommandPolicy(ctx, name, runtimePolicies[name]+commandTransitPolicy); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (c *Client) SignSSHCertificate(ctx context.Context, role, publicKey, principal string, ttl time.Duration) (string, error) {
 	if !transitNamePattern.MatchString(role) || !sshPrincipal.MatchString(principal) || ttl <= 0 || ttl > 15*time.Minute || len(publicKey) > 16384 || !strings.HasPrefix(publicKey, "ssh-ed25519 ") || strings.ContainsAny(publicKey, "\r\n") {
 		return "", fmt.Errorf("invalid SSH certificate request")
@@ -49,17 +67,11 @@ func (c *Client) ConfigureCommandExecutionSSH(ctx context.Context, ordinary stri
 	}
 	// Projected API authentication uses the same exact policy already provisioned
 	// for its PKI/signing identity. No signing rights are added to investigators.
-	policy := runtimePolicies["ops-api-workload"] + `
-path "transit/encrypt/evidence-archive" { capabilities = ["update"] }
-path "transit/decrypt/evidence-archive" { capabilities = ["update"] }
-path "ssh/sign/ops-sp07-user" { capabilities = ["update"] }
-path "ssh/sign/ops-sp07-root" { capabilities = ["update"] }`
+	policy := runtimePolicies["ops-api-workload"] + commandTransitPolicy + commandSSHPolicy
 	if err := c.extendCommandPolicy(ctx, "ops-api-workload", policy); err != nil {
 		return err
 	}
-	workerPolicy := runtimePolicies["ops-worker-workload"] + `
-path "transit/encrypt/evidence-archive" { capabilities = ["update"] }
-path "transit/decrypt/evidence-archive" { capabilities = ["update"] }`
+	workerPolicy := runtimePolicies["ops-worker-workload"] + commandTransitPolicy
 	return c.extendCommandPolicy(ctx, "ops-worker-workload", workerPolicy)
 }
 
@@ -69,11 +81,16 @@ func (c *Client) extendCommandPolicy(ctx context.Context, name, desired string) 
 		return err
 	}
 	raw, ok := current.Data["policy"].(string)
-	if !ok || (strings.TrimSpace(raw) != strings.TrimSpace(runtimePolicies[name]) && strings.TrimSpace(raw) != strings.TrimSpace(desired)) {
+	raw = strings.TrimSpace(raw)
+	if !ok {
 		return fmt.Errorf("command policy differs from expected existing scope")
 	}
-	if strings.TrimSpace(raw) == strings.TrimSpace(desired) {
+	// A Transit-only rerun must preserve an explicitly initialized SSH scope.
+	if raw == strings.TrimSpace(desired) || name == "ops-api-workload" && raw == strings.TrimSpace(runtimePolicies[name]+commandTransitPolicy+commandSSHPolicy) {
 		return nil
+	}
+	if raw != strings.TrimSpace(runtimePolicies[name]) && raw != strings.TrimSpace(runtimePolicies[name]+commandTransitPolicy) {
+		return fmt.Errorf("command policy differs from expected existing scope")
 	}
 	if err := c.request(ctx, http.MethodPut, "/v1/sys/policies/acl/"+name, map[string]any{"policy": desired}, nil); err != nil {
 		return err

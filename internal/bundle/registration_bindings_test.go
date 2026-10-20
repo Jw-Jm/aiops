@@ -78,9 +78,9 @@ func TestAPIRegisteredSourceIDsPreserveInstallationScopeAndRejectUnverifiedBindi
 func TestSourceIDTransitionCannotRebindIngestionOrExpandScope(t *testing.T) {
 	d := validBusinessDocument()
 	cluster := object(d, "sp04")["clusters"].([]any)[0].(map[string]any)
-	object(d, "sp05")["ingestionBindings"] = []any{map[string]any{"Tenant": textValue(cluster, "Tenant"), "SourceID": textValue(cluster, "SourceID"), "SourceSystem": "kubernetes", "SourceInstance": "collector"}}
-	// Digest comparisons use the already validated structure; the binding's
-	// exact schema is separately enforced by ReadBusinessValues.
+	binding := map[string]any{"Tenant": textValue(cluster, "Tenant"), "Subject": uuid.NewString(), "SourceID": textValue(cluster, "SourceID"), "RegistrationRevision": 1, "CredentialRevision": 1}
+	object(d, "sp05")["ingestionBindings"] = []any{binding}
+	_ = readBusinessTest(t, d)
 	b := BusinessValues{values: d}
 	before := registeredBusinessInstallationDigest(b)
 	cluster["SourceID"] = uuid.Must(uuid.NewV7()).String()
@@ -91,6 +91,13 @@ func TestSourceIDTransitionCannotRebindIngestionOrExpandScope(t *testing.T) {
 	if registeredBusinessInstallationDigest(b) != before {
 		t.Fatal("consistent registered ID transition rejected")
 	}
+	plannedSubject := binding["Subject"]
+	dependencyDigest := businessInstallationDigest(b)
+	binding["Subject"] = uuid.NewString()
+	if registeredBusinessInstallationDigest(b) == before || businessInstallationDigest(b) == dependencyDigest {
+		t.Fatal("ingestion subject changed across an installation checkpoint")
+	}
+	binding["Subject"] = plannedSubject
 	cluster["ClusterUID"] = "foreign"
 	if registeredBusinessInstallationDigest(b) == before {
 		t.Fatal("cluster scope changed across registration boundary")

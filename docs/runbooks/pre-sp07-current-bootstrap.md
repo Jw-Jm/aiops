@@ -47,6 +47,8 @@ Keycloak 使用单独的 `keycloak` 数据库与 `ops-keycloak-database` 身份�
 
 依赖准备后，以独立 CA 和私有凭据运行 `opsctl bootstrap oidc-realm --profile /secure/current-resolved-profile.yaml --config /secure/oidc-input.json --secrets-file /secure/oidc-private.json --ca /secure/oidc-ca.pem`。公共输入显式给出 schemaVersion、HTTPS callbackURL、tenantId、username、email、firstName、lastName；私有输入给出 bootstrapUsername/bootstrapPassword/clientSecret/subjectPassword。它复用冻结 realm 的 PKCE/LoA 配置，仅设定确切 callback/origin/client credential，通过固定 Keycloak Admin API 创建 realm 和初始主体。真实 OTP enrollment 和 LoA-2 登录仍是首次 Tenant 前置；初始化旧 realm 时拒绝覆盖。冻结 realm 的实际 HTTPS 初始化、重复拒绝、OTP enrollment、PKCE/nonce、LoA-2 和首次 Tenant 的正式 CLI 链路已通过。命名 Keycloak 管理身份及 bootstrap 身份退役已在隔离初始化目标实际完成；当前完整冷装中的同一路径仍待验收。
 
+使用正式 `/api/v2/findings:ingest` binding 时，在 **dependencies 之前**生成一个规范小写、非零 UUID，将同一值写入 OIDC 公共输入的可选 `subjectId` 和 `sp05.ingestionBindings[].Subject`，并预先固定 Tenant、SourceID 及两个 revision。例如 OIDC 输入增加 `"subjectId": "019a0000-0000-7000-8000-000000000001"`，对应 binding 的 `Subject` 使用完全相同的字符串；示例 UUID 应替换为本次安装独立生成的值。其余公共输入与私有文件要求不变，后续仍使用上述正式 bootstrap 命令。初始化器将该用户随新 realm 导入（普通 `POST /users` 不保留指定 ID），再读回校验 ID、用户名、启用状态、确切租户属性及 `CONFIGURE_TOTP`；失败保留现场并拒绝返回成功。未提供 `subjectId` 时保持原有随机主体创建方式。真实 OTP/LoA-2 登录取得的 `sub` 必须再次与预设值一致，正式 RoleBinding 授予所需 cluster/namespace；来源须准入 `finding-envelope/v2`。Source 注册后只按既有语义映射替换 SourceID，不回填或更改 Subject，不编辑 checkpoint，也不放宽摘要校验。此功能需使用包含该变更并完成来源绑定、重签验证的新版 opsctl；旧二进制会拒绝未知输入字段。
+
 命名管理员退役入口分两步，均要求独立 CA、正式 namespace/安装身份、明确 tenant/subject/username 及真实新鲜 RS256、ops-api audience、LoA-2 bearer。管理员公共输入为 schemaVersion=1、tenantId、subject、username；私有输入为 bootstrapUsername、bootstrapPassword、replacementBootstrapPassword。它必须与该安装的临时 Secret 匹配，不能接管其他安装。
 
 ```sh

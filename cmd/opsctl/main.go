@@ -387,7 +387,7 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 		return writeOpenBaoStatus(stdout, status)
 	case "configure-commands":
 		if *executionSSHUser == "" {
-			return errors.New("configure-commands requires --command-ssh-user")
+			return client.ConfigureCommandExecutionTransit(ctx)
 		}
 		return client.ConfigureCommandExecutionSSH(ctx, *executionSSHUser)
 	case "configure":

@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 
 	"github.com/google/uuid"
@@ -22,6 +23,7 @@ type OIDCInput struct {
 	CallbackURL   string    `json:"callbackURL"`
 	ClientMode    string    `json:"clientMode,omitempty"`
 	TenantID      uuid.UUID `json:"tenantId"`
+	SubjectID     string    `json:"subjectId,omitempty"`
 	Username      string    `json:"username"`
 	Email         string    `json:"email"`
 	FirstName     string    `json:"firstName"`
@@ -35,6 +37,12 @@ type OIDCPrivateInput struct {
 }
 
 func (c OIDCInput) Validate(private OIDCPrivateInput) error {
+	if c.SubjectID != "" {
+		id, err := uuid.Parse(c.SubjectID)
+		if err != nil || id == uuid.Nil || id.String() != c.SubjectID {
+			return errors.New("OIDC subjectId must be a canonical nonzero UUID")
+		}
+	}
 	u, err := url.Parse(c.CallbackURL)
 	callback := "/api/v1/auth/callback"
 	if c.ClientMode == "browser-pkce" {
@@ -73,7 +81,17 @@ func BuildOIDCRealm(c OIDCInput, private OIDCPrivateInput) ([]byte, error) {
 			}
 		}
 	}
+	if c.SubjectID != "" {
+		// Realm import preserves user IDs; POST /users generates a new ID.
+		subject := c.initialSubject(private)
+		subject["id"] = c.SubjectID
+		realm["users"] = []any{subject}
+	}
 	return json.Marshal(realm)
+}
+
+func (c OIDCInput) initialSubject(private OIDCPrivateInput) map[string]any {
+	return map[string]any{"username": c.Username, "email": c.Email, "firstName": c.FirstName, "lastName": c.LastName, "enabled": true, "emailVerified": false, "attributes": map[string]any{"tenant_id": []string{c.TenantID.String()}, "tenant_ids": []string{c.TenantID.String()}}, "requiredActions": []string{"CONFIGURE_TOTP"}, "credentials": []any{map[string]any{"type": "password", "value": private.SubjectPassword, "temporary": false}}}
 }
 
 // BootstrapOIDC uses only fixed Keycloak administrative endpoints to initialize
@@ -104,7 +122,7 @@ func BootstrapOIDC(ctx context.Context, client *http.Client, base string, c OIDC
 	if response.StatusCode != 200 || readErr != nil || len(raw) > 64<<10 || json.Unmarshal(raw, &token) != nil || token.AccessToken == "" {
 		return "", errors.New("Keycloak bootstrap authentication rejected")
 	}
-	call := func(method, path string, body []byte) (int, string, error) {
+	call := func(method, path string, body []byte, result any) (int, string, error) {
 		request, _ := http.NewRequestWithContext(ctx, method, base+path, bytes.NewReader(body))
 		request.Header.Set("Authorization", "Bearer "+token.AccessToken)
 		request.Header.Set("Content-Type", "application/json")
@@ -113,19 +131,39 @@ func BootstrapOIDC(ctx context.Context, client *http.Client, base string, c OIDC
 			return 0, "", errors.New("Keycloak bootstrap request failed")
 		}
 		defer response.Body.Close()
+		if result != nil && response.StatusCode == http.StatusOK {
+			raw, err := io.ReadAll(io.LimitReader(response.Body, (64<<10)+1))
+			if err != nil || len(raw) > 64<<10 || json.Unmarshal(raw, result) != nil {
+				return 0, "", errors.New("Keycloak bootstrap response invalid")
+			}
+		}
 		// Administrative error bodies may contain credentials and are not logged.
 		return response.StatusCode, response.Header.Get("Location"), nil
 	}
-	status, _, err := call("GET", "/admin/realms/ops", nil)
+	status, _, err := call("GET", "/admin/realms/ops", nil, nil)
 	if err != nil || status != 404 {
 		return "", errors.New("OIDC bootstrap refuses an existing or inaccessible ops realm")
 	}
-	status, _, err = call("POST", "/admin/realms", realm)
+	status, _, err = call("POST", "/admin/realms", realm, nil)
 	if err != nil || status != 201 {
 		return "", errors.New("OIDC realm initialization rejected")
 	}
-	subject, _ := json.Marshal(map[string]any{"username": c.Username, "email": c.Email, "firstName": c.FirstName, "lastName": c.LastName, "enabled": true, "emailVerified": false, "attributes": map[string]any{"tenant_id": []string{c.TenantID.String()}, "tenant_ids": []string{c.TenantID.String()}}, "requiredActions": []string{"CONFIGURE_TOTP"}, "credentials": []any{map[string]any{"type": "password", "value": private.SubjectPassword, "temporary": false}}})
-	status, location, err := call("POST", "/admin/realms/ops/users", subject)
+	if c.SubjectID != "" {
+		var user struct {
+			ID, Username    string
+			Enabled         bool
+			Attributes      map[string][]string
+			RequiredActions []string
+		}
+		status, _, err := call("GET", "/admin/realms/ops/users/"+c.SubjectID, nil, &user)
+		tenant := []string{c.TenantID.String()}
+		if err != nil || status != http.StatusOK || user.ID != c.SubjectID || user.Username != c.Username || !user.Enabled || !slices.Equal(user.Attributes["tenant_id"], tenant) || !slices.Equal(user.Attributes["tenant_ids"], tenant) || !slices.Contains(user.RequiredActions, "CONFIGURE_TOTP") {
+			return "", errors.New("BOOTSTRAP_PARTIAL_REALM_RETAINED: imported OIDC subject verification failed")
+		}
+		return c.SubjectID, nil
+	}
+	subject, _ := json.Marshal(c.initialSubject(private))
+	status, location, err := call("POST", "/admin/realms/ops/users", subject, nil)
 	if err != nil || status != 201 {
 		return "", errors.New("BOOTSTRAP_PARTIAL_REALM_RETAINED: initial OIDC subject creation rejected")
 	}
