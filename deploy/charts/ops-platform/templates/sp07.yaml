@@ -96,6 +96,13 @@ spec:
           podSelector: {matchLabels: {k8s-app: kube-dns}}
       ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]
     {{- if has .type (list "k8s_namespace" "k8s_cluster") }}
+    {{- if eq .type "k8s_namespace" }}
+    # A namespace execution profile may only reach the dedicated verification
+    # endpoints: pods in this installation that explicitly carry the probe label,
+    # on the fixed probe port. Business targets and the API remain untouched.
+    - to: [{podSelector: {matchLabels: {ops.platform.io/verification-probe: "true"}}}]
+      ports: [{protocol: TCP, port: 8080}]
+    {{- end }}
     {{- range $.Values.sp04.kubernetesAPI.cidrs }}
     - to: [{ipBlock: {cidr: {{ . | quote }}}}]
       ports: [{protocol: TCP, port: {{ $.Values.sp04.kubernetesAPI.port }}}]
