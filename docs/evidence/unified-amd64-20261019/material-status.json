@@ -15,7 +15,7 @@
   "releaseAdmitted": false,
   "installerSourceCommit": "9ade735",
   "toolsBundle": {
-    "id": "unified-amd64-installer-20261019-r10",
+    "id": "unified-amd64-installer-20261019-r11",
     "signed": true,
     "previousTrustedInstallerVerification": "PASS",
     "independentOpenSSLSignature": "PASS"
@@ -32,7 +32,11 @@
       "platform-worker": "sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad",
       "reason": "the Runner workload CA fix and the assistant-disabled guard live in the runtime binaries; a chart-only change left r9 at SP07 configuration invalid"
     },
-    "unchangedMaterials": 34
+    "unchangedMaterials": 34,
+    "supersededBy": {
+      "id": "unified-amd64-20261019-r11",
+      "note": "r11 carries the OpenBao init outcome fix in the installer and docs only; runtime images and chart are byte-identical to r10, so the r10 installation remains the verified runtime"
+    }
   },
   "fixedRuntimeDefects": {
     "assistantDisabledPanic": "internal/app/sp06_runtime.go:347 nil Profile dereference, fixed in 04cae43",
@@ -56,8 +60,8 @@
     "probeVolumeSubPath": "pvc_read_write needs a writable .ops-verification directory (uid 65532); documented as a fixed preparation step in the SP07 runbook"
   },
   "environmentState": {
-    "current": "ops-amd64-unified-r10-20261019 (13 workloads Running)",
-    "scaledToZeroDataRetained": [
+    "current": "ops-amd64-unified-r10-20261019 (13 workloads Running); r10 targets namespace retained",
+    "reclaimed": [
       "ops-amd64-unified-20261019",
       "ops-amd64-unified-r3-20261019",
       "ops-amd64-unified-r4-20261019",
@@ -65,6 +69,7 @@
       "ops-amd64-unified-r7-20261019",
       "ops-amd64-unified-r9-20261019"
     ],
+    "reclaimedNote": "namespaces, dedicated PVs and their host data directories removed after the r10 evidence was archived; no pre-existing service, data or volume was touched",
     "existingEnvironmentsUntouched": "core/final/assistant environments were never modified"
   },
   "nextRequired": [
