@@ -27,6 +27,10 @@ const (
 var (
 	ErrAlreadyInitialized = errors.New("OPENBAO_ALREADY_INITIALIZED")
 	ErrSealed             = errors.New("OPENBAO_SEALED")
+	// ErrRecoveryUnavailable means the server reports an initialized instance for
+	// which no recovery material was received. The dedicated volume has to be
+	// reset; retrying initialization cannot recover it.
+	ErrRecoveryUnavailable = errors.New("OPENBAO_RECOVERY_UNAVAILABLE")
 	ErrConfigurationDrift = errors.New("OPENBAO_CONFIGURATION_DRIFT")
 	ErrNoDefaultIssuer    = errors.New("OPENBAO_PKI_DEFAULT_ISSUER_MISSING")
 )

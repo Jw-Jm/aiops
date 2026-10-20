@@ -51,8 +51,23 @@ func (c *Client) Initialize(ctx context.Context, recoveryFile string) error {
 	if err := validateExternalPath(recoveryFile, c.repositoryRoot, c.bundleDirectory); err != nil {
 		return fmt.Errorf("recovery material path: %w", err)
 	}
-	if _, err := os.Lstat(recoveryFile); err == nil {
-		return errors.New("recovery material file already exists; refusing to overwrite it")
+	if info, err := os.Lstat(recoveryFile); err == nil {
+		if info.Size() > 0 {
+			return errors.New("recovery material file already exists; refusing to overwrite it")
+		}
+		// A zero-byte file is the residue of an initialization whose response was
+		// lost. It is only safe to discard once the server itself reports an
+		// uninitialized instance; otherwise the shares are gone for good.
+		seal, sealErr := c.readSealStatus(ctx)
+		if sealErr != nil {
+			return fmt.Errorf("inspect OpenBao state before discarding an empty recovery file: %w", sealErr)
+		}
+		if seal.Initialized {
+			return fmt.Errorf("%w: an initialized instance has no recovery material; reset the dedicated volume before initializing again (%s)", ErrRecoveryUnavailable, recoveryFile)
+		}
+		if err := os.Remove(recoveryFile); err != nil {
+			return fmt.Errorf("replace the empty recovery material file: %w", err)
+		}
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf("inspect recovery material path: %w", err)
 	}
@@ -91,7 +106,14 @@ func (c *Client) Initialize(ctx context.Context, recoveryFile string) error {
 				return ErrAlreadyInitialized
 			}
 		}
-		return fmt.Errorf("OPENBAO_INIT_OUTCOME_UNCERTAIN: reserved recovery path %q; inspect OpenBao state before retrying", recoveryFile)
+		// The initialization request failed after the server may already have
+		// committed state. Never leave an empty recovery file behind: decide from
+		// the server itself, so a retry is either clean or clearly impossible.
+		_ = os.Remove(recoveryFile)
+		if state, stateErr := c.readSealStatus(ctx); stateErr == nil && state.Initialized {
+			return fmt.Errorf("%w: OpenBao committed initialization but no recovery material was received (%s); reset the dedicated volume before initializing again", ErrRecoveryUnavailable, recoveryFile)
+		}
+		return fmt.Errorf("OPENBAO_INIT_OUTCOME_UNCERTAIN: no recovery material was received and the instance still reports uninitialized; retrying initialization is safe")
 	}
 	if len(response.Shares) != initKeyShares || response.RootToken == "" {
 		return errors.New("OPENBAO_INIT_RESPONSE_INVALID: initialization response did not contain the expected recovery material")

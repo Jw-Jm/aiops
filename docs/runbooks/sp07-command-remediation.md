@@ -19,6 +19,10 @@
 
 Runner 的工作负载 CA 不再由操作者提供。`sp07.workloadCABundle` 已弃用并被忽略（Schema 保留字段仅为兼容，不再必填）；Runner 的 trust 卷改为 projected：`runner.json`/`openbao-ca.pem` 取自 `ops-command-runner-trust`，`workload-ca.pem` 直接投影自 API 使用的身份 Secret（`sp04.apiIdentitySecret`，键 `ca.pem`）。这样 CA 与 API 服务端证书必然一致，也避免了新装时 PKI 根尚未生成、无法提前填写的问题。OpenBao HTTPS bootstrap CA 仍只用于 `openbao-ca.pem`。若历史安装执行停在 `execution_unknown` 且报 `RUNNER_IDENTITY_UNAVAILABLE`，修正后先核对 claim/目标事实，再重新评估、确认并创建独立执行；不得重放旧执行。
 
+### 探测卷的固定前置
+
+`pvc_read_write` 由运行器以 uid 65532 在挂载点内的 `.ops-verification` 子目录读写，因此该目录必须存在且可写。专属探测卷准备时须先创建它（例如以 root 一次性 Pod 执行 `mkdir -p /mnt/probe/.ops-verification && chmod 0777 /mnt/probe /mnt/probe/.ops-verification`）。缺失时会得到 `probe_unavailable` / `inconclusive`，这不是连通性缺陷，也不能据此宣称通过；不得改用业务卷充当探测卷。
+
 ## 接入 Linux 主机和 Profile
 
 目标必须是任务专属隔离 Linux 环境。先独立核验 host key、SSH CA 公钥和 `TrustedUserCAKeys`、principal 到本地账户映射、普通用户/root/sudo 边界。不能关闭 host key 校验，不能把共享宿主机当隔离目标。锁定 transport 的远端解释器为 `/usr/bin/python3`，接入时须核验其存在并指向真实受审 Python。
