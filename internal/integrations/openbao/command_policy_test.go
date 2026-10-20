@@ -76,3 +76,58 @@ func TestCommandTransitInitializationScopeAndRerun(t *testing.T) {
 		})
 	}
 }
+
+// TestConfigureAcceptsAnAlreadyExtendedCommandPolicy pins that re-running the
+// standard OpenBao configuration after Transit or explicit SSH provisioning does
+// not report least-privilege drift, while an unknown extension still fails.
+func TestConfigureAcceptsAnAlreadyExtendedCommandPolicy(t *testing.T) {
+	for _, scope := range []string{"base", "transit", "ssh", "drift"} {
+		t.Run(scope, func(t *testing.T) {
+			current := map[string]string{}
+			for name := range runtimePolicies {
+				current[name] = runtimePolicies[name]
+			}
+			if scope != "base" {
+				current["ops-api-workload"] += commandTransitPolicy
+				current["ops-worker-workload"] += commandTransitPolicy
+			}
+			if scope == "ssh" {
+				current["ops-api-workload"] += commandSSHPolicy
+			}
+			if scope == "drift" {
+				current["ops-worker-workload"] += `path "secret/*" { capabilities = ["read"] }`
+			}
+			writes := 0
+			ca, key := makeTestCA(t)
+			server, client := newPKITestServer(t, ca, key, func(w http.ResponseWriter, r *http.Request) {
+				name := strings.TrimPrefix(r.URL.Path, "/v1/sys/policies/acl/")
+				policy, ok := current[name]
+				if !ok {
+					t.Errorf("unexpected request: %s %s", r.Method, r.URL.Path)
+					http.NotFound(w, r)
+					return
+				}
+				if r.Method == http.MethodPut {
+					writes++
+				}
+				writeJSON(w, map[string]any{"data": map[string]any{"policy": policy}})
+			})
+			defer server.Close()
+			for name, policy := range runtimePolicies {
+				err := client.ensurePolicy(context.Background(), name, policy)
+				if scope == "drift" && name == "ops-worker-workload" {
+					if err == nil {
+						t.Fatal("unknown policy extension accepted")
+					}
+					continue
+				}
+				if err != nil {
+					t.Fatalf("%s: %v", name, err)
+				}
+			}
+			if writes != 0 {
+				t.Fatalf("idempotent configure rewrote %d policies", writes)
+			}
+		})
+	}
+}

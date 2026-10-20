@@ -578,7 +578,7 @@ func (c *Client) ensurePolicy(ctx context.Context, name, policy string) error {
 		}
 		return err
 	}
-	if response.Data["policy"] != policy {
+	if current, _ := response.Data["policy"].(string); !allowsCommandPolicy(name, current, policy) {
 		return fmt.Errorf("%w: ACL policy %s differs from the least-privilege policy", ErrConfigurationDrift, name)
 	}
 	return nil
@@ -690,7 +690,7 @@ func (c *Client) verifyConfiguration(ctx context.Context) error {
 		if err := c.request(ctx, http.MethodGet, "/v1/sys/policies/acl/"+name, nil, &response); err != nil {
 			return asDriftIfNotFound(err, "runtime ACL policy is missing")
 		}
-		if response.Data["policy"] != policy {
+		if current, _ := response.Data["policy"].(string); !allowsCommandPolicy(name, current, policy) {
 			return fmt.Errorf("%w: ACL policy %s has drifted", ErrConfigurationDrift, name)
 		}
 	}

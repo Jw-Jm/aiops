@@ -19,6 +19,32 @@ const commandSSHPolicy = `
 path "ssh/sign/ops-sp07-user" { capabilities = ["update"] }
 path "ssh/sign/ops-sp07-root" { capabilities = ["update"] }`
 
+// commandPolicyScopes lists the exact ACL variants a runtime workload policy may
+// hold on top of the least-privilege baseline: the Transit extension required by
+// Kubernetes execution and, for the API workload only, the explicit SSH
+// extension. Re-running "configure" after either extension must stay idempotent
+// instead of reporting drift against the bare baseline.
+func commandPolicyScopes(name, policy string) []string {
+	scopes := []string{strings.TrimSpace(policy)}
+	switch name {
+	case "ops-api-workload":
+		scopes = append(scopes, strings.TrimSpace(policy+commandTransitPolicy),
+			strings.TrimSpace(policy+commandTransitPolicy+commandSSHPolicy))
+	case "ops-worker-workload":
+		scopes = append(scopes, strings.TrimSpace(policy+commandTransitPolicy))
+	}
+	return scopes
+}
+
+func allowsCommandPolicy(name, current, policy string) bool {
+	for _, scope := range commandPolicyScopes(name, policy) {
+		if strings.TrimSpace(current) == scope {
+			return true
+		}
+	}
+	return false
+}
+
 // Kubernetes execution needs Transit without granting SSH signing authority.
 func (c *Client) ConfigureCommandExecutionTransit(ctx context.Context) error {
 	for _, name := range []string{"ops-api-workload", "ops-worker-workload"} {
