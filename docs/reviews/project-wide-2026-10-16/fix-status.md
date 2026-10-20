@@ -106,3 +106,7 @@ PWR-002 的真实标签切换与重新进入来源范围仍待集群验收；PWR
 - **arm64 的 native 前滚迁移未在本环境执行**：隔离验证主机为 x86_64 且未注册 aarch64 binfmt/QEMU，本机为 darwin/arm64 且本轮不使用本机容器。已完成的等效证据（归档离线重建复现同一二进制、两个架构同一份迁移 SQL、amd64 native 前滚通过）见 `docs/evidence/pwr004-migration-renew-20261016/forward-migration-arm64.json`。
 - `make check` 的 `test-unit` 目标在无环境主机上仍失败：`go test ./...` 会执行 `test/integration` 的 live gate（要求真实 PostgreSQL/SeaweedFS/K8sGPT 前置），这些用例设计为 fail-closed 而非 skip。本轮在远程真实环境用 35 个用例覆盖了该集合的核心部分，其余 live gate 仍需各自环境。
 - 上一节“四、本轮验证回执”中的动态验收缺口（五来源联合验收、离线 Bundle 重建/干净重装、真实模型调用、BMC 轮换、浏览器交互）状态不变。
+
+### 三、历史复现探针状态（2026-10-17 复审）
+
+`docs/reviews/2026-10-15-project-review/_probes/review_test.go` 是审查轮的缺陷复现探针，其语义是“缺陷存在即 PASS”。复审确认该文件当前**无法编译**：PWR-002 的修复把 `resourcestore.SyncSnapshot` 从 8 个参数改为 9 个（增加完整原生快照），探针第 145 行仍按旧签名调用，`go vet` 报 `not enough arguments in call to SyncSnapshot`。因此它既不能作为复现入口，也不能被读成“探针通过”；原文保留不动，修复后的行为改由下列测试覆盖：`internal/analytics/cost_test.go`（PWR-001 展开成本）、`internal/resourcestore/sync_snapshot_test.go`（PWR-002 过滤≠删除）、`internal/resourcestore/reconcile_test.go` 与远程真实 PostgreSQL 的 `TestSP04IdentityConflictFindingAndTerminalTombstone`（PWR-006）、`internal/modelprofile` 及真实 PostgreSQL 的 Profile 预留用例（PWR-003）。
