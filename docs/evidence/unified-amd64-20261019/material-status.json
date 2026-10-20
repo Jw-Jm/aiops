@@ -1,79 +1,74 @@
 {
-  "runtimeSourceCommit": "04cae431c50d98f175a826623f130287eb35f7da",
-  "runtimeSourceCommitPrevious": "1a7c7da4af7d74d80df0df0aec72868cbe2785cc",
-  "chartFixCommit": "ae82c80df15b6fb531c03d801b3cbb2eecc04b54",
+  "runtimeSourceCommit": "53bae79",
+  "runtimeSourceCommitHistory": [
+    "1a7c7da4af7d74d80df0df0aec72868cbe2785cc",
+    "04cae431c50d98f175a826623f130287eb35f7da",
+    "4df038e",
+    "53bae79"
+  ],
   "architecture": "linux/amd64",
-  "OCI": "FIVE_BUILT",
+  "OCI": "REBUILT_FOR_STRUCTURAL_FIX",
   "nativeMaterialTests": "PASS_BOUNDED_SCOPE",
-  "bundle": "BUILT_AND_SIGNED_R4",
-  "installation": "THREE_STAGE_PASS_ON_R4",
-  "realProbe": "NOT_RUN",
+  "bundle": "BUILT_AND_SIGNED_R10",
+  "installation": "THREE_STAGE_PASS_NO_MANUAL_PATCH",
+  "realProbe": "TCP_HTTP_PVC_ALL_RESOLVED",
   "releaseAdmitted": false,
-  "remotePerformanceFixes": false,
   "installerSourceCommit": "9ade735",
   "toolsBundle": {
-    "id": "unified-amd64-installer-20261019-r4",
+    "id": "unified-amd64-installer-20261019-r10",
     "signed": true,
     "previousTrustedInstallerVerification": "PASS",
-    "independentOpenSSLSignature": "PASS",
-    "executableSHA256": "sha256:c7d2dcaee95d1f9caddd50c2eceb664c9aa5a601bd2a4c5ed60a6c497efe28c0"
+    "independentOpenSSLSignature": "PASS"
   },
   "runtimeBundle": {
-    "id": "unified-amd64-20261019-r4",
+    "id": "unified-amd64-20261019-r10",
     "builtAndSigned": true,
     "builderSelfVerification": "PASS",
     "independentOpenSSLSignature": "PASS",
     "independentFullPayloadVerification": "PASS",
     "verificationAcceptance": "PASS",
-    "changedMaterialsVersusR2": [
-      "platform-api (assistant-disabled wiring fix, source 04cae43)",
-      "opsctl-source (corresponding platform source archive)",
-      "ops-platform-chart (Web OIDC CA mount fix, source ae82c80)"
-    ],
-    "unchangedMaterials": 33
-  },
-  "targetPreflight": {
-    "hostRecovery": "host rebooted by operator; WiFi interface renamed wlp3s0->wlp4s0 and lost the node address; netplan/NetworkManager match repaired with backups, kubelet restarted",
-    "storageProvisioner": "kubernetes.io/no-provisioner",
-    "dedicatedStorage": "created per installation with deterministic claimRef binding; existing PV/PVC/data untouched",
-    "deploymentStarted": true,
-    "namespaceOrPVCreated": true,
-    "existingServicesReplaced": false
-  },
-  "highLoadRootCause": {
-    "primary": "install/bundle-import extract the whole 8.9 GB payload into $TMPDIR; /tmp is a 7.5 GiB RAM-backed tmpfs, so the first import exhausted memory and made the host unresponsive",
-    "mitigation": "TMPDIR pointed at a disk-backed directory for every bundle operation; no timeout, memory or gate relaxation",
-    "secondary": "kubelet node.status.images reported only 50 images so the 5.1 MiB platform-web digest was invisible to the offline admission check; nodeStatusMaxImages raised to 200 without changing digest verification"
-  },
-  "runtimeDefectsFound": {
-    "assistantDisabledPanic": {
-      "file": "internal/app/sp06_runtime.go",
-      "fixedIn": "04cae43",
-      "evidence": "api-crash.log, sp06-runtime-config.json, assistant-disabled-runtime-defect.json"
+    "imagesRebuilt": {
+      "platform-api": "sha256:494817ba463482a5959c1c3e10968b3e28db1affc458dbdbe2cec0be5d4878a7",
+      "platform-worker": "sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad",
+      "reason": "the Runner workload CA fix and the assistant-disabled guard live in the runtime binaries; a chart-only change left r9 at SP07 configuration invalid"
     },
-    "webOidcMount": {
-      "file": "deploy/charts/ops-platform/templates/sp08.yaml",
-      "fixedIn": "ae82c80",
-      "evidence": "nginx refused to start because a ConfigMap file subPath was mounted inside the read-only TLS Secret volume"
-    }
+    "unchangedMaterials": 34
+  },
+  "fixedRuntimeDefects": {
+    "assistantDisabledPanic": "internal/app/sp06_runtime.go:347 nil Profile dereference, fixed in 04cae43",
+    "webOidcMount": "OIDC CA file subPath inside the read-only TLS Secret volume, fixed in ae82c80",
+    "commandTransitPermissions": "openbao configure now provisions the evidence-archive Transit paths, fixed in 21e301b and made idempotent in 53bae79",
+    "runnerWorkloadCA": "projected from the API identity Secret instead of an operator-supplied value, fixed in 4df038e",
+    "verificationProbeEgress": "runner may reach only probe-labelled pods on TCP 8080, fixed in e5615d3",
+    "oidcSubjectDeclaration": "realm import can pin the subject id so ingestion bindings are declarable before installation, fixed in fd5ee69"
   },
   "verificationOutcome": {
-    "webLogin": "PASS (real PKCE + TOTP through the nginx /oidc proxy, acr=urn:ops:loa:2, authenticated API 201, unauthenticated 401)",
-    "assistantFaultChain": "NOT_RUN (no admitted assistant model profile exists; audit report is FAIL/NOT_ADMITTED with unfilled human review and fabricating admission is prohibited)",
-    "executionProbes": "NOT_RUN (no incident exists; the graph holds 46 resources but neither the dedicated Service nor the PVC because the registered source namespace scope is the targets namespace only, and PVC verification requires the installation namespace)",
-    "postCheck": "NOT_RUN"
+    "webLogin": "PASS on r10 (index, runtime-config, discovery via proxy, real PKCE + TOTP with acr=urn:ops:loa:2, authenticated API 201, unauthenticated 401)",
+    "findingIngestion": "PASS (binding subject honoured, POST /api/v2/findings:ingest 200, correlator created the incident)",
+    "commandExecution": "PASS (base executions succeeded with exit 0)",
+    "tcpVerification": "resolved / tcp_connected",
+    "httpVerification": "resolved / http_assertions_met (200)",
+    "pvcReadWriteVerification": "resolved / read_write_verified / cleanup=true",
+    "assistantFaultChain": "NOT_RUN (no admitted assistant model profile exists; the only report is FAIL/NOT_ADMITTED with an unfilled human review; fabricating admission is prohibited)"
+  },
+  "knownOperationalIssues": {
+    "openbaoInitResponseLoss": "observed on every first initialization of a fresh volume: the server reports initialized while the client receives no shares, leaving the instance unsealable. The CLI now distinguishes 'retryable' from 'reset the dedicated volume' instead of leaving a zero-byte recovery file.",
+    "probeVolumeSubPath": "pvc_read_write needs a writable .ops-verification directory (uid 65532); documented as a fixed preparation step in the SP07 runbook"
+  },
+  "environmentState": {
+    "current": "ops-amd64-unified-r10-20261019 (13 workloads Running)",
+    "scaledToZeroDataRetained": [
+      "ops-amd64-unified-20261019",
+      "ops-amd64-unified-r3-20261019",
+      "ops-amd64-unified-r4-20261019",
+      "ops-amd64-unified-r6-20261019",
+      "ops-amd64-unified-r7-20261019",
+      "ops-amd64-unified-r9-20261019"
+    ],
+    "existingEnvironmentsUntouched": "core/final/assistant environments were never modified"
   },
   "nextRequired": [
-    "register the installation namespace in the Kubernetes source scope when PVC verification is required, and obtain a real incident (finding ingestion or analyzer output) before executing commands",
-    "supply an admitted assistant model profile only from a real, human-reviewed evaluation; never fabricate admission",
-    "keep production release, ARM64, KubeVirt/CDI, Trace and PyRCA out of scope"
-  ],
-  "localValidation": {
-    "goBootstrapAndBundleTests": "PASS",
-    "supplychainAndBundleAdmissionTests": "PASS",
-    "generatedAndSourceAndDeliveryChecks": "PASS",
-    "affectedGoVet": "PASS",
-    "deliveryBaselineAfterSignedCandidateUpdate": "PASS",
-    "newRegressionTest": "internal/app/sp06_assistant_wiring_test.go PASS"
-  }
+    "a real human-reviewed evaluation must produce an admitted assistant model profile before the assistant and fault chain can run",
+    "production release, ARM64, KubeVirt/CDI, Trace and PyRCA remain out of scope"
+  ]
 }
