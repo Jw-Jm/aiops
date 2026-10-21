@@ -1,0 +1,40 @@
+﻿task_id,phase,name,depends_on,owner_role,code_targets,work,deliverables,acceptance,status,estimate
+P0-01,P0,固定代码设计与运行基准,,技术负责人,docs/plans;web/src;api/openapi,核对当前 commit/tree、工作区、设计包和实际运行制品；保存已有未提交变更归属,基准及范围记录,代码/设计/运行三种版本分开；不操作共享实例,待实施,P0 核实后估算
+P0-02,P0,逐切片能力核实,P0-01,前后端联合,internal/httpapi;internal/app;web/src;api/openapi;migrations,沿接口、处理器、服务、存储、Worker 和调用方确认 458 个状态；更新适配/新增裁决,完整映射与缺口清单,458 项唯一覆盖，复合状态有主责任，缺口可定位,待实施,P0 核实后估算
+P0-03,P0,合同与补充交互决策,P0-02,技术负责人,api/openapi;api/schemas;internal/modelprofile;internal/auth,确定账号主体保留、观测查询、模型准入/路由、调查预算、再次验证及取消语义,ADR 草案和状态合同、必要补充状态,不降低既有保证；拟定与已有区分；不增加不必要用户配置字段,待实施,P0 核实后估算
+P0-04,P0,独立环境与测试数据准备,P0-01,运行验证负责人,docs/evidence;test/integration;web/tests,只读核对既有远程环境，规划专属身份、来源、数据、端口和受限证据目录,环境及数据清单,正式运行仅在获准独立环境，实际加载版本可核对,待实施,P0 核实后估算
+P1-01,P1,设计令牌及公共控件,P0-03,前端,web/src/components;web/src/design;web/src/styles.css,迁移布局、字体、颜色、SVG、表单表格、弹窗抽屉及嵌套浮层,公共组件与视觉用例,等效尺寸与样式；长内容、滚动、焦点、错误和禁用可复用,待实施,P0 核实后估算
+P1-02,P1,导航路由与集群上下文,P1-01,前端,web/src/app/router.tsx;web/src/layout/AppShell.tsx,实现 22 菜单、旧链接映射、运维与配置集群分离、侧栏滚动和草稿保护,路由与上下文,同名资源不串范围；旧链接保留对象，未知范围不静默扩大,待实施,P0 核实后估算
+P1-03,P1,请求缓存与流式事件,P0-03,前端及后端,web/src/api;web/src/auth;web/src/api/sse-reader.ts,接入原生会话、CSRF、现有幂等/错误包络，授权版本缓存和迟到响应保护,请求层及定向测试,退出撤权断流清缓存；旧结果不可覆盖新账号/集群；生成客户端一致,待实施,P0 核实后估算
+P1-04,P1,建立全分辨率视觉基准,P1-01;P0-04,前端验证,web/tests;web/package.json,在固定远程浏览器环境由原始切片渲染黄金图并建立状态定位,基准截图与参数化视觉入口,不用缩略 PNG，不以新实现自生成黄金图；浮层和长页面完整,待实施,P0 核实后估算
+P2-01,P2,原生账号数据与首次初始化,P0-03,后端,internal/auth;internal/persistence;migrations;cmd/opsctl,实现用户、凭据、会话、主体映射的前滚迁移及受限首管理员初始化,迁移、初始化入口与测试,无生产默认密码；重复初始化拒绝；认证查找权限受限,待实施,P0 核实后估算
+P2-02,P2,原生登录与会话恢复,P2-01;P1-03,后端及前端,internal/auth;internal/httpapi/foundation.go;internal/app/api_runtime.go;web/src/auth,登录退出、首次/本人改密、cookie 会话、过期/撤销并接回现有 RequestContext,原生认证主链,正确权限上下文；CSRF/过期/改密失效；不接受客户端自授角色,待实施,P0 核实后估算
+P2-03,P2,内置再次验证与操作绑定,P2-02,后端及前端,internal/auth/stepup.go;internal/action;web/src/auth/StepUpControl.tsx,实现内置验证方式、必要多因素、恢复和挑战状态；替换外部会话耦合,再次验证合同和补充界面,保持认证强度、绝对/空闲过期、撤销、命令绑定和事务内重检,待实施,P0 核实后估算
+P2-04,P2,用户授权与历史主体保留,P2-02;P2-03,后端及前端,internal/tenant;internal/httpapi/tenant_handlers.go;web/src/pages/admin;migrations,创建/编辑/启停/重置/撤销、角色范围与最后管理员保护；保留既有主体,用户与权限页面及迁移核对,同名不继承权限；旧个人会话、调查、执行、审计归属正确；双角色独立,待实施,P0 核实后估算
+P2-05,P2,全栈认证切换与冷启动,P2-03;P2-04;P0-04,后端及运行验证,internal/app;internal/bundle;cmd/opsctl;deploy/charts/ops-platform;services/investigator,同步 API/Worker/Web/CLI/安装校验，删除目标安装旧身份依赖并演练,匹配版本集合与切换记录,无旧身份服务冷启动；旧会话失效；按写入边界回退，不倒退撤销状态,待实施,P0 核实后估算
+P3-01,P3,总览与资源图真实接入,P2-05;P1-02,前端及后端,web/src/pages/OverviewPage.tsx;web/src/pages/ResourcesPage.tsx;web/src/pages/ResourceDetailPage.tsx;web/src/features/graph;internal/httpapi/resource_handlers.go,重构总览、目录、详情、图、对比、筛选及来源追溯,资源和总览闭环,服务端授权聚合；规范标识/UID正确；图节点与详情跳转一致,待实施,P0 核实后估算
+P3-02,P3,受控观测查询服务,P2-05;P0-03,后端,internal/analytics;internal/evidence;internal/httpapi/resource_handlers.go;internal/app/assistant_analysis.go;migrations,复用受控查询，补独立结果合同、权限、预算、个人查询历史及生命周期,观测 API、持久化与测试,手动查询不建立假 AI 会话；统计来自真实总体；资格和读取重检,待实施,P0 核实后估算
+P3-03,P3,日志工作台完整状态,P3-02;P1-02;P1-04,前端,web/src/pages;web/src/features;web/src/api,实现 SL-049 同组输入/加载/结果/空态、字段/原文、筛选和历史,日志页面及交互用例,固定设计 1:1；范围切换失效；样例数量不当总量，时间桶有真实口径,待实施,P0 核实后估算
+P3-04,P3,首条全栈样板验收,P3-01;P3-03;P0-04,运行验证负责人,test/integration;web/tests;docs/evidence,贯通登录、两个集群、同名资源、明确来源、查询与历史，验证撤权迟到响应,样板验收证据,真实 API/DB/来源可核对；无跨范围数据；加载和实际回执对应,待实施,P0 核实后估算
+P4-01,P4,指标网络硬件观测,P3-04,前端及后端,internal/analytics;internal/evidence;internal/integrations;web/src/features;web/src/pages,补指标视图、缺失采样、网络摘要关联、硬件声明/实测/接入状态及监控视图,其余三类观测与公共查询组件,单位/覆盖/缺失正确；未采样不伪造；不用完整 Trace 冒充网络统计,待实施,P0 核实后估算
+P4-02,P4,业务服务与责任归属,P3-04,后端及前端,internal/resource;internal/httpapi;web/src/pages;migrations,新增业务服务与稳定资源引用、责任成员和查看编辑,归属 API 与页面,与 K8s Service 区分；删除重建资源不误绑；成员选择受限,待实施,P0 核实后估算
+P4-03,P4,当前历史告警接入,P3-04,前端及后端,internal/httpapi/sp05_handlers.go;internal/inspection;web/src/pages/FindingsPage.tsx,将已有 Finding 生命周期适配为当前/历史告警及详情来源、筛选导出,告警页面与投影合同,不复制冲突事实；发生恢复观测时间分开；跨集群拒绝,待实施,P0 核实后估算
+P4-04,P4,故障协作及关联修正,P4-03,后端及前端,internal/httpapi/sp05_handlers.go;web/src/pages/IncidentWorkspace.tsx;migrations,补认领/转交/评论/后续任务/告警关联，复用证据、时间线、状态和根因版本,协作 API、持久化和故障页,revision和审计齐全；转交不等于恢复；无越权或篡改原始事实,待实施,P0 核实后估算
+P4-05,P4,调查证据与预算界面,P4-04;P4-01,前端及后端,internal/investigation;internal/httpapi/investigation_handlers.go;web/src/features/investigation;web/src/features/evidence,接通公开步骤、证据、取消、历史，扩展必要预算/调查重点合同,调查工作台及合同适配,用户只能收紧服务端上限；部分结果与根因假设准确；引用固定且重新授权,待实施,P0 核实后估算
+P5-01,P5,AI 结构化返回复刻,P4-05;P3-02,前端及后端,web/src/features/assistant;web/src/pages/AssistantPage.tsx;internal/assistant;internal/investigation,按现有结构化合同实现统计/趋势/日志/排障/澄清/partial/证据及人工处置入口,AI 返回切片与业务闭环,数字与证据可定位；模型解释质量不覆盖已提交结果；实际命令独立输入,待实施,P0 核实后估算
+P5-02,P5,AI 会话历史及流恢复,P5-01,前端及后端,internal/assistant/history.go;internal/assistant/rebind.go;internal/assistant/retention.go;web/src/features/assistant,接通个人会话搜索/改名/归档、范围重绑、停止、流续传和保留,会话操作与历史界面,归档不级联删除引用；越权历史不可读；闲置/版本围栏及法律保留保持,待实施,P0 核实后估算
+P5-03,P5,四字段模型连接与运行路由,P0-03;P2-05;P1-02,后端及前端,internal/modelprofile;internal/app/sp06_runtime.go;internal/httpapi;services/investigator;web/src/pages/admin;migrations,新增连接测试、凭据引用、已准入材料关联和多运行版本路由,模型页、API/Worker 一致性合同,真实测试后准确标状态；未知准入不伪造；旧Job固定版本；兼容范围明确,待实施,P0 核实后估算
+P6-01,P6,人工执行全链复刻,P3-04;P2-03,前端及后端,internal/action;internal/httpapi/action_handlers.go;web/src/features/action;web/src/pages/IncidentWorkspace.tsx,复用风险评估、确认、派发、输出、取消；补全局执行列表与人工验证尝试，保留自动验证报告,命令执行与故障处置页面,篡改/重放拒绝；命令成功与故障恢复分开；未知外部结果不盲重试,待实施,P0 核实后估算
+P6-02,P6,受控作业模板,P6-01,后端及前端,internal/action;internal/configregistry;web/src/features/action;migrations,保存受控模板版本、字面量参数校验和预览,模板合同及界面,不自由拼接Shell，不自动填入或执行命令，目标和版本重新核对,待实施,P0 核实后估算
+P6-03,P6,用户只读巡检任务,P3-04,后端及前端,internal/inspection;internal/app;internal/httpapi;web/src/pages;migrations,用户巡检创建、范围/检查项、进度、取消、重跑及不可变报告,巡检任务与报告,复用检查适配器；各项真实状态；重启恢复且报告不随实时数据变更,待实施,P0 核实后估算
+P6-04,P6,只读巡检持久调度,P6-03,后端及前端,internal/app;internal/persistence;internal/httpapi;web/src/pages;migrations,计划时区/周期/版本/启停、槽位唯一派发、租约与手动触发历史,调度及计划页面,双Worker/重启不重复派发；默认不追赶堆积；停用不假取消运行任务,待实施,P0 核实后估算
+P7-01,P7,集群来源与只读组件检查,P2-05;P3-02,后端及前端,internal/source;internal/httpapi/cluster_handlers.go;internal/httpapi/source_handlers.go;internal/bundle;web/src/pages/admin;migrations,登记/范围/来源版本、组件只读检查与资格状态投影,接入检查报告与页面,无权限/未知/缺失/不兼容分开；登记不授予权限或资格,待实施,P0 核实后估算
+P7-02,P7,缺口处理与受控组件部署,P7-01,后端及前端,internal/bundle;cmd/opsctl;internal/httpapi;web/src/pages/admin;migrations,验证驱动远程目标能力，关联已有服务、前置条件、独立安装权限、任务及采样复验,缺口计划、部署任务与回执,只装明确缺失，不接管第三方；离线物料合格；部署完成不等于数据可用,待实施,P0 核实后估算
+P7-03,P7,规则静默与通知投递,P4-03;P2-03,后端及前端,internal/inspection;internal/httpapi;internal/app;web/src/pages;migrations,规则关联、静默、渠道、路由、受控测试、投递回执与重试,通知及维护功能,静默不改事实；秘密不回显；未知回执诚实标识；隔离接收端验证,待实施,P0 核实后估算
+P7-04,P7,知识正文版本与处理,P2-05;P1-02,后端及前端,internal/evidence;internal/httpapi;internal/app;web/src/pages;migrations,故障案例/手册统一存储、导入、草稿、发布、归档及版本/索引任务,知识库与处理链,固定版本不可变；导入不执行脚本；旧引用不级联丢失；索引失败可重试,待实施,P0 核实后估算
+P7-05,P7,知识检索与 AI 固定引用,P7-04;P5-01,后端及前端,internal/investigation/tools;internal/assistant;web/src/features/assistant;web/src/pages,明确中文检索语义、检索测试、原文固定版本和现有工具链引用,检索/引用合同与页面,已发布且授权版本才进新检索；归档后新问答不引用；旧引用按权限读取,待实施,P0 核实后估算
+P7-06,P7,配置治理部署与审计,P2-05;P1-02,前端及后端,internal/configregistry;internal/httpapi/config_handlers.go;internal/httpapi/audit_handlers.go;web/src/pages/admin,复刻策略和执行配置草稿/校验/发布/激活/退役、部署与审计,管理页面和缺失健康投影,签名/固定版本不绕过；公开健康探针不能代替业务资格；审计不虚报完整性,待实施,P0 核实后估算
+P8-01,P8,全量视觉与交互验收,P1-04;P4-01;P4-02;P4-05;P5-02;P5-03;P6-02;P6-04;P7-02;P7-03;P7-05;P7-06,前端验证,web/tests;test/contract;docs/evidence,逐458基准及补充状态验证视觉/交互、差异处置、旧链接和跨页上下文,逐切片验收记录和全分辨率差异,各片适用项通过；不以新实现改黄金图；长页、内部滚动、嵌套层级无遗漏,待实施,P0 核实后估算
+P8-02,P8,真实来源模型与异常联调,P8-01;P0-04,运行验证负责人,test/integration;web/tests;docs/evidence,真实多集群来源、AI/调查、执行、调度、知识、部署、通知及异常恢复,真实接入证据和质量结果,代码/制品/UID/来源/窗口可追溯；Fixture和机制/质量独立；失败不得美化,待实施,P0 核实后估算
+P8-03,P8,身份切换升级及回退演练,P8-02;P2-05,后端及运行验证,cmd/opsctl;internal/bundle;deploy/charts/ops-platform;docs/evidence,专属环境冷装/升级、备份恢复、排空任务及切换前后写入边界回退,升级、恢复与原生账号演练证据,不只回滚旧API或恢复旧凭据；新写入/撤销/历史记录无不明倒退,待实施,P0 核实后估算
+P8-04,P8,开发交付候选与操作说明,P8-03,技术负责人,docs/plans;docs/runbooks;docs/evidence,汇总制品、合同、迁移、差异、限制、六项验收和运维说明,完整开发交付候选,不以开发通过宣称生产发布/HA/离线发行或延期项已通过,待实施,P0 核实后估算
