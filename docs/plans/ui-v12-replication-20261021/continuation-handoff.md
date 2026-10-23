@@ -91,3 +91,65 @@ r12安装器native业务配置/Keycloak显式禁用/CA/受控Cookie读取/环境
 实际源码/制品以evidence/gpt-resume-r13/source-current.json和runtime-password.txt为准；source.json仅保留早期快照，不能用于断言最终部署。r6来源结果/截图已回收，仍仅隔离合成注册而非来源合格。任务Bao JWT此次仍只续期1小时，后续恢复需再核对期限，不重新初始化或创建Transit key。
 
 下一步：先补SL-005/账号安全/用户权限的HTML与补充状态视觉（当前独立首次改密页面未对齐SL-005对话框，不通过视觉）；继续历史业务归属读取与当前原生范围复检、管理并发/故障注入、原生first-tenant引导、Job/Worker authority/user/version与签名链，再无OIDC冷启动及P3 SL-049真实来源样板。namespace范围合同200/SQL100尚需裁决对齐，SQL只能新增57+。OPA来源摘要锁失败仍不得通过改材料/门禁掩盖。P2全部未关闭；原额度中断剩余项仍有效。
+
+
+r14追加（2026-10-23）：SL-005已改居中660px对话框，真实取消/改密及持久化通过；149 Vitest/构建通过。evidence/gpt-dialog-r14/result.json记录安全扩展、动画/拦截脚本失败及视觉未完成范围。独立预览30468/API18088/metrics19088，目录/data/ops-ui-v12-mfa-20261022-r1/gpt-dialog-r14/preview；API仍r13二进制，schema56不变。30467保留，用户要求全部菜单账号：使用r14独立账号，已通过UI分别授予operator/platform_admin，仅明确登记的一个fixture集群；凭据仅remote private/browser-created-account.json，不复制到仓库。created-account-persistence.json记录授权前无角色的时间点，不能当作当前角色状态。继续原有P2与SL-049剩余，不重跑已通过机制；完整像素与pending/关闭/退出失败浏览器未通过。
+
+
+## 最新接续断点：SL-005交互/登录背景r15与授权范围前滚r16（2026-10-23）
+
+SL-005补齐真实关闭/Escape/加载禁用与退出失败网络故障、刷新、精确会话重试，均远程浏览器通过；错误当前密码、取消与持久化沿r14证据。重新核对原始PNG后纠正“overview背景”假设：固定参考实际为登录背景，提取NativeLoginLayout并作为inert、disabled、无凭据/无处理器背景复用，不触发业务读取。实测660px宽、6px字段间距、18.7px提示行高、10px按钮间距；安全额外字段/文案导致高度不同，完整像素不通过。152 Vitest、6 SSE及正式构建通过，中文关闭与administrator/operator首页路径均覆盖。浏览器英文Close/加载图标定位失败、组件库8px默认padding/margin及修正过程保留，不作产品失败掩盖或继承通过。
+
+原生范围200namespace合同/SQL100差异已实测复现：真实UI+密码/TOTP授权400。新增57仅将admin_account_write的cluster/namespace上限100/100对齐合同50/200，保留所有事务、当前会话/角色/版本、最后管理员与独立授权推进；1～56与HEAD原文逐项核对不变。任务15453已执行57并冻结，后续58+。相同合同真实UI201并持久200；API角色SQL事务中200可接受，201namespace/51cluster拒绝22023，探测全部ROLLBACK，原binding/范围/版本不变。完整contract及identity/httpapi/db-migrate通过。另真实用户UI密码重置200、强制改密201、刷新进入operator总览并保留独立200namespace范围，无管理员菜单。首轮重置脚本误期望201而实际200，成功重置后中断未保存随机密码；仅隔离测试账号再经真实UI重置恢复，两个事件保留，用户r14账号未改。
+
+30469/API18089/metrics19089为r15独立预览，最终容器ops-ui-v12-gpt-r15-web-r5及web-footer-final目录；API仍r13相同二进制。30467/30468和历史制品保留；三个预览共用任务15453，当前schema57，早期schema56证据仍只代表当时版本。未写共享开发库/生产。SL-005 interaction提升passed，visual/authorization/live未提升；P2仍in_progress。历史业务归属读取与当前范围复检、最后管理员并发/审计故障、原生first-tenant/Job/Worker/无OIDC冷启动、SL-049真实样板及其余切片仍待。证据见evidence/gpt-login-r15/result.json与evidence/gpt-scope-r16/result.json。
+
+远程r15/preview为schema56时的旧Web交互测试材料，preview-r2才是30469运行目录；凭据均remote private，不复制到仓库。最后业务测试账号为r15 layout fixture，现operator+200namespace且已改密；用户可用r14双角色账号不受影响。r16 migrate.py仅允许从56升57，现已执行不得重跑；恢复用兼容原生数据版本/58+前滚，见evidence/gpt-scope-r16/runbook.md。
+
+
+## GPT继续：P2-04审计故障与管理员并发r17（2026-10-23）
+
+新增可重复边界测试并复用原生管理精确password/TOTP证明：仅本轮新建tenant/target/identity.admin.update的临时audit触发器令资料修改返回500，账号revision/业务审计均未提交；清理后同证明+同幂等键重试与重放200，只有一次revision和一次业务审计。双管理员并发停用前，控制事务持有既有tenant advisory lock；确认两个正式HTTP事务均在数据库锁等待后才释放，验证一个200、一个401/403/409，保留恰好一名有效管理员，幸存者实际登录/必要首次改密后读取用户列表200。
+
+守卫MFA/用户管理整组623.37秒PASS；本地编译/vet通过。使用httptest正式Handler+真实任务PG15453/schema57及文件sealer测试fixture，不冒充生产OpenBao/浏览器/Worker或模型验收。只读回执绑定实际tenant/request/audit ID并确认故障trigger/function为0，r14用户账号仍active/credentialVersion2/双角色；30467/30469服务active。初次只读证据采集误用payload列，按实际record列修正后通过，失败说明保留，无需重跑已通过测试。
+
+历史归属读取仍未实现：助手会话/列表/结果分别过滤旧主体，冻结grant摘要及Job输入/权限/策略校验横跨消息/引用/事件/Worker；不能只放开WHERE、改写旧主体或覆盖摘要。operational Job未持久化native authority source/user/version仍是P2-05缺口（本轮静态核实，不是运行验证）。命令历史资源域读取使用当前operator范围，不应误改为个人主体过滤。具体位置见evidence/gpt-admin-r17/history-read-review.md。
+
+本轮只新增测试、复审与证据，没有修改Go业务实现、迁移或部署；1～57冻结，下一SQL58+。产品六维未提升；P2-04仍in_progress，保留历史读取/映射并发/其他故障/产品视觉、P2-05及SL-049完整样板等剩余项。证据见evidence/gpt-admin-r17/result.json；原生执行/取消/再次验证凭据不因映射放宽。
+
+## r18（2026-10-23）：历史业务归属读取源码 + 真实 PG 机制验证
+
+- 覆盖 r17「历史归属读取仍未实现」的源码现状：新增 58（仅源码，未在任务库执行，任务库仍 schema57；1～57 未改）与助手历史映射读取。映射只放行“谁可读”，读取仍以当前原生会话/角色/版本/集群/namespace/资源范围复检，冻结 owner/id/摘要/策略原样保留；写入路径仍是 owner 精确匹配。
+- 真实 PG（任务 15453 上的临时库，1→58 全量迁移）通过：映射前不可见、映射后列表/详情可读且冻结字段未变、严格读取拒绝、撤权后拒绝、API 直接读映射表失败、审计记录存在。证据 evidence/gpt-historical-r18/。
+- 仍未关闭：映射历史会话的前端视觉/交互、消息-结果-事件-来源步骤在真实 Job 上、审计域会话、映射冲突并发/其他故障注入、部署新 API/Web 与浏览器联调。P2-04 继续 in_progress；P2-02/03/05、P1、P3（SL-049）、P4～P8 未在本轮推进。
+- 远程临时库 sp03_mig_*（schema58，含审计记录）按保留策略未删除；只读发现任务库 ui_v12_native_identity 仍为 57。旧 30467/30469、历史轮次与账号未改动。
+
+## r19（2026-10-23）：映射历史读权限贯通故障链（返修）
+
+- 修掉嵌套读丢权限：`AuthorizeHistoricalReadTx` 是唯一能力构造点，`CheckAssistantJobTx` 命中后仍用 `currentAssistantAs` 复检原生会话/版本/角色/集群/namespace/资源/策略；能力不写库、不改冻结字段、Worker 与写路径不可用。改动 `internal/investigation/assistant_v3.go`、`internal/assistant/repository.go`、`internal/assistant/fault_chain.go`，新增单元 `historical_grant_test.go`。
+- 真实 PG（1→58 临时库）：`TestNativeMappedHistoricalOwnerRead` 与新增 `TestNativeMappedHistoricalTurnRead` 均 PASS。后者用真实 `Submit` 的 Turn/Job + committed `evaluate_fault_chain` Step + 触发器写入的 answer/message/event，验证故障链/Turn/Messages/Events 正向读取、冻结字段不变，以及未映射/异主体/异租户/收窄 scope/撤权与严格 Turn/Get/Submit 拒绝。证据 evidence/gpt-historical-r19/。
+- 仍未验证：前端视觉/交互与 SSE、查询结果/正式引用/审计域会话、映射冲突并发、部署新制品与浏览器联调。任务库仍 schema57。
+- 继续项（未在本轮推进）：P2-05（Job/Worker 显式 native authority、无 OIDC 冷启动）、P2-02/P2-03 视觉状态、P1 正式页面入口与全分辨率对比、P3（SL-049 同组日志样板）、P4～P7、P8 全量验收。OPA 摘要只阻塞 Bundle/冷装，不阻塞这些独立源码/UI 任务。
+
+## r20（2026-10-23）：P2-05 业务Job/Worker原生权威 + 原生首租户
+
+- 业务 Job 持久 identity source/native userID/authorization version（operational 也有，legacy 显式记 legacy），`AssistantTask.Valid` 与冻结摘要继续校验；Worker 按持久来源复检：native 用 `NativeOperatorScopeForJobTx`（`investigation.job_native_operator_scope` + `graph.EffectiveNativeTx`，与准入同一 scope/revision 实现），audit 用既有 `AuditScopeForJobTx`，仅历史空来源走 legacy 且 native 不回退。
+- 迁移 59（门 + 投影，RLS 既存分支逐条保留）；迁移 60（migration_role 对 tenants 仅 INSERT）。改动 `internal/graph/protocol.go`、`internal/investigation/assistant_v3.go`、`internal/assistant/repository.go`。
+- 真实 PG（1→59）`TestNativeOperationalJobWorkerAuthority` PASS：无会话 Claim/取输入、租约到期接管、撤权/重授/停用/收窄/篡改/跨租户拒绝、取消拒绝、`AUTHORIZATION_REVOKED`。
+- 原生首租户：`identity.CreateFirstTenant` + `opsctl bootstrap first-tenant-native`；真实 PG（1→60）`TestNativeFirstTenantBootstrap` PASS：原子创建、change_required、审计、重复、非引导职责、并发唯一胜者。证据 evidence/gpt-native-job-r20/。
+- 下一轮独立任务：Action 执行/巡检同类边界（`internal/action/read.go:11`、`postcheck.go:58`、`postcheck_report.go:165`、`service.go:78`）、安装器 native 闭包与无 OIDC 冷启动、P2-04 查询结果/正式引用/审计域/映射并发、P2-02/03 与 P1 视觉、P3 SL-049、P4～P7、P8。任务库仍 schema57；59/60 未部署。
+
+## r21（2026-10-23）：P2-05 阶段返修（Worker 授权锁）＋Action 权威接线＋首租户 CLI 真跑
+
+- P1：61 新增 `platform.native_operator_scope_locked`/`platform.native_authority_locked`（VOLATILE，账号→授权行锁，持至提交），撤销 runtime 对 59 解锁投影的 EXECUTE；`graph.EffectivePersistedNativeTx` 成为 Job 与 Action 共用的持锁复检。真实并发双向验证（Worker 先→管理等待 55P03；撤权先→Worker 拒绝），停用/收窄/重授不复活。
+- Action：62 增 `action.executions.authority`，创建时持久来源/user/version，`RecordPostCheck` 走 `Execution.authorityScopeTx`（native 持锁、legacy 原路径、不回退）；SP07 legacy 回归 PASS。native 执行后检查用例待补。
+- 首租户 CLI：一次性库 1→62 后真实进程运行成功、重复拒绝；前滚前置 `GRANT CREATE ON DATABASE ... TO schema_owner` 已记录，安装器/runbook 需包含。
+- 下一轮：安装器 native 闭包与无 OIDC 冷启动/重启/前滚演练；Job 签名 Context/工具结果/取消的独立 Worker 运行；Action native 后检查用例；P2-04 剩余读取与映射并发、P2-02/03 与 P1 视觉、P3 SL-049、P4～P8。任务库仍 schema57。
+
+## r22（2026-10-23）：审计投影名+共享锁死锁+Action来源+证据一致
+
+- 修 P1：audit 分支原调不存在的 `investigation.job_native_authority_locked`，现改 `platform.native_authority_shared`；原生 platform_admin 审计 Job 准入/Claim/取输入正向 PASS(181s)，撤权后新审计 Job 拒绝并置 AUTHORIZATION_REVOKED。
+- 修 P1：61 的 FOR UPDATE 投影与 API 入口 `authorize_native_session_role` 的 FOR SHARE 形成升级死锁；63 改 FOR SHARE（账号→授权同序，与 API SHARE 兼容、与管理工作写入冲突），并撤销 61 两变体的 runtime EXECUTE。同账号双 API 事务并发复检 PASS(148s)；撤权/收窄等待、撤权先提交拒绝、停用/重授不复活 PASS。
+- 修 P2：`Authority.nativeForRecheck` 只接受完整 native / 显式 legacy / 历史空编码；未知 source 与混合字段拒绝，含单测。
+- 证据：r22 source.json 由最终树脚本生成并 `shasum -c` 复核通过。
+- 下一轮（未完成）：独立 Worker 签名 Context/工具结果/取消/异常、Action 原生后检查真实用例、CLI 首次改密、安装器 native 闭包与无 OIDC 冷启动/重启/前滚、P2-04 剩余读取与映射并发、P2-02/03 与 P1 视觉、P3 SL-049、P4～P8。任务库仍 schema57。

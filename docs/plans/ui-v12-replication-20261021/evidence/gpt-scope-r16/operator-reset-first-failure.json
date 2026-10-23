@@ -1,0 +1,56 @@
+{
+  "origin": "https://192.168.0.63:30469",
+  "schemaVersion": 57,
+  "scope": "isolated r15 operator password reset/forced change, persisted scope and final footer geometry; schema57",
+  "checks": [],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a166b4-2c44-76c2-a386-03b63dfc1af4"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a166b4-2cd5-7322-bf85-6dc8c3690cee"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a166b4-2da5-7d32-9258-80d5b6bd9685"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a166b4-2e01-7901-a01e-f87dfa37df58"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a166b4-2e00-7570-b416-a6a9ba057539"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a166b4-320b-7595-b039-4ea58750f892"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a166b4-321c-7070-a788-dfaebb698f24:verify",
+      "status": 200,
+      "requestId": "01a166b4-3229-7ec3-a054-6f5eac374ca8"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a166b4-321c-7070-a788-dfaebb698f24:verify",
+      "status": 200,
+      "requestId": "01a166b4-32b2-735f-8110-aa28a05eecea"
+    },
+    {
+      "path": "/api/v1/admin/users/01a166a2-b078-7961-8113-74c9507da8a0/password:reset",
+      "status": 200,
+      "requestId": "01a166b4-3320-780a-a23b-8ad368b919db"
+    }
+  ],
+  "pageErrors": [],
+  "status": "failed",
+  "failure": "real password reset failed"
+}

@@ -75,6 +75,9 @@ export function V12Modal({
   children,
   footer,
   width = 520,
+  rootClassName,
+  centered = false,
+  closeDisabled = false,
 }: {
   open: boolean;
   title: ReactNode;
@@ -82,6 +85,9 @@ export function V12Modal({
   children: ReactNode;
   footer?: ReactNode;
   width?: number;
+  rootClassName?: string;
+  centered?: boolean;
+  closeDisabled?: boolean;
 }) {
   const box = useRef<HTMLDivElement>(null);
   useLayer(open, onClose, box);
@@ -94,7 +100,11 @@ export function V12Modal({
       keyboard={false}
       mask={{ closable: false }}
       width={width}
-      rootClassName="v12-layer-root"
+      centered={centered}
+      closable={{ disabled: closeDisabled }}
+      rootClassName={["v12-layer-root", rootClassName]
+        .filter(Boolean)
+        .join(" ")}
       destroyOnHidden
     >
       <div ref={box}>{children}</div>

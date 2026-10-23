@@ -1,0 +1,72 @@
+{
+  "round": "gpt-historical-r19",
+  "date": "2026-10-23",
+  "task": "返修：映射历史读权限贯通故障链内部 + 真实持久 Job 正向/拒绝回归",
+  "baseline": {
+    "branch": "feat/ui-v12-replication",
+    "head": "4b207ae8441e2367efc72d1a29388818f45cac8e",
+    "workingTree": "r14～r18 未提交修改与新任务基线保留，未重置、未切分支、未提交/推送"
+  },
+  "defect": "assistant.FaultChainContext/authorizeTurnAnswer 用 AssistantReadJobTxAs 取到保留旧 Subject 的 Job 后，嵌套的 ReadFaultChainContextTx→CheckAssistantJobTx→currentAssistant→graph.EffectiveTx(旧 Subject) 在 native 上下文里直接拒绝，合法映射用户读含 FaultChainContextRef 的答案/故障链/来源步骤失败。",
+  "fix": [
+    "internal/investigation/assistant_v3.go：新增不可伪造的只读凭据 historicalReadGrant（非导出类型/键），只由 AuthorizeHistoricalReadTx 在 AssistantReadJobTxAs 成功后附加；CheckAssistantJobTx 命中凭据时要求凭据的 tenant/job/owner 与 Job 完全一致且 read.Mapped，然后仍调用 currentAssistantAs 重新证明当前原生会话、会话版本、角色、集群/namespace/资源范围与策略版本。",
+    "凭据不改变任何冻结字段（requesting_subject、effective_scope(_digest)、assistant_binding、input/context digest、policyVersion），也不进入 Job 行或数据库。",
+    "internal/assistant/repository.go：authorizeTurnAnswer 用 AuthorizeHistoricalReadTx 得到 readCtx 后再校验答案，使嵌套故障链/来源步骤读取复用同一份已确认权限。",
+    "internal/assistant/fault_chain.go：FaultChainContext 与 ResourceSourceStep 使用 AuthorizeHistoricalReadTx，并把 readCtx 传给 ReadFaultChainContextTx / ReadResourceSourceStepForClientTx。",
+    "Worker/写路径不附加凭据：Submit/Cancel/Archive/Rebind、严格 Turn/Get 与 Worker withLease 仍走 currentAssistant（旧路径），凭据只对同一 Job 的只读嵌套检查生效。"
+  ],
+  "verified": {
+    "unit": [
+      "CheckAssistantJobTx 对异租户/异 Job/异主体的凭据直接 ErrDenied（nil tx 即拒绝，未触库）。",
+      "未标记 Mapped 的凭据被拒绝，不回退到冻结主体。",
+      "最小 FaultChainContext 由生产 EvaluateFaultChain 生成并通过 fault-chain-context/v1 合同校验（供给集成夹具）。"
+    ],
+    "integration_real_pg": {
+      "database": "任务 PG17.11 :15453 上的临时数据库，1→58 全量迁移（保留：sp03_mig_f37d47e8c68845f2ad198cb10d8e391b、sp03_mig_167f34ef3f9a44cc9b3b4634ea04b195）",
+      "positive": [
+        "TestNativeMappedHistoricalOwnerRead：映射账号列表/详情可读，owner/cluster 未变；严格 Get 拒绝；未映射账号列表为空、详情拒绝；撤销当前 operator 授权后拒绝；API LOGIN 不能直读 identity.subject_mappings；存在访问审计。",
+        "TestNativeMappedHistoricalTurnRead：真实 repository.Submit 产生 queued Turn/Job，提交已成功的 evaluate_fault_chain Step 与模型答案（经 jobs.result 触发器写入 turn/message/event），映射账号成功读取故障链（digest 与冻结引用一致）、Turn（completed, jobId 一致）、Messages（user+assistant）、Events（answer.ready）。"
+      ],
+      "negative": [
+        "严格 Turn/Get 与 Submit 对映射账号拒绝（写入仍不可用）。",
+        "异 legacy 主体（无映射、无 native 会话）读取拒绝；冻结 owner 自身 owner-exact 读取仍正常。",
+        "异租户读取故障链拒绝。",
+        "当前 operator 授权收窄为 private 命名空间后（新会话重读授权快照），故障链与 Turn 均拒绝。",
+        "撤销授权后（新会话）故障链与消息均拒绝。",
+        "无原生会话的进程上下文（Worker 形态）即使映射与 Job 存在也被拒绝。"
+      ],
+      "frozen_evidence": "读取前后比对 requesting_subject、effective_scope、effective_scope_digest、assistant_binding、turn input_digest/context_digest 完全一致。"
+    }
+  },
+  "notVerified": [
+    "浏览器视觉/交互（映射历史会话列表/详情/故障链面板）未验收；本轮仅有 Go 层与真实 PG 证据。",
+    "未部署新 API/Web 二进制到 30467/30469，无真实浏览器与 SSE 流。",
+    "故障链内容为夹具提交的 committed Step（无模型、无真实集群来源）；消息-结果-事件只覆盖本夹具的 answer/result 链，查询结果、正式引用、审计域（tenant 级）会话仍未运行验证。",
+    "映射冲突并发与映射函数（identity.admin_map_subject）本身不属本轮返修范围。"
+  ],
+  "checks": [
+    {
+      "command": "go build ./...",
+      "result": "exit=0"
+    },
+    {
+      "command": "go vet ./internal/assistant/... ./internal/investigation/... ./internal/identity/... ./internal/httpapi/... ./test/integration/",
+      "result": "exit=0"
+    },
+    {
+      "command": "go test ./internal/assistant/ ./internal/investigation/ ./internal/identity/ ./internal/httpapi/ -count=1",
+      "result": "四包 ok"
+    },
+    {
+      "command": "GOOS=linux GOARCH=amd64 go test -c ./test/integration；SP03_TEST_DATABASE_URL=<15453> ./hist.test -test.run '^TestNativeMappedHistorical(Owner|Turn)Read$'",
+      "result": "PASS 155.04s / 12.67s（两次运行均 PASS；日志 integration-mapped-history.log 为最后一次）"
+    }
+  ],
+  "evidence": [
+    "evidence/gpt-historical-r19/integration-mapped-history.log",
+    "evidence/gpt-historical-r19/go-build.log",
+    "evidence/gpt-historical-r19/go-vet.log",
+    "evidence/gpt-historical-r19/go-package-tests.log",
+    "evidence/gpt-historical-r19/source.json"
+  ]
+}

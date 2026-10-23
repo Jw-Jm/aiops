@@ -1,0 +1,22 @@
+{
+  "round": "gpt-native-job-r21",
+  "head": "4b207ae8441e2367efc72d1a29388818f45cac8e",
+  "algorithm": "sha256",
+  "files": {
+    "migrations/00061_native_job_authority_locks.sql": "371743940c5fe6c49fd72aa26ad8817b89bc416d4448bede87a6d3469585f761",
+    "migrations/00062_action_native_authority.sql": "3dbdee6decd629532d371c8a67a4bc574b3777a65dde48df77d817eccfd3d5e1",
+    "internal/graph/protocol.go": "02eb120543c2db1394ce954a04b5e855838f79ea74549b57bbd99c3ccdb7d9c7",
+    "internal/investigation/assistant_v3.go": "f7d18a2524268ca9bf1d0f30707b8fb366c10e0505eb2af217dbc5dd97dbe6f1",
+    "internal/auth/authority.go": "b94b00c392860680941cdfe72d1d03f97bd8fd9fbf3ee6895ea3f7743e79244e",
+    "internal/action/authority.go": "6a87ab2727e54a8a5ad071f92fa9ef71f1cb13ba05e832122f1560a965317cea",
+    "internal/action/domain.go": "0ad19aff0c6b434b647b38f405cbe34aa0e254103a467294540a92d5225f58f6",
+    "internal/action/repository.go": "9841f6f9733c4cb45690d48ba5a2d2db98e609290ee34fe1e31a394a4e612264",
+    "internal/action/service.go": "5fbf49a23b724f2144364dcb15374c16ae51a47ae3faa673c62953330a778750",
+    "internal/action/postcheck.go": "58b6ac7e6ebabbb5f3745d561a6ca41d8cebedbd0888a660e3c6748cbdf857c7",
+    "test/integration/native_operational_job_test.go": "ca9279cf0f005a82330e04e6989cff29d9839639d7d082de0b1030d19c74435c",
+    "test/integration/sp05_finding_test.go": "b473f54aeed37d8ccfbbfeffd4b70f4390ed24f5f19e914888a4c4c004ccd21e"
+  },
+  "note": "本地 macOS 源码；Linux 集成二进制与 opsctl/db-migrate 由同一源码树编译后上传 /data/ops-ui-v12-mfa-20261022-r1/gpt-native-job-r20 执行；未部署 API/Web/Worker 制品。",
+  "migrationState": "1～60 原文未改；61/62 为新增，已在一次性临时库执行，任务库 ui_v12_native_identity 仍 schema57，部署前必须按序前滚（含 schema_owner 建库权限）并复验。",
+  "contracts": "assistant_binding 与新增 action.executions.authority 均为内部列，不经 API 序列化，本轮无需 OpenAPI/Schema/生成客户端变更。"
+}

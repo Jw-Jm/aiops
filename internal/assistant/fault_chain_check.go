@@ -75,7 +75,7 @@ func validateFaultChainCheckTx(ctx context.Context, tx pgx.Tx, c Conversation, q
 	if err != nil || parent.ConversationID != c.ConversationID {
 		return investigation.ErrDenied
 	}
-	if err := authorizeTurnAnswer(ctx, tx, c, parent.TurnID, parent.Answer); err != nil {
+	if err := authorizeTurnAnswer(ctx, tx, c, parent.TurnID, parent.Answer, ownerRead(c, c.OwnerSubject)); err != nil {
 		return err
 	}
 	job, err := investigation.AssistantReadJobTx(ctx, tx, c.TenantID, c.OwnerSubject, c.ConversationID, parent.TurnID, c.Binding.ExecutionScope)

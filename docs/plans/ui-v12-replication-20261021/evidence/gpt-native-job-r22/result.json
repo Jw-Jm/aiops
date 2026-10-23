@@ -1,0 +1,70 @@
+{
+  "round": "gpt-native-job-r22",
+  "date": "2026-10-23",
+  "task": "P2-05 阶段返修：审计投影名称、共享锁死锁、Action 来源严格性、证据版本一致",
+  "baseline": {
+    "branch": "feat/ui-v12-replication",
+    "head": "4b207ae8441e2367efc72d1a29388818f45cac8e",
+    "workingTree": "r14～r21 保留，未重置、未切分支、未提交/推送"
+  },
+  "fixes": {
+    "p1_audit_projection_name": {
+      "problem": "nativeRoleScopeForJobTx 查询 investigation.job_native_authority_locked，61 实际创建 platform.native_authority_locked，schema62 上 to_regprocedure 前者 MISSING，原生 audit Job 复检必 ErrDenied。",
+      "fix": "改调 platform.native_authority_shared（63 新增的共享锁版本）；审计与业务分支均改用 63 的投影。",
+      "runtime": "TestNativeAuditJobWorkerAuthority PASS(181.25s)：native platform_admin 审计会话 → Submit → 冻结 binding authorizationSource=native/user/version → 无会话 Worker Claim + GetAssistantInput 成功 → 撤权（grant revoked + 账号版本+1）后新审计 Job Claim 拒绝并置 failed/AUTHORIZATION_REVOKED。"
+    },
+    "p1_lock_upgrade_deadlock": {
+      "problem": "61 的投影以 FOR UPDATE 锁账号/授权行，而 native API 入口 authorize_native_session_role 已对同账号/授权持 FOR SHARE；两个同账号请求各自持 SHARE 再请求 UPDATE，形成锁升级死锁（审核独立探测 40P01）。",
+      "fix": "63 新增 platform.native_operator_scope_shared / platform.native_authority_shared，按同一顺序（账号行→授权行 binding_id）取 FOR SHARE：与 API 既有 SHARE 兼容不升级，且与管理工作写入（账号 FOR UPDATE、授权 UPDATE）冲突从而阻塞；63 同时撤销 runtime 对 61 FOR UPDATE 两个变体的 EXECUTE，1～62 原文未改。",
+      "runtime": "TestNativeAuthoritySharedLockNoDeadlock PASS(148.12s)：两个同账号事务各自真实调用 identity.authorize_native_session_role（FOR SHARE）→ 受控屏障后各自执行 CheckAssistantJobTx（共享锁投影）→ 均成功提交、无 40P01；随后 Job 仍可正常 Claim。",
+      "regression": "TestNativeJobAuthorityLocksSerializeRevocation PASS(119.04s)、TestNativeJobAuthorityRevocationBeforeWorkerRecheck PASS(138.54s)、TestNativeOperationalJobWorkerAuthority PASS(159.86s)：Worker 先持锁时管理撤权/收窄在 lock_timeout 内返回 55P03，提交后方成功；撤权先提交则复检与 Claim 拒绝；停用/重授不复活。"
+    },
+    "p2_action_authority_source": {
+      "problem": "authorityScopeTx 只识别 native，其它任意 source 静默走 legacy。",
+      "fix": "抽出 Authority.nativeForRecheck：仅接受完整 native（user+version）或显式 legacy，或历史空编码（允许但必须 user 为空、version 为 0）；未知 source、native 缺字段、legacy 携带身份/版本一律 ErrDenied，绝不切换身份系统。",
+      "unit": "internal/action/authority_test.go：9 组来源组合全部按预期分类或拒绝；无会话上下文默认 legacy。"
+    },
+    "evidence_version": {
+      "problem": "r21 source.json 的 native_operational_job_test.go 摘要与最终文件不符。",
+      "fix": "r22 source.json 由脚本直接对最终工作树计算，并同时输出 sha256sum.txt；已用 `shasum -a 256 -c` 复核 6 个文件全部 OK。清单只列本轮增量。"
+    }
+  },
+  "checks": [
+    {"command": "go build ./...", "result": "exit=0"},
+    {"command": "go vet ./internal/action/ ./internal/graph/ ./internal/investigation/ ./test/integration/", "result": "exit=0"},
+    {"command": "go test ./internal/action/ ./internal/graph ./internal/investigation/ ./internal/assistant/ ./internal/httpapi/ ./internal/identity/ -count=1 -timeout 20m", "result": "全部 ok"},
+    {"command": "远程 ./native_job.test -test.run '^TestNative(AuditJobWorkerAuthority|OperationalJobWorkerAuthority|JobAuthority)'（1→63 临时库）", "result": "Audit PASS 181.25s；Operational PASS 159.86s；Locks PASS 119.04s；RevocationBefore PASS 138.54s"},
+    {"command": "远程 ./native_job.test -test.run '^TestNativeAuthoritySharedLockNoDeadlock$'", "result": "PASS 148.12s（同账号双 API 事务持 SHARE 后并发复检无死锁）"},
+    {"command": "shasum -a 256 -c evidence/gpt-native-job-r22/sha256sum.txt", "result": "6 个文件全部 OK"}
+  ],
+  "verified_databases": [
+    "sp03_mig_* 一次性库（1→63），含审计自动保留；主任务库 ui_v12_native_identity 仍 schema57，未部署"
+  ],
+  "stage_status": {
+    "p1_audit_projection": "完成并真实运行验证",
+    "p1_shared_lock_deadlock": "完成并真实并发验证（同账号 API 无死锁；管理写入等待；撤权先提交拒绝）",
+    "p2_action_source": "完成（代码 + 单测）；Action 原生执行/后检查真实用例仍未运行",
+    "job_worker_full_chain": "未验：原生 HTTP 提交→独立 Worker 签名 Context 颁发/校验→工具/结果持久化回显→取消/恢复/异常 的独立进程运行",
+    "installer_native_closure": "未做：安装器 native 依赖闭包、无 OIDC 冷启动/重启/前滚恢复演练",
+    "first_password_change": "未验：CLI 引导后的首次改密端到端（既有改密机制用例不替代）",
+    "p2_04_and_visual": "未做",
+    "p3_p4_p8": "未做"
+  },
+  "risks": [
+    "共享锁投影依赖管理写入始终先锁账号行（admin_lock_accounts/admin_account_write）；任何绕过该路径的直接 UPDATE 不受账号行锁保护，需在后续审计中保持单一管理写入口。",
+    "Action 原生后检查尚未有真实运行用例，只能算接线与单测通过。",
+    "Job 全链（签名 Context、工具结果、取消/恢复/异常）仍只有 Repository 机制证据，不是独立 Worker 进程证据。",
+    "安装器 native 闭包与无 OIDC 冷启动未实现/未演练；前滚前置 schema_owner CREATE ON DATABASE 已记录。",
+    "任务库仍 schema57，63 未部署；不得继承临时库 PASS。"
+  ],
+  "evidence": [
+    "evidence/gpt-native-job-r22/result.json",
+    "evidence/gpt-native-job-r22/source.json",
+    "evidence/gpt-native-job-r22/sha256sum.txt",
+    "evidence/gpt-native-job-r22/integration-native-job-locks-audit.log",
+    "evidence/gpt-native-job-r22/integration-shared-lock-no-deadlock.log",
+    "evidence/gpt-native-job-r22/go-build.log",
+    "evidence/gpt-native-job-r22/go-vet.log",
+    "evidence/gpt-native-job-r22/go-package-tests.log"
+  ]
+}

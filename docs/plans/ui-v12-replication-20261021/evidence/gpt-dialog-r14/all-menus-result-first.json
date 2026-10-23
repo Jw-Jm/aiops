@@ -1,0 +1,41 @@
+{
+  "origin": "https://192.168.0.63:30467",
+  "schemaVersion": 56,
+  "scope": "user-authorized independent preview login; dual roles, one explicit registered task cluster; no source qualification",
+  "checks": [],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16680-89b8-79da-9f78-3df5c25e0e67"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16680-8a5a-74eb-bd08-bf76010eb63b"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16680-9264-7915-bdc9-3c1e68f9f38e"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16680-9a8b-724b-b6e6-ff4a243a4c3c"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a16680-9a8a-708e-97e4-ba3d38d9aabc"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16681-0fbc-728c-913d-9fecad3f5a8f"
+    }
+  ],
+  "pageErrors": [],
+  "status": "failed",
+  "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('option').first()\n    - locator resolved to <div role=\"option\" id=\"_r_f__list_0\" aria-selected=\"false\" aria-label=\"Source UI fixture\">cluster-ui-d3562cbc-902f-4526-ae55-a395c023b8ef</div>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not stable\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not stable\n    - retrying click action\n      - waiting 100ms\n    58 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n"
+}

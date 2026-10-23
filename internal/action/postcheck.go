@@ -38,6 +38,23 @@ func JudgePostCheck(f PostCheckFacts, completedAt time.Time) string {
 func workerActor(tenant uuid.UUID) auth.RequestContext {
 	return auth.RequestContext{TenantID: tenant, Subject: "platform-worker"}
 }
+
+// ScopeForExecution rebuilds the frozen authority of one stored execution without
+// a browser session. Post-check collection runs in the Worker, so it must use the
+// same persisted identity source as the dispatch and the recorded check instead of
+// the legacy binding table.
+func (s Service) ScopeForExecution(ctx context.Context, e Execution) (graph.Scope, error) {
+	var out graph.Scope
+	err := persistence.WithTenantTx(ctx, s.Pool, e.Binding.TenantID, func(tx pgx.Tx) error {
+		scope, err := e.authorityScopeTx(ctx, tx)
+		out = scope
+		return err
+	})
+	if err != nil {
+		return graph.Scope{}, ErrDenied
+	}
+	return out, nil
+}
 func (s Service) RecordPostCheck(ctx context.Context, tenant, id uuid.UUID, f PostCheckFacts) error {
 	if len(f.EvidenceRefs) > 50 || len(f.NewAnomalies) > 40 {
 		return ErrInvalid
@@ -55,7 +72,7 @@ func (s Service) RecordPostCheck(ctx context.Context, tenant, id uuid.UUID, f Po
 			return err
 		}
 
-		scope, scopeErr := graph.EffectiveTx(ctx, tx, tenant.String(), e.Binding.Subject, e.Binding.ClusterUID, true)
+		scope, scopeErr := e.authorityScopeTx(ctx, tx)
 		ns := ""
 		if e.Binding.Namespace != nil {
 			ns = *e.Binding.Namespace

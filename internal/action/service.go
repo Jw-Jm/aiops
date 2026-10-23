@@ -66,6 +66,15 @@ func profileTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, version int
 	return p, vid, err
 }
 func (s Service) authorize(ctx context.Context, tx pgx.Tx, a auth.RequestContext, b Binding, p Profile, touch bool) (policy.PolicyDecision, error) {
+	return s.authorizeAs(ctx, tx, a, b, p, touch, nil)
+}
+
+// authorizeAs re-checks one binding for the identity system that proved it. A
+// request path passes nil and uses the live session. The asynchronous dispatch and
+// claim paths pass the execution's frozen authority: they have no browser session,
+// so a native command must be re-proved from the persisted account/version and the
+// live grant rows rather than from the legacy binding table.
+func (s Service) authorizeAs(ctx context.Context, tx pgx.Tx, a auth.RequestContext, b Binding, p Profile, touch bool, frozen *Authority) (policy.PolicyDecision, error) {
 	if a.TenantID != b.TenantID || a.Subject != b.Subject || !p.Allows(b.Target, b.Options) || p.ID != b.ProfileID || p.Version != b.ProfileVersion || p.ClusterUID != b.ClusterUID || s.Policy == nil {
 		return policy.PolicyDecision{}, ErrDenied
 	}
@@ -75,7 +84,13 @@ func (s Service) authorize(ctx context.Context, tx pgx.Tx, a auth.RequestContext
 	if err := relatedExecutionTx(ctx, tx, b); err != nil {
 		return policy.PolicyDecision{}, err
 	}
-	effective, err := graph.EffectiveTx(ctx, tx, a.TenantID.String(), a.Subject, b.ClusterUID, true)
+	var effective graph.Scope
+	var err error
+	if frozen != nil {
+		effective, err = frozen.scopeTx(ctx, tx, b)
+	} else {
+		effective, err = graph.EffectiveTx(ctx, tx, a.TenantID.String(), a.Subject, b.ClusterUID, true)
+	}
 	ns := ""
 	if b.Namespace != nil {
 		ns = *b.Namespace
@@ -374,7 +389,7 @@ func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestCont
 		if tag.RowsAffected() != 1 {
 			return ErrConflict
 		}
-		out = Execution{Iteration: 1, AckID: ackID, PolicyID: decision.DecisionID, ID: uuid.Must(uuid.NewV7()), Binding: b, RequestDigest: b.Digest(), State: "prepared", SuggestionMatch: "not_applicable", ComparatorVersion: ComparatorVersion, PostCheck: "inconclusive"}
+		out = Execution{Iteration: 1, AckID: ackID, PolicyID: decision.DecisionID, ID: uuid.Must(uuid.NewV7()), Binding: b, RequestDigest: b.Digest(), State: "prepared", SuggestionMatch: "not_applicable", ComparatorVersion: ComparatorVersion, PostCheck: "inconclusive", Authority: commandAuthorityFromContext(ctx)}
 		if b.ActionPlanID != nil {
 			var suggestion string
 			if err = tx.QueryRow(ctx, `SELECT content->>'suggestedCommand',(content->>'iteration')::int FROM action.plans WHERE tenant_id=$1 AND action_plan_id=$2`, a.TenantID, *b.ActionPlanID).Scan(&suggestion, &out.Iteration); err != nil {
@@ -388,7 +403,7 @@ func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestCont
 		if err != nil {
 			return err
 		}
-		err = tx.QueryRow(ctx, `INSERT INTO action.executions(tenant_id,execution_id,subject,target_canonical_id,shell,command_digest,risk_acknowledgement_id,execution_profile_version_id,idempotency_key_digest,state,binding,request_digest,command_envelope,suggestion_match,comparator_version,policy_decision_id,actor_context,dispatch_deadline) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'prepared',$10,$11,$12,$13,$14,$15,$16,LEAST($17,(SELECT expires_at FROM action.risk_acknowledgements WHERE tenant_id=$1 AND acknowledgement_id=$7))) RETURNING created_at`, a.TenantID, out.ID, a.Subject, b.Target, b.Shell, b.CommandDigest, ackID, vid, persistence.HashIdempotencyKey(key), Canonical(b), b.Digest(), Canonical(envelope), out.SuggestionMatch, ComparatorVersion, decision.DecisionID, Canonical(a), a.TokenExpiresAt).Scan(&out.CreatedAt)
+		err = tx.QueryRow(ctx, `INSERT INTO action.executions(tenant_id,execution_id,subject,target_canonical_id,shell,command_digest,risk_acknowledgement_id,execution_profile_version_id,idempotency_key_digest,state,binding,request_digest,command_envelope,suggestion_match,comparator_version,policy_decision_id,actor_context,dispatch_deadline,authority) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'prepared',$10,$11,$12,$13,$14,$15,$16,LEAST($17,(SELECT expires_at FROM action.risk_acknowledgements WHERE tenant_id=$1 AND acknowledgement_id=$7)),$18) RETURNING created_at`, a.TenantID, out.ID, a.Subject, b.Target, b.Shell, b.CommandDigest, ackID, vid, persistence.HashIdempotencyKey(key), Canonical(b), b.Digest(), Canonical(envelope), out.SuggestionMatch, ComparatorVersion, decision.DecisionID, Canonical(a), a.TokenExpiresAt, Canonical(commandAuthorityFromContext(ctx))).Scan(&out.CreatedAt)
 		if err != nil {
 			return err
 		}

@@ -75,6 +75,9 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "native-administrator" {
 		return runBootstrapNativeAdministrator(ctx, args[2:], stdout, stderr)
 	}
+	if len(args) > 1 && args[0] == "bootstrap" && args[1] == "first-tenant-native" {
+		return runBootstrapFirstTenantNative(ctx, args[2:], stdout, stderr)
+	}
 	if len(args) > 1 && args[0] == "graph" && args[1] == "lease-recover" {
 		return runGraphRecovery(ctx, args[2:], stdout, stderr)
 	}

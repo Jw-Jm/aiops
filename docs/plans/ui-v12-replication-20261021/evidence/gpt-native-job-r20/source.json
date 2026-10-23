@@ -1,0 +1,22 @@
+{
+  "round": "gpt-native-job-r20",
+  "head": "4b207ae8441e2367efc72d1a29388818f45cac8e",
+  "algorithm": "sha256",
+  "files": {
+    "migrations/00059_native_operator_job_authority.sql": "26e462b26f055a754ed5def804e3a732f69c38b9b40337f26246826cf36402a9",
+    "migrations/00060_native_first_tenant.sql": "fe696b1f3d3b16de4209a73efe6a39809e69b83ef90d26cb14f60cfe3dc49f97",
+    "internal/graph/protocol.go": "33d1e7be71d31c5cae7242ebddc2ec5e25d544604d21e0ef2eb7976128abdf6d",
+    "internal/investigation/assistant_v3.go": "9b17edf0ee2f469eca609910992b88ccde682c1a427c10068fa7aa77b8945d98",
+    "internal/assistant/repository.go": "9ad9c33f32c91df5e55e805823da604341d6ec4ae57ad4444c0a4528ce2895b3",
+    "internal/identity/repository.go": "7f4cb5a454c5863318824f0500b28a20824d4f0d2765cd54188ad81063dadd11",
+    "internal/identity/first_tenant.go": "98014cb53197486f8f61d066cbbaac66d07f01363cd82d2601a5c5b55b38e0fc",
+    "cmd/opsctl/main.go": "c8ee011f2389efa9098186af02fdfb31cc776d01765d2291dc32661b347d13d2",
+    "cmd/opsctl/bootstrap_first_tenant_native.go": "ebba8340aedb1aadbe6997116e6248962ea2ce05888f25bb45d0fb92898e84df",
+    "cmd/opsctl/bootstrap_first_tenant_native_test.go": "63156fab7b076e4fb5432c403099623eaf6218866c2fea34dcccddd589eca453",
+    "test/integration/native_operational_job_test.go": "c003297d008d4eec5cb463d650b373afa5ab046d8ec0ef402123ba4ea25a9f89",
+    "test/integration/native_first_tenant_test.go": "82ad4185f40aeaf847859e8a904734eaa33c6a417ac505aed7ebbba5a22d5b62"
+  },
+  "note": "本地 macOS 源码；Linux 集成二进制由同一源码树编译，上传 /data/ops-ui-v12-mfa-20261022-r1/gpt-native-job-r20/source 执行；未部署 API/Web/Worker 制品。",
+  "migrationState": "1～58 原文未改；59/60 为新增，仅在一次性临时库执行，任务库 ui_v12_native_identity 仍 schema57，部署前需按序前滚并复验。",
+  "contracts": "assistant_binding 为内部 Job 列，不经 API 序列化，故本轮不需要 OpenAPI/Schema/生成客户端变更；CLI 输出只增标识与版本字段。"
+}

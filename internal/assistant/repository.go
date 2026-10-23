@@ -68,11 +68,21 @@ func authorizeConversation(ctx context.Context, tx pgx.Tx, c Conversation) (grap
 	if graph.ScopeDigest(grant) != graph.ScopeDigest(c.Binding.GrantSnapshot) || !investigation.ScopeSubset(grant, c.Binding.ExecutionScope) {
 		return grant, investigation.ErrDenied
 	}
+	if err := authorizeFrozenBinding(ctx, tx, c); err != nil {
+		return grant, err
+	}
+	return grant, nil
+}
+
+// authorizeFrozenBinding re-checks the frozen resource and incident references
+// against current rows. It is shared by same-owner and mapped-owner reads: the
+// frozen evidence is verified, never rewritten.
+func authorizeFrozenBinding(ctx context.Context, tx pgx.Tx, c Conversation) error {
 	if c.Binding.ResourceContext != nil {
 		for _, candidate := range c.Binding.ResourceContext.Resources {
 			var ns string
 			if tx.QueryRow(ctx, `SELECT namespace FROM platform.resource_entities WHERE tenant_id=$1 AND canonical_id=$2 AND deleted_at IS NULL`, c.TenantID, candidate.CanonicalID).Scan(&ns) != nil || !c.Binding.ExecutionScope.Allows(candidate.CanonicalID, ns) {
-				return grant, investigation.ErrDenied
+				return investigation.ErrDenied
 			}
 		}
 	}
@@ -80,29 +90,29 @@ func authorizeConversation(ctx context.Context, tx pgx.Tx, c Conversation) (grap
 		var cluster string
 		var ns string
 		if tx.QueryRow(ctx, `SELECT cluster_uid,namespace FROM incident.records WHERE tenant_id=$1 AND incident_id=$2`, c.TenantID, c.Binding.IncidentID).Scan(&cluster, &ns) != nil || cluster != c.ClusterUID {
-			return grant, investigation.ErrDenied
+			return investigation.ErrDenied
 		}
 		if (ns == "" && !c.Binding.ExecutionScope.ClusterScoped) || (ns != "" && !slices.Contains(c.Binding.ExecutionScope.Namespaces, ns)) {
-			return grant, investigation.ErrDenied
+			return investigation.ErrDenied
 		}
 		rows, err := tx.Query(ctx, `SELECT f.cluster_uid,f.namespace,COALESCE(f.resource_canonical_id,'') FROM incident.finding_links l JOIN finding.records f USING(tenant_id,finding_id) WHERE l.tenant_id=$1 AND l.incident_id=$2`, c.TenantID, c.Binding.IncidentID)
 		if err != nil {
-			return grant, investigation.ErrDenied
+			return investigation.ErrDenied
 		}
 		for rows.Next() {
 			var findingCluster, namespace, canonicalID string
 			if rows.Scan(&findingCluster, &namespace, &canonicalID) != nil || findingCluster != c.ClusterUID || !c.Binding.ExecutionScope.Allows(canonicalID, namespace) {
 				rows.Close()
-				return grant, investigation.ErrDenied
+				return investigation.ErrDenied
 			}
 		}
 		err = rows.Err()
 		rows.Close()
 		if err != nil {
-			return grant, investigation.ErrDenied
+			return investigation.ErrDenied
 		}
 	}
-	return grant, nil
+	return nil
 }
 
 type CreationKey struct{ Key, RequestDigest string }
@@ -219,15 +229,39 @@ func (r Repository) Create(ctx context.Context, c Conversation, keys ...Creation
 	return c, err
 }
 func (r Repository) Get(ctx context.Context, tenant, id uuid.UUID, subject string) (Conversation, error) {
+	return r.get(ctx, tenant, id, subject, false)
+}
+
+// GetReadable additionally serves history still owned by an explicitly mapped
+// pre-native subject. It is read-only: every write path keeps using Get, so a
+// mapped account can never append to, archive or rebind a historical owner's
+// conversation.
+func (r Repository) GetReadable(ctx context.Context, tenant, id uuid.UUID, subject string) (Conversation, error) {
+	return r.get(ctx, tenant, id, subject, true)
+}
+
+func (r Repository) get(ctx context.Context, tenant, id uuid.UUID, subject string, allowMapped bool) (Conversation, error) {
 	var c Conversation
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
 		var err error
-		c, err = loadConversation(ctx, tx, tenant, id, subject, false)
+		read := investigation.HistoricalRead{OwnerSubject: subject, CurrentSubject: subject}
+		var rs readSubjects
+		if allowMapped {
+			if rs, err = newReadSubjects(ctx, tx, tenant, subject); err != nil {
+				return err
+			}
+			c, read, err = loadReadableConversation(ctx, tx, tenant, id, rs, false)
+		} else {
+			c, err = loadConversation(ctx, tx, tenant, id, subject, false)
+			read.OwnerSubject = c.OwnerSubject
+		}
 		if err != nil {
 			return err
 		}
-		_, err = authorizeConversation(ctx, tx, c)
-		if err != nil {
+		if _, err = authorizeRead(ctx, tx, c, read); err != nil {
+			return err
+		}
+		if err = rs.recordAudit(ctx, tx, tenant, c, read); err != nil {
 			return err
 		}
 		var turnID uuid.UUID
@@ -242,14 +276,14 @@ func (r Repository) Get(ctx context.Context, tenant, id uuid.UUID, subject strin
 		if err != nil {
 			return err
 		}
-		if _, err := investigation.AssistantReadJobTx(ctx, tx, c.TenantID, c.OwnerSubject, c.ConversationID, turn.TurnID, c.Binding.ExecutionScope); err != nil {
+		if _, err := investigation.AssistantReadJobTxAs(ctx, tx, c.TenantID, read, c.ConversationID, turn.TurnID, c.Binding.ExecutionScope); err != nil {
 			if errors.Is(err, investigation.ErrDenied) {
 				return nil
 			}
 			return err
 		}
 		if len(turn.Answer) > 0 {
-			if err := authorizeTurnAnswer(ctx, tx, c, turn.TurnID, turn.Answer); err != nil {
+			if err := authorizeTurnAnswer(ctx, tx, c, turn.TurnID, turn.Answer, read); err != nil {
 				if !errors.Is(err, investigation.ErrResultExpired) {
 					return err
 				}
@@ -271,18 +305,21 @@ func taskKind(c Conversation) string {
 	}
 	return "resource_troubleshooting"
 }
-func authorizeTurnAnswer(ctx context.Context, tx pgx.Tx, c Conversation, turn uuid.UUID, answer json.RawMessage) error {
-	j, err := investigation.AssistantReadJobTx(ctx, tx, c.TenantID, c.OwnerSubject, c.ConversationID, turn, c.Binding.ExecutionScope)
+func authorizeTurnAnswer(ctx context.Context, tx pgx.Tx, c Conversation, turn uuid.UUID, answer json.RawMessage, read investigation.HistoricalRead) error {
+	// The proven mapped read travels with the transaction context so nested
+	// read-only checks (fault-chain context and its source steps) re-prove the
+	// same Job instead of falling back to the frozen legacy subject.
+	readCtx, j, err := investigation.AuthorizeHistoricalReadTx(ctx, tx, c.TenantID, read, c.ConversationID, turn, c.Binding.ExecutionScope)
 	if err != nil {
 		return err
 	}
 	if err = investigation.AssistantAnswerRetainedTx(ctx, tx, c.TenantID, c.ConversationID, turn); err != nil {
 		return err
 	}
-	return investigation.AuthorizeAssistantResultTx(ctx, tx, j, answer)
+	return investigation.AuthorizeAssistantResultTx(readCtx, tx, j, answer)
 }
 
-func messages(ctx context.Context, tx pgx.Tx, c Conversation, limit int, cursors ...int64) ([]Message, error) {
+func messages(ctx context.Context, tx pgx.Tx, c Conversation, read investigation.HistoricalRead, limit int, cursors ...int64) ([]Message, error) {
 	out := []Message{}
 	before := int64(9223372036854775807)
 	if len(cursors) > 0 && cursors[0] > 0 {
@@ -311,7 +348,7 @@ func messages(ctx context.Context, tx pgx.Tx, c Conversation, limit int, cursors
 	filtered := []Message{}
 	deniedTurns := map[uuid.UUID]bool{}
 	for _, m := range out {
-		if _, err := investigation.AssistantReadJobTx(ctx, tx, c.TenantID, c.OwnerSubject, c.ConversationID, m.TurnID, c.Binding.ExecutionScope); err != nil {
+		if _, err := investigation.AssistantReadJobTxAs(ctx, tx, c.TenantID, read, c.ConversationID, m.TurnID, c.Binding.ExecutionScope); err != nil {
 			if errors.Is(err, investigation.ErrDenied) {
 				deniedTurns[m.TurnID] = true
 				continue
@@ -319,7 +356,7 @@ func messages(ctx context.Context, tx pgx.Tx, c Conversation, limit int, cursors
 			return nil, err
 		}
 		if m.Role == "assistant" {
-			if err := authorizeTurnAnswer(ctx, tx, c, m.TurnID, m.Content); err != nil {
+			if err := authorizeTurnAnswer(ctx, tx, c, m.TurnID, m.Content, read); err != nil {
 				if errors.Is(err, investigation.ErrDenied) {
 					deniedTurns[m.TurnID] = true
 					continue
@@ -345,14 +382,21 @@ func (r Repository) MessagePage(ctx context.Context, tenant, id uuid.UUID, subje
 	}
 	var out []Message
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
-		c, err := loadConversation(ctx, tx, tenant, id, subject, false)
+		rs, err := newReadSubjects(ctx, tx, tenant, subject)
 		if err != nil {
 			return err
 		}
-		if _, err = authorizeConversation(ctx, tx, c); err != nil {
+		c, read, err := loadReadableConversation(ctx, tx, tenant, id, rs, false)
+		if err != nil {
 			return err
 		}
-		out, err = messages(ctx, tx, c, limit, before)
+		if _, err = authorizeRead(ctx, tx, c, read); err != nil {
+			return err
+		}
+		if err = rs.recordAudit(ctx, tx, tenant, c, read); err != nil {
+			return err
+		}
+		out, err = messages(ctx, tx, c, read, limit, before)
 		return err
 	})
 	return out, err
@@ -412,7 +456,7 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 				return err
 			}
 			if len(out.Answer) > 0 {
-				return authorizeTurnAnswer(ctx, tx, c, out.TurnID, out.Answer)
+				return authorizeTurnAnswer(ctx, tx, c, out.TurnID, out.Answer, ownerRead(c, c.OwnerSubject))
 			}
 			return nil
 		}
@@ -459,7 +503,7 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 		if !ready {
 			return investigation.ErrNoJob
 		}
-		history, err := messages(ctx, tx, c, 12)
+		history, err := messages(ctx, tx, c, ownerRead(c, c.OwnerSubject), 12)
 		if err != nil {
 			return err
 		}
@@ -559,15 +603,14 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 			return err
 		}
 		j.Assistant = &investigation.AssistantTask{DatasetCatalogVersion: datasetCatalog.Version, DatasetCatalogDigest: graph.ScopeDigest(datasetCatalog), TaskKind: taskKind(c), AuthorizationDomain: c.AuthorizationDomain, ConversationID: id, TurnID: out.TurnID, InputDigest: graph.ScopeDigest(input), ContextDigest: graph.ScopeDigest(c.Binding), GrantSnapshot: grant, GrantSnapshotDigest: graph.ScopeDigest(grant), CatalogVersion: "assistant-tools/v2", PromptVersion: "assistant/v1", ModelProfileVersion: admission.ModelProfileVersion, ResultSchemaVersion: "assistant-answer/v1"}
-		if c.AuthorizationDomain == "audit" {
-			// Freeze the exact source and version the grant digest was computed
-			// from, so the Worker recheck cannot silently switch identity systems
-			// or accept a re-granted role.
-			authority := investigation.AuditAuthorityFromContext(ctx)
-			j.Assistant.AuthorizationSource = authority.Source
-			j.Assistant.AuthorizationUserID = authority.UserID
-			j.Assistant.AuthorizationVersion = authority.AuthorizationVersion
-		}
+		// Freeze the exact identity source and version the grant digest was
+		// computed from, for audit and business jobs alike. The Worker re-proves
+		// this source later without a browser session and cannot silently switch
+		// identity systems or accept a re-granted role.
+		authority := investigation.AuditAuthorityFromContext(ctx)
+		j.Assistant.AuthorizationSource = authority.Source
+		j.Assistant.AuthorizationUserID = authority.UserID
+		j.Assistant.AuthorizationVersion = authority.AuthorizationVersion
 		if q.FaultChainRequest != nil {
 			j.Assistant.ExecutionMode = "evidence_only"
 			j.Assistant.FaultChainRequestDigest = graph.ScopeDigest(*q.FaultChainRequest)
@@ -606,6 +649,16 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 	return out, err
 }
 func (r Repository) Turn(ctx context.Context, tenant, id uuid.UUID, subject string) (Turn, error) {
+	return r.turn(ctx, tenant, id, subject, false)
+}
+
+// TurnReadable serves a turn of a conversation owned by an explicitly mapped
+// pre-native subject. Cancel keeps the strict Turn path.
+func (r Repository) TurnReadable(ctx context.Context, tenant, id uuid.UUID, subject string) (Turn, error) {
+	return r.turn(ctx, tenant, id, subject, true)
+}
+
+func (r Repository) turn(ctx context.Context, tenant, id uuid.UUID, subject string, allowMapped bool) (Turn, error) {
 	var out Turn
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
 		var err error
@@ -613,15 +666,29 @@ func (r Repository) Turn(ctx context.Context, tenant, id uuid.UUID, subject stri
 		if err != nil {
 			return err
 		}
-		c, err := loadConversation(ctx, tx, tenant, out.ConversationID, subject, false)
+		read := investigation.HistoricalRead{OwnerSubject: subject, CurrentSubject: subject}
+		var c Conversation
+		var rs readSubjects
+		if allowMapped {
+			if rs, err = newReadSubjects(ctx, tx, tenant, subject); err != nil {
+				return err
+			}
+			c, read, err = loadReadableConversation(ctx, tx, tenant, out.ConversationID, rs, false)
+		} else {
+			c, err = loadConversation(ctx, tx, tenant, out.ConversationID, subject, false)
+			read.OwnerSubject = c.OwnerSubject
+		}
 		if err != nil {
 			return err
 		}
-		if _, err = authorizeConversation(ctx, tx, c); err != nil {
+		if _, err = authorizeRead(ctx, tx, c, read); err != nil {
+			return err
+		}
+		if err = rs.recordAudit(ctx, tx, tenant, c, read); err != nil {
 			return err
 		}
 		if len(out.Answer) > 0 {
-			err := authorizeTurnAnswer(ctx, tx, c, out.TurnID, out.Answer)
+			err := authorizeTurnAnswer(ctx, tx, c, out.TurnID, out.Answer, read)
 			if errors.Is(err, investigation.ErrResultExpired) {
 				out.Answer = nil
 				out.ErrorCode = "RESULT_EXPIRED"
@@ -684,7 +751,11 @@ func (r Repository) ListPage(ctx context.Context, tenant uuid.UUID, subject stri
 		beforeID = uuid.MustParse("ffffffff-ffff-ffff-ffff-ffffffffffff")
 	}
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
-		rows, err := tx.Query(ctx, `SELECT conversation_id,updated_at FROM investigation.assistant_conversations WHERE tenant_id=$1 AND owner_subject=$2 AND archived_at IS NULL AND (updated_at,conversation_id)<($3,$4) ORDER BY updated_at DESC,conversation_id DESC LIMIT 201`, tenant, subject, before, beforeID)
+		rs, err := newReadSubjects(ctx, tx, tenant, subject)
+		if err != nil {
+			return err
+		}
+		rows, err := tx.Query(ctx, `SELECT conversation_id,updated_at FROM investigation.assistant_conversations WHERE tenant_id=$1 AND owner_subject = ANY($2) AND archived_at IS NULL AND (updated_at,conversation_id)<($3,$4) ORDER BY updated_at DESC,conversation_id DESC LIMIT 201`, tenant, rs.subjects(), before, beforeID)
 		if err != nil {
 			return err
 		}
@@ -713,14 +784,17 @@ func (r Repository) ListPage(ctx context.Context, tenant uuid.UUID, subject stri
 			}
 			page.Before = p.at
 			page.BeforeID = p.id
-			c, err := loadConversation(ctx, tx, tenant, p.id, subject, false)
+			c, read, err := loadReadableConversation(ctx, tx, tenant, p.id, rs, false)
 			if err != nil {
 				return err
 			}
-			if _, err = authorizeConversation(ctx, tx, c); err != nil {
+			if _, err = authorizeRead(ctx, tx, c, read); err != nil {
 				if errors.Is(err, investigation.ErrDenied) {
 					continue
 				}
+				return err
+			}
+			if err = rs.recordAudit(ctx, tx, tenant, c, read); err != nil {
 				return err
 			}
 			page.Items = append(page.Items, c)
@@ -750,11 +824,19 @@ func (r Repository) Events(ctx context.Context, tenant, id uuid.UUID, subject st
 	}
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
 		var err error
-		c, err = loadConversation(ctx, tx, tenant, id, subject, false)
+		rs, err := newReadSubjects(ctx, tx, tenant, subject)
 		if err != nil {
 			return err
 		}
-		if _, err = authorizeConversation(ctx, tx, c); err != nil {
+		var read investigation.HistoricalRead
+		c, read, err = loadReadableConversation(ctx, tx, tenant, id, rs, false)
+		if err != nil {
+			return err
+		}
+		if _, err = authorizeRead(ctx, tx, c, read); err != nil {
+			return err
+		}
+		if err = rs.recordAudit(ctx, tx, tenant, c, read); err != nil {
 			return err
 		}
 		var maxSeq int64
@@ -783,7 +865,7 @@ func (r Repository) Events(ctx context.Context, tenant, id uuid.UUID, subject st
 		}
 		for index, e := range out {
 			if e.TurnID != uuid.Nil {
-				if _, err := investigation.AssistantReadJobTx(ctx, tx, c.TenantID, c.OwnerSubject, c.ConversationID, e.TurnID, c.Binding.ExecutionScope); err != nil {
+				if _, err := investigation.AssistantReadJobTxAs(ctx, tx, c.TenantID, read, c.ConversationID, e.TurnID, c.Binding.ExecutionScope); err != nil {
 					if !errors.Is(err, investigation.ErrDenied) {
 						return err
 					}
@@ -800,7 +882,7 @@ func (r Repository) Events(ctx context.Context, tenant, id uuid.UUID, subject st
 				return investigation.ErrInvalid
 			}
 			if len(v.Result) > 0 {
-				if err := authorizeTurnAnswer(ctx, tx, c, e.TurnID, v.Result); err != nil {
+				if err := authorizeTurnAnswer(ctx, tx, c, e.TurnID, v.Result, read); err != nil {
 					if !errors.Is(err, investigation.ErrResultExpired) {
 						return err
 					}
@@ -816,18 +898,25 @@ func (r Repository) Events(ctx context.Context, tenant, id uuid.UUID, subject st
 func (r Repository) QueryResult(ctx context.Context, tenant, id uuid.UUID, subject string) (investigation.StoredQueryResult, error) {
 	var out investigation.StoredQueryResult
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
-		var cid, turnID uuid.UUID
-		if err := tx.QueryRow(ctx, `SELECT t.conversation_id,t.turn_id FROM investigation.assistant_query_results q JOIN investigation.assistant_turns t USING(tenant_id,turn_id) WHERE q.tenant_id=$1 AND q.query_result_id=$2 AND q.owner_subject=$3`, tenant, id, subject).Scan(&cid, &turnID); err != nil {
-			return err
-		}
-		c, err := loadConversation(ctx, tx, tenant, cid, subject, false)
+		rs, err := newReadSubjects(ctx, tx, tenant, subject)
 		if err != nil {
 			return err
 		}
-		if _, err = authorizeConversation(ctx, tx, c); err != nil {
+		var cid, turnID uuid.UUID
+		if err := tx.QueryRow(ctx, `SELECT t.conversation_id,t.turn_id FROM investigation.assistant_query_results q JOIN investigation.assistant_turns t USING(tenant_id,turn_id) WHERE q.tenant_id=$1 AND q.query_result_id=$2 AND q.owner_subject = ANY($3)`, tenant, id, rs.subjects()).Scan(&cid, &turnID); err != nil {
 			return err
 		}
-		j, err := investigation.AssistantReadJobTx(ctx, tx, tenant, subject, cid, turnID, c.Binding.ExecutionScope)
+		c, read, err := loadReadableConversation(ctx, tx, tenant, cid, rs, false)
+		if err != nil {
+			return err
+		}
+		if _, err = authorizeRead(ctx, tx, c, read); err != nil {
+			return err
+		}
+		if err = rs.recordAudit(ctx, tx, tenant, c, read); err != nil {
+			return err
+		}
+		j, err := investigation.AssistantReadJobTxAs(ctx, tx, tenant, read, cid, turnID, c.Binding.ExecutionScope)
 		if err != nil {
 			return err
 		}

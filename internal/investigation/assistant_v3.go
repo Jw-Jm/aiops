@@ -55,22 +55,63 @@ func (a *AssistantTask) Valid(j Job) bool {
 		return false
 	}
 	if a.AuthorizationDomain == "audit" {
-		if !a.validAuditAuthority() {
+		if !a.validAuthority() {
 			return false
 		}
 		return a.TaskKind == "data_query" && j.IncidentID == uuid.Nil && j.TriggerRevision == 0 && j.Scope.Cluster == "" && a.GrantSnapshot.Tenant == j.TenantID.String() && graph.ScopeDigest(j.Scope) == a.GrantSnapshotDigest && !j.Scope.ClusterScoped && len(j.Scope.Resources) == 0 && len(j.Scope.Namespaces) == 0
 	}
-	if a.AuthorizationDomain != "operational" || !ScopeSubset(a.GrantSnapshot, j.Scope) {
+	if a.AuthorizationDomain != "operational" || !a.validAuthority() || !ScopeSubset(a.GrantSnapshot, j.Scope) {
 		return false
 	}
 	return (a.TaskKind == "incident_followup" && j.IncidentID != uuid.Nil && j.TriggerRevision > 0) || (slices.Contains([]string{"data_query", "resource_troubleshooting"}, a.TaskKind) && j.IncidentID == uuid.Nil && j.TriggerRevision == 0)
 }
 func ScopeSubset(grant, scope graph.Scope) bool { return graph.ContainsScope(grant, scope) }
 
-// validAuditAuthority rejects an audit job whose identity source is unknown, or
-// a native job that lost the user/version its digest was computed from. An
-// empty source is accepted only as the historical legacy encoding.
-func (a *AssistantTask) validAuditAuthority() bool {
+// HistoricalRead binds the frozen owner of a business row with the identity
+// reading it now. It is built only after an explicit, reviewed subject mapping
+// was proven in the same transaction. It never rewrites the frozen subject,
+// grant snapshot or digest of the historical row.
+type HistoricalRead struct {
+	OwnerSubject   string
+	CurrentSubject string
+	Mapped         bool
+	MappingID      uuid.UUID
+	EvidenceDigest string
+}
+
+// ScopeCoversMappedOwner compares a current native grant with an execution
+// scope frozen under another identity source. The authorization revision is
+// not comparable across identity systems, so it cannot be part of the
+// comparison; tenant, cluster, cluster-scoped flag, namespaces and resources
+// must still be contained. The frozen snapshot itself remains unchanged and is
+// still validated against the frozen job by AssistantTask.Valid.
+func ScopeCoversMappedOwner(grant, scope graph.Scope) bool {
+	if grant.Tenant != scope.Tenant || grant.Cluster != scope.Cluster || (scope.ClusterScoped && !grant.ClusterScoped) {
+		return false
+	}
+	for _, namespace := range scope.Namespaces {
+		if !slices.Contains(grant.Namespaces, namespace) {
+			return false
+		}
+	}
+	if len(grant.Resources) > 0 {
+		if len(scope.Resources) == 0 {
+			return false
+		}
+		for _, id := range scope.Resources {
+			if !slices.Contains(grant.Resources, id) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// validAuthority rejects a job whose identity source is unknown, or a native job
+// that lost the user/version its digest was computed from. An empty source is
+// accepted only as the historical legacy encoding; every new job, audit or
+// operational, persists an explicit source.
+func (a *AssistantTask) validAuthority() bool {
 	switch a.AuthorizationSource {
 	case AuditSourceNative:
 		return a.AuthorizationUserID != uuid.Nil && a.AuthorizationVersion >= 1
@@ -94,13 +135,8 @@ type AuditAuthorityRef struct {
 // AuditAuthorityFromContext returns the source that the current request proves
 // its audit authority with. A native session is never described as legacy.
 func AuditAuthorityFromContext(ctx context.Context) AuditAuthorityRef {
-	if native, ok := auth.NativeSessionFromContext(ctx); ok {
-		return AuditAuthorityRef{
-			Source: AuditSourceNative, UserID: native.Session.UserID,
-			AuthorizationVersion: native.Session.AuthorizationVersion,
-		}
-	}
-	return AuditAuthorityRef{Source: AuditSourceLegacy}
+	ref := auth.AuthorityFromContext(ctx)
+	return AuditAuthorityRef{Source: ref.Source, UserID: ref.UserID, AuthorizationVersion: ref.AuthorizationVersion}
 }
 
 func emptyAuditScope(tenant uuid.UUID) graph.Scope {
@@ -159,21 +195,42 @@ func AuditScopeForJobTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, subjec
 }
 
 func nativeAuditScope(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, subject string, ref AuditAuthorityRef, out graph.Scope) (graph.Scope, error) {
-	if ref.UserID == uuid.Nil || ref.AuthorizationVersion < 1 {
+	return nativeRoleScopeForJobTx(ctx, tx, tenant, subject, ref, "platform_admin", "")
+}
+
+// NativeOperatorScopeForJobTx re-proves an operational job admitted by a native
+// operator without a browser session. It reads the live grant rows and refuses
+// when the account is disabled, the grants were revoked or re-granted, or the
+// account authorization version moved; the rebuilt scope must also reproduce the
+// frozen grant digest exactly. Legacy rows never reach this function.
+func NativeOperatorScopeForJobTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, subject string, ref AuditAuthorityRef, cluster string) (graph.Scope, error) {
+	return nativeRoleScopeForJobTx(ctx, tx, tenant, subject, ref, "operator", cluster)
+}
+
+func nativeRoleScopeForJobTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, subject string, ref AuditAuthorityRef, role, cluster string) (graph.Scope, error) {
+	out := emptyAuditScope(tenant)
+	if tx == nil || tenant == uuid.Nil || subject == "" || ref.UserID == uuid.Nil || ref.AuthorizationVersion < 1 {
 		return out, ErrDenied
 	}
-	authority, err := authz.NativeAuthorityFor(ctx, tx, tenant, ref.UserID, "platform_admin")
-	if err != nil || authority.AuthorizationVersion != ref.AuthorizationVersion {
-		// Revoked, re-granted, disabled or re-versioned authority changes the
-		// digest and denies the job; it never falls back to legacy bindings.
-		return out, ErrDenied
+	if role == "platform_admin" {
+		// Locked projection: same account->grant order as the administrative write,
+		// so a concurrent revocation waits until this transaction commits.
+		var version int
+		var bindings []uuid.UUID
+		if err := tx.QueryRow(ctx, `SELECT authorization_version,binding_ids FROM platform.native_authority_shared($1,$2,$3)`, tenant, ref.UserID, role).Scan(&version, &bindings); err != nil {
+			return out, ErrDenied
+		}
+		if version != ref.AuthorizationVersion || len(bindings) == 0 {
+			return out, ErrDenied
+		}
+		var revision int64
+		if err := tx.QueryRow(ctx, `SELECT revision FROM platform.tenants WHERE tenant_id=$1 AND status='active'`, tenant).Scan(&revision); err != nil {
+			return out, ErrDenied
+		}
+		out.AuthorizationRevision = NativeAuditRevision(revision, subject, ref.UserID, version, bindings)
+		return out, nil
 	}
-	var revision int64
-	if err := tx.QueryRow(ctx, `SELECT revision FROM platform.tenants WHERE tenant_id=$1 AND status='active'`, tenant).Scan(&revision); err != nil {
-		return out, ErrDenied
-	}
-	out.AuthorizationRevision = NativeAuditRevision(revision, subject, ref.UserID, authority.AuthorizationVersion, authority.BindingIDs)
-	return out, nil
+	return graph.EffectivePersistedNativeTx(ctx, tx, tenant.String(), subject, cluster, ref.UserID, ref.AuthorizationVersion)
 }
 
 // NativeAuditRevision is the audit authorization digest for a native subject.
@@ -231,24 +288,49 @@ func AuditScope(ctx context.Context, pool persistence.TxBeginner, tenant uuid.UU
 	return out, err
 }
 func currentAssistant(ctx context.Context, tx pgx.Tx, j Job) error {
+	return currentAssistantAs(ctx, tx, j, HistoricalRead{OwnerSubject: j.Subject, CurrentSubject: j.Subject})
+}
+
+// currentAssistantAs re-proves a job's authority inside the caller's
+// transaction. A mapped historical owner is re-authorized with the reading
+// account's current native authority only; the frozen legacy grant is kept as
+// evidence and never compared as if it were a native grant.
+func currentAssistantAs(ctx context.Context, tx pgx.Tx, j Job, read HistoricalRead) error {
 	if !j.Assistant.Valid(j) || graph.ScopeDigest(j.Scope) != j.EffectiveScopeDigest {
 		return ErrDenied
 	}
-	var grant graph.Scope
-	var err error
-	if j.Assistant.AuthorizationDomain == "audit" {
-		// Recheck with the source recorded at admission. A Worker has no browser
-		// session, and must not guess its way into the legacy binding table.
-		grant, err = AuditScopeForJobTx(ctx, tx, j.TenantID, j.Subject, AuditAuthorityRef{
+	if read.Mapped {
+		if read.OwnerSubject != j.Subject || read.CurrentSubject == "" || read.CurrentSubject == j.Subject || read.MappingID == uuid.Nil {
+			return ErrDenied
+		}
+		if err := currentMappedAuthority(ctx, tx, j, read.CurrentSubject); err != nil {
+			return ErrDenied
+		}
+	} else {
+		var grant graph.Scope
+		var err error
+		authority := AuditAuthorityRef{
 			Source:               j.Assistant.AuthorizationSource,
 			UserID:               j.Assistant.AuthorizationUserID,
 			AuthorizationVersion: j.Assistant.AuthorizationVersion,
-		})
-	} else {
-		grant, err = graph.EffectiveTx(ctx, tx, j.TenantID.String(), j.Subject, j.Scope.Cluster, true)
-	}
-	if err != nil || graph.ScopeDigest(grant) != j.Assistant.GrantSnapshotDigest {
-		return ErrDenied
+		}
+		switch {
+		case j.Assistant.AuthorizationDomain == "audit":
+			// Recheck with the source recorded at admission. A Worker has no browser
+			// session, and must not guess its way into the legacy binding table.
+			grant, err = AuditScopeForJobTx(ctx, tx, j.TenantID, j.Subject, authority)
+		case authority.Source == AuditSourceNative:
+			// A business job admitted by a native operator is re-proved from the
+			// persisted account/version and the live grant rows, never from a
+			// browser session and never by falling back to legacy bindings.
+			grant, err = NativeOperatorScopeForJobTx(ctx, tx, j.TenantID, j.Subject, authority, j.Scope.Cluster)
+		default:
+			// Rows written before the source field existed could only be legacy.
+			grant, err = graph.EffectiveTx(ctx, tx, j.TenantID.String(), j.Subject, j.Scope.Cluster, true)
+		}
+		if err != nil || graph.ScopeDigest(grant) != j.Assistant.GrantSnapshotDigest {
+			return ErrDenied
+		}
 	}
 	var owner, digest, contextDigest string
 	if err := tx.QueryRow(ctx, `SELECT c.owner_subject,t.input_digest,t.context_digest FROM investigation.assistant_turns t JOIN investigation.assistant_conversations c USING(tenant_id,conversation_id) WHERE t.tenant_id=$1 AND t.turn_id=$2 AND t.job_id=$3 AND c.conversation_id=$4`, j.TenantID, j.Assistant.TurnID, j.JobID, j.Assistant.ConversationID).Scan(&owner, &digest, &contextDigest); err != nil || owner != j.Subject || digest != j.Assistant.InputDigest || contextDigest != j.Assistant.ContextDigest {
@@ -265,6 +347,43 @@ func currentAssistant(ctx context.Context, tx pgx.Tx, j Job) error {
 		return ErrDenied
 	}
 	return nil
+}
+
+// currentMappedAuthority re-proves a reading account's *current* authority for
+// history frozen under a pre-native owner. It requires a live native session
+// with its issued versions, and either the current platform administrator role
+// (audit domain) or a current operator grant that still covers the frozen
+// cluster/namespace/resource scope (operational domain). The frozen snapshot is
+// validated against the frozen job separately, so a stored grant is never
+// rewritten into a native one.
+func currentMappedAuthority(ctx context.Context, tx pgx.Tx, j Job, currentSubject string) error {
+	native, ok := auth.NativeSessionFromContext(ctx)
+	if !ok || native.Session.TenantID != j.TenantID || native.Session.Subject != currentSubject {
+		return ErrDenied
+	}
+	if graph.ScopeDigest(j.Assistant.GrantSnapshot) != j.Assistant.GrantSnapshotDigest || !ScopeCoversMappedOwner(j.Assistant.GrantSnapshot, j.Scope) {
+		return ErrDenied
+	}
+	switch j.Assistant.AuthorizationDomain {
+	case "audit":
+		allowed, err := authz.NativeRoleAuthorized(ctx, tx, auth.RequestContext{TenantID: j.TenantID, Subject: currentSubject}, "platform_admin")
+		if err != nil || !allowed {
+			return ErrDenied
+		}
+		var revision int64
+		if err := tx.QueryRow(ctx, `SELECT revision FROM platform.tenants WHERE tenant_id=$1 AND status='active'`, j.TenantID).Scan(&revision); err != nil {
+			return ErrDenied
+		}
+		return nil
+	case "operational":
+		grant, err := graph.EffectiveTx(ctx, tx, j.TenantID.String(), currentSubject, j.Scope.Cluster, true)
+		if err != nil || !ScopeCoversMappedOwner(grant, j.Scope) {
+			return ErrDenied
+		}
+		return nil
+	default:
+		return ErrDenied
+	}
 }
 
 // CreateAssistantJobTx shares the caller's short transaction with Message/Turn.
@@ -325,7 +444,46 @@ func (r Repository) completeAssistant(ctx context.Context, l Lease, b []byte) er
 	})
 }
 
+// historicalReadGrant carries an already-proven mapped read to the nested
+// read-only helpers that re-check the Job. The type and its key are unexported,
+// so only AuthorizeHistoricalReadTx can create one; every use is re-proved
+// against the live native session and the account's current authority.
+type historicalReadGrant struct {
+	tenant uuid.UUID
+	job    uuid.UUID
+	read   HistoricalRead
+}
+
+type historicalReadGrantKey struct{}
+
+// AuthorizeHistoricalReadTx proves the historical read once and returns a
+// context carrying that grant so nested read-only checks (fault-chain context,
+// source steps, formal references) stay authorized. The frozen Job, Subject and
+// digests are untouched: the grant only names the reading account, and
+// CheckAssistantJobTx re-runs currentAssistantAs for the exact same Job.
+func AuthorizeHistoricalReadTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, read HistoricalRead, conversation, turn uuid.UUID, scope graph.Scope) (context.Context, Job, error) {
+	j, err := AssistantReadJobTxAs(ctx, tx, tenant, read, conversation, turn, scope)
+	if err != nil {
+		return ctx, Job{}, err
+	}
+	if read.Mapped {
+		ctx = context.WithValue(ctx, historicalReadGrantKey{}, historicalReadGrant{tenant: tenant, job: j.JobID, read: read})
+	}
+	return ctx, j, nil
+}
+
+// CheckAssistantJobTx re-proves Job authority. A mapped read grant can only
+// extend an already authorized read to its own Job: it never matches another
+// tenant/Job, never applies to an owner-exact read and cannot be constructed by
+// a Worker or an HTTP write path (neither attaches one, and the mapped branch
+// still requires a live native session plus current cluster/namespace scope).
 func CheckAssistantJobTx(ctx context.Context, tx pgx.Tx, j Job) error {
+	if grant, ok := ctx.Value(historicalReadGrantKey{}).(historicalReadGrant); ok {
+		if !grant.read.Mapped || grant.tenant != j.TenantID || grant.job != j.JobID || grant.read.OwnerSubject != j.Subject {
+			return ErrDenied
+		}
+		return currentAssistantAs(ctx, tx, j, grant.read)
+	}
 	return currentAssistant(ctx, tx, j)
 }
 func AuthorizeAssistantResultTx(ctx context.Context, tx pgx.Tx, j Job, result []byte) error {
@@ -335,15 +493,23 @@ func AuthorizeAssistantResultTx(ctx context.Context, tx pgx.Tx, j Job, result []
 // AssistantReadJobTx restores the exact admitted policy and data ceiling for
 // history reads. A conversation scope alone cannot stand in for a Job budget.
 func AssistantReadJobTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, subject string, conversation, turn uuid.UUID, scope graph.Scope) (Job, error) {
+	return AssistantReadJobTxAs(ctx, tx, tenant, HistoricalRead{OwnerSubject: subject, CurrentSubject: subject}, conversation, turn, scope)
+}
+
+// AssistantReadJobTxAs restores the exact admitted job for a read whose owner
+// may be an explicitly mapped historical subject. The frozen owner, job id,
+// input/context digests and policy version are still required to match; only
+// the identity that must currently hold authority is the reading account.
+func AssistantReadJobTxAs(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, read HistoricalRead, conversation, turn uuid.UUID, scope graph.Scope) (Job, error) {
 	var id uuid.UUID
 	if tx.QueryRow(ctx, `SELECT job_id FROM investigation.assistant_turns WHERE tenant_id=$1 AND conversation_id=$2 AND turn_id=$3`, tenant, conversation, turn).Scan(&id) != nil {
 		return Job{}, ErrDenied
 	}
 	j, err := load(ctx, tx, tenant, id, false)
-	if err != nil || j.Assistant == nil || j.Subject != subject || j.Assistant.ConversationID != conversation || !ScopeSubset(scope, j.Scope) {
+	if err != nil || j.Assistant == nil || read.OwnerSubject == "" || j.Subject != read.OwnerSubject || j.Assistant.ConversationID != conversation || !ScopeSubset(scope, j.Scope) {
 		return Job{}, ErrDenied
 	}
-	if err = currentAssistant(ctx, tx, j); err != nil {
+	if err = currentAssistantAs(ctx, tx, j, read); err != nil {
 		return Job{}, err
 	}
 	return j, nil

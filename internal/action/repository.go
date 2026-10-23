@@ -103,13 +103,14 @@ func (s Service) RetireProfile(ctx context.Context, a auth.RequestContext, id uu
 func executionTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID) (Execution, error) {
 	var e Execution
 	var b []byte
+	var authorityRaw []byte
 	var suggested *string
 	e.ID = id
-	err := tx.QueryRow(ctx, `SELECT binding,request_digest,state,suggestion_match,comparator_version,exit_code,output_bytes,output_truncated,post_check,created_at,risk_acknowledgement_id,policy_decision_id,claimed_at,completed_at,output_archive_ref,output_digest,output_previews,post_checked_at,COALESCE((SELECT (content->>'iteration')::int FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),1),(SELECT content->>'suggestedCommand' FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid) FROM action.executions WHERE tenant_id=$1 AND execution_id=$2 FOR UPDATE`, tenant, id).Scan(&b, &e.RequestDigest, &e.State, &e.SuggestionMatch, &e.ComparatorVersion, &e.ExitCode, &e.OutputBytes, &e.Truncated, &e.PostCheck, &e.CreatedAt, &e.AckID, &e.PolicyID, &e.StartedAt, &e.CompletedAt, &e.ArchiveRef, &e.OutputDigest, &e.OutputPreviews, &e.PostCheckedAt, &e.Iteration, &suggested)
+	err := tx.QueryRow(ctx, `SELECT binding,authority,request_digest,state,suggestion_match,comparator_version,exit_code,output_bytes,output_truncated,post_check,created_at,risk_acknowledgement_id,policy_decision_id,claimed_at,completed_at,output_archive_ref,output_digest,output_previews,post_checked_at,COALESCE((SELECT (content->>'iteration')::int FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),1),(SELECT content->>'suggestedCommand' FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid) FROM action.executions WHERE tenant_id=$1 AND execution_id=$2 FOR UPDATE`, tenant, id).Scan(&b, &authorityRaw, &e.RequestDigest, &e.State, &e.SuggestionMatch, &e.ComparatorVersion, &e.ExitCode, &e.OutputBytes, &e.Truncated, &e.PostCheck, &e.CreatedAt, &e.AckID, &e.PolicyID, &e.StartedAt, &e.CompletedAt, &e.ArchiveRef, &e.OutputDigest, &e.OutputPreviews, &e.PostCheckedAt, &e.Iteration, &suggested)
 	if err != nil {
 		return e, err
 	}
-	if json.Unmarshal(b, &e.Binding) != nil {
+	if json.Unmarshal(b, &e.Binding) != nil || json.Unmarshal(authorityRaw, &e.Authority) != nil {
 		return e, ErrInvalid
 	}
 	if suggested != nil {

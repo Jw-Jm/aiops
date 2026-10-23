@@ -1,0 +1,64 @@
+{
+  "origin": "https://192.168.0.63:30469",
+  "schemaVersion": 57,
+  "scope": "isolated r15 operator password reset/forced change, persisted scope and final footer geometry; schema57",
+  "checks": [
+    "real UI password+TOTP-bound reset200 forces first password",
+    "footer10px gap and660px width",
+    "real rotation201 and reload land operator overview",
+    "current session preserves exactly operator200 namespaces without admin"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a166b5-87c6-76d6-86f4-12ec2ad623bb"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a166b5-8858-7d6d-9e07-cdaa23af052e"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a166b5-8909-79cd-abff-36154663a9fd"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a166b5-895e-7447-96e5-3241f6b368ad"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a166b5-895f-79d3-986e-ec68aa35b1e5"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a166b5-8daf-7aa9-be3d-6bdeb3de4857"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a166b5-8f26-7b5a-8323-62fcbc620c79:verify",
+      "status": 200,
+      "requestId": "01a166b5-8fe0-7d87-88b3-5c720f871045"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a166b5-8f26-7b5a-8323-62fcbc620c79:verify",
+      "status": 200,
+      "requestId": "01a166b5-9064-78c1-9a98-60a45d54afb2"
+    },
+    {
+      "path": "/api/v1/admin/users/01a166a2-b078-7961-8113-74c9507da8a0/password:reset",
+      "status": 200,
+      "requestId": "01a166b5-90da-7973-982e-fe7cde155618"
+    }
+  ],
+  "pageErrors": [],
+  "footer": {
+    "gap": 10,
+    "width": 660
+  },
+  "status": "passed"
+}

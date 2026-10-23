@@ -1,0 +1,74 @@
+{
+  "origin": "https://192.168.0.63:30468",
+  "runtime": "unchanged r14 Web/API; PG15453/schema56",
+  "scope": "SL-005 close/Escape/transport-failed logout/reload/retry and pending true password rotation",
+  "checks": [
+    "aborted logout clears UI identity, server cookie still200; reload keeps warning/login",
+    "retry authenticates exact old session then logout200; old cookie401; warning cleared"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a1669a-9707-7217-9f33-298b2547da0f"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669a-979e-721e-be70-3968569fefe3"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a1669a-a228-75a9-b4be-77f4d8a8d343"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a1669a-a779-7dca-b729-3e3a2d92a5d2"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a1669a-a89c-757f-95d3-25404592e5b0"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a1669a-ab49-73bc-bc7a-f17af5c84ed3"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669a-ab97-7149-9b33-00d18ac302d4"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a1669b-2300-7819-aee4-cff36cd316b6"
+    }
+  ],
+  "phase": "close",
+  "transportFailures": [
+    {
+      "path": "/api/v1/auth/logout",
+      "error": "net::ERR_FAILED"
+    }
+  ],
+  "failureView": {
+    "path": "/auth/first-password",
+    "dialog": true,
+    "notice": false,
+    "closeDisabled": false
+  },
+  "status": "failed",
+  "failure": "page.waitForResponse: Timeout 30000ms exceeded while waiting for event \"response\""
+}

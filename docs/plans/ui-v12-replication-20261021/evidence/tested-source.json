@@ -222,5 +222,31 @@
     "note": "earlier top-level source/test entries remain historical; use exact round evidence; no whole-product acceptance",
     "preview": "https://192.168.0.63:30467/login",
     "version_boundary": "seventh full MFA; password-final HTTP + browser, see round result"
+  },
+  "gpt_dialog_r14": {
+    "source": "evidence/gpt-dialog-r14/source.json",
+    "result": "evidence/gpt-dialog-r14/result.json",
+    "preview": "https://192.168.0.63:30468/login",
+    "runtime": "mssc-direct PG15453/schema56; unchanged r13 API binary; separate Web+API ports18088/30468; no whole-product acceptance",
+    "userPreview": "30467 separate dual-role account verified; credentials remote-private only"
+  },
+  "latest_implementation": {
+    "date": "2026-10-23",
+    "frontend": "evidence/gpt-login-r15/source.json",
+    "frontendResult": "evidence/gpt-login-r15/result.json",
+    "authorization": "evidence/gpt-scope-r16/source.json",
+    "authorizationResult": "evidence/gpt-scope-r16/result.json",
+    "taskDatabase": "mssc-direct PostgreSQL17.11 :15453 schema57; migrations1-57 frozen; next58+",
+    "preview": "https://192.168.0.63:30469/login",
+    "userPreview": "30467 and user r14 dual-role account retained",
+    "note": "r13 latest_resume and earlier entries remain historical snapshots; no whole-product acceptance",
+    "validation": "evidence/gpt-admin-r17/result.json (scoped backend regression; previous frontend/runtime source entries retained)"
+  },
+  "gpt_admin_r17": {
+    "source": "evidence/gpt-admin-r17/source.json",
+    "result": "evidence/gpt-admin-r17/result.json",
+    "runtimeReceipt": "evidence/gpt-admin-r17/runtime-result.json",
+    "scope": "new scoped regression tests/review only; application Go source and deployments unchanged; task PG15453 schema57",
+    "preview": "30467/30468/30469 retained; user r14 dual-role account unchanged"
   }
 }

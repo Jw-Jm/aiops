@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-23",
+  "status": "partial_progress_not_V1.2_acceptance",
+  "source": "source.json",
+  "checks": {
+    "vitest": "152 passed across37files; includes Chinese close/Escape and both administrator/operator first-password home routing",
+    "SSE": "6 passed",
+    "build": "TypeScript/Vite passed",
+    "browser": "browser-states-result.json: true API/session cancellation, network-failed logout, reload, exact-session retry, close/Escape, pending one real password request then201",
+    "layout": "660px width,6px label/input gap,41.4375px inputs,18.7px help; footer-final.png + ../gpt-scope-r16/operator-reset-result.json verify10px footer gap",
+    "backdrop": "existing Login layout reused as inert disabled blank surface, no business requests/credentials"
+  },
+  "correction": "r14 neutral backdrop was based on an incorrect overview-background assumption; existing reference actually has login backdrop. Corrected by reusing NativeLoginLayout without authentication logic. No reference recapture.",
+  "visual": "not accepted as whole-image pixel match; added current-password field and genuine policy/security copy explicitly differ; focus and resulting total dialog height/vertical position remain accounted separately",
+  "failures": [
+    "browser-states-first/second-failure: harness queried English Close instead of localized关闭; no close request was made",
+    "browser-states-third-failure: loading icon altered exact save-button accessible name; use contains match; pending true request rerun passed",
+    "layout-first-failure and diagnostic iteration: Ant Design vertical label8px padding overrode scoped styles; fixed selector specificity using existing grid-label pattern",
+    "footer had extra Ant Design8px adjacent-button margin; final scoped rule verified10px gap"
+  ],
+  "remaining": [
+    "P2-02 complete whole-state visual acceptance",
+    "P2-03 MFA supplementary visual states/downstream full chain",
+    "P2-04 historical ownership/current scope reads; concurrency/fault injection",
+    "P2-05 native first tenant, Job/Worker authorization, cold start/recovery",
+    "SL-049 real-source sample and remaining modules"
+  ]
+}

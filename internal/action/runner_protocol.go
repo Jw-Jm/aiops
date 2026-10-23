@@ -54,7 +54,9 @@ func (s Service) BeginDispatch(ctx context.Context, tenant, id uuid.UUID) (Dispa
 		p, _, err := profileTx(ctx, tx, tenant, e.Binding.ProfileID, e.Binding.ProfileVersion)
 		denied := err != nil || !time.Now().Before(deadline) || !time.Now().Before(a.TokenExpiresAt)
 		if !denied {
-			_, err = s.authorize(ctx, tx, a, e.Binding, p, true)
+			// There is no live session here: re-prove the identity system that
+			// admitted the command, at its frozen version.
+			_, err = s.authorizeAs(ctx, tx, a, e.Binding, p, true, &e.Authority)
 			denied = err != nil
 		}
 		if denied {
@@ -129,7 +131,7 @@ func (s Service) ClaimWithKey(ctx context.Context, tenant, id uuid.UUID, token, 
 		if err != nil {
 			return err
 		}
-		if _, err = s.authorize(ctx, tx, a, e.Binding, p, true); err != nil {
+		if _, err = s.authorizeAs(ctx, tx, a, e.Binding, p, true, &e.Authority); err != nil {
 			return err
 		}
 		plain, err := s.Protector.Open(ctx, tenant, id, envelope)

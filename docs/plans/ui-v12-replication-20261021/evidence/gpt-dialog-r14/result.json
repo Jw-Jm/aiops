@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-23",
+  "status": "partial_progress_not_V1.2_acceptance",
+  "source": "source.json",
+  "scope": [
+    "SL-005 dialog geometry and real first-password paths",
+    "explicit user-requested separate dual-role preview account on30467"
+  ],
+  "checks": {
+    "vitest": "149 passed; first full run148/149 failed due obsolete labels, preserved and corrected",
+    "focused": "17 passed",
+    "build": "TypeScript/Vite passed",
+    "browser": "first-password-result.json passed; seven real request/session checks",
+    "database": "created-account-persistence.json verified before subsequent explicitly requested role grants",
+    "dualRoleLogin": "all-menus-result.json passed; separate operator/admin grants through real UI+password/TOTP proof"
+  },
+  "visual": {
+    "status": "not_accepted",
+    "geometry": "660px centered; header76px with22px25px padding; body24px25px; inputs41.4375px; footer68.4375px; see first-password-result.json",
+    "reference": "artifacts/test-reports/ui-v12-reference-r3/SL-005-viewport.png retained, not recaptured",
+    "extensions": [
+      "current-password field required by recorded security decision",
+      "12-256 Unicode codepoint policy instead of prototype10-128",
+      "neutral backdrop instead of fetching overview before mandatory password rotation",
+      "security copy replaces prototype demo copy"
+    ],
+    "remaining": [
+      "whole-reference pixel comparison not accepted due explicit security differences",
+      "close icon/font and label spacing require final comparison",
+      "pending-state browser interception interrupted; unit coverage passed; no browser pending pass claimed"
+    ]
+  },
+  "failuresPreserved": [
+    "motion-failure.log: jsdom CSS transition corrected in test ConfigProvider only",
+    "first-password-result-first.json: geometry sampled during scale0.2 animation, then waited settled660px",
+    "browser-first-password-interrupted.mjs: intercepted-request wait timed out/unhandled response promise; no rotation, no passing result fabricated",
+    "web-first-failure.log: CSRF integration test queried old labels; caller corrected",
+    "all-menus-result-first.json: Ant Design virtual option inaccessible to click; visible option locator used on retry"
+  ],
+  "remaining": [
+    "P2-02 complete visual/error/loading/close/logout-failure acceptance",
+    "P2-03 complete security supplementary visual states and downstream chain",
+    "P2-04 historical ownership/current scope reads; last-administrator concurrency and fault injection",
+    "P2-05 native first tenant, Job/Worker authorization, cold start/recovery",
+    "namespace API200 vs SQL100; migrations1-56 frozen",
+    "OPA source lock mismatch; SL-049 real-source full sample; remaining modules"
+  ]
+}

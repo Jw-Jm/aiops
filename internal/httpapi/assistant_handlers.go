@@ -327,7 +327,7 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if !cancel && r.Method == "GET" {
-			out, err := h.Repository.Turn(r.Context(), actor.TenantID, id, actor.Subject)
+			out, err := h.Repository.TurnReadable(r.Context(), actor.TenantID, id, actor.Subject)
 			if err != nil {
 				fail(err)
 				return
@@ -371,7 +371,7 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			if !archive && r.Method == "GET" {
-				out, err := h.Repository.Get(r.Context(), actor.TenantID, id, actor.Subject)
+				out, err := h.Repository.GetReadable(r.Context(), actor.TenantID, id, actor.Subject)
 				if err != nil {
 					fail(err)
 					return

@@ -1,0 +1,112 @@
+{
+  "origin": "https://192.168.0.63:30468",
+  "runtime": "unchanged r14 Web/API; PG15453/schema56",
+  "scope": "SL-005 close/Escape/transport-failed logout/reload/retry and pending true password rotation",
+  "checks": [
+    "aborted logout clears UI identity, server cookie still200; reload keeps warning/login",
+    "retry authenticates exact old session then logout200; old cookie401; warning cleared",
+    "close -> real logout200/old cookie401",
+    "escape -> real logout200/old cookie401",
+    "pending actual request disables all fields/save/cancel/close and ignores Escape; exactly one request then real201/old cookie401"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a1669e-4514-766c-aa12-648c98c5acd3"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669e-45a2-7a2f-bd4d-153a232bb4e2"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a1669e-522a-7844-b8f5-542849909683"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a1669e-5783-7474-a57c-fefe9fde4009"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a1669e-5a44-7a75-b1d9-c9d8caf14e29"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a1669e-6022-747d-b825-6fafe8c1168a"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669e-6071-7ec0-a85b-301c0ad8bb9a"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a1669e-646c-7591-ab8a-f7da520a5722"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a1669e-6a60-77a0-b350-37956df23063"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669e-6abb-75fe-ac7e-7e71edb6c388"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a1669e-6cce-70b1-8e30-92443bc61b4c"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a1669e-6d2c-7f0f-ae69-0454dcb9453f"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669e-6d87-76f2-b9fc-350db159f7e3"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669e-7874-7518-85e9-4abb02ee4acc"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a1669e-799f-7681-ba5c-c3246509fd89"
+    }
+  ],
+  "phase": "complete",
+  "transportFailures": [
+    {
+      "path": "/api/v1/auth/logout",
+      "error": "net::ERR_FAILED"
+    }
+  ],
+  "status": "passed"
+}

@@ -16,18 +16,15 @@ func (r Repository) FormalReference(ctx context.Context, tenant, turn uuid.UUID,
 		return out, investigation.ErrInvalid
 	}
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
-		t, err := loadTurn(ctx, tx, tenant, turn)
+		rs, err := newReadSubjects(ctx, tx, tenant, subject)
 		if err != nil {
 			return err
 		}
-		c, err := loadConversation(ctx, tx, tenant, t.ConversationID, subject, false)
+		c, t, read, err := loadReadableTurn(ctx, tx, tenant, turn, &rs)
 		if err != nil {
 			return err
 		}
-		if _, err = authorizeConversation(ctx, tx, c); err != nil {
-			return err
-		}
-		if err = authorizeTurnAnswer(ctx, tx, c, turn, t.Answer); err != nil {
+		if err = authorizeTurnAnswer(ctx, tx, c, turn, t.Answer, read); err != nil {
 			return err
 		}
 		var answer investigation.AssistantAnswer
@@ -35,7 +32,7 @@ func (r Repository) FormalReference(ctx context.Context, tenant, turn uuid.UUID,
 			return investigation.ErrInvalid
 		}
 		ref := answer.FormalRefs[index]
-		j, err := investigation.AssistantReadJobTx(ctx, tx, tenant, subject, c.ConversationID, turn, c.Binding.ExecutionScope)
+		j, err := investigation.AssistantReadJobTxAs(ctx, tx, tenant, read, c.ConversationID, turn, c.Binding.ExecutionScope)
 		if err != nil {
 			return err
 		}

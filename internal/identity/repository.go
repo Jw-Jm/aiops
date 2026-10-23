@@ -102,95 +102,7 @@ func (r *Repository) CreateFirstAdministrator(ctx context.Context, input FirstAd
 	}
 
 	err = r.withBootstrapTx(ctx, input, func(tx pgx.Tx, tenantID uuid.UUID) error {
-		// Serialize the rare tenant-level bootstrap before checking the marker.
-		// This makes concurrent callers linearizable without deferring FKs and
-		// without a loser leaving any account/credential/grant residue.
-		if _, err := tx.Exec(ctx, `
-			SELECT pg_advisory_xact_lock(
-				hashtextextended('identity:first-administrator:' || $1::text, 0)
-			)
-		`, tenantID.String()); err != nil {
-			return fmt.Errorf("lock first administrator bootstrap: %w", err)
-		}
-		var initialized bool
-		if err := tx.QueryRow(ctx, `
-			SELECT EXISTS (
-				SELECT 1 FROM identity.administrator_initializations
-				WHERE tenant_id = $1
-			)
-		`, tenantID).Scan(&initialized); err != nil {
-			return fmt.Errorf("check first administrator marker: %w", err)
-		}
-		if initialized {
-			return ErrAlreadyInitialized
-		}
-
-		if _, err = tx.Exec(ctx, `
-			INSERT INTO identity.accounts
-				(tenant_id, user_id, login_name, display_name, subject, status,
-				 password_state, must_change_password, account_revision,
-				 credential_version, authorization_version, session_version)
-			VALUES ($1, $2, $3, $4, $5, 'active', 'change_required', true, 1, 1, 1, 1)
-		`, tenantID, userID, input.LoginName, input.DisplayName, subject); err != nil {
-			return mapAccountWrite(err)
-		}
-		if _, err = tx.Exec(ctx, `
-			INSERT INTO identity.credentials
-				(tenant_id, user_id, credential_version, password_hash, status)
-			VALUES ($1, $2, 1, $3, 'active')
-		`, tenantID, userID, passwordHash); err != nil {
-			return fmt.Errorf("store initial credential: %w", err)
-		}
-		grantID, err := uuid.NewV7()
-		if err != nil {
-			return fmt.Errorf("generate first administrator grant id: %w", err)
-		}
-		if _, err = tx.Exec(ctx, `
-			INSERT INTO identity.role_grants
-				(tenant_id, user_id, binding_id, role, scope, authorization_version, status)
-			VALUES ($1, $2, $3, 'platform_admin', '{}'::jsonb, 1, 'active')
-		`, tenantID, userID, grantID); err != nil {
-			return fmt.Errorf("grant first administrator: %w", err)
-		}
-		if _, err = tx.Exec(ctx, `
-			INSERT INTO identity.administrator_initializations
-				(tenant_id, user_id, actor_subject)
-			VALUES ($1, $2, $3)
-		`, tenantID, userID, bootstrapActor); err != nil {
-			return fmt.Errorf("record first administrator marker: %w", err)
-		}
-
-		recordID, err := uuid.NewV7()
-		if err != nil {
-			return fmt.Errorf("generate first administrator audit id: %w", err)
-		}
-		_, err = audit.Append(ctx, tx, audit.Entry{
-			TenantID:   tenantID,
-			RecordID:   recordID,
-			EventType:  "identity.first_administrator.initialized",
-			EntityKind: "native_account",
-			EntityID:   userID,
-			Subject:    bootstrapActor,
-			Payload: map[string]any{
-				"loginName":            input.LoginName,
-				"displayName":          input.DisplayName,
-				"role":                 string(RolePlatformAdmin),
-				"initialState":         PasswordChangeRequired,
-				"accountRevision":      1,
-				"authorizationVersion": 1,
-				"sessionVersion":       1,
-			},
-		})
-		if err != nil {
-			return err
-		}
-
-		result = FirstAdministratorResult{
-			TenantID: tenantID, UserID: userID, LoginName: input.LoginName,
-			Subject: subject, AccountRevision: 1, CredentialVersion: 1,
-			AuthorizationVersion: 1, SessionVersion: 1,
-		}
-		return nil
+		return createFirstAdministratorTx(ctx, tx, tenantID, input, userID, subject, passwordHash, &result)
 	})
 	if err != nil {
 		return FirstAdministratorResult{}, err
@@ -251,6 +163,101 @@ func (r *Repository) ClearPasswordFailure(ctx context.Context, tenantID, userID 
 	return nil
 }
 
+// createFirstAdministratorTx installs the first administrator inside an
+// already-authorized bootstrap transaction. It is shared by the tenant-explicit
+// command and by first-tenant creation so both paths write identical rows.
+func createFirstAdministratorTx(ctx context.Context, tx pgx.Tx, tenantID uuid.UUID, input FirstAdministratorInput, userID uuid.UUID, subject, passwordHash string, result *FirstAdministratorResult) error {
+	// Serialize the rare tenant-level bootstrap before checking the marker.
+	// This makes concurrent callers linearizable without deferring FKs and
+	// without a loser leaving any account/credential/grant residue.
+	if _, err := tx.Exec(ctx, `
+			SELECT pg_advisory_xact_lock(
+				hashtextextended('identity:first-administrator:' || $1::text, 0)
+			)
+		`, tenantID.String()); err != nil {
+		return fmt.Errorf("lock first administrator bootstrap: %w", err)
+	}
+	var initialized bool
+	if err := tx.QueryRow(ctx, `
+			SELECT EXISTS (
+				SELECT 1 FROM identity.administrator_initializations
+				WHERE tenant_id = $1
+			)
+		`, tenantID).Scan(&initialized); err != nil {
+		return fmt.Errorf("check first administrator marker: %w", err)
+	}
+	if initialized {
+		return ErrAlreadyInitialized
+	}
+
+	if _, err := tx.Exec(ctx, `
+			INSERT INTO identity.accounts
+				(tenant_id, user_id, login_name, display_name, subject, status,
+				 password_state, must_change_password, account_revision,
+				 credential_version, authorization_version, session_version)
+			VALUES ($1, $2, $3, $4, $5, 'active', 'change_required', true, 1, 1, 1, 1)
+		`, tenantID, userID, input.LoginName, input.DisplayName, subject); err != nil {
+		return mapAccountWrite(err)
+	}
+	if _, err := tx.Exec(ctx, `
+			INSERT INTO identity.credentials
+				(tenant_id, user_id, credential_version, password_hash, status)
+			VALUES ($1, $2, 1, $3, 'active')
+		`, tenantID, userID, passwordHash); err != nil {
+		return fmt.Errorf("store initial credential: %w", err)
+	}
+	grantID, err := uuid.NewV7()
+	if err != nil {
+		return fmt.Errorf("generate first administrator grant id: %w", err)
+	}
+	if _, err := tx.Exec(ctx, `
+			INSERT INTO identity.role_grants
+				(tenant_id, user_id, binding_id, role, scope, authorization_version, status)
+			VALUES ($1, $2, $3, 'platform_admin', '{}'::jsonb, 1, 'active')
+		`, tenantID, userID, grantID); err != nil {
+		return fmt.Errorf("grant first administrator: %w", err)
+	}
+	if _, err := tx.Exec(ctx, `
+			INSERT INTO identity.administrator_initializations
+				(tenant_id, user_id, actor_subject)
+			VALUES ($1, $2, $3)
+		`, tenantID, userID, bootstrapActor); err != nil {
+		return fmt.Errorf("record first administrator marker: %w", err)
+	}
+
+	recordID, err := uuid.NewV7()
+	if err != nil {
+		return fmt.Errorf("generate first administrator audit id: %w", err)
+	}
+	_, err = audit.Append(ctx, tx, audit.Entry{
+		TenantID:   tenantID,
+		RecordID:   recordID,
+		EventType:  "identity.first_administrator.initialized",
+		EntityKind: "native_account",
+		EntityID:   userID,
+		Subject:    bootstrapActor,
+		Payload: map[string]any{
+			"loginName":            input.LoginName,
+			"displayName":          input.DisplayName,
+			"role":                 string(RolePlatformAdmin),
+			"initialState":         PasswordChangeRequired,
+			"accountRevision":      1,
+			"authorizationVersion": 1,
+			"sessionVersion":       1,
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	*result = FirstAdministratorResult{
+		TenantID: tenantID, UserID: userID, LoginName: input.LoginName,
+		Subject: subject, AccountRevision: 1, CredentialVersion: 1,
+		AuthorizationVersion: 1, SessionVersion: 1,
+	}
+	return nil
+}
+
 // withBootstrapTx resolves an active tenant by explicit slug/id before
 // installing app.tenant_id. This supports slug bootstrap without ever setting
 // a placeholder tenant for RLS.
@@ -259,6 +266,27 @@ func (r *Repository) withBootstrapTx(
 	input FirstAdministratorInput,
 	fn func(tx pgx.Tx, tenantID uuid.UUID) error,
 ) error {
+	return r.withBootstrapDuty(ctx, func(tx pgx.Tx) error {
+		tenantID, err := activeTenantID(ctx, tx, input)
+		if err != nil {
+			return err
+		}
+		var installed string
+		if err = tx.QueryRow(ctx, "SELECT set_config('app.tenant_id', $1, true)", tenantID.String()).
+			Scan(&installed); err != nil {
+			return fmt.Errorf("set identity bootstrap tenant: %w", err)
+		}
+		if installed != tenantID.String() {
+			return fmt.Errorf("set identity bootstrap tenant: database returned a different tenant context")
+		}
+		return fn(tx, tenantID)
+	})
+}
+
+// withBootstrapDuty runs fn under the dedicated NOINHERIT migration-duty LOGIN.
+// It is the only transaction shape allowed to write identity bootstrap rows; the
+// duty checks run before any caller-supplied statement executes.
+func (r *Repository) withBootstrapDuty(ctx context.Context, fn func(tx pgx.Tx) error) error {
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("begin identity bootstrap transaction: %w", err)
@@ -292,19 +320,7 @@ func (r *Repository) withBootstrapTx(
 		roleState.Superuser || roleState.Inherit || roleState.BypassRLS {
 		return ErrBootstrapDuty
 	}
-	tenantID, err := activeTenantID(ctx, tx, input)
-	if err != nil {
-		return err
-	}
-	var installed string
-	if err = tx.QueryRow(ctx, "SELECT set_config('app.tenant_id', $1, true)", tenantID.String()).
-		Scan(&installed); err != nil {
-		return fmt.Errorf("set identity bootstrap tenant: %w", err)
-	}
-	if installed != tenantID.String() {
-		return fmt.Errorf("set identity bootstrap tenant: database returned a different tenant context")
-	}
-	if err = fn(tx, tenantID); err != nil {
+	if err = fn(tx); err != nil {
 		return err
 	}
 	if err = tx.Commit(ctx); err != nil {

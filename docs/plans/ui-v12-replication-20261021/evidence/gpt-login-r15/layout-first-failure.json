@@ -1,0 +1,46 @@
+{
+  "origin": "https://192.168.0.63:30469",
+  "runtime": "r15 backdrop Web; unchanged r13 API; PG15453/schema56",
+  "scope": "SL-005 close/Escape/transport-failed logout/reload/retry and pending true password rotation",
+  "checks": [],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a166a5-ae9d-7d92-b40b-807ffa8dbb8e"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a166a5-af38-7460-b327-9c0a0e08c0ca"
+    }
+  ],
+  "phase": "logout failure",
+  "geometry": {
+    "dialogWidth": 660,
+    "labelInputGap": 8,
+    "inputHeight": 41.4375,
+    "hintLineHeight": "18.7px",
+    "backdropInert": true,
+    "backdropInputs": [
+      {
+        "disabled": true,
+        "empty": true
+      },
+      {
+        "disabled": true,
+        "empty": true
+      }
+    ]
+  },
+  "failureView": {
+    "path": "/auth/first-password",
+    "dialog": true,
+    "notice": false,
+    "closeDisabled": false
+  },
+  "status": "failed",
+  "failure": "label input gap differs from source6px"
+}

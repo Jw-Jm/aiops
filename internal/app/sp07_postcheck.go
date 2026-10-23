@@ -9,7 +9,6 @@ import (
 	"ops-platform/internal/action"
 	"ops-platform/internal/configregistry"
 	"ops-platform/internal/evidence"
-	"ops-platform/internal/graph"
 	"ops-platform/internal/incident"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/policy"
@@ -57,16 +56,16 @@ func commandPostCheckPass(ctx context.Context, s action.Service, archive *eviden
 	}
 	for _, id := range ids {
 		var e action.Execution
-		var bindingRaw []byte
+		var bindingRaw, authorityRaw []byte
 		var completed time.Time
 		err = persistence.WithTenantTx(ctx, s.Pool, tenant, func(tx pgx.Tx) error {
 			e.ID = id
-			return tx.QueryRow(ctx, `SELECT binding,completed_at FROM action.executions WHERE tenant_id=$1 AND execution_id=$2`, tenant, id).Scan(&bindingRaw, &completed)
+			return tx.QueryRow(ctx, `SELECT binding,authority,completed_at FROM action.executions WHERE tenant_id=$1 AND execution_id=$2`, tenant, id).Scan(&bindingRaw, &authorityRaw, &completed)
 		})
 		if err != nil {
 			return err
 		}
-		if json.Unmarshal(bindingRaw, &e.Binding) != nil {
+		if json.Unmarshal(bindingRaw, &e.Binding) != nil || json.Unmarshal(authorityRaw, &e.Authority) != nil {
 			return action.ErrInvalid
 		}
 		facts := action.PostCheckFacts{CheckedAt: time.Now().UTC(), EvidenceRefs: []string{}}
@@ -86,7 +85,10 @@ func commandPostCheckPass(ctx context.Context, s action.Service, archive *eviden
 func collectCommandPostCheck(ctx context.Context, s action.Service, archive *evidence.ArchiveService, registry *configregistry.Service, trust configregistry.Ed25519TrustStore, cluster SP04Cluster, e action.Execution, completed time.Time) action.PostCheckFacts {
 	f := action.PostCheckFacts{CheckedAt: time.Now().UTC(), EvidenceRefs: []string{}}
 	tenant := e.Binding.TenantID
-	scope, err := (graph.Authorization{Pool: s.Pool}).Effective(ctx, tenant.String(), e.Binding.Subject, cluster.ClusterUID)
+	// The collection runs without a browser session. Use the execution's frozen
+	// identity source (native account/version or explicit legacy), never the
+	// subject's legacy bindings, so a native command can reach a real verdict.
+	scope, err := s.ScopeForExecution(ctx, e)
 	if err != nil {
 		return f
 	}

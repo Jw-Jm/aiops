@@ -1,0 +1,63 @@
+{
+  "round": "gpt-historical-r18",
+  "date": "2026-10-23",
+  "task": "P2-04 历史业务归属读取（助手会话/消息/结果/事件/步骤/正式引用/故障链）",
+  "baseline": {
+    "branch": "feat/ui-v12-replication",
+    "head": "4b207ae8441e2367efc72d1a29388818f45cac8e",
+    "workingTree": "r14-r17 未提交修改按基线保留，未重置、未切换分支、未提交/推送"
+  },
+  "implemented": [
+    "migrations/00058_native_historical_read.sql：identity.read_mapped_legacy_subjects 只读投影，要求租户事务、活跃租户/账号、verified_inventory 依据且引用了已导入的复核清单；仅授予 api_runtime_role EXECUTE，不授予映射表直接读取。",
+    "internal/identity/historical_read.go：映射读取封装，拒绝空租户/空用户/非 32 字节摘要，错误不回落为按名称或 subject 前缀匹配。",
+    "internal/investigation/assistant_v3.go：新增 HistoricalRead（冻结所有者 + 当前读取账号 + 映射证明）、AssistantReadJobTxAs、currentAssistantAs、currentMappedAuthority、ScopeCoversMappedOwner。映射读取只用当前原生会话/角色/版本/集群/命名空间/资源范围复检；冻结 GrantSnapshot、GrantSnapshotDigest、Job 输入/上下文摘要与策略版本仍逐项校验。",
+    "internal/assistant/historical.go：owner 允许集合（当前主体 + 显式映射的旧主体）、逐条 authority 解析、一次性访问审计 assistant.history.mapped_owner.read；authorizeRead 在映射分支要求当前原生 platform_admin（审计域）或覆盖冻结执行范围的 operator 授权（运维域），并要求冻结快照自身仍覆盖冻结执行范围。",
+    "internal/assistant/repository.go 等：GetReadable/TurnReadable 只读入口，列表/消息/事件/结果/来源步骤/正式引用/故障链接入映射所有者；写入侧 Get/Turn/Cancel/Archive/Submit/Rebind 保持 owner 精确匹配，映射账号不能向旧主体会话追加、归档或改写绑定。",
+    "internal/httpapi/assistant_handlers.go：GET 会话详情与 GET 轮次改用只读入口；其余路由不变。"
+  ],
+  "verified": {
+    "api": "GET /api/v1/assistant/conversations 列表与详情在映射后返回旧主体会话，严格读取入口仍拒绝（真实 PG，仓库层真实调用）。",
+    "persistence": "真实 PostgreSQL 17.11：全新库按 1→58 全量迁移成功，旧主体会话由原有 legacy 仓库路径写入；读取不修改 owner_subject/revision/cluster。",
+    "authorization": "映射前不可见；映射后可读；撤销当前 operator 授权后再次拒绝；API LOGIN 直接 SELECT identity.subject_mappings 失败；映射读取写入审计记录。",
+    "unit": "ScopeCoversMappedOwner 仅忽略跨身份系统的 authorization revision，仍校验租户/集群/集群级/命名空间/资源；readSubjects 只放行显式映射；无原生会话的映射读取与冻结快照不覆盖执行范围均拒绝。"
+  },
+  "notVerified": [
+    "visual/interaction：本轮无前端改动，历史会话在正式前端的状态与视觉未验收。",
+    "live：未部署新 API/Worker 二进制，未在 30467/30469 上用真实浏览器复验映射历史会话的列表/详情/消息/结果/事件与流恢复。",
+    "消息、结果、事件、来源步骤、正式引用与故障链的映射读取只做了源码与单元级验证；集成测试只覆盖列表与详情（无轮次数据），未在真实 Job 上验证。",
+    "审计域（tenant 级）旧主体会话的映射读取只做源码实现，未构造真实审计 Job 验证。",
+    "映射冲突并发、其他故障注入、命令历史不在本轮改动范围（命令历史仍按当前 operator 资源域读取）。"
+  ],
+  "environment": {
+    "host": "mssc（ssh mssc-direct），/ 74% 58G 可用、/data 12% 1.6T 可用",
+    "taskRoot": "/data/ops-ui-v12-mfa-20261022-r1/gpt-historical-r18",
+    "taskDatabase": "PG17.11 :15453 容器 ops-ui-v12-mfa-pg-20261022；任务库 ui_v12_native_identity 保持 schema57，本轮未前滚、未改冻结迁移",
+    "disposableDatabase": "sp03_mig_97ea937baa38453c87bbbed0535ad7de（schema58，因含审计记录按保留策略未自动删除）",
+    "untouched": "30467/30469 及历史轮次目录、账号、镜像、容器未改动；未使用本机 OrbStack；未写共享库或生产"
+  },
+  "checks": [
+    {"command": "go build ./...", "result": "通过"},
+    {"command": "go vet ./internal/assistant/... ./internal/investigation/... ./internal/identity/... ./internal/httpapi/... ./test/integration/", "result": "通过"},
+    {"command": "go test ./internal/assistant/... ./internal/investigation/ ./internal/identity/... ./internal/authz/... -count=1", "result": "通过"},
+    {"command": "go test ./test/contract -run 'TestUIV12' -count=1", "result": "通过"},
+    {"command": "go test ./internal/... -count=1", "result": "42 个包通过；仅 internal/bundle 既有 opa-sdk-source 材料摘要不一致失败（与本次改动无关，日志见 go-internal-all.log）"},
+    {"command": "GOOS=linux GOARCH=amd64 go test -c ./test/integration; SP03_TEST_DATABASE_URL=<task PG> ./hist.test -test.run '^TestNativeMappedHistoricalOwnerRead$' -test.v", "result": "PASS（42.43s，PASS 日志见 integration-native-historical-read.log）"}
+  ],
+  "risks": [
+    "internal/bundle 的 opa-sdk-source 来源摘要不一致是既有阻塞，本轮未修改锁/材料/门禁，仍不得以放宽校验通过。",
+    "00058 只在临时库执行过，任务库 ui_v12_native_identity 仍为 schema57；部署 API 前必须前滚并复验。",
+    "映射读取依赖身份映射已存在且账号活跃；映射创建会撤销目标会话（迁移56），映射后需重新登录。"
+  ],
+  "evidence": [
+    "evidence/gpt-historical-r18/integration-native-historical-read.log",
+    "evidence/gpt-historical-r18/go-build.log",
+    "evidence/gpt-historical-r18/go-vet.log",
+    "evidence/gpt-historical-r18/go-unit-tests.log",
+    "evidence/gpt-historical-r18/contract-tests.log",
+    "evidence/gpt-historical-r18/source.json"
+  ],
+  "remaining": [
+    "P2-04 仍未关闭：映射历史读取的浏览器视觉/交互、消息-结果-事件-来源步骤全链真实 Job、审计域会话、映射冲突并发与其他故障注入未验收。",
+    "P2-02/P2-03/P2-05、P1、P3（含 SL-049）、P4～P8 未在本轮推进，状态保持原样。"
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "round": "gpt-native-job-r20",
+  "date": "2026-10-23",
+  "task": "P2-05 operational Job/Worker 原生身份贯通 + 原生 first-tenant CLI",
+  "baseline": {
+    "branch": "feat/ui-v12-replication",
+    "head": "4b207ae8441e2367efc72d1a29388818f45cac8e",
+    "workingTree": "r14～r19 未提交修改与本轮基线保留，未重置、未切分支、未提交/推送"
+  },
+  "p2_05": {
+    "problem": "业务 Job 只对审计域持久 identity source/userID/authorizationVersion；Worker 在无浏览器会话时走 graph.EffectiveTx(legacy)，原生提交的 operational Job 无法在 Worker 复检。",
+    "changes": [
+      "internal/assistant/repository.go：Submit 对 audit 与 operational 一律持久 authorizationSource/authorizationUserId/authorizationVersion（native 会话取自已验证会话；legacy 显式记 legacy）。",
+      "internal/investigation/assistant_v3.go：AssistantTask.Valid 对 operational 同样要求显式来源；currentAssistantAs 按持久来源分派——native operational 走 NativeOperatorScopeForJobTx（无会话），audit 走既有 AuditScopeForJobTx，只有历史空来源才走 legacy graph.EffectiveTx，绝不从 native 回退 legacy。",
+      "internal/graph/protocol.go：把原生授权范围计算收敛为 applyNativeGrants + finishScopeTx 单实现，并新增 EffectiveNativeTx，从「当前集群/租户/来源注册版本 + 持久 userID/version + 现存活授权行」重建与准入时逐字节相同的 scope 与 authorization revision。",
+      "migrations/00059_native_operator_job_authority.sql：新增 identity.job_authority_active（仅 api/worker 运行时职责、schema_owner、指定操作）与 investigation.job_native_operator_scope（返回活跃账号的 operator 授权行与账户授权版本；identity 模式不对 Worker 开放），并把门加入 accounts/role_grants 的既有 RLS 分支（不删除任何既有分支）。",
+      "版本不一致（撤权、重授、停用、版本变化）在 Worker 复检时拒绝；frozen grantSnapshotDigest / effectiveScopeDigest / input/context digest 保持不变并继续校验。"
+    ],
+    "runtime_evidence": {
+      "database": "任务 PG17.11 :15453 临时库，1→59 全量迁移（保留 sp03_mig_02100fe885f64a358659cdb61e7554b4）",
+      "passed": [
+        "Submit 持久 authorizationSource=native、authorizationUserId=账号、authorizationVersion=1。",
+        "Worker（worker_runtime_role，无浏览器会话）Claim + GetAssistantInput 成功；租约到期后新 Worker 实例接管同一 Job 成功（Generation 递增）。",
+        "撤权（grant revoked + 账户版本+1）：Claim 拒绝，Job 置 failed/AUTHORIZATION_REVOKED，Cancel 也拒绝。",
+        "重授（新 grant 版本2 + 账户版本2）：拒绝，旧 Job 不复活。",
+        "账号停用：拒绝。",
+        "篡改 assistant_binding.authorizationUserId 或 effective_scope：拒绝（摘要不一致）。",
+        "跨租户 Claim：ErrNoJob。",
+        "授权收窄为 private 命名空间：拒绝。"
+      ]
+    }
+  },
+  "first_tenant": {
+    "changes": [
+      "internal/identity/first_tenant.go：CreateFirstTenant 在专用 NOINHERIT migration-duty 事务内创建租户 + 首管理员（账户/凭据/platform_admin 授权/初始化标记/两条审计）原子提交；重复 slug 返回 ErrTenantExists，不接管既有租户。",
+      "internal/identity/repository.go：抽出 withBootstrapDuty 与 createFirstAdministratorTx，首管理员与首租户共用同一写入实现。",
+      "cmd/opsctl/bootstrap_first_tenant_native.go + main.go：新命令 opsctl bootstrap first-tenant-native --input <0600 JSON> --password-file <0600>，无 OIDC issuer/CA/token；输出仅标识与版本。",
+      "migrations/00060_native_first_tenant.sql：仅授予 migration_role 对 platform.tenants 的 INSERT（引导职责此前只有 SELECT）。"
+    ],
+    "runtime_evidence": {
+      "database": "任务 PG17.11 :15453 临时库，1→60 全量迁移（保留 sp03_mig_d9d24caf7bb9463eb6229140bf11f9af）",
+      "passed": [
+        "CreateFirstTenant 创建 active 租户（revision 1）与 change_required 首管理员 + platform_admin 授权 + 1 条初始化标记 + 两条审计。",
+        "登录查找返回该租户、active、password_state=change_required（无 OIDC）。",
+        "重复调用 ErrTenantExists 且租户数不变。",
+        "API 运行时角色调用 ErrBootstrapDuty。",
+        "同 slug 并发两次：恰好一次成功，库中仅 1 个租户。"
+      ]
+    }
+  },
+  "notVerified": [
+    "P2-05 未跑真实模型/真实工具/真实集群来源的完整 Worker 执行；本轮验证的是真实 Repository/Worker 许可与复检路径。",
+    "API→Worker 端到端（HTTP 提交 + 独立 Worker 进程 + SSE）未在 30467/30469 复验；未部署新制品。",
+    "Action 执行/巡检侧仍使用 graph.EffectiveTx（internal/action/read.go:11、postcheck.go:58、postcheck_report.go:165、service.go:78），原生提交的 Action 在无会话 Worker 上同类边界尚未改造（本轮未改，下一轮独立任务）。",
+    "安装器 native 闭包与无 OIDC 冷启动脚本（deploy/offline install）尚未改造；本轮只提供 CLI 与数据层能力。",
+    "P2-04 查询结果/正式引用/审计域历史读取与映射并发、P2-02/03 与 P1 视觉、P3 SL-049、P4～P7、P8 未在本轮推进。"
+  ],
+  "checks": [
+    {"command": "go build ./...", "result": "exit=0"},
+    {"command": "go vet ./internal/identity/ ./internal/investigation/ ./internal/graph/ ./internal/assistant/ ./cmd/opsctl/ ./test/integration/", "result": "exit=0"},
+    {"command": "go test ./internal/identity/ ./internal/investigation/ ./internal/assistant/ ./internal/httpapi/ -count=1", "result": "四包 ok"},
+    {"command": "go test ./cmd/opsctl/ -run TestNativeFirstTenant -count=1", "result": "ok"},
+    {"command": "go test ./cmd/opsctl/ -count=1", "result": "既存 TestBundleBuildCLIAndIndependentVerify 因 opa-sdk-source 来源摘要不一致 FAIL（与本次改动无关，未改锁/材料/门禁）"},
+    {"command": "SP03_TEST_DATABASE_URL=<15453> ./native_job.test -test.run '^TestNativeOperationalJobWorkerAuthority$'", "result": "PASS 117.68s"},
+    {"command": "SP03_TEST_DATABASE_URL=<15453> ./native_job.test -test.run '^TestNativeFirstTenantBootstrap$'", "result": "PASS 151.45s"}
+  ],
+  "evidence": [
+    "evidence/gpt-native-job-r20/integration-native-job.log",
+    "evidence/gpt-native-job-r20/integration-first-tenant.log",
+    "evidence/gpt-native-job-r20/go-build.log",
+    "evidence/gpt-native-job-r20/go-vet.log",
+    "evidence/gpt-native-job-r20/go-package-tests.log",
+    "evidence/gpt-native-job-r20/go-cli-tests.log",
+    "evidence/gpt-native-job-r20/source.json"
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "origin": "https://192.168.0.63:30467",
+  "schemaVersion": 56,
+  "scope": "user-authorized independent preview login; dual roles, one explicit registered task cluster; no source qualification",
+  "checks": [
+    "independent operator grant201 with exact password+TOTP proof",
+    "independent platform_admin grant201 with exact password+TOTP proof",
+    "real dual-role login shows all9 top-level entries/22 leaves; unfinished states remain explicit"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16681-d7b7-7654-83a8-be98261a0c10"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16681-d842-72af-800e-ad66b86b1221"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16681-e1f0-78d7-9bba-017b39094bde"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16681-e263-766e-907c-b5dba5c2e2e4"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a16681-e262-72a2-a87c-cdeeca40c2e0"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a16681-f8f1-7c2a-976a-a726fa350674"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16682-039a-7e19-af8b-fd36d86bd357:verify",
+      "status": 200,
+      "requestId": "01a16682-101d-7221-b9af-b719c327615a"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16682-039a-7e19-af8b-fd36d86bd357:verify",
+      "status": 200,
+      "requestId": "01a16682-1b92-72bc-af22-e52c75dafffc"
+    },
+    {
+      "path": "/api/v1/admin/role-bindings",
+      "status": 201,
+      "requestId": "01a16682-2be4-73a8-866f-8e442fc177bc"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16682-37bd-78e2-999c-2c308b67deb0"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16682-3ddc-7c92-bfcd-9d841a294436"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a16682-3dda-7522-8679-77f01a0ac304"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a16682-502c-7276-826e-f9a077da2011"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16682-5041-7ea9-90c2-794bc5585ca0:verify",
+      "status": 200,
+      "requestId": "01a16682-5065-7b3d-abe5-6c12fccad7ed"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16682-5041-7ea9-90c2-794bc5585ca0:verify",
+      "status": 200,
+      "requestId": "01a16682-5ab7-77c5-978a-e3a36ef07cdf"
+    },
+    {
+      "path": "/api/v1/admin/role-bindings",
+      "status": 201,
+      "requestId": "01a16682-63ae-7013-ae8b-54a3cf7e3d79"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16682-6ba8-76d8-9dc6-1ad1bd7ada79"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a16682-78c3-782d-b25c-dec766e508f2"
+    }
+  ],
+  "pageErrors": [],
+  "loginName": "browser.r14.9c6570f77cc3",
+  "status": "passed"
+}

@@ -1,0 +1,23 @@
+{
+  "head": "4b207ae8441e2367efc72d1a29388818f45cac8e",
+  "branch": "feat/ui-v12-replication",
+  "workingTree": "r14-r16 changes preserved; r17 test/review additions uncommitted",
+  "files": {
+    "test/integration/native_admin_boundaries_test.go": "c758d602f2f7bc5a4bc232ad9d7cff2e3a627f0aafaa62e172b2c48ae44d66eb",
+    "test/integration/native_user_administration_test.go": "7dea776995b29bb5aeaacbd514206ed7f99c3181292a66ad9202bdf81554000f",
+    "test/integration/native_mfa_test.go": "d6f47302c5585ec322a790b3f37f76c58514a2b42bb277809553c429895180ff",
+    "internal/httpapi/native_users.go": "ab487cd258a9efcadf64300e85a4a2831c386b4daf2c806b53072a9a5c42ced9",
+    "internal/auth/native_stepup.go": "f01d54c725f83a5acdd24d64ecbf8eafda94f7c133af62abc805c41b52012c6b",
+    "migrations/00055_native_user_administration.sql": "9bc7b4fa73ec59a4f94b18a5f4b22aa1d33eefdbc306facddf30f433d27c6166",
+    "migrations/00057_native_grant_scope_limits.sql": "4ae99de5dbf74d9937905c3c90c064f6e9b9347fb275bbb2b34571b2315ede4b"
+  },
+  "testBinary": {
+    "path": "artifacts/test-reports/ui-v12-session-r2/gpt-admin-r17.test",
+    "sha256": "d735c3c08b46ccaba589f3db4181d0cc66ddaf5b6f7cb45a4095a78bd443b80c",
+    "target": "linux/amd64"
+  },
+  "applicationGoSource": "unchanged from4b207ae; only integration tests changed this round",
+  "database": "approved task PG15453/schema57; no new SQL migration",
+  "preview": "30467/30468/30469 retained; no API/Web deployment this round",
+  "runtimeScope": "guarded httptest -> real native Handler -> task PostgreSQL; file sealer test fixture, not production OpenBao/Worker/model/browser acceptance"
+}

@@ -1,0 +1,175 @@
+{
+  "origin": "https://192.168.0.63:30469",
+  "runtime": "r15 backdrop Web; unchanged r13 API; PG15453/schema56",
+  "scope": "SL-005 close/Escape/transport-failed logout/reload/retry and pending true password rotation",
+  "checks": [
+    "aborted logout clears UI identity, server cookie still200; reload keeps warning/login",
+    "retry authenticates exact old session then logout200; old cookie401; warning cleared",
+    "close -> real logout200/old cookie401",
+    "escape -> real logout200/old cookie401",
+    "pending actual request disables all fields/save/cancel/close and ignores Escape; exactly one request then real201/old cookie401"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a166ab-1216-7539-a621-989b83b8fff1"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a166ab-12a7-7628-9d84-43850eb4818f"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a166ab-1649-7b0a-bf3a-53db1bc4b830"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a166ab-16cb-7aaa-a8c9-db5dabfff343"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a166ab-17ea-7159-a488-0c89817c5505"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a166ab-19a4-7672-9f5c-89b5f257b986"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a166ab-19f0-7e85-9825-2af9f2cb988f"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a166ab-1ce8-7161-abd0-8cfc1fb4dad5"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a166ab-1d64-758c-9c44-72d39256ecd3"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a166ab-1db5-783a-a30a-2b7929fadc5e"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a166ab-1ffa-7ad9-98f0-baa33fcd9d18"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a166ab-205b-7c92-b09d-c17eef15d0ea"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a166ab-20b4-733a-b2e0-0cfd76ca935b"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a166ab-239e-7f41-bb76-6318883218de"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a166ab-24eb-7ba4-9bcf-4b4fc1bcbc76"
+    }
+  ],
+  "phase": "complete",
+  "geometry": {
+    "debug": [
+      {
+        "className": "ant-row ant-form-item-row css-oc1rc0 css-var-_r_0_",
+        "top": 333.6875,
+        "height": 67.234375,
+        "display": "grid",
+        "lineHeight": "22px",
+        "padding": "0px",
+        "margin": "0px",
+        "gap": "6px",
+        "fontSize": "14px"
+      },
+      {
+        "className": "ant-col ant-form-item-label css-oc1rc0 css-var-_r_0_",
+        "top": 333.6875,
+        "height": 19.796875,
+        "display": "block",
+        "lineHeight": "0px",
+        "padding": "0px",
+        "margin": "0px",
+        "gap": "normal",
+        "fontSize": "14px"
+      },
+      {
+        "className": "ant-form-item-required ant-form-item-required-mark-hidden",
+        "top": 333.6875,
+        "height": 19.796875,
+        "display": "block",
+        "lineHeight": "19.8px",
+        "padding": "0px",
+        "margin": "0px",
+        "gap": "normal",
+        "fontSize": "12px"
+      },
+      {
+        "className": "ant-col ant-form-item-control css-oc1rc0 css-var-_r_0_",
+        "top": 359.484375,
+        "height": 41.4375,
+        "display": "block",
+        "lineHeight": "22px",
+        "padding": "0px",
+        "margin": "0px",
+        "gap": "normal",
+        "fontSize": "14px"
+      }
+    ],
+    "dialogWidth": 660,
+    "labelInputGap": 6,
+    "inputHeight": 41.4375,
+    "hintLineHeight": "18.7px",
+    "backdropInert": true,
+    "backdropInputs": [
+      {
+        "disabled": true,
+        "empty": true
+      },
+      {
+        "disabled": true,
+        "empty": true
+      }
+    ]
+  },
+  "transportFailures": [
+    {
+      "path": "/api/v1/auth/logout",
+      "error": "net::ERR_FAILED"
+    }
+  ],
+  "status": "passed"
+}

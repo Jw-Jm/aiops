@@ -52,7 +52,7 @@ type mfaClient struct {
 	sessions *identity.SessionRepository
 }
 
-func (c mfaClient) do(t *testing.T, method, path string, body any, session *mfaSession) (int, map[string]any, string) {
+func (c mfaClient) do(t *testing.T, method, path string, body any, session *mfaSession, keys ...string) (int, map[string]any, string) {
 	t.Helper()
 	var reader *strings.Reader
 	if body != nil {
@@ -68,7 +68,14 @@ func (c mfaClient) do(t *testing.T, method, path string, body any, session *mfaS
 	request.Host = "ops.example"
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Sec-Fetch-Site", "same-origin")
-	request.Header.Set("Idempotency-Key", uuid.NewString())
+	if len(keys) > 1 {
+		t.Fatal("one idempotency key expected")
+	}
+	key := uuid.NewString()
+	if len(keys) == 1 {
+		key = keys[0]
+	}
+	request.Header.Set("Idempotency-Key", key)
 	if session != nil {
 		if session.stepUpChallenge != "" {
 			request.Header.Set("X-Ops-Step-Up-Challenge", session.stepUpChallenge)
@@ -209,7 +216,7 @@ func TestNativeMFAEnrollmentStepUpAndReset(t *testing.T) {
 	if err != nil {
 		t.Fatalf("instance bootstrap DSN guard failed: %v", err)
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
 	adminDB, err := sql.Open("pgx", adminDSN)
 	if err != nil {
@@ -792,6 +799,7 @@ func TestNativeMFAEnrollmentStepUpAndReset(t *testing.T) {
 	if targetState != "reset_required" {
 		t.Fatalf("the reset target kept a second factor: state=%q", targetState)
 	}
+	assertNativeAdministratorRace(t, ctx, bootstrapPool, apiPool, client, tenantA, &admin, adminSecret)
 }
 
 // mfaTenantInt runs one read inside a tenant-scoped transaction with the

@@ -1,0 +1,106 @@
+{
+  "origin": "https://192.168.0.63:30468",
+  "runtime": "unchanged r14 Web/API; PG15453/schema56",
+  "scope": "SL-005 close/Escape/transport-failed logout/reload/retry and pending true password rotation",
+  "checks": [
+    "aborted logout clears UI identity, server cookie still200; reload keeps warning/login",
+    "retry authenticates exact old session then logout200; old cookie401; warning cleared",
+    "close -> real logout200/old cookie401",
+    "escape -> real logout200/old cookie401"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a1669c-71e8-70e7-8353-e69a4901f692"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669c-7289-70fe-a077-fe30b1ecb619"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a1669c-7952-7174-9415-6ef865f1a0b4"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a1669c-7e9d-7a11-9bcd-5f85d8725085"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a1669c-81d6-70b1-9f69-7f79e04ea844"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a1669c-826e-7c12-a462-af1062862be5"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669c-82ba-7ee9-bcf7-0712570a9ed9"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a1669c-8631-7201-b908-dcf4ad52b178"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a1669c-89a5-7a3d-b258-24961b5ea8cd"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669c-8a06-7599-b85d-8040cccf27de"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a1669c-9079-77bc-b36f-dfaebbbc1e65"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a1669c-90cc-784d-948d-d16dc73a36fe"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a1669c-911d-7b18-a363-9be9df9236ce"
+    }
+  ],
+  "phase": "pending password",
+  "transportFailures": [
+    {
+      "path": "/api/v1/auth/logout",
+      "error": "net::ERR_FAILED"
+    }
+  ],
+  "failureView": {
+    "path": "/auth/first-password",
+    "dialog": true,
+    "notice": false,
+    "closeDisabled": true
+  },
+  "status": "failed",
+  "failure": "page.waitForResponse: Timeout 30000ms exceeded while waiting for event \"response\""
+}

@@ -58,36 +58,7 @@ func assertNativeUserAdministration(t *testing.T, ctx context.Context, bootstrap
 		return nil
 	}
 	proof := func(method, path string, body map[string]any) {
-		copied := map[string]any{}
-		for key, value := range body {
-			copied[key] = value
-		}
-		if password, ok := copied["initialPassword"].(string); ok {
-			mac := hmac.New(sha256.New, []byte(admin.csrf))
-			mac.Write([]byte(password))
-			copied["initialPassword"] = "hmac-sha256:" + hex.EncodeToString(mac.Sum(nil))
-		}
-		raw, _ := json.Marshal(copied)
-		canonical, err := bundle.CanonicalizeJSON(raw)
-		if err != nil {
-			t.Fatal(err)
-		}
-		target := map[string]any{"kind": "administrative_write", "write": map[string]any{"method": method, "path": path, "bodyDigest": "sha256:" + identity.DigestHex(identity.DigestSHA256(canonical))}}
-		status, payload, message := client.do(t, http.MethodPost, "/api/v1/auth/step-up-challenges", map[string]any{"operation": "user_administration", "target": target, "expectedSessionVersion": admin.sessionVersion}, admin)
-		if status != 201 {
-			t.Fatalf("native user challenge=%d %s", status, message)
-		}
-		id := mfaData(t, payload)["challengeId"].(string)
-		status, _, message = client.do(t, http.MethodPost, "/api/v1/auth/step-up-challenges/"+id+":verify", map[string]any{"method": "password", "credential": "mfa-rotated-password", "expectedChallengeRevision": 1}, admin)
-		if status != 200 {
-			t.Fatalf("native user password=%d %s", status, message)
-		}
-		code := nextNativeAdminTOTP(t, ctx, pool, tenant, admin, secret)
-		status, payload, message = client.do(t, http.MethodPost, "/api/v1/auth/step-up-challenges/"+id+":verify", map[string]any{"method": "totp", "credential": code, "expectedChallengeRevision": 2}, admin)
-		if status != 200 || mfaData(t, payload)["verified"] != true {
-			t.Fatalf("native user TOTP=%d %s", status, message)
-		}
-		admin.stepUpChallenge = id
+		nativeAdminWriteProof(t, ctx, pool, client, tenant, admin, secret, method, path, body)
 	}
 	write := func(method, path string, body map[string]any, want int) map[string]any {
 		proof(method, path, body)
@@ -235,6 +206,8 @@ func assertNativeUserAdministration(t *testing.T, ctx context.Context, bootstrap
 	if len(account["roleGrants"].([]any)) != 1 {
 		t.Fatal("revoking admin removed independent operator")
 	}
+	assertNativeAdminAuditRollback(t, ctx, bootstrapPool, pool, client, tenant, admin, secret, id)
+	account = readAccount(id)
 	write(http.MethodPatch, path, map[string]any{"displayName": "Edited Fixture", "expectedRevision": account["revision"]}, 200)
 	account = readAccount(id)
 	reset := write(http.MethodPost, path+"/password:reset", map[string]any{"initialPassword": "managed-reset-password", "expectedRevision": account["revision"], "expectedCredentialVersion": account["revocation"].(map[string]any)["credentialVersion"]}, 200)
@@ -296,4 +269,41 @@ func nextNativeAdminTOTP(t *testing.T, ctx context.Context, pool *pgxpool.Pool, 
 		}
 	}
 	return mfaCodeAt(t, secret, step)
+}
+
+// Native writes are proven through real password and TOTP HTTP verification.
+func nativeAdminWriteProof(t *testing.T, ctx context.Context, pool *pgxpool.Pool, client mfaClient, tenant uuid.UUID, admin *mfaSession, secret, method, path string, body map[string]any) {
+	t.Helper()
+
+	copied := map[string]any{}
+	for key, value := range body {
+		copied[key] = value
+	}
+	if password, ok := copied["initialPassword"].(string); ok {
+		mac := hmac.New(sha256.New, []byte(admin.csrf))
+		mac.Write([]byte(password))
+		copied["initialPassword"] = "hmac-sha256:" + hex.EncodeToString(mac.Sum(nil))
+	}
+	raw, _ := json.Marshal(copied)
+	canonical, err := bundle.CanonicalizeJSON(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	target := map[string]any{"kind": "administrative_write", "write": map[string]any{"method": method, "path": path, "bodyDigest": "sha256:" + identity.DigestHex(identity.DigestSHA256(canonical))}}
+	status, payload, message := client.do(t, http.MethodPost, "/api/v1/auth/step-up-challenges", map[string]any{"operation": "user_administration", "target": target, "expectedSessionVersion": admin.sessionVersion}, admin)
+	if status != 201 {
+		t.Fatalf("native user challenge=%d %s", status, message)
+	}
+	id := mfaData(t, payload)["challengeId"].(string)
+	status, _, message = client.do(t, http.MethodPost, "/api/v1/auth/step-up-challenges/"+id+":verify", map[string]any{"method": "password", "credential": "mfa-rotated-password", "expectedChallengeRevision": 1}, admin)
+	if status != 200 {
+		t.Fatalf("native user password=%d %s", status, message)
+	}
+	code := nextNativeAdminTOTP(t, ctx, pool, tenant, admin, secret)
+	status, payload, message = client.do(t, http.MethodPost, "/api/v1/auth/step-up-challenges/"+id+":verify", map[string]any{"method": "totp", "credential": code, "expectedChallengeRevision": 2}, admin)
+	if status != 200 || mfaData(t, payload)["verified"] != true {
+		t.Fatalf("native user TOTP=%d %s", status, message)
+	}
+	admin.stepUpChallenge = id
+
 }

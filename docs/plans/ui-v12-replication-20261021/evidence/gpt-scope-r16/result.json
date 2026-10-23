@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-23",
+  "status": "scoped_fix_verified_not_P2_completion",
+  "source": "source.json",
+  "migration": "migration-result.json;57 executed/frozen;1-56 unchanged",
+  "before": "scope-before-result.json: actual200-namespace UI write with password/TOTP proof rejected400",
+  "after": "scope-after-result.json: same versioned contract accepted201 and persisted200 namespaces",
+  "SQL": "sql-boundaries.json: API-role200 accepted under rollback;201namespaces/51clusters rejected22023; binding/scope/account versions unchanged after probe",
+  "tests": [
+    "contract.log: full contract package passed including100/200/201 namespace and50/51 cluster cases",
+    "go.log: identity/httpapi/db-migrate passed",
+    "operator-reset-result.json: true UI reset200, mandatory first password/rotation201, operator overview after reload; exactly one independent200-namespace operator grant and no admin menu; footer gap10px"
+  ],
+  "failure": "operator-reset-first-failure.json: reset correctly returned200 but harness incorrectly expected201 and stopped before saving generated reset password. Follow-up authorized reset of this isolated fixture restored known private credentials; both real reset events retained, no existing/user-facing account reset.",
+  "boundaries": [
+    "57 only changes existing SQL scope limits100/100 to contract50/200; retains all locking/version/role/session logic",
+    "existing grants/credentials unchanged by migration; test fixture role/password changes explicitly recorded",
+    "no full concurrency, audit-fault, historical-ownership, Worker/cold-start or whole-product acceptance"
+  ]
+}

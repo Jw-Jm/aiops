@@ -1,0 +1,58 @@
+{
+  "origin": "https://192.168.0.63:30469",
+  "schemaVersion": 56,
+  "scope": "200-namespace NativeIdentityScopeV1 boundary on isolated r15 fixture; no source qualification",
+  "checks": [
+    "200 namespaces via exact password+TOTP: HTTP400"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a166ad-ab08-7ba4-a688-b7eb26d173ad"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a166ad-ab99-7aaa-8f4b-e80e04778a9b"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a166ad-b179-731e-96cd-5f60bdab0eea"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a166ad-b3b7-7c85-af3d-63d276573c91"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a166ad-b3b9-730d-87c5-9bbd29b1c60c"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a166ad-bf74-7a48-9231-e499fe66d3a8"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a166ad-c0ce-789b-9efb-cb6734d9c5ea:verify",
+      "status": 200,
+      "requestId": "01a166ad-c11a-74d3-a520-427b3c5d5feb"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a166ad-c0ce-789b-9efb-cb6734d9c5ea:verify",
+      "status": 200,
+      "requestId": "01a166ad-c938-7db2-941f-3af865af3a8d"
+    },
+    {
+      "path": "/api/v1/admin/role-bindings",
+      "status": 400,
+      "requestId": "01a166ad-edca-7ae4-876e-5ede309e8be2"
+    }
+  ],
+  "pageErrors": [],
+  "loginName": "browser.r15.cccd47f324db",
+  "status": "passed"
+}

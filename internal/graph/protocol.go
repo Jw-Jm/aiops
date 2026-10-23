@@ -78,23 +78,15 @@ func EffectiveTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster string
 	versions := []any{clusterRevision, tenantRevision}
 	if isNative {
 		versions = append(versions, "native", native.Session.UserID.String(), native.Session.AuthorizationVersion)
+		grants := make([]NativeGrant, 0, len(native.Session.Grants))
 		for _, grant := range native.Session.Grants {
-			if grant.Role != "operator" || !slices.Contains(grant.ClusterUIDs, cluster) {
+			if grant.Role != "operator" {
 				continue
 			}
-			versions = append(versions, grant.BindingID.String(), grant.AuthorizationVersion, grant.ClusterUIDs, grant.Namespaces)
-			if len(grant.Namespaces) == 0 {
-				out.ClusterScoped = true
-			} else {
-				if len(grant.ClusterUIDs) != 1 {
-					return out, ErrScope
-				}
-				for _, namespace := range grant.Namespaces {
-					if !slices.Contains(out.Namespaces, namespace) {
-						out.Namespaces = append(out.Namespaces, namespace)
-					}
-				}
-			}
+			grants = append(grants, NativeGrant{BindingID: grant.BindingID, AuthorizationVersion: grant.AuthorizationVersion, ClusterUIDs: grant.ClusterUIDs, Namespaces: grant.Namespaces})
+		}
+		if out, versions, err = applyNativeGrants(out, cluster, grants, versions); err != nil {
+			return out, err
 		}
 	} else {
 		rows, err := tx.Query(ctx, `SELECT binding_id,revision,cluster_scopes,namespace_scopes FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND status='active' AND role_name='operator' ORDER BY binding_id`, tid, subject)
@@ -129,11 +121,120 @@ func EffectiveTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster string
 		}
 		rows.Close()
 	}
+	return finishScopeTx(ctx, tx, tid, clusterID, cluster, out, versions)
+}
+
+// NativeGrant is one persisted operator grant row. A Worker re-proves a job's
+// frozen scope from these rows instead of a browser session.
+type NativeGrant struct {
+	BindingID            uuid.UUID
+	AuthorizationVersion int
+	ClusterUIDs          []string
+	Namespaces           []string
+}
+
+// applyNativeGrants is the single implementation of "what a native operator
+// grant covers for one cluster". EffectiveTx (browser session) and
+// EffectiveNativeTx (persisted job re-proof) share it, so both produce the same
+// scope and the same authorization revision vector.
+func applyNativeGrants(out Scope, cluster string, grants []NativeGrant, versions []any) (Scope, []any, error) {
+	for _, grant := range grants {
+		if grant.BindingID == uuid.Nil || grant.AuthorizationVersion < 1 {
+			return out, versions, ErrScope
+		}
+		if !slices.Contains(grant.ClusterUIDs, cluster) {
+			continue
+		}
+		versions = append(versions, grant.BindingID.String(), grant.AuthorizationVersion, grant.ClusterUIDs, grant.Namespaces)
+		if len(grant.Namespaces) == 0 {
+			out.ClusterScoped = true
+			continue
+		}
+		if len(grant.ClusterUIDs) != 1 {
+			return out, versions, ErrScope
+		}
+		for _, namespace := range grant.Namespaces {
+			if !slices.Contains(out.Namespaces, namespace) {
+				out.Namespaces = append(out.Namespaces, namespace)
+			}
+		}
+	}
+	return out, versions, nil
+}
+
+// EffectiveNativeTx rebuilds the exact scope of a job admitted by a native
+// operator without a browser session. The caller must have already proven the
+// persisted user/version; this function re-reads the cluster/tenant/source
+// revisions so any change invalidates the frozen digest.
+func EffectiveNativeTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster string, userID uuid.UUID, authorizationVersion int, grants []NativeGrant) (Scope, error) {
+	out := Scope{Tenant: tenant, Cluster: cluster, Namespaces: []string{}, Resources: []string{}}
+	tid, err := uuid.Parse(tenant)
+	if err != nil || subject == "" || tx == nil || userID == uuid.Nil || authorizationVersion < 1 || cluster == "" {
+		return out, ErrScope
+	}
+	var clusterID uuid.UUID
+	var clusterRevision, tenantRevision int64
+	if err := tx.QueryRow(ctx, `SELECT c.cluster_id,c.revision,t.revision FROM platform.cluster_registrations c JOIN platform.tenants t USING(tenant_id) WHERE c.tenant_id=$1 AND c.cluster_uid=$2 AND c.status='active' AND t.status='active'`, tid, cluster).Scan(&clusterID, &clusterRevision, &tenantRevision); err != nil {
+		return out, ErrScope
+	}
+	versions := []any{clusterRevision, tenantRevision, "native", userID.String(), authorizationVersion}
+	if out, versions, err = applyNativeGrants(out, cluster, grants, versions); err != nil {
+		return out, err
+	}
+	return finishScopeTx(ctx, tx, tid, clusterID, cluster, out, versions)
+}
+
+// EffectivePersistedNativeTx re-proves a persisted decision (a Worker job or a
+// command execution that outlived its browser session) from the account and the
+// live operator grants. The projection locks the account and grant rows in the
+// caller's transaction, so an administrative revocation waits until that
+// transaction commits instead of slipping between the check and the business
+// write. A version mismatch refuses the decision; it never falls back to legacy.
+func EffectivePersistedNativeTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster string, userID uuid.UUID, authorizationVersion int) (Scope, error) {
+	out := Scope{Tenant: tenant, Cluster: cluster, Namespaces: []string{}, Resources: []string{}}
+	tid, err := uuid.Parse(tenant)
+	if err != nil || subject == "" || cluster == "" || tx == nil || userID == uuid.Nil || authorizationVersion < 1 {
+		return out, ErrScope
+	}
+	rows, err := tx.Query(ctx, `SELECT authorization_version,binding_id,scope FROM platform.native_operator_scope_shared($1,$2)`, tid, userID)
+	if err != nil {
+		return out, ErrScope
+	}
+	defer rows.Close()
+	grants := []NativeGrant{}
+	for rows.Next() {
+		var version int
+		var binding uuid.UUID
+		var scopeRaw []byte
+		if err := rows.Scan(&version, &binding, &scopeRaw); err != nil {
+			return out, ErrScope
+		}
+		if version != authorizationVersion {
+			// Revoked, re-granted, disabled or re-versioned authority can never
+			// revive a decision frozen at an earlier version.
+			return out, ErrScope
+		}
+		var scope struct {
+			ClusterUIDs []string `json:"clusterUids"`
+			Namespaces  []string `json:"namespaces"`
+		}
+		if json.Unmarshal(scopeRaw, &scope) != nil {
+			return out, ErrScope
+		}
+		grants = append(grants, NativeGrant{BindingID: binding, AuthorizationVersion: version, ClusterUIDs: scope.ClusterUIDs, Namespaces: scope.Namespaces})
+	}
+	if err := rows.Err(); err != nil || len(grants) == 0 {
+		return out, ErrScope
+	}
+	return EffectiveNativeTx(ctx, tx, tenant, subject, cluster, userID, authorizationVersion, grants)
+}
+
+func finishScopeTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, clusterID uuid.UUID, cluster string, out Scope, versions []any) (Scope, error) {
 	if !out.ClusterScoped && len(out.Namespaces) == 0 {
 		return out, ErrScope
 	}
 	sort.Strings(out.Namespaces)
-	sourceRows, err := tx.Query(ctx, `SELECT source_id,revision,status,source_type,backend_logical_id,data_scope_mapping FROM platform.source_registrations WHERE tenant_id=$1 AND (cluster_id=$2 OR data_scope_mapping->'scopes'->'cluster' ? $3) ORDER BY source_id`, tid, clusterID, cluster)
+	sourceRows, err := tx.Query(ctx, `SELECT source_id,revision,status,source_type,backend_logical_id,data_scope_mapping FROM platform.source_registrations WHERE tenant_id=$1 AND (cluster_id=$2 OR data_scope_mapping->'scopes'->'cluster' ? $3) ORDER BY source_id`, tenant, clusterID, cluster)
 	if err != nil {
 		return out, err
 	}

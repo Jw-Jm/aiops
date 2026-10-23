@@ -216,50 +216,61 @@ it("posts the real Login form through generated fetch and does not return to /lo
   );
 });
 
-it("recovers CSRF on first-password route and sends it with the real generated change request", async () => {
-  initialView = view("first_password_only");
-  changeView = view("full");
-  changeView.authorization.grants[0] = {
-    ...changeView.authorization.grants[0],
-    role: "platform_admin",
-    scope: { clusterUids: [], namespaces: [] },
-  };
-  changeView.authorizedClusters = [];
-  render(
-    <MemoryRouter initialEntries={["/login"]}>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/auth/first-password" element={<FirstPassword />} />
-          <Route path="/access/sources" element={<div>admin home</div>} />
-        </Routes>
-      </AuthProvider>
-    </MemoryRouter>,
-  );
-  fireEvent.change(await screen.findByLabelText("当前密码"), {
-    target: { value: "initial-password" },
-  });
-  fireEvent.change(screen.getByLabelText("新密码"), {
-    target: { value: "replacement-password" },
-  });
-  fireEvent.change(screen.getByLabelText("确认新密码"), {
-    target: { value: "replacement-password" },
-  });
-  fireEvent.click(screen.getByRole("button", { name: /设置密码并继续/ }));
-  expect(await screen.findByText("admin home")).toBeVisible();
-  const changeCall = calls.find((call) =>
-    call.url.endsWith("/api/v1/auth/password:change"),
-  );
-  expect(changeCall).toBeTruthy();
-  expect(
-    (changeCall?.init?.headers as Record<string, string>)["X-CSRF-Token"],
-  ).toBe("derived-csrf-token");
-  expect(JSON.parse(String(changeCall?.init?.body))).toEqual({
-    currentPassword: "initial-password",
-    newPassword: "replacement-password",
-    expectedCredentialVersion: 1,
-  });
-});
+it.each(["platform_admin", "operator"] as const)(
+  "recovers CSRF and uses the new %s session for first-password navigation",
+  async (role) => {
+    initialView = view("first_password_only");
+    changeView = view("full");
+    changeView.authorization.grants[0] = {
+      ...changeView.authorization.grants[0],
+      role,
+      scope:
+        role === "platform_admin"
+          ? { clusterUids: [], namespaces: [] }
+          : { clusterUids: ["k8s-uid-a"], namespaces: ["default"] },
+    };
+    if (role === "platform_admin") changeView.authorizedClusters = [];
+    render(
+      <MemoryRouter initialEntries={["/login"]}>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/auth/first-password" element={<FirstPassword />} />
+            <Route path="/access/sources" element={<div>admin home</div>} />
+            <Route path="/overview" element={<div>operator home</div>} />
+          </Routes>
+        </AuthProvider>
+      </MemoryRouter>,
+    );
+    fireEvent.change(await screen.findByLabelText("当前密码"), {
+      target: { value: "initial-password" },
+    });
+    fireEvent.change(screen.getByLabelText("密码"), {
+      target: { value: "replacement-password" },
+    });
+    fireEvent.change(screen.getByLabelText("确认密码"), {
+      target: { value: "replacement-password" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /保存密码/ }));
+    expect(
+      await screen.findByText(
+        role === "operator" ? "operator home" : "admin home",
+      ),
+    ).toBeVisible();
+    const changeCall = calls.find((call) =>
+      call.url.endsWith("/api/v1/auth/password:change"),
+    );
+    expect(changeCall).toBeTruthy();
+    expect(
+      (changeCall?.init?.headers as Record<string, string>)["X-CSRF-Token"],
+    ).toBe("derived-csrf-token");
+    expect(JSON.parse(String(changeCall?.init?.body))).toEqual({
+      currentPassword: "initial-password",
+      newPassword: "replacement-password",
+      expectedCredentialVersion: 1,
+    });
+  },
+);
 
 it("accepts the legacy SP08 OIDC runtime config without auth.mode", async () => {
   vi.stubGlobal(

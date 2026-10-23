@@ -91,7 +91,17 @@ type Acknowledgement struct {
 	RequestDigest string    `json:"executionRequestDigest"`
 	ExpiresAt     time.Time `json:"expiresAt"`
 }
+
+// Authority records which identity system proved the command and at which
+// version. Empty is the historical legacy encoding.
+type Authority struct {
+	Source               string    `json:"source,omitempty"`
+	UserID               uuid.UUID `json:"userId,omitempty"`
+	AuthorizationVersion int       `json:"authorizationVersion,omitempty"`
+}
+
 type Execution struct {
+	Authority         Authority       `json:"authority"`
 	Iteration         int             `json:"iteration"`
 	OutputPreviews    json.RawMessage `json:"outputPreviews,omitempty"`
 	AckID             uuid.UUID       `json:"acknowledgementId"`
