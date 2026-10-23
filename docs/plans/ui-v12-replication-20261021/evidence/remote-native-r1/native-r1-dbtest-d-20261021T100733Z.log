@@ -1,0 +1,6 @@
+=== RUN   TestNativeIdentityGuardRejectsSharedOrOverriddenDSN
+--- PASS: TestNativeIdentityGuardRejectsSharedOrOverriddenDSN (0.00s)
+=== RUN   TestNativeIdentityRepositoryAndRoles
+    native_identity_test.go:106: apply role bootstrap: ERROR 00001_roles_and_schemas.sql: failed to run SQL migration: failed to execute SQL query "ALTER ROLE schema_owner NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS;": ERROR: permission denied to alter role (SQLSTATE 42501)
+--- FAIL: TestNativeIdentityRepositoryAndRoles (0.08s)
+FAIL

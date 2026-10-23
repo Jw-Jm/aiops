@@ -1,0 +1,68 @@
+{
+  "task_id": "f20c4c58-e62c-45a2-b701-f3eaba376dda",
+  "reviewer": "Codex",
+  "date": "2026-10-21T06:35:42.317697+00:00",
+  "result": "changes_requested; P1 remains in_progress; G0 readiness retained",
+  "checks": [
+    {
+      "command": "pnpm test",
+      "result": "passed 6 node contract + 92 Vitest /24 files",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p1-tests.log"
+    },
+    {
+      "command": "pnpm build",
+      "result": "passed TypeScript/Vite; chunk size warning",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p1-build.log"
+    }
+  ],
+  "findings": [
+    {
+      "id": "P1-R1",
+      "files": [
+        "web/src/app/ClusterContext.tsx",
+        "web/src/layout/AppShell.tsx",
+        "web/src/pages/AssistantPage.tsx"
+      ],
+      "issue": "NavList links omit clusterUid so effect silently resets selected B to first authorized A. Provider URL/auth cluster reconciliation bypasses apply/generation/cancel/draft guards. apply retains prior canonicalId/conversation/incidentId/namespace/cursor in URL. Assistant scopeKey and useConversationStream depend only auth/id, not selected cluster; old SSE continues; confirm discard does not reset symptom/message/targets. Must make transitions atomic across navigation, URLs, auth scope and manual selectors; preserve object identity or require deliberate clearing, never silently rebind."
+    },
+    {
+      "id": "P1-R2",
+      "files": [
+        "web/src/app/ClusterContext.tsx",
+        "web/src/pages/admin/AdminPage.tsx"
+      ],
+      "issue": "Config clusters reuse session.authorizedClusters (operator read set), not administrator registration API. setConfigCluster lacks URL/authorization reconciliation. AdminPage adds UID only to cache key but requests/rows/writes are unchanged; label suggests selected scope while showing other-cluster data; old selected object/draft/step-up survives changes. Separate real config candidates; scope actual reads/rows and writes, explicit tenant-wide sections, clear stale selections/receipts with draft protection."
+    },
+    {
+      "id": "P1-R3",
+      "files": [
+        "web/src/app/navigation.tsx",
+        "web/src/layout/AppShell.tsx",
+        "web/src/app/router.tsx"
+      ],
+      "issue": "Flattened sidebar omits designed expandable module hierarchy; test only checks own hardcoded22 list. Frozen source includes knowledge cases/runbooks links while implementation replaces with /knowledge; reconcile manifest routes and source navigation without forcing old count. Only admin menus filtered; operator-only menus displayed for pure admin and no operator route guards. Legacy /capabilities now redirects into admin-only route, removing existing operator read capability. Preserve independent role projections and deep-link identity."
+    },
+    {
+      "id": "P1-R4",
+      "files": [
+        "web/src/components/v12/Layer.tsx",
+        "web/src/design/v12.css"
+      ],
+      "issue": "Antd Modal/Drawer portals render outside .v12-shell but styles/variables require that ancestor, so layer skin misses real dialogs; testId props unused. LayerContext creates new API object each provider render, restarting all open-layer effects/focus/stack. Scope portal style explicitly and stabilize context; meaningful focus restoration and nested close tests, not only fixed callbacks."
+    },
+    {
+      "id": "P1-R5",
+      "files": [
+        "web/src/components/v12/primitives.tsx",
+        "web/src/pages/UnavailablePage.tsx",
+        "web/src/app/router.tsx"
+      ],
+      "issue": "Product fallback pages expose task IDs, contract IDs, schema/handler/migration notes and statements about fake data; remove implementation bookkeeping from user flow. Keep honest concise unavailable state and useful next action; details belong evidence only. Mobile drawer/media layout added despite desktop-only scope; remove unnecessary new mobile work and match fixed desktop min width."
+    }
+  ],
+  "not_verified": [
+    "remote business browser/visual comparison",
+    "live APIs and persisted cross-cluster behavior",
+    "native auth/P2 and six product dimensions"
+  ]
+}

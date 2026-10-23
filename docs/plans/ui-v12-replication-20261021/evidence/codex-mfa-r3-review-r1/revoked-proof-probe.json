@@ -1,0 +1,16 @@
+{
+  "scope": "15453; existing genuinely minted unrevoked proof tied to revoked session; expiry extended inside rollback solely to isolate revocation check",
+  "snapshot": {
+    "tenant_id": "2e56e676-e525-46aa-94c0-cfdddfb14cb7",
+    "user_id": "01a16305-53f3-73c8-aea3-11a755ca8e8f",
+    "session_id": "01a16305-5658-793e-b7dc-f5707b7def6b",
+    "step_up_ref": "01a16305-5734-71bc-a3d1-2d89567d6294",
+    "operation": "mfa_enrollment",
+    "av": 1,
+    "cv": 2,
+    "sv": 2,
+    "current_sv": 3,
+    "revoked": true
+  },
+  "result": "BEGIN\nUPDATE 1\nSET\nSET\n2e56e676-e525-46aa-94c0-cfdddfb14cb7\n{\"revoked_session_step_up_recheck\" : true}\nROLLBACK\n"
+}

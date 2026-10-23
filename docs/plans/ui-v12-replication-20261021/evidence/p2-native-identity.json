@@ -1,0 +1,183 @@
+{
+  "task": "P2-01 native identity and restricted first administrator initialization",
+  "date": "2026-10-21",
+  "status": "isolated_db_verified_for_data_and_first_administrator_scope_only",
+  "migration": {
+    "file": "migrations/00044_native_identity.sql",
+    "number": 44,
+    "direction": "forward_only",
+    "down": "none",
+    "executed": true,
+    "execution_scope": "task-owned isolated15450 and independent fresh15451 only; shared runtime unchanged"
+  },
+  "implementation": {
+    "schema": [
+      "identity.accounts",
+      "identity.credentials",
+      "identity.password_attempts",
+      "identity.sessions",
+      "identity.role_grants",
+      "identity.subject_mappings",
+      "identity.administrator_initializations"
+    ],
+    "go": [
+      "internal/identity/account.go",
+      "internal/identity/password.go",
+      "internal/identity/repository.go",
+      "cmd/opsctl/bootstrap_native_administrator.go"
+    ],
+    "roles": "existing api_runtime_role and migration_role duties; no new capability role created by migration 44",
+    "api_runtime_grants": "schema USAGE plus three SECURITY DEFINER function executes only; no direct identity-table grants",
+    "bootstrap_duty": "dedicated migration-role LOGIN required; non-superuser, no bypassrls, no active SET ROLE",
+    "password_hash": "Argon2id v=19 m=65536,t=2,p=1; 16-byte random salt; 32-byte key; constant-time compare; bounded parser"
+  },
+  "checks": [
+    {
+      "command": "go test ./internal/identity ./cmd/opsctl -run 'NativeAdministrator|PrivatePassword|HashAndVerify|LoginName|DisplayName|FirstAdministrator|Secret' -count=1",
+      "result": "pass"
+    },
+    {
+      "command": "go test ./test/contract -count=1",
+      "result": "pass"
+    },
+    {
+      "command": "go test ./test/integration -run 'NativeIdentity' -count=1 -v",
+      "result": "guard unit test pass; repository DB test SKIP; no DB executed"
+    },
+    {
+      "command": "GOOS=linux GOARCH=amd64 go test -c ./test/integration -o /tmp/ops-ui-v12-native-identity-linux.test",
+      "result": "pass; sha256 2fa603dee5fd39054a26d225e64547251a37b0f3a5c5d7655fcc4e136712335c"
+    },
+    {
+      "command": "database migration / opsctl bootstrap native-administrator",
+      "result": "not executed by design"
+    }
+  ],
+  "known_existing_failure": {
+    "command": "go test ./cmd/opsctl -count=1",
+    "result": "TestBundleBuildCLIAndIndependentVerify fails on opa-sdk-source corresponding-source lock",
+    "scope": "OPA source-lock attribution unresolved; unrelated material unchanged"
+  },
+  "remaining": [
+    "Codex independent acceptance of this isolated DB verification",
+    "P2-02 native HTTP login/session/CSRF/first-password",
+    "P2-04 legacy subject mapping execution interface",
+    "OIDC/runtime switch and product six dimensions"
+  ],
+  "secret_safety": [
+    "FirstAdministratorInput.MarshalJSON omits password and exposes passwordPresent only",
+    "LoginAccount.MarshalJSON omits password hash and exposes passwordHashPresent only",
+    "FirstAdministratorResult has identifiers/versions/login only",
+    "CLI password file is separate, 0600, outside Git, newline-free; password and DSN are not printed"
+  ],
+  "logs": [
+    "evidence/p2-native-identity-tests.log"
+  ],
+  "initialization": {
+    "transaction": "SET LOCAL ROLE migration_role verified; tenant advisory lock; marker checked then account, credential, platform_admin grant, initialization marker and audit in one transaction",
+    "fk_order": "immediate FKs are valid because accounts exist before the initialization marker",
+    "failure": "full rollback leaves no account, credential, grant, marker or audit record",
+    "concurrency": "one winner per tenant; global login uniqueness returns ErrLoginNameUnavailable across tenants"
+  },
+  "duty_path": {
+    "cli": "identity.RequireNativeBootstrapDuty checks rolcanlogin, rolsuper=false, rolinherit=false, rolbypassrls=false, session_user=current_user and migration_role membership",
+    "transaction": "SET LOCAL ROLE migration_role and current_user/membership/attributes re-checked before identity data",
+    "grants": "identity schema USAGE, explicit identity table grants and audit function execute for migration_role only where needed"
+  },
+  "preauth": {
+    "functions": "find_login_account, record_password_failure, clear_password_failure",
+    "context": "each function resets app.identity_preauth then sets its exact operation; helper also requires security-definer user, api-duty session user and exact GUC",
+    "rls": "ENABLE/FORCE RLS unchanged; no BYPASSRLS/SUPERUSER; API/Worker have no direct identity-table grants",
+    "locking": "record uses GREATEST(existing lock, requested lock); clear only removes an unlocked/expired row"
+  },
+  "foreign_keys": "all six account child tables use composite (tenant_id,user_id) FK to identity.accounts(tenant_id,user_id); accounts PK is (tenant_id,user_id) with user_id globally unique",
+  "db_test_guard": {
+    "no_generic_helper": true,
+    "required_env": [
+      "OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1",
+      "OPS_UI_V12_NATIVE_IDENTITY_TASK=ui-v12-p2-01-r1",
+      "OPS_UI_V12_NATIVE_IDENTITY_DB_PORT",
+      "OPS_UI_V12_NATIVE_IDENTITY_ADMIN_DSN"
+    ],
+    "checks_before_mutation": [
+      "loopback host",
+      "exact task port/database/user",
+      "no DSN overrides",
+      "exact database comment",
+      "NOBYPASSRLS/NOSUPERUSER CREATEROLE owner",
+      "native server port 5432",
+      "PostgreSQL 15+"
+    ],
+    "created_logins": "NOINHERIT/NOSUPERUSER/NOBYPASSRLS migration, api, worker and bootstrap duty paths",
+    "skip_is_not_pass": true
+  },
+  "opa_failure": {
+    "result": "unresolved attribution",
+    "details": "full cmd/opsctl still reports opa-sdk-source corresponding-source lock drift; no unrelated lock or bundle source was modified"
+  },
+  "actual_remote_verification": {
+    "date": "2026-10-21",
+    "host": "mssc-direct",
+    "task_dir": "/data/ops-ui-v12-native-20261021-r1",
+    "container": "ops-ui-v12-native-pg-20261021-r1",
+    "port": "127.0.0.1:15450 -> 5432",
+    "image": "sha256:589f742565e4f6d22149176b032974f55f8201a8a37b71ed587ec5c6902e689f",
+    "postgres": "17.11",
+    "database": "ui_v12_native_identity",
+    "owner": "ui_v12_native_owner",
+    "comment": "ops.task=ui-v12-p2-01-r1; isolated native identity only",
+    "schema_version": 44,
+    "migration_split": "migration 1 by instance bootstrap super; migrations 2-44 by NOINHERIT migration LOGIN",
+    "test_result": "TestNativeIdentityRepositoryAndRoles PASS",
+    "cli_result": "first initialization PASS; repeated initialization rejected without changing existing account",
+    "assertions": [
+      "NOINHERIT/NOSUPERUSER/NOBYPASSRLS duty and bootstrap logins",
+      "FORCE RLS and pre-auth exact GUC context",
+      "six composite tenant/user account foreign keys",
+      "cross-tenant FK/RLS rejection",
+      "concurrent initialization has exactly one winner",
+      "repeat initialization does not reset existing account",
+      "API/Worker cannot bootstrap or read identity tables directly",
+      "restricted lookup works without client-supplied authorization",
+      "failure counter and valid lock are durable and cannot be cleared early",
+      "first-administrator audit is persisted"
+    ],
+    "nonsecret_final_counts": {
+      "accounts": 4,
+      "credentials": 4,
+      "initializations": 4,
+      "first_administrator_audit_records": 4,
+      "active_platform_admin_grants": 4,
+      "active_operator_grants": 0,
+      "composite_account_fks": 6
+    },
+    "source_archive_sha256": "2e7ff1544b74b764dc28606c152aeeb4a49967bc8b9b694cc2da14b2fe5811d8",
+    "db_test_binary_sha256": "92f28d49d61fc5df0328f3948328e3c819ba445b9f053cefad6a11c9ce48d129",
+    "cli_binary_sha256": "ae5c8f704ca42ddd61951aa5348661cc20848b6ee2ff1a82a47a0aa24a40283d",
+    "evidence_dir": "evidence/remote-native-r1"
+  },
+  "secret_handling": {
+    "private_materials": "kept only in remote task private directory with 0600 files",
+    "repository_copy": "no secrets in evidence, docs or repository",
+    "scan_result": "remote evidence and local sanitized evidence scans were clean",
+    "failed_setup_logs": "preserved; no generated credential echo found",
+    "rotation": "not required because no credential echo was found"
+  },
+  "codex_independent_acceptance": {
+    "status": "accepted_P2_01_data_and_bootstrap_scope",
+    "date": "2026-10-22T00:45:20.095182+00:00",
+    "evidence": "evidence/codex-p2-review-r3.json",
+    "fresh_instance_port": 15451
+  },
+  "historical_not_executed": [
+    "goose migration 44",
+    "opsctl bootstrap native-administrator",
+    "remote native identity database integration",
+    "OIDC/runtime switch",
+    "shared database access"
+  ],
+  "current_not_executed": [
+    "native HTTP/OIDC runtime switch",
+    "shared database mutation"
+  ]
+}

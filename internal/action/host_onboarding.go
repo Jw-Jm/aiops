@@ -3,10 +3,12 @@ package action
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"net"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/authz"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/resource"
 	"regexp"
@@ -58,11 +60,13 @@ func (s Service) OnboardHost(ctx context.Context, a auth.RequestContext, in Onbo
 		return err
 	}
 	return persistence.WithTenantTx(ctx, s.Pool, a.TenantID, func(tx pgx.Tx) error {
-		var role uuid.UUID
-		if tx.QueryRow(ctx, `SELECT binding_id FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND role_name='platform_admin' AND status='active' FOR SHARE`, a.TenantID, a.Subject).Scan(&role) != nil {
-			return ErrDenied
-		}
 		if _, err := auth.TouchCurrentStepUpSession(ctx, tx, a, []string{auth.StepUpACRLevel2}); err != nil {
+			return err
+		}
+		if err := authz.RequireAdmin(ctx, tx, a); err != nil {
+			if errors.Is(err, authz.ErrUnauthorized) || errors.Is(err, authz.ErrIdentityMismatch) {
+				return ErrDenied
+			}
 			return err
 		}
 		d, err := persistence.Begin(ctx, tx, persistence.Scope{TenantID: a.TenantID, Subject: a.Subject, Operation: "onboard-host"}, key, persistence.Digest(Digest(Canonical(in))))

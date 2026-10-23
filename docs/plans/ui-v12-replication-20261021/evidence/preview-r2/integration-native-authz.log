@@ -1,0 +1,22 @@
+# TestNativeHTTPSessionFlow against the task database (15452, schema 49)
+# Binary: /tmp/native-http-r6.test (GOOS=linux GOARCH=amd64, this working tree)
+# Command (remote, DSNs read from private files; nothing printed):
+#   native-http-r6.test -test.run ^TestNativeHTTPSessionFlow$ -test.v -test.timeout 10m
+# cwd: /data/ops-ui-v12-http-20261022-r1/source-r6/platform/test/integration
+# goose: no migrations to run. current version: 49
+
+=== RUN   TestNativeHTTPSessionFlow
+    native_http_session_test.go:185: tenant=2ac77143-d329-4f4d-a6ba-fc3c0b9e09eb user=01a162b4-d2d8-715a-bc2c-b7b5d271a72f
+=== RUN   TestNativeHTTPSessionFlow/registered_scopes_keep_roles_and_tenants_separate
+=== RUN   TestNativeHTTPSessionFlow/audit_failure_rolls_back_password_and_session_rotation
+=== RUN   TestNativeHTTPSessionFlow/absolute_expiry_caps_touch_and_rejects_password_change
+--- PASS: TestNativeHTTPSessionFlow (6.39s)
+    --- PASS: TestNativeHTTPSessionFlow/registered_scopes_keep_roles_and_tenants_separate (0.30s)
+    --- PASS: TestNativeHTTPSessionFlow/audit_failure_rolls_back_password_and_session_rotation (0.16s)
+    --- PASS: TestNativeHTTPSessionFlow/absolute_expiry_caps_touch_and_rejects_password_change (0.09s)
+PASS
+
+# New P2-04 assertions inside the flow (after password rotation, using the rotated cookie):
+#   GET /api/v1/admin/clusters                       -> 200
+#   GET /api/v1/overview?clusterUid=...              -> 403 (administrator has no operator grant)
+#   SELECT count(*) FROM platform.role_bindings      -> 0 (no legacy binding was copied)

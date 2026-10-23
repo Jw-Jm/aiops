@@ -127,6 +127,12 @@ func TouchStepUpSession(ctx context.Context, tx pgx.Tx, session StepUpSession, r
 // TouchCurrentStepUpSession resolves the session exclusively from the verified request identity,
 // then applies the accepted-ACR check and database-time expiry update in the caller's transaction.
 func TouchCurrentStepUpSession(ctx context.Context, tx pgx.Tx, request RequestContext, acceptedACRs []string) (StepUpSession, error) {
+	if _, native := NativeSessionFromContext(ctx); native {
+		if !containsString(acceptedACRs, StepUpACRLevel2) {
+			return StepUpSession{}, ErrStepUpInvalid
+		}
+		return touchNativeStepUp(ctx, tx, request)
+	}
 	if request.TenantID == uuid.Nil || request.Subject == "" || request.KeycloakSID == "" || request.AuthTime.IsZero() ||
 		!containsString(acceptedACRs, request.ACR) {
 		return StepUpSession{}, ErrStepUpInvalid

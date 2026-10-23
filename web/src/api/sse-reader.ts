@@ -28,6 +28,7 @@ export async function* streamJSONEvents<T>(
   const headers = new Headers(options.headers);
   headers.set("Accept", "text/event-stream");
   const response = await fetch(url, { ...options, headers });
+  options.signal?.throwIfAborted();
   if (!response.ok) {
     const detail = await response.text();
     throw new SSEHttpError(response.status, detail);
@@ -44,7 +45,10 @@ export async function* streamJSONEvents<T>(
   if (!response.body) {
     throw new Error("SSE response has no readable body");
   }
-  yield* readJSONEventStream(response.body, decode);
+  for await (const message of readJSONEventStream(response.body, decode)) {
+    options.signal?.throwIfAborted();
+    yield message;
+  }
 }
 
 export async function* readJSONEventStream<T>(

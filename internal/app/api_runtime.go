@@ -16,6 +16,7 @@ import (
 	"ops-platform/internal/auth"
 	"ops-platform/internal/configregistry"
 	"ops-platform/internal/httpapi"
+	"ops-platform/internal/identity"
 	"ops-platform/internal/observability"
 )
 
@@ -96,13 +97,49 @@ func (application *APIApp) Serve(ctx context.Context, listener net.Listener, run
 		return err
 	}
 	defer pool.Close()
-	bindings, err := auth.NewPostgreSQLRoleBindingSource(pool)
-	if err != nil {
-		return err
-	}
-	authenticator, err := auth.NewOIDCAuthenticator(ctx, application.config.OIDCIssuerURL, "ops-api", bindings)
-	if err != nil {
-		return errors.New("API OIDC discovery failed")
+	var authenticator auth.AuthMiddleware
+	var nativeHandlers *httpapi.NativeAuthHandlers
+	var nativeMFA *httpapi.NativeMFAHandlers
+	if application.config.HumanAuthMode == HumanAuthModeNative {
+		sessions, sessionErr := identity.NewSessionRepository(pool)
+		if sessionErr != nil {
+			return errors.New("native session repository is unavailable")
+		}
+		nativeHandlers, sessionErr = httpapi.NewNativeAuthHandlers(sessions, application.config.NativeAuthTenantID)
+		if sessionErr != nil {
+			return errors.New("native authentication is unavailable")
+		}
+		sealer, sealerErr := nativeMFASealerFromEnv()
+		if sealerErr != nil {
+			return sealerErr
+		}
+		mfaRepository, mfaErr := identity.NewMFARepository(sessions, sealer)
+		if mfaErr != nil {
+			return errors.New("native MFA repository is unavailable")
+		}
+		nativeMFA, mfaErr = httpapi.NewNativeMFAHandlers(mfaRepository, sessions, application.config.NativeAuthTenantID, pool)
+		if mfaErr != nil {
+			return errors.New("native MFA handlers are unavailable")
+		}
+		nativeHandlers.MFA = mfaRepository
+		nativeHandlers.IdleTTL = application.config.NativeSessionIdleTTL
+		nativeHandlers.AbsoluteTTL = application.config.NativeSessionAbsoluteTTL
+		nativeHandlers.PublicOrigin = application.config.NativeAuthPublicOrigin
+		authenticator, sessionErr = auth.NewNativeAuthenticator(sessions, application.config.NativeAuthTenantID, application.config.NativeSessionIdleTTL)
+		if sessionErr != nil {
+			return errors.New("native authentication is unavailable")
+		}
+		authenticator.(*auth.NativeAuthenticator).SetPublicOrigin(application.config.NativeAuthPublicOrigin)
+	} else {
+		bindings, bindingErr := auth.NewPostgreSQLRoleBindingSource(pool)
+		if bindingErr != nil {
+			return errors.New("API role binding source is unavailable")
+		}
+		oidcAuthenticator, oidcErr := auth.NewOIDCAuthenticator(ctx, application.config.OIDCIssuerURL, "ops-api", bindings)
+		if oidcErr != nil {
+			return errors.New("API OIDC discovery failed")
+		}
+		authenticator = oidcAuthenticator
 	}
 	trust, err := RegistryTrustFromFile(os.Getenv("PLATFORM_REGISTRY_TRUST_FILE"))
 	if err != nil {
@@ -122,7 +159,7 @@ func (application *APIApp) Serve(ctx context.Context, listener net.Listener, run
 		return err
 	}
 	defer stopSP07()
-	handler, err := httpapi.NewFoundationHandlerWithSP04(pool, authenticator, trust, runtime, sp04)
+	handler, err := httpapi.NewFoundationHandlerWithNativeMFA(pool, authenticator, trust, runtime, sp04, nativeHandlers, nativeMFA)
 	if err != nil {
 		return err
 	}

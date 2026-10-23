@@ -7,7 +7,9 @@ import { AuthProvider } from "./auth/AuthProvider";
 import { authEvents } from "./api/client";
 import { router } from "./app/router";
 import { tokens } from "./design/tokens";
+import { LayerProvider } from "./components/v12/Layer";
 import "./styles.css";
+import "./design/v12.css";
 const client = new QueryClient({
   defaultOptions: {
     queries: { retry: false, staleTime: 15000, refetchOnWindowFocus: true },
@@ -23,9 +25,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <ConfigProvider locale={zhCN} theme={{ token: tokens }}>
     <App>
       <QueryClientProvider client={client}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <LayerProvider>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </LayerProvider>
       </QueryClientProvider>
     </App>
   </ConfigProvider>,

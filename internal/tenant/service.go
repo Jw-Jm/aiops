@@ -34,6 +34,10 @@ func (s *Service) ListCurrentRoleBindings(ctx context.Context, request auth.Requ
 }
 
 func (s *Service) CreateTenant(ctx context.Context, tx pgx.Tx, actor auth.RequestContext, input CreateTenantInput) (Tenant, error) {
+	// Native administration must never create or mutate legacy authority.
+	if _, native := auth.NativeSessionFromContext(ctx); native {
+		return Tenant{}, ErrUnauthorized
+	}
 	if err := input.Validate(); err != nil {
 		return Tenant{}, err
 	}
@@ -104,6 +108,10 @@ func (s *Service) UpdateCurrentTenant(ctx context.Context, tx pgx.Tx, actor auth
 }
 
 func (s *Service) CreateRoleBinding(ctx context.Context, tx pgx.Tx, actor auth.RequestContext, input CreateRoleBindingInput) (RoleBinding, error) {
+	// Native administration must never create or mutate legacy authority.
+	if _, native := auth.NativeSessionFromContext(ctx); native {
+		return RoleBinding{}, ErrUnauthorized
+	}
 	if err := input.Validate(); err != nil {
 		return RoleBinding{}, err
 	}
@@ -149,6 +157,10 @@ func (s *Service) CreateRoleBinding(ctx context.Context, tx pgx.Tx, actor auth.R
 }
 
 func (s *Service) UpdateRoleBinding(ctx context.Context, tx pgx.Tx, actor auth.RequestContext, bindingID uuid.UUID, expectedRevision int64, input CreateRoleBindingInput, status string) (RoleBinding, error) {
+	// Native administration must never create or mutate legacy authority.
+	if _, native := auth.NativeSessionFromContext(ctx); native {
+		return RoleBinding{}, ErrUnauthorized
+	}
 	if bindingID == uuid.Nil || expectedRevision < 1 || (status != "active" && status != "disabled") {
 		return RoleBinding{}, ErrInvalidInput
 	}
@@ -225,6 +237,10 @@ func (s *Service) UpdateRoleBinding(ctx context.Context, tx pgx.Tx, actor auth.R
 // a caller to substitute the subject, role, tenant or resource scopes. The row
 // remains locked while the existing revisioned, audited update is committed.
 func (s *Service) SetOperatorRoleBindingStatus(ctx context.Context, tx pgx.Tx, actor auth.RequestContext, bindingID uuid.UUID, expectedRevision int64, status string) (RoleBinding, error) {
+	// Native administration must never create or mutate legacy authority.
+	if _, native := auth.NativeSessionFromContext(ctx); native {
+		return RoleBinding{}, ErrUnauthorized
+	}
 	if bindingID == uuid.Nil || expectedRevision < 1 || (status != "active" && status != "disabled") {
 		return RoleBinding{}, ErrInvalidInput
 	}

@@ -1,0 +1,127 @@
+{
+  "task_id": "264ba468-737c-4111-b2ff-93b686aff578",
+  "date": "2026-10-22T05:43:10.360496+00:00",
+  "reviewer": "Codex independent incremental review",
+  "status": "changes_required_P2_02_r2",
+  "head": "9bd78d84e212217626cdf0cfe54af84a155a9a3d",
+  "worktree": "uncommitted feat/ui-v12-replication",
+  "accepted_static_changes": [
+    "Cookie is set before successful body",
+    "RLS existing credential-login access restored",
+    "SQL revoke/change RETURN NEXT and SQLSTATE40001/28000 mapping added",
+    "touch compares issued_session_version and bounds idle strictly below absolute",
+    "SQL password mutation rechecks and locks old session/account",
+    "audit uses same transaction as mutation",
+    "first-only response omits business grants; every namespace on one cluster projected",
+    "middleware preserves original request context and checks origin on unsafe methods",
+    "Web mode bootstrap gated and native event subscription installed"
+  ],
+  "findings": [
+    {
+      "id": "B1",
+      "priority": "P1",
+      "title": "Login admission defaults are never installed",
+      "location": "internal/httpapi/native_auth.go:48-60,88; internal/app/api_runtime.go:107",
+      "evidence": "Constructor leaves EntryLimit/EntryWindow/EntryLock zero and app wiring never sets them. AdmitLoginAttempt rejects these before SQL, so every otherwise-valid native login responds503. Install actual valid defaults and test constructor-to-handler successful login."
+    },
+    {
+      "id": "B2",
+      "priority": "P1",
+      "title": "Password transaction receives an empty input",
+      "location": "internal/httpapi/native_auth.go:320,415-442",
+      "evidence": "changeOwnPassword constructs local ChangeOwnPasswordInput but returns only issued.input (CreateSessionInput), never issued.passwordInput. ChangeOwnPasswordWithAudit receives zero IDs/versions/digests and returns ErrSessionInvalid. Wire the exact password input or remove the unnecessary wrapper; verify successful real handler rotation."
+    },
+    {
+      "id": "B3",
+      "priority": "P1",
+      "title": "Restored CSRF remains empty",
+      "location": "internal/auth/native.go:153-158; internal/httpapi/native_auth.go:190",
+      "evidence": "CSRFToken field and DeriveCSRFToken helper exist, but middleware never assigns CSRFToken when constructing NativeSessionContext. GET session still returns empty token. Derive from verified cookie and verify its digest against stored CSRF fact before exposing it; same-session reload then mutation must work."
+    },
+    {
+      "id": "B4",
+      "priority": "P1",
+      "title": "Native login invalidates its own generation",
+      "location": "web/src/auth/AuthProvider.tsx:282-299,327-337,407-420; web/src/api/client.ts:34-40",
+      "evidence": "nativeLogin captures ++generation then calls clearCredentials. In settled native mode its expired event listener synchronously invokes expireIdentity and increments generation again. Every login success is therefore rejected as stale, though a server cookie may be set. Distinguish intentional local cleanup from expiration, and cover real provider/nativeLogin/generated fetch and delayed success after logout. Same-session refresh should preserve query/signal continuity; actual changes must abort immediately."
+    },
+    {
+      "id": "B5",
+      "priority": "P1",
+      "title": "Cluster resolver lacks tenant RLS context and role scopes are mixed",
+      "location": "internal/identity/session.go:484-537; migrations/00045_native_http_sessions.sql:637-690; migrations/00008_rls.sql:21-24; internal/auth/native.go:181-235; web/src/auth/AuthProvider.tsx:95-121",
+      "evidence": "Resolver/list directly use pool queries. SECURITY DEFINER only sets identity preauth GUC, while platform.cluster_registrations FORCE RLS requires app.tenant_id; valid operator UIDs resolve to zero rows. Also native middleware unions admin scope into operator ClusterScopes/NamespaceScopes; RequireOperatorScope can accept admin-only cluster B when operator is only granted A. Session authorizedClusters similarly unions roles, and Web writes clusterUID into clusterScopes/namespaceScopes.clusterId although AuthSessionV1 expects internal IDs. Preserve tenant transaction and per-role scope semantics across server/Web. First-only empty grants and all single-cluster namespaces are now correctly projected."
+    },
+    {
+      "id": "B6",
+      "priority": "P1",
+      "title": "Known failure function still has SQL ambiguity and initial-row race",
+      "location": "migrations/00045_native_http_sessions.sql:571-633; internal/httpapi/native_auth.go:285-299",
+      "evidence": "RETURNS TABLE failed_count/locked_until conflicts with unqualified SELECT failed_count,...locked_until from password_attempts under normal PL/pgSQL variable conflict rules. Even after qualification, FOR SHARE on account allows concurrent first failures to both see no attempt row then race INSERT unique key. Use atomic upsert or proper per-account serialization. ChangePassword still bypasses entry admission before expensive Argon work. Cover empty attempt table concurrent failures, threshold, expiry reset, spray and fence errors; do not hide errors or use in-memory fences."
+    },
+    {
+      "id": "B7",
+      "priority": "P1",
+      "title": "Success projection can still fail after committed mutation",
+      "location": "internal/httpapi/native_auth.go:148-166,320-337; internal/identity/session.go:165-186,360-380; migrations/00045_native_http_sessions.sql:252-260",
+      "evidence": "Audit now commits atomically with session/password mutation, but authorizedClusters executes after commit and before Set-Cookie. Resolver/data errors can return500 after successful password update/session revocation without delivering the new cookie; administrator state is loaded outside the success transaction. Compute the required success projection within the transaction and rollback on failure. find_active_session still omits issued_session_version equality even though touch now checks it: lookup must not return an active stale version. Audit wrapper static improvement accepted; DB rollback behavior remains unexecuted."
+    },
+    {
+      "id": "B8",
+      "priority": "P1",
+      "title": "OIDC compatibility breaks on current configuration producer",
+      "location": "web/src/auth/AuthProvider.tsx:58-72; deploy/charts/ops-platform/templates/sp08.yaml:20; web/src/pages/Login.tsx:23-53; web/src/app/router.tsx:67",
+      "evidence": "loadAuthMode requires auth.mode, while current Helm runtime-config produces only oidc and release. Existing supported OIDC deployments fail startup with the new Web. Preserve legacy compatibility through explicit producer/schema-compatible normalization without fallback from malformed/explicit-native config. Public /login is ungated by mode/loading/config error and default returnTo is /login; a successful full native login can navigate back to its form. Gate entry and choose a valid role-aware home/safeReturnTo, preserving valid deep links and rejecting unsafe destinations."
+    },
+    {
+      "id": "B9",
+      "priority": "P2",
+      "title": "Administrator state is synthesized and includes disabled accounts",
+      "location": "migrations/00045_native_http_sessions.sql:493-509,693-710",
+      "evidence": "administrator_state counts active grant rows without active-account/current-version checks and returns greatest(active_count,1), inventing an administrator when count0. Return actual facts and synchronize schema if zero is a real state; last-admin protection remains a P2-04 dependency. Its SECURITY DEFINER function also lacks REVOKE FROM PUBLIC while new peer functions revoke it; retain least privilege consistently."
+    }
+  ],
+  "checks": [
+    {
+      "command": "go test ./internal/identity ./internal/auth ./internal/httpapi ./internal/app ./test/contract -count=1",
+      "result": "PASS 5 packages",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p2-http-unit-r2.log"
+    },
+    {
+      "command": "pnpm test",
+      "result": "PASS 6 Node SSE contract checks +30 Vitest files/123 tests",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p2-http-web-r2.log"
+    },
+    {
+      "command": "pnpm build",
+      "result": "PASS existing chunk warning",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p2-http-build-r2.log"
+    },
+    {
+      "command": "validate-progress.py",
+      "result": "PASS structure only; g0=true; product six dimensions0"
+    },
+    {
+      "command": "compare migration44 with accepted P2-01 source",
+      "result": "identical"
+    }
+  ],
+  "coverage_gap": "New native_authprovider tests mock generated/platform, never invoke nativeLogin, and do not exercise fetch/real Login route. DB integration file covers a simple path plus CSRF/audit count but not requested concurrent admission/failure, SQLSTATE, version invalidation, audit/projection rollback, multi-role scoped registry or expiry boundaries. Default skip is not DB pass.",
+  "source_sha256": {
+    "migrations/00045_native_http_sessions.sql": "25883d0cabdf0827afe13bde9a7bcbce46f82be74780c94fd82e5e03ccf39e9e",
+    "internal/httpapi/native_auth.go": "f2850d137d8ac238bc096fcab0c7a9c0d8989c5acf430ba146bc92896b6d7bdf",
+    "internal/identity/session.go": "588e2d8f141cc7319134b8037f26c2abbce4cda5a427cadec4858a4d7f3c6b4b",
+    "internal/auth/native.go": "033c414570085ad4cf11e6572b9a60613e16e7cea2a5b3c9034b2cc528bbb60b",
+    "web/src/auth/AuthProvider.tsx": "14eed2a5847b11546ada631c8a5fca8ca28facdac2dba82f6b4112f60b3a32f2",
+    "web/tests/native_authprovider.test.tsx": "4cd2cb7a6a7317b79dc1de8bbc7b1d1a4ca6aa35740cefceb7e7da395c757a1d",
+    "test/integration/native_http_session_test.go": "8190569ae9785c5b7393b8a29c1d9ecac2dfed09ef21a71f325c78a90de6e09f",
+    "deploy/charts/ops-platform/templates/sp08.yaml": "2d55d99d0f4cf50ae69c1743b8f3cd03046a85e39a6b1023b9fb5658c0d025b0"
+  },
+  "notification": "automatic Stop callback succeeded this round; no polling/manual recovery",
+  "repair_task": "766b08fa-17fd-45ca-af7a-564aa3f83fd9",
+  "limits": [
+    "No migration45/database/HTTP/browser/live execution. Static SQL failure conditions are not represented as observed DB errors.",
+    "Partial progress acknowledged; P2-02 not accepted, P2-03~05 remain unimplemented.",
+    "Old30451/shared15449/15450/15451 untouched. No model setting verification."
+  ]
+}

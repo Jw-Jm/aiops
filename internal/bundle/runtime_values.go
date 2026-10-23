@@ -18,9 +18,17 @@ import (
 
 // Runtime trust and the archive destination are provisioned independently by
 // the operator. A signed Bundle must not bootstrap its own application trust.
-func platformRuntimeValues(ctx context.Context, installationNamespace string, p profile.ResolvedProfile, run CommandRunner) (map[string]any, error) {
+func platformRuntimeValues(ctx context.Context, installationNamespace string, p profile.ResolvedProfile, run CommandRunner, business *BusinessValues) (map[string]any, error) {
+	if err := validateIdentityProfile(business, p); err != nil {
+		return nil, err
+	}
+	native := business != nil && business.NativeIdentity()
 	issuer := strings.TrimSuffix(p.Components["keycloak"].Endpoint, "/")
-	for _, endpoint := range []string{issuer, p.Components["openbao"].Endpoint} {
+	endpoints := []string{p.Components["openbao"].Endpoint}
+	if !native {
+		endpoints = append(endpoints, issuer)
+	}
+	for _, endpoint := range endpoints {
 		u, err := url.Parse(endpoint)
 		if err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" {
 			return nil, errors.New("runtime Keycloak and OpenBao endpoints require HTTPS without credentials")
@@ -54,8 +62,10 @@ func platformRuntimeValues(ctx context.Context, installationNamespace string, p 
 	if err := validateCA("openbao-ca.pem", true); err != nil {
 		return nil, err
 	}
-	if err := validateCA("oidc-ca.pem", true); err != nil {
-		return nil, err
+	if !native {
+		if err := validateCA("oidc-ca.pem", true); err != nil {
+			return nil, err
+		}
 	}
 	if err := validateCA("archive-ca.pem", true); err != nil {
 		return nil, err
@@ -78,5 +88,14 @@ func platformRuntimeValues(ctx context.Context, installationNamespace string, p 
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"profile": string(profileYAML), "oidcIssuerURL": issuer + "/realms/ops", "oidcCABundle": bootstrap.Data["oidc-ca.pem"], "openbaoAddress": p.Components["openbao"].Endpoint, "openbaoCABundle": bootstrap.Data["openbao-ca.pem"], "archiveEndpoint": archive, "archiveCABundle": bootstrap.Data["archive-ca.pem"], "archiveBucket": bucket, "registryTrust": trust}, nil
+	values := map[string]any{"profile": string(profileYAML), "openbaoAddress": p.Components["openbao"].Endpoint, "openbaoCABundle": bootstrap.Data["openbao-ca.pem"], "archiveEndpoint": archive, "archiveCABundle": bootstrap.Data["archive-ca.pem"], "archiveBucket": bucket, "registryTrust": trust}
+	if native {
+		values["humanAuthMode"] = "native"
+		values["nativeAuth"] = nativeRuntimeValues(*business)
+	} else {
+		values["humanAuthMode"] = "oidc"
+		values["oidcIssuerURL"] = issuer + "/realms/ops"
+		values["oidcCABundle"] = bootstrap.Data["oidc-ca.pem"]
+	}
+	return values, nil
 }

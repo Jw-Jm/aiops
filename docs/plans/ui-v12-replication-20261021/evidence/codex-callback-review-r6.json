@@ -1,0 +1,47 @@
+{
+  "task_id": "14e6b99e-2675-4fc8-b885-30b7a882a110",
+  "reviewer": "Codex",
+  "head": "9bd78d84e212217626cdf0cfe54af84a155a9a3d",
+  "date": "2026-10-21T06:14:06.414020+00:00",
+  "result": "changes_requested; incremental repairs accepted but G0 remains open",
+  "accepted": [
+    "SL-001/002 now bind login C-009, not overview",
+    "SL-009 C-004 and graph-root/depth, 544 nonform controls inventoried",
+    "SL-106 C-030 parent+C-031 candidates+C-039 write retained",
+    "C-051/052 credential/int-null contextWindow and C-170/173/175 schema fields corrected",
+    "G0 separates structure/independent approval from later product six dimensions"
+  ],
+  "checks": [
+    {
+      "command": "python3 docs/plans/ui-v12-replication-20261021/validate-progress.py",
+      "result": "passed structural checks; G0 false; P0-02 + independent-approval"
+    },
+    {
+      "command": "go test ./test/contract -run TestUIV12 -count=1",
+      "result": "pass 0.752s"
+    },
+    {
+      "command": "git -c core.whitespace=cr-at-eol diff --check",
+      "result": "pass"
+    }
+  ],
+  "findings": [
+    {
+      "id": "R6-01",
+      "issue": "native-password-form is reused by self/first/reset but global form binding sends all to C-011. SL-094/370 reset must use C-017 with initialPassword and both expectedRevision and expectedCredentialVersion, userId from explicit selected account. SL-005 first lacks required currentPassword; register required supplemental state rather than retain password from login or loosen schema. Self change target is current session, not userId-path. All seven occurrences need context-specific bindings and authorization."
+    },
+    {
+      "id": "R6-02",
+      "issue": "model-form fields now map correctly but submit_request still advertises endpoint/modelId/credentialRef/contextLength. v11-user-form request string still advertises username/name/password/mustChange, conflates account create/update and update could send rejected password. Align request descriptions and per-operation mapping to schemas, including path/body/header and local-only confirmation."
+    },
+    {
+      "id": "R6-03",
+      "issue": "binding-form still maps subject:subject and clusterScopes/namespaceScopes, while C-020 roleGrantRequest requires userId/scope/expectedAuthorizationVersion/reason. Preserve existing subject-based service as historical reuse only; require explicit native member selection/mapping, no same-name inheritance. Add exact missing fields/supplemental states and distinguish native adaptation from existing runtime."
+    }
+  ],
+  "not_repeated": [
+    "fixture unchanged; retained independently verified r3 46/46",
+    "web source unchanged; no unrelated browser/build or reference recapture"
+  ],
+  "product_acceptance": false
+}

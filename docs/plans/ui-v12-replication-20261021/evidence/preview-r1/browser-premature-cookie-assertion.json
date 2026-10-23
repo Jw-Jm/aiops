@@ -1,0 +1,62 @@
+{
+  "origin": "https://192.168.0.63:30462",
+  "checks": [
+    "native login renders without OIDC",
+    "resumed with previously rotated password; first-password evidence retained separately",
+    "reload restores durable session and rotated credential version",
+    "administrator does not receive operator permission",
+    "cross-origin/missing-CSRF logout rejected"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16288-1bc8-7bb3-8320-799a30b58565"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16288-1c9e-731d-9627-8c6f593774c4"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16288-1e5b-710a-bcf6-c96d1675df26"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16288-1e88-72f1-bf6d-623db6c557a2"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16288-1e98-76ae-b638-4dae6b708515"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16288-1efd-76ca-bb05-78e6f9949b5f"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16288-1f45-72d8-8597-1e2698dfc217"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16288-1f53-7e9f-b53f-75cb1715ddf0"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16288-1f59-7587-a5c4-2d9389755410"
+    }
+  ],
+  "consoleErrors": [],
+  "browser": "156.0.8078.4",
+  "subject": "user:01a1627d-4cd4-77b9-bacc-ed412395c861",
+  "status": "FAIL",
+  "failure": "The expression evaluated to a falsy value:\n\n  assert(!(await context.cookies()).some(c => c.name === '__Host-ops-session'))\n"
+}

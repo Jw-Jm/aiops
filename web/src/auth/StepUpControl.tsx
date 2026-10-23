@@ -11,7 +11,7 @@ export function StepUpControl({
 }: {
   onReady: (expiresAt: string) => void;
 }) {
-  const { session } = useAuth();
+  const { session, authMode } = useAuth();
   const register = useMutation({
     mutationFn: () =>
       checked(createStepUpSession({}, requestOptions(undefined, true))),
@@ -20,6 +20,14 @@ export function StepUpControl({
       if (typeof expires === "string") onReady(expires);
     },
   });
+  if (authMode === "native")
+    return (
+      <Alert
+        type="info"
+        title="请在具体操作处验证身份"
+        description="原生再次验证绑定目标和提交内容。请先在账号安全中启用双因素。"
+      />
+    );
   return (
     <>
       <Alert

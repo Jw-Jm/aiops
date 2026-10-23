@@ -1,0 +1,88 @@
+{
+  "origin": "https://192.168.0.63:30462",
+  "checks": [
+    "native login renders without OIDC",
+    "resumed with previously rotated password; first-password evidence retained separately",
+    "reload restores durable session and rotated credential version",
+    "administrator does not receive operator permission",
+    "cross-origin/missing-CSRF logout rejected",
+    "logout deletes browser cookie and rejects replay of revoked cookie",
+    "new password login succeeds after first-password rotation"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16292-240c-796c-a001-6ddae15fb15e"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16292-24df-724e-b0d5-6b097ba796d1"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16292-2638-7612-a0ba-a70724809ead"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16292-266a-7d76-b237-6ac5a41cdc39"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16292-2687-70f6-b79d-38350ccf6530"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16292-26ed-7353-a7a4-e92e5ed266cc"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16292-2724-76ff-868c-5a5d9f1eeda5"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16292-2731-7bcb-ad1b-f510d9c7d341"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16292-273c-73f7-a0fa-9330ad50ab06"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200,
+      "requestId": "01a16292-2809-7adc-b996-afa0b1073e84"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16292-286f-7eea-aff4-50f30af7846a"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16292-2919-7e6f-95f6-b5d3adf6f4f3"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16292-292d-7e0b-a88c-3d9403e2fbbd"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200,
+      "requestId": "01a16292-2944-783b-a9cb-5ad242f5ff1f"
+    }
+  ],
+  "consoleErrors": [],
+  "browser": "156.0.8078.4",
+  "subject": "user:01a1627d-4cd4-77b9-bacc-ed412395c861",
+  "status": "PASS"
+}

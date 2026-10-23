@@ -1,0 +1,113 @@
+{
+  "round": "preview-r2 (2026-10-22, CodeBuddy/Deepseek-V4.1-Flash implementation)",
+  "origin": "https://192.168.0.63:30463/login",
+  "host": "mssc-direct (hostname mssc, LAN 192.168.0.63, direct 10.10.10.2)",
+  "directory": "/data/ops-ui-v12-http-20261022-r1/preview-r2",
+  "reused_unchanged": {
+    "database": "container ops-ui-v12-http-pg-20261022-r1, 127.0.0.1:15452, ui_v12_native_identity",
+    "schema_version": 49,
+    "delivered_account": "v12.admin (password untouched, MFA not enabled)",
+    "profile": "existing r10 resolved Profile read-only copy; no installable/admission/public-egress change"
+  },
+  "new_in_this_round": {
+    "api_binary": "platform-api rebuilt from this working tree (linux/amd64)",
+    "web_build": "web/dist rebuilt from this working tree",
+    "systemd_unit": "ops-ui-v12-preview-r2-api (127.0.0.1:18063, metrics 19063)",
+    "web_container": "ops-ui-v12-preview-r2-web (192.168.0.63:30463, non-root 101:101, 16MiB tmpfs)",
+    "migrations": [
+      "00047_native_authorization.sql (shared native grant recheck)",
+      "00048_native_authorization_found_fix.sql (FOUND capture; executed 47 retained)",
+      "00049_native_authorization_policy_restore.sql (restores find_session policy branch)"
+    ]
+  },
+  "p2_02": {
+    "sl_001_visual": {
+      "reference": "artifacts/test-reports/ui-v12-reference-r3/SL-001-viewport.png",
+      "actual": "evidence/preview-r2/product-login-filled.png",
+      "canvas": [1440, 960],
+      "browser": "156.0.8078.4",
+      "dpr": 1,
+      "locale": "zh-CN / Asia-Shanghai",
+      "geometry": "all measured elements exact (y/x/width/height deltas 0.00) against the frozen prototype opened as file:// in the same browser; only the tag text width differs (60.00 vs 113.78) because the copy is intentionally shorter",
+      "pixel_diff": {
+        "masks": [
+          "tag copy region 900,256 118x28 (prototype interactive-prototype label replaced by built-in account label)",
+          "footer copy region 900,660 359x44 (demo credentials replaced by real account guidance)"
+        ],
+        "differing_pixels": 21,
+        "considered_pixels": 1363300,
+        "ratio": 0.0000154,
+        "residual": "brand symbol icon antialiasing (x93-108,y76-83) and rounded button corner blending (y600/y640); no layout, color-block or spacing difference",
+        "result": "passed_with_registered_copy_differences"
+      },
+      "copy_differences": [
+        "tag: 内置账号 · 交互原型 -> 内置账号",
+        "footer: demo account/password text -> real account guidance",
+        "inputs are empty in the product instead of prefilled demo credentials"
+      ]
+    },
+    "states": {
+      "empty": "evidence/preview-r2/login-state-empty.png",
+      "field_validation": "evidence/preview-r2/login-state-validation.png",
+      "credential_failure": "evidence/preview-r2/login-state-credentials.png",
+      "loading": "evidence/preview-r2/login-state-loading.png",
+      "admin_shell": "evidence/preview-r2/admin-shell-r2.png"
+    },
+    "interaction": {
+      "blank_submit": "client-side validation only; no /api/v1/auth/login request reached the server",
+      "unknown_login": "401 UNAUTHENTICATED with the constant inline message 登录名或密码不正确。",
+      "loading": "submit sets aria-busy=true and antd loading state while the real request is in flight",
+      "cancel": "leaving the login page aborts the in-flight request; new Vitest case asserts the request signal is aborted and the identity is not adopted after the gate resolves",
+      "first_password": "currentPassword supplemental control already present; real 201 first-change evidence retained from preview-r1 (not repeated this round because no independent first-only identity is available yet)",
+      "rate_limit_429": "covered by component tests with a mocked 429; live 429 is NOT verified because identity.login_entry_attempts is a single entry-wide fence (limit 60) and locking it would temporarily block the delivered administrator"
+    },
+    "browser_result": "evidence/preview-r2/auth-browser-result.json (status PASS)",
+    "source_changes": [
+      "web/src/design/v12.css (SL-001 right column copied from shared/platform.css metrics)",
+      "web/src/pages/Login.tsx (prototype arrow icon, explicit busy state, abortable submit)",
+      "web/src/auth/AuthProvider.tsx (nativeLogin accepts an abort signal and refuses a late success)",
+      "web/src/layout/AppShell.tsx (stable 退出 accessible name, in-flight sign-out state)"
+    ]
+  },
+  "p2_04_authorization_slice": {
+    "root_cause": "internal/source.service.go authorizeAdmin and three other copies read platform.role_bindings by subject while native sessions project identity.role_grants; a native administrator therefore had no legacy row and every admin transaction answered 403",
+    "fix": "new internal/authz package is the single shared check; native sessions are proven only by identity.authorize_native_role (migration 47/48) at the session authorization version with FOR SHARE, legacy sessions only by platform.role_bindings; neither source can fall back to the other",
+    "call_sites_migrated": [
+      "internal/source/service.go",
+      "internal/tenant/repository.go",
+      "internal/configregistry/service.go",
+      "internal/action/repository.go (execution profile publication)",
+      "internal/httpapi/audit_handlers.go",
+      "internal/app/sp08_audit_verify.go (signed machine context, legacy binding retained)",
+      "internal/investigation/assistant_v3.go (audit authority revision)"
+    ],
+    "live_evidence": {
+      "admin_clusters_before": "403 FORBIDDEN",
+      "admin_clusters_after": "200, data.length=0 (no cluster registered in this task database)",
+      "operator_overview": "403 FORBIDDEN (platform_admin does not inherit operator scope)",
+      "legacy_role_bindings_rows": 0,
+      "native_grants_used": "identity.role_grants (v12.admin platform_admin, authorization_version 1)"
+    },
+    "regression_found_and_fixed": "migration 47 rewrote the identity.role_grants policy with ALTER POLICY and dropped the session_context_active('find_session') branch; find_active_session then returned an empty grant projection (session view authorization.grants=[]), which was the real cause of the still-403 response after the Go change. Migration 49 restores the exact branch plus the new operation; the browser then passed"
+  },
+  "checks": [
+    {"command": "go test ./internal/authz/ ./internal/source/ ./internal/configregistry/ ./internal/action/ ./internal/investigation/ ./internal/httpapi/ ./internal/app/ ./internal/graph/ -count=1", "result": "ok (graph 376s)"},
+    {"command": "GOOS=linux GOARCH=amd64 go test -c ./test/integration then bin/native-http-r6.test -test.run '^TestNativeHTTPSessionFlow$' on port 15452 (schema 49)", "result": "PASS 6.39s including new assertions admin/clusters 200, overview 403, platform.role_bindings count 0; evidence/preview-r2/integration-native-authz.log"},
+    {"command": "go test ./test/contract -count=1", "result": "ok after docs/release/delivery-baseline.json migrations latest/count 43->49"},
+    {"command": "npx tsc --noEmit", "result": "clean"},
+    {"command": "npx vitest run", "result": "31 files / 132 tests passed"},
+    {"command": "npx vite build", "result": "built"},
+    {"command": "GOOS=linux GOARCH=amd64 go build ./cmd/platform-api", "result": "built"},
+    {"command": "node geometry.mjs (remote Chrome 156)", "result": "max non-copy geometry delta 0.00"},
+    {"command": "node visual-diff.mjs", "result": "21/1363300 differing pixels (0.00154%) after two registered copy masks"},
+    {"command": "node auth-browser.mjs", "result": "PASS: login states, admin/clusters 200, operator overview 403, legacy bindings 0, reload, logout revocation"}
+  ],
+  "not_verified_in_this_round": [
+    "P2-03 MFA/TOTP enrolment, step-up challenges, recovery codes, administrator MFA reset: not implemented",
+    "P2-04 native user lifecycle (create/update/disable/reset password/revoke sessions), role grant/revoke API, historical subject mapping API: not implemented; the authorization layer is in place",
+    "P2-04 native operator scope in graph.EffectiveTx: not migrated; no independent operator identity exists yet (blocked by the missing user-creation API)",
+    "P2-05 full-stack switch (Worker/CLI/Helm/install validation, native cold start): not started",
+    "P3-01..04 resource/log sample and SL-049 states: not started",
+    "live 429 rate-limit UI: blocked by the shared entry fence explained above"
+  ]
+}

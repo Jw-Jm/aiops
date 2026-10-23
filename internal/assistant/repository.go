@@ -559,6 +559,15 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 			return err
 		}
 		j.Assistant = &investigation.AssistantTask{DatasetCatalogVersion: datasetCatalog.Version, DatasetCatalogDigest: graph.ScopeDigest(datasetCatalog), TaskKind: taskKind(c), AuthorizationDomain: c.AuthorizationDomain, ConversationID: id, TurnID: out.TurnID, InputDigest: graph.ScopeDigest(input), ContextDigest: graph.ScopeDigest(c.Binding), GrantSnapshot: grant, GrantSnapshotDigest: graph.ScopeDigest(grant), CatalogVersion: "assistant-tools/v2", PromptVersion: "assistant/v1", ModelProfileVersion: admission.ModelProfileVersion, ResultSchemaVersion: "assistant-answer/v1"}
+		if c.AuthorizationDomain == "audit" {
+			// Freeze the exact source and version the grant digest was computed
+			// from, so the Worker recheck cannot silently switch identity systems
+			// or accept a re-granted role.
+			authority := investigation.AuditAuthorityFromContext(ctx)
+			j.Assistant.AuthorizationSource = authority.Source
+			j.Assistant.AuthorizationUserID = authority.UserID
+			j.Assistant.AuthorizationVersion = authority.AuthorizationVersion
+		}
 		if q.FaultChainRequest != nil {
 			j.Assistant.ExecutionMode = "evidence_only"
 			j.Assistant.FaultChainRequestDigest = graph.ScopeDigest(*q.FaultChainRequest)

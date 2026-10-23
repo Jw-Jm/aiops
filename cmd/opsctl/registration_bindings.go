@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"io"
@@ -11,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"ops-platform/internal/auth"
 	"ops-platform/internal/bundle"
 	"ops-platform/internal/profile"
 )
@@ -18,12 +20,15 @@ import (
 func verifyInstalledSourceBindings(ctx context.Context, p profile.ResolvedProfile, b bundle.BusinessValues, tokenPath string) (bundle.BusinessValues, error) {
 	info, err := os.Stat(tokenPath)
 	if err != nil || !info.Mode().IsRegular() || info.Mode().Perm()&0077 != 0 || !outsideGitTree(tokenPath) {
-		return b, errors.New("registration bearer requires a private repository-external regular file")
+		return b, errors.New("registration credential requires a private repository-external regular file")
 	}
 	raw, err := readBoundedFile(tokenPath, 64<<10)
-	token := strings.TrimSpace(string(raw))
-	if err != nil || token == "" || strings.ContainsAny(token, "\r\n\t ") {
-		return b, errors.New("private registration bearer unavailable or invalid")
+	if err != nil {
+		return b, errors.New("private registration credential unavailable")
+	}
+	headers, err := registrationAuthHeaders(raw, b.NativeIdentity())
+	if err != nil {
+		return b, err
 	}
 	address, stop, err := serviceBootstrapForward(ctx, p.Kubernetes.Context, b.Namespace(), "ops-api", 8080)
 	if err != nil {
@@ -52,7 +57,7 @@ func verifyInstalledSourceBindings(ctx context.Context, p profile.ResolvedProfil
 			if err != nil {
 				return b, errors.New("fixed registration request unavailable")
 			}
-			req.Header.Set("Authorization", "Bearer "+token)
+			req.Header = headers.Clone()
 			req.Header.Set("X-Tenant-ID", tenant)
 			response, err := client.Do(req)
 			if err != nil {
@@ -89,4 +94,23 @@ func verifyInstalledSourceBindings(ctx context.Context, p profile.ResolvedProfil
 		}
 	}
 	return bundle.VerifyRegisteredBusinessSources(b, registrations)
+}
+
+func registrationAuthHeaders(raw []byte, native bool) (http.Header, error) {
+	token := strings.TrimSpace(string(raw))
+	if token == "" || strings.ContainsAny(token, "\r\n\t ") {
+		return nil, errors.New("private registration credential is invalid")
+	}
+	headers := make(http.Header)
+	if native {
+		decoded, err := base64.RawURLEncoding.Strict().DecodeString(token)
+		if err != nil || len(decoded) != 32 {
+			return nil, errors.New("native registration requires an opaque session token")
+		}
+		req := &http.Request{Header: headers}
+		req.AddCookie(&http.Cookie{Name: auth.NativeSessionCookieName, Value: token})
+	} else {
+		headers.Set("Authorization", "Bearer "+token)
+	}
+	return headers, nil
 }

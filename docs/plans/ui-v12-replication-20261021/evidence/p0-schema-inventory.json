@@ -1,0 +1,348 @@
+{
+  "task": "P0-03",
+  "generatedAt": "2026-10-21",
+  "contractDocument": "docs/plans/ui-v12-replication-20261021/p0-version-contracts.md",
+  "runtime": "not_verified",
+  "note": "Static contract inventory. Every listed operation is proposed unless contracts.csv marks it existing; none of the behaviours below has been implemented or run. Each schema root rejects every instance, so payloads are only valid through #/$defs fragments.",
+  "schemas": [
+    {
+      "id": "https://ops.local/schemas/ui-v12-identity/v1",
+      "file": "api/schemas/ui-v12-identity-v1.schema.json",
+      "purpose": "Native account with initial password and forced first change, separate administrator password reset, server session, CSRF, explicit historical subject mapping, independent operator/platform_admin grants, revocation versions, and the last-active-administrator conflict projection returned by the server.",
+      "definitions": [
+        "revision",
+        "loginName",
+        "displayName",
+        "password",
+        "timestamp",
+        "optionalTimestamp",
+        "scope",
+        "loginRequest",
+        "firstPasswordRequest",
+        "passwordChangeRequest",
+        "accountCreateRequest",
+        "accountUpdateRequest",
+        "accountUpdateConflict",
+        "adminPasswordResetRequest",
+        "adminPasswordResetResult",
+        "roleGrantRequest",
+        "roleGrantView",
+        "subjectMappingRequest",
+        "subjectMappingView",
+        "sessionRevocation",
+        "csrf",
+        "sessionView",
+        "sessionRevocationRequest",
+        "accountView",
+        "roleGrantStatusRequest"
+      ],
+      "rejectedClientClaims": [
+        "tenantId",
+        "roles",
+        "subject",
+        "acr",
+        "loa",
+        "assuranceLevel",
+        "matchBy",
+        "lastAdministratorCheck",
+        "activeAdministrators",
+        "targetIsLastActive",
+        "initialPasswordMode"
+      ],
+      "implementationAmendment": "P2-04 adds native roleGrantStatusRequest; original-plan remains unchanged"
+    },
+    {
+      "id": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "file": "api/schemas/ui-v12-stepup-v1.schema.json",
+      "purpose": "Operation-bound re-verification for real command execution (assessment, execution request digest, profile id/version, incident, actual command digest) and for user, source, cluster, registry, execution-profile and MFA operations with their own target projections and no invented risk assessments; server-owned method policy and accumulated password plus TOTP state; MFA enrolment confirmation ordered after a password+TOTP challenge; recovery codes bound to a challenge id; administrator MFA reset with a write-time recheck record.",
+      "definitions": [
+        "revision",
+        "timestamp",
+        "optionalTimestamp",
+        "target",
+        "commandBinding",
+        "challengeCreateRequest",
+        "challengeView",
+        "challengeVerifyRequest",
+        "stepUpSessionView",
+        "challengeVerifyResult",
+        "writeRecheck",
+        "mfaEnrollmentCreateRequest",
+        "mfaEnrollmentCreated",
+        "mfaEnrollmentView",
+        "mfaEnrollmentVerifyRequest",
+        "recoveryCodeSet",
+        "mfaEnrollmentVerifyResult",
+        "recoveryCodeVerifyRequest",
+        "recoveryCodeVerifyResult",
+        "adminMfaResetRequest",
+        "adminMfaResetResult",
+        "writeBinding"
+      ],
+      "rejectedClientClaims": [
+        "acr",
+        "loa",
+        "assuranceLevel",
+        "verified",
+        "requestedMethods",
+        "otpauthUri in status view",
+        "transactionRecheck in pre-write verify result"
+      ]
+    },
+    {
+      "id": "https://ops.local/schemas/ui-v12-observability/v1",
+      "file": "api/schemas/ui-v12-observability-v1.schema.json",
+      "purpose": "Independent observability query lifecycle without an AI conversation: fixed resource identity with an explicit namespaced or cluster-scoped scope, source registration and credential revision, absolute half-open window, coverage, population versus bounded samples, result publication only on completion, cancel request versus confirmed termination, expiry and re-authorization record.",
+      "definitions": [
+        "revision",
+        "timestamp",
+        "optionalTimestamp",
+        "namespaceScope",
+        "resourceIdentity",
+        "sourceBinding",
+        "window",
+        "coverage",
+        "budget",
+        "filter",
+        "createRequest",
+        "termination",
+        "reauthorization",
+        "failure",
+        "resultRef",
+        "queryView",
+        "population",
+        "samples",
+        "statistic",
+        "resultView",
+        "cancelRequest",
+        "cancelResult"
+      ],
+      "rejectedClientClaims": [
+        "conversationId",
+        "turnId",
+        "query",
+        "representative",
+        "inferredPopulation",
+        "population count when not measured"
+      ]
+    },
+    {
+      "id": "https://ops.local/schemas/ui-v12-model/v1",
+      "file": "api/schemas/ui-v12-model-v1.schema.json",
+      "purpose": "Four user-facing model fields with a plain integer or null context window and an explicit credential keep/replace action, OpenBao-controlled credential without echo, separation of connection/admission/task/quality expressed by distinct fields and absent cross-effects, no fabricated admission for unknown models, and a new job envelope freezing one admitted profile reference plus worker capability shared by API, Go worker and Python dispatcher.",
+      "definitions": [
+        "revision",
+        "timestamp",
+        "optionalTimestamp",
+        "profileReference",
+        "contextWindow",
+        "apiKeyInput",
+        "credentialUpdate",
+        "connectionUpsertRequest",
+        "credentialState",
+        "connectionState",
+        "admissionState",
+        "connectionView",
+        "connectionTestRequest",
+        "connectionCheck",
+        "connectionTestResult",
+        "capabilityRecord",
+        "runOptionView",
+        "assistantJobBinding"
+      ],
+      "rejectedClientClaims": [
+        "temperature",
+        "top_p",
+        "max_tokens",
+        "apiKey or secret in response",
+        "admission or quality verdict in a connection test",
+        "old investigation-job/v3 reused"
+      ]
+    }
+  ],
+  "crossFieldRuntimeChecks": [
+    {
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1",
+      "check": "login name uniqueness and tenant resolution come only from installation configuration",
+      "owner": "P2-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1",
+      "check": "Argon2id parameter version, persistent failure rate limiting and identical unknown-user/wrong-password errors",
+      "owner": "P2-01"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1",
+      "check": "session rotation, HttpOnly/Secure cookie, Origin and CSRF validation on every write",
+      "owner": "P2-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1",
+      "check": "first_password_only session may reach only password change and logout",
+      "owner": "P2-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1",
+      "check": "historical subject mapping uniqueness, evidence link and no role inheritance by login name",
+      "owner": "P2-04"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1",
+      "check": "last-administrator decision is taken inside the write transaction; the client sees accountUpdateConflict and cannot influence the count",
+      "owner": "P2-04"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1",
+      "check": "credential, session and authorization versions increment and invalidate older sessions immediately",
+      "owner": "P2-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "challenge binds operation, target identity and revision; command execution additionally binds the real risk assessment, command digest, incident, execution profile version and policy version",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "administrative and MFA operations never construct a fake command risk assessment",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "required methods are derived by the server from the operation policy; clients cannot lower them",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "acr urn:ops:loa:2 only after the current challenge accumulated both password and TOTP; a single TOTP or a previous login does not count",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "verify happens before any business write; each high-risk write records its own writeRecheck in its transaction",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "TOTP provisioning material is returned only by the creation response and never by later status reads",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "recovery code yields loa:1, revokes existing sessions and forces MFA re-enrolment",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1",
+      "check": "window to is later than from and the window does not exceed the source maxWindowSeconds",
+      "owner": "P3-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1",
+      "check": "canonical ID, UID, namespace UID and cluster UID all match the registered resource; recreated resources do not hit old results",
+      "owner": "P3-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1",
+      "check": "source registration active, credential revision current and qualification digest matching",
+      "owner": "P3-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1",
+      "check": "query state machine, late result rejection and cancel receipt confirmation",
+      "owner": "P3-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1",
+      "check": "population count comes from an aggregate or full scan, never from sample rows, returned or truncation",
+      "owner": "P3-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1",
+      "check": "history read re-authorizes and re-checks source qualification; expired results return result_expired",
+      "owner": "P3-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-model/v1",
+      "check": "baseURL keeps the existing modelprofile address constraints and the credential is written to and never read back from OpenBao",
+      "owner": "P5-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-model/v1",
+      "check": "manual context window may only tighten a measured limit; unknown stays unknown",
+      "owner": "P5-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-model/v1",
+      "check": "connection test never changes admission evidence and quality is recorded separately",
+      "owner": "P5-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-model/v1",
+      "check": "new job freezes the profile reference; API, Go worker and Python dispatcher compare the same reference and worker capability",
+      "owner": "P5-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-model/v1",
+      "check": "credential keep leaves OpenBao untouched; replace writes a new version; create requires replace and no response echoes the secret",
+      "owner": "P5-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-model/v1",
+      "check": "a null context window triggers provider detection; the measured maximum and source are server facts and can only tighten the value",
+      "owner": "P5-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1",
+      "check": "cluster-scoped resources carry null namespace and namespace UID; namespaced resources carry both and are checked against the registry",
+      "owner": "P3-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1",
+      "check": "only a completed query publishes a result; cancelled, terminated, failed, running and expired reads expose no stored result and discard late results",
+      "owner": "P3-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1",
+      "check": "result status derives from the measured population for log results and from not_applicable for metric/resource/hardware results; empty samples never imply no match",
+      "owner": "P3-02"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1",
+      "check": "administrator password reset is its own operation: initial password, expected revision and credential version, forced change and session version bump",
+      "owner": "P2-04"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "command challenges match assessmentId, riskAssessmentVersion, executionRequestDigest, executionProfileId and integer executionProfileVersion, actualCommandDigest, policyVersion and incident",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "source, cluster, registry and execution-profile administration challenges target their own projections and carry no command binding",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "MFA confirmation requires a completed password+TOTP challenge bound to the enrolment and current session before the new TOTP is accepted",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "recovery verification resolves the challenge from the request challenge id and expected revision, not from a cookie alone",
+      "owner": "P2-03"
+    },
+    {
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1",
+      "check": "administrator MFA reset may revoke zero sessions but must bump credential and session versions; the count is not the security proof",
+      "owner": "P2-03"
+    }
+  ],
+  "notVerified": [
+    "native account, session, CSRF, subject mapping, dual-role and last-administrator behaviour (P2-01 to P2-04)",
+    "password plus TOTP step-up, MFA enrolment, recovery codes and administrator MFA reset (P2-03)",
+    "independent observability create/get/results/cancel and source qualification (P3-02)",
+    "model connection, OpenBao credential write, admission linkage and new job routing (P5-03)",
+    "OpenAPI, generated clients, migrations and any runtime endpoint"
+  ],
+  "implementationAmendment": "2026-10-22: writeBinding is an implementation-time extension; original-plan retains the pre-implementation inventory. This file tracks current structure, not runtime acceptance."
+}

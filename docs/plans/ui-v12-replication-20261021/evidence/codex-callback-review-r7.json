@@ -1,0 +1,35 @@
+{
+  "task_id": "9089ff01-7e28-48d4-bb33-7b476e2c0459",
+  "reviewer": "Codex",
+  "head": "9bd78d84e212217626cdf0cfe54af84a155a9a3d",
+  "date": "2026-10-21T06:20:17.058239+00:00",
+  "status": "approved_for_P0_readiness",
+  "findings_closed": [
+    "R6-01: seven password forms now explicitly self/first/reset; reset uses C-017 and separate account/credential revisions; first missing currentPassword assigned supplemental P2-02 control",
+    "R6-02: model/user create/update DTO descriptions synchronized; local confirmation and server-only facts excluded",
+    "R6-03: native member selection and roleGrant DTO adaptation explicitly assigned P2-04; legacy subject handler not claimed as implemented"
+  ],
+  "checks": [
+    {
+      "command": "python3 docs/plans/ui-v12-replication-20261021/validate-progress.py",
+      "result": "structural checks passed before independent signoff; 458 slices/177 contracts/54 forms/7 password variants/544 nonform controls/62 composite; task dependency DAG valid"
+    },
+    {
+      "command": "go test ./test/contract -run TestUIV12 -count=1",
+      "result": "passed 0.464s, 55 positive + 87 rejection schema cases"
+    },
+    {
+      "command": "git -c core.whitespace=cr-at-eol diff --check",
+      "result": "passed"
+    }
+  ],
+  "retained_evidence": [
+    "codex-callback-review-r5.json: independent full contract package and remote fixture r3 46/46",
+    "codex-callback-review-r6.json: prior failures retained"
+  ],
+  "limits": [
+    "P0 only: proposed operations and supplemental states still need implementation",
+    "all six product dimensions not_verified",
+    "no native account migration, real source qualification, model runtime or visual product acceptance claimed"
+  ]
+}

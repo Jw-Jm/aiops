@@ -1,0 +1,43 @@
+{
+  "task_id": "36df89c4-e45f-4af9-8afb-0e6838b176c1",
+  "reviewer": "Codex",
+  "date": "2026-10-21T07:28:11.165051+00:00",
+  "result": "changes_requested; do not certify P1 from current tests",
+  "checks": [
+    {
+      "command": "pnpm exec vitest run tests/v12/p1_assistant_scope.test.tsx tests/v12/p1_shell.test.tsx tests/v12/p1_shell_app.test.tsx",
+      "result": "20 passed /3 files; coverage limitations below",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p1-r3-targeted.log"
+    },
+    {
+      "command": "pnpm build",
+      "result": "TypeScript/Vite passed",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p1-r3-build.log"
+    }
+  ],
+  "accepted": [
+    "initial deep-link mode no longer reset on mount",
+    "async local commits now call canCommit",
+    "initial invalid and revoked scope no longer auto-select another UID",
+    "provider restores prior query params for pending URL change"
+  ],
+  "findings": [
+    {
+      "id": "P1-R3-01",
+      "issue": "late-create mock resolves only {conversationId}, whereas generated API/checked expects {status,headers,data:{data:{conversationId}}}; existing assertions cannot prove success commit is blocked, since out is undefined or no commit executes. Add valid current-scope positive success control plus delayed valid success across switch and unmount. Stream is mocked out completely, so current tests do not prove old SSE abortion."
+    },
+    {
+      "id": "P1-R3-02",
+      "issue": "AppShell conditionally replaces Outlet when urlTransition=true, unmounting real AssistantPage and destroying draft before parent rollback. Provider-only DraftHistoryProbe test does not use AppShell; confirm test title says clears draft while assertion actually expects old-draft. committedOperationalLocation stores only URLSearchParams, so path/hash cannot be restored for cross-page navigation. Need pre-commit navigation blocking or equivalent that preserves mounted draft until confirmation; test actual Shell+AssistantPage routes and real pathname+search+hash cancel/confirm behavior."
+    },
+    {
+      "id": "P1-R3-03",
+      "issue": "AssistantPage only updates mode on scope change; same-scope navigation from query creation to incident/canonical deep link leaves mode data_query. Initialize/update based on new bound object without erasing unrelated draft on every render; test actual create request mode and object, not mere text presence."
+    }
+  ],
+  "limits": [
+    "P1 stays in_progress; no browser/live/visual acceptance",
+    "G0 preparation approval retained",
+    "model settings not verified per user instruction"
+  ]
+}

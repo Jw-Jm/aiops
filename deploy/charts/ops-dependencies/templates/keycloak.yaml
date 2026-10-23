@@ -1,6 +1,6 @@
 {{- $component := .Values.components.keycloak -}}
-{{- $tls := hasPrefix "https://" $component.endpoint -}}
 {{- if eq $component.mode "bundled" }}
+{{- $tls := hasPrefix "https://" $component.endpoint -}}
 apiVersion: v1
 kind: Service
 metadata:

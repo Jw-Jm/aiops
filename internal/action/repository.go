@@ -3,9 +3,11 @@ package action
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/authz"
 	"ops-platform/internal/persistence"
 	"slices"
 	"time"
@@ -28,11 +30,13 @@ func (s Service) PublishProfile(ctx context.Context, a auth.RequestContext, in P
 		return err
 	}
 	return persistence.WithTenantTx(ctx, s.Pool, a.TenantID, func(tx pgx.Tx) error {
-		var exists bool
-		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND role_name='platform_admin' AND status='active' FOR SHARE)`, a.TenantID, a.Subject).Scan(&exists); err != nil || !exists {
-			return ErrDenied
-		}
 		if _, err := auth.TouchCurrentStepUpSession(ctx, tx, a, []string{auth.StepUpACRLevel2}); err != nil {
+			return err
+		}
+		if err := authz.RequireAdmin(ctx, tx, a); err != nil {
+			if errors.Is(err, authz.ErrUnauthorized) || errors.Is(err, authz.ErrIdentityMismatch) {
+				return ErrDenied
+			}
 			return err
 		}
 		d, err := persistence.Begin(ctx, tx, persistence.Scope{TenantID: a.TenantID, Subject: a.Subject, Operation: "publish-execution-profile"}, key, persistence.Digest(Digest(Canonical(in))))
@@ -64,11 +68,13 @@ func (s Service) RetireProfile(ctx context.Context, a auth.RequestContext, id uu
 		return ErrDenied
 	}
 	return persistence.WithTenantTx(ctx, s.Pool, a.TenantID, func(tx pgx.Tx) error {
-		var locked uuid.UUID
-		if err := tx.QueryRow(ctx, `SELECT binding_id FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND role_name='platform_admin' AND status='active' FOR SHARE`, a.TenantID, a.Subject).Scan(&locked); err != nil {
-			return ErrDenied
-		}
 		if _, err := auth.TouchCurrentStepUpSession(ctx, tx, a, []string{auth.StepUpACRLevel2}); err != nil {
+			return err
+		}
+		if err := authz.RequireAdmin(ctx, tx, a); err != nil {
+			if errors.Is(err, authz.ErrUnauthorized) || errors.Is(err, authz.ErrIdentityMismatch) {
+				return ErrDenied
+			}
 			return err
 		}
 		d, err := persistence.Begin(ctx, tx, persistence.Scope{TenantID: a.TenantID, Subject: a.Subject, Operation: "retire-execution-profile"}, key, persistence.Digest(Digest(Canonical([]any{id, version}))))
@@ -178,12 +184,32 @@ func (s Service) ListProfiles(ctx context.Context, a auth.RequestContext) ([]Pro
 	err := persistence.WithTenantTx(ctx, s.Pool, a.TenantID, func(tx pgx.Tx) error {
 		admin := false
 		if slices.Contains(a.Roles, auth.PlatformAdmin) {
-			if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND role_name='platform_admin' AND status='active')`, a.TenantID, a.Subject).Scan(&admin); err != nil {
+			err := authz.RequireAdmin(ctx, tx, a)
+			if err == nil {
+				admin = true
+			} else if !errors.Is(err, authz.ErrUnauthorized) {
+				if errors.Is(err, authz.ErrIdentityMismatch) {
+					return ErrDenied
+				}
 				return err
 			}
 		}
-		if !admin && !slices.Contains(a.Roles, auth.Operator) {
-			return ErrDenied
+		if !admin {
+			if !slices.Contains(a.Roles, auth.Operator) {
+				return ErrDenied
+			}
+			if _, native := auth.NativeSessionFromContext(ctx); native {
+				allowed, err := authz.NativeRoleAuthorized(ctx, tx, a, "operator")
+				if err != nil {
+					if errors.Is(err, authz.ErrIdentityMismatch) {
+						return ErrDenied
+					}
+					return err
+				}
+				if !allowed {
+					return ErrDenied
+				}
+			}
 		}
 		rows, err := tx.Query(ctx, `SELECT content FROM platform.execution_profile_versions WHERE tenant_id=$1 AND status='published' ORDER BY logical_name,version_number`, a.TenantID)
 		if err != nil {

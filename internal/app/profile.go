@@ -31,6 +31,9 @@ func (config AppConfig) validateRuntimeProfile(worker bool) error {
 				return errors.New("worker endpoint differs from resolved Deployment Profile")
 			}
 		}
+	} else if config.HumanAuthMode == HumanAuthModeNative {
+		// A native-only API has no OIDC issuer dependency. The compatibility
+		// profile remains unchanged for the default OIDC mode.
 	} else {
 		c, ok := p.Components["keycloak"]
 		if !ok || c.Mode == "disabled" || config.OIDCIssuerURL != strings.TrimRight(c.Endpoint, "/")+"/realms/ops" {

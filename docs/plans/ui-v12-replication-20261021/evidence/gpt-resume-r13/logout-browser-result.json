@@ -1,0 +1,33 @@
+{
+  "origin": "https://192.168.0.63:30467",
+  "scope": "resume only the interrupted logout check using the already rotated fixture account",
+  "checks": [
+    "rotated password login201 and no default authority",
+    "real UI logout200 then session401",
+    "reload stays logged out"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a1665e-30e6-7ea6-83c8-d0a4d8ad3262"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a1665e-318a-7b0c-a3b5-c92fb92c36e6"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200,
+      "requestId": "01a1665e-326e-78c5-ac7e-dab7eed2b0bc"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a1665e-32d5-7852-abbf-e69988a8ea05"
+    }
+  ],
+  "pageErrors": [],
+  "status": "passed"
+}

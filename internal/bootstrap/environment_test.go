@@ -63,3 +63,32 @@ func TestEnvironmentBootstrapRejectsEmptyOrUnboundedArchiveIAM(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestNativeEnvironmentRequiresOnlyItsOwnTrustAndSecrets(t *testing.T) {
+	c, secrets := validEnvironment(t)
+	c.HumanAuthMode = "native"
+	delete(c.PublicTrust, "oidc-ca.pem")
+	var native []EnvironmentSecret
+	for _, secret := range secrets {
+		if secret.Name != "ops-keycloak-auth" && secret.Name != "ops-keycloak-database" && secret.Name != "ops-keycloak-tls" {
+			native = append(native, secret)
+		}
+	}
+	if err := c.Validate(native); err != nil {
+		t.Fatal(err)
+	}
+	if err := c.Validate(secrets); err == nil {
+		t.Fatal("native bootstrap accepted mixed Keycloak secrets")
+	}
+	for _, mode := range []string{"oidc", "", "unknown"} {
+		c.HumanAuthMode = mode
+		if err := c.Validate(native); err == nil {
+			t.Fatalf("%q accepted incomplete or unknown identity mode", mode)
+		}
+	}
+	c.HumanAuthMode = "native"
+	delete(c.PublicTrust, "openbao-ca.pem")
+	if err := c.Validate(native); err == nil {
+		t.Fatal("native bootstrap waived independent OpenBao trust")
+	}
+}

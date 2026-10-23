@@ -1,0 +1,111 @@
+{
+  "origin": "https://192.168.0.63:30463",
+  "checks": [
+    "native login renders for an unauthenticated browser",
+    "blank submit shows field validation without a request",
+    "unknown login is rejected with a constant 401 and inline error",
+    "submit exposes an explicit busy state and completes into the administrator shell",
+    "reload restores the durable native session",
+    "logout revokes server-side state and the old cookie is rejected"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a162b2-1c43-7f30-8a3c-b995fcd8838f"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 401,
+      "requestId": "01a162b2-1e38-73fc-b786-87b42257bea2"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a162b2-24cd-7b38-a0a2-11fd79cbfced"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162b2-2564-7d88-9e1c-f809b6a45753"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a162b2-2590-7833-b237-38c44eee9571"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a162b2-259c-76fe-ac94-229ec9f568aa"
+    },
+    {
+      "path": "/api/v1/overview",
+      "status": 403,
+      "requestId": "01a162b2-25d9-779b-bba7-a76f44a03781"
+    },
+    {
+      "path": "/api/v1/admin/role-bindings",
+      "status": 200,
+      "requestId": "01a162b2-25e5-7ca5-b005-5f10af05e7b6"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162b2-269c-75c4-acb1-f21536777f97"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a162b2-26dd-7caf-8723-72d32b9c0e46"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162b2-26ec-7337-bee5-96ff7ee4bee3"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200,
+      "requestId": "01a162b2-272e-760b-a46b-4885904ed6c6"
+    }
+  ],
+  "consoleErrors": [],
+  "failuresRetained": [],
+  "browser": "156.0.8078.4",
+  "credentialsFailures": {
+    "status": 401,
+    "alert": "登录名或密码不正确。"
+  },
+  "loading": {
+    "disabled": false,
+    "busy": "true"
+  },
+  "session": {
+    "subject": "user:01a1627d-4cd4-77b9-bacc-ed412395c861",
+    "mode": "full",
+    "acr": "urn:ops:loa:1",
+    "roles": [
+      "platform_admin"
+    ],
+    "revocation": {
+      "authorizationVersion": 1,
+      "credentialVersion": 2,
+      "sessionVersion": 9
+    }
+  },
+  "adminClusters": {
+    "status": 200,
+    "count": 0,
+    "code": null
+  },
+  "operatorOverview": {
+    "status": 403,
+    "code": "FORBIDDEN"
+  },
+  "legacyBindings": {
+    "status": 200,
+    "count": 0
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,444 @@
+{
+  "task": "P0-03",
+  "generatedAt": "2026-10-21",
+  "validator": "internal/contract.Validate",
+  "test": "test/contract/ui_v12_contract_test.go",
+  "note": "Each case is a valid baseline payload plus one mutation, and must be rejected by the listed schema. These are static contract rejections; they do not prove any runtime authorisation or database behaviour.",
+  "cases": [
+    {
+      "name": "login-request-self-granted-tenant",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/loginRequest",
+      "reason": "tenantId is an unknown client field; the organisation comes from installation configuration"
+    },
+    {
+      "name": "login-request-self-granted-roles",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/loginRequest",
+      "reason": "roles are server grants and never part of a login request"
+    },
+    {
+      "name": "account-create-self-granted-tenant",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/accountCreateRequest",
+      "reason": "account creation cannot choose another tenant"
+    },
+    {
+      "name": "account-create-self-granted-roles",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/accountCreateRequest",
+      "reason": "account creation and role authorisation are separate operations"
+    },
+    {
+      "name": "account-create-email-setup-link",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/accountCreateRequest",
+      "reason": "the confirmed prototype creates the account with an initial password; no email or one-time-link flow exists"
+    },
+    {
+      "name": "account-create-without-initial-password",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/accountCreateRequest",
+      "reason": "creation always carries the initial password and the server forces a first change"
+    },
+    {
+      "name": "account-update-client-supplied-administrator-state",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/accountUpdateRequest",
+      "reason": "administrator count and target flag are transaction-time server facts, not client input"
+    },
+    {
+      "name": "account-update-empty-intent",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/accountUpdateRequest",
+      "reason": "an update must change either the display name or the status"
+    },
+    {
+      "name": "account-update-conflict-allows-disable",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/accountUpdateConflict",
+      "reason": "the last-administrator conflict projection can only report the account left active"
+    },
+    {
+      "name": "account-update-conflict-zero-administrators",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/accountUpdateConflict",
+      "reason": "a conflict cannot be reported with zero active administrators"
+    },
+    {
+      "name": "role-grant-combined-roles-field",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/roleGrantRequest",
+      "reason": "one grant carries exactly one role; operator and platform_admin are independent"
+    },
+    {
+      "name": "role-grant-combined-role-value",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/roleGrantRequest",
+      "reason": "a combined role string is not a valid role"
+    },
+    {
+      "name": "subject-mapping-by-login-name",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/subjectMappingRequest",
+      "reason": "matching a historical subject by login name is forbidden"
+    },
+    {
+      "name": "subject-mapping-without-evidence",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/subjectMappingRequest",
+      "reason": "explicit mapping requires a verified inventory evidence digest"
+    },
+    {
+      "name": "subject-mapping-view-carries-roles",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/subjectMappingView",
+      "reason": "a mapping preserves the subject but never carries or inherits roles"
+    },
+    {
+      "name": "session-loa2-from-password-only",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/sessionView",
+      "reason": "urn:ops:loa:2 requires both password and TOTP authentication methods"
+    },
+    {
+      "name": "session-first-password-with-business-grants",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/sessionView",
+      "reason": "a first_password_only session must carry no business grants"
+    },
+    {
+      "name": "session-csrf-weakened-samesite",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/sessionView",
+      "reason": "the session CSRF cookie is SameSite=Strict"
+    },
+    {
+      "name": "session-zero-credential-version",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/sessionView",
+      "reason": "revocation versions start at 1"
+    },
+    {
+      "name": "account-view-zero-active-administrators",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/accountView",
+      "reason": "an account view cannot report zero active administrators"
+    },
+    {
+      "name": "admin-password-reset-client-forced-flag",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/adminPasswordResetRequest",
+      "reason": "forced first-password change is server policy, not a client flag"
+    },
+    {
+      "name": "admin-password-reset-result-zero-credential-version",
+      "schema": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/adminPasswordResetResult",
+      "reason": "a reset response must report the new credential version, which starts at 1"
+    },
+    {
+      "name": "step-up-verify-client-assurance-level",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeVerifyRequest",
+      "reason": "the client cannot assert an assurance level"
+    },
+    {
+      "name": "step-up-verify-client-acr",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeVerifyRequest",
+      "reason": "acr is server output, not request input"
+    },
+    {
+      "name": "step-up-create-client-downscales-methods",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeCreateRequest",
+      "reason": "the server derives required methods from the operation policy; the client cannot request fewer"
+    },
+    {
+      "name": "step-up-command-operation-without-command-binding",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeCreateRequest",
+      "reason": "command execution must bind the real risk assessment, command digest, incident, execution profile version and policy version"
+    },
+    {
+      "name": "step-up-user-operation-with-command-binding",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeCreateRequest",
+      "reason": "user administration must not invent a command risk assessment"
+    },
+    {
+      "name": "step-up-mfa-enrollment-target-kind-mismatch",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeCreateRequest",
+      "reason": "an MFA enrolment challenge must target the enrolment object, not a user"
+    },
+    {
+      "name": "step-up-source-operation-with-user-target",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeCreateRequest",
+      "reason": "a source administration challenge must target the source registration, not a user"
+    },
+    {
+      "name": "step-up-verified-single-totp",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeVerifyResult",
+      "reason": "a single TOTP step does not accumulate a password and cannot become LoA2"
+    },
+    {
+      "name": "step-up-verified-without-session",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeVerifyResult",
+      "reason": "a verified challenge must produce a bound step-up session"
+    },
+    {
+      "name": "step-up-verify-result-claims-write-recheck",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeVerifyResult",
+      "reason": "the pre-write verify response cannot claim a future business-transaction recheck"
+    },
+    {
+      "name": "step-up-challenge-verified-partial-methods",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeView",
+      "reason": "a verified challenge must have accumulated both password and TOTP"
+    },
+    {
+      "name": "step-up-pending-with-both-methods",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeView",
+      "reason": "a challenge that accumulated both methods is verified, not pending"
+    },
+    {
+      "name": "step-up-used-challenge-with-attempts",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/challengeView",
+      "reason": "a used, expired or revoked challenge has no remaining attempts"
+    },
+    {
+      "name": "mfa-status-view-repeats-provisioning-uri",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/mfaEnrollmentView",
+      "reason": "the provisioning URI is returned only by the creation response"
+    },
+    {
+      "name": "mfa-enrollment-verify-result-without-codes",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/mfaEnrollmentVerifyResult",
+      "reason": "confirmation issues the recovery code set exactly once"
+    },
+    {
+      "name": "mfa-enrollment-verify-short-code",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/mfaEnrollmentVerifyRequest",
+      "reason": "a TOTP code is exactly six digits"
+    },
+    {
+      "name": "mfa-enrollment-verify-without-step-up",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/mfaEnrollmentVerifyRequest",
+      "reason": "confirmation must follow a completed password+TOTP challenge bound to this enrolment and session"
+    },
+    {
+      "name": "recovery-code-without-challenge-id",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/recoveryCodeVerifyRequest",
+      "reason": "the server needs the challenge id to locate the recovery challenge"
+    },
+    {
+      "name": "mfa-enrollment-verify-short-recovery-set",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/mfaEnrollmentVerifyResult",
+      "reason": "the recovery code set contains exactly ten codes"
+    },
+    {
+      "name": "recovery-code-without-session-revocation",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/recoveryCodeVerifyResult",
+      "reason": "successful recovery revokes at least one existing session"
+    },
+    {
+      "name": "recovery-code-escalates-to-step-up",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/recoveryCodeVerifyResult",
+      "reason": "a recovery code never yields a step-up session or LoA2"
+    },
+    {
+      "name": "admin-mfa-reset-result-without-recheck",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/adminMfaResetResult",
+      "reason": "the reset write must record its own transaction recheck"
+    },
+    {
+      "name": "admin-mfa-reset-result-without-revocation",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/adminMfaResetResult",
+      "reason": "a reset must report the credential and session version bump, even when no session was active"
+    },
+    {
+      "name": "write-recheck-command-without-digest",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/writeRecheck",
+      "reason": "a command-execution recheck must carry the command digest"
+    },
+    {
+      "name": "write-recheck-without-write-attempt",
+      "schema": "https://ops.local/schemas/ui-v12-stepup/v1#/$defs/writeRecheck",
+      "reason": "a recheck is bound to the actual write attempt"
+    },
+    {
+      "name": "observation-create-binds-ai-conversation",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/createRequest",
+      "reason": "a manual observation query must not create or attach to an AI conversation"
+    },
+    {
+      "name": "observation-create-free-form-query",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/createRequest",
+      "reason": "only structured filters and fixed templates are accepted"
+    },
+    {
+      "name": "observation-create-zero-credential-revision",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/createRequest",
+      "reason": "the source credential revision is required and starts at 1"
+    },
+    {
+      "name": "observation-create-non-half-open-window",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/createRequest",
+      "reason": "the window must be absolute and half-open"
+    },
+    {
+      "name": "observation-create-without-namespace-uid",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/createRequest",
+      "reason": "a namespaced object requires the namespace name and its UID"
+    },
+    {
+      "name": "observation-create-forged-cluster-namespace-uid",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/createRequest",
+      "reason": "a cluster-scoped object must state null namespace and namespace UID, not fabricate one"
+    },
+    {
+      "name": "observation-result-total-from-samples",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/resultView",
+      "reason": "a not-measured population must not carry a total derived from samples"
+    },
+    {
+      "name": "observation-result-sample-inferred-population",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/resultView",
+      "reason": "bounded samples cannot infer a population"
+    },
+    {
+      "name": "observation-result-representative-sample",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/resultView",
+      "reason": "samples are explicitly non-representative"
+    },
+    {
+      "name": "observation-result-truncated-without-reason",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/resultView",
+      "reason": "a truncated result must state why"
+    },
+    {
+      "name": "observation-result-complete-without-measured-population",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/resultView",
+      "reason": "a complete result requires an exact measured population"
+    },
+    {
+      "name": "observation-result-no-data-with-samples",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/resultView",
+      "reason": "no_data means a measured zero population and cannot carry sample rows"
+    },
+    {
+      "name": "observation-result-metric-with-log-population",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/resultView",
+      "reason": "metric, resource and hardware results have no log population; a fabricated count is rejected"
+    },
+    {
+      "name": "observation-view-completed-without-result",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/queryView",
+      "reason": "completed requires a fixed result reference"
+    },
+    {
+      "name": "observation-view-terminated-without-receipt",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/queryView",
+      "reason": "terminated requires a confirmed termination receipt"
+    },
+    {
+      "name": "observation-view-cancel-requested-already-terminated",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/queryView",
+      "reason": "a cancel request is not a termination"
+    },
+    {
+      "name": "observation-view-running-with-cancel-flag",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/queryView",
+      "reason": "cancelRequestedAt only appears after a cancel request state"
+    },
+    {
+      "name": "observation-view-running-with-result",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/queryView",
+      "reason": "a running query has not published a result"
+    },
+    {
+      "name": "observation-view-terminated-with-result",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/queryView",
+      "reason": "a terminated query must not publish a late result"
+    },
+    {
+      "name": "observation-view-expired-with-result",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/queryView",
+      "reason": "an expired read must not expose a stored result"
+    },
+    {
+      "name": "observation-reauthorization-allowed-with-denial",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/queryView",
+      "reason": "an allowed read cannot carry a denial code"
+    },
+    {
+      "name": "observation-coverage-unknown-but-complete",
+      "schema": "https://ops.local/schemas/ui-v12-observability/v1#/$defs/queryView",
+      "reason": "unknown coverage basis cannot be reported as complete"
+    },
+    {
+      "name": "model-connection-fifth-field",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionUpsertRequest",
+      "reason": "the user configures exactly four fields; runtime tuning is platform managed"
+    },
+    {
+      "name": "model-connection-view-echoes-api-key",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionView",
+      "reason": "the API key is never returned after the controlled write"
+    },
+    {
+      "name": "model-credential-echoes-secret",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionView",
+      "reason": "the credential state carries no secret material"
+    },
+    {
+      "name": "model-admission-without-evidence",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionView",
+      "reason": "admitted requires admission evidence and a frozen profile reference"
+    },
+    {
+      "name": "model-unknown-admission-with-profile",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionView",
+      "reason": "an unknown model must not expose a runnable profile reference"
+    },
+    {
+      "name": "model-context-window-too-small",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionUpsertRequest",
+      "reason": "the context window has a supported lower bound"
+    },
+    {
+      "name": "model-connection-window-client-claims-source",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionUpsertRequest",
+      "reason": "contextWindow input is an integer or null; source and provider maximum are server facts"
+    },
+    {
+      "name": "model-credential-replace-without-secret",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionUpsertRequest",
+      "reason": "replace requires the new secret; keep must not resend it"
+    },
+    {
+      "name": "model-credential-keep-with-secret",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionUpsertRequest",
+      "reason": "keep carries no secret material"
+    },
+    {
+      "name": "model-provider-window-without-measurement",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionView",
+      "reason": "a provider-reported window projection must carry the measured maximum"
+    },
+    {
+      "name": "model-test-claims-quality-verdict",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionTestResult",
+      "reason": "a connection test has no quality verdict field"
+    },
+    {
+      "name": "model-test-carries-admission-transition",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/connectionTestResult",
+      "reason": "a connection test cannot carry an admission transition"
+    },
+    {
+      "name": "model-quality-assessed-without-evidence",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/capabilityRecord",
+      "reason": "an assessed quality verdict requires a rubric version and evidence digest"
+    },
+    {
+      "name": "model-run-option-not-ready-worker",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/runOptionView",
+      "reason": "only a ready worker may be offered"
+    },
+    {
+      "name": "model-run-option-not-admitted",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/runOptionView",
+      "reason": "only admitted profiles may be offered"
+    },
+    {
+      "name": "model-job-old-contract-version",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/assistantJobBinding",
+      "reason": "the new job envelope is explicit; existing job versions are not rewritten"
+    },
+    {
+      "name": "model-job-without-admission-evidence",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/assistantJobBinding",
+      "reason": "a job freezing a profile must record its admission evidence"
+    },
+    {
+      "name": "model-job-without-worker-capability",
+      "schema": "https://ops.local/schemas/ui-v12-model/v1#/$defs/assistantJobBinding",
+      "reason": "a job must record the worker capability that can execute the frozen profile"
+    }
+  ]
+}

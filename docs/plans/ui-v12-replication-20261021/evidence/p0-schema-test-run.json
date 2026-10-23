@@ -1,0 +1,54 @@
+{
+  "task": "P0-03",
+  "date": "2026-10-21",
+  "revision": "r4 after contract completeness review",
+  "environment": "local worktree /Users/mssc/Documents/Code/ops/platform, Go toolchain from go.mod; no database, Kubernetes, model endpoint or browser was used",
+  "scope": "static JSON Schema validation only",
+  "schemaCount": 4,
+  "positiveCases": 55,
+  "rejectionCases": 87,
+  "commands": [
+    {
+      "command": "cd platform && go test ./test/contract -run 'TestUIV12' -count=1",
+      "result": "ok ops-platform/test/contract",
+      "exitCode": 0
+    },
+    {
+      "command": "cd platform && go test ./test/contract -run 'TestUIV12' -count=1 -v",
+      "result": "PASS: TestUIV12SchemaFilesMatchEvidence, TestUIV12RootRejectsUnscopedPayloads, TestUIV12RejectionEvidenceMatchesCases, TestUIV12PositiveContracts (55 subtests), TestUIV12RejectedContracts (87 subtests)",
+      "exitCode": 0
+    },
+    {
+      "command": "cd platform && go test ./test/contract ./internal/contract -count=1",
+      "result": "ok ops-platform/test/contract; ops-platform/internal/contract has no test files",
+      "exitCode": 0
+    }
+  ],
+  "assertions": [
+    "each ui-v12 schema file is embedded with the declared $id and makes its root document reject every instance",
+    "the root id cannot be used as a wildcard: Validate(rootID, {}, {\"schemaVersion\":\"x\"}, \"text\", [], null) is rejected for all four schemas",
+    "the recorded inventory definitions equal the actual $defs of every ui-v12 schema",
+    "every rejection recorded in p0-schema-rejections.json is implemented, and every implemented rejection is recorded",
+    "each rejection baseline payload is valid before the single mutation, so the rejection is attributable to that mutation",
+    "each positive payload is accepted by its declared fragment schema",
+    "a cluster-scoped resource identity is accepted while a forged namespace UID on it is rejected",
+    "a model context window is accepted as an integer or null, while client-supplied source and provider maximum are rejected",
+    "credential keep without a secret and replace with a secret are accepted; keep with a secret and replace without one are rejected",
+    "query result references are rejected for running, terminated and expired states",
+    "no_data with samples and complete without a measured population are rejected",
+    "an admin password reset request rejects a client-supplied forced-change flag and its result rejects a zero credential version",
+    "a rejected first factor may report an empty completedMethods set, while verified results still require both password and TOTP",
+    "command binding rejects a null actualCommandDigest and uses executionProfileId plus integer executionProfileVersion",
+    "source, cluster, registry and execution-profile administration challenges are accepted; a source challenge with a user target is rejected",
+    "MFA confirmation without a bound step-up challenge and recovery verification without a challenge id are rejected",
+    "admin MFA reset accepts zero revoked sessions but requires the revocation version projection",
+    "a metric result with a fabricated log population is rejected while a not_applicable population is accepted"
+  ],
+  "notProven": [
+    "runtime authentication, session, CSRF, step-up, MFA or recovery behaviour",
+    "runtime observability query execution, source qualification, cancellation or result retention",
+    "runtime model connection, OpenBao write, admission evaluation or worker routing",
+    "OpenAPI validity, generated clients, database migrations or HTTP handlers",
+    "any visual, interaction or live acceptance status of the affected slices; these remain not_verified"
+  ]
+}

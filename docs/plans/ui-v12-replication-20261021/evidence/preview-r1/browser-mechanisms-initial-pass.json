@@ -1,0 +1,78 @@
+{
+  "origin": "https://192.168.0.63:30462",
+  "checks": [
+    "native login renders without OIDC",
+    "resumed with previously rotated password; first-password evidence retained separately",
+    "reload restores durable session and rotated credential version",
+    "administrator does not receive operator permission",
+    "cross-origin/missing-CSRF logout rejected",
+    "logout deletes browser cookie and rejects replay of revoked cookie",
+    "new password login succeeds after first-password rotation"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16288-ad39-7c89-8252-c94a99c5ea6f"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16288-adeb-7e7a-88ff-109169e80564"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16288-afb7-7641-9e06-59486d2863ab"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16288-afe3-7dc6-88ad-6a0376f956af"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16288-b05f-78ad-a75b-1cac9d696421"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16288-b0b3-7e63-9a5e-b5a43b2e8ed4"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16288-b0c2-7eab-9eec-c15fffa7f719"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16288-b0c9-7583-a854-d9e05b879c38"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200,
+      "requestId": "01a16288-b148-73f7-beca-490f6dfe8a2a"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16288-b1ae-7a95-8393-3112cd3e6c0a"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16288-b23d-7398-9168-ef61a7479905"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200,
+      "requestId": "01a16288-b263-74bb-b097-9686cba5c90f"
+    }
+  ],
+  "consoleErrors": [],
+  "browser": "156.0.8078.4",
+  "subject": "user:01a1627d-4cd4-77b9-bacc-ed412395c861",
+  "status": "PASS"
+}

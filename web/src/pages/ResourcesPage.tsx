@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { Input, Select, Table, Button, Space } from "antd";
+import { Input, Select, Button, Space } from "antd";
+import { DataTable as Table } from "../components/v12/primitives";
 import { Link, useSearchParams } from "react-router-dom";
 import { getResources } from "../api/generated/platform";
 import type {
@@ -9,7 +10,8 @@ import type {
 } from "../api/generated/models";
 import { checked, requestOptions } from "../api/client";
 import { PageHeading } from "../components/PageHeading";
-import { ScopeFilter, useClusters } from "../components/ScopeFilter";
+import { ScopeFilter } from "../components/ScopeFilter";
+import { useOperationalCluster } from "../app/ClusterContext";
 import { QueryState } from "../components/QueryState";
 import { EnvelopeMeta } from "../components/EnvelopeMeta";
 import { FullText, Details } from "../components/Details";
@@ -17,16 +19,15 @@ import { Status } from "../components/Status";
 import { record, text } from "../components/data";
 export function ResourcesPage() {
   const [url, setUrl] = useSearchParams();
-  const clusters = useClusters();
+  const { clusterUid: cluster, invalid } = useOperationalCluster();
   const params: GetResourcesParams = {
     limit: 50,
-    clusterUid: url.get("clusterUid") || clusters[0],
+    clusterUid: cluster,
     order: url.get("order") === "desc" ? "desc" : "asc",
     ...Object.fromEntries(
       [
         "domain",
         "kind",
-        "clusterUid",
         "namespace",
         "name",
         "health",
@@ -60,10 +61,7 @@ export function ResourcesPage() {
       />
       <section className="section">
         <div className="filters">
-          <ScopeFilter
-            value={params.clusterUid}
-            onChange={(v) => update("clusterUid", v)}
-          />
+          <ScopeFilter value={params.clusterUid} />
           <div className="filter">
             <label htmlFor="resource-domain">资源领域</label>
             <Select
@@ -152,7 +150,7 @@ export function ResourcesPage() {
           loading={query.isPending && !!params.clusterUid}
           error={query.error}
           retry={() => void query.refetch()}
-          noScope={!params.clusterUid}
+          noScope={!params.clusterUid || invalid}
           empty={page?.data.length === 0}
         >
           <EnvelopeMeta value={page?.meta} />

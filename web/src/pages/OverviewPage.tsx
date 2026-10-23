@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button, Alert, Table, Space } from "antd";
-import { Link, useSearchParams } from "react-router-dom";
-import { ScopeFilter, useClusters } from "../components/ScopeFilter";
+import { Link } from "react-router-dom";
+import { ScopeFilter } from "../components/ScopeFilter";
+import { useOperationalCluster } from "../app/ClusterContext";
 import { getOverview, getCapabilities } from "../api/generated/platform";
 import { checked, requestOptions } from "../api/client";
 import { PageHeading } from "../components/PageHeading";
@@ -11,9 +12,7 @@ import { Details } from "../components/Details";
 import { record, text, list, displayTime } from "../components/data";
 import { Status } from "../components/Status";
 export function OverviewPage() {
-  const [url, setUrl] = useSearchParams();
-  const clusters = useClusters();
-  const cluster = url.get("clusterUid") || clusters[0] || "";
+  const { clusterUid: cluster, invalid } = useOperationalCluster();
   const q = useQuery({
     queryKey: ["overview", cluster],
     enabled: !!cluster,
@@ -53,15 +52,12 @@ export function OverviewPage() {
         }
       />
       <div className="filters">
-        <ScopeFilter
-          value={cluster}
-          onChange={(v) => setUrl({ clusterUid: v })}
-        />
+        <ScopeFilter value={cluster} />
       </div>
       <QueryState
         loading={q.isPending && !!cluster}
         error={q.error}
-        noScope={!cluster}
+        noScope={!cluster || invalid}
         retry={() => void q.refetch()}
       >
         <EnvelopeMeta value={d.resourceObservation} />
@@ -164,7 +160,7 @@ export function OverviewPage() {
                 render: (_, row) => (
                   <Link
                     to={
-                      "/incidents/" + encodeURIComponent(String(row.incidentId))
+                      "/events/incidents/" + encodeURIComponent(String(row.incidentId))
                     }
                   >
                     {text(row.title)}
@@ -232,10 +228,10 @@ export function OverviewPage() {
       <section className="section">
         <h2 className="section-title">故障处理入口</h2>
         <div className="filters">
-          <Link to={"/incidents?clusterUid=" + encodeURIComponent(cluster)}>
+          <Link to={"/events/incidents?clusterUid=" + encodeURIComponent(cluster)}>
             <Button type="primary">开始处理故障</Button>
           </Link>
-          <Link to={"/findings?clusterUid=" + encodeURIComponent(cluster)}>
+          <Link to={"/events/alerts?clusterUid=" + encodeURIComponent(cluster)}>
             <Button>查看故障告警</Button>
           </Link>
           <Link to={"/resources?clusterUid=" + encodeURIComponent(cluster)}>
@@ -253,7 +249,7 @@ export function OverviewPage() {
                   value={capabilities.data.data.commandExecution.status}
                 />
               </p>
-              <Link to="/capabilities">查看完整能力及来源说明 →</Link>
+              <Link to="/access/readiness">查看完整能力及来源说明 →</Link>
             </>
           )}
         </QueryState>

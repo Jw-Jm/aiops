@@ -108,6 +108,7 @@ func TestSP08WebChartTLSAndPermissionIsolation(t *testing.T) {
 	for _, attack := range []struct{ key, value string }{
 		{"publicOrigin", "https://ops.example.invalid/unsafe"},
 		{"publicOrigin", "http://ops.example.invalid"},
+		{"publicOrigin", "https://ops.example.invalid:65536"},
 	} {
 		original := values["sp08"].(map[string]any)[attack.key]
 		values["sp08"].(map[string]any)[attack.key] = attack.value

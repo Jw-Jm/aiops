@@ -1,0 +1,85 @@
+{
+  "task": "5c0d0922-0c14-4c87-be97-d8b94ff68a18",
+  "reviewed_at": "2026-10-22T16:35:00.084154+08:00",
+  "status": "changes_required; partial implementation accepted only in scope",
+  "baseline": "/Users/mssc/.codex/codebuddy-dev/5c0d0922-0c14-4c87-be97-d8b94ff68a18/baseline/",
+  "accepted_subset": [
+    "SL-001 layout geometry and 1440x960 stored artifact: independently counted21 differences over1363300 considered pixels with two explicit copy masks; no whole-page waiver.",
+    "Native admin cluster-list integration has positive Foundation test; no copying platform.role_bindings; legacy/native source separation is retained.",
+    "19 targeted native Web tests and8 selected Go packages (tenant has no tests) passed independently.",
+    "Contract suite passed34.392s; scoped diff whitespace and implementation tracking validation passed.",
+    "Executed migrations44..46 match handoff baseline;47..49 are executed forward history and must not be edited."
+  ],
+  "findings": [
+    {
+      "id": "R1",
+      "priority": 1,
+      "file": "internal/authz/authorization.go",
+      "line": 101,
+      "title": "事务复检未绑定会话及凭据/撤销状态",
+      "detail": "requireNativeRole只传tenant/user/role/authorizationVersion；当前SQL只校验account与grant的authorization_version。middleware已取得NativeSessionContext后，退出/改密/撤销更新session或credential版本，业务事务仍可能通过。SQL只FOR SHARE grant_row，account与session状态没有锁住，不能作为完整事务内撤销围栏。",
+      "proof": "在15452/schema49，以真实preview API LOGIN的session authorization执行SELECT并ROLLBACK：v12.admin已撤销session issued_session_version9，而account.session_version10，identity.authorize_native_role(tenant,user,platform_admin,1)仍true。新请求middleware会拒绝该旧Cookie；问题是已过middleware的迟到业务写入。",
+      "required": "新增前滚50+；绑定可信具体session ID、tenant/user/subject及credential/session/authorization版本与期限/撤销/first-only状态，必要account/session/grant/tenant锁与现有改密撤销顺序一致。实际写事务复检，覆盖并发撤销/改密/停用/过期先提交后拒绝，保留最小职责/FORCE RLS。"
+    },
+    {
+      "id": "R2",
+      "priority": 1,
+      "file": "internal/investigation/assistant_v3.go",
+      "line": 55,
+      "title": "原生审计授权分支被旧表检查提前拒绝，授权摘要也缺版本",
+      "detail": "AuditScopeTx在检测NativeSession之前执行platform.assistant_lock_audit_authority；migration39函数只读旧platform.role_bindings。原生无旧绑定时返回false，65行新增分支不能运行。即使移除阻断，AuthorizationRevision只hash tenant revision+subject，不含native authorizationVersion/grant版本，授权撤销再授予不改变摘要。",
+      "proof": "同一只读真实API-duty SQL探针返回authorizeNativeRole=true、assistant_lock_audit_authority=false；源码55行在native判断前直接ErrDenied。",
+      "required": "按可信身份来源分派，原生无旧表依赖；授权摘要绑定实际版本与当前授权依据，事务锁/后续Worker复检不丢身份来源。补真实原生正例、旧身份正例和撤销/重新授予后的摘要/Job拒绝回归，不降级权限。"
+    },
+    {
+      "id": "R3",
+      "priority": 2,
+      "file": "web/src/layout/AppShell.tsx",
+      "line": 245,
+      "title": "退出撤销失败仍被静默吞掉",
+      "detail": "signOut捕获logout异常却不设置任何用户反馈；AuthProvider先expireIdentity立即跳走，logout失败也未保存error。旧Cookie若未被服务器清除，刷新会恢复身份，用户却看不到撤销未确认或重试入口。注释声称错误已surfaced、shell等待撤销均不符合实际调用顺序。",
+      "required": "保持立即清本地身份/取消旧请求；显示准确的服务端撤销未确认状态与受控重试，不吞错或让迟到logout污染新身份。测试超时/500/断网、重复点击、失败后reload、重新登录后的迟到退出。不要只改注释或改为继续保留旧身份等待服务端。"
+    },
+    {
+      "id": "R4",
+      "priority": 2,
+      "file": "docs/plans/ui-v12-replication-20261021/evidence/preview-r2/auth-browser.mjs",
+      "line": 93,
+      "title": "浏览器脚本记录关键授权结果却不作断言，证据版本范围需收口",
+      "detail": "adminClusters、operatorOverview、legacyBindings只写result，没有断言200/403/0，未来即使权限退化仍可能status PASS。视觉实际consideredPixels=1363300，report/acceptance/result部分仍称1365851。新增scope49仍引用schema46重启证据并称same schema；result缺实际API/Web source及binary版本绑定，tested-source未同步本轮。SL-001整六项pass不能代替缺失首次改密/429/异常撤销等逐状态证据。",
+      "required": "对200/403/0及关键版本/错误语义显式断言；用独立测试身份/组织/实例验证first-only、429与失败路径，不能以尚未实现用户API当不可创建隔离测试身份的永久阻塞。同步合同/映射/进度/tested-source和真实制品摘要，修正分母，标明历史证据适用范围，未实测维度不通过。"
+    }
+  ],
+  "scope_remaining": [
+    "P2-02首改密补充视觉/429/退出异常等未全部收尾。",
+    "P2-03 MFA/恢复/真实step-up完全未实现，无需重规划但必须继续。",
+    "P2-04用户生命周期/授权变更/历史映射、P2-05全栈冷启动及P3样板未实现。"
+  ],
+  "remote_probe": {
+    "host": "mssc-direct",
+    "database": "task-only15452/schema49",
+    "mutations": "none; SELECT functions inside rolled-back transaction; no credential material printed",
+    "session_was_revoked": true,
+    "issued_session_version": 9,
+    "current_account_session_version": 10,
+    "authorize_native_role": true,
+    "legacy_audit_authority_fence": false
+  },
+  "checks": [
+    {
+      "command": "go test ./internal/authz ./internal/source ./internal/tenant ./internal/configregistry ./internal/action ./internal/investigation ./internal/httpapi ./internal/app -count=1",
+      "result": "PASS; tenant has no test files",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-preview-r2-review-go.log"
+    },
+    {
+      "command": "vitest native_fetch_login/native_authprovider/native_auth",
+      "result": "19 PASS",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-preview-r2-review-web.log"
+    },
+    {
+      "command": "go test ./test/contract -count=1",
+      "result": "PASS",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-preview-r2-review-contract.log"
+    }
+  ]
+}

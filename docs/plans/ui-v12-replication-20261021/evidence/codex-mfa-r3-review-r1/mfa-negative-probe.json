@@ -1,0 +1,16 @@
+{
+  "scope": "independent15453; transaction rolled back; only proof lifetime extended to isolate revocation, one synthetic recovery challenge inserted; no secrets accessed",
+  "snapshot": {
+    "tenant_id": "2e56e676-e525-46aa-94c0-cfdddfb14cb7",
+    "user_id": "01a16305-5406-74fa-8351-4210e2e8dea1",
+    "session_id": "01a16305-59ec-72a2-82c6-590dd8b36f22",
+    "step_up_ref": "01a16305-5b07-7acc-b47a-5f8b1dff97b5",
+    "operation": "mfa_enrollment",
+    "av": 1,
+    "cv": 1,
+    "sv": 1,
+    "current_sv": 2,
+    "revoked": true
+  },
+  "result": "BEGIN\nUPDATE 1\nINSERT 0 1\nSET\nSET\n2e56e676-e525-46aa-94c0-cfdddfb14cb7\n{\"revoked_session_step_up_recheck\" : false}\n0\n0\n0\n0\n0\n0\n0\nRESET\n{\"attempts_after_seven_bad_recovery_codes\" : 0, \"revision\" : 1, \"state\" : \"pending\", \"limit\" : 5}\nROLLBACK\n"
+}

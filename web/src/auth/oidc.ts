@@ -72,13 +72,13 @@ export async function login(
       : {}),
   });
 }
-export function safeReturnTo(value: unknown): string {
+export function safeReturnTo(value: unknown, fallback = "/overview"): string {
   return typeof value === "string" &&
     value.startsWith("/") &&
     !value.startsWith("//") &&
     !value.includes("\\")
     ? value
-    : "/overview";
+    : fallback;
 }
 export async function restore(): Promise<User | null> {
   const m = await getManager();

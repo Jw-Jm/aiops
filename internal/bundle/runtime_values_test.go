@@ -23,7 +23,7 @@ func TestInstallerRejectsMissingRuntimeBootstrapBeforeImport(t *testing.T) {
 	p.Components["seaweedfs"] = profile.ResolvedComponent{Mode: "bundled", Endpoint: "https://archive.ops-system.svc:8333"}
 	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, func(context.Context, string, ...string) ([]byte, error) {
 		return []byte(`{"data":{}}`), nil
-	}); err == nil {
+	}, nil); err == nil {
 		t.Fatal("missing independent OpenBao CA and archive bucket accepted")
 	}
 }
@@ -51,7 +51,7 @@ func TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust(t *testing.T)
 		}
 		return json.Marshal(map[string]any{"data": data})
 	}
-	values, err := platformRuntimeValues(context.Background(), "ops-system", p, run)
+	values, err := platformRuntimeValues(context.Background(), "ops-system", p, run, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,18 +63,45 @@ func TestRuntimeBootstrapBindsExternalEndpointsAndIndependentTrust(t *testing.T)
 	for _, key := range []string{"openbao-ca.pem", "oidc-ca.pem", "archive-ca.pem", "registry-trust.json", "archive-bucket"} {
 		old := data[key]
 		data[key] = "invalid_"
-		if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run); err == nil {
+		if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run, nil); err == nil {
 			t.Errorf("invalid %s accepted", key)
 		}
 		data[key] = old
 	}
 	delete(data, "oidc-ca.pem")
-	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run); err == nil {
+	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run, nil); err == nil {
 		t.Fatal("scratch API accepted TLS issuer without independently supplied trust")
 	}
 	data["oidc-ca.pem"] = ca
+	business := readBusinessTest(t, nativeBusinessDocument())
+	p.Components["keycloak"] = profile.ResolvedComponent{Mode: "disabled"}
+	data["oidc-ca.pem"] = "unused invalid legacy trust"
+	values, err = platformRuntimeValues(context.Background(), "ops-system", p, run, &business)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if values["humanAuthMode"] != "native" || values["oidcIssuerURL"] != nil || values["oidcCABundle"] != nil {
+		t.Fatal("native runtime retained an OIDC dependency")
+	}
+	if got := values["nativeAuth"].(map[string]any); got["tenantId"] != "11111111-1111-4111-8111-111111111111" || got["mfaTransitKey"] != "ops-native-mfa" {
+		t.Fatalf("native identity binding lost: %v", got)
+	}
+	delete(data, "oidc-ca.pem")
+	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run, &business); err != nil {
+		t.Fatal("native runtime requires unused OIDC trust:", err)
+	}
+	old := data["openbao-ca.pem"]
+	delete(data, "openbao-ca.pem")
+	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run, &business); err == nil {
+		t.Fatal("native runtime accepted missing independent OpenBao trust")
+	}
+	data["openbao-ca.pem"] = old
+	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run, nil); err == nil {
+		t.Fatal("legacy runtime accepted missing OIDC trust")
+	}
+	data["oidc-ca.pem"] = ca
 	p.Components["keycloak"] = profile.ResolvedComponent{Mode: "external", Endpoint: "http://keycloak.identity.svc:8080"}
-	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run); err == nil {
+	if _, err := platformRuntimeValues(context.Background(), "ops-system", p, run, nil); err == nil {
 		t.Fatal("in-cluster plaintext OIDC accepted")
 	}
 }

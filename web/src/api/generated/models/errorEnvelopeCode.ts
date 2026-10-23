@@ -11,6 +11,7 @@ export type ErrorEnvelopeCode = typeof ErrorEnvelopeCode[keyof typeof ErrorEnvel
 export const ErrorEnvelopeCode = {
   INVALID_ARGUMENT: 'INVALID_ARGUMENT',
   UNAUTHENTICATED: 'UNAUTHENTICATED',
+  CURRENT_PASSWORD_INVALID: 'CURRENT_PASSWORD_INVALID',
   FORBIDDEN: 'FORBIDDEN',
   NOT_FOUND: 'NOT_FOUND',
   CONFLICT: 'CONFLICT',

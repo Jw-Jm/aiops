@@ -74,6 +74,410 @@ components:
       properties:
         data: {$ref: '#/components/schemas/AuthSessionV1'}
         requestId: {type: string}
+    NativeLoginRequestV1:
+      type: object
+      additionalProperties: false
+      required: [loginName, password]
+      properties:
+        loginName: {type: string, minLength: 1, maxLength: 128, pattern: '^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$'}
+        password: {type: string, minLength: 12, maxLength: 256, writeOnly: true}
+        deviceLabel: {type: string, minLength: 1, maxLength: 128}
+    NativePasswordChangeRequestV1:
+      type: object
+      additionalProperties: false
+      required: [currentPassword, newPassword, expectedCredentialVersion]
+      properties:
+        currentPassword: {type: string, minLength: 12, maxLength: 256, writeOnly: true}
+        newPassword: {type: string, minLength: 12, maxLength: 256, writeOnly: true}
+        expectedCredentialVersion: {type: integer, minimum: 1, maximum: 2147483647}
+    NativeLogoutRequestV1:
+      type: object
+      additionalProperties: false
+      required: [expectedSessionVersion, reason]
+      properties:
+        expectedSessionVersion: {type: integer, minimum: 1, maximum: 2147483647}
+        reason: {type: string, minLength: 1, maxLength: 512}
+    IdentityScopeV1:
+      type: object
+      additionalProperties: false
+      required: [clusterUids, namespaces]
+      properties:
+        clusterUids: {type: array, maxItems: 50, uniqueItems: true, items: {type: string, minLength: 1, maxLength: 128}}
+        namespaces: {type: array, maxItems: 200, uniqueItems: true, items: {type: string, minLength: 1, maxLength: 63, pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'}}
+    IdentityRoleGrantV1:
+      type: object
+      additionalProperties: false
+      required: [bindingId, userId, tenantId, role, scope, authorizationVersion, grantedAt, revokedAt]
+      properties:
+        bindingId: {type: string, format: uuid}
+        userId: {type: string, format: uuid}
+        tenantId: {type: string, format: uuid}
+        role: {type: string, enum: [operator, platform_admin]}
+        scope: {$ref: '#/components/schemas/IdentityScopeV1'}
+        authorizationVersion: {type: integer, minimum: 1, maximum: 2147483647}
+        grantedAt: {type: string, format: date-time}
+        revokedAt: {type: [string, 'null'], format: date-time}
+    IdentityCsrfV1:
+      type: object
+      additionalProperties: false
+      required: [headerName, token, cookieName, sameSite]
+      properties:
+        headerName: {type: string, const: X-CSRF-Token}
+        token: {type: string, minLength: 16, maxLength: 512}
+        cookieName: {type: string, const: __Host-ops-session}
+        sameSite: {type: string, const: Strict}
+    IdentitySessionRevocationV1:
+      type: object
+      additionalProperties: false
+      required: [credentialVersion, sessionVersion, authorizationVersion]
+      properties:
+        credentialVersion: {type: integer, minimum: 1, maximum: 2147483647}
+        sessionVersion: {type: integer, minimum: 1, maximum: 2147483647}
+        authorizationVersion: {type: integer, minimum: 1, maximum: 2147483647}
+    NativeSessionViewV1:
+      type: object
+      additionalProperties: false
+      required: [sessionRef, subject, tenantId, mode, authMethods, acr, issuedAt, absoluteExpiresAt, idleExpiresAt, mustChangePassword, accountRevision, revocation, csrf, authorization, authorizedClusters, administratorState]
+      properties:
+        sessionRef: {type: string, minLength: 1, maxLength: 128}
+        accountRevision: {type: integer, minimum: 1, maximum: 2147483647}
+        subject: {type: string, minLength: 1, maxLength: 256}
+        tenantId: {type: string, format: uuid}
+        mode: {type: string, enum: [full, first_password_only]}
+        authMethods: {type: array, minItems: 1, maxItems: 3, uniqueItems: true, items: {type: string, enum: [password, totp, recovery_code]}}
+        acr: {type: string, enum: [urn:ops:loa:1, urn:ops:loa:2]}
+        issuedAt: {type: string, format: date-time}
+        absoluteExpiresAt: {type: string, format: date-time}
+        idleExpiresAt: {type: string, format: date-time}
+        mustReenrollMfa: {type: boolean, description: "Only MFA setup and logout are permitted until a new factor is confirmed."}
+        mustChangePassword: {type: boolean}
+        revocation: {$ref: '#/components/schemas/IdentitySessionRevocationV1'}
+        csrf: {$ref: '#/components/schemas/IdentityCsrfV1'}
+        authorization:
+          type: object
+          additionalProperties: false
+          required: [grants]
+          properties:
+            grants: {type: array, maxItems: 50, items: {$ref: '#/components/schemas/IdentityRoleGrantV1'}}
+        authorizedClusters:
+          type: array
+          maxItems: 100
+          items: {$ref: '#/components/schemas/AuthorizedClusterV1'}
+        administratorState:
+          type: object
+          additionalProperties: false
+          required: [activeAdministrators, isAdministrator, isLastActiveAdministrator]
+          properties:
+            activeAdministrators: {type: integer, minimum: 0, maximum: 1000}
+            isAdministrator: {type: boolean}
+            isLastActiveAdministrator: {type: boolean}
+    NativeLoginSuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/NativeSessionViewV1'}
+        requestId: {type: string}
+    NativeLogoutSuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/IdentitySessionRevocationV1'}
+        requestId: {type: string}
+    NativeMFAStatusV1:
+      type: object
+      additionalProperties: false
+      required: [state, enrollmentId, confirmedAt, recoveryCodesRemaining, method]
+      properties:
+        state: {type: string, enum: [none, pending_confirmation, confirmed, expired, revoked, reset_required]}
+        enrollmentId: {type: string, format: uuid, nullable: true}
+        confirmedAt: {type: string, format: date-time, nullable: true}
+        recoveryCodesRemaining: {type: integer, minimum: 0, maximum: 10}
+        method: {type: string, enum: [totp]}
+    NativeMFAStatusSuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/NativeMFAStatusV1'}
+        requestId: {type: string}
+    NativeMFAEnrollmentCreateRequestV1:
+      type: object
+      additionalProperties: false
+      required: [method, expectedCredentialVersion]
+      properties:
+        method: {type: string, enum: [totp]}
+        expectedCredentialVersion: {type: integer, minimum: 1, maximum: 2147483647}
+    NativeMFAEnrollmentCreatedV1:
+      type: object
+      additionalProperties: false
+      required: [enrollmentId, method, state, otpauthUri, createdAt, expiresAt]
+      properties:
+        enrollmentId: {type: string, format: uuid}
+        method: {type: string, enum: [totp]}
+        state: {type: string, enum: [pending_confirmation]}
+        otpauthUri: {type: string, minLength: 1, maxLength: 2048, pattern: '^otpauth://totp/'}
+        createdAt: {type: string, format: date-time}
+        expiresAt: {type: string, format: date-time}
+    NativeMFAEnrollmentCreatedSuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/NativeMFAEnrollmentCreatedV1'}
+        requestId: {type: string}
+    NativeMFAEnrollmentViewV1:
+      type: object
+      additionalProperties: false
+      required: [enrollmentId, method, state, createdAt, expiresAt, confirmedAt]
+      properties:
+        enrollmentId: {type: string, format: uuid}
+        method: {type: string, enum: [totp]}
+        state: {type: string, enum: [pending_confirmation, confirmed, expired]}
+        createdAt: {type: string, format: date-time}
+        expiresAt: {type: string, format: date-time}
+        confirmedAt: {type: string, format: date-time, nullable: true}
+    NativeMFAEnrollmentViewSuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/NativeMFAEnrollmentViewV1'}
+        requestId: {type: string}
+    NativeMFAEnrollmentVerifyRequestV1:
+      type: object
+      additionalProperties: false
+      required: [totpCode, expectedEnrollmentRevision, stepUp]
+      properties:
+        totpCode: {type: string, pattern: '^[0-9]{6}$'}
+        expectedEnrollmentRevision: {type: integer, minimum: 1, maximum: 2147483647}
+        stepUp:
+          type: object
+          additionalProperties: false
+          required: [challengeId, sessionRef]
+          properties:
+            challengeId: {type: string, format: uuid}
+            sessionRef: {type: string, minLength: 1, maxLength: 128}
+    NativeMFAEnrollmentVerifyResultV1:
+      type: object
+      additionalProperties: false
+      required: [enrollmentId, state, confirmedAt, credentialVersion, recoveryCodes]
+      properties:
+        enrollmentId: {type: string, format: uuid}
+        state: {type: string, enum: [confirmed]}
+        confirmedAt: {type: string, format: date-time}
+        credentialVersion: {type: integer, minimum: 1, maximum: 2147483647}
+        recoveryCodes:
+          type: object
+          additionalProperties: false
+          required: [codes]
+          properties:
+            codes:
+              type: array
+              minItems: 10
+              maxItems: 10
+              items: {type: string, pattern: '^[A-Z0-9]{4}-[A-Z0-9]{4}$'}
+    NativeMFAEnrollmentVerifySuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/NativeMFAEnrollmentVerifyResultV1'}
+        requestId: {type: string}
+    NativeCommandStepUpBindingV1:
+      type: object
+      additionalProperties: false
+      required: [assessmentId, riskAssessmentVersion, executionRequestDigest, policyVersion, incidentId, executionProfileId, executionProfileVersion, actualCommandDigest]
+      properties:
+        assessmentId: {type: string, format: uuid}
+        riskAssessmentVersion: {type: string}
+        executionRequestDigest: {type: string, pattern: '^sha256:[a-f0-9]{64}$'}
+        policyVersion: {type: string}
+        incidentId: {type: string, format: uuid}
+        executionProfileId: {type: string, format: uuid}
+        executionProfileVersion: {type: integer, minimum: 1}
+        actualCommandDigest: {type: string, pattern: '^sha256:[a-f0-9]{64}$'}
+    NativeIdentityAccountViewV1: {"type": "object", "additionalProperties": false, "properties": {"userId": {"type": "string", "format": "uuid"}, "loginName": {"$ref": "#/components/schemas/NativeIdentityLoginNameV1"}, "displayName": {"$ref": "#/components/schemas/NativeIdentityDisplayNameV1"}, "status": {"enum": ["active", "disabled", "archived"]}, "mustChangePassword": {"type": "boolean"}, "subject": {"type": "string", "minLength": 1, "maxLength": 256}, "revision": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}, "revocation": {"$ref": "#/components/schemas/NativeIdentitySessionRevocationV1"}, "roleGrants": {"type": "array", "maxItems": 50, "items": {"$ref": "#/components/schemas/NativeIdentityRoleGrantViewV1"}}, "administratorState": {"type": "object", "additionalProperties": false, "properties": {"activeAdministrators": {"type": "integer", "minimum": 1, "maximum": 1000}, "isAdministrator": {"type": "boolean"}, "isLastActiveAdministrator": {"type": "boolean"}}, "required": ["activeAdministrators", "isAdministrator", "isLastActiveAdministrator"]}}, "required": ["userId", "loginName", "displayName", "status", "mustChangePassword", "subject", "revision", "revocation", "roleGrants", "administratorState"]}
+    NativeIdentityLoginNameV1: {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"}
+    NativeIdentityDisplayNameV1: {"type": "string", "minLength": 1, "maxLength": 256}
+    NativeIdentityRevisionV1: {"type": "integer", "minimum": 1, "maximum": 2147483647}
+    NativeIdentitySessionRevocationV1: {"type": "object", "additionalProperties": false, "properties": {"credentialVersion": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}, "sessionVersion": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}, "authorizationVersion": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}}, "required": ["credentialVersion", "sessionVersion", "authorizationVersion"]}
+    NativeIdentityRoleGrantViewV1: {"type": "object", "additionalProperties": false, "properties": {"bindingId": {"type": "string", "format": "uuid"}, "userId": {"type": "string", "format": "uuid"}, "tenantId": {"type": "string", "format": "uuid"}, "role": {"enum": ["operator", "platform_admin"]}, "scope": {"$ref": "#/components/schemas/NativeIdentityScopeV1"}, "authorizationVersion": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}, "grantedAt": {"$ref": "#/components/schemas/NativeIdentityTimestampV1"}, "revokedAt": {"$ref": "#/components/schemas/NativeIdentityOptionalTimestampV1"}}, "required": ["bindingId", "userId", "tenantId", "role", "scope", "authorizationVersion", "grantedAt", "revokedAt"]}
+    NativeIdentityScopeV1: {"type": "object", "additionalProperties": false, "properties": {"clusterUids": {"type": "array", "maxItems": 50, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}}, "namespaces": {"type": "array", "maxItems": 200, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 63, "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"}}}, "required": ["clusterUids", "namespaces"]}
+    NativeIdentityTimestampV1: {"type": "string", "format": "date-time"}
+    NativeIdentityOptionalTimestampV1: {"type": "string", "format": "date-time", "nullable": true}
+    NativeIdentityAccountCreateRequestV1: {"type": "object", "additionalProperties": false, "description": "Creation takes a login name, display name and initial password. The server always forces a password change on first sign-in; there is no email or one-time-link delivery flow. Tenant, subject and roles are assigned separately by the server and are unknown fields here.", "properties": {"loginName": {"$ref": "#/components/schemas/NativeIdentityLoginNameV1"}, "displayName": {"$ref": "#/components/schemas/NativeIdentityDisplayNameV1"}, "initialPassword": {"$ref": "#/components/schemas/NativeIdentityPasswordV1"}}, "required": ["loginName", "displayName", "initialPassword"]}
+    NativeIdentityPasswordV1: {"type": "string", "minLength": 12, "maxLength": 256, "writeOnly": true}
+    NativeIdentityAccountUpdateRequestV1: {"type": "object", "additionalProperties": false, "description": "A profile edit and a status change are independent intents. The last-administrator decision is made by the service inside the write transaction and returned as a conflict projection; no client-supplied administrator count, target flag or guard assertion is accepted.", "properties": {"displayName": {"$ref": "#/components/schemas/NativeIdentityDisplayNameV1"}, "status": {"enum": ["active", "disabled"]}, "expectedRevision": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}}, "required": ["expectedRevision"], "anyOf": [{"required": ["displayName"]}, {"required": ["status"]}]}
+    NativeIdentityAdminPasswordResetRequestV1: {"type": "object", "additionalProperties": false, "description": "Administrator password reset is a separate operation from profile/status editing. The target user comes from the path; the body carries the new initial password and both optimistic revisions. The server forces a change on next sign-in and revokes sessions.", "properties": {"initialPassword": {"$ref": "#/components/schemas/NativeIdentityPasswordV1"}, "expectedRevision": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}, "expectedCredentialVersion": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}}, "required": ["initialPassword", "expectedRevision", "expectedCredentialVersion"]}
+    NativeIdentityAdminPasswordResetResultV1: {"type": "object", "additionalProperties": false, "description": "The reset bumps the credential and session versions and forces a first-password change. sessionsRevoked may be zero if the target had no active sessions.", "properties": {"userId": {"type": "string", "format": "uuid"}, "passwordState": {"enum": ["change_required"]}, "credentialVersion": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}, "sessionsRevoked": {"type": "integer", "minimum": 0, "maximum": 1000}, "revocation": {"$ref": "#/components/schemas/NativeIdentitySessionRevocationV1"}, "auditRecordId": {"type": "string", "format": "uuid"}}, "required": ["userId", "passwordState", "credentialVersion", "sessionsRevoked", "revocation", "auditRecordId"]}
+    NativeIdentitySessionRevocationRequestV1: {"type": "object", "additionalProperties": false, "properties": {"expectedSessionVersion": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}, "reason": {"type": "string", "minLength": 1, "maxLength": 512}}, "required": ["expectedSessionVersion", "reason"]}
+    NativeIdentityRoleGrantStatusRequestV1: {"type": "object", "additionalProperties": false, "properties": {"userId": {"type": "string", "format": "uuid"}, "expectedRevision": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}, "status": {"enum": ["disabled"]}, "reason": {"type": "string", "minLength": 5, "maxLength": 512}}, "required": ["userId", "expectedRevision", "status", "reason"], "description": "Native status change revokes one current binding at the user authorization version. Re-enabling uses a new explicit roleGrantRequest; legacy subject bindings are never mutated."}
+    NativeAccountSuccessV1: {"type": "object", "required": ["data", "requestId"], "properties": {"data": {"$ref": "#/components/schemas/NativeIdentityAccountViewV1"}, "requestId": {"type": "string"}}}
+    NativeAdminPasswordResetSuccessV1: {"type": "object", "required": ["data", "requestId"], "properties": {"data": {"$ref": "#/components/schemas/NativeIdentityAdminPasswordResetResultV1"}, "requestId": {"type": "string"}}}
+    NativeAdminRevocationSuccessV1: {"type": "object", "required": ["data", "requestId"], "properties": {"data": {"$ref": "#/components/schemas/NativeIdentitySessionRevocationV1"}, "requestId": {"type": "string"}}}
+    NativeUsersPageV1: {"type":"object","required":["data","meta","requestId"],"properties":{"data":{"type":"array","items":{"$ref":"#/components/schemas/NativeIdentityAccountViewV1"}},"meta":{"type":"object","properties":{"nextCursor":{"type":"string"}}},"requestId":{"type":"string"}}}
+    NativeIdentitySubjectMappingRequestV1: {"type": "object", "additionalProperties": false, "description": "Historical subjects migrate only through an explicit, evidence-backed mapping. Matching by login name or display name is not part of this contract.", "properties": {"legacySubject": {"type": "string", "minLength": 1, "maxLength": 256}, "userId": {"type": "string", "format": "uuid"}, "basis": {"enum": ["verified_inventory"]}, "evidenceDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "expectedUserRevision": {"$ref": "#/components/schemas/NativeIdentityRevisionV1"}}, "required": ["legacySubject", "userId", "basis", "evidenceDigest", "expectedUserRevision"]}
+    NativeIdentitySubjectMappingViewV1: {"type": "object", "additionalProperties": false, "description": "The mapping view carries the mapped historical subject and the evidence it was verified against. It has no role fields: roles are never inherited from a name.", "properties": {"mappingId": {"type": "string", "format": "uuid"}, "legacySubject": {"type": "string", "minLength": 1, "maxLength": 256}, "userId": {"type": "string", "format": "uuid"}, "tenantId": {"type": "string", "format": "uuid"}, "basis": {"enum": ["verified_inventory"]}, "evidenceDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "mappedAt": {"$ref": "#/components/schemas/NativeIdentityTimestampV1"}}, "required": ["mappingId", "legacySubject", "userId", "tenantId", "basis", "evidenceDigest", "mappedAt"]}
+    NativeSubjectMappingSuccessV1: {"type": "object", "required": ["data", "requestId"], "properties": {"data": {"$ref": "#/components/schemas/NativeIdentitySubjectMappingViewV1"}, "requestId": {"type": "string"}}}
+    NativeSubjectMappingsPageV1: {"type": "object", "required": ["data", "meta", "requestId"], "properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/NativeIdentitySubjectMappingViewV1"}}, "meta": {"type": "object", "properties": {"nextCursor": {"type": "string", "format": "uuid"}}}, "requestId": {"type": "string"}}}
+    NativeStepUpTargetV1:
+      type: object
+      additionalProperties: true
+      description: Operation target. administrative_write binds a proposed mutation without inventing an object ID or revision; service revision/version checks still apply. Native administrative writes additionally bind write.method, write.path and write.bodyDigest to the exact HTTP request. The verified challenge UUID is sent in X-Ops-Step-Up-Challenge; the server rechecks it inside the business transaction.
+      required: [kind]
+      properties:
+        kind: {type: string, enum: [k8s_object, user, mfa_enrollment, source_registration, cluster_registration, registry_object, execution_profile, administrative_write]}
+        revision: {type: integer, minimum: 1, maximum: 2147483647}
+    NativeStepUpChallengeCreateRequestV1:
+      type: object
+      additionalProperties: false
+      required: [operation, target, expectedSessionVersion]
+      properties:
+        operation: {type: string, enum: [command_execution, user_administration, mfa_enrollment, mfa_reset, recovery_code_regenerate, source_administration, cluster_administration, registry_administration, execution_profile_administration]}
+        command: {$ref: '#/components/schemas/NativeCommandStepUpBindingV1'}
+        target: {$ref: '#/components/schemas/NativeStepUpTargetV1'}
+        expectedSessionVersion: {type: integer, minimum: 1, maximum: 2147483647}
+    NativeStepUpChallengeViewV1:
+      type: object
+      additionalProperties: false
+      required: [challengeId, operation, target, bindingDigest, requiredMethods, completedMethods, state, revision, createdAt, expiresAt, verifiedAt, attemptLimit, remainingAttempts]
+      properties:
+        challengeId: {type: string, format: uuid}
+        operation: {type: string}
+        command: {$ref: '#/components/schemas/NativeCommandStepUpBindingV1'}
+        target: {$ref: '#/components/schemas/NativeStepUpTargetV1'}
+        bindingDigest: {type: string}
+        requiredMethods: {type: array, minItems: 2, maxItems: 2, items: {type: string, enum: [password, totp]}}
+        completedMethods: {type: array, maxItems: 2, items: {type: string, enum: [password, totp]}}
+        state: {type: string, enum: [pending, verified, expired, used, revoked]}
+        revision: {type: integer, minimum: 1, maximum: 2147483647}
+        createdAt: {type: string, format: date-time}
+        expiresAt: {type: string, format: date-time}
+        verifiedAt: {type: string, format: date-time, nullable: true}
+        attemptLimit: {type: integer, minimum: 1, maximum: 5}
+        remainingAttempts: {type: integer, minimum: 0, maximum: 5}
+    NativeStepUpChallengeSuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/NativeStepUpChallengeViewV1'}
+        requestId: {type: string}
+    NativeStepUpVerifyRequestV1:
+      type: object
+      additionalProperties: false
+      required: [method, credential, expectedChallengeRevision]
+      properties:
+        method: {type: string, enum: [password, totp]}
+        credential: {type: string, minLength: 1, maxLength: 512, writeOnly: true}
+        expectedChallengeRevision: {type: integer, minimum: 1, maximum: 2147483647}
+    NativeStepUpSessionV1:
+      type: object
+      additionalProperties: false
+      required: [sessionRef, operation, bindingDigest, verifiedMethods, absoluteExpiresAt, idleExpiresAt]
+      properties:
+        sessionRef: {type: string}
+        operation: {type: string}
+        bindingDigest: {type: string}
+        verifiedMethods: {type: array, minItems: 2, maxItems: 2, items: {type: string, enum: [password, totp]}}
+        absoluteExpiresAt: {type: string, format: date-time}
+        idleExpiresAt: {type: string, format: date-time}
+    NativeStepUpVerifyResultV1:
+      type: object
+      additionalProperties: false
+      required: [verified, method, challengeState, revision, completedMethods, acr, stepUpSession, verifiedAt, failureCode]
+      properties:
+        remainingAttempts: {type: integer, minimum: 0, maximum: 5}
+        verified: {type: boolean}
+        method: {type: string, enum: [password, totp]}
+        challengeState: {type: string, enum: [pending, verified, expired, used, revoked]}
+        revision: {type: integer, minimum: 1, maximum: 2147483647}
+        completedMethods: {type: array, maxItems: 2, items: {type: string, enum: [password, totp]}}
+        acr: {type: string, enum: [urn:ops:loa:1, urn:ops:loa:2]}
+        stepUpSession:
+          anyOf:
+          - {$ref: '#/components/schemas/NativeStepUpSessionV1'}
+          - {type: 'null'}
+        verifiedAt: {type: string, format: date-time, nullable: true}
+        failureCode: {type: string, nullable: true, enum: [invalid_credential, expired, already_used, too_many_attempts, revoked, null]}
+    NativeStepUpVerifySuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/NativeStepUpVerifyResultV1'}
+        requestId: {type: string}
+    NativeRecoveryVerifyRequestV1:
+      type: object
+      additionalProperties: false
+      required: [challengeId, recoveryCode, expectedChallengeRevision]
+      properties:
+        challengeId: {type: string, format: uuid}
+        recoveryCode: {type: string, pattern: '^[A-Z0-9]{4}-[A-Z0-9]{4}$'}
+        expectedChallengeRevision: {type: integer, minimum: 1, maximum: 2147483647}
+    NativeRecoveryVerifyResultV1:
+      type: object
+      additionalProperties: false
+      required: [verified, method, acr, sessionsRevoked, recoveryCodesRemaining, mustReenrollMfa, stepUpSession]
+      properties:
+        challengeRevision: {type: integer, minimum: 1}
+        challengeState: {type: string, enum: [pending, verified, used, revoked, expired]}
+        verified: {type: boolean}
+        method: {type: string, enum: [recovery_code]}
+        acr: {type: string, enum: [urn:ops:loa:1]}
+        sessionsRevoked: {type: integer, minimum: 0, maximum: 1000}
+        recoveryCodesRemaining: {type: integer, minimum: 0, maximum: 10}
+        mustReenrollMfa: {type: boolean}
+        stepUpSession: {type: 'null'}
+    NativeRecoveryVerifySuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/NativeRecoveryVerifyResultV1'}
+        requestId: {type: string}
+    NativeAdminMFAResetRequestV1:
+      type: object
+      additionalProperties: false
+      required: [userId, confirmLoginName, reason, expectedUserRevision, expectedCredentialVersion, stepUp]
+      properties:
+        userId: {type: string, format: uuid}
+        confirmLoginName: {type: string, minLength: 1, maxLength: 128}
+        reason: {type: string, minLength: 5, maxLength: 512}
+        expectedUserRevision: {type: integer, minimum: 1, maximum: 2147483647}
+        expectedCredentialVersion: {type: integer, minimum: 1, maximum: 2147483647}
+        stepUp:
+          type: object
+          additionalProperties: false
+          required: [challengeId, sessionRef]
+          properties:
+            challengeId: {type: string, format: uuid}
+            sessionRef: {type: string, minLength: 1, maxLength: 128}
+    NativeWriteRecheckV1:
+      type: object
+      additionalProperties: false
+      required: [writeAttemptId, writeOperation, checkedAt, result, sessionDigest, authorizationVersion, credentialVersion, objectDigest, actualCommandDigest]
+      properties:
+        writeAttemptId: {type: string, format: uuid}
+        writeOperation: {type: string, enum: [command_execution, user_administration, mfa_reset, source_administration, cluster_administration, registry_administration, execution_profile_administration]}
+        checkedAt: {type: string, format: date-time}
+        result: {type: string, enum: [passed, failed, conflict]}
+        sessionDigest: {type: string}
+        authorizationVersion: {type: integer, minimum: 1, maximum: 2147483647}
+        credentialVersion: {type: integer, minimum: 1, maximum: 2147483647}
+        objectDigest: {type: string}
+        actualCommandDigest: {type: string, nullable: true}
+    NativeAdminMFAResetResultV1:
+      type: object
+      additionalProperties: false
+      required: [userId, mfaState, credentialVersion, sessionsRevoked, revocation, writeRecheck, auditRecordId]
+      properties:
+        userId: {type: string, format: uuid}
+        mfaState: {type: string, enum: [reset_required]}
+        credentialVersion: {type: integer, minimum: 1, maximum: 2147483647}
+        sessionsRevoked: {type: integer, minimum: 0, maximum: 1000}
+        revocation: {$ref: '#/components/schemas/IdentitySessionRevocationV1'}
+        writeRecheck: {$ref: '#/components/schemas/NativeWriteRecheckV1'}
+        auditRecordId: {type: string, format: uuid}
+    NativeAdminMFAResetSuccessV1:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {$ref: '#/components/schemas/NativeAdminMFAResetResultV1'}
+        requestId: {type: string}
     ResourceGraphV2:
       type: object
       additionalProperties: false
@@ -833,6 +1237,7 @@ components:
           enum:
           - INVALID_ARGUMENT
           - UNAUTHENTICATED
+          - CURRENT_PASSWORD_INVALID
           - FORBIDDEN
           - NOT_FOUND
           - CONFLICT
@@ -4272,6 +4677,10 @@ components:
           type: string
           format: byte
   securitySchemes:
+    NativeSessionCookie:
+      type: apiKey
+      in: cookie
+      name: __Host-ops-session
     BearerAuth:
       bearerFormat: JWT
       scheme: bearer
@@ -4301,6 +4710,84 @@ paths:
   /api/v1/assistant/query-results/{queryResultId}: {"get": {"operationId": "getAssistantQueryResult", "tags": ["Assistant"], "summary": "getAssistantQueryResult", "responses": {"200": {"description": "Authorized owner response; never cached.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AssistantQueryEnvelopeV1"}}}}, "default": {"description": "Unified error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}}}, "parameters": [{"in": "path", "name": "queryResultId", "required": true, "schema": {"type": "string", "format": "uuid"}}]}}
   /api/v1/assistant/conversations/{conversationId}/events: {"get": {"operationId": "getAssistantConversationEvents", "tags": ["Assistant"], "summary": "getAssistantConversationEvents", "responses": {"200": {"description": "Authorized owner response; never cached.", "content": {"text/event-stream": {"schema": {"$ref": "#/components/schemas/AssistantEventV1"}}}}, "default": {"description": "Unified error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}}}, "parameters": [{"in": "header", "name": "Last-Event-ID", "schema": {"type": "string"}}, {"in": "path", "name": "conversationId", "required": true, "schema": {"type": "string", "format": "uuid"}}], "x-sse-event-envelope": "#/components/schemas/AssistantEventV1"}}
 # assistant-generated-paths-end
+  /api/v1/auth/login:
+    post:
+      operationId: nativeLogin
+      x-idempotency: non-idempotent
+      summary: Create a native server session from a fixed deployment organization login.
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NativeLoginRequestV1'}
+      responses:
+        '201':
+          description: Native session created. The opaque token is HttpOnly cookie material only.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeLoginSuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  /api/v1/auth/logout:
+    post:
+      operationId: nativeLogout
+      x-idempotency: non-idempotent
+      summary: Revoke the current native server session and clear its cookie.
+      tags: [Authentication]
+      security:
+      - NativeSessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NativeLogoutRequestV1'}
+      responses:
+        '200':
+          description: Session revoked and cookie cleared. Never cached.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeLogoutSuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  /api/v1/auth/password:change:
+    post:
+      operationId: changeNativePassword
+      x-idempotency: non-idempotent
+      summary: Change the current native account password and rotate its session.
+      description: A 401 CURRENT_PASSWORD_INVALID rejects the supplied current password without invalidating the session. Other 401 errors invalidate the session.
+      tags: [Authentication]
+      security:
+      - NativeSessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NativePasswordChangeRequestV1'}
+      responses:
+        '201':
+          description: Credential rotated and prior sessions revoked. Never cached.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeLoginSuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
   /api/v1/auth/session:
     get:
       operationId: getAuthSession
@@ -4312,6 +4799,227 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/AuthSessionSuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  /api/v1/auth/mfa/status:
+    get:
+      operationId: getNativeMFAStatus
+      summary: Second-factor state of the signed-in account; never returns a provisioning secret.
+      tags: [Authentication]
+      security:
+      - NativeSessionCookie: []
+      responses:
+        '200':
+          description: Second-factor status. Never cached.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeMFAStatusSuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  /api/v1/auth/mfa/enrollments:
+    post:
+      operationId: createNativeMFAEnrollment
+      x-idempotency: non-idempotent
+      summary: Start a TOTP enrolment; the provisioning URI is returned exactly once.
+      tags: [Authentication]
+      security:
+      - NativeSessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NativeMFAEnrollmentCreateRequestV1'}
+      responses:
+        '201':
+          description: Pending enrolment with the one-time provisioning URI. Never cached.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeMFAEnrollmentCreatedSuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  /api/v1/auth/mfa/enrollments/{enrollmentId}:
+    get:
+      operationId: getNativeMFAEnrollment
+      summary: Status of one enrolment. It has no provisioning URI or secret field.
+      tags: [Authentication]
+      security:
+      - NativeSessionCookie: []
+      parameters:
+      - in: path
+        name: enrollmentId
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: Enrolment status. Never cached.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeMFAEnrollmentViewSuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  /api/v1/auth/mfa/enrollments/{enrollmentId}:verify:
+    post:
+      operationId: verifyNativeMFAEnrollment
+      x-idempotency: non-idempotent
+      summary: Confirm an enrolment with a bound password+TOTP step-up and issue the recovery codes once.
+      tags: [Authentication]
+      security:
+      - NativeSessionCookie: []
+      parameters:
+      - in: path
+        name: enrollmentId
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NativeMFAEnrollmentVerifyRequestV1'}
+      responses:
+        '200':
+          description: Confirmed enrolment and the one-time recovery code set. Never cached.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeMFAEnrollmentVerifySuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  /api/v1/auth/step-up-challenges:
+    post:
+      operationId: createNativeStepUpChallenge
+      x-idempotency: non-idempotent
+      summary: Persist a challenge bound to this session, one operation, one target and every version.
+      tags: [Authentication]
+      security:
+      - NativeSessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NativeStepUpChallengeCreateRequestV1'}
+      responses:
+        '201':
+          description: Pending challenge. The required methods are server policy. Never cached.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeStepUpChallengeSuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  /api/v1/auth/step-up-challenges/{challengeId}:verify:
+    post:
+      operationId: verifyNativeStepUpChallenge
+      x-idempotency: non-idempotent
+      summary: Submit one credential; only accumulated password+TOTP mints a LoA2 step-up session.
+      tags: [Authentication]
+      security:
+      - NativeSessionCookie: []
+      parameters:
+      - in: path
+        name: challengeId
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NativeStepUpVerifyRequestV1'}
+      responses:
+        '200':
+          description: Server-accumulated challenge state before any business write. Never cached.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeStepUpVerifySuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  /api/v1/auth/mfa/recovery-codes:verify:
+    post:
+      operationId: verifyNativeRecoveryCode
+      x-idempotency: non-idempotent
+      summary: Consume one recovery code; it restores LoA1 only, revokes sessions and forces re-enrolment.
+      tags: [Authentication]
+      security:
+      - NativeSessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NativeRecoveryVerifyRequestV1'}
+      responses:
+        '200':
+          description: Recovery result; never mints a step-up session. Never cached.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeRecoveryVerifySuccessV1'}
+        default:
+          description: Unified API error.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  /api/v1/admin/users: {"get": {"operationId": "getNativeUsers", "tags": ["Admin"], "security": [{"NativeSessionCookie": []}], "responses": {"200": {"description": "Verified native user operation; no credential material is returned.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeUsersPageV1"}}}}, "default": {"description": "Unified error. Last administrator conflict carries the server projection in details.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}}}, "parameters": [{"name": "cursor", "in": "query", "schema": {"type": "string", "format": "uuid"}}, {"name": "limit", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100}}]}, "post": {"operationId": "createNativeUser", "tags": ["Admin"], "security": [{"NativeSessionCookie": []}], "responses": {"201": {"description": "Verified native user operation; no credential material is returned.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeAccountSuccessV1"}}}}, "default": {"description": "Unified error. Last administrator conflict carries the server projection in details.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}}}, "parameters": [{"name": "Idempotency-Key", "in": "header", "required": true, "schema": {"type": "string", "minLength": 1}}, {"name": "X-Ops-Step-Up-Challenge", "in": "header", "required": true, "schema": {"type": "string", "format": "uuid"}}], "x-idempotency": "required", "x-step-up": "required", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeIdentityAccountCreateRequestV1"}}}}}}
+  /api/v1/admin/users/{userId}: {"patch": {"operationId": "updateNativeUser", "tags": ["Admin"], "security": [{"NativeSessionCookie": []}], "responses": {"200": {"description": "Verified native user operation; no credential material is returned.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeAccountSuccessV1"}}}}, "default": {"description": "Unified error. Last administrator conflict carries the server projection in details.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}}}, "parameters": [{"name": "userId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "Idempotency-Key", "in": "header", "required": true, "schema": {"type": "string", "minLength": 1}}, {"name": "X-Ops-Step-Up-Challenge", "in": "header", "required": true, "schema": {"type": "string", "format": "uuid"}}], "x-idempotency": "required", "x-step-up": "required", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeIdentityAccountUpdateRequestV1"}}}}}}
+  /api/v1/admin/users/{userId}/password:reset: {"post": {"operationId": "resetNativeUserPassword", "tags": ["Admin"], "security": [{"NativeSessionCookie": []}], "responses": {"200": {"description": "Verified native user operation; no credential material is returned.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeAdminPasswordResetSuccessV1"}}}}, "default": {"description": "Unified error. Last administrator conflict carries the server projection in details.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}}}, "parameters": [{"name": "userId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "Idempotency-Key", "in": "header", "required": true, "schema": {"type": "string", "minLength": 1}}, {"name": "X-Ops-Step-Up-Challenge", "in": "header", "required": true, "schema": {"type": "string", "format": "uuid"}}], "x-idempotency": "required", "x-step-up": "required", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeIdentityAdminPasswordResetRequestV1"}}}}}}
+  /api/v1/admin/users/{userId}/sessions:revoke: {"post": {"operationId": "revokeNativeUserSessions", "tags": ["Admin"], "security": [{"NativeSessionCookie": []}], "responses": {"200": {"description": "Verified native user operation; no credential material is returned.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeAdminRevocationSuccessV1"}}}}, "default": {"description": "Unified error. Last administrator conflict carries the server projection in details.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}}}, "parameters": [{"name": "userId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "Idempotency-Key", "in": "header", "required": true, "schema": {"type": "string", "minLength": 1}}, {"name": "X-Ops-Step-Up-Challenge", "in": "header", "required": true, "schema": {"type": "string", "format": "uuid"}}], "x-idempotency": "required", "x-step-up": "required", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeIdentitySessionRevocationRequestV1"}}}}}}
+  /api/v1/admin/subject-mappings: {"get": {"operationId": "getNativeSubjectMappings", "tags": ["Admin"], "security": [{"NativeSessionCookie": []}], "parameters": [{"name": "userId", "in": "query", "schema": {"type": "string", "format": "uuid"}}, {"name": "legacySubject", "in": "query", "schema": {"type": "string", "maxLength": 256}}, {"name": "cursor", "in": "query", "schema": {"type": "string", "format": "uuid"}}, {"name": "limit", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100}}], "responses": {"200": {"description": "Recorded mappings. No legacy roles are imported.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeSubjectMappingsPageV1"}}}}, "default": {"description": "Unified error. Unreviewed or mismatched inventory is a conflict.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}}}}, "post": {"operationId": "createNativeSubjectMapping", "tags": ["Admin"], "security": [{"NativeSessionCookie": []}], "x-idempotency": "required", "x-step-up": "required", "description": "The exact user/legacy subject/digest must match a reviewed inventory imported under the dedicated migration duty. Does not rewrite principals or import old roles. Target sessions are revoked.", "parameters": [{"name": "Idempotency-Key", "in": "header", "required": true, "schema": {"type": "string", "minLength": 1}}, {"name": "X-Ops-Step-Up-Challenge", "in": "header", "required": true, "schema": {"type": "string", "format": "uuid"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeIdentitySubjectMappingRequestV1"}}}}, "responses": {"201": {"description": "Explicit, audited mapping recorded. Historical reads still reauthorize independently.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NativeSubjectMappingSuccessV1"}}}}, "default": {"description": "Unified error. Unreviewed or mismatched inventory is a conflict.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}}}}}
+  /api/v1/admin/users/{userId}/mfa:reset:
+    post:
+      operationId: resetNativeUserMFA
+      x-idempotency: non-idempotent
+      summary: Administrator MFA reset with a target-bound high-risk step-up, version bumps and audit in one transaction.
+      tags: [Identity administration]
+      security:
+      - NativeSessionCookie: []
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NativeAdminMFAResetRequestV1'}
+      responses:
+        '200':
+          description: Reset result with the transactional write recheck. Never cached.
+          headers:
+            Cache-Control: {schema: {type: string, const: no-store}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NativeAdminMFAResetSuccessV1'}
         default:
           description: Unified API error.
           content:
@@ -4571,6 +5279,7 @@ paths:
       x-idempotency: required
   /api/v1/admin/execution-profiles:
     get:
+      description: Returns currently authorized published versions in name/version order. Pagination follows authorization filtering; refresh from the first page if the cursor version was retired or is no longer visible.
       operationId: getExecutionProfiles
       parameters:
       - description: Opaque cursor for keyset pagination.
@@ -4578,10 +5287,13 @@ paths:
         name: cursor
         schema:
           type: string
+          maxLength: 128
       - in: query
         name: limit
         schema:
           minimum: 1
+          maximum: 200
+          default: 100
           type: integer
       responses:
         '200':
@@ -4598,6 +5310,7 @@ paths:
           description: Unified API error.
       security:
       - BearerAuth: []
+      - NativeSessionCookie: []
       summary: getExecutionProfiles
       tags:
       - Admin
@@ -5064,6 +5777,7 @@ paths:
           description: Unified API error.
       security:
       - BearerAuth: []
+      - NativeSessionCookie: []
       summary: getRoleBindings
       tags:
       - Admin
@@ -5098,6 +5812,8 @@ paths:
           description: Unified API error.
       security:
       - BearerAuth: []
+      - NativeSessionCookie: []
+      description: Native mode requires roleGrantRequest from ui-v12-identity/v1, one explicit role and registered cluster UID scopes; no subject string. Writes require X-Ops-Step-Up-Challenge.
       summary: createRoleBinding
       tags:
       - Admin
@@ -6934,13 +7650,14 @@ paths:
     patch:
       operationId: setOperatorRoleBindingStatus
       summary: Revoke or restore an operator binding while preserving its exact identity and scopes.
-      description: Platform administrator with current LoA2 step-up. Only operator bindings are accepted; subject, role, tenant
+      description: Native mode revokes only and requires userId, expectedRevision (authorization version), status=disabled and reason. Re-enabling requires a new reviewed native grant. Legacy mode retains the existing contract. Platform administrator with current LoA2 step-up. Only operator bindings are accepted; subject, role, tenant
         and scopes cannot be supplied or changed. The expected revision is mandatory and the existing audited update advances
         it. This is an administrative authorization operation, with no command execution.
       tags:
       - Admin
       security:
       - BearerAuth: []
+      - NativeSessionCookie: []
       x-idempotency: required
       x-step-up: required
       parameters:
@@ -6961,7 +7678,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OperatorRoleBindingStatusUpdateRequest'
+              oneOf:
+              - $ref: '#/components/schemas/OperatorRoleBindingStatusUpdateRequest'
+              - $ref: '#/components/schemas/NativeIdentityRoleGrantStatusRequestV1'
       responses:
         '200':
           description: Audited current operator binding with advanced revision.

@@ -1,0 +1,336 @@
+{
+  "schemaVersion": "ui-v12-fixture/v1",
+  "task": "ui-v12-p0-04-r2",
+  "scope": "isolated business fixture only; not a live source, native account or G0/P0-04 acceptance",
+  "status": "checks_failed",
+  "error": "one or more fixture checks failed",
+  "generatedAt": "2026-10-21T05:31:10.127417511Z",
+  "guard": {
+    "database": "ui_v12_development",
+    "clientEndpoint": "127.0.0.1:15449",
+    "serverAddress": "172.17.0.2",
+    "serverPort": 5432,
+    "databaseOwner": "ui_v12_owner",
+    "schemaVersion": 43,
+    "databaseTaskMarker": true,
+    "apiSessionUser": "ui_v12_api",
+    "workerSessionUser": "ui_v12_worker",
+    "migrationSessionUser": "ui_v12_migration",
+    "task": "ui-v12-p0-04-r2",
+    "envDir": "/data/ops-ui-v12-20261021-r2/private"
+  },
+  "fixture": {
+    "bindings": [
+      {
+        "clusterUid": "0c1a0000-0000-4000-8000-0000000000a1",
+        "role": "operator",
+        "subject": "ui-v12-r2-operator-a"
+      },
+      {
+        "clusterUid": "0c1a0000-0000-4000-8000-0000000000b1",
+        "role": "operator",
+        "subject": "ui-v12-r2-operator-b"
+      },
+      {
+        "clusterUid": "",
+        "role": "platform_admin",
+        "subject": "ui-v12-r2-bootstrap-admin"
+      }
+    ],
+    "clusters": [
+      {
+        "clusterId": "01a15cf1-27d7-7e93-a298-9b19736108d1",
+        "clusterUid": "0c1a0000-0000-4000-8000-0000000000a1",
+        "sourceId": "01a15cf1-29e9-770c-95b7-79023c717924"
+      },
+      {
+        "clusterId": "01a15cf1-2854-792c-a44a-bc2ea21ed15b",
+        "clusterUid": "0c1a0000-0000-4000-8000-0000000000b1",
+        "sourceId": "01a15cf1-2a70-7931-b64e-8b6e51903415"
+      }
+    ],
+    "history": {
+      "ui-v12-r2-operator-a": "c0a00000-0000-4000-8000-0000000000a1",
+      "ui-v12-r2-operator-b": "c0a00000-0000-4000-8000-0000000000b1"
+    },
+    "resources": {
+      "a/namespace/canary": "k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000a1/core/Namespace/0a110000-0000-4000-8000-0000000000a2",
+      "a/namespace/prod": "k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000a1/core/Namespace/0a110000-0000-4000-8000-0000000000a1",
+      "a/pod/canary": "k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000a1/core/Pod/90d00000-0000-4000-8000-0000000000a2",
+      "a/pod/prod": "k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000a1/core/Pod/90d00000-0000-4000-8000-0000000000a1",
+      "b/namespace/prod": "k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000b1/core/Namespace/0a110000-0000-4000-8000-0000000000b1",
+      "b/pod/prod": "k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000b1/core/Pod/90d00000-0000-4000-8000-0000000000b1"
+    },
+    "sources": [
+      {
+        "instanceKey": "ui-v12-r2-a-native",
+        "revision": 2,
+        "sourceId": "01a15cf1-29e9-770c-95b7-79023c717924",
+        "status": "active"
+      },
+      {
+        "instanceKey": "ui-v12-r2-b-native",
+        "revision": 1,
+        "sourceId": "01a15cf1-2a70-7931-b64e-8b6e51903415",
+        "status": "active"
+      },
+      {
+        "instanceKey": "ui-v12-r2-b-revoked",
+        "revision": 2,
+        "sourceId": "01a15cf1-2ac4-75ae-81f9-f8b45c6567b5",
+        "status": "disabled"
+      }
+    ],
+    "tenantId": "01a15cf1-2721-741a-ad5e-7727064ffadf"
+  },
+  "counts": {
+    "aliases": 6,
+    "auditRecords": 9,
+    "bindings": 3,
+    "clusterRevisions": 2,
+    "clusters": 2,
+    "conversations": 2,
+    "entities": 6,
+    "qualificationProofs": 0,
+    "sourceRevisions": 5,
+    "sources": 3
+  },
+  "checks": [
+    {
+      "name": "idempotent_tenant",
+      "passed": true,
+      "detail": "tenant=01a15cf1-2721-741a-ad5e-7727064ffadf"
+    },
+    {
+      "name": "idempotent_clusters",
+      "passed": true,
+      "detail": "a=01a15cf1-27d7-7e93-a298-9b19736108d1 b=01a15cf1-2854-792c-a44a-bc2ea21ed15b"
+    },
+    {
+      "name": "idempotent_sources",
+      "passed": true,
+      "detail": "a=01a15cf1-29e9-770c-95b7-79023c717924/2 b=01a15cf1-2a70-7931-b64e-8b6e51903415/1 revoked=01a15cf1-2ac4-75ae-81f9-f8b45c6567b5/2/disabled"
+    },
+    {
+      "name": "idempotent_bindings",
+      "passed": true,
+      "detail": "a=01a15cf1-286b-74c0-92c2-fbcbeb5b8a3e b=01a15cf1-2881-7c13-9b8f-bb8b6a1ab71e"
+    },
+    {
+      "name": "idempotent_conversations",
+      "passed": true,
+      "detail": "a=c0a00000-0000-4000-8000-0000000000a1 b=c0a00000-0000-4000-8000-0000000000b1"
+    },
+    {
+      "name": "idempotent_resources",
+      "passed": true,
+      "detail": "first=6 second=6"
+    },
+    {
+      "name": "counts_stable",
+      "passed": true,
+      "detail": "first={Clusters:2 Sources:3 Bindings:3 Entities:6 Aliases:6 Conversations:2 Verifications:0 AuditRecords:9 SourceRevisions:5 ClusterRevisions:2} second={Clusters:2 Sources:3 Bindings:3 Entities:6 Aliases:6 Conversations:2 Verifications:0 AuditRecords:9 SourceRevisions:5 ClusterRevisions:2}"
+    },
+    {
+      "name": "side_effects_stable",
+      "passed": true,
+      "detail": "audit=9/9 sourceRevisions=5/5 clusterRevisions=2/2"
+    },
+    {
+      "name": "expected_counts",
+      "passed": true,
+      "detail": "{Clusters:2 Sources:3 Bindings:3 Entities:6 Aliases:6 Conversations:2 Verifications:0 AuditRecords:9 SourceRevisions:5 ClusterRevisions:2}"
+    },
+    {
+      "name": "no_duplicate_bindings",
+      "passed": true,
+      "detail": "duplicates=0 err=\u003cnil\u003e"
+    },
+    {
+      "name": "no_duplicate_sources",
+      "passed": true,
+      "detail": "duplicates=0 err=\u003cnil\u003e"
+    },
+    {
+      "name": "existing_tenants_unchanged",
+      "passed": true,
+      "detail": "changed=[]"
+    },
+    {
+      "name": "only_task_tenants_added",
+      "passed": true,
+      "detail": "added=[ui-v12-p0-04-r2 ui-v12-r2-bootstrap] unexpected=[]"
+    },
+    {
+      "name": "resource_a_pod_matched",
+      "passed": true,
+      "detail": "status=matched"
+    },
+    {
+      "name": "same_pod_name_differs_by_cluster",
+      "passed": true,
+      "detail": "a=k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000a1/core/Pod/90d00000-0000-4000-8000-0000000000a1 b=k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000b1/core/Pod/90d00000-0000-4000-8000-0000000000b1"
+    },
+    {
+      "name": "same_pod_name_differs_by_namespace",
+      "passed": true,
+      "detail": "prod=k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000a1/core/Pod/90d00000-0000-4000-8000-0000000000a1 canary=k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000a1/core/Pod/90d00000-0000-4000-8000-0000000000a2"
+    },
+    {
+      "name": "same_namespace_name_differs_by_cluster",
+      "passed": true,
+      "detail": "a-prod=0a110000-0000-4000-8000-0000000000a1 canary=0a110000-0000-4000-8000-0000000000a2 b-prod=0a110000-0000-4000-8000-0000000000b1"
+    },
+    {
+      "name": "persisted_three_same_named_pods",
+      "passed": true,
+      "detail": "pods=3 err=\u003cnil\u003e"
+    },
+    {
+      "name": "persisted_pod_namespace_links",
+      "passed": true,
+      "detail": "links=3 distinctNamespaces=3"
+    },
+    {
+      "name": "persisted_pod_scopes",
+      "passed": true,
+      "detail": "scopes=map[0c1a0000-0000-4000-8000-0000000000a1/canary:k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000a1/core/Pod/90d00000-0000-4000-8000-0000000000a2 0c1a0000-0000-4000-8000-0000000000a1/prod:k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000a1/core/Pod/90d00000-0000-4000-8000-0000000000a1 0c1a0000-0000-4000-8000-0000000000b1/prod:k8s+v1://01a15cf1-2721-741a-ad5e-7727064ffadf/0c1a0000-0000-4000-8000-0000000000b1/core/Pod/90d00000-0000-4000-8000-0000000000b1]"
+    },
+    {
+      "name": "platform_admin_has_no_operator_scope",
+      "passed": true,
+      "detail": "err=FORBIDDEN"
+    },
+    {
+      "name": "operator_a_scope_cluster_a",
+      "passed": true,
+      "detail": "err=\u003cnil\u003e scope={Tenant:01a15cf1-2721-741a-ad5e-7727064ffadf Cluster:0c1a0000-0000-4000-8000-0000000000a1 Namespaces:[canary prod] Resources:[] ClusterScoped:true AuthorizationRevision:sha256:28089f7bd1037feda220edac3fce8fdaf49de5e9865540082cb8b0ad9e512411}"
+    },
+    {
+      "name": "operator_b_scope_cluster_b",
+      "passed": true,
+      "detail": "err=\u003cnil\u003e scope={Tenant:01a15cf1-2721-741a-ad5e-7727064ffadf Cluster:0c1a0000-0000-4000-8000-0000000000b1 Namespaces:[prod] Resources:[] ClusterScoped:true AuthorizationRevision:sha256:32a99dc287d35f98eeb5bc82302880f2d11f2efaccfd09be7065ed0e7f29dae5}"
+    },
+    {
+      "name": "operator_cluster_isolation",
+      "passed": true,
+      "detail": "a-on-b=FORBIDDEN b-on-a=FORBIDDEN"
+    },
+    {
+      "name": "operator_scope_allows_own_resources",
+      "passed": true,
+      "detail": "a=true b=true"
+    },
+    {
+      "name": "operator_namespace_grants_explicit",
+      "passed": true,
+      "detail": "a=[canary prod] b=[prod]"
+    },
+    {
+      "name": "operator_scope_rejects_other_cluster",
+      "passed": true,
+      "detail": "a-on-b=false b-on-a=false"
+    },
+    {
+      "name": "operator_scope_rejects_other_namespace",
+      "passed": true,
+      "detail": "b-canary=false a-other=false"
+    },
+    {
+      "name": "operators_have_no_admin_binding",
+      "passed": true,
+      "detail": "admin=1 a=true b=true"
+    },
+    {
+      "name": "operator_rejected_by_admin_endpoint/ui-v12-r2-operator-a",
+      "passed": true,
+      "detail": "err=source identity is not authorized"
+    },
+    {
+      "name": "operator_rejected_by_admin_endpoint/ui-v12-r2-operator-b",
+      "passed": true,
+      "detail": "err=source identity is not authorized"
+    },
+    {
+      "name": "source_revision_advanced",
+      "passed": true,
+      "detail": "revision=2 status=active"
+    },
+    {
+      "name": "source_active_native",
+      "passed": true,
+      "detail": "revision=1 status=active"
+    },
+    {
+      "name": "source_revoked_state",
+      "passed": true,
+      "detail": "revision=2 status=disabled"
+    },
+    {
+      "name": "active_source_binding_matches",
+      "passed": true,
+      "detail": "binding accepted"
+    },
+    {
+      "name": "unqualified_source_rejected",
+      "passed": true,
+      "detail": "no fabricated qualification proof"
+    },
+    {
+      "name": "stale_source_revision_rejected",
+      "passed": true,
+      "detail": "expected revision 1, current 2"
+    },
+    {
+      "name": "revoked_source_rejected",
+      "passed": true,
+      "detail": "status disabled"
+    },
+    {
+      "name": "history_owner_a",
+      "passed": false,
+      "detail": "count=0 err=\u003cnil\u003e"
+    },
+    {
+      "name": "history_owner_b",
+      "passed": false,
+      "detail": "count=0 err=\u003cnil\u003e"
+    },
+    {
+      "name": "login_name_has_no_history",
+      "passed": true,
+      "detail": "count=0 err=\u003cnil\u003e"
+    },
+    {
+      "name": "history_cross_owner_rejected",
+      "passed": true,
+      "detail": "err=no rows in result set"
+    },
+    {
+      "name": "history_owner_read",
+      "passed": false,
+      "detail": "err=INVESTIGATION_NOT_AUTHORIZED"
+    },
+    {
+      "name": "history_owner_rows_preserved",
+      "passed": true,
+      "detail": "owners=2 err=\u003cnil\u003e"
+    },
+    {
+      "name": "native_user_tables_absent",
+      "passed": true,
+      "detail": "nativeTables=[] stepUpSessionsPresent=true (step-up sessions are not a native account/login proof)"
+    },
+    {
+      "name": "no_login_name_binding_inheritance",
+      "passed": true,
+      "detail": "bindings=0 err=\u003cnil\u003e"
+    }
+  ],
+  "unmet": [
+    "native user, login-credential and login-session tables are absent; native login and explicit historical subject mapping remain P2-01/P2-02 dependencies",
+    "no adapter qualification proof is fabricated; unqualified sources are rejected, and a qualified live source belongs to P8-02",
+    "this fixture does not authenticate a real API/Worker process, Kubernetes source, model or browser",
+    "G0 and P0-04 are not closed by this test; it prepares and verifies only the task-owned business fixture"
+  ]
+}

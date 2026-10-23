@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "ui-v12-fixture-plan/v1",
+  "task": "ui-v12-p0-04-r2",
+  "status": "r1_executed_failed_root_cause_fixed_pending_r2",
+  "generatedAt": "2026-10-21T00:00:00Z",
+  "scope": "isolated business fixture definition for the task-owned database only; not a live source, native account or G0/P0-04 acceptance",
+  "environment": {
+    "hostAlias": "mssc-direct",
+    "taskDir": "/data/ops-ui-v12-20261021-r2",
+    "container": "ops-ui-v12-pg-20261021-r2",
+    "imageDigest": "sha256:589f742565e4f6d22149176b032974f55f8201a8a37b71ed587ec5c6902e689f",
+    "database": "ui_v12_development",
+    "clientEndpoint": "127.0.0.1:15449",
+    "serverPort": 5432,
+    "serverAddress": "container address recorded at runtime",
+    "databaseOwner": "ui_v12_owner",
+    "databaseComment": "ops.task=ui-v12-20261021-r2; isolated synthetic fixtures only",
+    "databaseCommentTaskMarker": true,
+    "schemaVersion": 43,
+    "logins": [
+      {"name": "ui_v12_api", "dutyRole": "api_runtime_role", "inherit": false, "bypassRLS": false},
+      {"name": "ui_v12_worker", "dutyRole": "worker_runtime_role", "inherit": false, "bypassRLS": false},
+      {"name": "ui_v12_migration", "dutyRole": "migration_role", "inherit": false, "bypassRLS": false}
+    ]
+  },
+  "firstRun": {
+    "run": "r1",
+    "binarySha256": "cd51072e2ae5327958f097045c220dbd616973de6161504103c54ab89d9b3225",
+    "checks": 46,
+    "passed": 43,
+    "failed": [
+      "history_owner_a count=0",
+      "history_owner_b count=0",
+      "history_owner_read INVESTIGATION_NOT_AUTHORIZED"
+    ],
+    "landed": {
+      "clusters": 2,
+      "sources": 3,
+      "entities": 6,
+      "bindings": 3,
+      "conversations": 2,
+      "auditRecords": 9,
+      "qualificationProofs": 0
+    },
+    "rootCause": "the first fixture hand-built GrantSnapshot lacked the real AuthorizationRevision and Namespaces; assistant.authorizeConversation correctly rejected the digest mismatch and is not changed",
+    "remediation": "new conversations use assistant.Repository.Create with stable creation keys; the two r1 empty task conversations use a bounded binding correction plus the existing Rebind path, without deletion or recreation",
+    "evidencePreserved": [
+      "evidence/fixture-run-r1.log",
+      "evidence/ui-v12-fixture-run-r1.json"
+    ]
+  },
+  "fixture": {
+    "bootstrapTenant": {
+      "slug": "ui-v12-r2-bootstrap",
+      "tenantId": "7e1a0000-0000-4000-8000-000000000001",
+      "adminSubject": "ui-v12-r2-bootstrap-admin",
+      "note": "only direct schema_owner write; fixed ID/slug/name/status/binding are verified and any ownership conflict is rejected instead of adopting an existing row"
+    },
+    "tenant": {
+      "slug": "ui-v12-p0-04-r2",
+      "provisioning": "platform.provision_tenant through tenant.Service"
+    },
+    "clusters": [
+      {"clusterUid": "0c1a0000-0000-4000-8000-0000000000a1", "displayName": "UI v1.2 R2 cluster A"},
+      {"clusterUid": "0c1a0000-0000-4000-8000-0000000000b1", "displayName": "UI v1.2 R2 cluster B"}
+    ],
+    "namespaces": [
+      {"clusterUid": "0c1a0000-0000-4000-8000-0000000000a1", "name": "prod", "namespaceUid": "0a110000-0000-4000-8000-0000000000a1"},
+      {"clusterUid": "0c1a0000-0000-4000-8000-0000000000a1", "name": "canary", "namespaceUid": "0a110000-0000-4000-8000-0000000000a2"},
+      {"clusterUid": "0c1a0000-0000-4000-8000-0000000000b1", "name": "prod", "namespaceUid": "0a110000-0000-4000-8000-0000000000b1"}
+    ],
+    "pods": [
+      {"clusterUid": "0c1a0000-0000-4000-8000-0000000000a1", "namespace": "prod", "name": "api-0", "uid": "90d00000-0000-4000-8000-0000000000a1"},
+      {"clusterUid": "0c1a0000-0000-4000-8000-0000000000a1", "namespace": "canary", "name": "api-0", "uid": "90d00000-0000-4000-8000-0000000000a2"},
+      {"clusterUid": "0c1a0000-0000-4000-8000-0000000000b1", "namespace": "prod", "name": "api-0", "uid": "90d00000-0000-4000-8000-0000000000b1"}
+    ],
+    "bindings": [
+      {"subject": "ui-v12-r2-bootstrap-admin", "role": "platform_admin", "clusterScopes": [], "namespaceScopes": []},
+      {"subject": "ui-v12-r2-operator-a", "role": "operator", "clusterUids": ["0c1a0000-0000-4000-8000-0000000000a1"], "namespaceScopes": ["prod", "canary"]},
+      {"subject": "ui-v12-r2-operator-b", "role": "operator", "clusterUids": ["0c1a0000-0000-4000-8000-0000000000b1"], "namespaceScopes": ["prod"]}
+    ],
+    "sources": [
+      {"instanceKey": "ui-v12-r2-a-native", "clusterUid": "0c1a0000-0000-4000-8000-0000000000a1", "expectedRevision": 2, "expectedStatus": "active", "purpose": "stale revision 1 rejection"},
+      {"instanceKey": "ui-v12-r2-b-native", "clusterUid": "0c1a0000-0000-4000-8000-0000000000b1", "expectedRevision": 1, "expectedStatus": "active", "purpose": "valid binding without qualification proof"},
+      {"instanceKey": "ui-v12-r2-b-revoked", "clusterUid": "0c1a0000-0000-4000-8000-0000000000b1", "expectedRevision": 2, "expectedStatus": "disabled", "purpose": "revoked source rejection"}
+    ],
+    "qualificationProofsWritten": 0,
+    "conversations": [
+      {"conversationId": "c0a00000-0000-4000-8000-0000000000a1", "ownerSubject": "ui-v12-r2-operator-a", "clusterUid": "0c1a0000-0000-4000-8000-0000000000a1"},
+      {"conversationId": "c0a00000-0000-4000-8000-0000000000b1", "ownerSubject": "ui-v12-r2-operator-b", "clusterUid": "0c1a0000-0000-4000-8000-0000000000b1"}
+    ]
+  },
+  "expectedCounts": {
+    "clusters": 2,
+    "sources": 3,
+    "bindings": 3,
+    "entities": 6,
+    "aliases": 6,
+    "conversations": 2,
+    "qualificationProofs": 0,
+    "minAuditRecords": 1,
+    "sourceRevisions": 5,
+    "clusterRevisions": 2
+  },
+  "plannedChecks": [
+    "guard: client 127.0.0.1:15449, server-side PostgreSQL 5432, database ui_v12_development, owner ui_v12_owner, exact database comment ops.task=ui-v12-20261021-r2; isolated synthetic fixtures only, schema 43",
+    "guard: three independent NOINHERIT/NOBYPASSRLS/NOSUPERUSER logins and duty roles",
+    "bootstrap: fixed tenant/slug/name/status/binding accepted only when already owned by this task",
+    "idempotency: second seed keeps tenant/cluster/source/binding/conversation IDs and all counts",
+    "side effects: second seed adds no audit record, source revision or cluster revision",
+    "no duplicate role bindings or source instance keys",
+    "existing tenants unchanged; only the two task tenants may be added",
+    "same-named Pods and namespaces stay distinct by cluster scope and namespace UID; Pods link to their Namespace entity",
+    "platform_admin has no operator graph scope",
+    "operator A only cluster A with explicit prod/canary namespaces, operator B only cluster B with prod; cross-cluster and other-namespace scope rejected",
+    "operators are rejected by admin-only source listing",
+    "source revision 1 rejected while revision 2 is current",
+    "active but unqualified source rejected by evidence.Authorize",
+    "disabled source rejected by binding and authorization",
+    "personal history is isolated by owner_subject; new conversations use assistant.Repository.Create with stable creation keys; login name sees no history",
+    "r1 legacy empty conversations: bounded binding repair only for exact task IDs plus formal Rebind; no deletion/recreation; legacyRepairs recorded",
+    "native identity tables absent by exact name; existing step-up sessions are not treated as native accounts; no login-name role binding inheritance",
+    "evidence: a new unique path is required; O_CREATE|O_EXCL prevents overwriting history and any write failure fails the test"
+  ],
+  "unmet": [
+    "native user, login-credential and login-session tables plus subject mapping are absent; P2-01/P2-02/P2-05 remain dependencies",
+    "no adapter qualification proof is written; a qualified live source remains P8-02",
+    "no live API/Worker/Kubernetes/model/browser path is exercised",
+    "G0 and P0-04 are not closed by this fixture"
+  ]
+}

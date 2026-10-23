@@ -1,0 +1,116 @@
+{
+  "task_id": "e21619a5-d488-429a-a38b-5b7b334cd0b8",
+  "reviewer": "Codex independent code review",
+  "date": "2026-10-22T03:39:59.492837+00:00",
+  "status": "changes_required_P2_02",
+  "head": "9bd78d84e212217626cdf0cfe54af84a155a9a3d",
+  "worktree": "uncommitted feat/ui-v12-replication",
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P1",
+      "title": "HTTP success commits before cookie",
+      "location": "internal/httpapi/native_auth.go:126,254; internal/httpapi/tenant_handlers.go:288",
+      "evidence": "Login and ChangePassword invoke writeJSON before setSessionCookie. writeJSON calls WriteHeader; Result().Cookies/browser receives no session cookie. Set cookie before committing successful response and exercise real positive handler flow."
+    },
+    {
+      "id": "R2",
+      "priority": "P1",
+      "title": "Restored CSRF unusable and password request omits it",
+      "location": "internal/httpapi/native_auth.go:470; web/src/auth/AuthProvider.tsx:166,429",
+      "evidence": "Session returns csrf.token empty, violating identity schema minLength16. acceptNativeSession overwrites CSRF with empty. changeNativePasswordRequest has no requestOptions(undefined,true), so even fresh-login CSRF is omitted. Recover a stable session-bound CSRF safely; never persist raw token; assert restore/read then authenticated write and same-session refresh continuity."
+    },
+    {
+      "id": "R3",
+      "priority": "P1",
+      "title": "Migration45 removes existing preauth RLS access",
+      "location": "migrations/00045_native_http_sessions.sql:47-90; migrations/00044_native_identity.sql:269-368",
+      "evidence": "Replacement credentials policy lacks find_login_account used by the existing login function. Replacement accounts policy lacks record_password_failure and revoke_session WITH CHECK. Under FORCE RLS/NOINHERIT native login cannot see credentials and writes lose required access. Restore only exact operation privileges, preserve spoof rejection and direct table denial; do not edit executed44."
+    },
+    {
+      "id": "R4",
+      "priority": "P1",
+      "title": "Mutating SQL functions yield no result row",
+      "location": "migrations/00045_native_http_sessions.sql:292-435; internal/identity/session.go:230,275",
+      "evidence": "revoke_native_session and change_own_password RETURNS TABLE set OUT variables but contain no RETURN NEXT/RETURN QUERY. QueryRow.Scan receives no rows after committed function mutation. Return actual row; translate SQLSTATE40001/28000/validation errors to repository sentinels so HTTP409/401/400 are accurate."
+    },
+    {
+      "id": "R5",
+      "priority": "P1",
+      "title": "Session version and absolute boundary missing",
+      "location": "migrations/00045_native_http_sessions.sql:110-290; migrations/00044_native_identity.sql:99",
+      "evidence": "No issued_session_version is stored/compared; account session version changes do not invalidate other sessions. touch uses least(absolute,now+ttl), conflicting with existing strict absolute>idle CHECK near expiry. Define version semantics consistently, record/compare issued value, handle equality at expiry in forward45 only."
+    },
+    {
+      "id": "R6",
+      "priority": "P1",
+      "title": "Password mutation and audit recheck incomplete",
+      "location": "internal/httpapi/native_auth.go:386-424; migrations/00045_native_http_sessions.sql:349-435",
+      "evidence": "Password credential/session rotation is atomic in SQL, but p_old_session_id is not checked in its body; an expired/revoked old session can pass after middleware check. Login/logout/password audit runs separately and every error is discarded; success can lack audit. Recheck locked account+actual old session active/version/expiry and successful password proof version in the write transaction; audit and mutation must commit together or both fail, including unique audit event IDs."
+    },
+    {
+      "id": "R7",
+      "priority": "P1",
+      "title": "Rate fence uses stale pre-read count and no entry bound",
+      "location": "internal/httpapi/native_auth.go:83-113,359-384; migrations/00045_native_http_sessions.sql:438",
+      "evidence": "Lock threshold is decided from prior failed_count outside atomic increment, losing threshold under concurrency. Unknown-user path returns without equivalent bounded password verification cost; per-name rows alone permit username spray and have no entry-wide admission fence. Persistence errors ignored. Implement account+entry durable concurrent reservation/limit, equivalent unknown rejection behavior and explicit fence-error handling; keep costs bounded."
+    },
+    {
+      "id": "R8",
+      "priority": "P1",
+      "title": "Native authorization projection changes scope semantics",
+      "location": "internal/auth/native.go:174-221; web/src/auth/AuthProvider.tsx:129-171; internal/httpapi/cluster_handlers.go:22",
+      "evidence": "Cluster UID is parsed as registered cluster ID without registry mapping. One cluster with multiple namespaces passes validation but projects zero namespaces. Operator-only Web loads platform_admin-only getClusters, receiving403; empty allowed set includes all returned clusters. First-only JSON also returns grants although middleware removes roles. Project server-authorized UID/ID scope via existing service/session mechanism with separate roles, retain every namespace or fail closed; first-only returns no business grants. Do not grant admin to fix operator login or implement unrelated P2-04 administration."
+    },
+    {
+      "id": "R9",
+      "priority": "P1",
+      "title": "Native lifecycle can resurrect expired/logged-out state",
+      "location": "web/src/auth/AuthProvider.tsx:161,238,286,303,344,448; web/src/api/client.ts:24",
+      "evidence": "expireIdentity/logout do not advance generation; native refreshes overlap using same generation. acceptNativeSession mutates credentials/loggedOut before current check. Native mode has no authEvents expired/forbidden listeners. Native logout without a session falls through getManager. Native initial render also starts OIDC manager before config resolves, while loadAuthMode silently falls back to OIDC on config failure. Gate mode until known/fail closed; subscribe native events; serialize/version refresh and invalidate before logout; gate every side effect and credential commit. Same session refresh stays valid; real change aborts old HTTP/SSE/cache. OIDC addUserLoaded anonymous callback removed with different function must be corrected."
+    },
+    {
+      "id": "R10",
+      "priority": "P1",
+      "title": "Middleware drops request cancellation and cookie-write origin coverage",
+      "location": "internal/auth/native.go:118-159,223; internal/httpapi/native_auth.go:149",
+      "evidence": "requestContext builds on context.Background, losing original cancellation/deadline/values. Unsafe middleware checks CSRF but not origin; Logout has no origin check. Preserve r.Context and apply exact same-origin policy uniformly for cookie writes. Existing TLS termination must have explicit trusted deployment origin rules instead of trusting arbitrary forwarded headers. Remove tautological supplied-vs-itself comparison."
+    }
+  ],
+  "checks": [
+    {
+      "command": "go test ./internal/identity ./internal/auth ./internal/httpapi ./internal/app -count=1",
+      "result": "PASS",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p2-http-unit-r1.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/native_auth.test.tsx tests/auth_recovery.test.tsx tests/client_generation.test.ts",
+      "result": "PASS 3 files /18 tests",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p2-http-web-r1.log"
+    },
+    {
+      "command": "pnpm build",
+      "result": "PASS existing chunk-size warning",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p2-http-build-r1.log"
+    }
+  ],
+  "source_sha256": {
+    "migrations/00045_native_http_sessions.sql": "0bb97e6525901129293260c57753495446002f50f3f386f89da5633339074a01",
+    "internal/httpapi/native_auth.go": "8651a310d6c8ce7fb389ba109f18f244d568ab7e66705b399ae7315c295c366d",
+    "internal/identity/session.go": "e3c49ebe93e01fc748e581dbf5b66372927255aac64428befb035bae79fd227f",
+    "internal/auth/native.go": "44e6550a97f5bddad771b913b97e5aa6aa1b136b7f90b30864783fc3249fda03",
+    "web/src/auth/AuthProvider.tsx": "3644a1b0dad4aed589e8e96c780f8cf04a202fb9b9427c0fa01f5282b401759b",
+    "web/src/api/client.ts": "229f23dc13a51d7f103b8eaee0ef13619d24824d23d541b4badf8aba63df3f72"
+  },
+  "callback": {
+    "original_state": "waiting despite report ready",
+    "manual_recovery": "bridge.py hook Stop invoked once; notified succeeded",
+    "new_repair_task": "264ba468-737c-4111-b2ff-93b686aff578"
+  },
+  "limits": [
+    "Static findings plus local unit/build only; no migration45/database/HTTP/browser/live execution",
+    "Migration44 frozen; P2-01 acceptance remains limited to tested schema44 source",
+    "P2-02 in_progress; all six product dimensions unverified",
+    "No CodeBuddy model verification; no shared environment or existing database mutations"
+  ]
+}

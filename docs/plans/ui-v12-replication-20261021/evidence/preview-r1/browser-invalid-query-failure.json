@@ -1,0 +1,60 @@
+{
+  "origin": "https://192.168.0.63:30462",
+  "checks": [
+    "native login renders without OIDC",
+    "resumed with previously rotated password; first-password evidence retained separately",
+    "reload restores durable session and rotated credential version"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16287-5b17-7aa8-88e9-82fd8e94a0a4"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16287-5ca0-7b9a-b879-825dd06dc40a"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16287-5d29-7a18-8e32-82a065c456da"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16287-5d5b-767a-8517-f29551eaf87b"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16287-5d6c-700c-883c-c2c8d47e7b09"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16287-5dde-7d8b-8f46-4b454b2cc15e"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16287-5e18-7af4-85a4-8f4b4a7fe7bb"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16287-5e29-7515-bbf9-9473ce3d8f24"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16287-5e2e-7c30-9e4a-b33c41edc975"
+    }
+  ],
+  "consoleErrors": [],
+  "browser": "156.0.8078.4",
+  "subject": "user:01a1627d-4cd4-77b9-bacc-ed412395c861",
+  "status": "FAIL",
+  "failure": "Expected values to be strictly equal:\n\n400 !== 403\n"
+}

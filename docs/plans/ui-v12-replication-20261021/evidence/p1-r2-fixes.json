@@ -1,0 +1,32 @@
+{
+  "task": "P1 R2 assistant deep-link and URL boundary repair",
+  "date": "2026-10-21",
+  "review": "evidence/codex-p1-review-r2.json",
+  "fixes": {
+    "P1-R2-01": "AssistantPage scope reset tracks the previous scope and runs only on an actual transition; first mount and same-scope incident/canonicalId deep links keep troubleshoot mode and draft state",
+    "P1-R2-02": "ClusterContext separates selector changes from validated URL/history navigation; URL transitions preserve the full new object location; dirty transitions restore the exact committed location in a layout effect before passive child requests, children stay mounted, cancel preserves the full draft, and confirmation applies the new location; generation-0 selection cannot recover after invalidation",
+    "P1-R2-03": "Assistant mutations receive a canCommit guard; late create/send/resolve results check scope, signal and unmount before local setState or navigation; resolve/interpret requests now receive the scope signal and unmount aborts the controller"
+  },
+  "tests": {
+    "vitest": "108 passed (26 files)",
+    "node_contracts": "6 passed",
+    "new_boundaries": [
+      "real AssistantPage incident and resource deep links stay troubleshoot",
+      "real AssistantPage late create does not navigate after same-tick scope switch",
+      "real AssistantPage unmount discards late create result",
+      "dirty URL transition restores the full committed location and draft on cancel",
+      "confirmed URL transition preserves the new object",
+      "initial unknown uid and revocation with another candidate remain unavailable after effects settle"
+    ]
+  },
+  "build": "tsc --noEmit + vite build passed",
+  "not_verified": [
+    "remote browser/live API/persistence",
+    "model behavior",
+    "product six dimensions"
+  ],
+  "logs": [
+    "evidence/web-tests-p1-r3.log",
+    "evidence/web-build-p1-r3.log"
+  ]
+}

@@ -4,6 +4,19 @@
 {{- if not .Values.workloadIdentity.enabled }}{{ fail "Projected PKI identity must be explicitly enabled" }}{{- end }}
 {{- if not .Values.runtime.openbaoCABundle }}{{ fail "Projected PKI requires independently provisioned OpenBao CA trust" }}{{- end }}
 {{- end }}
+{{- $mode := .Values.runtime.humanAuthMode | default "oidc" }}
+{{- if not (has $mode (list "oidc" "native")) }}{{ fail "Unknown human authentication mode" }}{{- end }}
+{{- if eq $mode "native" }}
+{{- if not (regexMatch "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" .Values.runtime.nativeAuth.tenantId) }}{{ fail "Native auth requires a tenant UUID" }}{{- end }}
+{{- if eq .Values.runtime.nativeAuth.tenantId "00000000-0000-0000-0000-000000000000" }}{{ fail "Native auth tenant UUID cannot be nil" }}{{- end }}
+{{- if not (regexMatch "^https://[A-Za-z0-9.-]+(:[0-9]+)?$" .Values.runtime.nativeAuth.publicOrigin) }}{{ fail "Native auth requires a public HTTPS origin without path" }}{{- end }}
+{{- $port := regexFind ":[0-9]+$" .Values.runtime.nativeAuth.publicOrigin | trimPrefix ":" }}
+{{- if and $port (or (lt (int $port) 1) (gt (int $port) 65535)) }}{{ fail "Native auth public origin port is invalid" }}{{- end }}
+{{- if and .Values.sp08.enabled (ne .Values.runtime.nativeAuth.publicOrigin .Values.sp08.publicOrigin) }}{{ fail "API and Web public origins must match" }}{{- end }}
+{{- if not .Values.workloadIdentity.enabled }}{{ fail "Native MFA requires projected workload identity" }}{{- end }}
+{{- if not .Values.runtime.openbaoCABundle }}{{ fail "Native MFA requires independently provisioned OpenBao CA trust" }}{{- end }}
+{{- if not (regexMatch "^[A-Za-z0-9_-]+$" .Values.runtime.nativeAuth.mfaTransitKey) }}{{ fail "Native MFA requires an existing Transit key name" }}{{- end }}
+{{- end }}
 {{- range $name := list "api" "worker" "web" }}
 {{- $component := index $.Values.components $name }}
 {{- if and $component.enabled (not (and (eq $name "web") $.Values.sp08.enabled)) (or (not $.Values.bootstrapAPIOnly) (eq $name "api")) (not (and $.Values.sp06.enabled (eq $name "investigator"))) }}
@@ -85,12 +98,14 @@ spec:
             {{ end }}
             {{ if and $.Values.sp06.enabled (has $name (list "api" "worker")) }}
             - {name: SP06_RUNTIME_FILE, value: {{ printf "/etc/sp06/runtime/%s.json" $name | quote }}}
+            {{ end }}
+            {{ if and $.Values.workloadIdentity.enabled (has $name (list "api" "worker")) }}
             - {name: OPENBAO_PROJECTED_TOKEN_FILE, value: /var/run/secrets/ops-platform/openbao/token}
-            {{ if eq $name "api" }}
+            {{ end }}
+            {{ if and (eq $name "api") (or $.Values.sp06.enabled (eq $mode "native") (eq $.Values.workloadIdentity.mode "openbao-kubernetes")) }}
             - {name: OPENBAO_ADDR, value: {{ $.Values.runtime.openbaoAddress | default (printf "https://ops-openbao.%s.svc.cluster.local:8200" $.Release.Namespace) | quote }}}
             - {name: OPENBAO_CA_FILE, value: /etc/ops/openbao-ca.pem}
             - {name: OPENBAO_SERVICE_DOMAIN, value: {{ printf "%s.svc.cluster.local" $.Release.Namespace | quote }}}
-            {{ end }}
             {{ end }}
             {{ if and $.Values.sp04.enabled (has $name (list "api" "worker")) }}
             - name: SP04_RUNTIME_FILE
@@ -111,12 +126,23 @@ spec:
                   name: ops-platform-runtime
                   key: {{ $name }}DatabaseURL
             {{ end }}
+            {{ if has $name (list "api" "worker") }}
+            - {name: HUMAN_AUTH_MODE, value: {{ $mode | quote }}}
+            {{ if eq $mode "native" }}
+            - {name: NATIVE_AUTH_TENANT_ID, value: {{ $.Values.runtime.nativeAuth.tenantId | quote }}}
+            {{ if eq $name "api" }}
+            - {name: NATIVE_AUTH_PUBLIC_ORIGIN, value: {{ $.Values.runtime.nativeAuth.publicOrigin | quote }}}
+            - {name: OPENBAO_MFA_TRANSIT_KEY, value: {{ $.Values.runtime.nativeAuth.mfaTransitKey | quote }}}
+            {{ end }}
+            {{ else if eq $name "api" }}
             - name: OIDC_ISSUER_URL
               value: {{ required "runtime.oidcIssuerURL is required" $.Values.runtime.oidcIssuerURL | quote }}
+            {{ end }}
+            {{ end }}
             - name: PLATFORM_PROFILE
               value: /etc/ops/profile.yaml
             {{ if eq $name "api" }}
-            {{ if $.Values.runtime.oidcCABundle }}
+            {{ if and (eq $mode "oidc") $.Values.runtime.oidcCABundle }}
             - name: SSL_CERT_FILE
               value: /etc/ops/oidc-ca.pem
             {{ end }}
@@ -263,7 +289,9 @@ data:
   registry-trust.json: {{ $.Values.runtime.registryTrust | default dict | toJson | quote }}
   openbao-ca.pem: {{ $.Values.runtime.openbaoCABundle | default "" | quote }}
   archive-ca.pem: {{ $.Values.runtime.archiveCABundle | default "" | quote }}
+  {{- if eq $mode "oidc" }}
   oidc-ca.pem: {{ $.Values.runtime.oidcCABundle | default "" | quote }}
+  {{- end }}
   profile.yaml: |
 {{ required "runtime.profile is required" .Values.runtime.profile | indent 4 }}
 {{- end }}

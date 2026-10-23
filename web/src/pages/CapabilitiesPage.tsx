@@ -1,5 +1,5 @@
-import { useSearchParams } from "react-router-dom";
-import { ScopeFilter, useClusters } from "../components/ScopeFilter";
+import { ScopeFilter } from "../components/ScopeFilter";
+import { useOperationalCluster } from "../app/ClusterContext";
 import { useQuery } from "@tanstack/react-query";
 import { getCapabilities } from "../api/generated/platform";
 import { checked, requestOptions } from "../api/client";
@@ -8,9 +8,7 @@ import { QueryState } from "../components/QueryState";
 import { CapabilityStatus } from "../components/CapabilityStatus";
 import type { CapabilitiesSuccessV1 } from "../api/generated/models";
 export function CapabilitiesPage() {
-  const [url, setUrl] = useSearchParams();
-  const clusters = useClusters();
-  const cluster = url.get("clusterUid") || clusters[0] || "";
+  const { clusterUid: cluster, invalid } = useOperationalCluster();
   const q = useQuery({
     queryKey: ["capabilities", cluster],
     enabled: !!cluster,
@@ -25,13 +23,10 @@ export function CapabilitiesPage() {
         description="查看当前环境可用的功能及数据来源。“未启用”和“待验收”均不能视为已通过真实运行验收。"
       />
       <div className="filters">
-        <ScopeFilter
-          value={cluster}
-          onChange={(v) => setUrl({ clusterUid: v })}
-        />
+        <ScopeFilter value={cluster} />
       </div>
       <QueryState
-        noScope={!cluster}
+        noScope={!cluster || invalid}
         loading={q.isPending && !!cluster}
         error={q.error}
         retry={() => void q.refetch()}

@@ -1,0 +1,50 @@
+{
+  "status": "local_verified_remote_pending",
+  "date": "2026-10-22",
+  "implementation": [
+    "C-170/C-171 native explicit mapping API and generated clients",
+    "controlled migration-duty reviewed-inventory importer; exact tenant/subject/native ID and evidence document matching",
+    "same transaction account locks, current session/version recheck, exact HTTP step-up proof, idempotency, mapping, target session revocation and audit",
+    "users page historical mapping list/pagination/modal using v12 shared components",
+    "migration55 administrator count fixed to each administrator own authorization version; no SQL execution"
+  ],
+  "checks": {
+    "go": "identity/httpapi/contract full packages passed; importer/CLI/admin boundaries focused final checks passed",
+    "web": "37 files / 145 Vitest + 6 SSE contract tests passed",
+    "build": "final TypeScript/Vite passed; existing >500kB chunk warning",
+    "linux": "API, opsctl and guarded integration executable cross-compiled successfully, not remotely run",
+    "progress": "177 contracts / 458 states passed validate-progress.py; no product acceptance dimensions promoted",
+    "frozen_migrations": "1..54 unchanged against r8 recorded hashes"
+  },
+  "database": {
+    "last_independently_verified_remote_schema": 54,
+    "source_latest_migration": 56,
+    "unexecuted_migrations": [
+      55,
+      56
+    ],
+    "new_migrations_frozen": false
+  },
+  "remote": "No remote calls, database or business browser runtime this round, per user direction. No CodeBuddy dispatch.",
+  "failures_preserved": [
+    "artifacts/test-reports/ui-v12-session-r2/gpt-mapping-r9-go-first.log: full opsctl package source-material lock mismatch (opa-sdk-source); left unchanged, focused new CLI checks passed"
+  ],
+  "integration_prepared_not_run": [
+    "API duty cannot import inventory",
+    "controlled importer idempotency/conflicting approval refusal",
+    "missing inventory mapping conflict without mutation",
+    "real mapping persistence/current target session revocation/no inherited legacy admin role",
+    "administrator count with different per-account authorization versions"
+  ],
+  "remaining": [
+    "execute55/56 on rechecked task-owned remote DB and run guarded integration with valid task JWT/real OpenBao",
+    "concurrent administrator/mapping conflicts and audit failure transaction rollback",
+    "historical record ownership access with current native scope recheck",
+    "real browser and HTML visual verification including supplemental native security states",
+    "P2-05 Worker/Job authority/CLI/chart/cold start and P3 SL-049 full resource/log sample",
+    "existing opsctl bundle test reviewed source-material mismatch"
+  ],
+  "source": "source.json",
+  "runbook": "../../subject-mapping-runbook.md",
+  "acceptance": "P2-04 remains in_progress; no product dimension upgraded; V1.2 incomplete"
+}

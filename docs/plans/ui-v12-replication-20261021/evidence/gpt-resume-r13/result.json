@@ -1,0 +1,61 @@
+{
+  "status": "scoped_runtime_verified_product_incomplete",
+  "environment": {
+    "host": "mssc-direct -> mssc",
+    "source_repository_head": "3339876e72bd4f4d5e2d321afa62440b886c3130 unchanged",
+    "database": "task-owned PostgreSQL17.11 :15453 schema56",
+    "frozen_migrations": [
+      55,
+      56
+    ],
+    "preview": "https://192.168.0.63:30467/login",
+    "api": "127.0.0.1:18087",
+    "unit": "ops-ui-v12-gpt-r13-api.service",
+    "web_container": "ops-ui-v12-gpt-r13-web-r3",
+    "runtime_evidence": "runtime-password.txt"
+  },
+  "checks": {
+    "full_mfa_users_mapping": "passed integration-seventh.log (467.85s MFA case plus HTTP case; seventh binary precedes final current-password error-code fix)",
+    "final_password_http": "passed http-password-error-final.log using final binary: code distinction, session survival, audit principal, namespace authorization and audit rollback",
+    "real_openbao": "passed bao-refresh-result.json; existing TLS/Raft key and exact role/policy retained; only task JWT refreshed",
+    "users_browser": "passed users-browser-result.json on initial r13 preview; actual Transit-backed proof, account persisted, no grants",
+    "first_password_browser": "completed assertions in first-password-browser-interrupted.json; harness interrupted only at logout; persistence independently checked",
+    "logout_browser": "passed logout-browser-result.json on final preview; login with rotated password, no default grants, logout200/session401/reload stays logged out",
+    "frontend": "31 tests in 5 files and build passed gpt-resume-r13-password-web-tests.log / password-web-build.log",
+    "go_contract": "httpapi/auth/identity/audit passed; error mirror contract initially failed and corrected; final targeted contract passed; full pre-fix failure log retained",
+    "installer": "partial local-only: ../gpt-installer-r12/result.json"
+  },
+  "production_fixes": [
+    "login/password audit takes actual persisted principal in same transaction",
+    "native namespace scopes accepted without widening to whole-cluster or admin scope",
+    "admin role grant sends explicit empty scope arrays per contract",
+    "password reset audit records expectedPasswordVersion without weakening secret filter",
+    "CURRENT_PASSWORD_INVALID preserves session only for wrong current password; UNAUTHENTICATED continues expiry"
+  ],
+  "preserved_failures": [
+    "integration-first.log: bootstrap duty guard rejected before mutation",
+    "integration-second.log: replay test generated a fresh code across a time boundary",
+    "integration-third.log: test assumed user: principal prefix",
+    "integration-fourth.log: first-password test expected200 instead of201",
+    "integration-fifth.log: administrator scope contract mismatch",
+    "integration-sixth.log: password reset audit secret-field rejection; rollback evidence retained",
+    "http-audit-regression.log: native namespace scope adaptation omission",
+    "preview-first-failure.log: non-root nginx TLS permission; failed container retained",
+    "first-password-browser-result.json: wrong current password incorrectly expired UI session",
+    "first-password-browser-interrupted.json: logout selector/promise harness failure after successful change",
+    "gpt-resume-r13-password-go.log: legacy error schema mirror mismatch, fixed and focused retest passed"
+  ],
+  "remaining": [
+    "P2-02/03/04/05 remain in_progress; per-state HTML/pixel and supplemental states not accepted",
+    "historical business ownership reads and current native scope rechecks",
+    "concurrent last-administrator and complete administrative fault-injection coverage",
+    "Job/Worker explicit native authority/user/version through persisted jobs and signatures",
+    "native first-tenant bootstrap and signed-bundle cold start/forward recovery",
+    "existing OPA reviewed-source digest mismatch blocks full bundle/opsctl qualification",
+    "namespace limit contract200 vs SQL100 must be aligned using57+ if SQL changes",
+    "SL-049 real-source resource/log sample and remaining modules"
+  ],
+  "product_acceptance_promoted": false,
+  "credentials": "remain only in remote private files; none copied into evidence",
+  "final_source": "source-current.json"
+}

@@ -1,0 +1,45 @@
+{
+  "task_id": "9e9eab8d-fc08-480d-8583-4c4d847e9ed6",
+  "reviewer": "Codex",
+  "date": "2026-10-21T09:12:54.576289+00:00",
+  "result": "changes_requested before any database execution",
+  "checks": [
+    {
+      "command": "go test ./internal/identity ./cmd/opsctl -run 'Password|LoginName|NativeAdministrator|PrivatePassword|FirstAdministrator|Secret' -count=1",
+      "result": "passed identity0.912s and CLI0.870s"
+    },
+    {
+      "command": "go test ./test/contract -count=1",
+      "result": "passed 27.944s"
+    }
+  ],
+  "findings": [
+    {
+      "id": "P2-R1-01",
+      "issue": "CreateFirstAdministrator inserts administrator_initializations.user_id before inserting accounts.user_id, but migration FK is immediate. Valid initialization fails before account creation; use a transaction/lock/reservation design with correct FK ordering and exactly-one concurrent winner."
+    },
+    {
+      "id": "P2-R1-02",
+      "issue": "requireNativeBootstrapDuty selects nonexistent pg_roles.r.olsuper (must rolsuper). CLI verifies NOINHERIT login but repository transaction never SET LOCAL ROLE migration_role; identity schema USAGE granted only API, not migration_role. Ordinary dedicated migration LOGIN cannot execute advertised bootstrap. Align true CLI LOGIN and transactional least-privilege role path, no persistent role or privilege widening."
+    },
+    {
+      "id": "P2-R1-03",
+      "issue": "find_login_account owned schema_owner remains subject to FORCE RLS, uses current_setting app.tenant_id and establishes no trusted tenant context; pre-login without context returns zero rows. record/clear failure have same context issue. Explicitly design restricted pre-auth tenant lookup vs internal context; do not grant BYPASSRLS or remove FORCE RLS. Count/lock writes must target the actual account and preserve newer lock state."
+    },
+    {
+      "id": "P2-R1-04",
+      "issue": "credentials/password_attempts/sessions/role_grants/subject_mappings reference accounts(user_id) only, not (tenant_id,user_id). Tenant-B row can attach to tenant-A account UUID; RLS validates row tenant but cannot enforce relationship. Add account composite uniqueness and tenant-bound FK on every child relation."
+    },
+    {
+      "id": "P2-R1-05",
+      "issue": "Native DB test gate checks only environment flag then delegates to generic SP03_TEST_DATABASE_URL helper; it does not refuse shared host/port/instance. Helper creates roles/databases on arbitrary configured PostgreSQL. Role test LOGIN defaults INHERIT, which masks production NOINHERIT failures. Add dedicated task-owned remote guard before mutations and true NOINHERIT roles, exact CLI exercise and cross-tenant relation rejection tests. No test execution authorized until reviewed."
+    }
+  ],
+  "other_failure": "OPA source-lock package failure is reported, but pre-existing attribution has not independently been reproduced at HEAD; retain as unresolved attribution, no unrelated lock changes.",
+  "not_proven": [
+    "SQL migration execution/permissions",
+    "actual CLI initialization",
+    "database concurrency/persistence/RLS/audit",
+    "native HTTP login/session/CSRF or runtime switch"
+  ]
+}

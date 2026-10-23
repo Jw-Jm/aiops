@@ -1,12 +1,7 @@
-import { Tag, Tooltip } from "antd";
-import {
-  CheckCircleOutlined,
-  ExclamationCircleOutlined,
-  MinusCircleOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
+import { Tooltip } from "antd";
 import { text } from "./data";
 import { stateLabel } from "./presentation";
+import { StatusPill } from "./v12/primitives";
 const meanings: Record<string, string> = {
   unknown: "未知：缺少可靠观测",
   partial: "部分结果：查询或证据不完整",
@@ -37,34 +32,26 @@ export function Status({ value, reason }: { value: unknown; reason?: string }) {
     "source_available",
     "archived_verified",
   ].includes(s);
-  // Null/absent values are neutral, not warnings. Compare the value, not the
-  // rendered label ("空值（null）"), which never matched the old "null" entry.
   const off =
-    value === null || value === undefined ||
+    value === null ||
+    value === undefined ||
     ["disabled", "unverified", "not_applicable"].includes(s);
-  const color = good
+  const tone = good
     ? "success"
     : off
-      ? "default"
+      ? "neutral"
       : ["failed", "conflicted", "execution_unknown"].includes(s)
-        ? "error"
+        ? "danger"
         : "warning";
-  const Icon = good
-    ? CheckCircleOutlined
-    : off
-      ? MinusCircleOutlined
-      : s === "running"
-        ? ClockCircleOutlined
-        : ExclamationCircleOutlined;
   return (
     <Tooltip
       title={[reason || meanings[s] || stateLabel(s), "系统状态：" + s].join(
         " · ",
       )}
     >
-      <Tag color={color} icon={<Icon />}>
-        {stateLabel(s)}
-      </Tag>
+      <span>
+        <StatusPill value={s} label={stateLabel(s)} tone={tone} />
+      </span>
     </Tooltip>
   );
 }

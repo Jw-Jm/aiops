@@ -1,0 +1,7 @@
+=== RUN   TestNativeIdentityGuardRejectsSharedOrOverriddenDSN
+--- PASS: TestNativeIdentityGuardRejectsSharedOrOverriddenDSN (0.00s)
+=== RUN   TestNativeIdentityRepositoryAndRoles
+2026/10/21 18:13:08 goose: no migrations to run. current version: 43
+    native_identity_test.go:136: apply native identity migrations: ERROR 00044_native_identity.sql: failed to run SQL migration: failed to execute SQL query "GRANT EXECUTE ON FUNCTION audit.append_record_v2(uuid, uuid, text, text, uuid, text, jsonb, bytea, timestamptz) TO migration_role;": ERROR: permission denied for function append_record_v2 (SQLSTATE 42501)
+--- FAIL: TestNativeIdentityRepositoryAndRoles (0.09s)
+FAIL

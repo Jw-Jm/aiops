@@ -1,0 +1,25 @@
+{
+  "task": "P1 R3 real integration boundary repair",
+  "date": "2026-10-21",
+  "review": "evidence/codex-p1-review-r3.json",
+  "fixes": {
+    "P1-R3-01": "Assistant integration mocks now use generated success envelopes ({status:201,headers,data:{data:{conversationId},meta}}); tests cover current-scope positive create navigation, cross-scope late success, unmount late success, and real SSE abort on scope change via controlled streamJSONEvents",
+    "P1-R3-02": "AppShell uses React Router useBlocker to pre-commit dirty cross-cluster navigation; the real AssistantPage stays mounted with its pathname/search/hash/object/draft until confirm or cancel; confirmed navigation commits the full target including hash, and unauthorized URL targets are gated before passive child requests",
+    "P1-R3-03": "AssistantPage tracks bound incidentId/canonicalId changes on the same scope and switches to troubleshoot without clearing unrelated drafts; real create body assertions cover mode, domain, cluster, incident and resource identity"
+  },
+  "tests": {
+    "vitest": "113 passed (28 files)",
+    "node_contracts": "6 passed",
+    "integration": "tests/v12/p1_assistant_integration.test.tsx covers dirty cancel/confirm, valid success envelopes, create bodies and SSE abort"
+  },
+  "build": "tsc --noEmit + vite build passed",
+  "not_verified": [
+    "remote browser/live API/persistence",
+    "model behavior",
+    "product six dimensions"
+  ],
+  "logs": [
+    "evidence/web-tests-p1-r4.log",
+    "evidence/web-build-p1-r4.log"
+  ]
+}

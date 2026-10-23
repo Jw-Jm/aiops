@@ -1,0 +1,29 @@
+=== go test ./internal/identity ./cmd/opsctl -run ...
+ok  	ops-platform/internal/identity	1.032s
+ok  	ops-platform/cmd/opsctl	1.200s
+unit_cli_rc=0
+=== go test ./test/contract -count=1
+ok  	ops-platform/test/contract	33.102s
+contract_rc=0
+=== go test ./test/integration -run NativeIdentity -count=1 -v
+=== RUN   TestNativeIdentityGuardRejectsSharedOrOverriddenDSN
+--- PASS: TestNativeIdentityGuardRejectsSharedOrOverriddenDSN (0.00s)
+=== RUN   TestNativeIdentityRepositoryAndRoles
+    native_identity_test.go:80: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not a database pass
+--- SKIP: TestNativeIdentityRepositoryAndRoles (0.00s)
+PASS
+ok  	ops-platform/test/integration	1.067s
+integration_local_rc=0
+=== GOOS=linux GOARCH=amd64 go test -c ./test/integration
+cross_test_rc=0
+92f28d49d61fc5df0328f3948328e3c819ba445b9f053cefad6a11c9ce48d129  /tmp/ops-ui-v12-native-identity-linux-final.test
+=== GOOS=linux GOARCH=amd64 go build ./cmd/opsctl
+cross_cli_rc=0
+ae5c8f704ca42ddd61951aa5348661cc20848b6ee2ff1a82a47a0aa24a40283d  /tmp/opsctl-linux-final
+=== go test ./cmd/opsctl -count=1 (OPA failure attribution unresolved)
+--- FAIL: TestBundleBuildCLIAndIndependentVerify (14.79s)
+    build_bundle_test.go:103: source material opa-sdk-source differs from the reviewed corresponding-source lock
+FAIL
+FAIL	ops-platform/cmd/opsctl	15.663s
+FAIL
+cmd_full_rc=1

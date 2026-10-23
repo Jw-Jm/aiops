@@ -11,6 +11,7 @@ import (
 	"io"
 	"net/http"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/authz"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/persistence"
 	"strconv"
@@ -72,13 +73,19 @@ func serveWorkerAudit(w http.ResponseWriter, r *http.Request, trust auth.Workloa
 	defer cancel()
 	authorize := func() error {
 		return persistence.WithTenantTx(ctx, pool, request.TenantID, func(tx pgx.Tx) error {
-			var active bool
 			var count int64
-			if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND role_name='platform_admin' AND status='active')`, request.TenantID, claims.Subject).Scan(&active); err != nil {
+			// This machine-to-machine path carries a signed graph context, not a
+			// browser session, so the shared layer resolves the legacy binding
+			// for the signed subject. It never accepts a browser-supplied role.
+			if err := authz.RequireAdmin(ctx, tx, auth.RequestContext{
+				TenantID: request.TenantID,
+				Subject:  claims.Subject,
+				Roles:    []auth.Role{auth.PlatformAdmin},
+			}); err != nil {
+				if errors.Is(err, authz.ErrUnauthorized) || errors.Is(err, authz.ErrIdentityMismatch) {
+					return auth.ErrForbidden
+				}
 				return err
-			}
-			if !active {
-				return auth.ErrForbidden
 			}
 			if err := tx.QueryRow(ctx, `SELECT count(*) FROM (SELECT 1 FROM audit.records WHERE tenant_id=$1 AND audit_seq BETWEEN $2 AND $3 LIMIT 201) budget`, request.TenantID, first, last).Scan(&count); err != nil {
 				return err

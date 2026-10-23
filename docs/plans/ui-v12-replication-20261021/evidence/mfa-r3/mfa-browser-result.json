@@ -1,0 +1,231 @@
+{
+  "origin": "https://192.168.0.63:30464",
+  "checks": [
+    "login renders for an unauthenticated browser",
+    "the first login of a fresh administrator is first-password-only without grants",
+    "the rotated password signs in and reaches the administrator shell",
+    "admin clusters 200, ungranted operator scope 403 FORBIDDEN, legacy bindings 0 rows",
+    "the account security route renders and reports the server-side MFA state",
+    "the enrolment URI is returned once and the status view never repeats it",
+    "a wrong password stays LoA1, password plus totp reaches LoA2 with a step-up session",
+    "the enrolment is confirmed, ten recovery codes are issued once and the session reports LoA2",
+    "the account security page shows the confirmed second factor",
+    "a failed revocation is reported with a controlled retry and keeps the local identity cleared",
+    "the controlled retry revokes the server session and the old cookie is rejected",
+    "the entry rate limit answers 429 with an error code"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a162f4-0eb5-76b3-9c48-a6492fdef339"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a162f4-0f83-7e5f-9e4f-b70a551002ca"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162f4-101f-7477-848a-00d06dce662a"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 201,
+      "requestId": "01a162f4-108c-7592-9873-ece443f06788"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a162f4-118e-79cd-b276-18acc58ca432"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a162f4-11be-7299-9609-df990630d4b1"
+    },
+    {
+      "path": "/api/v1/overview",
+      "status": 403,
+      "requestId": "01a162f4-11ca-7439-a905-8338aaa513f4"
+    },
+    {
+      "path": "/api/v1/admin/role-bindings",
+      "status": 200,
+      "requestId": "01a162f4-11e9-77b2-8b26-f3d563129f52"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162f4-1219-75a0-b5d4-93d318a32094"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162f4-126b-771b-99ba-38bb9942b16c"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a162f4-12c9-72ff-9770-0d77b87e847b"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a162f4-12c9-7d98-986c-6e921f57434a"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a162f4-12fa-719e-83c3-1216ae40432a"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a162f4-130e-7ce8-a1db-9771ee55cb0d"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a162f4-1320-7490-92d1-c98652053b51",
+      "status": 200,
+      "requestId": "01a162f4-132e-7ab2-b8e8-97ccf9b9adb9"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a162f4-133c-76ab-add8-fc1b1eaca587"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a162f4-134d-72af-a8a2-bb09c02a2c7f:verify",
+      "status": 200,
+      "requestId": "01a162f4-135b-7820-b442-c990f3e491c6"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a162f4-134d-72af-a8a2-bb09c02a2c7f:verify",
+      "status": 200,
+      "requestId": "01a162f4-13c0-725a-8762-fce2d927a47b"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a162f4-134d-72af-a8a2-bb09c02a2c7f:verify",
+      "status": 200,
+      "requestId": "01a162f4-142c-7008-907a-0cc8e2a3c6ab"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a162f4-1320-7490-92d1-c98652053b51:verify",
+      "status": 200,
+      "requestId": "01a162f4-1497-753d-baba-659d14cb3f4b"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a162f4-14d0-722d-8384-cd9cf9fe1145"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162f4-14dc-705e-ab16-1819c85f9dcd"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162f4-1516-730e-919c-404931b76404"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162f4-15a2-7889-ae4d-34de82e742fe"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a162f4-15ea-7097-8d03-9643e76ac5a0"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a162f4-15ea-78fc-8b9e-330f99e4c4e6"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162f4-166f-75ef-b757-2bd7492b6a54"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 500
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a162f4-175c-72e1-9315-ed1e99017608"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200,
+      "requestId": "01a162f4-1775-7a7b-873e-dc6f6eb5b307"
+    }
+  ],
+  "consoleErrors": [],
+  "failuresRetained": [],
+  "instance": {
+    "database": "127.0.0.1:15453",
+    "schemaVersion": 51,
+    "api": "127.0.0.1:18084"
+  },
+  "browser": "156.0.8078.4",
+  "firstOnly": {
+    "status": 200,
+    "mode": "first_password_only",
+    "url": "https://192.168.0.63:30464/auth/first-password"
+  },
+  "authorization": {
+    "adminClusters": {
+      "status": 200,
+      "count": 0,
+      "code": null
+    },
+    "operatorOverview": {
+      "status": 403,
+      "code": "FORBIDDEN"
+    },
+    "legacyBindings": {
+      "status": 200,
+      "count": 0
+    }
+  },
+  "sessionBefore": {
+    "acr": "urn:ops:loa:1",
+    "authMethods": [
+      "password"
+    ]
+  },
+  "mfaStatusBefore": {
+    "confirmedAt": null,
+    "enrollmentId": null,
+    "method": "totp",
+    "recoveryCodesRemaining": 0,
+    "state": "none"
+  },
+  "enrollment": {
+    "created": 201,
+    "view": 200,
+    "state": "pending_confirmation"
+  },
+  "revocation": {
+    "notice": true,
+    "retry": true,
+    "cookieKept": true,
+    "noticeAfterRetry": 0,
+    "cookieAfterRetry": 0
+  },
+  "rateLimit": {
+    "status": 429,
+    "body": {
+      "code": "RATE_LIMITED",
+      "message": "login is temporarily unavailable",
+      "requestId": "01a162f4-358c-781e-90e2-509785ddd523",
+      "retryable": false
+    }
+  },
+  "status": "PASS"
+}

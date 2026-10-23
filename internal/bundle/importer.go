@@ -147,6 +147,10 @@ func validateInstallProfile(p profile.ResolvedProfile, architecture string) erro
 }
 
 func planImages(v *verifiedPayload, p profile.ResolvedProfile) ([]ImageArtifact, error) {
+	return planImagesForIdentity(v, p, false)
+}
+
+func planImagesForIdentity(v *verifiedPayload, p profile.ResolvedProfile, native bool) ([]ImageArtifact, error) {
 	if err := validateInstallProfile(p, v.manifest.Architecture); err != nil {
 		return nil, err
 	}
@@ -179,7 +183,10 @@ func planImages(v *verifiedPayload, p profile.ResolvedProfile) ([]ImageArtifact,
 		externalFallback := false
 		if component, ok := p.Components[profileName]; ok {
 			if component.Mode == "disabled" {
-				return nil, fmt.Errorf("disabled material %s cannot be imported", material.Name)
+				if !native || material.Name != "keycloak" {
+					return nil, fmt.Errorf("disabled material %s cannot be imported", material.Name)
+				}
+				externalFallback = true
 			}
 			if component.Mode == "bundled" {
 				if component.Digest != digest || !strings.HasSuffix(component.Image, "@"+digest) || component.Version != material.Version {
@@ -191,7 +198,7 @@ func planImages(v *verifiedPayload, p profile.ResolvedProfile) ([]ImageArtifact,
 			// standard fallback archive is independently catalog locked and
 			// must not touch the external service's shared image cache. Its
 			// full OCI closure is still validated above before skipping import.
-			externalFallback = component.Mode == "external"
+			externalFallback = externalFallback || component.Mode == "external"
 		}
 		if reference == "" || !strings.HasSuffix(reference, "@"+digest) {
 			return nil, fmt.Errorf("OCI material %s needs an immutable image reference", material.Name)

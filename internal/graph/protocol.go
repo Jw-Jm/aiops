@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"ops-platform/gen/internalgraph"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/authz"
 	platformcontract "ops-platform/internal/contract"
 	"ops-platform/internal/observability"
 	"ops-platform/internal/persistence"
@@ -53,7 +54,17 @@ func EffectiveTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster string
 	if err != nil || subject == "" {
 		return out, ErrScope
 	}
-	if fenced {
+	native, isNative := auth.NativeSessionFromContext(ctx)
+	if isNative {
+		if native.Session.TenantID != tid || native.Session.Subject != subject {
+			return out, ErrScope
+		}
+		authorized, err := authz.NativeRoleAuthorized(ctx, tx, auth.RequestContext{TenantID: tid, Subject: subject}, "operator")
+		if err != nil || !authorized {
+			return out, ErrScope
+		}
+	}
+	if fenced && !isNative {
 		var locked bool
 		if err := tx.QueryRow(ctx, `SELECT platform.sp06_lock_authority($1,$2,$3)`, tid, subject, cluster).Scan(&locked); err != nil || !locked {
 			return out, ErrScope
@@ -64,42 +75,64 @@ func EffectiveTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster string
 	if err := tx.QueryRow(ctx, `SELECT c.cluster_id,c.revision,t.revision FROM platform.cluster_registrations c JOIN platform.tenants t USING(tenant_id) WHERE c.tenant_id=$1 AND c.cluster_uid=$2 AND c.status='active' AND t.status='active'`, tid, cluster).Scan(&clusterID, &clusterRevision, &tenantRevision); err != nil {
 		return out, ErrScope
 	}
-	rows, err := tx.Query(ctx, `SELECT binding_id,revision,cluster_scopes,namespace_scopes FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND status='active' AND role_name='operator' ORDER BY binding_id`, tid, subject)
-	if err != nil {
-		return out, err
-	}
-	defer rows.Close()
 	versions := []any{clusterRevision, tenantRevision}
-	for rows.Next() {
-		var id uuid.UUID
-		var revision int64
-		var clustersRaw, namespacesRaw []byte
-		if err := rows.Scan(&id, &revision, &clustersRaw, &namespacesRaw); err != nil {
-			return out, err
-		}
-		var clusters []uuid.UUID
-		var namespaces []auth.NamespaceScope
-		if json.Unmarshal(clustersRaw, &clusters) != nil || json.Unmarshal(namespacesRaw, &namespaces) != nil {
-			return out, ErrScope
-		}
-		versions = append(versions, id.String(), revision, clusters, namespaces)
-		if slices.Contains(clusters, clusterID) {
-			out.ClusterScoped = true
-		}
-		for _, ns := range namespaces {
-			if ns.ClusterID == clusterID && !slices.Contains(out.Namespaces, ns.Namespace) {
-				out.Namespaces = append(out.Namespaces, ns.Namespace)
+	if isNative {
+		versions = append(versions, "native", native.Session.UserID.String(), native.Session.AuthorizationVersion)
+		for _, grant := range native.Session.Grants {
+			if grant.Role != "operator" || !slices.Contains(grant.ClusterUIDs, cluster) {
+				continue
+			}
+			versions = append(versions, grant.BindingID.String(), grant.AuthorizationVersion, grant.ClusterUIDs, grant.Namespaces)
+			if len(grant.Namespaces) == 0 {
+				out.ClusterScoped = true
+			} else {
+				if len(grant.ClusterUIDs) != 1 {
+					return out, ErrScope
+				}
+				for _, namespace := range grant.Namespaces {
+					if !slices.Contains(out.Namespaces, namespace) {
+						out.Namespaces = append(out.Namespaces, namespace)
+					}
+				}
 			}
 		}
-	}
-	if err := rows.Err(); err != nil {
-		return out, err
+	} else {
+		rows, err := tx.Query(ctx, `SELECT binding_id,revision,cluster_scopes,namespace_scopes FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND status='active' AND role_name='operator' ORDER BY binding_id`, tid, subject)
+		if err != nil {
+			return out, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var id uuid.UUID
+			var revision int64
+			var clustersRaw, namespacesRaw []byte
+			if err := rows.Scan(&id, &revision, &clustersRaw, &namespacesRaw); err != nil {
+				return out, err
+			}
+			var clusters []uuid.UUID
+			var namespaces []auth.NamespaceScope
+			if json.Unmarshal(clustersRaw, &clusters) != nil || json.Unmarshal(namespacesRaw, &namespaces) != nil {
+				return out, ErrScope
+			}
+			versions = append(versions, id.String(), revision, clusters, namespaces)
+			if slices.Contains(clusters, clusterID) {
+				out.ClusterScoped = true
+			}
+			for _, ns := range namespaces {
+				if ns.ClusterID == clusterID && !slices.Contains(out.Namespaces, ns.Namespace) {
+					out.Namespaces = append(out.Namespaces, ns.Namespace)
+				}
+			}
+		}
+		if err := rows.Err(); err != nil {
+			return out, err
+		}
+		rows.Close()
 	}
 	if !out.ClusterScoped && len(out.Namespaces) == 0 {
 		return out, ErrScope
 	}
 	sort.Strings(out.Namespaces)
-	rows.Close()
 	sourceRows, err := tx.Query(ctx, `SELECT source_id,revision,status,source_type,backend_logical_id,data_scope_mapping FROM platform.source_registrations WHERE tenant_id=$1 AND (cluster_id=$2 OR data_scope_mapping->'scopes'->'cluster' ? $3) ORDER BY source_id`, tid, clusterID, cluster)
 	if err != nil {
 		return out, err

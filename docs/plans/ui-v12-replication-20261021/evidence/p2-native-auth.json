@@ -1,0 +1,112 @@
+{
+  "task": "P2-02 native HTTP login, server session, CSRF, first password change and Web integration R2",
+  "date": "2026-10-22",
+  "status": "code_unit_contract_build_only_r2",
+  "migration": {
+    "new_file": "migrations/00045_native_http_sessions.sql",
+    "migration_44_modified": false,
+    "executed": false,
+    "down": "none",
+    "r1_changes": [
+      "single-row login entry limiter table and FORCE RLS policy",
+      "issued_session_version bound to create/find/touch/revoke/change",
+      "RLS operations narrowed to exact session functions",
+      "revoke/change RETURN NEXT result rows",
+      "touch caps last_seen/idle at absolute boundary",
+      "change_own_password rechecks old session and versions under FOR UPDATE",
+      "record_known_login_failure with SQL threshold and lock preservation",
+      "resolve_cluster_ids and list_authorized_clusters for server-side cluster projection"
+    ],
+    "source_sha256": "de7652829bc786abf8c22aad3c3300c53a984a0c44eb8471879767b89844179d"
+  },
+  "implementation": {
+    "auth_mode": "runtime-config oidc default; native requires fixed deployment tenant; config failure does not start OIDC",
+    "cookie": "__Host-ops-session HttpOnly Secure SameSite=Strict Path=/; Set-Cookie before JSON body",
+    "csrf": "stable HMAC token derived from session token; DB stores SHA-256 digest only; recovered on GET session",
+    "login": "entry limiter, dummy Argon2id for unknown login, same 401, persistent known/unknown fence, locked account independent of source",
+    "session": "DB rechecks status/credential/session/authorization versions, absolute/idle expiry and revocation on every request",
+    "logout": "C-010 CSRF + expectedSessionVersion; revoke/version/cookie/audit in one tenant transaction",
+    "password_change": "C-011 currentPassword+newPassword+expectedCredentialVersion; old session/account FOR UPDATE recheck; rotate credential/session and audit atomically",
+    "origin": "unsafe cookie requests require exact configured public origin or direct same-origin evidence; Forwarded headers ignored",
+    "web": "no OIDC manager in native mode; server authorizedClusters drive session; expired/forbidden cleanup; generation guards late refresh; same-session refresh does not clear queries"
+  },
+  "checks": [
+    {
+      "command": "go test ./internal/identity ./internal/auth ./internal/httpapi ./internal/app -count=1",
+      "result": "pass"
+    },
+    {
+      "command": "go test ./test/contract -count=1",
+      "result": "pass"
+    },
+    {
+      "command": "go test ./test/integration -run 'NativeHTTPSession|NativeIdentity' -count=1",
+      "result": "compiled and SKIP; skip not DB/HTTP pass"
+    },
+    {
+      "command": "GOOS=linux GOARCH=amd64 go test -c ./test/integration",
+      "result": "pass; sha256 80f5a8c1cf04fca98ee32e56c0a16d91d9b1451b4d429ad6b7bc78d9b381e3fc"
+    },
+    {
+      "command": "GOOS=linux GOARCH=amd64 go build ./cmd/platform-api",
+      "result": "pass; sha256 dc700f4543fdf2bd90601687f26f149c083a0718835c359ece55e6b59969336c"
+    },
+    {
+      "command": "pnpm test",
+      "result": "pass; 6 Node SSE contract checks + 31 Vitest files / 129 tests"
+    },
+    {
+      "command": "pnpm build",
+      "result": "pass; TypeScript/Vite build, existing large chunk warning only"
+    }
+  ],
+  "test_coverage": {
+    "real_web_fetch": "native_fetch_login.test.tsx uses real AuthProvider/Login/FirstPassword/generated client with fetch replaced; asserts login URL/body, first-only, CSRF header/body, legacy OIDC, malformed mode, nativeLogin success and late logout success/failure",
+    "auth": "role-specific operator/admin scopes, namespaces, context values/cancellation, public origin, CSRF-derived restore",
+    "integration_code": "default-skip guarded HTTP chain plus session version invalidation, concurrent entry admission, concurrent known failures, projection rollback session/audit"
+  },
+  "not_executed": [
+    "migration 45",
+    "native HTTP server/runtime",
+    "real login/logout/password change",
+    "Web deployment/browser",
+    "30451/15449/15450/15451/shared"
+  ],
+  "remaining": [
+    "Codex review of migration 45 and session/auth/Web changes",
+    "fresh isolated migration 1..45 plus HTTP/DB integration",
+    "P2-03 MFA/step-up",
+    "P2-04 user administration/legacy subject mapping",
+    "P2-05 full-stack switch",
+    "product six dimensions"
+  ],
+  "source_sha256": {
+    "api/openapi/platform-v1.yaml": "5ecd07b5d0a8029b4f7fb466eaf30497029d388012af0371f7e3f1be3611138c",
+    "gen/api/openapi.gen.go": "079e2e1d7175f6364c63d057291869326785a2b63605c2a3f5346872ceb9a7d8",
+    "web/src/api/generated/platform.ts": "e5b68aa14635281b74b89ac256deaa16e6c4bf36b87bf140fd9dd7f4e1a09a77",
+    "internal/auth/native.go": "2d6c25149afa88a4684e395726485201eebae19974532b99fa0cf4d69ab3267f",
+    "internal/httpapi/native_auth.go": "0e95f09daeba92a7710e4ea81bdf23d4961c657071c1a23f5c4e918723413727",
+    "internal/identity/session.go": "2bac3358860c87bd1ae907ee55d36240a73d8ac6d16b511abc52bf9609c7ce2e",
+    "web/src/auth/AuthProvider.tsx": "64488eeb1cf0bc047a6e0e9a661de0546542475d001c88243a9895a2ff07add7",
+    "web/src/auth/guards.tsx": "3b5b7c3d5858ac0c19c85f7d2ac5d9bffedd45d01b85f2f23b16bd6a3ae70bc5",
+    "web/src/pages/Login.tsx": "d67a873e4fd0118bbf32458e5a39e842c9b25c4406685301233e2775bc94bfb6",
+    "web/src/pages/FirstPassword.tsx": "2d1cbc8ecf83af99e1ccf36d90813276b334c67575b0299e3111e6e4bf331ee8",
+    "web/src/auth/oidc.ts": "422b062c7bd20850b33a02f77e480afcfb58b4491573c0de315ceda4be9eb09d",
+    "web/src/api/client.ts": "0b672b05a6662f6f0596c1c976df18583f3699e2d31bd6f62a7d535cf878300f",
+    "web/tests/native_authprovider.test.tsx": "a9079b29b36ce38997f688ae0fb7eb1917d562f1d058b1ee305e63b01a1fe9f5",
+    "web/tests/native_fetch_login.test.tsx": "172709bf7809a0a749d11daf737390a3615783c953f9d43e0cb41ef2b2f77003",
+    "deploy/charts/ops-platform/templates/sp08.yaml": "2247030c813c4bdf9f3b694d40436b17f3a8f63663600104d8331e627c6e34ba",
+    "test/integration/native_http_session_test.go": "dac3167610020ed6e37b3d5d09bb719cd2cbe98ea2f8ea6a90125c379cbc403e"
+  },
+  "findings": {
+    "B1": "fixed: constructor entry defaults installed",
+    "B2": "fixed: passwordInput wired to real change transaction",
+    "B3": "fixed: middleware derives/verifies/restores CSRF from cookie",
+    "B4": "fixed: intentional clear does not dispatch expired; real nativeLogin and late logout tests",
+    "B5": "fixed: tenant RLS transaction, operator-only scopes, Web internal registered IDs",
+    "B6": "fixed: qualified SQL columns, account FOR UPDATE, change entry admission",
+    "B7": "fixed: projection/state in session transaction, active lookup checks issued_session_version",
+    "B8": "fixed: legacy OIDC runtime config, explicit invalid fail-closed, /login gating and safe role home",
+    "B9": "fixed: real active-admin count, schema zero, REVOKE PUBLIC"
+  }
+}

@@ -1,3 +1,8 @@
+import { useAuth } from "../../auth/AuthProvider";
+import {
+  administrativeWrite,
+  useNativeWriteProof,
+} from "../../auth/useNativeWriteProof";
 import { PolicyImpactPreview, type ImpactReceipt } from "./PolicyImpactPreview";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -34,6 +39,10 @@ export function RegistryEditor({
   ready: boolean;
   onChanged: () => void;
 }) {
+  const auth = useAuth();
+  const [writeAction, setWriteAction] = useState<
+    "create" | "update" | "activate" | "retire"
+  >("create");
   const [logicalName, setLogicalName] = useState("");
   const [content, setContent] = useState("");
   const [draftId, setDraftId] = useState("");
@@ -66,16 +75,71 @@ export function RegistryEditor({
       ? currentDraft.data.data
       : undefined;
 
+  let draftContent: Record<string, unknown> | undefined;
+  try {
+    draftContent = record(JSON.parse(content));
+  } catch {
+    /* Parse failures remain visible when submitting. */
+  }
+  const createBody: RegistryDraftCreateRequest = {
+    kind: "policy",
+    logicalName,
+    content: draftContent ?? {},
+  };
+  const updateBody = { expectedRevision, content: draftContent ?? {} };
+  const activationBody: RegistryActivationRequest = {
+    kind: "policy",
+    logicalName: text(selected?.logicalName),
+    versionId: targetVersion || text(selected?.versionId),
+    scopeType,
+    clusterId: scopeType === "tenant" ? null : clusterId,
+    namespace: scopeType === "namespace" ? namespace : undefined,
+    expectedRevision: impactReceipt?.revision ?? 0,
+  };
+  const retireBody = { expectedDigest: text(selected?.digest) };
+  const intent =
+    writeAction === "create"
+      ? draftContent && logicalName
+        ? administrativeWrite(
+            "registry_administration",
+            "POST",
+            "/api/v1/admin/registry-drafts",
+            createBody,
+          )
+        : undefined
+      : writeAction === "update"
+        ? draftContent && draftId
+          ? administrativeWrite(
+              "registry_administration",
+              "PATCH",
+              `/api/v1/admin/registry-drafts/${draftId}`,
+              updateBody,
+            )
+          : undefined
+        : writeAction === "activate"
+          ? impactReady
+            ? administrativeWrite(
+                "registry_administration",
+                "POST",
+                "/api/v1/admin/registry-activations",
+                activationBody,
+              )
+            : undefined
+          : selected?.versionId && selected?.digest
+            ? administrativeWrite(
+                "registry_administration",
+                "POST",
+                `/api/v1/admin/registry-versions/${text(selected.versionId)}:retire`,
+                retireBody,
+              )
+            : undefined;
+  const proof = useNativeWriteProof(intent, ready);
+  const canWrite = (action: typeof writeAction) =>
+    proof.ready && (auth.authMode !== "native" || writeAction === action);
   const created = useMutation({
     mutationFn: () => {
-      const body: RegistryDraftCreateRequest = {
-        kind: "policy",
-        logicalName,
-        content: record(JSON.parse(content)),
-      };
-      return checked(
-        createRegistryDraft(body, requestOptions(undefined, true)),
-      );
+      if (!draftContent) throw new Error("策略内容不是有效 JSON");
+      return checked(createRegistryDraft(createBody, proof.options()));
     },
     onSuccess: (r) => {
       const d = record(record(r).data);
@@ -87,13 +151,7 @@ export function RegistryEditor({
   });
   const updated = useMutation({
     mutationFn: () =>
-      checked(
-        updateRegistryDraft(
-          draftId,
-          { expectedRevision, content: record(JSON.parse(content)) },
-          requestOptions(undefined, true),
-        ),
-      ),
+      checked(updateRegistryDraft(draftId, updateBody, proof.options())),
     onSuccess: (r) => {
       setResult(record(r).data);
       setExpectedRevision(Number(record(record(r).data).revision));
@@ -104,18 +162,7 @@ export function RegistryEditor({
     mutationFn: () => {
       if (!impactReady || impactReceipt?.revision === undefined)
         throw new Error("请重新读取并核对影响预览");
-      const body: RegistryActivationRequest = {
-        kind: "policy",
-        logicalName: text(selected?.logicalName),
-        versionId: targetVersion || text(selected?.versionId),
-        scopeType,
-        clusterId: scopeType === "tenant" ? null : clusterId,
-        namespace: scopeType === "namespace" ? namespace : undefined,
-        expectedRevision: impactReceipt.revision,
-      };
-      return checked(
-        activateRegistryVersion(body, requestOptions(undefined, true)),
-      );
+      return checked(activateRegistryVersion(activationBody, proof.options()));
     },
     onSuccess: (r) => {
       setImpactReceipt(undefined);
@@ -128,8 +175,8 @@ export function RegistryEditor({
       checked(
         retireRegistryVersion(
           text(selected?.versionId),
-          { expectedDigest: text(selected?.digest) },
-          requestOptions(undefined, true),
+          retireBody,
+          proof.options(),
         ),
       ),
     onSuccess: (r) => {
@@ -139,6 +186,22 @@ export function RegistryEditor({
   });
   return (
     <>
+      {auth.authMode === "native" ? (
+        <section className="section">
+          <Select
+            aria-label="待验证策略操作"
+            value={writeAction}
+            onChange={setWriteAction}
+            options={[
+              { value: "create", label: "创建策略草稿" },
+              { value: "update", label: "更新草稿" },
+              { value: "activate", label: "激活或回滚版本" },
+              { value: "retire", label: "退役版本" },
+            ]}
+          />
+          {proof.verification}
+        </section>
+      ) : null}
       <section className="section">
         <h3>策略草稿</h3>
         <p>
@@ -184,7 +247,7 @@ export function RegistryEditor({
             重新读取草稿（保留本地修改）
           </Button>
           <Button
-            disabled={!ready || !logicalName || !content}
+            disabled={!canWrite("create") || !logicalName || !content}
             loading={created.isPending}
             onClick={() => created.mutate()}
           >
@@ -192,7 +255,7 @@ export function RegistryEditor({
           </Button>
           <Button
             aria-label="按修订号更新草稿"
-            disabled={!ready || !draftId || !content}
+            disabled={!canWrite("update") || !draftId || !content}
             loading={updated.isPending}
             onClick={() => updated.mutate()}
           >
@@ -309,7 +372,7 @@ export function RegistryEditor({
           <Space className="status-note">
             <Button
               disabled={
-                !ready ||
+                !canWrite("activate") ||
                 !impactReady ||
                 !selected.versionId ||
                 (scopeType !== "tenant" && !clusterId) ||
@@ -323,7 +386,7 @@ export function RegistryEditor({
             <Button
               danger
               disabled={
-                !ready ||
+                !canWrite("retire") ||
                 !selected.digest ||
                 selected.retiredAt != null ||
                 (typeof selected.referenceCount === "number" &&

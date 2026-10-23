@@ -25,7 +25,7 @@ func runOffline(ctx context.Context, args []string, install bool, stdout, stderr
 	foundationOnly := flags.Bool("foundation-only", false, "explicit historical foundation deployment; does not deliver SP04–SP06")
 	initializeCommands := flags.Bool("initialize-commands", false, "explicit first SP07 initialization during business activation after native PKI/SSH bootstrap")
 	stage := flags.String("stage", "", "current initialization phase: dependencies, bootstrap-api or business")
-	tokenPath := flags.String("registration-token-file", "", "repository-external private operator token for formal source binding verification")
+	tokenPath := flags.String("registration-token-file", "", "repository-external private session token (native) or operator bearer (legacy) for source binding verification")
 	offline := flags.Bool("offline", false, "require offline installation")
 	nodeName := flags.String("node-name", "", "containerd import-only: explicit local Kubernetes node name")
 	nodeUID := flags.String("node-uid", "", "containerd import-only: independently observed node UID")

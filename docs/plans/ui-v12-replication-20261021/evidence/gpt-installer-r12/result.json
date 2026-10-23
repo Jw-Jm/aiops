@@ -1,0 +1,31 @@
+{
+  "status": "partial_local_implementation",
+  "scope": [
+    "native business values and fixed-tenant/Profile boundary",
+    "runtime trust independent of OIDC",
+    "explicitly disabled Keycloak dependency render and image-cache skip after full OCI validation",
+    "native environment bootstrap requires only its own trust/secrets",
+    "source registration CLI uses private native session cookie over fixed controlled tunnel",
+    "business receipt digest binds native configuration"
+  ],
+  "checks": {
+    "focused_bundle": "passed: gpt-installer-r12-local-final.log and gpt-installer-r12-boundary-final.log (including full fallback OCI validation before native cache skip)",
+    "environment_bootstrap_unit": "passed: gpt-installer-r12-bootstrap.log",
+    "cli_credentials": "passed: gpt-installer-r12-registration.log",
+    "full_bundle": "failed: gpt-installer-r12-bundle.log; opa-sdk-source differs from payload source digest, existing material lock failure preserved",
+    "linux_cli_build": "passed: gpt-installer-r12-build.log; not deployed"
+  },
+  "not_verified": [
+    "signed bundle installation",
+    "native database/first tenant/administrator cold start",
+    "real CLI native registration verification",
+    "rollback/forward recovery",
+    "Job/Worker explicit native authority/user/version",
+    "real source/sample SL-049"
+  ],
+  "remaining": [
+    "first-tenant bootstrap CLI still requires OIDC; no native cold-start claim",
+    "existing source material mismatch must be resolved using reviewed provenance, not bypassed"
+  ],
+  "product_acceptance_promoted": false
+}

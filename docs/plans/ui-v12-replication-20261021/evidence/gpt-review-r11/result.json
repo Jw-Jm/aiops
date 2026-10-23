@@ -1,0 +1,65 @@
+{
+  "status": "local_verified_remote_pending",
+  "date": "2026-10-22",
+  "scope": "directed review and fixes across native roles/inventory, execution profile paging and Helm PKI config; not exhaustive repository security review",
+  "findings": [
+    {
+      "id": "R11-01",
+      "priority": "P1",
+      "problem": "role changes could revive another stale active grant by overwriting all active authorization versions",
+      "fix": "carry only independently current grants to the next account version",
+      "validation": "source review and guarded DB integration case compiled; SQL not executed"
+    },
+    {
+      "id": "R11-02",
+      "priority": "P1",
+      "problem": "OIDC+SP04 projected PKI without SP06 omitted OpenBao address/CA on API",
+      "fix": "wire API OpenBao env when openbao-kubernetes identity selected",
+      "validation": "Helm regression failed before fix and passed after; no runtime certificate issuance"
+    },
+    {
+      "id": "R11-03",
+      "priority": "P2",
+      "problem": "C-134 ignored cursor/limit and omitted nextCursor",
+      "fix": "page currently authorized profiles by exact ID/version and return metadata; invalid/hidden anchor rejected",
+      "validation": "HTTP/helper unit, contract, 13 relevant frontend tests and build; actual DB/browser still pending"
+    },
+    {
+      "id": "R11-04",
+      "priority": "P2",
+      "problem": "reviewer/legacy subject NUL could reach the DB after inventory parsing",
+      "fix": "reject NUL in parser before CLI DB connection",
+      "validation": "identity/parser and CLI focused tests passed"
+    }
+  ],
+  "checks": {
+    "go": "identity/httpapi/action/app full packages passed; complete test/contract passed; final OpenAPI/UIV12/native/OIDC/PKI contract checks passed",
+    "cli": "native inventory/admin/private file focused checks passed; full opsctl source-lock failure remains unresolved",
+    "web": "3 files / 13 targeted tests passed; final TypeScript/Vite build after regeneration passed; existing chunk-size and jsdom canvas warnings retained",
+    "linux": "latest API/opsctl and guarded integration binaries built, not executed remotely",
+    "progress": "177 contracts/458 states structural validation passed; no product dimension promoted"
+  },
+  "source": "source.json",
+  "review": "review.md",
+  "runtime": {
+    "remote_calls_this_round": false,
+    "codebuddy_dispatched": false,
+    "local_db_or_business_browser_run": false,
+    "last_independently_verified_db_schema": 54,
+    "unexecuted_migrations": [
+      55,
+      56
+    ]
+  },
+  "failed_check_preserved": "artifacts/test-reports/ui-v12-session-r2/gpt-review-r11-pki-regression-before.log",
+  "remaining": [
+    "SQL regression including stale grant, concurrency/last administrator/audit rollback on isolated remote DB",
+    "formal native Bundle installer/business-values/Profile alignment",
+    "Job/Worker explicit native authority/user/version and signed cross-process/current scope checks",
+    "historical business ownership reads and current permission checks",
+    "real cold start, actual source/resource/log sample SL-049 and HTML/browser acceptance",
+    "configuration catalog still loaded before filtering/pagination; large catalog performance unverified",
+    "preexisting full opsctl source-material lock mismatch"
+  ],
+  "task_status": "P2-04/P2-05 in_progress; no overall V1.2 acceptance"
+}

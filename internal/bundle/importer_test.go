@@ -164,6 +164,24 @@ components:
 	if _, err := planImages(v, p); err == nil || !strings.Contains(err.Error(), "catalog") {
 		t.Fatalf("catalog mismatch error=%v", err)
 	}
+	// Native mode skips only disabled Keycloak after validating its full fallback archive.
+	catalog.Components[0].Name = "keycloak"
+	v.manifest.Materials[0].Name = "keycloak"
+	v.manifest.Materials[0].Version = "1.0.0"
+	p = importProfile()
+	p.Components["keycloak"] = profile.ResolvedComponent{Mode: "disabled"}
+	if images, err := planImagesForIdentity(v, p, true); err != nil || len(images) != 0 {
+		t.Fatalf("native disabled Keycloak plan=%v error=%v", images, err)
+	}
+	if _, err := planImages(v, p); err == nil {
+		t.Fatal("legacy installation accepted disabled core identity material")
+	}
+	if err := os.WriteFile(filepath.Join(dir, "fallback.tar"), broken, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := planImagesForIdentity(v, p, true); err == nil || !strings.Contains(err.Error(), "layer") {
+		t.Fatalf("native mode skipped invalid Keycloak archive: %v", err)
+	}
 }
 
 func signedOCIImportFixture(t *testing.T, missingWorkerLayer bool) (Manifest, TrustRoot) {

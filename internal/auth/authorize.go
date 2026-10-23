@@ -62,7 +62,22 @@ func RequireOperatorScope(clusterID uuid.UUID, namespace string) func(http.Handl
 				writeAuthorizationError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "a verified request context is required", false, requestID)
 				return
 			}
-			if !containsRole(request.Roles, Operator) || !hasScope(request, clusterID, namespace) {
+			scopeGranted := hasScope(request, clusterID, namespace)
+			if _, native := NativeSessionFromContext(r.Context()); native {
+				// Native cluster scopes are whole-cluster grants; namespace grants stand alone.
+				scopeGranted = false
+				if clusterID != uuid.Nil {
+					for _, scope := range request.ClusterScopes {
+						scopeGranted = scopeGranted || scope == clusterID
+					}
+					if namespace != "" {
+						for _, scope := range request.NamespaceScopes {
+							scopeGranted = scopeGranted || scope.ClusterID == clusterID && scope.Namespace == namespace
+						}
+					}
+				}
+			}
+			if !containsRole(request.Roles, Operator) || !scopeGranted {
 				writeAuthorizationError(w, http.StatusForbidden, "FORBIDDEN", "the operator grant does not cover this resource scope", false, requestID)
 				return
 			}

@@ -77,16 +77,16 @@ func (e AssistantFaultChainRequestV1ReadOnlyCheckDirection) Valid() bool {
 
 // Defines values for AssistantMessageV1Role.
 const (
-	Assistant AssistantMessageV1Role = "assistant"
-	User      AssistantMessageV1Role = "user"
+	AssistantMessageV1RoleAssistant AssistantMessageV1Role = "assistant"
+	AssistantMessageV1RoleUser      AssistantMessageV1Role = "user"
 )
 
 // Valid indicates whether the value is a known member of the AssistantMessageV1Role enum.
 func (e AssistantMessageV1Role) Valid() bool {
 	switch e {
-	case Assistant:
+	case AssistantMessageV1RoleAssistant:
 		return true
-	case User:
+	case AssistantMessageV1RoleUser:
 		return true
 	default:
 		return false
@@ -113,34 +113,34 @@ func (e AssistantResolutionEnvelopeV1DataStatus) Valid() bool {
 
 // Defines values for AssistantTurnV1State.
 const (
-	AwaitingUser AssistantTurnV1State = "awaiting_user"
-	Cancelled    AssistantTurnV1State = "cancelled"
-	Completed    AssistantTurnV1State = "completed"
-	Expired      AssistantTurnV1State = "expired"
-	Failed       AssistantTurnV1State = "failed"
-	Partial      AssistantTurnV1State = "partial"
-	Queued       AssistantTurnV1State = "queued"
-	Running      AssistantTurnV1State = "running"
+	AssistantTurnV1StateAwaitingUser AssistantTurnV1State = "awaiting_user"
+	AssistantTurnV1StateCancelled    AssistantTurnV1State = "cancelled"
+	AssistantTurnV1StateCompleted    AssistantTurnV1State = "completed"
+	AssistantTurnV1StateExpired      AssistantTurnV1State = "expired"
+	AssistantTurnV1StateFailed       AssistantTurnV1State = "failed"
+	AssistantTurnV1StatePartial      AssistantTurnV1State = "partial"
+	AssistantTurnV1StateQueued       AssistantTurnV1State = "queued"
+	AssistantTurnV1StateRunning      AssistantTurnV1State = "running"
 )
 
 // Valid indicates whether the value is a known member of the AssistantTurnV1State enum.
 func (e AssistantTurnV1State) Valid() bool {
 	switch e {
-	case AwaitingUser:
+	case AssistantTurnV1StateAwaitingUser:
 		return true
-	case Cancelled:
+	case AssistantTurnV1StateCancelled:
 		return true
-	case Completed:
+	case AssistantTurnV1StateCompleted:
 		return true
-	case Expired:
+	case AssistantTurnV1StateExpired:
 		return true
-	case Failed:
+	case AssistantTurnV1StateFailed:
 		return true
-	case Partial:
+	case AssistantTurnV1StatePartial:
 		return true
-	case Queued:
+	case AssistantTurnV1StateQueued:
 		return true
-	case Running:
+	case AssistantTurnV1StateRunning:
 		return true
 	default:
 		return false
@@ -149,16 +149,16 @@ func (e AssistantTurnV1State) Valid() bool {
 
 // Defines values for AuthSessionV1Roles.
 const (
-	Operator      AuthSessionV1Roles = "operator"
-	PlatformAdmin AuthSessionV1Roles = "platform_admin"
+	AuthSessionV1RolesOperator      AuthSessionV1Roles = "operator"
+	AuthSessionV1RolesPlatformAdmin AuthSessionV1Roles = "platform_admin"
 )
 
 // Valid indicates whether the value is a known member of the AuthSessionV1Roles enum.
 func (e AuthSessionV1Roles) Valid() bool {
 	switch e {
-	case Operator:
+	case AuthSessionV1RolesOperator:
 		return true
-	case PlatformAdmin:
+	case AuthSessionV1RolesPlatformAdmin:
 		return true
 	default:
 		return false
@@ -345,6 +345,7 @@ const (
 	ErrorEnvelopeCodeCAPABILITYDISABLED              ErrorEnvelopeCode = "CAPABILITY_DISABLED"
 	ErrorEnvelopeCodeCOMMANDPOLICYDENIED             ErrorEnvelopeCode = "COMMAND_POLICY_DENIED"
 	ErrorEnvelopeCodeCONFLICT                        ErrorEnvelopeCode = "CONFLICT"
+	ErrorEnvelopeCodeCURRENTPASSWORDINVALID          ErrorEnvelopeCode = "CURRENT_PASSWORD_INVALID"
 	ErrorEnvelopeCodeCURSOREXPIRED                   ErrorEnvelopeCode = "CURSOR_EXPIRED"
 	ErrorEnvelopeCodeEXECUTIONPROFILEDENIED          ErrorEnvelopeCode = "EXECUTION_PROFILE_DENIED"
 	ErrorEnvelopeCodeEXECUTIONUNKNOWN                ErrorEnvelopeCode = "EXECUTION_UNKNOWN"
@@ -393,6 +394,8 @@ func (e ErrorEnvelopeCode) Valid() bool {
 	case ErrorEnvelopeCodeCOMMANDPOLICYDENIED:
 		return true
 	case ErrorEnvelopeCodeCONFLICT:
+		return true
+	case ErrorEnvelopeCodeCURRENTPASSWORDINVALID:
 		return true
 	case ErrorEnvelopeCodeCURSOREXPIRED:
 		return true
@@ -576,6 +579,69 @@ const (
 func (e HostOnboardingV1SchemaVersion) Valid() bool {
 	switch e {
 	case HostOnboardingv1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IdentityCsrfV1CookieName.
+const (
+	UnderscoreUnderscoreHostOpsSession IdentityCsrfV1CookieName = "__Host-ops-session"
+)
+
+// Valid indicates whether the value is a known member of the IdentityCsrfV1CookieName enum.
+func (e IdentityCsrfV1CookieName) Valid() bool {
+	switch e {
+	case UnderscoreUnderscoreHostOpsSession:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IdentityCsrfV1HeaderName.
+const (
+	XCSRFToken IdentityCsrfV1HeaderName = "X-CSRF-Token"
+)
+
+// Valid indicates whether the value is a known member of the IdentityCsrfV1HeaderName enum.
+func (e IdentityCsrfV1HeaderName) Valid() bool {
+	switch e {
+	case XCSRFToken:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IdentityCsrfV1SameSite.
+const (
+	Strict IdentityCsrfV1SameSite = "Strict"
+)
+
+// Valid indicates whether the value is a known member of the IdentityCsrfV1SameSite enum.
+func (e IdentityCsrfV1SameSite) Valid() bool {
+	switch e {
+	case Strict:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IdentityRoleGrantV1Role.
+const (
+	IdentityRoleGrantV1RoleOperator      IdentityRoleGrantV1Role = "operator"
+	IdentityRoleGrantV1RolePlatformAdmin IdentityRoleGrantV1Role = "platform_admin"
+)
+
+// Valid indicates whether the value is a known member of the IdentityRoleGrantV1Role enum.
+func (e IdentityRoleGrantV1Role) Valid() bool {
+	switch e {
+	case IdentityRoleGrantV1RoleOperator:
+		return true
+	case IdentityRoleGrantV1RolePlatformAdmin:
 		return true
 	default:
 		return false
@@ -845,13 +911,13 @@ func (e LegalHoldResultV1MetaFreshness) Valid() bool {
 
 // Defines values for LegalHoldResultV1ProtectionSync.
 const (
-	Pending LegalHoldResultV1ProtectionSync = "pending"
+	LegalHoldResultV1ProtectionSyncPending LegalHoldResultV1ProtectionSync = "pending"
 )
 
 // Valid indicates whether the value is a known member of the LegalHoldResultV1ProtectionSync enum.
 func (e LegalHoldResultV1ProtectionSync) Valid() bool {
 	switch e {
-	case Pending:
+	case LegalHoldResultV1ProtectionSyncPending:
 		return true
 	default:
 		return false
@@ -867,6 +933,615 @@ const (
 func (e LegalHoldResultV1SchemaVersion) Valid() bool {
 	switch e {
 	case LegalHoldResultv1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeAdminMFAResetResultV1MfaState.
+const (
+	NativeAdminMFAResetResultV1MfaStateResetRequired NativeAdminMFAResetResultV1MfaState = "reset_required"
+)
+
+// Valid indicates whether the value is a known member of the NativeAdminMFAResetResultV1MfaState enum.
+func (e NativeAdminMFAResetResultV1MfaState) Valid() bool {
+	switch e {
+	case NativeAdminMFAResetResultV1MfaStateResetRequired:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeMFAEnrollmentCreateRequestV1Method.
+const (
+	NativeMFAEnrollmentCreateRequestV1MethodTotp NativeMFAEnrollmentCreateRequestV1Method = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeMFAEnrollmentCreateRequestV1Method enum.
+func (e NativeMFAEnrollmentCreateRequestV1Method) Valid() bool {
+	switch e {
+	case NativeMFAEnrollmentCreateRequestV1MethodTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeMFAEnrollmentCreatedV1Method.
+const (
+	NativeMFAEnrollmentCreatedV1MethodTotp NativeMFAEnrollmentCreatedV1Method = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeMFAEnrollmentCreatedV1Method enum.
+func (e NativeMFAEnrollmentCreatedV1Method) Valid() bool {
+	switch e {
+	case NativeMFAEnrollmentCreatedV1MethodTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeMFAEnrollmentCreatedV1State.
+const (
+	NativeMFAEnrollmentCreatedV1StatePendingConfirmation NativeMFAEnrollmentCreatedV1State = "pending_confirmation"
+)
+
+// Valid indicates whether the value is a known member of the NativeMFAEnrollmentCreatedV1State enum.
+func (e NativeMFAEnrollmentCreatedV1State) Valid() bool {
+	switch e {
+	case NativeMFAEnrollmentCreatedV1StatePendingConfirmation:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeMFAEnrollmentVerifyResultV1State.
+const (
+	NativeMFAEnrollmentVerifyResultV1StateConfirmed NativeMFAEnrollmentVerifyResultV1State = "confirmed"
+)
+
+// Valid indicates whether the value is a known member of the NativeMFAEnrollmentVerifyResultV1State enum.
+func (e NativeMFAEnrollmentVerifyResultV1State) Valid() bool {
+	switch e {
+	case NativeMFAEnrollmentVerifyResultV1StateConfirmed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeMFAEnrollmentViewV1Method.
+const (
+	NativeMFAEnrollmentViewV1MethodTotp NativeMFAEnrollmentViewV1Method = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeMFAEnrollmentViewV1Method enum.
+func (e NativeMFAEnrollmentViewV1Method) Valid() bool {
+	switch e {
+	case NativeMFAEnrollmentViewV1MethodTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeMFAEnrollmentViewV1State.
+const (
+	NativeMFAEnrollmentViewV1StateConfirmed           NativeMFAEnrollmentViewV1State = "confirmed"
+	NativeMFAEnrollmentViewV1StateExpired             NativeMFAEnrollmentViewV1State = "expired"
+	NativeMFAEnrollmentViewV1StatePendingConfirmation NativeMFAEnrollmentViewV1State = "pending_confirmation"
+)
+
+// Valid indicates whether the value is a known member of the NativeMFAEnrollmentViewV1State enum.
+func (e NativeMFAEnrollmentViewV1State) Valid() bool {
+	switch e {
+	case NativeMFAEnrollmentViewV1StateConfirmed:
+		return true
+	case NativeMFAEnrollmentViewV1StateExpired:
+		return true
+	case NativeMFAEnrollmentViewV1StatePendingConfirmation:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeMFAStatusV1Method.
+const (
+	NativeMFAStatusV1MethodTotp NativeMFAStatusV1Method = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeMFAStatusV1Method enum.
+func (e NativeMFAStatusV1Method) Valid() bool {
+	switch e {
+	case NativeMFAStatusV1MethodTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeMFAStatusV1State.
+const (
+	NativeMFAStatusV1StateConfirmed           NativeMFAStatusV1State = "confirmed"
+	NativeMFAStatusV1StateExpired             NativeMFAStatusV1State = "expired"
+	NativeMFAStatusV1StateNone                NativeMFAStatusV1State = "none"
+	NativeMFAStatusV1StatePendingConfirmation NativeMFAStatusV1State = "pending_confirmation"
+	NativeMFAStatusV1StateResetRequired       NativeMFAStatusV1State = "reset_required"
+	NativeMFAStatusV1StateRevoked             NativeMFAStatusV1State = "revoked"
+)
+
+// Valid indicates whether the value is a known member of the NativeMFAStatusV1State enum.
+func (e NativeMFAStatusV1State) Valid() bool {
+	switch e {
+	case NativeMFAStatusV1StateConfirmed:
+		return true
+	case NativeMFAStatusV1StateExpired:
+		return true
+	case NativeMFAStatusV1StateNone:
+		return true
+	case NativeMFAStatusV1StatePendingConfirmation:
+		return true
+	case NativeMFAStatusV1StateResetRequired:
+		return true
+	case NativeMFAStatusV1StateRevoked:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeRecoveryVerifyResultV1Acr.
+const (
+	NativeRecoveryVerifyResultV1AcrUrnOpsLoa1 NativeRecoveryVerifyResultV1Acr = "urn:ops:loa:1"
+)
+
+// Valid indicates whether the value is a known member of the NativeRecoveryVerifyResultV1Acr enum.
+func (e NativeRecoveryVerifyResultV1Acr) Valid() bool {
+	switch e {
+	case NativeRecoveryVerifyResultV1AcrUrnOpsLoa1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeRecoveryVerifyResultV1ChallengeState.
+const (
+	NativeRecoveryVerifyResultV1ChallengeStateExpired  NativeRecoveryVerifyResultV1ChallengeState = "expired"
+	NativeRecoveryVerifyResultV1ChallengeStatePending  NativeRecoveryVerifyResultV1ChallengeState = "pending"
+	NativeRecoveryVerifyResultV1ChallengeStateRevoked  NativeRecoveryVerifyResultV1ChallengeState = "revoked"
+	NativeRecoveryVerifyResultV1ChallengeStateUsed     NativeRecoveryVerifyResultV1ChallengeState = "used"
+	NativeRecoveryVerifyResultV1ChallengeStateVerified NativeRecoveryVerifyResultV1ChallengeState = "verified"
+)
+
+// Valid indicates whether the value is a known member of the NativeRecoveryVerifyResultV1ChallengeState enum.
+func (e NativeRecoveryVerifyResultV1ChallengeState) Valid() bool {
+	switch e {
+	case NativeRecoveryVerifyResultV1ChallengeStateExpired:
+		return true
+	case NativeRecoveryVerifyResultV1ChallengeStatePending:
+		return true
+	case NativeRecoveryVerifyResultV1ChallengeStateRevoked:
+		return true
+	case NativeRecoveryVerifyResultV1ChallengeStateUsed:
+		return true
+	case NativeRecoveryVerifyResultV1ChallengeStateVerified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeRecoveryVerifyResultV1Method.
+const (
+	NativeRecoveryVerifyResultV1MethodRecoveryCode NativeRecoveryVerifyResultV1Method = "recovery_code"
+)
+
+// Valid indicates whether the value is a known member of the NativeRecoveryVerifyResultV1Method enum.
+func (e NativeRecoveryVerifyResultV1Method) Valid() bool {
+	switch e {
+	case NativeRecoveryVerifyResultV1MethodRecoveryCode:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeSessionViewV1Acr.
+const (
+	NativeSessionViewV1AcrUrnOpsLoa1 NativeSessionViewV1Acr = "urn:ops:loa:1"
+	NativeSessionViewV1AcrUrnOpsLoa2 NativeSessionViewV1Acr = "urn:ops:loa:2"
+)
+
+// Valid indicates whether the value is a known member of the NativeSessionViewV1Acr enum.
+func (e NativeSessionViewV1Acr) Valid() bool {
+	switch e {
+	case NativeSessionViewV1AcrUrnOpsLoa1:
+		return true
+	case NativeSessionViewV1AcrUrnOpsLoa2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeSessionViewV1AuthMethods.
+const (
+	NativeSessionViewV1AuthMethodsPassword     NativeSessionViewV1AuthMethods = "password"
+	NativeSessionViewV1AuthMethodsRecoveryCode NativeSessionViewV1AuthMethods = "recovery_code"
+	NativeSessionViewV1AuthMethodsTotp         NativeSessionViewV1AuthMethods = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeSessionViewV1AuthMethods enum.
+func (e NativeSessionViewV1AuthMethods) Valid() bool {
+	switch e {
+	case NativeSessionViewV1AuthMethodsPassword:
+		return true
+	case NativeSessionViewV1AuthMethodsRecoveryCode:
+		return true
+	case NativeSessionViewV1AuthMethodsTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeSessionViewV1Mode.
+const (
+	FirstPasswordOnly NativeSessionViewV1Mode = "first_password_only"
+	Full              NativeSessionViewV1Mode = "full"
+)
+
+// Valid indicates whether the value is a known member of the NativeSessionViewV1Mode enum.
+func (e NativeSessionViewV1Mode) Valid() bool {
+	switch e {
+	case FirstPasswordOnly:
+		return true
+	case Full:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpChallengeCreateRequestV1Operation.
+const (
+	NativeStepUpChallengeCreateRequestV1OperationClusterAdministration          NativeStepUpChallengeCreateRequestV1Operation = "cluster_administration"
+	NativeStepUpChallengeCreateRequestV1OperationCommandExecution               NativeStepUpChallengeCreateRequestV1Operation = "command_execution"
+	NativeStepUpChallengeCreateRequestV1OperationExecutionProfileAdministration NativeStepUpChallengeCreateRequestV1Operation = "execution_profile_administration"
+	NativeStepUpChallengeCreateRequestV1OperationMfaEnrollment                  NativeStepUpChallengeCreateRequestV1Operation = "mfa_enrollment"
+	NativeStepUpChallengeCreateRequestV1OperationMfaReset                       NativeStepUpChallengeCreateRequestV1Operation = "mfa_reset"
+	NativeStepUpChallengeCreateRequestV1OperationRecoveryCodeRegenerate         NativeStepUpChallengeCreateRequestV1Operation = "recovery_code_regenerate"
+	NativeStepUpChallengeCreateRequestV1OperationRegistryAdministration         NativeStepUpChallengeCreateRequestV1Operation = "registry_administration"
+	NativeStepUpChallengeCreateRequestV1OperationSourceAdministration           NativeStepUpChallengeCreateRequestV1Operation = "source_administration"
+	NativeStepUpChallengeCreateRequestV1OperationUserAdministration             NativeStepUpChallengeCreateRequestV1Operation = "user_administration"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpChallengeCreateRequestV1Operation enum.
+func (e NativeStepUpChallengeCreateRequestV1Operation) Valid() bool {
+	switch e {
+	case NativeStepUpChallengeCreateRequestV1OperationClusterAdministration:
+		return true
+	case NativeStepUpChallengeCreateRequestV1OperationCommandExecution:
+		return true
+	case NativeStepUpChallengeCreateRequestV1OperationExecutionProfileAdministration:
+		return true
+	case NativeStepUpChallengeCreateRequestV1OperationMfaEnrollment:
+		return true
+	case NativeStepUpChallengeCreateRequestV1OperationMfaReset:
+		return true
+	case NativeStepUpChallengeCreateRequestV1OperationRecoveryCodeRegenerate:
+		return true
+	case NativeStepUpChallengeCreateRequestV1OperationRegistryAdministration:
+		return true
+	case NativeStepUpChallengeCreateRequestV1OperationSourceAdministration:
+		return true
+	case NativeStepUpChallengeCreateRequestV1OperationUserAdministration:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpChallengeViewV1CompletedMethods.
+const (
+	NativeStepUpChallengeViewV1CompletedMethodsPassword NativeStepUpChallengeViewV1CompletedMethods = "password"
+	NativeStepUpChallengeViewV1CompletedMethodsTotp     NativeStepUpChallengeViewV1CompletedMethods = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpChallengeViewV1CompletedMethods enum.
+func (e NativeStepUpChallengeViewV1CompletedMethods) Valid() bool {
+	switch e {
+	case NativeStepUpChallengeViewV1CompletedMethodsPassword:
+		return true
+	case NativeStepUpChallengeViewV1CompletedMethodsTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpChallengeViewV1RequiredMethods.
+const (
+	NativeStepUpChallengeViewV1RequiredMethodsPassword NativeStepUpChallengeViewV1RequiredMethods = "password"
+	NativeStepUpChallengeViewV1RequiredMethodsTotp     NativeStepUpChallengeViewV1RequiredMethods = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpChallengeViewV1RequiredMethods enum.
+func (e NativeStepUpChallengeViewV1RequiredMethods) Valid() bool {
+	switch e {
+	case NativeStepUpChallengeViewV1RequiredMethodsPassword:
+		return true
+	case NativeStepUpChallengeViewV1RequiredMethodsTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpChallengeViewV1State.
+const (
+	NativeStepUpChallengeViewV1StateExpired  NativeStepUpChallengeViewV1State = "expired"
+	NativeStepUpChallengeViewV1StatePending  NativeStepUpChallengeViewV1State = "pending"
+	NativeStepUpChallengeViewV1StateRevoked  NativeStepUpChallengeViewV1State = "revoked"
+	NativeStepUpChallengeViewV1StateUsed     NativeStepUpChallengeViewV1State = "used"
+	NativeStepUpChallengeViewV1StateVerified NativeStepUpChallengeViewV1State = "verified"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpChallengeViewV1State enum.
+func (e NativeStepUpChallengeViewV1State) Valid() bool {
+	switch e {
+	case NativeStepUpChallengeViewV1StateExpired:
+		return true
+	case NativeStepUpChallengeViewV1StatePending:
+		return true
+	case NativeStepUpChallengeViewV1StateRevoked:
+		return true
+	case NativeStepUpChallengeViewV1StateUsed:
+		return true
+	case NativeStepUpChallengeViewV1StateVerified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpSessionV1VerifiedMethods.
+const (
+	NativeStepUpSessionV1VerifiedMethodsPassword NativeStepUpSessionV1VerifiedMethods = "password"
+	NativeStepUpSessionV1VerifiedMethodsTotp     NativeStepUpSessionV1VerifiedMethods = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpSessionV1VerifiedMethods enum.
+func (e NativeStepUpSessionV1VerifiedMethods) Valid() bool {
+	switch e {
+	case NativeStepUpSessionV1VerifiedMethodsPassword:
+		return true
+	case NativeStepUpSessionV1VerifiedMethodsTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpTargetV1Kind.
+const (
+	NativeStepUpTargetV1KindAdministrativeWrite NativeStepUpTargetV1Kind = "administrative_write"
+	NativeStepUpTargetV1KindClusterRegistration NativeStepUpTargetV1Kind = "cluster_registration"
+	NativeStepUpTargetV1KindExecutionProfile    NativeStepUpTargetV1Kind = "execution_profile"
+	NativeStepUpTargetV1KindK8sObject           NativeStepUpTargetV1Kind = "k8s_object"
+	NativeStepUpTargetV1KindMfaEnrollment       NativeStepUpTargetV1Kind = "mfa_enrollment"
+	NativeStepUpTargetV1KindRegistryObject      NativeStepUpTargetV1Kind = "registry_object"
+	NativeStepUpTargetV1KindSourceRegistration  NativeStepUpTargetV1Kind = "source_registration"
+	NativeStepUpTargetV1KindUser                NativeStepUpTargetV1Kind = "user"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpTargetV1Kind enum.
+func (e NativeStepUpTargetV1Kind) Valid() bool {
+	switch e {
+	case NativeStepUpTargetV1KindAdministrativeWrite:
+		return true
+	case NativeStepUpTargetV1KindClusterRegistration:
+		return true
+	case NativeStepUpTargetV1KindExecutionProfile:
+		return true
+	case NativeStepUpTargetV1KindK8sObject:
+		return true
+	case NativeStepUpTargetV1KindMfaEnrollment:
+		return true
+	case NativeStepUpTargetV1KindRegistryObject:
+		return true
+	case NativeStepUpTargetV1KindSourceRegistration:
+		return true
+	case NativeStepUpTargetV1KindUser:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpVerifyRequestV1Method.
+const (
+	NativeStepUpVerifyRequestV1MethodPassword NativeStepUpVerifyRequestV1Method = "password"
+	NativeStepUpVerifyRequestV1MethodTotp     NativeStepUpVerifyRequestV1Method = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpVerifyRequestV1Method enum.
+func (e NativeStepUpVerifyRequestV1Method) Valid() bool {
+	switch e {
+	case NativeStepUpVerifyRequestV1MethodPassword:
+		return true
+	case NativeStepUpVerifyRequestV1MethodTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpVerifyResultV1Acr.
+const (
+	NativeStepUpVerifyResultV1AcrUrnOpsLoa1 NativeStepUpVerifyResultV1Acr = "urn:ops:loa:1"
+	NativeStepUpVerifyResultV1AcrUrnOpsLoa2 NativeStepUpVerifyResultV1Acr = "urn:ops:loa:2"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpVerifyResultV1Acr enum.
+func (e NativeStepUpVerifyResultV1Acr) Valid() bool {
+	switch e {
+	case NativeStepUpVerifyResultV1AcrUrnOpsLoa1:
+		return true
+	case NativeStepUpVerifyResultV1AcrUrnOpsLoa2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpVerifyResultV1ChallengeState.
+const (
+	NativeStepUpVerifyResultV1ChallengeStateExpired  NativeStepUpVerifyResultV1ChallengeState = "expired"
+	NativeStepUpVerifyResultV1ChallengeStatePending  NativeStepUpVerifyResultV1ChallengeState = "pending"
+	NativeStepUpVerifyResultV1ChallengeStateRevoked  NativeStepUpVerifyResultV1ChallengeState = "revoked"
+	NativeStepUpVerifyResultV1ChallengeStateUsed     NativeStepUpVerifyResultV1ChallengeState = "used"
+	NativeStepUpVerifyResultV1ChallengeStateVerified NativeStepUpVerifyResultV1ChallengeState = "verified"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpVerifyResultV1ChallengeState enum.
+func (e NativeStepUpVerifyResultV1ChallengeState) Valid() bool {
+	switch e {
+	case NativeStepUpVerifyResultV1ChallengeStateExpired:
+		return true
+	case NativeStepUpVerifyResultV1ChallengeStatePending:
+		return true
+	case NativeStepUpVerifyResultV1ChallengeStateRevoked:
+		return true
+	case NativeStepUpVerifyResultV1ChallengeStateUsed:
+		return true
+	case NativeStepUpVerifyResultV1ChallengeStateVerified:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpVerifyResultV1CompletedMethods.
+const (
+	NativeStepUpVerifyResultV1CompletedMethodsPassword NativeStepUpVerifyResultV1CompletedMethods = "password"
+	NativeStepUpVerifyResultV1CompletedMethodsTotp     NativeStepUpVerifyResultV1CompletedMethods = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpVerifyResultV1CompletedMethods enum.
+func (e NativeStepUpVerifyResultV1CompletedMethods) Valid() bool {
+	switch e {
+	case NativeStepUpVerifyResultV1CompletedMethodsPassword:
+		return true
+	case NativeStepUpVerifyResultV1CompletedMethodsTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpVerifyResultV1FailureCode.
+const (
+	NativeStepUpVerifyResultV1FailureCodeAlreadyUsed       NativeStepUpVerifyResultV1FailureCode = "already_used"
+	NativeStepUpVerifyResultV1FailureCodeExpired           NativeStepUpVerifyResultV1FailureCode = "expired"
+	NativeStepUpVerifyResultV1FailureCodeInvalidCredential NativeStepUpVerifyResultV1FailureCode = "invalid_credential"
+	NativeStepUpVerifyResultV1FailureCodeLessThannil       NativeStepUpVerifyResultV1FailureCode = "<nil>"
+	NativeStepUpVerifyResultV1FailureCodeRevoked           NativeStepUpVerifyResultV1FailureCode = "revoked"
+	NativeStepUpVerifyResultV1FailureCodeTooManyAttempts   NativeStepUpVerifyResultV1FailureCode = "too_many_attempts"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpVerifyResultV1FailureCode enum.
+func (e NativeStepUpVerifyResultV1FailureCode) Valid() bool {
+	switch e {
+	case NativeStepUpVerifyResultV1FailureCodeAlreadyUsed:
+		return true
+	case NativeStepUpVerifyResultV1FailureCodeExpired:
+		return true
+	case NativeStepUpVerifyResultV1FailureCodeInvalidCredential:
+		return true
+	case NativeStepUpVerifyResultV1FailureCodeLessThannil:
+		return true
+	case NativeStepUpVerifyResultV1FailureCodeRevoked:
+		return true
+	case NativeStepUpVerifyResultV1FailureCodeTooManyAttempts:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeStepUpVerifyResultV1Method.
+const (
+	NativeStepUpVerifyResultV1MethodPassword NativeStepUpVerifyResultV1Method = "password"
+	NativeStepUpVerifyResultV1MethodTotp     NativeStepUpVerifyResultV1Method = "totp"
+)
+
+// Valid indicates whether the value is a known member of the NativeStepUpVerifyResultV1Method enum.
+func (e NativeStepUpVerifyResultV1Method) Valid() bool {
+	switch e {
+	case NativeStepUpVerifyResultV1MethodPassword:
+		return true
+	case NativeStepUpVerifyResultV1MethodTotp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeWriteRecheckV1Result.
+const (
+	NativeWriteRecheckV1ResultConflict NativeWriteRecheckV1Result = "conflict"
+	NativeWriteRecheckV1ResultFailed   NativeWriteRecheckV1Result = "failed"
+	NativeWriteRecheckV1ResultPassed   NativeWriteRecheckV1Result = "passed"
+)
+
+// Valid indicates whether the value is a known member of the NativeWriteRecheckV1Result enum.
+func (e NativeWriteRecheckV1Result) Valid() bool {
+	switch e {
+	case NativeWriteRecheckV1ResultConflict:
+		return true
+	case NativeWriteRecheckV1ResultFailed:
+		return true
+	case NativeWriteRecheckV1ResultPassed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NativeWriteRecheckV1WriteOperation.
+const (
+	NativeWriteRecheckV1WriteOperationClusterAdministration          NativeWriteRecheckV1WriteOperation = "cluster_administration"
+	NativeWriteRecheckV1WriteOperationCommandExecution               NativeWriteRecheckV1WriteOperation = "command_execution"
+	NativeWriteRecheckV1WriteOperationExecutionProfileAdministration NativeWriteRecheckV1WriteOperation = "execution_profile_administration"
+	NativeWriteRecheckV1WriteOperationMfaReset                       NativeWriteRecheckV1WriteOperation = "mfa_reset"
+	NativeWriteRecheckV1WriteOperationRegistryAdministration         NativeWriteRecheckV1WriteOperation = "registry_administration"
+	NativeWriteRecheckV1WriteOperationSourceAdministration           NativeWriteRecheckV1WriteOperation = "source_administration"
+	NativeWriteRecheckV1WriteOperationUserAdministration             NativeWriteRecheckV1WriteOperation = "user_administration"
+)
+
+// Valid indicates whether the value is a known member of the NativeWriteRecheckV1WriteOperation enum.
+func (e NativeWriteRecheckV1WriteOperation) Valid() bool {
+	switch e {
+	case NativeWriteRecheckV1WriteOperationClusterAdministration:
+		return true
+	case NativeWriteRecheckV1WriteOperationCommandExecution:
+		return true
+	case NativeWriteRecheckV1WriteOperationExecutionProfileAdministration:
+		return true
+	case NativeWriteRecheckV1WriteOperationMfaReset:
+		return true
+	case NativeWriteRecheckV1WriteOperationRegistryAdministration:
+		return true
+	case NativeWriteRecheckV1WriteOperationSourceAdministration:
+		return true
+	case NativeWriteRecheckV1WriteOperationUserAdministration:
 		return true
 	default:
 		return false
@@ -2837,6 +3512,51 @@ type HostOnboardingV1SchemaVersion string
 // Identifier defines model for Identifier.
 type Identifier = string
 
+// IdentityCsrfV1 defines model for IdentityCsrfV1.
+type IdentityCsrfV1 struct {
+	CookieName IdentityCsrfV1CookieName `json:"cookieName"`
+	HeaderName IdentityCsrfV1HeaderName `json:"headerName"`
+	SameSite   IdentityCsrfV1SameSite   `json:"sameSite"`
+	Token      string                   `json:"token"`
+}
+
+// IdentityCsrfV1CookieName defines model for IdentityCsrfV1.CookieName.
+type IdentityCsrfV1CookieName string
+
+// IdentityCsrfV1HeaderName defines model for IdentityCsrfV1.HeaderName.
+type IdentityCsrfV1HeaderName string
+
+// IdentityCsrfV1SameSite defines model for IdentityCsrfV1.SameSite.
+type IdentityCsrfV1SameSite string
+
+// IdentityRoleGrantV1 defines model for IdentityRoleGrantV1.
+type IdentityRoleGrantV1 struct {
+	AuthorizationVersion int                     `json:"authorizationVersion"`
+	BindingId            openapi_types.UUID      `json:"bindingId"`
+	GrantedAt            time.Time               `json:"grantedAt"`
+	RevokedAt            *time.Time              `json:"revokedAt"`
+	Role                 IdentityRoleGrantV1Role `json:"role"`
+	Scope                IdentityScopeV1         `json:"scope"`
+	TenantId             openapi_types.UUID      `json:"tenantId"`
+	UserId               openapi_types.UUID      `json:"userId"`
+}
+
+// IdentityRoleGrantV1Role defines model for IdentityRoleGrantV1.Role.
+type IdentityRoleGrantV1Role string
+
+// IdentityScopeV1 defines model for IdentityScopeV1.
+type IdentityScopeV1 struct {
+	ClusterUids []string `json:"clusterUids"`
+	Namespaces  []string `json:"namespaces"`
+}
+
+// IdentitySessionRevocationV1 defines model for IdentitySessionRevocationV1.
+type IdentitySessionRevocationV1 struct {
+	AuthorizationVersion int `json:"authorizationVersion"`
+	CredentialVersion    int `json:"credentialVersion"`
+	SessionVersion       int `json:"sessionVersion"`
+}
+
 // IncidentEvidencePageV2 defines model for IncidentEvidencePageV2.
 type IncidentEvidencePageV2 struct {
 	Data []EvidenceV2 `json:"data"`
@@ -3198,6 +3918,572 @@ type LegalHoldV1 struct {
 	EvidenceId openapi_types.UUID `json:"evidenceId"`
 	Hold       bool               `json:"hold"`
 }
+
+// NativeAccountSuccessV1 defines model for NativeAccountSuccessV1.
+type NativeAccountSuccessV1 struct {
+	Data      NativeIdentityAccountViewV1 `json:"data"`
+	RequestId string                      `json:"requestId"`
+}
+
+// NativeAdminMFAResetRequestV1 defines model for NativeAdminMFAResetRequestV1.
+type NativeAdminMFAResetRequestV1 struct {
+	ConfirmLoginName          string `json:"confirmLoginName"`
+	ExpectedCredentialVersion int    `json:"expectedCredentialVersion"`
+	ExpectedUserRevision      int    `json:"expectedUserRevision"`
+	Reason                    string `json:"reason"`
+	StepUp                    struct {
+		ChallengeId openapi_types.UUID `json:"challengeId"`
+		SessionRef  string             `json:"sessionRef"`
+	} `json:"stepUp"`
+	UserId openapi_types.UUID `json:"userId"`
+}
+
+// NativeAdminMFAResetResultV1 defines model for NativeAdminMFAResetResultV1.
+type NativeAdminMFAResetResultV1 struct {
+	AuditRecordId     openapi_types.UUID                  `json:"auditRecordId"`
+	CredentialVersion int                                 `json:"credentialVersion"`
+	MfaState          NativeAdminMFAResetResultV1MfaState `json:"mfaState"`
+	Revocation        IdentitySessionRevocationV1         `json:"revocation"`
+	SessionsRevoked   int                                 `json:"sessionsRevoked"`
+	UserId            openapi_types.UUID                  `json:"userId"`
+	WriteRecheck      NativeWriteRecheckV1                `json:"writeRecheck"`
+}
+
+// NativeAdminMFAResetResultV1MfaState defines model for NativeAdminMFAResetResultV1.MfaState.
+type NativeAdminMFAResetResultV1MfaState string
+
+// NativeAdminMFAResetSuccessV1 defines model for NativeAdminMFAResetSuccessV1.
+type NativeAdminMFAResetSuccessV1 struct {
+	Data      NativeAdminMFAResetResultV1 `json:"data"`
+	RequestId string                      `json:"requestId"`
+}
+
+// NativeAdminPasswordResetSuccessV1 defines model for NativeAdminPasswordResetSuccessV1.
+type NativeAdminPasswordResetSuccessV1 struct {
+	// Data The reset bumps the credential and session versions and forces a first-password change. sessionsRevoked may be zero if the target had no active sessions.
+	Data      NativeIdentityAdminPasswordResetResultV1 `json:"data"`
+	RequestId string                                   `json:"requestId"`
+}
+
+// NativeAdminRevocationSuccessV1 defines model for NativeAdminRevocationSuccessV1.
+type NativeAdminRevocationSuccessV1 struct {
+	Data      NativeIdentitySessionRevocationV1 `json:"data"`
+	RequestId string                            `json:"requestId"`
+}
+
+// NativeCommandStepUpBindingV1 defines model for NativeCommandStepUpBindingV1.
+type NativeCommandStepUpBindingV1 struct {
+	ActualCommandDigest     string             `json:"actualCommandDigest"`
+	AssessmentId            openapi_types.UUID `json:"assessmentId"`
+	ExecutionProfileId      openapi_types.UUID `json:"executionProfileId"`
+	ExecutionProfileVersion int                `json:"executionProfileVersion"`
+	ExecutionRequestDigest  string             `json:"executionRequestDigest"`
+	IncidentId              openapi_types.UUID `json:"incidentId"`
+	PolicyVersion           string             `json:"policyVersion"`
+	RiskAssessmentVersion   string             `json:"riskAssessmentVersion"`
+}
+
+// NativeIdentityAccountCreateRequestV1 Creation takes a login name, display name and initial password. The server always forces a password change on first sign-in; there is no email or one-time-link delivery flow. Tenant, subject and roles are assigned separately by the server and are unknown fields here.
+type NativeIdentityAccountCreateRequestV1 struct {
+	DisplayName     NativeIdentityDisplayNameV1 `json:"displayName"`
+	InitialPassword *NativeIdentityPasswordV1   `json:"initialPassword,omitempty"`
+	LoginName       NativeIdentityLoginNameV1   `json:"loginName"`
+}
+
+// NativeIdentityAccountUpdateRequestV1 A profile edit and a status change are independent intents. The last-administrator decision is made by the service inside the write transaction and returned as a conflict projection; no client-supplied administrator count, target flag or guard assertion is accepted.
+type NativeIdentityAccountUpdateRequestV1 struct {
+	DisplayName      *NativeIdentityDisplayNameV1 `json:"displayName,omitempty"`
+	ExpectedRevision NativeIdentityRevisionV1     `json:"expectedRevision"`
+	Status           interface{}                  `json:"status,omitempty"`
+	union            json.RawMessage
+}
+
+// NativeIdentityAccountUpdateRequestV10 defines model for NativeIdentityAccountUpdateRequestV1.0.
+type NativeIdentityAccountUpdateRequestV10 = interface{}
+
+// NativeIdentityAccountUpdateRequestV11 defines model for NativeIdentityAccountUpdateRequestV1.1.
+type NativeIdentityAccountUpdateRequestV11 = interface{}
+
+// NativeIdentityAccountViewV1 defines model for NativeIdentityAccountViewV1.
+type NativeIdentityAccountViewV1 struct {
+	AdministratorState struct {
+		ActiveAdministrators      int  `json:"activeAdministrators"`
+		IsAdministrator           bool `json:"isAdministrator"`
+		IsLastActiveAdministrator bool `json:"isLastActiveAdministrator"`
+	} `json:"administratorState"`
+	DisplayName        NativeIdentityDisplayNameV1       `json:"displayName"`
+	LoginName          NativeIdentityLoginNameV1         `json:"loginName"`
+	MustChangePassword bool                              `json:"mustChangePassword"`
+	Revision           NativeIdentityRevisionV1          `json:"revision"`
+	Revocation         NativeIdentitySessionRevocationV1 `json:"revocation"`
+	RoleGrants         []NativeIdentityRoleGrantViewV1   `json:"roleGrants"`
+	Status             interface{}                       `json:"status"`
+	Subject            string                            `json:"subject"`
+	UserId             openapi_types.UUID                `json:"userId"`
+}
+
+// NativeIdentityAdminPasswordResetRequestV1 Administrator password reset is a separate operation from profile/status editing. The target user comes from the path; the body carries the new initial password and both optimistic revisions. The server forces a change on next sign-in and revokes sessions.
+type NativeIdentityAdminPasswordResetRequestV1 struct {
+	ExpectedCredentialVersion NativeIdentityRevisionV1  `json:"expectedCredentialVersion"`
+	ExpectedRevision          NativeIdentityRevisionV1  `json:"expectedRevision"`
+	InitialPassword           *NativeIdentityPasswordV1 `json:"initialPassword,omitempty"`
+}
+
+// NativeIdentityAdminPasswordResetResultV1 The reset bumps the credential and session versions and forces a first-password change. sessionsRevoked may be zero if the target had no active sessions.
+type NativeIdentityAdminPasswordResetResultV1 struct {
+	AuditRecordId     openapi_types.UUID                `json:"auditRecordId"`
+	CredentialVersion NativeIdentityRevisionV1          `json:"credentialVersion"`
+	PasswordState     interface{}                       `json:"passwordState"`
+	Revocation        NativeIdentitySessionRevocationV1 `json:"revocation"`
+	SessionsRevoked   int                               `json:"sessionsRevoked"`
+	UserId            openapi_types.UUID                `json:"userId"`
+}
+
+// NativeIdentityDisplayNameV1 defines model for NativeIdentityDisplayNameV1.
+type NativeIdentityDisplayNameV1 = string
+
+// NativeIdentityLoginNameV1 defines model for NativeIdentityLoginNameV1.
+type NativeIdentityLoginNameV1 = string
+
+// NativeIdentityOptionalTimestampV1 defines model for NativeIdentityOptionalTimestampV1.
+type NativeIdentityOptionalTimestampV1 = time.Time
+
+// NativeIdentityPasswordV1 defines model for NativeIdentityPasswordV1.
+type NativeIdentityPasswordV1 = string
+
+// NativeIdentityRevisionV1 defines model for NativeIdentityRevisionV1.
+type NativeIdentityRevisionV1 = int
+
+// NativeIdentityRoleGrantStatusRequestV1 Native status change revokes one current binding at the user authorization version. Re-enabling uses a new explicit roleGrantRequest; legacy subject bindings are never mutated.
+type NativeIdentityRoleGrantStatusRequestV1 struct {
+	ExpectedRevision NativeIdentityRevisionV1 `json:"expectedRevision"`
+	Reason           string                   `json:"reason"`
+	Status           interface{}              `json:"status"`
+	UserId           openapi_types.UUID       `json:"userId"`
+}
+
+// NativeIdentityRoleGrantViewV1 defines model for NativeIdentityRoleGrantViewV1.
+type NativeIdentityRoleGrantViewV1 struct {
+	AuthorizationVersion NativeIdentityRevisionV1          `json:"authorizationVersion"`
+	BindingId            openapi_types.UUID                `json:"bindingId"`
+	GrantedAt            NativeIdentityTimestampV1         `json:"grantedAt"`
+	RevokedAt            NativeIdentityOptionalTimestampV1 `json:"revokedAt"`
+	Role                 interface{}                       `json:"role"`
+	Scope                NativeIdentityScopeV1             `json:"scope"`
+	TenantId             openapi_types.UUID                `json:"tenantId"`
+	UserId               openapi_types.UUID                `json:"userId"`
+}
+
+// NativeIdentityScopeV1 defines model for NativeIdentityScopeV1.
+type NativeIdentityScopeV1 struct {
+	ClusterUids []string `json:"clusterUids"`
+	Namespaces  []string `json:"namespaces"`
+}
+
+// NativeIdentitySessionRevocationRequestV1 defines model for NativeIdentitySessionRevocationRequestV1.
+type NativeIdentitySessionRevocationRequestV1 struct {
+	ExpectedSessionVersion NativeIdentityRevisionV1 `json:"expectedSessionVersion"`
+	Reason                 string                   `json:"reason"`
+}
+
+// NativeIdentitySessionRevocationV1 defines model for NativeIdentitySessionRevocationV1.
+type NativeIdentitySessionRevocationV1 struct {
+	AuthorizationVersion NativeIdentityRevisionV1 `json:"authorizationVersion"`
+	CredentialVersion    NativeIdentityRevisionV1 `json:"credentialVersion"`
+	SessionVersion       NativeIdentityRevisionV1 `json:"sessionVersion"`
+}
+
+// NativeIdentitySubjectMappingRequestV1 Historical subjects migrate only through an explicit, evidence-backed mapping. Matching by login name or display name is not part of this contract.
+type NativeIdentitySubjectMappingRequestV1 struct {
+	Basis                interface{}              `json:"basis"`
+	EvidenceDigest       string                   `json:"evidenceDigest"`
+	ExpectedUserRevision NativeIdentityRevisionV1 `json:"expectedUserRevision"`
+	LegacySubject        string                   `json:"legacySubject"`
+	UserId               openapi_types.UUID       `json:"userId"`
+}
+
+// NativeIdentitySubjectMappingViewV1 The mapping view carries the mapped historical subject and the evidence it was verified against. It has no role fields: roles are never inherited from a name.
+type NativeIdentitySubjectMappingViewV1 struct {
+	Basis          interface{}               `json:"basis"`
+	EvidenceDigest string                    `json:"evidenceDigest"`
+	LegacySubject  string                    `json:"legacySubject"`
+	MappedAt       NativeIdentityTimestampV1 `json:"mappedAt"`
+	MappingId      openapi_types.UUID        `json:"mappingId"`
+	TenantId       openapi_types.UUID        `json:"tenantId"`
+	UserId         openapi_types.UUID        `json:"userId"`
+}
+
+// NativeIdentityTimestampV1 defines model for NativeIdentityTimestampV1.
+type NativeIdentityTimestampV1 = time.Time
+
+// NativeLoginRequestV1 defines model for NativeLoginRequestV1.
+type NativeLoginRequestV1 struct {
+	DeviceLabel *string `json:"deviceLabel,omitempty"`
+	LoginName   string  `json:"loginName"`
+	Password    *string `json:"password,omitempty"`
+}
+
+// NativeLoginSuccessV1 defines model for NativeLoginSuccessV1.
+type NativeLoginSuccessV1 struct {
+	Data      NativeSessionViewV1 `json:"data"`
+	RequestId string              `json:"requestId"`
+}
+
+// NativeLogoutRequestV1 defines model for NativeLogoutRequestV1.
+type NativeLogoutRequestV1 struct {
+	ExpectedSessionVersion int    `json:"expectedSessionVersion"`
+	Reason                 string `json:"reason"`
+}
+
+// NativeLogoutSuccessV1 defines model for NativeLogoutSuccessV1.
+type NativeLogoutSuccessV1 struct {
+	Data      IdentitySessionRevocationV1 `json:"data"`
+	RequestId string                      `json:"requestId"`
+}
+
+// NativeMFAEnrollmentCreateRequestV1 defines model for NativeMFAEnrollmentCreateRequestV1.
+type NativeMFAEnrollmentCreateRequestV1 struct {
+	ExpectedCredentialVersion int                                      `json:"expectedCredentialVersion"`
+	Method                    NativeMFAEnrollmentCreateRequestV1Method `json:"method"`
+}
+
+// NativeMFAEnrollmentCreateRequestV1Method defines model for NativeMFAEnrollmentCreateRequestV1.Method.
+type NativeMFAEnrollmentCreateRequestV1Method string
+
+// NativeMFAEnrollmentCreatedSuccessV1 defines model for NativeMFAEnrollmentCreatedSuccessV1.
+type NativeMFAEnrollmentCreatedSuccessV1 struct {
+	Data      NativeMFAEnrollmentCreatedV1 `json:"data"`
+	RequestId string                       `json:"requestId"`
+}
+
+// NativeMFAEnrollmentCreatedV1 defines model for NativeMFAEnrollmentCreatedV1.
+type NativeMFAEnrollmentCreatedV1 struct {
+	CreatedAt    time.Time                          `json:"createdAt"`
+	EnrollmentId openapi_types.UUID                 `json:"enrollmentId"`
+	ExpiresAt    time.Time                          `json:"expiresAt"`
+	Method       NativeMFAEnrollmentCreatedV1Method `json:"method"`
+	OtpauthUri   string                             `json:"otpauthUri"`
+	State        NativeMFAEnrollmentCreatedV1State  `json:"state"`
+}
+
+// NativeMFAEnrollmentCreatedV1Method defines model for NativeMFAEnrollmentCreatedV1.Method.
+type NativeMFAEnrollmentCreatedV1Method string
+
+// NativeMFAEnrollmentCreatedV1State defines model for NativeMFAEnrollmentCreatedV1.State.
+type NativeMFAEnrollmentCreatedV1State string
+
+// NativeMFAEnrollmentVerifyRequestV1 defines model for NativeMFAEnrollmentVerifyRequestV1.
+type NativeMFAEnrollmentVerifyRequestV1 struct {
+	ExpectedEnrollmentRevision int `json:"expectedEnrollmentRevision"`
+	StepUp                     struct {
+		ChallengeId openapi_types.UUID `json:"challengeId"`
+		SessionRef  string             `json:"sessionRef"`
+	} `json:"stepUp"`
+	TotpCode string `json:"totpCode"`
+}
+
+// NativeMFAEnrollmentVerifyResultV1 defines model for NativeMFAEnrollmentVerifyResultV1.
+type NativeMFAEnrollmentVerifyResultV1 struct {
+	ConfirmedAt       time.Time          `json:"confirmedAt"`
+	CredentialVersion int                `json:"credentialVersion"`
+	EnrollmentId      openapi_types.UUID `json:"enrollmentId"`
+	RecoveryCodes     struct {
+		Codes []string `json:"codes"`
+	} `json:"recoveryCodes"`
+	State NativeMFAEnrollmentVerifyResultV1State `json:"state"`
+}
+
+// NativeMFAEnrollmentVerifyResultV1State defines model for NativeMFAEnrollmentVerifyResultV1.State.
+type NativeMFAEnrollmentVerifyResultV1State string
+
+// NativeMFAEnrollmentVerifySuccessV1 defines model for NativeMFAEnrollmentVerifySuccessV1.
+type NativeMFAEnrollmentVerifySuccessV1 struct {
+	Data      NativeMFAEnrollmentVerifyResultV1 `json:"data"`
+	RequestId string                            `json:"requestId"`
+}
+
+// NativeMFAEnrollmentViewSuccessV1 defines model for NativeMFAEnrollmentViewSuccessV1.
+type NativeMFAEnrollmentViewSuccessV1 struct {
+	Data      NativeMFAEnrollmentViewV1 `json:"data"`
+	RequestId string                    `json:"requestId"`
+}
+
+// NativeMFAEnrollmentViewV1 defines model for NativeMFAEnrollmentViewV1.
+type NativeMFAEnrollmentViewV1 struct {
+	ConfirmedAt  time.Time                       `json:"confirmedAt"`
+	CreatedAt    time.Time                       `json:"createdAt"`
+	EnrollmentId openapi_types.UUID              `json:"enrollmentId"`
+	ExpiresAt    time.Time                       `json:"expiresAt"`
+	Method       NativeMFAEnrollmentViewV1Method `json:"method"`
+	State        NativeMFAEnrollmentViewV1State  `json:"state"`
+}
+
+// NativeMFAEnrollmentViewV1Method defines model for NativeMFAEnrollmentViewV1.Method.
+type NativeMFAEnrollmentViewV1Method string
+
+// NativeMFAEnrollmentViewV1State defines model for NativeMFAEnrollmentViewV1.State.
+type NativeMFAEnrollmentViewV1State string
+
+// NativeMFAStatusSuccessV1 defines model for NativeMFAStatusSuccessV1.
+type NativeMFAStatusSuccessV1 struct {
+	Data      NativeMFAStatusV1 `json:"data"`
+	RequestId string            `json:"requestId"`
+}
+
+// NativeMFAStatusV1 defines model for NativeMFAStatusV1.
+type NativeMFAStatusV1 struct {
+	ConfirmedAt            time.Time               `json:"confirmedAt"`
+	EnrollmentId           openapi_types.UUID      `json:"enrollmentId"`
+	Method                 NativeMFAStatusV1Method `json:"method"`
+	RecoveryCodesRemaining int                     `json:"recoveryCodesRemaining"`
+	State                  NativeMFAStatusV1State  `json:"state"`
+}
+
+// NativeMFAStatusV1Method defines model for NativeMFAStatusV1.Method.
+type NativeMFAStatusV1Method string
+
+// NativeMFAStatusV1State defines model for NativeMFAStatusV1.State.
+type NativeMFAStatusV1State string
+
+// NativePasswordChangeRequestV1 defines model for NativePasswordChangeRequestV1.
+type NativePasswordChangeRequestV1 struct {
+	CurrentPassword           *string `json:"currentPassword,omitempty"`
+	ExpectedCredentialVersion int     `json:"expectedCredentialVersion"`
+	NewPassword               *string `json:"newPassword,omitempty"`
+}
+
+// NativeRecoveryVerifyRequestV1 defines model for NativeRecoveryVerifyRequestV1.
+type NativeRecoveryVerifyRequestV1 struct {
+	ChallengeId               openapi_types.UUID `json:"challengeId"`
+	ExpectedChallengeRevision int                `json:"expectedChallengeRevision"`
+	RecoveryCode              string             `json:"recoveryCode"`
+}
+
+// NativeRecoveryVerifyResultV1 defines model for NativeRecoveryVerifyResultV1.
+type NativeRecoveryVerifyResultV1 struct {
+	Acr                    NativeRecoveryVerifyResultV1Acr             `json:"acr"`
+	ChallengeRevision      *int                                        `json:"challengeRevision,omitempty"`
+	ChallengeState         *NativeRecoveryVerifyResultV1ChallengeState `json:"challengeState,omitempty"`
+	Method                 NativeRecoveryVerifyResultV1Method          `json:"method"`
+	MustReenrollMfa        bool                                        `json:"mustReenrollMfa"`
+	RecoveryCodesRemaining int                                         `json:"recoveryCodesRemaining"`
+	SessionsRevoked        int                                         `json:"sessionsRevoked"`
+	StepUpSession          any                                         `json:"stepUpSession"`
+	Verified               bool                                        `json:"verified"`
+}
+
+// NativeRecoveryVerifyResultV1Acr defines model for NativeRecoveryVerifyResultV1.Acr.
+type NativeRecoveryVerifyResultV1Acr string
+
+// NativeRecoveryVerifyResultV1ChallengeState defines model for NativeRecoveryVerifyResultV1.ChallengeState.
+type NativeRecoveryVerifyResultV1ChallengeState string
+
+// NativeRecoveryVerifyResultV1Method defines model for NativeRecoveryVerifyResultV1.Method.
+type NativeRecoveryVerifyResultV1Method string
+
+// NativeRecoveryVerifySuccessV1 defines model for NativeRecoveryVerifySuccessV1.
+type NativeRecoveryVerifySuccessV1 struct {
+	Data      NativeRecoveryVerifyResultV1 `json:"data"`
+	RequestId string                       `json:"requestId"`
+}
+
+// NativeSessionViewV1 defines model for NativeSessionViewV1.
+type NativeSessionViewV1 struct {
+	AbsoluteExpiresAt  time.Time              `json:"absoluteExpiresAt"`
+	AccountRevision    int                    `json:"accountRevision"`
+	Acr                NativeSessionViewV1Acr `json:"acr"`
+	AdministratorState struct {
+		ActiveAdministrators      int  `json:"activeAdministrators"`
+		IsAdministrator           bool `json:"isAdministrator"`
+		IsLastActiveAdministrator bool `json:"isLastActiveAdministrator"`
+	} `json:"administratorState"`
+	AuthMethods   []NativeSessionViewV1AuthMethods `json:"authMethods"`
+	Authorization struct {
+		Grants []IdentityRoleGrantV1 `json:"grants"`
+	} `json:"authorization"`
+	AuthorizedClusters []AuthorizedClusterV1   `json:"authorizedClusters"`
+	Csrf               IdentityCsrfV1          `json:"csrf"`
+	IdleExpiresAt      time.Time               `json:"idleExpiresAt"`
+	IssuedAt           time.Time               `json:"issuedAt"`
+	Mode               NativeSessionViewV1Mode `json:"mode"`
+	MustChangePassword bool                    `json:"mustChangePassword"`
+
+	// MustReenrollMfa Only MFA setup and logout are permitted until a new factor is confirmed.
+	MustReenrollMfa *bool                       `json:"mustReenrollMfa,omitempty"`
+	Revocation      IdentitySessionRevocationV1 `json:"revocation"`
+	SessionRef      string                      `json:"sessionRef"`
+	Subject         string                      `json:"subject"`
+	TenantId        openapi_types.UUID          `json:"tenantId"`
+}
+
+// NativeSessionViewV1Acr defines model for NativeSessionViewV1.Acr.
+type NativeSessionViewV1Acr string
+
+// NativeSessionViewV1AuthMethods defines model for NativeSessionViewV1.AuthMethods.
+type NativeSessionViewV1AuthMethods string
+
+// NativeSessionViewV1Mode defines model for NativeSessionViewV1.Mode.
+type NativeSessionViewV1Mode string
+
+// NativeStepUpChallengeCreateRequestV1 defines model for NativeStepUpChallengeCreateRequestV1.
+type NativeStepUpChallengeCreateRequestV1 struct {
+	Command                *NativeCommandStepUpBindingV1                 `json:"command,omitempty"`
+	ExpectedSessionVersion int                                           `json:"expectedSessionVersion"`
+	Operation              NativeStepUpChallengeCreateRequestV1Operation `json:"operation"`
+
+	// Target Operation target. administrative_write binds a proposed mutation without inventing an object ID or revision; service revision/version checks still apply. Native administrative writes additionally bind write.method, write.path and write.bodyDigest to the exact HTTP request. The verified challenge UUID is sent in X-Ops-Step-Up-Challenge; the server rechecks it inside the business transaction.
+	Target NativeStepUpTargetV1 `json:"target"`
+}
+
+// NativeStepUpChallengeCreateRequestV1Operation defines model for NativeStepUpChallengeCreateRequestV1.Operation.
+type NativeStepUpChallengeCreateRequestV1Operation string
+
+// NativeStepUpChallengeSuccessV1 defines model for NativeStepUpChallengeSuccessV1.
+type NativeStepUpChallengeSuccessV1 struct {
+	Data      NativeStepUpChallengeViewV1 `json:"data"`
+	RequestId string                      `json:"requestId"`
+}
+
+// NativeStepUpChallengeViewV1 defines model for NativeStepUpChallengeViewV1.
+type NativeStepUpChallengeViewV1 struct {
+	AttemptLimit      int                                           `json:"attemptLimit"`
+	BindingDigest     string                                        `json:"bindingDigest"`
+	ChallengeId       openapi_types.UUID                            `json:"challengeId"`
+	Command           *NativeCommandStepUpBindingV1                 `json:"command,omitempty"`
+	CompletedMethods  []NativeStepUpChallengeViewV1CompletedMethods `json:"completedMethods"`
+	CreatedAt         time.Time                                     `json:"createdAt"`
+	ExpiresAt         time.Time                                     `json:"expiresAt"`
+	Operation         string                                        `json:"operation"`
+	RemainingAttempts int                                           `json:"remainingAttempts"`
+	RequiredMethods   []NativeStepUpChallengeViewV1RequiredMethods  `json:"requiredMethods"`
+	Revision          int                                           `json:"revision"`
+	State             NativeStepUpChallengeViewV1State              `json:"state"`
+
+	// Target Operation target. administrative_write binds a proposed mutation without inventing an object ID or revision; service revision/version checks still apply. Native administrative writes additionally bind write.method, write.path and write.bodyDigest to the exact HTTP request. The verified challenge UUID is sent in X-Ops-Step-Up-Challenge; the server rechecks it inside the business transaction.
+	Target     NativeStepUpTargetV1 `json:"target"`
+	VerifiedAt time.Time            `json:"verifiedAt"`
+}
+
+// NativeStepUpChallengeViewV1CompletedMethods defines model for NativeStepUpChallengeViewV1.CompletedMethods.
+type NativeStepUpChallengeViewV1CompletedMethods string
+
+// NativeStepUpChallengeViewV1RequiredMethods defines model for NativeStepUpChallengeViewV1.RequiredMethods.
+type NativeStepUpChallengeViewV1RequiredMethods string
+
+// NativeStepUpChallengeViewV1State defines model for NativeStepUpChallengeViewV1.State.
+type NativeStepUpChallengeViewV1State string
+
+// NativeStepUpSessionV1 defines model for NativeStepUpSessionV1.
+type NativeStepUpSessionV1 struct {
+	AbsoluteExpiresAt time.Time                              `json:"absoluteExpiresAt"`
+	BindingDigest     string                                 `json:"bindingDigest"`
+	IdleExpiresAt     time.Time                              `json:"idleExpiresAt"`
+	Operation         string                                 `json:"operation"`
+	SessionRef        string                                 `json:"sessionRef"`
+	VerifiedMethods   []NativeStepUpSessionV1VerifiedMethods `json:"verifiedMethods"`
+}
+
+// NativeStepUpSessionV1VerifiedMethods defines model for NativeStepUpSessionV1.VerifiedMethods.
+type NativeStepUpSessionV1VerifiedMethods string
+
+// NativeStepUpTargetV1 Operation target. administrative_write binds a proposed mutation without inventing an object ID or revision; service revision/version checks still apply. Native administrative writes additionally bind write.method, write.path and write.bodyDigest to the exact HTTP request. The verified challenge UUID is sent in X-Ops-Step-Up-Challenge; the server rechecks it inside the business transaction.
+type NativeStepUpTargetV1 struct {
+	Kind                 NativeStepUpTargetV1Kind `json:"kind"`
+	Revision             *int                     `json:"revision,omitempty"`
+	AdditionalProperties map[string]interface{}   `json:"-"`
+}
+
+// NativeStepUpTargetV1Kind defines model for NativeStepUpTargetV1.Kind.
+type NativeStepUpTargetV1Kind string
+
+// NativeStepUpVerifyRequestV1 defines model for NativeStepUpVerifyRequestV1.
+type NativeStepUpVerifyRequestV1 struct {
+	Credential                *string                           `json:"credential,omitempty"`
+	ExpectedChallengeRevision int                               `json:"expectedChallengeRevision"`
+	Method                    NativeStepUpVerifyRequestV1Method `json:"method"`
+}
+
+// NativeStepUpVerifyRequestV1Method defines model for NativeStepUpVerifyRequestV1.Method.
+type NativeStepUpVerifyRequestV1Method string
+
+// NativeStepUpVerifyResultV1 defines model for NativeStepUpVerifyResultV1.
+type NativeStepUpVerifyResultV1 struct {
+	Acr               NativeStepUpVerifyResultV1Acr                `json:"acr"`
+	ChallengeState    NativeStepUpVerifyResultV1ChallengeState     `json:"challengeState"`
+	CompletedMethods  []NativeStepUpVerifyResultV1CompletedMethods `json:"completedMethods"`
+	FailureCode       NativeStepUpVerifyResultV1FailureCode        `json:"failureCode"`
+	Method            NativeStepUpVerifyResultV1Method             `json:"method"`
+	RemainingAttempts *int                                         `json:"remainingAttempts,omitempty"`
+	Revision          int                                          `json:"revision"`
+	StepUpSession     *NativeStepUpSessionV1                       `json:"stepUpSession"`
+	Verified          bool                                         `json:"verified"`
+	VerifiedAt        time.Time                                    `json:"verifiedAt"`
+}
+
+// NativeStepUpVerifyResultV1Acr defines model for NativeStepUpVerifyResultV1.Acr.
+type NativeStepUpVerifyResultV1Acr string
+
+// NativeStepUpVerifyResultV1ChallengeState defines model for NativeStepUpVerifyResultV1.ChallengeState.
+type NativeStepUpVerifyResultV1ChallengeState string
+
+// NativeStepUpVerifyResultV1CompletedMethods defines model for NativeStepUpVerifyResultV1.CompletedMethods.
+type NativeStepUpVerifyResultV1CompletedMethods string
+
+// NativeStepUpVerifyResultV1FailureCode defines model for NativeStepUpVerifyResultV1.FailureCode.
+type NativeStepUpVerifyResultV1FailureCode string
+
+// NativeStepUpVerifyResultV1Method defines model for NativeStepUpVerifyResultV1.Method.
+type NativeStepUpVerifyResultV1Method string
+
+// NativeStepUpVerifySuccessV1 defines model for NativeStepUpVerifySuccessV1.
+type NativeStepUpVerifySuccessV1 struct {
+	Data      NativeStepUpVerifyResultV1 `json:"data"`
+	RequestId string                     `json:"requestId"`
+}
+
+// NativeSubjectMappingSuccessV1 defines model for NativeSubjectMappingSuccessV1.
+type NativeSubjectMappingSuccessV1 struct {
+	// Data The mapping view carries the mapped historical subject and the evidence it was verified against. It has no role fields: roles are never inherited from a name.
+	Data      NativeIdentitySubjectMappingViewV1 `json:"data"`
+	RequestId string                             `json:"requestId"`
+}
+
+// NativeSubjectMappingsPageV1 defines model for NativeSubjectMappingsPageV1.
+type NativeSubjectMappingsPageV1 struct {
+	Data []NativeIdentitySubjectMappingViewV1 `json:"data"`
+	Meta struct {
+		NextCursor *openapi_types.UUID `json:"nextCursor,omitempty"`
+	} `json:"meta"`
+	RequestId string `json:"requestId"`
+}
+
+// NativeUsersPageV1 defines model for NativeUsersPageV1.
+type NativeUsersPageV1 struct {
+	Data []NativeIdentityAccountViewV1 `json:"data"`
+	Meta struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta"`
+	RequestId string `json:"requestId"`
+}
+
+// NativeWriteRecheckV1 defines model for NativeWriteRecheckV1.
+type NativeWriteRecheckV1 struct {
+	ActualCommandDigest  string                             `json:"actualCommandDigest"`
+	AuthorizationVersion int                                `json:"authorizationVersion"`
+	CheckedAt            time.Time                          `json:"checkedAt"`
+	CredentialVersion    int                                `json:"credentialVersion"`
+	ObjectDigest         string                             `json:"objectDigest"`
+	Result               NativeWriteRecheckV1Result         `json:"result"`
+	SessionDigest        string                             `json:"sessionDigest"`
+	WriteAttemptId       openapi_types.UUID                 `json:"writeAttemptId"`
+	WriteOperation       NativeWriteRecheckV1WriteOperation `json:"writeOperation"`
+}
+
+// NativeWriteRecheckV1Result defines model for NativeWriteRecheckV1.Result.
+type NativeWriteRecheckV1Result string
+
+// NativeWriteRecheckV1WriteOperation defines model for NativeWriteRecheckV1.WriteOperation.
+type NativeWriteRecheckV1WriteOperation string
 
 // OnboardExecutionHostRequest defines model for OnboardExecutionHostRequest.
 type OnboardExecutionHostRequest struct {
@@ -4050,6 +5336,11 @@ type CreateRoleBindingParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
+// SetOperatorRoleBindingStatusJSONBody defines parameters for SetOperatorRoleBindingStatus.
+type SetOperatorRoleBindingStatusJSONBody struct {
+	union json.RawMessage
+}
+
 // SetOperatorRoleBindingStatusParams defines parameters for SetOperatorRoleBindingStatus.
 type SetOperatorRoleBindingStatusParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
@@ -4086,6 +5377,20 @@ type RotateSourceCredentialParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
+// GetNativeSubjectMappingsParams defines parameters for GetNativeSubjectMappings.
+type GetNativeSubjectMappingsParams struct {
+	UserId        *openapi_types.UUID `form:"userId,omitempty" json:"userId,omitempty"`
+	LegacySubject *string             `form:"legacySubject,omitempty" json:"legacySubject,omitempty"`
+	Cursor        *openapi_types.UUID `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit         *int                `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// CreateNativeSubjectMappingParams defines parameters for CreateNativeSubjectMapping.
+type CreateNativeSubjectMappingParams struct {
+	IdempotencyKey      string             `json:"Idempotency-Key"`
+	XOpsStepUpChallenge openapi_types.UUID `json:"X-Ops-Step-Up-Challenge"`
+}
+
 // GetTenantsParams defines parameters for GetTenants.
 type GetTenantsParams struct {
 	// Cursor Opaque cursor for keyset pagination.
@@ -4104,6 +5409,36 @@ type GetToolsParams struct {
 	// Cursor Opaque cursor for keyset pagination.
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// GetNativeUsersParams defines parameters for GetNativeUsers.
+type GetNativeUsersParams struct {
+	Cursor *openapi_types.UUID `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *int                `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// CreateNativeUserParams defines parameters for CreateNativeUser.
+type CreateNativeUserParams struct {
+	IdempotencyKey      string             `json:"Idempotency-Key"`
+	XOpsStepUpChallenge openapi_types.UUID `json:"X-Ops-Step-Up-Challenge"`
+}
+
+// UpdateNativeUserParams defines parameters for UpdateNativeUser.
+type UpdateNativeUserParams struct {
+	IdempotencyKey      string             `json:"Idempotency-Key"`
+	XOpsStepUpChallenge openapi_types.UUID `json:"X-Ops-Step-Up-Challenge"`
+}
+
+// ResetNativeUserPasswordParams defines parameters for ResetNativeUserPassword.
+type ResetNativeUserPasswordParams struct {
+	IdempotencyKey      string             `json:"Idempotency-Key"`
+	XOpsStepUpChallenge openapi_types.UUID `json:"X-Ops-Step-Up-Challenge"`
+}
+
+// RevokeNativeUserSessionsParams defines parameters for RevokeNativeUserSessions.
+type RevokeNativeUserSessionsParams struct {
+	IdempotencyKey      string             `json:"Idempotency-Key"`
+	XOpsStepUpChallenge openapi_types.UUID `json:"X-Ops-Step-Up-Challenge"`
 }
 
 // GetAssistantCapabilitiesParams defines parameters for GetAssistantCapabilities.
@@ -4599,7 +5934,7 @@ type RetireRegistryVersionJSONRequestBody = RegistryVersionRetireRequest
 type CreateRoleBindingJSONRequestBody = JSONRequest
 
 // SetOperatorRoleBindingStatusJSONRequestBody defines body for SetOperatorRoleBindingStatus for application/json ContentType.
-type SetOperatorRoleBindingStatusJSONRequestBody = OperatorRoleBindingStatusUpdateRequest
+type SetOperatorRoleBindingStatusJSONRequestBody SetOperatorRoleBindingStatusJSONBody
 
 // CreateSourceRegistrationJSONRequestBody defines body for CreateSourceRegistration for application/json ContentType.
 type CreateSourceRegistrationJSONRequestBody = SourceRegistrationRequest
@@ -4613,8 +5948,26 @@ type RollbackSourceRegistrationJSONRequestBody = SourceRegistrationRollbackReque
 // RotateSourceCredentialJSONRequestBody defines body for RotateSourceCredential for application/json ContentType.
 type RotateSourceCredentialJSONRequestBody = SourceCredentialRotationRequest
 
+// CreateNativeSubjectMappingJSONRequestBody defines body for CreateNativeSubjectMapping for application/json ContentType.
+type CreateNativeSubjectMappingJSONRequestBody = NativeIdentitySubjectMappingRequestV1
+
 // CreateTenantJSONRequestBody defines body for CreateTenant for application/json ContentType.
 type CreateTenantJSONRequestBody = JSONRequest
+
+// CreateNativeUserJSONRequestBody defines body for CreateNativeUser for application/json ContentType.
+type CreateNativeUserJSONRequestBody = NativeIdentityAccountCreateRequestV1
+
+// UpdateNativeUserJSONRequestBody defines body for UpdateNativeUser for application/json ContentType.
+type UpdateNativeUserJSONRequestBody = NativeIdentityAccountUpdateRequestV1
+
+// ResetNativeUserMFAJSONRequestBody defines body for ResetNativeUserMFA for application/json ContentType.
+type ResetNativeUserMFAJSONRequestBody = NativeAdminMFAResetRequestV1
+
+// ResetNativeUserPasswordJSONRequestBody defines body for ResetNativeUserPassword for application/json ContentType.
+type ResetNativeUserPasswordJSONRequestBody = NativeIdentityAdminPasswordResetRequestV1
+
+// RevokeNativeUserSessionsJSONRequestBody defines body for RevokeNativeUserSessions for application/json ContentType.
+type RevokeNativeUserSessionsJSONRequestBody = NativeIdentitySessionRevocationRequestV1
 
 // CreateAssistantConversationJSONRequestBody defines body for CreateAssistantConversation for application/json ContentType.
 type CreateAssistantConversationJSONRequestBody = AssistantCreateConversationV1
@@ -4642,6 +5995,30 @@ type ResolveAssistantResourceJSONRequestBody = AssistantResolveResourceV1
 
 // CancelAssistantTurnJSONRequestBody defines body for CancelAssistantTurn for application/json ContentType.
 type CancelAssistantTurnJSONRequestBody = AssistantEmptyBodyV1
+
+// NativeLoginJSONRequestBody defines body for NativeLogin for application/json ContentType.
+type NativeLoginJSONRequestBody = NativeLoginRequestV1
+
+// NativeLogoutJSONRequestBody defines body for NativeLogout for application/json ContentType.
+type NativeLogoutJSONRequestBody = NativeLogoutRequestV1
+
+// CreateNativeMFAEnrollmentJSONRequestBody defines body for CreateNativeMFAEnrollment for application/json ContentType.
+type CreateNativeMFAEnrollmentJSONRequestBody = NativeMFAEnrollmentCreateRequestV1
+
+// VerifyNativeMFAEnrollmentJSONRequestBody defines body for VerifyNativeMFAEnrollment for application/json ContentType.
+type VerifyNativeMFAEnrollmentJSONRequestBody = NativeMFAEnrollmentVerifyRequestV1
+
+// VerifyNativeRecoveryCodeJSONRequestBody defines body for VerifyNativeRecoveryCode for application/json ContentType.
+type VerifyNativeRecoveryCodeJSONRequestBody = NativeRecoveryVerifyRequestV1
+
+// ChangeNativePasswordJSONRequestBody defines body for ChangeNativePassword for application/json ContentType.
+type ChangeNativePasswordJSONRequestBody = NativePasswordChangeRequestV1
+
+// CreateNativeStepUpChallengeJSONRequestBody defines body for CreateNativeStepUpChallenge for application/json ContentType.
+type CreateNativeStepUpChallengeJSONRequestBody = NativeStepUpChallengeCreateRequestV1
+
+// VerifyNativeStepUpChallengeJSONRequestBody defines body for VerifyNativeStepUpChallenge for application/json ContentType.
+type VerifyNativeStepUpChallengeJSONRequestBody = NativeStepUpVerifyRequestV1
 
 // CreateStepUpSessionJSONRequestBody defines body for CreateStepUpSession for application/json ContentType.
 type CreateStepUpSessionJSONRequestBody = CreateStepUpSessionJSONBody
@@ -4683,6 +6060,87 @@ type CancelInvestigationJSONRequestBody = CancelInvestigationJSONBody
 
 // IngestFindingV2JSONRequestBody defines body for IngestFindingV2 for application/json ContentType.
 type IngestFindingV2JSONRequestBody = FindingEnvelopeV2
+
+// Getter for additional properties for NativeStepUpTargetV1. Returns the specified
+// element and whether it was found
+func (a NativeStepUpTargetV1) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for NativeStepUpTargetV1
+func (a *NativeStepUpTargetV1) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for NativeStepUpTargetV1 to handle AdditionalProperties
+func (a *NativeStepUpTargetV1) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["kind"]; found {
+		err = json.Unmarshal(raw, &a.Kind)
+		if err != nil {
+			return fmt.Errorf("error reading 'kind': %w", err)
+		}
+		delete(object, "kind")
+	}
+
+	if raw, found := object["revision"]; found {
+		err = json.Unmarshal(raw, &a.Revision)
+		if err != nil {
+			return fmt.Errorf("error reading 'revision': %w", err)
+		}
+		delete(object, "revision")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for NativeStepUpTargetV1 to handle AdditionalProperties
+func (a NativeStepUpTargetV1) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	object["kind"], err = json.Marshal(a.Kind)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'kind': %w", err)
+	}
+
+	if a.Revision != nil {
+		object["revision"], err = json.Marshal(a.Revision)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'revision': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
 
 // Getter for additional properties for PageEnvelope_Meta. Returns the specified
 // element and whether it was found
@@ -5023,6 +6481,127 @@ func (t InvestigationStepV2_ArgsSummary_AdditionalProperties) MarshalJSON() ([]b
 
 func (t *InvestigationStepV2_ArgsSummary_AdditionalProperties) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsNativeIdentityAccountUpdateRequestV10 returns the union data inside the NativeIdentityAccountUpdateRequestV1 as a NativeIdentityAccountUpdateRequestV10
+func (t NativeIdentityAccountUpdateRequestV1) AsNativeIdentityAccountUpdateRequestV10() (NativeIdentityAccountUpdateRequestV10, error) {
+	var body NativeIdentityAccountUpdateRequestV10
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNativeIdentityAccountUpdateRequestV10 overwrites any union data inside the NativeIdentityAccountUpdateRequestV1 as the provided NativeIdentityAccountUpdateRequestV10
+func (t *NativeIdentityAccountUpdateRequestV1) FromNativeIdentityAccountUpdateRequestV10(v NativeIdentityAccountUpdateRequestV10) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNativeIdentityAccountUpdateRequestV10 performs a merge with any union data inside the NativeIdentityAccountUpdateRequestV1, using the provided NativeIdentityAccountUpdateRequestV10
+func (t *NativeIdentityAccountUpdateRequestV1) MergeNativeIdentityAccountUpdateRequestV10(v NativeIdentityAccountUpdateRequestV10) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNativeIdentityAccountUpdateRequestV11 returns the union data inside the NativeIdentityAccountUpdateRequestV1 as a NativeIdentityAccountUpdateRequestV11
+func (t NativeIdentityAccountUpdateRequestV1) AsNativeIdentityAccountUpdateRequestV11() (NativeIdentityAccountUpdateRequestV11, error) {
+	var body NativeIdentityAccountUpdateRequestV11
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNativeIdentityAccountUpdateRequestV11 overwrites any union data inside the NativeIdentityAccountUpdateRequestV1 as the provided NativeIdentityAccountUpdateRequestV11
+func (t *NativeIdentityAccountUpdateRequestV1) FromNativeIdentityAccountUpdateRequestV11(v NativeIdentityAccountUpdateRequestV11) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNativeIdentityAccountUpdateRequestV11 performs a merge with any union data inside the NativeIdentityAccountUpdateRequestV1, using the provided NativeIdentityAccountUpdateRequestV11
+func (t *NativeIdentityAccountUpdateRequestV1) MergeNativeIdentityAccountUpdateRequestV11(v NativeIdentityAccountUpdateRequestV11) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t NativeIdentityAccountUpdateRequestV1) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	object := make(map[string]json.RawMessage)
+	if t.union != nil {
+		err = json.Unmarshal(b, &object)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if t.DisplayName != nil {
+		object["displayName"], err = json.Marshal(t.DisplayName)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'displayName': %w", err)
+		}
+	}
+
+	object["expectedRevision"], err = json.Marshal(t.ExpectedRevision)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'expectedRevision': %w", err)
+	}
+
+	object["status"], err = json.Marshal(t.Status)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'status': %w", err)
+	}
+
+	b, err = json.Marshal(object)
+	return b, err
+}
+
+func (t *NativeIdentityAccountUpdateRequestV1) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	if err != nil {
+		return err
+	}
+	object := make(map[string]json.RawMessage)
+	err = json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["displayName"]; found {
+		err = json.Unmarshal(raw, &t.DisplayName)
+		if err != nil {
+			return fmt.Errorf("error reading 'displayName': %w", err)
+		}
+	}
+
+	if raw, found := object["expectedRevision"]; found {
+		err = json.Unmarshal(raw, &t.ExpectedRevision)
+		if err != nil {
+			return fmt.Errorf("error reading 'expectedRevision': %w", err)
+		}
+	}
+
+	if raw, found := object["status"]; found {
+		err = json.Unmarshal(raw, &t.Status)
+		if err != nil {
+			return fmt.Errorf("error reading 'status': %w", err)
+		}
+	}
+
 	return err
 }
 
@@ -5720,6 +7299,68 @@ func (t CreateLegalHolddefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
 }
 
 func (t *CreateLegalHolddefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsOperatorRoleBindingStatusUpdateRequest returns the union data inside the SetOperatorRoleBindingStatusJSONBody as a OperatorRoleBindingStatusUpdateRequest
+func (t SetOperatorRoleBindingStatusJSONBody) AsOperatorRoleBindingStatusUpdateRequest() (OperatorRoleBindingStatusUpdateRequest, error) {
+	var body OperatorRoleBindingStatusUpdateRequest
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOperatorRoleBindingStatusUpdateRequest overwrites any union data inside the SetOperatorRoleBindingStatusJSONBody as the provided OperatorRoleBindingStatusUpdateRequest
+func (t *SetOperatorRoleBindingStatusJSONBody) FromOperatorRoleBindingStatusUpdateRequest(v OperatorRoleBindingStatusUpdateRequest) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOperatorRoleBindingStatusUpdateRequest performs a merge with any union data inside the SetOperatorRoleBindingStatusJSONBody, using the provided OperatorRoleBindingStatusUpdateRequest
+func (t *SetOperatorRoleBindingStatusJSONBody) MergeOperatorRoleBindingStatusUpdateRequest(v OperatorRoleBindingStatusUpdateRequest) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNativeIdentityRoleGrantStatusRequestV1 returns the union data inside the SetOperatorRoleBindingStatusJSONBody as a NativeIdentityRoleGrantStatusRequestV1
+func (t SetOperatorRoleBindingStatusJSONBody) AsNativeIdentityRoleGrantStatusRequestV1() (NativeIdentityRoleGrantStatusRequestV1, error) {
+	var body NativeIdentityRoleGrantStatusRequestV1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNativeIdentityRoleGrantStatusRequestV1 overwrites any union data inside the SetOperatorRoleBindingStatusJSONBody as the provided NativeIdentityRoleGrantStatusRequestV1
+func (t *SetOperatorRoleBindingStatusJSONBody) FromNativeIdentityRoleGrantStatusRequestV1(v NativeIdentityRoleGrantStatusRequestV1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeNativeIdentityRoleGrantStatusRequestV1 performs a merge with any union data inside the SetOperatorRoleBindingStatusJSONBody, using the provided NativeIdentityRoleGrantStatusRequestV1
+func (t *SetOperatorRoleBindingStatusJSONBody) MergeNativeIdentityRoleGrantStatusRequestV1(v NativeIdentityRoleGrantStatusRequestV1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SetOperatorRoleBindingStatusJSONBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *SetOperatorRoleBindingStatusJSONBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -7611,6 +9252,12 @@ type ServerInterface interface {
 	// RotateSourceCredential rotateSourceCredential
 	// (POST /api/v1/admin/source-registrations/{sourceId}/rotate-credential)
 	RotateSourceCredential(w http.ResponseWriter, r *http.Request, sourceId Identifier, params RotateSourceCredentialParams)
+
+	// (GET /api/v1/admin/subject-mappings)
+	GetNativeSubjectMappings(w http.ResponseWriter, r *http.Request, params GetNativeSubjectMappingsParams)
+
+	// (POST /api/v1/admin/subject-mappings)
+	CreateNativeSubjectMapping(w http.ResponseWriter, r *http.Request, params CreateNativeSubjectMappingParams)
 	// GetTenants getTenants
 	// (GET /api/v1/admin/tenants)
 	GetTenants(w http.ResponseWriter, r *http.Request, params GetTenantsParams)
@@ -7620,6 +9267,24 @@ type ServerInterface interface {
 	// GetTools getTools
 	// (GET /api/v1/admin/tools)
 	GetTools(w http.ResponseWriter, r *http.Request, params GetToolsParams)
+
+	// (GET /api/v1/admin/users)
+	GetNativeUsers(w http.ResponseWriter, r *http.Request, params GetNativeUsersParams)
+
+	// (POST /api/v1/admin/users)
+	CreateNativeUser(w http.ResponseWriter, r *http.Request, params CreateNativeUserParams)
+
+	// (PATCH /api/v1/admin/users/{userId})
+	UpdateNativeUser(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID, params UpdateNativeUserParams)
+	// ResetNativeUserMFA Administrator MFA reset with a target-bound high-risk step-up, version bumps and audit in one transaction.
+	// (POST /api/v1/admin/users/{userId}/mfa:reset)
+	ResetNativeUserMFA(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID)
+
+	// (POST /api/v1/admin/users/{userId}/password:reset)
+	ResetNativeUserPassword(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID, params ResetNativeUserPasswordParams)
+
+	// (POST /api/v1/admin/users/{userId}/sessions:revoke)
+	RevokeNativeUserSessions(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID, params RevokeNativeUserSessionsParams)
 	// GetAssistantCapabilities getAssistantCapabilities
 	// (GET /api/v1/assistant/capabilities)
 	GetAssistantCapabilities(w http.ResponseWriter, r *http.Request, params GetAssistantCapabilitiesParams)
@@ -7683,9 +9348,39 @@ type ServerInterface interface {
 	// GetAuditRecord getAuditRecord
 	// (GET /api/v1/audit-records/{auditId})
 	GetAuditRecord(w http.ResponseWriter, r *http.Request, auditId string)
+	// NativeLogin Create a native server session from a fixed deployment organization login.
+	// (POST /api/v1/auth/login)
+	NativeLogin(w http.ResponseWriter, r *http.Request)
+	// NativeLogout Revoke the current native server session and clear its cookie.
+	// (POST /api/v1/auth/logout)
+	NativeLogout(w http.ResponseWriter, r *http.Request)
+	// CreateNativeMFAEnrollment Start a TOTP enrolment; the provisioning URI is returned exactly once.
+	// (POST /api/v1/auth/mfa/enrollments)
+	CreateNativeMFAEnrollment(w http.ResponseWriter, r *http.Request)
+	// GetNativeMFAEnrollment Status of one enrolment. It has no provisioning URI or secret field.
+	// (GET /api/v1/auth/mfa/enrollments/{enrollmentId})
+	GetNativeMFAEnrollment(w http.ResponseWriter, r *http.Request, enrollmentId openapi_types.UUID)
+	// VerifyNativeMFAEnrollment Confirm an enrolment with a bound password+TOTP step-up and issue the recovery codes once.
+	// (POST /api/v1/auth/mfa/enrollments/{enrollmentId}:verify)
+	VerifyNativeMFAEnrollment(w http.ResponseWriter, r *http.Request, enrollmentId openapi_types.UUID)
+	// VerifyNativeRecoveryCode Consume one recovery code; it restores LoA1 only, revokes sessions and forces re-enrolment.
+	// (POST /api/v1/auth/mfa/recovery-codes:verify)
+	VerifyNativeRecoveryCode(w http.ResponseWriter, r *http.Request)
+	// GetNativeMFAStatus Second-factor state of the signed-in account; never returns a provisioning secret.
+	// (GET /api/v1/auth/mfa/status)
+	GetNativeMFAStatus(w http.ResponseWriter, r *http.Request)
+	// ChangeNativePassword Change the current native account password and rotate its session.
+	// (POST /api/v1/auth/password:change)
+	ChangeNativePassword(w http.ResponseWriter, r *http.Request)
 	// GetAuthSession Current verified identity and active platform grants; roles do not inherit.
 	// (GET /api/v1/auth/session)
 	GetAuthSession(w http.ResponseWriter, r *http.Request)
+	// CreateNativeStepUpChallenge Persist a challenge bound to this session, one operation, one target and every version.
+	// (POST /api/v1/auth/step-up-challenges)
+	CreateNativeStepUpChallenge(w http.ResponseWriter, r *http.Request)
+	// VerifyNativeStepUpChallenge Submit one credential; only accumulated password+TOTP mints a LoA2 step-up session.
+	// (POST /api/v1/auth/step-up-challenges/{challengeId}:verify)
+	VerifyNativeStepUpChallenge(w http.ResponseWriter, r *http.Request, challengeId openapi_types.UUID)
 	// CreateStepUpSession Persist a fresh verified Keycloak step-up identity.
 	// (POST /api/v1/auth/step-up-sessions)
 	CreateStepUpSession(w http.ResponseWriter, r *http.Request, params CreateStepUpSessionParams)
@@ -7979,6 +9674,16 @@ func (_ Unimplemented) RotateSourceCredential(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (GET /api/v1/admin/subject-mappings)
+func (_ Unimplemented) GetNativeSubjectMappings(w http.ResponseWriter, r *http.Request, params GetNativeSubjectMappingsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (POST /api/v1/admin/subject-mappings)
+func (_ Unimplemented) CreateNativeSubjectMapping(w http.ResponseWriter, r *http.Request, params CreateNativeSubjectMappingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // GetTenants getTenants
 // (GET /api/v1/admin/tenants)
 func (_ Unimplemented) GetTenants(w http.ResponseWriter, r *http.Request, params GetTenantsParams) {
@@ -7994,6 +9699,37 @@ func (_ Unimplemented) CreateTenant(w http.ResponseWriter, r *http.Request, para
 // GetTools getTools
 // (GET /api/v1/admin/tools)
 func (_ Unimplemented) GetTools(w http.ResponseWriter, r *http.Request, params GetToolsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (GET /api/v1/admin/users)
+func (_ Unimplemented) GetNativeUsers(w http.ResponseWriter, r *http.Request, params GetNativeUsersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (POST /api/v1/admin/users)
+func (_ Unimplemented) CreateNativeUser(w http.ResponseWriter, r *http.Request, params CreateNativeUserParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (PATCH /api/v1/admin/users/{userId})
+func (_ Unimplemented) UpdateNativeUser(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID, params UpdateNativeUserParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ResetNativeUserMFA Administrator MFA reset with a target-bound high-risk step-up, version bumps and audit in one transaction.
+// (POST /api/v1/admin/users/{userId}/mfa:reset)
+func (_ Unimplemented) ResetNativeUserMFA(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (POST /api/v1/admin/users/{userId}/password:reset)
+func (_ Unimplemented) ResetNativeUserPassword(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID, params ResetNativeUserPasswordParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (POST /api/v1/admin/users/{userId}/sessions:revoke)
+func (_ Unimplemented) RevokeNativeUserSessions(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID, params RevokeNativeUserSessionsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -8123,9 +9859,69 @@ func (_ Unimplemented) GetAuditRecord(w http.ResponseWriter, r *http.Request, au
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// NativeLogin Create a native server session from a fixed deployment organization login.
+// (POST /api/v1/auth/login)
+func (_ Unimplemented) NativeLogin(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// NativeLogout Revoke the current native server session and clear its cookie.
+// (POST /api/v1/auth/logout)
+func (_ Unimplemented) NativeLogout(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateNativeMFAEnrollment Start a TOTP enrolment; the provisioning URI is returned exactly once.
+// (POST /api/v1/auth/mfa/enrollments)
+func (_ Unimplemented) CreateNativeMFAEnrollment(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetNativeMFAEnrollment Status of one enrolment. It has no provisioning URI or secret field.
+// (GET /api/v1/auth/mfa/enrollments/{enrollmentId})
+func (_ Unimplemented) GetNativeMFAEnrollment(w http.ResponseWriter, r *http.Request, enrollmentId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// VerifyNativeMFAEnrollment Confirm an enrolment with a bound password+TOTP step-up and issue the recovery codes once.
+// (POST /api/v1/auth/mfa/enrollments/{enrollmentId}:verify)
+func (_ Unimplemented) VerifyNativeMFAEnrollment(w http.ResponseWriter, r *http.Request, enrollmentId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// VerifyNativeRecoveryCode Consume one recovery code; it restores LoA1 only, revokes sessions and forces re-enrolment.
+// (POST /api/v1/auth/mfa/recovery-codes:verify)
+func (_ Unimplemented) VerifyNativeRecoveryCode(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetNativeMFAStatus Second-factor state of the signed-in account; never returns a provisioning secret.
+// (GET /api/v1/auth/mfa/status)
+func (_ Unimplemented) GetNativeMFAStatus(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ChangeNativePassword Change the current native account password and rotate its session.
+// (POST /api/v1/auth/password:change)
+func (_ Unimplemented) ChangeNativePassword(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // GetAuthSession Current verified identity and active platform grants; roles do not inherit.
 // (GET /api/v1/auth/session)
 func (_ Unimplemented) GetAuthSession(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateNativeStepUpChallenge Persist a challenge bound to this session, one operation, one target and every version.
+// (POST /api/v1/auth/step-up-challenges)
+func (_ Unimplemented) CreateNativeStepUpChallenge(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// VerifyNativeStepUpChallenge Submit one credential; only accumulated password+TOTP mints a LoA2 step-up session.
+// (POST /api/v1/auth/step-up-challenges/{challengeId}:verify)
+func (_ Unimplemented) VerifyNativeStepUpChallenge(w http.ResponseWriter, r *http.Request, challengeId openapi_types.UUID) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -9748,6 +11544,146 @@ func (siw *ServerInterfaceWrapper) RotateSourceCredential(w http.ResponseWriter,
 	handler.ServeHTTP(w, r)
 }
 
+// GetNativeSubjectMappings operation middleware
+func (siw *ServerInterfaceWrapper) GetNativeSubjectMappings(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetNativeSubjectMappingsParams
+
+	// ------------- Optional query parameter "userId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "userId", r.URL.Query(), &params.UserId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "userId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "legacySubject" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "legacySubject", r.URL.Query(), &params.LegacySubject, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "legacySubject"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "legacySubject", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetNativeSubjectMappings(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateNativeSubjectMapping operation middleware
+func (siw *ServerInterfaceWrapper) CreateNativeSubjectMapping(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateNativeSubjectMappingParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Required header parameter "X-Ops-Step-Up-Challenge" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Ops-Step-Up-Challenge")]; found {
+		var XOpsStepUpChallenge openapi_types.UUID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Ops-Step-Up-Challenge", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Ops-Step-Up-Challenge", valueList[0], &XOpsStepUpChallenge, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: "uuid"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+			return
+		}
+
+		params.XOpsStepUpChallenge = XOpsStepUpChallenge
+
+	} else {
+		err := fmt.Errorf("Header parameter X-Ops-Step-Up-Challenge is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateNativeSubjectMapping(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetTenants operation middleware
 func (siw *ServerInterfaceWrapper) GetTenants(w http.ResponseWriter, r *http.Request) {
 
@@ -9876,6 +11812,377 @@ func (siw *ServerInterfaceWrapper) GetTools(w http.ResponseWriter, r *http.Reque
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetTools(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetNativeUsers operation middleware
+func (siw *ServerInterfaceWrapper) GetNativeUsers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetNativeUsersParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetNativeUsers(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateNativeUser operation middleware
+func (siw *ServerInterfaceWrapper) CreateNativeUser(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateNativeUserParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Required header parameter "X-Ops-Step-Up-Challenge" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Ops-Step-Up-Challenge")]; found {
+		var XOpsStepUpChallenge openapi_types.UUID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Ops-Step-Up-Challenge", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Ops-Step-Up-Challenge", valueList[0], &XOpsStepUpChallenge, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: "uuid"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+			return
+		}
+
+		params.XOpsStepUpChallenge = XOpsStepUpChallenge
+
+	} else {
+		err := fmt.Errorf("Header parameter X-Ops-Step-Up-Challenge is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateNativeUser(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateNativeUser operation middleware
+func (siw *ServerInterfaceWrapper) UpdateNativeUser(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "userId" -------------
+	var userId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "userId", chi.URLParam(r, "userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateNativeUserParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Required header parameter "X-Ops-Step-Up-Challenge" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Ops-Step-Up-Challenge")]; found {
+		var XOpsStepUpChallenge openapi_types.UUID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Ops-Step-Up-Challenge", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Ops-Step-Up-Challenge", valueList[0], &XOpsStepUpChallenge, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: "uuid"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+			return
+		}
+
+		params.XOpsStepUpChallenge = XOpsStepUpChallenge
+
+	} else {
+		err := fmt.Errorf("Header parameter X-Ops-Step-Up-Challenge is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateNativeUser(w, r, userId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ResetNativeUserMFA operation middleware
+func (siw *ServerInterfaceWrapper) ResetNativeUserMFA(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "userId" -------------
+	var userId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "userId", chi.URLParam(r, "userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ResetNativeUserMFA(w, r, userId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ResetNativeUserPassword operation middleware
+func (siw *ServerInterfaceWrapper) ResetNativeUserPassword(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "userId" -------------
+	var userId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "userId", chi.URLParam(r, "userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ResetNativeUserPasswordParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Required header parameter "X-Ops-Step-Up-Challenge" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Ops-Step-Up-Challenge")]; found {
+		var XOpsStepUpChallenge openapi_types.UUID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Ops-Step-Up-Challenge", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Ops-Step-Up-Challenge", valueList[0], &XOpsStepUpChallenge, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: "uuid"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+			return
+		}
+
+		params.XOpsStepUpChallenge = XOpsStepUpChallenge
+
+	} else {
+		err := fmt.Errorf("Header parameter X-Ops-Step-Up-Challenge is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ResetNativeUserPassword(w, r, userId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RevokeNativeUserSessions operation middleware
+func (siw *ServerInterfaceWrapper) RevokeNativeUserSessions(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "userId" -------------
+	var userId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "userId", chi.URLParam(r, "userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RevokeNativeUserSessionsParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Required header parameter "X-Ops-Step-Up-Challenge" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Ops-Step-Up-Challenge")]; found {
+		var XOpsStepUpChallenge openapi_types.UUID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Ops-Step-Up-Challenge", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Ops-Step-Up-Challenge", valueList[0], &XOpsStepUpChallenge, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: "uuid"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+			return
+		}
+
+		params.XOpsStepUpChallenge = XOpsStepUpChallenge
+
+	} else {
+		err := fmt.Errorf("Header parameter X-Ops-Step-Up-Challenge is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RevokeNativeUserSessions(w, r, userId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -10783,11 +13090,187 @@ func (siw *ServerInterfaceWrapper) GetAuditRecord(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
+// NativeLogin operation middleware
+func (siw *ServerInterfaceWrapper) NativeLogin(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.NativeLogin(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// NativeLogout operation middleware
+func (siw *ServerInterfaceWrapper) NativeLogout(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.NativeLogout(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateNativeMFAEnrollment operation middleware
+func (siw *ServerInterfaceWrapper) CreateNativeMFAEnrollment(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateNativeMFAEnrollment(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetNativeMFAEnrollment operation middleware
+func (siw *ServerInterfaceWrapper) GetNativeMFAEnrollment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "enrollmentId" -------------
+	var enrollmentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "enrollmentId", chi.URLParam(r, "enrollmentId"), &enrollmentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "enrollmentId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetNativeMFAEnrollment(w, r, enrollmentId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// VerifyNativeMFAEnrollment operation middleware
+func (siw *ServerInterfaceWrapper) VerifyNativeMFAEnrollment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "enrollmentId" -------------
+	var enrollmentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "enrollmentId", chi.URLParam(r, "enrollmentId"), &enrollmentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "enrollmentId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.VerifyNativeMFAEnrollment(w, r, enrollmentId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// VerifyNativeRecoveryCode operation middleware
+func (siw *ServerInterfaceWrapper) VerifyNativeRecoveryCode(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.VerifyNativeRecoveryCode(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetNativeMFAStatus operation middleware
+func (siw *ServerInterfaceWrapper) GetNativeMFAStatus(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetNativeMFAStatus(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ChangeNativePassword operation middleware
+func (siw *ServerInterfaceWrapper) ChangeNativePassword(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ChangeNativePassword(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetAuthSession operation middleware
 func (siw *ServerInterfaceWrapper) GetAuthSession(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAuthSession(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateNativeStepUpChallenge operation middleware
+func (siw *ServerInterfaceWrapper) CreateNativeStepUpChallenge(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateNativeStepUpChallenge(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// VerifyNativeStepUpChallenge operation middleware
+func (siw *ServerInterfaceWrapper) VerifyNativeStepUpChallenge(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "challengeId" -------------
+	var challengeId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "challengeId", chi.URLParam(r, "challengeId"), &challengeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "challengeId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.VerifyNativeStepUpChallenge(w, r, challengeId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -12951,7 +15434,61 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}/events", wrapper.GetAssistantConversationEvents)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/auth/login", wrapper.NativeLogin)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/auth/logout", wrapper.NativeLogout)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/auth/password:change", wrapper.ChangeNativePassword)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/auth/session", wrapper.GetAuthSession)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/auth/mfa/status", wrapper.GetNativeMFAStatus)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/auth/mfa/enrollments", wrapper.CreateNativeMFAEnrollment)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/auth/mfa/enrollments/{enrollmentId}", wrapper.GetNativeMFAEnrollment)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/auth/mfa/enrollments/{enrollmentId}:verify", wrapper.VerifyNativeMFAEnrollment)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/auth/step-up-challenges", wrapper.CreateNativeStepUpChallenge)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/auth/step-up-challenges/{challengeId}:verify", wrapper.VerifyNativeStepUpChallenge)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/auth/mfa/recovery-codes:verify", wrapper.VerifyNativeRecoveryCode)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/admin/users", wrapper.GetNativeUsers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/users", wrapper.CreateNativeUser)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/admin/users/{userId}", wrapper.UpdateNativeUser)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/users/{userId}/password:reset", wrapper.ResetNativeUserPassword)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/users/{userId}/sessions:revoke", wrapper.RevokeNativeUserSessions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/admin/subject-mappings", wrapper.GetNativeSubjectMappings)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/subject-mappings", wrapper.CreateNativeSubjectMapping)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/admin/users/{userId}/mfa:reset", wrapper.ResetNativeUserMFA)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/auth/step-up-sessions", wrapper.CreateStepUpSession)
@@ -14331,6 +16868,85 @@ func (response RotateSourceCredentialdefaultJSONResponse) VisitRotateSourceCrede
 	return err
 }
 
+type GetNativeSubjectMappingsRequestObject struct {
+	Params GetNativeSubjectMappingsParams
+}
+
+type GetNativeSubjectMappingsResponseObject interface {
+	VisitGetNativeSubjectMappingsResponse(w http.ResponseWriter) error
+}
+
+type GetNativeSubjectMappings200JSONResponse NativeSubjectMappingsPageV1
+
+func (response GetNativeSubjectMappings200JSONResponse) VisitGetNativeSubjectMappingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetNativeSubjectMappingsdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetNativeSubjectMappingsdefaultJSONResponse) VisitGetNativeSubjectMappingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateNativeSubjectMappingRequestObject struct {
+	Params CreateNativeSubjectMappingParams
+	Body   *CreateNativeSubjectMappingJSONRequestBody
+}
+
+type CreateNativeSubjectMappingResponseObject interface {
+	VisitCreateNativeSubjectMappingResponse(w http.ResponseWriter) error
+}
+
+type CreateNativeSubjectMapping201JSONResponse NativeSubjectMappingSuccessV1
+
+func (response CreateNativeSubjectMapping201JSONResponse) VisitCreateNativeSubjectMappingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateNativeSubjectMappingdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response CreateNativeSubjectMappingdefaultJSONResponse) VisitCreateNativeSubjectMappingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type GetTenantsRequestObject struct {
 	Params GetTenantsParams
 }
@@ -14438,6 +17054,258 @@ type GetToolsdefaultJSONResponse struct {
 }
 
 func (response GetToolsdefaultJSONResponse) VisitGetToolsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetNativeUsersRequestObject struct {
+	Params GetNativeUsersParams
+}
+
+type GetNativeUsersResponseObject interface {
+	VisitGetNativeUsersResponse(w http.ResponseWriter) error
+}
+
+type GetNativeUsers200JSONResponse NativeUsersPageV1
+
+func (response GetNativeUsers200JSONResponse) VisitGetNativeUsersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetNativeUsersdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetNativeUsersdefaultJSONResponse) VisitGetNativeUsersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateNativeUserRequestObject struct {
+	Params CreateNativeUserParams
+	Body   *CreateNativeUserJSONRequestBody
+}
+
+type CreateNativeUserResponseObject interface {
+	VisitCreateNativeUserResponse(w http.ResponseWriter) error
+}
+
+type CreateNativeUser201JSONResponse NativeAccountSuccessV1
+
+func (response CreateNativeUser201JSONResponse) VisitCreateNativeUserResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateNativeUserdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response CreateNativeUserdefaultJSONResponse) VisitCreateNativeUserResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateNativeUserRequestObject struct {
+	UserId openapi_types.UUID `json:"userId"`
+	Params UpdateNativeUserParams
+	Body   *UpdateNativeUserJSONRequestBody
+}
+
+type UpdateNativeUserResponseObject interface {
+	VisitUpdateNativeUserResponse(w http.ResponseWriter) error
+}
+
+type UpdateNativeUser200JSONResponse NativeAccountSuccessV1
+
+func (response UpdateNativeUser200JSONResponse) VisitUpdateNativeUserResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateNativeUserdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response UpdateNativeUserdefaultJSONResponse) VisitUpdateNativeUserResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ResetNativeUserMFARequestObject struct {
+	UserId openapi_types.UUID `json:"userId"`
+	Body   *ResetNativeUserMFAJSONRequestBody
+}
+
+type ResetNativeUserMFAResponseObject interface {
+	VisitResetNativeUserMFAResponse(w http.ResponseWriter) error
+}
+
+type ResetNativeUserMFA200ResponseHeaders struct {
+	CacheControl *string
+}
+
+type ResetNativeUserMFA200JSONResponse struct {
+	Body    NativeAdminMFAResetSuccessV1
+	Headers ResetNativeUserMFA200ResponseHeaders
+}
+
+func (response ResetNativeUserMFA200JSONResponse) VisitResetNativeUserMFAResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ResetNativeUserMFAdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response ResetNativeUserMFAdefaultJSONResponse) VisitResetNativeUserMFAResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ResetNativeUserPasswordRequestObject struct {
+	UserId openapi_types.UUID `json:"userId"`
+	Params ResetNativeUserPasswordParams
+	Body   *ResetNativeUserPasswordJSONRequestBody
+}
+
+type ResetNativeUserPasswordResponseObject interface {
+	VisitResetNativeUserPasswordResponse(w http.ResponseWriter) error
+}
+
+type ResetNativeUserPassword200JSONResponse NativeAdminPasswordResetSuccessV1
+
+func (response ResetNativeUserPassword200JSONResponse) VisitResetNativeUserPasswordResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ResetNativeUserPassworddefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response ResetNativeUserPassworddefaultJSONResponse) VisitResetNativeUserPasswordResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeNativeUserSessionsRequestObject struct {
+	UserId openapi_types.UUID `json:"userId"`
+	Params RevokeNativeUserSessionsParams
+	Body   *RevokeNativeUserSessionsJSONRequestBody
+}
+
+type RevokeNativeUserSessionsResponseObject interface {
+	VisitRevokeNativeUserSessionsResponse(w http.ResponseWriter) error
+}
+
+type RevokeNativeUserSessions200JSONResponse NativeAdminRevocationSuccessV1
+
+func (response RevokeNativeUserSessions200JSONResponse) VisitRevokeNativeUserSessionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeNativeUserSessionsdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response RevokeNativeUserSessionsdefaultJSONResponse) VisitRevokeNativeUserSessionsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -15312,6 +18180,398 @@ func (response GetAuditRecorddefaultJSONResponse) VisitGetAuditRecordResponse(w 
 	return err
 }
 
+type NativeLoginRequestObject struct {
+	Body *NativeLoginJSONRequestBody
+}
+
+type NativeLoginResponseObject interface {
+	VisitNativeLoginResponse(w http.ResponseWriter) error
+}
+
+type NativeLogin201ResponseHeaders struct {
+	CacheControl *string
+}
+
+type NativeLogin201JSONResponse struct {
+	Body    NativeLoginSuccessV1
+	Headers NativeLogin201ResponseHeaders
+}
+
+func (response NativeLogin201JSONResponse) VisitNativeLoginResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type NativeLogindefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response NativeLogindefaultJSONResponse) VisitNativeLoginResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type NativeLogoutRequestObject struct {
+	Body *NativeLogoutJSONRequestBody
+}
+
+type NativeLogoutResponseObject interface {
+	VisitNativeLogoutResponse(w http.ResponseWriter) error
+}
+
+type NativeLogout200ResponseHeaders struct {
+	CacheControl *string
+}
+
+type NativeLogout200JSONResponse struct {
+	Body    NativeLogoutSuccessV1
+	Headers NativeLogout200ResponseHeaders
+}
+
+func (response NativeLogout200JSONResponse) VisitNativeLogoutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type NativeLogoutdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response NativeLogoutdefaultJSONResponse) VisitNativeLogoutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateNativeMFAEnrollmentRequestObject struct {
+	Body *CreateNativeMFAEnrollmentJSONRequestBody
+}
+
+type CreateNativeMFAEnrollmentResponseObject interface {
+	VisitCreateNativeMFAEnrollmentResponse(w http.ResponseWriter) error
+}
+
+type CreateNativeMFAEnrollment201ResponseHeaders struct {
+	CacheControl *string
+}
+
+type CreateNativeMFAEnrollment201JSONResponse struct {
+	Body    NativeMFAEnrollmentCreatedSuccessV1
+	Headers CreateNativeMFAEnrollment201ResponseHeaders
+}
+
+func (response CreateNativeMFAEnrollment201JSONResponse) VisitCreateNativeMFAEnrollmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateNativeMFAEnrollmentdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response CreateNativeMFAEnrollmentdefaultJSONResponse) VisitCreateNativeMFAEnrollmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetNativeMFAEnrollmentRequestObject struct {
+	EnrollmentId openapi_types.UUID `json:"enrollmentId"`
+}
+
+type GetNativeMFAEnrollmentResponseObject interface {
+	VisitGetNativeMFAEnrollmentResponse(w http.ResponseWriter) error
+}
+
+type GetNativeMFAEnrollment200ResponseHeaders struct {
+	CacheControl *string
+}
+
+type GetNativeMFAEnrollment200JSONResponse struct {
+	Body    NativeMFAEnrollmentViewSuccessV1
+	Headers GetNativeMFAEnrollment200ResponseHeaders
+}
+
+func (response GetNativeMFAEnrollment200JSONResponse) VisitGetNativeMFAEnrollmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetNativeMFAEnrollmentdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetNativeMFAEnrollmentdefaultJSONResponse) VisitGetNativeMFAEnrollmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type VerifyNativeMFAEnrollmentRequestObject struct {
+	EnrollmentId openapi_types.UUID `json:"enrollmentId"`
+	Body         *VerifyNativeMFAEnrollmentJSONRequestBody
+}
+
+type VerifyNativeMFAEnrollmentResponseObject interface {
+	VisitVerifyNativeMFAEnrollmentResponse(w http.ResponseWriter) error
+}
+
+type VerifyNativeMFAEnrollment200ResponseHeaders struct {
+	CacheControl *string
+}
+
+type VerifyNativeMFAEnrollment200JSONResponse struct {
+	Body    NativeMFAEnrollmentVerifySuccessV1
+	Headers VerifyNativeMFAEnrollment200ResponseHeaders
+}
+
+func (response VerifyNativeMFAEnrollment200JSONResponse) VisitVerifyNativeMFAEnrollmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type VerifyNativeMFAEnrollmentdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response VerifyNativeMFAEnrollmentdefaultJSONResponse) VisitVerifyNativeMFAEnrollmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type VerifyNativeRecoveryCodeRequestObject struct {
+	Body *VerifyNativeRecoveryCodeJSONRequestBody
+}
+
+type VerifyNativeRecoveryCodeResponseObject interface {
+	VisitVerifyNativeRecoveryCodeResponse(w http.ResponseWriter) error
+}
+
+type VerifyNativeRecoveryCode200ResponseHeaders struct {
+	CacheControl *string
+}
+
+type VerifyNativeRecoveryCode200JSONResponse struct {
+	Body    NativeRecoveryVerifySuccessV1
+	Headers VerifyNativeRecoveryCode200ResponseHeaders
+}
+
+func (response VerifyNativeRecoveryCode200JSONResponse) VisitVerifyNativeRecoveryCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type VerifyNativeRecoveryCodedefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response VerifyNativeRecoveryCodedefaultJSONResponse) VisitVerifyNativeRecoveryCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetNativeMFAStatusRequestObject struct {
+}
+
+type GetNativeMFAStatusResponseObject interface {
+	VisitGetNativeMFAStatusResponse(w http.ResponseWriter) error
+}
+
+type GetNativeMFAStatus200ResponseHeaders struct {
+	CacheControl *string
+}
+
+type GetNativeMFAStatus200JSONResponse struct {
+	Body    NativeMFAStatusSuccessV1
+	Headers GetNativeMFAStatus200ResponseHeaders
+}
+
+func (response GetNativeMFAStatus200JSONResponse) VisitGetNativeMFAStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetNativeMFAStatusdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetNativeMFAStatusdefaultJSONResponse) VisitGetNativeMFAStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChangeNativePasswordRequestObject struct {
+	Body *ChangeNativePasswordJSONRequestBody
+}
+
+type ChangeNativePasswordResponseObject interface {
+	VisitChangeNativePasswordResponse(w http.ResponseWriter) error
+}
+
+type ChangeNativePassword201ResponseHeaders struct {
+	CacheControl *string
+}
+
+type ChangeNativePassword201JSONResponse struct {
+	Body    NativeLoginSuccessV1
+	Headers ChangeNativePassword201ResponseHeaders
+}
+
+func (response ChangeNativePassword201JSONResponse) VisitChangeNativePasswordResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChangeNativePassworddefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response ChangeNativePassworddefaultJSONResponse) VisitChangeNativePasswordResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type GetAuthSessionRequestObject struct {
 }
 
@@ -15339,6 +18599,105 @@ type GetAuthSessiondefaultJSONResponse struct {
 }
 
 func (response GetAuthSessiondefaultJSONResponse) VisitGetAuthSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateNativeStepUpChallengeRequestObject struct {
+	Body *CreateNativeStepUpChallengeJSONRequestBody
+}
+
+type CreateNativeStepUpChallengeResponseObject interface {
+	VisitCreateNativeStepUpChallengeResponse(w http.ResponseWriter) error
+}
+
+type CreateNativeStepUpChallenge201ResponseHeaders struct {
+	CacheControl *string
+}
+
+type CreateNativeStepUpChallenge201JSONResponse struct {
+	Body    NativeStepUpChallengeSuccessV1
+	Headers CreateNativeStepUpChallenge201ResponseHeaders
+}
+
+func (response CreateNativeStepUpChallenge201JSONResponse) VisitCreateNativeStepUpChallengeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateNativeStepUpChallengedefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response CreateNativeStepUpChallengedefaultJSONResponse) VisitCreateNativeStepUpChallengeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type VerifyNativeStepUpChallengeRequestObject struct {
+	ChallengeId openapi_types.UUID `json:"challengeId"`
+	Body        *VerifyNativeStepUpChallengeJSONRequestBody
+}
+
+type VerifyNativeStepUpChallengeResponseObject interface {
+	VisitVerifyNativeStepUpChallengeResponse(w http.ResponseWriter) error
+}
+
+type VerifyNativeStepUpChallenge200ResponseHeaders struct {
+	CacheControl *string
+}
+
+type VerifyNativeStepUpChallenge200JSONResponse struct {
+	Body    NativeStepUpVerifySuccessV1
+	Headers VerifyNativeStepUpChallenge200ResponseHeaders
+}
+
+func (response VerifyNativeStepUpChallenge200JSONResponse) VisitVerifyNativeStepUpChallengeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type VerifyNativeStepUpChallengedefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response VerifyNativeStepUpChallengedefaultJSONResponse) VisitVerifyNativeStepUpChallengeResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -17007,6 +20366,12 @@ type StrictServerInterface interface {
 	// RotateSourceCredential rotateSourceCredential
 	// (POST /api/v1/admin/source-registrations/{sourceId}/rotate-credential)
 	RotateSourceCredential(ctx context.Context, request RotateSourceCredentialRequestObject) (RotateSourceCredentialResponseObject, error)
+
+	// (GET /api/v1/admin/subject-mappings)
+	GetNativeSubjectMappings(ctx context.Context, request GetNativeSubjectMappingsRequestObject) (GetNativeSubjectMappingsResponseObject, error)
+
+	// (POST /api/v1/admin/subject-mappings)
+	CreateNativeSubjectMapping(ctx context.Context, request CreateNativeSubjectMappingRequestObject) (CreateNativeSubjectMappingResponseObject, error)
 	// GetTenants getTenants
 	// (GET /api/v1/admin/tenants)
 	GetTenants(ctx context.Context, request GetTenantsRequestObject) (GetTenantsResponseObject, error)
@@ -17016,6 +20381,24 @@ type StrictServerInterface interface {
 	// GetTools getTools
 	// (GET /api/v1/admin/tools)
 	GetTools(ctx context.Context, request GetToolsRequestObject) (GetToolsResponseObject, error)
+
+	// (GET /api/v1/admin/users)
+	GetNativeUsers(ctx context.Context, request GetNativeUsersRequestObject) (GetNativeUsersResponseObject, error)
+
+	// (POST /api/v1/admin/users)
+	CreateNativeUser(ctx context.Context, request CreateNativeUserRequestObject) (CreateNativeUserResponseObject, error)
+
+	// (PATCH /api/v1/admin/users/{userId})
+	UpdateNativeUser(ctx context.Context, request UpdateNativeUserRequestObject) (UpdateNativeUserResponseObject, error)
+	// ResetNativeUserMFA Administrator MFA reset with a target-bound high-risk step-up, version bumps and audit in one transaction.
+	// (POST /api/v1/admin/users/{userId}/mfa:reset)
+	ResetNativeUserMFA(ctx context.Context, request ResetNativeUserMFARequestObject) (ResetNativeUserMFAResponseObject, error)
+
+	// (POST /api/v1/admin/users/{userId}/password:reset)
+	ResetNativeUserPassword(ctx context.Context, request ResetNativeUserPasswordRequestObject) (ResetNativeUserPasswordResponseObject, error)
+
+	// (POST /api/v1/admin/users/{userId}/sessions:revoke)
+	RevokeNativeUserSessions(ctx context.Context, request RevokeNativeUserSessionsRequestObject) (RevokeNativeUserSessionsResponseObject, error)
 	// GetAssistantCapabilities getAssistantCapabilities
 	// (GET /api/v1/assistant/capabilities)
 	GetAssistantCapabilities(ctx context.Context, request GetAssistantCapabilitiesRequestObject) (GetAssistantCapabilitiesResponseObject, error)
@@ -17079,9 +20462,39 @@ type StrictServerInterface interface {
 	// GetAuditRecord getAuditRecord
 	// (GET /api/v1/audit-records/{auditId})
 	GetAuditRecord(ctx context.Context, request GetAuditRecordRequestObject) (GetAuditRecordResponseObject, error)
+	// NativeLogin Create a native server session from a fixed deployment organization login.
+	// (POST /api/v1/auth/login)
+	NativeLogin(ctx context.Context, request NativeLoginRequestObject) (NativeLoginResponseObject, error)
+	// NativeLogout Revoke the current native server session and clear its cookie.
+	// (POST /api/v1/auth/logout)
+	NativeLogout(ctx context.Context, request NativeLogoutRequestObject) (NativeLogoutResponseObject, error)
+	// CreateNativeMFAEnrollment Start a TOTP enrolment; the provisioning URI is returned exactly once.
+	// (POST /api/v1/auth/mfa/enrollments)
+	CreateNativeMFAEnrollment(ctx context.Context, request CreateNativeMFAEnrollmentRequestObject) (CreateNativeMFAEnrollmentResponseObject, error)
+	// GetNativeMFAEnrollment Status of one enrolment. It has no provisioning URI or secret field.
+	// (GET /api/v1/auth/mfa/enrollments/{enrollmentId})
+	GetNativeMFAEnrollment(ctx context.Context, request GetNativeMFAEnrollmentRequestObject) (GetNativeMFAEnrollmentResponseObject, error)
+	// VerifyNativeMFAEnrollment Confirm an enrolment with a bound password+TOTP step-up and issue the recovery codes once.
+	// (POST /api/v1/auth/mfa/enrollments/{enrollmentId}:verify)
+	VerifyNativeMFAEnrollment(ctx context.Context, request VerifyNativeMFAEnrollmentRequestObject) (VerifyNativeMFAEnrollmentResponseObject, error)
+	// VerifyNativeRecoveryCode Consume one recovery code; it restores LoA1 only, revokes sessions and forces re-enrolment.
+	// (POST /api/v1/auth/mfa/recovery-codes:verify)
+	VerifyNativeRecoveryCode(ctx context.Context, request VerifyNativeRecoveryCodeRequestObject) (VerifyNativeRecoveryCodeResponseObject, error)
+	// GetNativeMFAStatus Second-factor state of the signed-in account; never returns a provisioning secret.
+	// (GET /api/v1/auth/mfa/status)
+	GetNativeMFAStatus(ctx context.Context, request GetNativeMFAStatusRequestObject) (GetNativeMFAStatusResponseObject, error)
+	// ChangeNativePassword Change the current native account password and rotate its session.
+	// (POST /api/v1/auth/password:change)
+	ChangeNativePassword(ctx context.Context, request ChangeNativePasswordRequestObject) (ChangeNativePasswordResponseObject, error)
 	// GetAuthSession Current verified identity and active platform grants; roles do not inherit.
 	// (GET /api/v1/auth/session)
 	GetAuthSession(ctx context.Context, request GetAuthSessionRequestObject) (GetAuthSessionResponseObject, error)
+	// CreateNativeStepUpChallenge Persist a challenge bound to this session, one operation, one target and every version.
+	// (POST /api/v1/auth/step-up-challenges)
+	CreateNativeStepUpChallenge(ctx context.Context, request CreateNativeStepUpChallengeRequestObject) (CreateNativeStepUpChallengeResponseObject, error)
+	// VerifyNativeStepUpChallenge Submit one credential; only accumulated password+TOTP mints a LoA2 step-up session.
+	// (POST /api/v1/auth/step-up-challenges/{challengeId}:verify)
+	VerifyNativeStepUpChallenge(ctx context.Context, request VerifyNativeStepUpChallengeRequestObject) (VerifyNativeStepUpChallengeResponseObject, error)
 	// CreateStepUpSession Persist a fresh verified Keycloak step-up identity.
 	// (POST /api/v1/auth/step-up-sessions)
 	CreateStepUpSession(ctx context.Context, request CreateStepUpSessionRequestObject) (CreateStepUpSessionResponseObject, error)
@@ -18134,6 +21547,65 @@ func (sh *strictHandler) RotateSourceCredential(w http.ResponseWriter, r *http.R
 	}
 }
 
+// GetNativeSubjectMappings operation middleware
+func (sh *strictHandler) GetNativeSubjectMappings(w http.ResponseWriter, r *http.Request, params GetNativeSubjectMappingsParams) {
+	var request GetNativeSubjectMappingsRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetNativeSubjectMappings(ctx, request.(GetNativeSubjectMappingsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetNativeSubjectMappings")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetNativeSubjectMappingsResponseObject); ok {
+		if err := validResponse.VisitGetNativeSubjectMappingsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateNativeSubjectMapping operation middleware
+func (sh *strictHandler) CreateNativeSubjectMapping(w http.ResponseWriter, r *http.Request, params CreateNativeSubjectMappingParams) {
+	var request CreateNativeSubjectMappingRequestObject
+
+	request.Params = params
+
+	var body CreateNativeSubjectMappingJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateNativeSubjectMapping(ctx, request.(CreateNativeSubjectMappingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateNativeSubjectMapping")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateNativeSubjectMappingResponseObject); ok {
+		if err := validResponse.VisitCreateNativeSubjectMappingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // GetTenants operation middleware
 func (sh *strictHandler) GetTenants(w http.ResponseWriter, r *http.Request, params GetTenantsParams) {
 	var request GetTenantsRequestObject
@@ -18212,6 +21684,200 @@ func (sh *strictHandler) GetTools(w http.ResponseWriter, r *http.Request, params
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetToolsResponseObject); ok {
 		if err := validResponse.VisitGetToolsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetNativeUsers operation middleware
+func (sh *strictHandler) GetNativeUsers(w http.ResponseWriter, r *http.Request, params GetNativeUsersParams) {
+	var request GetNativeUsersRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetNativeUsers(ctx, request.(GetNativeUsersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetNativeUsers")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetNativeUsersResponseObject); ok {
+		if err := validResponse.VisitGetNativeUsersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateNativeUser operation middleware
+func (sh *strictHandler) CreateNativeUser(w http.ResponseWriter, r *http.Request, params CreateNativeUserParams) {
+	var request CreateNativeUserRequestObject
+
+	request.Params = params
+
+	var body CreateNativeUserJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateNativeUser(ctx, request.(CreateNativeUserRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateNativeUser")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateNativeUserResponseObject); ok {
+		if err := validResponse.VisitCreateNativeUserResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateNativeUser operation middleware
+func (sh *strictHandler) UpdateNativeUser(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID, params UpdateNativeUserParams) {
+	var request UpdateNativeUserRequestObject
+
+	request.UserId = userId
+	request.Params = params
+
+	var body UpdateNativeUserJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateNativeUser(ctx, request.(UpdateNativeUserRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateNativeUser")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateNativeUserResponseObject); ok {
+		if err := validResponse.VisitUpdateNativeUserResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ResetNativeUserMFA operation middleware
+func (sh *strictHandler) ResetNativeUserMFA(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID) {
+	var request ResetNativeUserMFARequestObject
+
+	request.UserId = userId
+
+	var body ResetNativeUserMFAJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ResetNativeUserMFA(ctx, request.(ResetNativeUserMFARequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ResetNativeUserMFA")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ResetNativeUserMFAResponseObject); ok {
+		if err := validResponse.VisitResetNativeUserMFAResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ResetNativeUserPassword operation middleware
+func (sh *strictHandler) ResetNativeUserPassword(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID, params ResetNativeUserPasswordParams) {
+	var request ResetNativeUserPasswordRequestObject
+
+	request.UserId = userId
+	request.Params = params
+
+	var body ResetNativeUserPasswordJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ResetNativeUserPassword(ctx, request.(ResetNativeUserPasswordRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ResetNativeUserPassword")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ResetNativeUserPasswordResponseObject); ok {
+		if err := validResponse.VisitResetNativeUserPasswordResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RevokeNativeUserSessions operation middleware
+func (sh *strictHandler) RevokeNativeUserSessions(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID, params RevokeNativeUserSessionsParams) {
+	var request RevokeNativeUserSessionsRequestObject
+
+	request.UserId = userId
+	request.Params = params
+
+	var body RevokeNativeUserSessionsJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RevokeNativeUserSessions(ctx, request.(RevokeNativeUserSessionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RevokeNativeUserSessions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RevokeNativeUserSessionsResponseObject); ok {
+		if err := validResponse.VisitRevokeNativeUserSessionsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -18831,6 +22497,244 @@ func (sh *strictHandler) GetAuditRecord(w http.ResponseWriter, r *http.Request, 
 	}
 }
 
+// NativeLogin operation middleware
+func (sh *strictHandler) NativeLogin(w http.ResponseWriter, r *http.Request) {
+	var request NativeLoginRequestObject
+
+	var body NativeLoginJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.NativeLogin(ctx, request.(NativeLoginRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "NativeLogin")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(NativeLoginResponseObject); ok {
+		if err := validResponse.VisitNativeLoginResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// NativeLogout operation middleware
+func (sh *strictHandler) NativeLogout(w http.ResponseWriter, r *http.Request) {
+	var request NativeLogoutRequestObject
+
+	var body NativeLogoutJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.NativeLogout(ctx, request.(NativeLogoutRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "NativeLogout")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(NativeLogoutResponseObject); ok {
+		if err := validResponse.VisitNativeLogoutResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateNativeMFAEnrollment operation middleware
+func (sh *strictHandler) CreateNativeMFAEnrollment(w http.ResponseWriter, r *http.Request) {
+	var request CreateNativeMFAEnrollmentRequestObject
+
+	var body CreateNativeMFAEnrollmentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateNativeMFAEnrollment(ctx, request.(CreateNativeMFAEnrollmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateNativeMFAEnrollment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateNativeMFAEnrollmentResponseObject); ok {
+		if err := validResponse.VisitCreateNativeMFAEnrollmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetNativeMFAEnrollment operation middleware
+func (sh *strictHandler) GetNativeMFAEnrollment(w http.ResponseWriter, r *http.Request, enrollmentId openapi_types.UUID) {
+	var request GetNativeMFAEnrollmentRequestObject
+
+	request.EnrollmentId = enrollmentId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetNativeMFAEnrollment(ctx, request.(GetNativeMFAEnrollmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetNativeMFAEnrollment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetNativeMFAEnrollmentResponseObject); ok {
+		if err := validResponse.VisitGetNativeMFAEnrollmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// VerifyNativeMFAEnrollment operation middleware
+func (sh *strictHandler) VerifyNativeMFAEnrollment(w http.ResponseWriter, r *http.Request, enrollmentId openapi_types.UUID) {
+	var request VerifyNativeMFAEnrollmentRequestObject
+
+	request.EnrollmentId = enrollmentId
+
+	var body VerifyNativeMFAEnrollmentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.VerifyNativeMFAEnrollment(ctx, request.(VerifyNativeMFAEnrollmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "VerifyNativeMFAEnrollment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(VerifyNativeMFAEnrollmentResponseObject); ok {
+		if err := validResponse.VisitVerifyNativeMFAEnrollmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// VerifyNativeRecoveryCode operation middleware
+func (sh *strictHandler) VerifyNativeRecoveryCode(w http.ResponseWriter, r *http.Request) {
+	var request VerifyNativeRecoveryCodeRequestObject
+
+	var body VerifyNativeRecoveryCodeJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.VerifyNativeRecoveryCode(ctx, request.(VerifyNativeRecoveryCodeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "VerifyNativeRecoveryCode")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(VerifyNativeRecoveryCodeResponseObject); ok {
+		if err := validResponse.VisitVerifyNativeRecoveryCodeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetNativeMFAStatus operation middleware
+func (sh *strictHandler) GetNativeMFAStatus(w http.ResponseWriter, r *http.Request) {
+	var request GetNativeMFAStatusRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetNativeMFAStatus(ctx, request.(GetNativeMFAStatusRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetNativeMFAStatus")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetNativeMFAStatusResponseObject); ok {
+		if err := validResponse.VisitGetNativeMFAStatusResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ChangeNativePassword operation middleware
+func (sh *strictHandler) ChangeNativePassword(w http.ResponseWriter, r *http.Request) {
+	var request ChangeNativePasswordRequestObject
+
+	var body ChangeNativePasswordJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ChangeNativePassword(ctx, request.(ChangeNativePasswordRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ChangeNativePassword")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ChangeNativePasswordResponseObject); ok {
+		if err := validResponse.VisitChangeNativePasswordResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // GetAuthSession operation middleware
 func (sh *strictHandler) GetAuthSession(w http.ResponseWriter, r *http.Request) {
 	var request GetAuthSessionRequestObject
@@ -18848,6 +22752,70 @@ func (sh *strictHandler) GetAuthSession(w http.ResponseWriter, r *http.Request) 
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetAuthSessionResponseObject); ok {
 		if err := validResponse.VisitGetAuthSessionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateNativeStepUpChallenge operation middleware
+func (sh *strictHandler) CreateNativeStepUpChallenge(w http.ResponseWriter, r *http.Request) {
+	var request CreateNativeStepUpChallengeRequestObject
+
+	var body CreateNativeStepUpChallengeJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateNativeStepUpChallenge(ctx, request.(CreateNativeStepUpChallengeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateNativeStepUpChallenge")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateNativeStepUpChallengeResponseObject); ok {
+		if err := validResponse.VisitCreateNativeStepUpChallengeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// VerifyNativeStepUpChallenge operation middleware
+func (sh *strictHandler) VerifyNativeStepUpChallenge(w http.ResponseWriter, r *http.Request, challengeId openapi_types.UUID) {
+	var request VerifyNativeStepUpChallengeRequestObject
+
+	request.ChallengeId = challengeId
+
+	var body VerifyNativeStepUpChallengeJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.VerifyNativeStepUpChallenge(ctx, request.(VerifyNativeStepUpChallengeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "VerifyNativeStepUpChallenge")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(VerifyNativeStepUpChallengeResponseObject); ok {
+		if err := validResponse.VisitVerifyNativeStepUpChallengeResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

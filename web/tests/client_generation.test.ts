@@ -1,6 +1,7 @@
 import { it, expect, vi } from "vitest";
 import {
   checked,
+  clearCredentials,
   setCredentials,
   requestOptions,
   authEvents,
@@ -45,3 +46,71 @@ for (const status of [401, 403])
       listener,
     );
   });
+
+for (const change of ["identity", "authorization", "logout", "session"])
+  it(`discards a delayed successful response after ${change} changes`, async () => {
+    setCredentials("old", "tenant");
+    let resolve!: (value: {
+      status: 200;
+      data: string;
+      headers: Headers;
+    }) => void;
+    let currentSession = true;
+    const pending = checked(
+      new Promise<{ status: 200; data: string; headers: Headers }>((r) => {
+        resolve = r;
+      }),
+      true,
+      () => currentSession,
+    );
+    const rejected = expect(pending).rejects.toMatchObject({
+      name: "AbortError",
+    });
+    if (change === "identity") setCredentials("new", "another-tenant");
+    if (change === "authorization")
+      authEvents.dispatchEvent(new Event("authorizationChanged"));
+    if (change === "logout") clearCredentials();
+    if (change === "session") currentSession = false;
+    resolve({
+      status: 200,
+      data: "private old result",
+      headers: new Headers(),
+    });
+    await rejected;
+  });
+
+it("keeps requests valid across a refresh of the same credentials", async () => {
+  setCredentials("same", "same-tenant");
+  let resolve!: (value: {
+    status: 200;
+    data: string;
+    headers: Headers;
+  }) => void;
+  const pending = checked(
+    new Promise<{ status: 200; data: string; headers: Headers }>((r) => {
+      resolve = r;
+    }),
+  );
+  setCredentials("same");
+  setCredentials("same", "same-tenant");
+  resolve({ status: 200, data: "current result", headers: new Headers() });
+  expect(await pending).toBe("current result");
+  expect(new Headers(requestOptions().headers).get("X-Tenant-ID")).toBe(
+    "same-tenant",
+  );
+});
+
+it("aborts in-flight requests and streams on revocation and retains caller cancellation", () => {
+  setCredentials("active", "tenant");
+  const caller = new AbortController();
+  const active = requestOptions(caller.signal).signal!;
+  const stream = requestOptions().signal!;
+  authEvents.dispatchEvent(new Event("authorizationChanged"));
+  expect(active.aborted).toBe(true);
+  expect(stream.aborted).toBe(true);
+  const next = requestOptions(caller.signal).signal!;
+  expect(next.aborted).toBe(false);
+  caller.abort();
+  expect(next.aborted).toBe(true);
+  expect(requestOptions().signal!.aborted).toBe(false);
+});

@@ -18,11 +18,25 @@ import (
 
 // NewFoundationHandler composes the SP-03 management routes. Later domain APIs
 // include the authorized SP-04 resource/evidence routes.
-func NewFoundationHandler(pool persistence.TxBeginner, authenticator *auth.Authenticator, trust configregistry.SignatureVerifier, runtime *observability.Runtime) (http.Handler, error) {
+func NewFoundationHandler(pool persistence.TxBeginner, authenticator auth.AuthMiddleware, trust configregistry.SignatureVerifier, runtime *observability.Runtime) (http.Handler, error) {
 	return NewFoundationHandlerWithSP04(pool, authenticator, trust, runtime, &SP04Handlers{Pool: pool})
 }
 
-func NewFoundationHandlerWithSP04(pool persistence.TxBeginner, authenticator *auth.Authenticator, trust configregistry.SignatureVerifier, runtime *observability.Runtime, sp04 *SP04Handlers) (http.Handler, error) {
+func NewFoundationHandlerWithSP04(pool persistence.TxBeginner, authenticator auth.AuthMiddleware, trust configregistry.SignatureVerifier, runtime *observability.Runtime, sp04 *SP04Handlers) (http.Handler, error) {
+	return NewFoundationHandlerWithNativeAuth(pool, authenticator, trust, runtime, sp04, nil)
+}
+
+// NewFoundationHandlerWithNativeAuth uses native cookie sessions when a fixed
+// deployment explicitly enables that mode. Login is unauthenticated; all other
+// native requests pass through the native middleware and its CSRF boundary.
+func NewFoundationHandlerWithNativeAuth(pool persistence.TxBeginner, authenticator auth.AuthMiddleware, trust configregistry.SignatureVerifier, runtime *observability.Runtime, sp04 *SP04Handlers, nativeAuth *NativeAuthHandlers) (http.Handler, error) {
+	return NewFoundationHandlerWithNativeMFA(pool, authenticator, trust, runtime, sp04, nativeAuth, nil)
+}
+
+// NewFoundationHandlerWithNativeMFA additionally wires the native MFA, step-up
+// and recovery routes. P2-03 is only reachable through the formal Foundation
+// composition, never through a test-only router.
+func NewFoundationHandlerWithNativeMFA(pool persistence.TxBeginner, authenticator auth.AuthMiddleware, trust configregistry.SignatureVerifier, runtime *observability.Runtime, sp04 *SP04Handlers, nativeAuth *NativeAuthHandlers, nativeMFA *NativeMFAHandlers) (http.Handler, error) {
 	if pool == nil || authenticator == nil || trust == nil || runtime == nil {
 		return nil, errors.New("foundation persistence, authentication, trust and observability are required")
 	}
@@ -79,6 +93,20 @@ func NewFoundationHandlerWithSP04(pool persistence.TxBeginner, authenticator *au
 	sp04.SP05.GraphAPI = sp04
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
+		case nativeAuth != nil && r.URL.Path == "/api/v1/auth/login" && r.Method == http.MethodPost:
+			nativeAuth.Login(w, r)
+		case nativeAuth != nil && r.URL.Path == "/api/v1/auth/session" && r.Method == http.MethodGet:
+			nativeAuth.Session(w, r)
+		case nativeAuth != nil && r.URL.Path == "/api/v1/auth/logout" && r.Method == http.MethodPost:
+			nativeAuth.Logout(w, r)
+		case nativeAuth != nil && r.URL.Path == "/api/v1/auth/password:change" && r.Method == http.MethodPost:
+			nativeAuth.ChangePassword(w, r)
+		case nativeMFA != nil && (strings.HasPrefix(r.URL.Path, "/api/v1/auth/mfa") ||
+			strings.HasPrefix(r.URL.Path, "/api/v1/auth/step-up-challenges") ||
+			(strings.HasPrefix(r.URL.Path, "/api/v1/admin/users/") && strings.HasSuffix(r.URL.Path, "/mfa:reset"))):
+			nativeMFA.ServeHTTP(w, r)
+		case nativeAuth != nil && (r.URL.Path == "/api/v1/admin/subject-mappings" || r.URL.Path == "/api/v1/admin/users" || strings.HasPrefix(r.URL.Path, "/api/v1/admin/users/") || strings.HasPrefix(r.URL.Path, adminRoleBindingsPath)):
+			NativeUserHandlers{Pool: pool}.ServeHTTP(w, r)
 		case strings.HasPrefix(r.URL.Path, "/api/v1/assistant/") && sp04.Assistant != nil:
 			sp04.Assistant.ServeHTTP(w, r)
 		case strings.HasPrefix(r.URL.Path, "/api/v1/audit-records"):

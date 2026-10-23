@@ -57,6 +57,8 @@ import type {
   GetIncidentTimelineParams,
   GetIncidentsParams,
   GetLegalHoldsParams,
+  GetNativeSubjectMappingsParams,
+  GetNativeUsersParams,
   GetOverviewParams,
   GetPolicyBundlesParams,
   GetRCARevisionsParams,
@@ -88,6 +90,37 @@ import type {
   LegalHoldResultV1,
   ListAssistantConversationsParams,
   ListAssistantMessagesParams,
+  NativeAccountSuccessV1,
+  NativeAdminMFAResetRequestV1,
+  NativeAdminMFAResetSuccessV1,
+  NativeAdminPasswordResetSuccessV1,
+  NativeAdminRevocationSuccessV1,
+  NativeIdentityAccountCreateRequestV1,
+  NativeIdentityAccountUpdateRequestV1,
+  NativeIdentityAdminPasswordResetRequestV1,
+  NativeIdentityRoleGrantStatusRequestV1,
+  NativeIdentitySessionRevocationRequestV1,
+  NativeIdentitySubjectMappingRequestV1,
+  NativeLoginRequestV1,
+  NativeLoginSuccessV1,
+  NativeLogoutRequestV1,
+  NativeLogoutSuccessV1,
+  NativeMFAEnrollmentCreateRequestV1,
+  NativeMFAEnrollmentCreatedSuccessV1,
+  NativeMFAEnrollmentVerifyRequestV1,
+  NativeMFAEnrollmentVerifySuccessV1,
+  NativeMFAEnrollmentViewSuccessV1,
+  NativeMFAStatusSuccessV1,
+  NativePasswordChangeRequestV1,
+  NativeRecoveryVerifyRequestV1,
+  NativeRecoveryVerifySuccessV1,
+  NativeStepUpChallengeCreateRequestV1,
+  NativeStepUpChallengeSuccessV1,
+  NativeStepUpVerifyRequestV1,
+  NativeStepUpVerifySuccessV1,
+  NativeSubjectMappingSuccessV1,
+  NativeSubjectMappingsPageV1,
+  NativeUsersPageV1,
   OnboardExecutionHostRequest,
   OperatorRoleBindingStatusUpdateRequest,
   PageEnvelope,
@@ -1235,6 +1268,199 @@ export const getAssistantConversationEvents = async (conversationId: string, opt
 
 
 
+export type nativeLoginResponse201 = {
+  data: NativeLoginSuccessV1
+  status: 201
+}
+
+export type nativeLoginResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type nativeLoginResponseSuccess = (nativeLoginResponse201) & {
+  headers: Headers;
+};
+export type nativeLoginResponseError = (nativeLoginResponseDefault) & {
+  headers: Headers;
+};
+
+export type nativeLoginResponse = (nativeLoginResponseSuccess | nativeLoginResponseError)
+
+export const getNativeLoginUrl = () => {
+
+
+
+
+  return `/api/v1/auth/login`
+}
+
+/**
+ * @summary Create a native server session from a fixed deployment organization login.
+ */
+export const nativeLogin = async (nativeLoginRequestV1: NativeLoginRequestV1, options?: RequestInit): Promise<nativeLoginResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getNativeLoginUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeLoginRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: nativeLoginResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as nativeLoginResponse
+}
+
+
+
+export type nativeLogoutResponse200 = {
+  data: NativeLogoutSuccessV1
+  status: 200
+}
+
+export type nativeLogoutResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type nativeLogoutResponseSuccess = (nativeLogoutResponse200) & {
+  headers: Headers;
+};
+export type nativeLogoutResponseError = (nativeLogoutResponseDefault) & {
+  headers: Headers;
+};
+
+export type nativeLogoutResponse = (nativeLogoutResponseSuccess | nativeLogoutResponseError)
+
+export const getNativeLogoutUrl = () => {
+
+
+
+
+  return `/api/v1/auth/logout`
+}
+
+/**
+ * @summary Revoke the current native server session and clear its cookie.
+ */
+export const nativeLogout = async (nativeLogoutRequestV1: NativeLogoutRequestV1, options?: RequestInit): Promise<nativeLogoutResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getNativeLogoutUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeLogoutRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: nativeLogoutResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as nativeLogoutResponse
+}
+
+
+
+export type changeNativePasswordResponse201 = {
+  data: NativeLoginSuccessV1
+  status: 201
+}
+
+export type changeNativePasswordResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type changeNativePasswordResponseSuccess = (changeNativePasswordResponse201) & {
+  headers: Headers;
+};
+export type changeNativePasswordResponseError = (changeNativePasswordResponseDefault) & {
+  headers: Headers;
+};
+
+export type changeNativePasswordResponse = (changeNativePasswordResponseSuccess | changeNativePasswordResponseError)
+
+export const getChangeNativePasswordUrl = () => {
+
+
+
+
+  return `/api/v1/auth/password:change`
+}
+
+/**
+ * A 401 CURRENT_PASSWORD_INVALID rejects the supplied current password without invalidating the session. Other 401 errors invalidate the session.
+ * @summary Change the current native account password and rotate its session.
+ */
+export const changeNativePassword = async (nativePasswordChangeRequestV1: NativePasswordChangeRequestV1, options?: RequestInit): Promise<changeNativePasswordResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getChangeNativePasswordUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativePasswordChangeRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: changeNativePasswordResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as changeNativePasswordResponse
+}
+
+
+
 export type getAuthSessionResponse200 = {
   data: AuthSessionSuccessV1
   status: 200
@@ -1281,6 +1507,912 @@ export const getAuthSession = async ( options?: RequestInit): Promise<getAuthSes
 
   const data: getAuthSessionResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getAuthSessionResponse
+}
+
+
+
+export type getNativeMFAStatusResponse200 = {
+  data: NativeMFAStatusSuccessV1
+  status: 200
+}
+
+export type getNativeMFAStatusResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getNativeMFAStatusResponseSuccess = (getNativeMFAStatusResponse200) & {
+  headers: Headers;
+};
+export type getNativeMFAStatusResponseError = (getNativeMFAStatusResponseDefault) & {
+  headers: Headers;
+};
+
+export type getNativeMFAStatusResponse = (getNativeMFAStatusResponseSuccess | getNativeMFAStatusResponseError)
+
+export const getGetNativeMFAStatusUrl = () => {
+
+
+
+
+  return `/api/v1/auth/mfa/status`
+}
+
+/**
+ * @summary Second-factor state of the signed-in account; never returns a provisioning secret.
+ */
+export const getNativeMFAStatus = async ( options?: RequestInit): Promise<getNativeMFAStatusResponse> => {
+
+  const res = await fetch(getGetNativeMFAStatusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getNativeMFAStatusResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getNativeMFAStatusResponse
+}
+
+
+
+export type createNativeMFAEnrollmentResponse201 = {
+  data: NativeMFAEnrollmentCreatedSuccessV1
+  status: 201
+}
+
+export type createNativeMFAEnrollmentResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type createNativeMFAEnrollmentResponseSuccess = (createNativeMFAEnrollmentResponse201) & {
+  headers: Headers;
+};
+export type createNativeMFAEnrollmentResponseError = (createNativeMFAEnrollmentResponseDefault) & {
+  headers: Headers;
+};
+
+export type createNativeMFAEnrollmentResponse = (createNativeMFAEnrollmentResponseSuccess | createNativeMFAEnrollmentResponseError)
+
+export const getCreateNativeMFAEnrollmentUrl = () => {
+
+
+
+
+  return `/api/v1/auth/mfa/enrollments`
+}
+
+/**
+ * @summary Start a TOTP enrolment; the provisioning URI is returned exactly once.
+ */
+export const createNativeMFAEnrollment = async (nativeMFAEnrollmentCreateRequestV1: NativeMFAEnrollmentCreateRequestV1, options?: RequestInit): Promise<createNativeMFAEnrollmentResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCreateNativeMFAEnrollmentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeMFAEnrollmentCreateRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createNativeMFAEnrollmentResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createNativeMFAEnrollmentResponse
+}
+
+
+
+export type getNativeMFAEnrollmentResponse200 = {
+  data: NativeMFAEnrollmentViewSuccessV1
+  status: 200
+}
+
+export type getNativeMFAEnrollmentResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getNativeMFAEnrollmentResponseSuccess = (getNativeMFAEnrollmentResponse200) & {
+  headers: Headers;
+};
+export type getNativeMFAEnrollmentResponseError = (getNativeMFAEnrollmentResponseDefault) & {
+  headers: Headers;
+};
+
+export type getNativeMFAEnrollmentResponse = (getNativeMFAEnrollmentResponseSuccess | getNativeMFAEnrollmentResponseError)
+
+export const getGetNativeMFAEnrollmentUrl = (enrollmentId: string,) => {
+
+
+
+
+  return `/api/v1/auth/mfa/enrollments/${enrollmentId}`
+}
+
+/**
+ * @summary Status of one enrolment. It has no provisioning URI or secret field.
+ */
+export const getNativeMFAEnrollment = async (enrollmentId: string, options?: RequestInit): Promise<getNativeMFAEnrollmentResponse> => {
+
+  const res = await fetch(getGetNativeMFAEnrollmentUrl(enrollmentId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getNativeMFAEnrollmentResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getNativeMFAEnrollmentResponse
+}
+
+
+
+export type verifyNativeMFAEnrollmentResponse200 = {
+  data: NativeMFAEnrollmentVerifySuccessV1
+  status: 200
+}
+
+export type verifyNativeMFAEnrollmentResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type verifyNativeMFAEnrollmentResponseSuccess = (verifyNativeMFAEnrollmentResponse200) & {
+  headers: Headers;
+};
+export type verifyNativeMFAEnrollmentResponseError = (verifyNativeMFAEnrollmentResponseDefault) & {
+  headers: Headers;
+};
+
+export type verifyNativeMFAEnrollmentResponse = (verifyNativeMFAEnrollmentResponseSuccess | verifyNativeMFAEnrollmentResponseError)
+
+export const getVerifyNativeMFAEnrollmentUrl = (enrollmentId: string,) => {
+
+
+
+
+  return `/api/v1/auth/mfa/enrollments/${enrollmentId}:verify`
+}
+
+/**
+ * @summary Confirm an enrolment with a bound password+TOTP step-up and issue the recovery codes once.
+ */
+export const verifyNativeMFAEnrollment = async (enrollmentId: string,
+    nativeMFAEnrollmentVerifyRequestV1: NativeMFAEnrollmentVerifyRequestV1, options?: RequestInit): Promise<verifyNativeMFAEnrollmentResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getVerifyNativeMFAEnrollmentUrl(enrollmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeMFAEnrollmentVerifyRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: verifyNativeMFAEnrollmentResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as verifyNativeMFAEnrollmentResponse
+}
+
+
+
+export type createNativeStepUpChallengeResponse201 = {
+  data: NativeStepUpChallengeSuccessV1
+  status: 201
+}
+
+export type createNativeStepUpChallengeResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type createNativeStepUpChallengeResponseSuccess = (createNativeStepUpChallengeResponse201) & {
+  headers: Headers;
+};
+export type createNativeStepUpChallengeResponseError = (createNativeStepUpChallengeResponseDefault) & {
+  headers: Headers;
+};
+
+export type createNativeStepUpChallengeResponse = (createNativeStepUpChallengeResponseSuccess | createNativeStepUpChallengeResponseError)
+
+export const getCreateNativeStepUpChallengeUrl = () => {
+
+
+
+
+  return `/api/v1/auth/step-up-challenges`
+}
+
+/**
+ * @summary Persist a challenge bound to this session, one operation, one target and every version.
+ */
+export const createNativeStepUpChallenge = async (nativeStepUpChallengeCreateRequestV1: NativeStepUpChallengeCreateRequestV1, options?: RequestInit): Promise<createNativeStepUpChallengeResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCreateNativeStepUpChallengeUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeStepUpChallengeCreateRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createNativeStepUpChallengeResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createNativeStepUpChallengeResponse
+}
+
+
+
+export type verifyNativeStepUpChallengeResponse200 = {
+  data: NativeStepUpVerifySuccessV1
+  status: 200
+}
+
+export type verifyNativeStepUpChallengeResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type verifyNativeStepUpChallengeResponseSuccess = (verifyNativeStepUpChallengeResponse200) & {
+  headers: Headers;
+};
+export type verifyNativeStepUpChallengeResponseError = (verifyNativeStepUpChallengeResponseDefault) & {
+  headers: Headers;
+};
+
+export type verifyNativeStepUpChallengeResponse = (verifyNativeStepUpChallengeResponseSuccess | verifyNativeStepUpChallengeResponseError)
+
+export const getVerifyNativeStepUpChallengeUrl = (challengeId: string,) => {
+
+
+
+
+  return `/api/v1/auth/step-up-challenges/${challengeId}:verify`
+}
+
+/**
+ * @summary Submit one credential; only accumulated password+TOTP mints a LoA2 step-up session.
+ */
+export const verifyNativeStepUpChallenge = async (challengeId: string,
+    nativeStepUpVerifyRequestV1: NativeStepUpVerifyRequestV1, options?: RequestInit): Promise<verifyNativeStepUpChallengeResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getVerifyNativeStepUpChallengeUrl(challengeId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeStepUpVerifyRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: verifyNativeStepUpChallengeResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as verifyNativeStepUpChallengeResponse
+}
+
+
+
+export type verifyNativeRecoveryCodeResponse200 = {
+  data: NativeRecoveryVerifySuccessV1
+  status: 200
+}
+
+export type verifyNativeRecoveryCodeResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type verifyNativeRecoveryCodeResponseSuccess = (verifyNativeRecoveryCodeResponse200) & {
+  headers: Headers;
+};
+export type verifyNativeRecoveryCodeResponseError = (verifyNativeRecoveryCodeResponseDefault) & {
+  headers: Headers;
+};
+
+export type verifyNativeRecoveryCodeResponse = (verifyNativeRecoveryCodeResponseSuccess | verifyNativeRecoveryCodeResponseError)
+
+export const getVerifyNativeRecoveryCodeUrl = () => {
+
+
+
+
+  return `/api/v1/auth/mfa/recovery-codes:verify`
+}
+
+/**
+ * @summary Consume one recovery code; it restores LoA1 only, revokes sessions and forces re-enrolment.
+ */
+export const verifyNativeRecoveryCode = async (nativeRecoveryVerifyRequestV1: NativeRecoveryVerifyRequestV1, options?: RequestInit): Promise<verifyNativeRecoveryCodeResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getVerifyNativeRecoveryCodeUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeRecoveryVerifyRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: verifyNativeRecoveryCodeResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as verifyNativeRecoveryCodeResponse
+}
+
+
+
+export type getNativeUsersResponse200 = {
+  data: NativeUsersPageV1
+  status: 200
+}
+
+export type getNativeUsersResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getNativeUsersResponseSuccess = (getNativeUsersResponse200) & {
+  headers: Headers;
+};
+export type getNativeUsersResponseError = (getNativeUsersResponseDefault) & {
+  headers: Headers;
+};
+
+export type getNativeUsersResponse = (getNativeUsersResponseSuccess | getNativeUsersResponseError)
+
+export const getGetNativeUsersUrl = (params?: GetNativeUsersParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/admin/users?${stringifiedParams}` : `/api/v1/admin/users`
+}
+
+export const getNativeUsers = async (params?: GetNativeUsersParams, options?: RequestInit): Promise<getNativeUsersResponse> => {
+
+  const res = await fetch(getGetNativeUsersUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getNativeUsersResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getNativeUsersResponse
+}
+
+
+
+export type createNativeUserResponse201 = {
+  data: NativeAccountSuccessV1
+  status: 201
+}
+
+export type createNativeUserResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type createNativeUserResponseSuccess = (createNativeUserResponse201) & {
+  headers: Headers;
+};
+export type createNativeUserResponseError = (createNativeUserResponseDefault) & {
+  headers: Headers;
+};
+
+export type createNativeUserResponse = (createNativeUserResponseSuccess | createNativeUserResponseError)
+
+export const getCreateNativeUserUrl = () => {
+
+
+
+
+  return `/api/v1/admin/users`
+}
+
+export const createNativeUser = async (nativeIdentityAccountCreateRequestV1: NativeIdentityAccountCreateRequestV1, options?: RequestInit): Promise<createNativeUserResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCreateNativeUserUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeIdentityAccountCreateRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createNativeUserResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createNativeUserResponse
+}
+
+
+
+export type updateNativeUserResponse200 = {
+  data: NativeAccountSuccessV1
+  status: 200
+}
+
+export type updateNativeUserResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type updateNativeUserResponseSuccess = (updateNativeUserResponse200) & {
+  headers: Headers;
+};
+export type updateNativeUserResponseError = (updateNativeUserResponseDefault) & {
+  headers: Headers;
+};
+
+export type updateNativeUserResponse = (updateNativeUserResponseSuccess | updateNativeUserResponseError)
+
+export const getUpdateNativeUserUrl = (userId: string,) => {
+
+
+
+
+  return `/api/v1/admin/users/${userId}`
+}
+
+export const updateNativeUser = async (userId: string,
+    nativeIdentityAccountUpdateRequestV1: NativeIdentityAccountUpdateRequestV1, options?: RequestInit): Promise<updateNativeUserResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getUpdateNativeUserUrl(userId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeIdentityAccountUpdateRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: updateNativeUserResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as updateNativeUserResponse
+}
+
+
+
+export type resetNativeUserPasswordResponse200 = {
+  data: NativeAdminPasswordResetSuccessV1
+  status: 200
+}
+
+export type resetNativeUserPasswordResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type resetNativeUserPasswordResponseSuccess = (resetNativeUserPasswordResponse200) & {
+  headers: Headers;
+};
+export type resetNativeUserPasswordResponseError = (resetNativeUserPasswordResponseDefault) & {
+  headers: Headers;
+};
+
+export type resetNativeUserPasswordResponse = (resetNativeUserPasswordResponseSuccess | resetNativeUserPasswordResponseError)
+
+export const getResetNativeUserPasswordUrl = (userId: string,) => {
+
+
+
+
+  return `/api/v1/admin/users/${userId}/password:reset`
+}
+
+export const resetNativeUserPassword = async (userId: string,
+    nativeIdentityAdminPasswordResetRequestV1: NativeIdentityAdminPasswordResetRequestV1, options?: RequestInit): Promise<resetNativeUserPasswordResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getResetNativeUserPasswordUrl(userId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeIdentityAdminPasswordResetRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: resetNativeUserPasswordResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as resetNativeUserPasswordResponse
+}
+
+
+
+export type revokeNativeUserSessionsResponse200 = {
+  data: NativeAdminRevocationSuccessV1
+  status: 200
+}
+
+export type revokeNativeUserSessionsResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type revokeNativeUserSessionsResponseSuccess = (revokeNativeUserSessionsResponse200) & {
+  headers: Headers;
+};
+export type revokeNativeUserSessionsResponseError = (revokeNativeUserSessionsResponseDefault) & {
+  headers: Headers;
+};
+
+export type revokeNativeUserSessionsResponse = (revokeNativeUserSessionsResponseSuccess | revokeNativeUserSessionsResponseError)
+
+export const getRevokeNativeUserSessionsUrl = (userId: string,) => {
+
+
+
+
+  return `/api/v1/admin/users/${userId}/sessions:revoke`
+}
+
+export const revokeNativeUserSessions = async (userId: string,
+    nativeIdentitySessionRevocationRequestV1: NativeIdentitySessionRevocationRequestV1, options?: RequestInit): Promise<revokeNativeUserSessionsResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getRevokeNativeUserSessionsUrl(userId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeIdentitySessionRevocationRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: revokeNativeUserSessionsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as revokeNativeUserSessionsResponse
+}
+
+
+
+export type getNativeSubjectMappingsResponse200 = {
+  data: NativeSubjectMappingsPageV1
+  status: 200
+}
+
+export type getNativeSubjectMappingsResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getNativeSubjectMappingsResponseSuccess = (getNativeSubjectMappingsResponse200) & {
+  headers: Headers;
+};
+export type getNativeSubjectMappingsResponseError = (getNativeSubjectMappingsResponseDefault) & {
+  headers: Headers;
+};
+
+export type getNativeSubjectMappingsResponse = (getNativeSubjectMappingsResponseSuccess | getNativeSubjectMappingsResponseError)
+
+export const getGetNativeSubjectMappingsUrl = (params?: GetNativeSubjectMappingsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/admin/subject-mappings?${stringifiedParams}` : `/api/v1/admin/subject-mappings`
+}
+
+export const getNativeSubjectMappings = async (params?: GetNativeSubjectMappingsParams, options?: RequestInit): Promise<getNativeSubjectMappingsResponse> => {
+
+  const res = await fetch(getGetNativeSubjectMappingsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getNativeSubjectMappingsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getNativeSubjectMappingsResponse
+}
+
+
+
+export type createNativeSubjectMappingResponse201 = {
+  data: NativeSubjectMappingSuccessV1
+  status: 201
+}
+
+export type createNativeSubjectMappingResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type createNativeSubjectMappingResponseSuccess = (createNativeSubjectMappingResponse201) & {
+  headers: Headers;
+};
+export type createNativeSubjectMappingResponseError = (createNativeSubjectMappingResponseDefault) & {
+  headers: Headers;
+};
+
+export type createNativeSubjectMappingResponse = (createNativeSubjectMappingResponseSuccess | createNativeSubjectMappingResponseError)
+
+export const getCreateNativeSubjectMappingUrl = () => {
+
+
+
+
+  return `/api/v1/admin/subject-mappings`
+}
+
+/**
+ * The exact user/legacy subject/digest must match a reviewed inventory imported under the dedicated migration duty. Does not rewrite principals or import old roles. Target sessions are revoked.
+ */
+export const createNativeSubjectMapping = async (nativeIdentitySubjectMappingRequestV1: NativeIdentitySubjectMappingRequestV1, options?: RequestInit): Promise<createNativeSubjectMappingResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCreateNativeSubjectMappingUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeIdentitySubjectMappingRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createNativeSubjectMappingResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createNativeSubjectMappingResponse
+}
+
+
+
+export type resetNativeUserMFAResponse200 = {
+  data: NativeAdminMFAResetSuccessV1
+  status: 200
+}
+
+export type resetNativeUserMFAResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type resetNativeUserMFAResponseSuccess = (resetNativeUserMFAResponse200) & {
+  headers: Headers;
+};
+export type resetNativeUserMFAResponseError = (resetNativeUserMFAResponseDefault) & {
+  headers: Headers;
+};
+
+export type resetNativeUserMFAResponse = (resetNativeUserMFAResponseSuccess | resetNativeUserMFAResponseError)
+
+export const getResetNativeUserMFAUrl = (userId: string,) => {
+
+
+
+
+  return `/api/v1/admin/users/${userId}/mfa:reset`
+}
+
+/**
+ * @summary Administrator MFA reset with a target-bound high-risk step-up, version bumps and audit in one transaction.
+ */
+export const resetNativeUserMFA = async (userId: string,
+    nativeAdminMFAResetRequestV1: NativeAdminMFAResetRequestV1, options?: RequestInit): Promise<resetNativeUserMFAResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getResetNativeUserMFAUrl(userId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(nativeAdminMFAResetRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: resetNativeUserMFAResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as resetNativeUserMFAResponse
 }
 
 
@@ -1749,6 +2881,7 @@ export const getGetExecutionProfilesUrl = (params?: GetExecutionProfilesParams,)
 }
 
 /**
+ * Returns currently authorized published versions in name/version order. Pagination follows authorization filtering; refresh from the first page if the cursor version was retired or is no longer visible.
  * @summary getExecutionProfiles
  */
 export const getExecutionProfiles = async (params?: GetExecutionProfilesParams, options?: RequestInit): Promise<getExecutionProfilesResponse> => {
@@ -2592,6 +3725,7 @@ export const getCreateRoleBindingUrl = () => {
 }
 
 /**
+ * Native mode requires roleGrantRequest from ui-v12-identity/v1, one explicit role and registered cluster UID scopes; no subject string. Writes require X-Ops-Step-Up-Challenge.
  * @summary createRoleBinding
  */
 export const createRoleBinding = async (jSONRequest: JSONRequest, options?: RequestInit): Promise<createRoleBindingResponse> => {
@@ -5348,11 +6482,11 @@ export const getSetOperatorRoleBindingStatusUrl = (bindingId: string,) => {
 }
 
 /**
- * Platform administrator with current LoA2 step-up. Only operator bindings are accepted; subject, role, tenant and scopes cannot be supplied or changed. The expected revision is mandatory and the existing audited update advances it. This is an administrative authorization operation, with no command execution.
+ * Native mode revokes only and requires userId, expectedRevision (authorization version), status=disabled and reason. Re-enabling requires a new reviewed native grant. Legacy mode retains the existing contract. Platform administrator with current LoA2 step-up. Only operator bindings are accepted; subject, role, tenant and scopes cannot be supplied or changed. The expected revision is mandatory and the existing audited update advances it. This is an administrative authorization operation, with no command execution.
  * @summary Revoke or restore an operator binding while preserving its exact identity and scopes.
  */
 export const setOperatorRoleBindingStatus = async (bindingId: string,
-    operatorRoleBindingStatusUpdateRequest: OperatorRoleBindingStatusUpdateRequest, options?: RequestInit): Promise<setOperatorRoleBindingStatusResponse> => {
+    operatorRoleBindingStatusUpdateRequestNativeIdentityRoleGrantStatusRequestV1: OperatorRoleBindingStatusUpdateRequest | NativeIdentityRoleGrantStatusRequestV1, options?: RequestInit): Promise<setOperatorRoleBindingStatusResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -5373,7 +6507,7 @@ const res = await fetch(getSetOperatorRoleBindingStatusUrl(bindingId),
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(operatorRoleBindingStatusUpdateRequest)
+    body: JSON.stringify(operatorRoleBindingStatusUpdateRequestNativeIdentityRoleGrantStatusRequestV1)
   }
 )
 

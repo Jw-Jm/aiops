@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RegistryEditor } from "../src/pages/admin/RegistryEditor";
 import { setCredentials } from "../src/api/client";
+vi.mock("../src/auth/AuthProvider", () => ({ useAuth: () => ({ authMode: "oidc" }) }));
 const api = vi.hoisted(() => ({ read: vi.fn(), update: vi.fn() }));
 vi.mock("../src/api/generated/platform", async (original) => ({
   ...(await original<object>()),

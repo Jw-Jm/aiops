@@ -45,6 +45,13 @@ func newTenantAdminStepUpIdempotency(pool persistence.TxBeginner, operation stri
 		if !ok {
 			return auth.ErrUnauthenticated
 		}
+		if _, native := auth.NativeSessionFromContext(r.Context()); native {
+			intent, err := nativeHTTPWriteIntent(r, tx, operation)
+			if err != nil {
+				return err
+			}
+			*r = *r.WithContext(auth.WithNativeStepUpIntent(r.Context(), intent))
+		}
 		// AuthorizeTx runs inside the tenant transaction before checking the
 		// idempotency ledger, including successful-response replay.
 		_, err := auth.TouchCurrentStepUpSession(r.Context(), tx, request, []string{auth.StepUpACRLevel2})

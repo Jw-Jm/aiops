@@ -51,12 +51,18 @@ func validateBusinessCapabilities(d map[string]any) error {
 // The nginx recipe uses fixed API/8443 OIDC upstreams. Bind them to the
 // installed Profile instead of accepting caller-selected proxy destinations.
 func validateWebProfile(b BusinessValues, p profile.ResolvedProfile) error {
+	if err := validateIdentityProfile(&b, p); err != nil {
+		return err
+	}
 	if !b.WebEnabled() {
 		return nil
 	}
 	// shortcut: the current Web recipe copies amd64 libraries; remove this fence only after per-architecture material qualification.
 	if p.Architecture != "amd64" {
 		return errors.New("SP08 Web image recipe currently supports amd64 only; other architectures remain unverified")
+	}
+	if b.NativeIdentity() {
+		return nil
 	}
 	endpoint := strings.TrimSuffix(p.Components["keycloak"].Endpoint, "/")
 	u, err := url.Parse(endpoint)

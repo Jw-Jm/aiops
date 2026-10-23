@@ -179,7 +179,7 @@ export function IncidentWorkspace() {
         title="故障处理工作台"
         description="先了解故障现象与影响，再核对证据、调查原因和执行本人确认的命令。"
         extra={
-          <Space><Link to={`/assistant?incidentId=${encodeURIComponent(incidentId)}&clusterUid=${encodeURIComponent(incident?.clusterUid || "")}`}><Button disabled={!incident}>自然语言追问</Button></Link><Link to="/incidents">
+          <Space><Link to={`/assistant?incidentId=${encodeURIComponent(incidentId)}&clusterUid=${encodeURIComponent(incident?.clusterUid || "")}`}><Button disabled={!incident}>自然语言追问</Button></Link><Link to="/events/incidents">
             <Button>返回故障列表</Button>
           </Link></Space>
         }

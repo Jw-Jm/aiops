@@ -1,0 +1,96 @@
+{
+  "task_id": "f858ef97-58b4-4880-ad2c-e4710577a729",
+  "status": "changes_required",
+  "head": "9bd78d84e212217626cdf0cfe54af84a155a9a3d",
+  "source": "dirty feat/ui-v12-replication; task baseline used for attribution",
+  "accepted_scope": [
+    "migration50 session-bound authorization: independent live late-write tests passed",
+    "audit authority source dispatch and revision digest structural fixes; full native audit/Worker runtime not independently accepted",
+    "logout immediate identity cancellation and visible failure notice added; reload lifecycle remains defective",
+    "SL-001 denominator corrected to1363300; previous independent visual scope retained; no fresh independent visual capture in this review"
+  ],
+  "checks": {
+    "go": "7 packages independently passed",
+    "web": "4 files /25 tests independently passed",
+    "contract": "independently passed 30.659s",
+    "build": "independently passed; existing chunk warning",
+    "database": "15453 PG17.11 schema51: independently rebuilt Linux integration binary; TestNativeMFAEnrollmentStepUpAndReset + TestNativeSessionBindingRejectsLateWrites passed; existing schema51 not fresh migration replay in this review",
+    "progress": "validate-progress passed tracking consistency only"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "priority": 1,
+      "title": "MFA事务复检未重新核对父会话与账户当前状态",
+      "location": "migrations/00051_native_mfa_stepup.sql:933",
+      "detail": "step_up_recheck只比较证明和调用者快照，不锁定/复检当前账户、父会话、租户和授权版本；mfa_session_proof也缺授权版本及锁。有效证明窗口内，父会话撤销或账户版本变化后仍可能接受。",
+      "evidence": "revoked-proof-probe.json；真实已签发且未撤销证明，事务内仅延长过期时间隔离撤销条件，父session已撤销/current sv3而issued sv2，返回true；全部ROLLBACK。最初选到已撤销proof返回false的探针保留。"
+    },
+    {
+      "id": "R2",
+      "priority": 1,
+      "title": "恢复码失败不消耗尝试额度",
+      "location": "migrations/00051_native_mfa_stepup.sql:1036",
+      "detail": "未知或已用恢复码直接RETURN，attempts/revision/state不变；没有实际执行challenge的attempt_limit。新挑战也不能成为绕过预算的入口。",
+      "evidence": "mfa-negative-probe.json：隔离15453事务插入合成挑战，以API职责提交7次错误digest，attempts=0/revision=1/pending/limit=5；ROLLBACK。"
+    },
+    {
+      "id": "R3",
+      "priority": 2,
+      "title": "已有MFA重新绑定流程循环依赖",
+      "location": "internal/identity/mfa.go:492",
+      "detail": "创建替换enrollment要求mfa_enrollment step-up；该operation验证TOTP只能读pending_confirmation enrollment。已有confirmed因子不能合法取得先决证明，界面重新绑定直接创建会被拒绝。",
+      "evidence": "静态调用链：mfa_begin_enrollment:337..356 + VerifyTOTPStep:503..513；未进行独立浏览器重绑。"
+    },
+    {
+      "id": "R4",
+      "priority": 2,
+      "title": "错误因子后的页面重试使用过期revision",
+      "location": "web/src/pages/AccountSecurity.tsx:151",
+      "detail": "错误密码/TOTP响应已推进服务端revision，但界面failureCode分支在setChallenge前return；之后正确重试409。现有浏览器脚本通过直接API调用手动取新revision，未覆盖表单。",
+      "evidence": "实际组件与HTTP返回链审核；补真实UI错误→正确回归。"
+    },
+    {
+      "id": "R5",
+      "priority": 1,
+      "title": "退出撤销失败后刷新仍会自动采用旧会话",
+      "location": "web/src/auth/AuthProvider.tsx:187",
+      "detail": "acceptNativeSession不检查sessionStorage中的pendingRevocation；GET session若仍200就恢复身份，Login提前Navigate导致待撤销警告不可见。现有reload单测mock GET401，未覆盖失败撤销后仍有效Cookie。",
+      "evidence": "静态生命周期审核；独立logout-reload-probe.json未成功登录（合成账号改密后的随机密码未保存），属于失败探针，不作浏览器复现通过。"
+    },
+    {
+      "id": "R6",
+      "priority": 2,
+      "title": "恢复后的强制重新设置仅存在响应字段",
+      "location": "migrations/00051_native_mfa_stepup.sql:1040",
+      "detail": "恢复删除/撤销因子、递增会话版本，但未持久化必须重新设置状态；下次密码登录可成为普通full会话。mustReenrollMfa=true不能代表服务端强制约束。",
+      "evidence": "恢复SQL与会话投影静态链；需持久状态及重登后业务边界回归。"
+    },
+    {
+      "id": "R7",
+      "priority": 1,
+      "title": "原生再次验证尚未接入真实业务写链路",
+      "location": "web/src/auth/StepUpControl.tsx:34",
+      "detail": "native验证按钮仍禁用，后续register仍调用旧createStepUpSession；RequestContext ACR固定loa1，原生新proof与旧Keycloak stepup存储分离。command_execution创建挑战被拒绝，仅账户设置路径已接入。",
+      "evidence": "实际调用方审核，报告亦承认未完成；不能把GET session显示loa2当成操作绑定业务写入通过。"
+    }
+  ],
+  "execution_model": {
+    "required": "Deepseek-V4.1-Flash",
+    "hook_recorded": "minimax-m3.1-flash",
+    "status": "workflow_deviation; selection had been explicitly set before dispatch; cause not established; no benchmark/model-use testing"
+  },
+  "limits": [
+    "OpenBao adapter exists but application startup only wires file backend; OpenBao/identity runtime unverified",
+    "tested-source.json still points to older verification; current source/API/Web artifact binding and new30464 runtime instructions incomplete",
+    "P2-02/P2-03 remain in_progress; P2-04 lifecycle and history mapping, P2-05 and P3 incomplete",
+    "No production, shared15452, deliveredv12.admin credential/MFA or oldpreviews changed by reviewer",
+    "No product or test source edits by reviewer"
+  ],
+  "evidence": [
+    "independent-integration.log",
+    "mfa-negative-probe.json",
+    "revoked-proof-probe.json",
+    "logout-reload-probe.json"
+  ]
+}

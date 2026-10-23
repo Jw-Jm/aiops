@@ -1,0 +1,1435 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/ui-v12-observability/v1",
+  "title": "UI v1.2 independent observability query lifecycle contract",
+  "description": "Manual operational queries have their own lifecycle and never create an AI conversation or turn. A query fixes the resource identity, source registration revision, credential revision and absolute half-open window together. Totals come from the query population; bounded samples never imply a total. Cancellation is a request state and an independently confirmed termination state. The root document accepts no instance; every payload is validated through a #/$defs fragment.",
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false,
+  "not": {},
+  "$defs": {
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "timestamp": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "optionalTimestamp": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "namespaceScope": {
+      "description": "A namespaced object carries both the namespace name and its UID. A cluster-scoped object (Node, PersistentVolume, PhysicalServer) states that scope explicitly and must not invent a namespace UID.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "namespaced"
+            },
+            "namespace": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 63,
+              "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+            },
+            "namespaceUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          "required": [
+            "kind",
+            "namespace",
+            "namespaceUid"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "cluster_scoped"
+            },
+            "namespace": {
+              "type": "null"
+            },
+            "namespaceUid": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "kind",
+            "namespace",
+            "namespaceUid"
+          ]
+        }
+      ]
+    },
+    "resourceIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Canonical ID, stable UID and cluster UID are always required; the namespace scope is discriminated so a cluster-scoped object is not forced to fabricate a namespace UID.",
+      "properties": {
+        "canonicalId": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+        },
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "clusterUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "namespaceScope": {
+          "$ref": "#/$defs/namespaceScope"
+        }
+      },
+      "required": [
+        "canonicalId",
+        "uid",
+        "clusterUid",
+        "namespaceScope"
+      ]
+    },
+    "sourceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "registrationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "registrationRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "credentialRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "qualificationDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        "collectorVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]*$"
+        }
+      },
+      "required": [
+        "registrationId",
+        "registrationRevision",
+        "credentialRevision",
+        "qualificationDigest",
+        "collectorVersion"
+      ]
+    },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "bounds makes the half-open semantics explicit. to must be greater than from; that ordering is checked by the implementation, not by JSON Schema.",
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "to": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z][A-Za-z0-9_+/-]*$"
+        },
+        "bounds": {
+          "const": "[from,to)"
+        }
+      },
+      "required": [
+        "from",
+        "to",
+        "timezone",
+        "bounds"
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "coveredFrom": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "coveredTo": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "basis": {
+          "enum": [
+            "source_proof",
+            "unknown"
+          ]
+        },
+        "gaps": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "from": {
+                "$ref": "#/$defs/timestamp"
+              },
+              "to": {
+                "$ref": "#/$defs/timestamp"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "from",
+              "to",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "coveredFrom",
+        "coveredTo",
+        "complete",
+        "basis",
+        "gaps"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "unknown"
+              }
+            },
+            "required": [
+              "basis"
+            ]
+          },
+          "then": {
+            "properties": {
+              "complete": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxRows": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5000
+        },
+        "maxBytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 67108864
+        },
+        "maxDurationSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "maxSourceCalls": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        }
+      },
+      "required": [
+        "maxRows",
+        "maxBytes",
+        "maxDurationSeconds",
+        "maxSourceCalls"
+      ]
+    },
+    "filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Structured filters only. No free-form query language or backend expression is accepted from the browser.",
+      "properties": {
+        "field": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$"
+        },
+        "operator": {
+          "enum": [
+            "eq",
+            "neq",
+            "contains",
+            "prefix",
+            "in"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "field",
+        "operator",
+        "value"
+      ]
+    },
+    "createRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A manual query has no conversationId or turnId. Those fields are unknown and must be rejected so that an observation cannot be smuggled into an AI session.",
+      "properties": {
+        "schemaVersion": {
+          "const": "ui-v12-observability-query/v1"
+        },
+        "queryKind": {
+          "enum": [
+            "logs",
+            "metrics",
+            "network"
+          ]
+        },
+        "templateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9][a-z0-9.-]{0,127}$"
+        },
+        "templateVersion": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/versionRef"
+        },
+        "resource": {
+          "$ref": "#/$defs/resourceIdentity"
+        },
+        "source": {
+          "$ref": "#/$defs/sourceBinding"
+        },
+        "window": {
+          "$ref": "#/$defs/window"
+        },
+        "filters": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/filter"
+          }
+        },
+        "groupBy": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$"
+          }
+        },
+        "budget": {
+          "$ref": "#/$defs/budget"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "queryKind",
+        "templateId",
+        "templateVersion",
+        "resource",
+        "source",
+        "window",
+        "budget"
+      ]
+    },
+    "termination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requestedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "deliveredAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "sourceStopped": {
+          "type": "boolean"
+        },
+        "receiptDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        }
+      },
+      "required": [
+        "requestedAt",
+        "deliveredAt",
+        "sourceStopped",
+        "receiptDigest"
+      ]
+    },
+    "reauthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Every read of a stored query or result re-checks the current authorization and source qualification. The record contains the actual check time, the versions it checked against and the outcome; the requirement to check is an implementation rule, not an asserted boolean.",
+      "properties": {
+        "checkedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "authorizationVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "sourceRegistrationRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "result": {
+          "enum": [
+            "allowed",
+            "denied",
+            "stale"
+          ]
+        },
+        "denialCode": {
+          "anyOf": [
+            {
+              "enum": [
+                "authorization_revoked",
+                "source_revoked",
+                "credential_rotated",
+                "qualification_expired",
+                "result_expired"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "checkedAt",
+        "authorizationVersion",
+        "sourceRegistrationRevision",
+        "result",
+        "denialCode"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "result": {
+                "const": "allowed"
+              }
+            },
+            "required": [
+              "result"
+            ]
+          },
+          "then": {
+            "properties": {
+              "denialCode": {
+                "const": null
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "denialCode": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "source_unavailable",
+            "budget_exceeded",
+            "denied",
+            "unsupported_query",
+            "timeout",
+            "invalid_argument"
+          ]
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "required": [
+        "code",
+        "retryable",
+        "message"
+      ]
+    },
+    "resultRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resultId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "digest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "required": [
+        "resultId",
+        "digest",
+        "expiresAt"
+      ]
+    },
+    "queryView": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "queryId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "schemaVersion": {
+          "const": "ui-v12-observability-query/v1"
+        },
+        "state": {
+          "enum": [
+            "accepted",
+            "running",
+            "completed",
+            "failed",
+            "cancel_requested",
+            "terminated",
+            "expired",
+            "denied"
+          ]
+        },
+        "ownerSubject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "tenantId": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+        },
+        "resource": {
+          "$ref": "#/$defs/resourceIdentity"
+        },
+        "source": {
+          "$ref": "#/$defs/sourceBinding"
+        },
+        "window": {
+          "$ref": "#/$defs/window"
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "updatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "resultRef": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/resultRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cancelRequestedAt": {
+          "$ref": "#/$defs/optionalTimestamp"
+        },
+        "termination": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/termination"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/failure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reauthorization": {
+          "$ref": "#/$defs/reauthorization"
+        }
+      },
+      "required": [
+        "queryId",
+        "schemaVersion",
+        "state",
+        "ownerSubject",
+        "tenantId",
+        "resource",
+        "source",
+        "window",
+        "coverage",
+        "createdAt",
+        "updatedAt",
+        "expiresAt",
+        "resultRef",
+        "cancelRequestedAt",
+        "termination",
+        "failure",
+        "reauthorization"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "completed"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "resultRef": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "failure": {
+                "const": null
+              },
+              "cancelRequestedAt": {
+                "const": null
+              },
+              "termination": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "properties": {
+                "state": {
+                  "const": "completed"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          "then": {
+            "description": "Only a completed query publishes a result. Running, cancelled, terminated, failed or expired queries must not expose a stored result, including late results and expired reads.",
+            "properties": {
+              "resultRef": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "enum": [
+                  "failed",
+                  "denied"
+                ]
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "failure": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "cancel_requested"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "cancelRequestedAt": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "termination": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "terminated"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "cancelRequestedAt": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "termination": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "enum": [
+                  "accepted",
+                  "running"
+                ]
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "cancelRequestedAt": {
+                "const": null
+              },
+              "termination": {
+                "const": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    "population": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "basis exact requires a measured population count; not_measured must not carry a count; not_applicable is used for metric, resource and hardware results that have no log population at all.",
+      "properties": {
+        "basis": {
+          "enum": [
+            "exact",
+            "not_measured",
+            "not_applicable"
+          ]
+        },
+        "method": {
+          "anyOf": [
+            {
+              "enum": [
+                "source_total",
+                "full_scan"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        }
+      },
+      "required": [
+        "basis",
+        "method"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "exact"
+              }
+            },
+            "required": [
+              "basis"
+            ]
+          },
+          "then": {
+            "required": [
+              "count"
+            ],
+            "properties": {
+              "method": {
+                "enum": [
+                  "source_total",
+                  "full_scan"
+                ]
+              }
+            }
+          },
+          "else": {
+            "not": {
+              "required": [
+                "count"
+              ]
+            },
+            "properties": {
+              "method": {
+                "const": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    "samples": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Bounded, non-representative examples. An empty items array is a valid outcome for an aggregate query and does not mean the population is empty.",
+      "properties": {
+        "returned": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "inferredPopulation": {
+          "const": null
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "timestamp": {
+                "$ref": "#/$defs/timestamp"
+              },
+              "level": {
+                "enum": [
+                  "error",
+                  "warn",
+                  "info",
+                  "debug",
+                  "unknown"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 2048
+              },
+              "fields": {
+                "type": "object",
+                "maxProperties": 64,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 512
+                }
+              }
+            },
+            "required": [
+              "timestamp",
+              "level",
+              "message"
+            ]
+          }
+        }
+      },
+      "required": [
+        "returned",
+        "inferredPopulation",
+        "items"
+      ]
+    },
+    "statistic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+        },
+        "value": {
+          "type": "number",
+          "minimum": -1000000000000,
+          "maximum": 1000000000000
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "basis": {
+          "enum": [
+            "exact",
+            "approximate"
+          ]
+        }
+      },
+      "required": [
+        "key",
+        "value",
+        "unit",
+        "basis"
+      ]
+    },
+    "resultView": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "ui-v12-observability-result/v1"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "no_data",
+            "degraded"
+          ]
+        },
+        "resultKind": {
+          "enum": [
+            "log_samples",
+            "log_statistics",
+            "metric_series",
+            "resource_state",
+            "hardware_state"
+          ]
+        },
+        "exact": {
+          "type": "boolean"
+        },
+        "resultId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "queryId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "computedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "resource": {
+          "$ref": "#/$defs/resourceIdentity"
+        },
+        "source": {
+          "$ref": "#/$defs/sourceBinding"
+        },
+        "window": {
+          "$ref": "#/$defs/window"
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        },
+        "population": {
+          "$ref": "#/$defs/population"
+        },
+        "samples": {
+          "$ref": "#/$defs/samples"
+        },
+        "statistics": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/$defs/statistic"
+          }
+        },
+        "truncation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "truncated": {
+              "type": "boolean"
+            },
+            "reasons": {
+              "type": "array",
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "row_limit",
+                  "byte_limit",
+                  "sample_limit",
+                  "source_partial"
+                ]
+              }
+            }
+          },
+          "required": [
+            "truncated",
+            "reasons"
+          ]
+        },
+        "warnings": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-z0-9][a-z0-9_.-]*$"
+          }
+        },
+        "resultDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        "reauthorization": {
+          "$ref": "#/$defs/reauthorization"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "status",
+        "resultKind",
+        "exact",
+        "resultId",
+        "queryId",
+        "computedAt",
+        "expiresAt",
+        "resource",
+        "source",
+        "window",
+        "coverage",
+        "population",
+        "samples",
+        "statistics",
+        "truncation",
+        "warnings",
+        "resultDigest",
+        "reauthorization"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "truncation": {
+                "properties": {
+                  "truncated": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "truncated"
+                ]
+              }
+            },
+            "required": [
+              "truncation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "truncation": {
+                "properties": {
+                  "reasons": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "complete"
+              },
+              "resultKind": {
+                "enum": [
+                  "log_samples",
+                  "log_statistics"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "resultKind"
+            ]
+          },
+          "then": {
+            "description": "A complete log result needs an exact measured log population.",
+            "properties": {
+              "exact": {
+                "const": true
+              },
+              "population": {
+                "properties": {
+                  "basis": {
+                    "const": "exact"
+                  },
+                  "count": {
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "complete"
+              },
+              "resultKind": {
+                "enum": [
+                  "metric_series",
+                  "resource_state",
+                  "hardware_state"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "resultKind"
+            ]
+          },
+          "then": {
+            "description": "A complete metric, resource or hardware result has no log population; population must be explicitly not_applicable.",
+            "properties": {
+              "exact": {
+                "const": true
+              },
+              "population": {
+                "properties": {
+                  "basis": {
+                    "const": "not_applicable"
+                  }
+                }
+              },
+              "samples": {
+                "properties": {
+                  "returned": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "no_data"
+              },
+              "resultKind": {
+                "enum": [
+                  "log_samples",
+                  "log_statistics"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "resultKind"
+            ]
+          },
+          "then": {
+            "description": "no_data means a measured zero log population, not an empty sample page.",
+            "properties": {
+              "exact": {
+                "const": false
+              },
+              "population": {
+                "properties": {
+                  "basis": {
+                    "const": "exact"
+                  },
+                  "count": {
+                    "const": 0
+                  }
+                }
+              },
+              "samples": {
+                "properties": {
+                  "returned": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "no_data"
+              },
+              "resultKind": {
+                "enum": [
+                  "metric_series",
+                  "resource_state",
+                  "hardware_state"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "resultKind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "exact": {
+                "const": false
+              },
+              "population": {
+                "properties": {
+                  "basis": {
+                    "const": "not_applicable"
+                  }
+                }
+              },
+              "samples": {
+                "properties": {
+                  "returned": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "partial",
+                  "degraded"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "exact": {
+                "const": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "population": {
+                "properties": {
+                  "basis": {
+                    "const": "not_measured"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              }
+            },
+            "required": [
+              "population"
+            ]
+          },
+          "then": {
+            "properties": {
+              "exact": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "cancelRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expectedRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "expectedRevision",
+        "reason"
+      ]
+    },
+    "cancelResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Accepting a cancel request is not the same as the source having stopped. termination is only present after the backend confirmed it.",
+      "properties": {
+        "queryId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "state": {
+          "enum": [
+            "cancel_requested",
+            "terminated"
+          ]
+        },
+        "cancelRequestedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "termination": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/termination"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "queryId",
+        "state",
+        "cancelRequestedAt",
+        "termination"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "cancel_requested"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "termination": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "terminated"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "termination": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

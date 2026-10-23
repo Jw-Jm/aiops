@@ -59,7 +59,7 @@ func install(ctx context.Context, manifest Manifest, trust TrustRoot, p profile.
 		return ImportReport{}, fmt.Errorf("checkpoint=verify-bundle: %w", err)
 	}
 	defer v.close()
-	images, err := planImages(v, p)
+	images, err := planImagesForIdentity(v, p, business != nil && business.NativeIdentity())
 	if err != nil {
 		return ImportReport{}, fmt.Errorf("checkpoint=validate-materials: %w", err)
 	}
@@ -392,6 +392,10 @@ func planCharts(ctx context.Context, installationNamespace string, v *verifiedPa
 			components := map[string]any{}
 			for _, componentName := range []string{"postgresql", "keycloak", "seaweedfs", "openbao"} {
 				component, ok := p.Components[componentName]
+				if componentName == "keycloak" && business != nil && business.NativeIdentity() && ok && component.Mode == "disabled" {
+					components[componentName] = map[string]any{"mode": "disabled"}
+					continue
+				}
 				if !ok || (component.Mode != "bundled" && component.Mode != "external") {
 					return nil, fmt.Errorf("required core component %s is missing", componentName)
 				}
@@ -413,7 +417,7 @@ func planCharts(ctx context.Context, installationNamespace string, v *verifiedPa
 				return nil, err
 			}
 			values["networkPolicy"] = map[string]any{"managedDependencyReleases": managed, "externalServices": externalServices}
-			runtimeValues, err := platformRuntimeValues(ctx, installationNamespace, p, run)
+			runtimeValues, err := platformRuntimeValues(ctx, installationNamespace, p, run, business)
 			if err != nil {
 				return nil, err
 			}

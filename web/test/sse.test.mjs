@@ -105,3 +105,21 @@ test('investigation SSE fails closed on missing Bearer, sequence gaps and 410', 
   await assert.rejects(async()=>{for await(const event of streamInvestigationEventsWithResume('/events',{headers:{Authorization:'Bearer token'}})){}},/410/);
  }finally{globalThis.fetch=originalFetch;}
 });
+
+test('SSE discards already-buffered events when its request scope is revoked', async () => {
+  const { streamJSONEvents, decodeCommandExecutionEvent } = await import(readerURL.href);
+  const originalFetch = globalThis.fetch;
+  const controller = new AbortController();
+  let cancelled = false;
+  globalThis.fetch = async () => new Response(new ReadableStream({
+    start(c) { c.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(validExecutionEvent)}\n\ndata: ${JSON.stringify(validExecutionEvent)}\n\n`)); },
+    cancel() { cancelled = true; },
+  }), { headers: { 'content-type': 'text/event-stream' } });
+  try {
+    const iterator = streamJSONEvents('/events', decodeCommandExecutionEvent, { signal: controller.signal });
+    assert.equal((await iterator.next()).value.data.eventId, 'evt-1');
+    controller.abort();
+    await assert.rejects(iterator.next(), { name: 'AbortError' });
+    assert.equal(cancelled, true);
+  } finally { globalThis.fetch = originalFetch; }
+});

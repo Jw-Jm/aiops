@@ -1,0 +1,428 @@
+{
+  "origin": "https://192.168.0.63:30466",
+  "schemaVersion": 54,
+  "checks": [
+    "actual UI initial enrollment creates challenge, retries password/TOTP and confirms",
+    "actual UI rebind validates old factor and confirms new factor atomically",
+    "500 logout failure + real GET200 + reload stays signed out + controlled retry401",
+    "timeout logout failure + real GET200 + reload stays signed out + controlled retry401",
+    "offline logout failure + real GET200 + reload stays signed out + controlled retry401",
+    "recovery survives relogin, redirects to setup and business request403",
+    "actual UI initial enrollment creates challenge, retries password/TOTP and confirms",
+    "new factor confirmation restores persisted business authorization",
+    "actual Transit outage503 preserves confirmed factor; persistent Raft restart/unseal restores encryption without file fallback"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16354-e4e2-7d41-8bcc-0461c3fd526d"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16354-e567-7d25-a053-f32b9ab63b85"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 201,
+      "requestId": "01a16354-e77b-7a3e-8a1d-42c69c005fa0"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16354-f54a-70a1-8bc0-cb47ef8b9b15"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16354-f894-77ac-9643-75f4f5c5bbbd"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16354-f896-76b2-9f67-3c426c5ea392"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a16354-f96e-7967-baed-0964af6f7c29"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a16354-fa67-77b0-a412-926ecf79d0c4"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16354-fa89-7076-8f27-278b6f18099b:verify",
+      "status": 200,
+      "requestId": "01a16354-fdcd-72d3-8d30-5b080bef00dc"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16354-fa89-7076-8f27-278b6f18099b:verify",
+      "status": 200,
+      "requestId": "01a16354-ff09-7625-b733-abda549fa916"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16354-fa89-7076-8f27-278b6f18099b:verify",
+      "status": 200,
+      "requestId": "01a16355-04f5-7f35-971a-0d387092c42b"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16354-fa89-7076-8f27-278b6f18099b:verify",
+      "status": 200,
+      "requestId": "01a16355-059d-70d4-ac1d-a3fcbba063a3"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a16354-f995-714c-986c-ab65b7152e96:verify",
+      "status": 200,
+      "requestId": "01a16355-0622-7e54-aa9f-f8fbc6044f70"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-06a4-7d9a-bbc4-770386eb0dce"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-06b9-7801-b145-1e2954fb55fb"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-06d7-70b6-8ea3-320069a57771"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-0723-7dea-a83c-fa839066f0be"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-076b-75d0-af16-95fe78a03931"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16355-076c-7216-ab1a-c31b7f91fe4f"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a16355-07c0-7bd8-b006-701a5215f7f6"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a16355-07d9-78ff-9038-7f56adfe1a4e"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16355-07e3-7580-baa7-ab30de8698f6:verify",
+      "status": 200,
+      "requestId": "01a16355-0b36-7410-9966-34e1411f5998"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16355-07e3-7580-baa7-ab30de8698f6:verify",
+      "status": 200,
+      "requestId": "01a16355-1197-7e49-accc-467497cc6c62"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16355-07e3-7580-baa7-ab30de8698f6:verify",
+      "status": 200,
+      "requestId": "01a16355-17e7-784e-9bb6-e51ac42eb64c"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16355-07e3-7580-baa7-ab30de8698f6:verify",
+      "status": 200,
+      "requestId": "01a16355-186e-7121-a0b9-5764b1ac524d"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-18c8-7ea5-ab8c-263cd70c4b96"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a16355-07ca-7e70-a489-8a8c1ce35fa5:verify",
+      "status": 200,
+      "requestId": "01a16355-1903-7480-b996-3259596c83f4"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-1926-7471-8aee-74aab45b6ca8"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-193c-737e-a0aa-1f414ba0f18d"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 500
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-19b1-7582-9cd4-b392753ffd73"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-1d1f-76c2-a6d6-f9b5943fac3a"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-1d7e-7bb0-8de8-38c2f7d978aa"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200,
+      "requestId": "01a16355-1d8e-7a0c-9ebc-b70bd24ec7aa"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16355-1dd0-7a01-aeb6-7b162ea2d671"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16355-1e09-7585-bf7a-9cd0459af17c"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16355-1e5a-7b2d-b4c7-355d71ce99ae"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16355-1f02-78c6-b991-6b76fe2163ce"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-1f45-74e8-8b9e-984a790bf73c"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-1faa-7702-8cd0-f8bb8667425c"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-22b3-7bc7-8cdf-0c501da152e0"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200,
+      "requestId": "01a16355-22c2-782e-92d7-e65e516648a9"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16355-2304-756c-8fa7-49906e064810"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16355-2338-74bc-a568-22a68ae73983"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16355-238f-7ed0-aa0d-b313c1e7a258"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-2469-757e-a9d9-08789273ae9a"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-24c2-70e7-b32e-85e63bdcd935"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-252d-771b-abbb-fd3ed681d42f"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200,
+      "requestId": "01a16355-253c-7ec9-a6dc-5d3ab368ea92"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16355-257d-72e0-9691-bcfd9e780957"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16355-25b2-7447-acea-a6b7865ee2ac"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16355-260a-7d03-843b-5dad962297ea"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-26e0-719c-94b1-e9ffeeb5c135"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-273e-7b0f-a075-4af38352fbc2"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16355-273f-767a-947c-3f6feb25af23"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a16355-2764-7533-abcc-99c28a1f8727"
+    },
+    {
+      "path": "/api/v1/auth/mfa/recovery-codes:verify",
+      "status": 200,
+      "requestId": "01a16355-27bb-78b8-a3a4-275355d235ee"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16355-27d8-7757-ad1d-b71d8bb46488"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16355-281f-7efe-af9d-6fdc7c5c9b66"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16355-2872-7025-a672-20e8037e8d3d"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-290e-7977-bf02-ac34ac3696f6"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-2911-70db-b4d0-83d40524e8ac"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16355-292e-74da-8aba-1e0ccc4d3487"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-2958-7d93-80f7-097163ae360d"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-2981-78fc-afbd-c7a81e0590d5"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a16355-29bc-70e2-b86d-39b9e5c462c6"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a16355-29db-762f-9bc8-40bc95d3d19c"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16355-2cd9-7d06-82b5-2d41f5a9455f:verify",
+      "status": 200,
+      "requestId": "01a16355-2f35-7c6f-a2da-0458e0656396"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16355-2cd9-7d06-82b5-2d41f5a9455f:verify",
+      "status": 200,
+      "requestId": "01a16355-3061-7b22-9237-75ef1df1b129"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16355-2cd9-7d06-82b5-2d41f5a9455f:verify",
+      "status": 200,
+      "requestId": "01a16355-318e-7846-ae7f-af3953e895b8"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16355-2cd9-7d06-82b5-2d41f5a9455f:verify",
+      "status": 200,
+      "requestId": "01a16355-3225-73af-9929-8680dd476945"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a16355-29cc-7322-8cf4-bb00f7cf3e68:verify",
+      "status": 200,
+      "requestId": "01a16355-375a-7d5d-98af-6a7640191534"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-3a06-7417-8b5b-c7a099128e42"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-3a7d-7229-a2fd-20f39eba6932"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-3b89-7540-9e55-d9cd7932553b"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-3fcf-759d-bb63-f5ff7389b685"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16355-3ec0-7314-8064-535f2195d618"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16355-3fcf-77fc-b5f1-10854e3f302a"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 503,
+      "requestId": "01a16355-4c1b-7d2f-86fa-de7fa4fbf123"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16355-4cf1-70c4-bec9-0d7dda6d5293"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a16355-59e7-7b7d-96db-249a65a4aec6"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16355-5af0-7bca-bca5-003271cdc6d0"
+    }
+  ],
+  "pageErrors": [],
+  "status": "passed"
+}

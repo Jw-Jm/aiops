@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"ops-platform/internal/audit"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/authz"
 	"ops-platform/internal/bundle"
 	"ops-platform/internal/persistence"
 )
@@ -438,18 +439,11 @@ func (service *Service) ResolveActive(ctx context.Context, tenantID uuid.UUID, k
 }
 
 func authorizeAdmin(ctx context.Context, tx pgx.Tx, actor auth.RequestContext) error {
-	if actor.TenantID == uuid.Nil || actor.Subject == "" || !auth.HasRole(auth.WithRequestContext(ctx, actor), auth.PlatformAdmin) {
-		return ErrUnauthorized
-	}
-	var active bool
-	err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM platform.tenants WHERE tenant_id = $1 AND status = 'active')
-		AND EXISTS (SELECT 1 FROM platform.role_bindings WHERE tenant_id = $1 AND subject = $2
-			AND role_name = 'platform_admin' AND status = 'active')`, actor.TenantID, actor.Subject).Scan(&active)
-	if err != nil {
+	if err := authz.RequireAdmin(ctx, tx, actor); err != nil {
+		if errors.Is(err, authz.ErrUnauthorized) || errors.Is(err, authz.ErrIdentityMismatch) {
+			return ErrUnauthorized
+		}
 		return fmt.Errorf("verify registry administrator: %w", err)
-	}
-	if !active {
-		return ErrUnauthorized
 	}
 	return nil
 }

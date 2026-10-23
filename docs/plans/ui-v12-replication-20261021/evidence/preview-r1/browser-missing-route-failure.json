@@ -1,0 +1,22 @@
+{
+  "origin": "https://192.168.0.63:30462",
+  "checks": [
+    "native login renders without OIDC"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16282-8ceb-7220-8f7f-77ee41df7162"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 404,
+      "requestId": "01a16282-8dc4-76b1-83a1-51991c0d76d2"
+    }
+  ],
+  "consoleErrors": [],
+  "browser": "156.0.8078.4",
+  "status": "FAIL",
+  "failure": "page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"**/auth/first-password\" until \"load\"\n============================================================"
+}

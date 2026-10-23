@@ -32,6 +32,15 @@ components:
     enabled: true
     port: 8091
 
+# Human identity is configured once for API/Worker and the SP08 Web runtime.
+# Native mode requires a fixed tenant, public origin and independently provisioned MFA Transit key.
+runtime:
+  humanAuthMode: oidc
+  nativeAuth:
+    tenantId: ""
+    publicOrigin: ""
+    mfaTransitKey: ""
+
 # SP04 uses the existing Worker. Identity and source credentials are provisioned
 # independently and never embedded in ConfigMap or Bundle values.
 sp04:

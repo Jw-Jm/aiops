@@ -38,7 +38,22 @@ func (s Service) with(ctx context.Context, a auth.RequestContext, f func(pgx.Tx)
 	if s.Pool == nil || a.Subject == "" || a.TenantID == uuid.Nil || !slices.Contains(a.Roles, auth.Operator) || !time.Now().Before(a.TokenExpiresAt) {
 		return ErrDenied
 	}
-	return persistence.WithTenantTx(ctx, s.Pool, a.TenantID, f)
+	return persistence.WithTenantTx(ctx, s.Pool, a.TenantID, func(tx pgx.Tx) error {
+		if native, ok := auth.NativeSessionFromContext(ctx); ok {
+			session := native.Session
+			var active bool
+			if session.TenantID != a.TenantID || session.Subject != a.Subject || session.MustReenrollMFA {
+				return ErrDenied
+			}
+			if err := tx.QueryRow(ctx, `SELECT identity.mfa_session_proof($1,$2,$3,$4,$5)`, session.TenantID, session.UserID, session.SessionID, session.CredentialVersion, session.SessionVersion).Scan(&active); err != nil {
+				return err
+			}
+			if !active {
+				return ErrDenied
+			}
+		}
+		return f(tx)
+	})
 }
 func profileTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, version int) (Profile, uuid.UUID, error) {
 	var b []byte
@@ -79,9 +94,10 @@ func (s Service) authorize(ctx context.Context, tx pgx.Tx, a auth.RequestContext
 	var raw []byte
 	var namespace string
 	var clusterID uuid.UUID
-	err = tx.QueryRow(ctx, `SELECT e.metadata,e.namespace,e.cluster_id FROM platform.resource_entities e JOIN platform.cluster_registrations c USING(tenant_id,cluster_id) WHERE e.tenant_id=$1 AND e.canonical_id=$2 AND e.deleted_at IS NULL AND c.cluster_uid=$3 AND c.status='active'`, a.TenantID, b.Target, b.ClusterUID).Scan(&raw, &namespace, &clusterID)
+	var targetRevision int
+	err = tx.QueryRow(ctx, `SELECT e.metadata,e.namespace,e.cluster_id,e.resource_revision FROM platform.resource_entities e JOIN platform.cluster_registrations c USING(tenant_id,cluster_id) WHERE e.tenant_id=$1 AND e.canonical_id=$2 AND e.deleted_at IS NULL AND c.cluster_uid=$3 AND c.status='active'`, a.TenantID, b.Target, b.ClusterUID).Scan(&raw, &namespace, &clusterID, &targetRevision)
 	var identity resource.Resolution
-	if err != nil || json.Unmarshal(raw, &identity) != nil || targetIdentity(identity) != b.TargetUID || namespace != ns {
+	if err != nil || json.Unmarshal(raw, &identity) != nil || targetIdentity(identity) != b.TargetUID || namespace != ns || targetRevision != b.TargetRevision {
 		return policy.PolicyDecision{}, ErrDenied
 	}
 	var exists bool
@@ -89,7 +105,8 @@ func (s Service) authorize(ctx context.Context, tx pgx.Tx, a auth.RequestContext
 		return policy.PolicyDecision{}, ErrDenied
 	}
 	step := false
-	if touch && p.HighPrivilege() {
+	native, hasNative := auth.NativeSessionFromContext(ctx)
+	if touch && (p.HighPrivilege() || (hasNative && native.StepUpChallengeID != uuid.Nil)) {
 		if _, err = auth.TouchCurrentStepUpSession(ctx, tx, a, []string{auth.StepUpACRLevel2}); err != nil {
 			return policy.PolicyDecision{}, err
 		}
@@ -135,7 +152,8 @@ func (s Service) bind(ctx context.Context, tx pgx.Tx, a auth.RequestContext, req
 	}
 	var raw []byte
 	var ns, cluster string
-	err = tx.QueryRow(ctx, `SELECT e.metadata,e.namespace,c.cluster_uid FROM platform.resource_entities e JOIN platform.cluster_registrations c USING(tenant_id,cluster_id) WHERE e.tenant_id=$1 AND e.canonical_id=$2 AND e.deleted_at IS NULL`, a.TenantID, request.Target).Scan(&raw, &ns, &cluster)
+	var targetRevision int
+	err = tx.QueryRow(ctx, `SELECT e.metadata,e.namespace,c.cluster_uid,e.resource_revision FROM platform.resource_entities e JOIN platform.cluster_registrations c USING(tenant_id,cluster_id) WHERE e.tenant_id=$1 AND e.canonical_id=$2 AND e.deleted_at IS NULL`, a.TenantID, request.Target).Scan(&raw, &ns, &cluster, &targetRevision)
 	var identity resource.Resolution
 	if err != nil || json.Unmarshal(raw, &identity) != nil || targetIdentity(identity) == "" {
 		return Binding{}, p, vid, ErrDenied
@@ -144,7 +162,7 @@ func (s Service) bind(ctx context.Context, tx pgx.Tx, a auth.RequestContext, req
 	if ns != "" {
 		namespace = &ns
 	}
-	b := Binding{DigestVersion: "execution-request/v1", TenantID: a.TenantID, Subject: a.Subject, IncidentID: request.IncidentID, ActionPlanID: request.ActionPlanID, Target: request.Target, TargetUID: targetIdentity(identity), ClusterUID: cluster, Namespace: namespace, Shell: request.Shell, CommandDigest: Digest([]byte(request.ActualCommand)), ProfileID: p.ID, ProfileVersion: p.Version, Options: request.Options, RiskVersion: RiskVersion}
+	b := Binding{TargetRevision: targetRevision, DigestVersion: "execution-request/v1", TenantID: a.TenantID, Subject: a.Subject, IncidentID: request.IncidentID, ActionPlanID: request.ActionPlanID, Target: request.Target, TargetUID: targetIdentity(identity), ClusterUID: cluster, Namespace: namespace, Shell: request.Shell, CommandDigest: Digest([]byte(request.ActualCommand)), ProfileID: p.ID, ProfileVersion: p.Version, Options: request.Options, RiskVersion: RiskVersion}
 	if request.RelatedExecutionID != nil {
 		b.DigestVersion = "execution-request/v2"
 		b.RelatedExecutionID, b.ExecutionRelation = request.RelatedExecutionID, request.ExecutionRelation
@@ -324,7 +342,12 @@ func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestCont
 		if b.Digest() != confirmed.Digest() {
 			return ErrAckScopeMismatch
 		}
-		decision, err := s.authorize(ctx, tx, a, b, p, true)
+		writeCtx := ctx
+		if native, ok := auth.NativeSessionFromContext(ctx); ok {
+			target, _ := json.Marshal(NativeCommandStepUpTarget(b, assessmentID))
+			writeCtx = auth.WithNativeStepUpIntent(ctx, auth.NativeStepUpIntent{ChallengeID: native.StepUpChallengeID, Operation: "command_execution", Target: target})
+		}
+		decision, err := s.authorize(writeCtx, tx, a, b, p, true)
 		if err != nil {
 			return err
 		}

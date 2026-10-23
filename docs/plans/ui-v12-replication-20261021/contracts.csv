@@ -1,86 +1,86 @@
 ﻿contract_id,family,method,path,status,primary_task,authorization,request_keys,response_or_state,notes
-C-001,RES,GET,/api/v1/overview,已有-复用,P3-01,运维+当前资源范围,clusterUid/canonicalId/筛选/有界预算,授权结果/关系/分页,旧页面路由变化不改变这些API
-C-002,RES,GET,/api/v1/resources,已有-复用,P3-01,运维+当前资源范围,clusterUid/canonicalId/筛选/有界预算,授权结果/关系/分页,旧页面路由变化不改变这些API
-C-003,RES,GET,/api/v1/resources/by-canonical-id,已有-复用,P3-01,运维+当前资源范围,clusterUid/canonicalId/筛选/有界预算,授权结果/关系/分页,旧页面路由变化不改变这些API
-C-004,RES,GET,/api/v1/resources/neighbors,已有-复用,P3-01,运维+当前资源范围,clusterUid/canonicalId/筛选/有界预算,授权结果/关系/分页,旧页面路由变化不改变这些API
-C-005,RES,GET,/api/v1/resources/impact-scope,已有-复用,P3-01,运维+当前资源范围,clusterUid/canonicalId/筛选/有界预算,授权结果/关系/分页,旧页面路由变化不改变这些API
-C-006,RES,POST,/api/v1/diagnostic-graphs:build,已有-复用,P3-01,运维+当前资源范围,clusterUid/canonicalId/筛选/有界预算,授权结果/关系/分页,旧页面路由变化不改变这些API
-C-007,AUTH,GET,/api/v1/auth/session,已有-改造,P2-02,原生登录会话,服务端Cookie,主体/角色/范围/过期,保留业务字段，替换原认证来源
-C-008,AUTH,POST,/api/v1/auth/step-up-sessions,已有-改造,P2-03,本地会话+真实再次验证,挑战/本次操作绑定（合同待扩展）,绑定当前会话的短期验证记录,不得继续从旧提供方claims伪造等级
-C-009,AUTH,POST,/api/v1/auth/login,拟新增,P2-02,登录入口受限；其他需会话及写保护,用户名/密码,受限改密或正式会话,首次初始化由受控CLI办理；多因素设置/恢复合同P0定稿
-C-010,AUTH,POST,/api/v1/auth/logout,拟新增,P2-02,登录入口受限；其他需会话及写保护,CSRF,当前会话撤销,首次初始化由受控CLI办理；多因素设置/恢复合同P0定稿
-C-011,AUTH,POST,/api/v1/auth/password:change,拟新增,P2-02,登录入口受限；其他需会话及写保护,当前密码/新密码/受限首次会话,凭据版本变化/旧会话失效,首次初始化由受控CLI办理；多因素设置/恢复合同P0定稿
-C-012,AUTH,POST,/api/v1/auth/step-up-challenges,拟新增,P2-03,登录入口受限；其他需会话及写保护,操作上下文/验证方式,受控挑战,首次初始化由受控CLI办理；多因素设置/恢复合同P0定稿
-C-013,AUTH,POST,/api/v1/auth/step-up-challenges/{challengeId}:verify,拟新增,P2-03,登录入口受限；其他需会话及写保护,挑战/当前凭据或动态口令,真实验证结果,首次初始化由受控CLI办理；多因素设置/恢复合同P0定稿
-C-014,AUTH,GET,/api/v1/admin/users,拟新增,P2-04,管理员；敏感写再次验证,userId/expectedRevision/资料或受控密码材料,用户安全投影/凭据或会话版本,角色单独授予；不回显秘密；保留最后管理员
-C-015,AUTH,POST,/api/v1/admin/users,拟新增,P2-04,管理员；敏感写再次验证,userId/expectedRevision/资料或受控密码材料,用户安全投影/凭据或会话版本,角色单独授予；不回显秘密；保留最后管理员
-C-016,AUTH,PATCH,/api/v1/admin/users/{userId},拟新增,P2-04,管理员；敏感写再次验证,userId/expectedRevision/资料或受控密码材料,用户安全投影/凭据或会话版本,角色单独授予；不回显秘密；保留最后管理员
-C-017,AUTH,POST,/api/v1/admin/users/{userId}/password:reset,拟新增,P2-04,管理员；敏感写再次验证,userId/expectedRevision/资料或受控密码材料,用户安全投影/凭据或会话版本,角色单独授予；不回显秘密；保留最后管理员
-C-018,AUTH,POST,/api/v1/admin/users/{userId}/sessions:revoke,拟新增,P2-04,管理员；敏感写再次验证,userId/expectedRevision/资料或受控密码材料,用户安全投影/凭据或会话版本,角色单独授予；不回显秘密；保留最后管理员
-C-019,AUTH,GET,/api/v1/admin/role-bindings,已有-适配,P2-04,管理员；写需再次验证,已存在主体/角色/集群namespace范围/版本,授权绑定/新revision,不按用户名自动继承历史角色
-C-020,AUTH,POST,/api/v1/admin/role-bindings,已有-适配,P2-04,管理员；写需再次验证,已存在主体/角色/集群namespace范围/版本,授权绑定/新revision,不按用户名自动继承历史角色
-C-021,AUTH,PATCH,/api/v1/admin/role-bindings/{bindingId}/status,已有-适配,P2-04,管理员；写需再次验证,已存在主体/角色/集群namespace范围/版本,授权绑定/新revision,不按用户名自动继承历史角色
-C-022,OBS,POST,/api/v1/evidence:query,已有-复用,P3-02,运维+精确资源来源授权,resourceCanonicalId/sourceRegistrationId/type/queryTemplate/timeRange/budget,受控证据,不是现成完整日志工作台；优先复用内部服务
+C-001,RES,GET,/api/v1/overview,已有-复用,P3-01,运维+当前资源范围,clusterUid,授权结果/关系/分页,旧页面路由变化不改变这些API
+C-002,RES,GET,/api/v1/resources,已有-复用,P3-01,运维+当前资源范围,clusterUid;canonicalIds;includeDomains;domain;kind;namespace;name;health;label;sort;order;limit;cursor,授权结果/关系/分页,旧页面路由变化不改变这些API
+C-003,RES,GET,/api/v1/resources/by-canonical-id,已有-复用,P3-01,运维+当前资源范围,clusterUid;canonicalId,授权结果/关系/分页,旧页面路由变化不改变这些API
+C-004,RES,GET,/api/v1/resources/neighbors,已有-复用,P3-01,运维+当前资源范围,clusterUid;canonicalId;depth;relationKinds;limit,授权结果/关系/分页,旧页面路由变化不改变这些API
+C-005,RES,GET,/api/v1/resources/impact-scope,已有-复用,P3-01,运维+当前资源范围,clusterUid;canonicalId;depth,授权结果/关系/分页,旧页面路由变化不改变这些API
+C-006,RES,POST,/api/v1/diagnostic-graphs:build,已有-复用,P3-01,运维+当前资源范围,clusterUid;canonicalId;depth;relationKinds;budget;Idempotency-Key,授权结果/关系/分页,旧页面路由变化不改变这些API
+C-007,AUTH,GET,/api/v1/auth/session,已有-改造,P2-02,原生登录会话,none (verified claims and server-side session),主体/角色/范围/过期,保留业务字段，替换原认证来源
+C-008,AUTH,POST,/api/v1/auth/step-up-sessions,已有-改造,P2-03,本地会话+真实再次验证,empty body (identity and ACR from verified claims),绑定当前会话的短期验证记录,不得继续从旧提供方claims伪造等级
+C-009,AUTH,POST,/api/v1/auth/login,已有-改造,P2-02,登录入口受限；其他需会话及写保护,loginName;password,sessionView with csrf; revocation; administratorState,versioned by ui-v12-identity/v1#/$defs/loginRequest and sessionView
+C-010,AUTH,POST,/api/v1/auth/logout,已有-改造,P2-02,登录入口受限；其他需会话及写保护,expectedSessionVersion;reason,sessionRevocation,ui-v12-identity/v1 sessionRevocationRequest
+C-011,AUTH,POST,/api/v1/auth/password:change,已有-改造,P2-02,登录入口受限；其他需会话及写保护,currentPassword;newPassword;expectedCredentialVersion,201 rotated session cookie and revocation version; wrong current password401 CURRENT_PASSWORD_INVALID with unchanged session and failure budget,ui-v12-identity/v1 passwordChangeRequest for both full and first-password-only sessions; 401 CURRENT_PASSWORD_INVALID preserves valid session; UNAUTHENTICATED still expires it; error-envelope-v1 mirror synchronized
+C-012,AUTH,POST,/api/v1/auth/step-up-challenges,已有-改造,P2-03,登录入口受限；其他需会话及写保护,operation;target;expectedSessionVersion,challengeView with requiredMethods; remainingAttempts,ui-v12-stepup/v1 challengeCreateRequest; methods derived server-side
+C-013,AUTH,POST,/api/v1/auth/step-up-challenges/{challengeId}:verify,已有-改造,P2-03,登录入口受限；其他需会话及写保护,method;credential;expectedChallengeRevision,challengeVerifyResult with completedMethods; acr; stepUpSession,ui-v12-stepup/v1 challengeVerifyRequest; loa:2 only after password+TOTP
+C-014,AUTH,GET,/api/v1/admin/users,已有-新增,P2-04,管理员；敏感写再次验证,cursor;limit,accountView list; no credential material,ui-v12-identity/v1 accountView; user_id is stable; GPT r8 source implemented; migration55 not executed; runtime not verified
+C-015,AUTH,POST,/api/v1/admin/users,已有-新增,P2-04,管理员；敏感写再次验证,loginName;displayName;initialPassword,accountView; server forces first password change,ui-v12-identity/v1 accountCreateRequest; tenant/subject/roles are not client fields; GPT r8 source implemented; migration55 not executed; runtime not verified
+C-016,AUTH,PATCH,/api/v1/admin/users/{userId},已有-新增,P2-04,管理员；敏感写再次验证,displayName or status;expectedRevision,accountView or accountUpdateConflict,ui-v12-identity/v1 accountUpdateRequest; last-admin decision inside transaction; GPT r8 source implemented; migration55 not executed; runtime not verified
+C-017,AUTH,POST,/api/v1/admin/users/{userId}/password:reset,已有-新增,P2-04,管理员；敏感写再次验证,initialPassword;expectedRevision;expectedCredentialVersion,adminPasswordResetResult with credentialVersion; passwordState=change_required; sessionsRevoked; revocation,versioned by ui-v12-identity/v1#/$defs/adminPasswordResetRequest and adminPasswordResetResult; target from path; no password echo; GPT r8 source implemented; migration55 not executed; runtime not verified
+C-018,AUTH,POST,/api/v1/admin/users/{userId}/sessions:revoke,已有-新增,P2-04,管理员；敏感写再次验证,expectedSessionVersion;reason,sessionRevocation,ui-v12-identity/v1 sessionRevocationRequest; GPT r8 source implemented; migration55 not executed; runtime not verified
+C-019,AUTH,GET,/api/v1/admin/role-bindings,已有-适配,P2-04,管理员；写需再次验证,none,授权绑定/新revision,不按用户名自动继承历史角色
+C-020,AUTH,POST,/api/v1/admin/role-bindings,已有-适配,P2-04,管理员；写需再次验证,userId;role;scope{clusterUids;namespaces};expectedAuthorizationVersion;reason;Idempotency-Key,roleGrantView,ui-v12-identity/v1 roleGrantRequest; one role per grant; no subject text
+C-021,AUTH,PATCH,/api/v1/admin/role-bindings/{bindingId}/status,已有-适配,P2-04,管理员；写需再次验证,native: userId;expectedRevision(authorizationVersion);status=disabled;reason; legacy: expectedRevision;status,授权绑定/新revision,不按用户名自动继承历史角色; native revoke-only; regrant requires separately reviewed C-020; independent roles retained
+C-022,OBS,POST,/api/v1/evidence:query,已有-复用,P3-02,运维+精确资源来源授权,resourceCanonicalId;type;queryTemplate;timeRange{from;to};budget{timeoutMs;maxBytes};sourceRegistrationId;namespace;limit;Idempotency-Key,evidence result with partial; freshness; degradedSources; warnings; queryHash,existing synchronous bounded evidence query; controlled browser path; not the new query lifecycle; do not map C-024 body onto this operation
 C-023,OBS,GET,/api/v1/evidence/{evidenceId},已有-复用,P4-05,当前证据范围,evidenceId,固定证据/保留与访问状态,
-C-024,OBS,POST,/api/v1/observability/queries,拟新增,P3-02,运维+个人所有者+当前来源范围,明确资源/来源/窗口/模板/结构化筛选/预算,结果或202任务,仅在现有合同不足时增加；内部复用analytics/evidence，不暴露内部RPC
-C-025,OBS,GET,/api/v1/observability/queries,拟新增,P3-02,运维+个人所有者+当前来源范围,个人范围/类型/游标,授权个人历史,仅在现有合同不足时增加；内部复用analytics/evidence，不暴露内部RPC
-C-026,OBS,GET,/api/v1/observability/queries/{queryId},拟新增,P3-02,运维+个人所有者+当前来源范围,queryId,状态/固定结果/覆盖/截断/统计/字段,仅在现有合同不足时增加；内部复用analytics/evidence，不暴露内部RPC
-C-027,OBS,POST,/api/v1/observability/queries/{queryId}:cancel,拟新增,P3-02,运维+个人所有者+当前来源范围,queryId/版本,取消请求或终态,仅在现有合同不足时增加；内部复用analytics/evidence，不暴露内部RPC
-C-028,OBS,GET,/api/v1/observability/capabilities,拟新增,P3-02,运维+当前资源范围,clusterUid/明确资源/查询类型,可选来源安全投影/操作/覆盖/资格,复用能力服务，运维查询不得依赖管理员登记列表或获得凭据
-C-029,EVENT,GET,/api/v1/findings,已有-适配,P4-03,运维+故障/资源范围,范围/ID/时间筛选/版本及有状态写入,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
-C-030,EVENT,GET,/api/v1/findings/{findingId},已有-适配,P4-03,运维+故障/资源范围,范围/ID/时间筛选/版本及有状态写入,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
-C-031,EVENT,GET,/api/v1/incidents,已有-适配,P4-04,运维+故障/资源范围,范围/ID/时间筛选/版本及有状态写入,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
-C-032,EVENT,GET,/api/v1/incidents/{incidentId},已有-适配,P4-04,运维+故障/资源范围,范围/ID/时间筛选/版本及有状态写入,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
-C-033,EVENT,GET,/api/v1/incidents/{incidentId}/timeline,已有-适配,P4-04,运维+故障/资源范围,范围/ID/时间筛选/版本及有状态写入,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
-C-034,EVENT,GET,/api/v1/incidents/{incidentId}/evidence,已有-适配,P4-04,运维+故障/资源范围,范围/ID/时间筛选/版本及有状态写入,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
-C-035,EVENT,POST,/api/v1/incidents/{incidentId}:transition,已有-适配,P4-04,运维+故障/资源范围,范围/ID/时间筛选/版本及有状态写入,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
+C-024,OBS,POST,/api/v1/observability/queries,拟新增,P3-02,运维+个人所有者+当前来源范围,schemaVersion;queryKind;templateId;templateVersion;resource{canonicalId;uid;namespaceUid;clusterUid};source{registrationId;registrationRevision;credentialRevision;qualificationDigest;collectorVersion};window{from;to;timezone;bounds};budget{maxRows;maxBytes;maxDurationSeconds;maxSourceCalls};filters,queryView with state; coverage; resultRef; termination; reauthorization,proposed observability query lifecycle; resourceIdentity/sourceBinding/window/coverage/termination; distinct from existing C-022 synchronous query
+C-025,OBS,GET,/api/v1/observability/queries,拟新增,P3-02,运维+个人所有者+当前来源范围,cursor;limit,queryView list owned by subject,ui-v12-observability/v1 queryView; history reauthorizes on read
+C-026,OBS,GET,/api/v1/observability/queries/{queryId},拟新增,P3-02,运维+个人所有者+当前来源范围,queryId,queryView,ui-v12-observability/v1 queryView
+C-027,OBS,POST,/api/v1/observability/queries/{queryId}:cancel,拟新增,P3-02,运维+个人所有者+当前来源范围,expectedRevision;reason,cancelResult with termination receipt,ui-v12-observability/v1 cancelRequest and cancelResult; delivered is not stopped
+C-028,OBS,GET,/api/v1/observability/capabilities,拟新增,P3-02,运维+当前资源范围,clusterUid,source capability projection; no credential ref,observability capability projection; ordinary operator must not read admin registration
+C-029,EVENT,GET,/api/v1/findings,已有-适配,P4-03,运维+故障/资源范围,clusterUid;state;severity;observedFrom;observedTo;resourceCanonicalId;incidentId;sourceSystem;limit;cursor,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
+C-030,EVENT,GET,/api/v1/findings/{findingId},已有-适配,P4-03,运维+故障/资源范围,findingId,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
+C-031,EVENT,GET,/api/v1/incidents,已有-适配,P4-04,运维+故障/资源范围,clusterUid;state;severity;rcaStatus;openedFrom;openedTo;incidentId;limit;cursor,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
+C-032,EVENT,GET,/api/v1/incidents/{incidentId},已有-适配,P4-04,运维+故障/资源范围,incidentId,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
+C-033,EVENT,GET,/api/v1/incidents/{incidentId}/timeline,已有-适配,P4-04,运维+故障/资源范围,incidentId;cursor;limit,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
+C-034,EVENT,GET,/api/v1/incidents/{incidentId}/evidence,已有-适配,P4-04,运维+故障/资源范围,incidentId;cursor;limit,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
+C-035,EVENT,POST,/api/v1/incidents/{incidentId}:transition,已有-适配,P4-04,运维+故障/资源范围,expectedRevision;state;reason;evidenceRefs;suppressedUntil;Idempotency-Key,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
 C-036,EVENT,POST,/api/v1/incidents/{incidentId}/assignments,拟新增,P4-04,运维+对象/目标成员范围,expectedRevision/目标/正文或关联ID,新版本与协作事件,认领使用赋值接口；写入时间线/审计，不修改原始来源
 C-037,EVENT,POST,/api/v1/incidents/{incidentId}/comments,拟新增,P4-04,运维+对象/目标成员范围,expectedRevision/目标/正文或关联ID,新版本与协作事件,认领使用赋值接口；写入时间线/审计，不修改原始来源
 C-038,EVENT,POST,/api/v1/incidents/{incidentId}/follow-up-tasks,拟新增,P4-04,运维+对象/目标成员范围,expectedRevision/目标/正文或关联ID,新版本与协作事件,认领使用赋值接口；写入时间线/审计，不修改原始来源
 C-039,EVENT,POST,/api/v1/incidents/{incidentId}/alert-links,拟新增,P4-04,运维+对象/目标成员范围,expectedRevision/目标/正文或关联ID,新版本与协作事件,认领使用赋值接口；写入时间线/审计，不修改原始来源
-C-040,SOURCE,GET,/api/v1/admin/clusters,已有-适配,P7-01,管理员；写需再次验证,配置集群/来源/凭据引用/范围/版本,登记记录及版本,顶部运维范围独立；登记不等于真实资格
-C-041,SOURCE,POST,/api/v1/admin/clusters,已有-适配,P7-01,管理员；写需再次验证,配置集群/来源/凭据引用/范围/版本,登记记录及版本,顶部运维范围独立；登记不等于真实资格
-C-042,SOURCE,GET,/api/v1/admin/source-registrations,已有-适配,P7-01,管理员；写需再次验证,配置集群/来源/凭据引用/范围/版本,登记记录及版本,顶部运维范围独立；登记不等于真实资格
-C-043,SOURCE,POST,/api/v1/admin/source-registrations,已有-适配,P7-01,管理员；写需再次验证,配置集群/来源/凭据引用/范围/版本,登记记录及版本,顶部运维范围独立；登记不等于真实资格
-C-044,SOURCE,PATCH,/api/v1/admin/source-registrations/{sourceId},已有-适配,P7-01,管理员；写需再次验证,配置集群/来源/凭据引用/范围/版本,登记记录及版本,顶部运维范围独立；登记不等于真实资格
-C-045,SOURCE,POST,/api/v1/admin/source-registrations/{sourceId}/rotate-credential,已有-适配,P7-01,管理员；写需再次验证,配置集群/来源/凭据引用/范围/版本,登记记录及版本,顶部运维范围独立；登记不等于真实资格
+C-040,SOURCE,GET,/api/v1/admin/clusters,已有-适配,P7-01,管理员；写需再次验证,cursor;limit,登记记录及版本,顶部运维范围独立；登记不等于真实资格
+C-041,SOURCE,POST,/api/v1/admin/clusters,已有-适配,P7-01,管理员；写需再次验证,clusterUid;displayName;apiEndpointRef;distribution;actualVersions;capabilities;expectedRevision;Idempotency-Key,登记记录及版本,顶部运维范围独立；登记不等于真实资格
+C-042,SOURCE,GET,/api/v1/admin/source-registrations,已有-适配,P7-01,管理员；写需再次验证,cursor;limit,登记记录及版本,顶部运维范围独立；登记不等于真实资格
+C-043,SOURCE,POST,/api/v1/admin/source-registrations,已有-适配,P7-01,管理员；写需再次验证,sourceType;instanceKey;clusterId;authRef;allowedSchemas;backendLogicalId;dataScopeMapping;Idempotency-Key,登记记录及版本,顶部运维范围独立；登记不等于真实资格
+C-044,SOURCE,PATCH,/api/v1/admin/source-registrations/{sourceId},已有-适配,P7-01,管理员；写需再次验证,expectedRevision;status;allowedSchemas;backendLogicalId;dataScopeMapping;clusterId;Idempotency-Key,登记记录及版本,顶部运维范围独立；登记不等于真实资格
+C-045,SOURCE,POST,/api/v1/admin/source-registrations/{sourceId}/rotate-credential,已有-适配,P7-01,管理员；写需再次验证,expectedRevision;authRef;Idempotency-Key,登记记录及版本,顶部运维范围独立；登记不等于真实资格
 C-046,COMPONENT,POST,/api/v1/admin/clusters/{clusterId}/component-checks,拟新增,P7-01,管理员；安装另需目标独立权限及再次验证,只读范围/检查项,202检查任务,检查只读；物料和目标适配验证先于真实部署
 C-047,COMPONENT,GET,/api/v1/admin/component-checks/{checkId},拟新增,P7-01,管理员；安装另需目标独立权限及再次验证,检查ID,未知/缺失/不兼容/覆盖及依据,检查只读；物料和目标适配验证先于真实部署
 C-048,COMPONENT,POST,/api/v1/admin/clusters/{clusterId}/component-deployments,拟新增,P7-02,管理员；安装另需目标独立权限及再次验证,检查版本/缺口方案/目标权限/确认,202受控任务,检查只读；物料和目标适配验证先于真实部署
 C-049,COMPONENT,GET,/api/v1/admin/component-deployments/{deploymentId},拟新增,P7-02,管理员；安装另需目标独立权限及再次验证,部署ID,步骤/回执/失败/数据待验收,检查只读；物料和目标适配验证先于真实部署
-C-050,MODEL,GET,/api/v1/admin/model-connections,拟新增,P5-03,管理员；写/测试按策略再次验证,四字段/expectedRevision/受控凭据引用,连接/测试/协议/能力/准入/固定Profile引用,连接通过与准入分开；API与Worker路由一致；不新增表单必填项
-C-051,MODEL,POST,/api/v1/admin/model-connections,拟新增,P5-03,管理员；写/测试按策略再次验证,四字段/expectedRevision/受控凭据引用,连接/测试/协议/能力/准入/固定Profile引用,连接通过与准入分开；API与Worker路由一致；不新增表单必填项
-C-052,MODEL,PATCH,/api/v1/admin/model-connections/{modelConnectionId},拟新增,P5-03,管理员；写/测试按策略再次验证,四字段/expectedRevision/受控凭据引用,连接/测试/协议/能力/准入/固定Profile引用,连接通过与准入分开；API与Worker路由一致；不新增表单必填项
-C-053,MODEL,POST,/api/v1/admin/model-connections/{modelConnectionId}:test,拟新增,P5-03,管理员；写/测试按策略再次验证,四字段/expectedRevision/受控凭据引用,连接/测试/协议/能力/准入/固定Profile引用,连接通过与准入分开；API与Worker路由一致；不新增表单必填项
-C-054,MODEL,GET,/api/v1/admin/model-connection-tests/{testId},拟新增,P5-03,管理员；写/测试按策略再次验证,四字段/expectedRevision/受控凭据引用,连接/测试/协议/能力/准入/固定Profile引用,连接通过与准入分开；API与Worker路由一致；不新增表单必填项
-C-055,ACTION,POST,/api/v1/commands:risk-assess,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,实际命令/目标/固定版本/风险确认/幂等,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
-C-056,ACTION,POST,/api/v1/commands:risk-acknowledge,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,实际命令/目标/固定版本/风险确认/幂等,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
-C-057,ACTION,POST,/api/v1/command-executions,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,实际命令/目标/固定版本/风险确认/幂等,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
+C-050,MODEL,GET,/api/v1/admin/model-connections,拟新增,P5-03,管理员；写/测试按策略再次验证,cursor;limit,connectionView list with credentialState and admissionState,ui-v12-model/v1 connectionView; secret never returned
+C-051,MODEL,POST,/api/v1/admin/model-connections,拟新增,P5-03,管理员；写/测试按策略再次验证,baseURL;modelID;contextWindow(integer|null);credential{action=replace;apiKey};expectedRevision(null on create),connectionView; credential stored by reference,ui-v12-model/v1 connectionUpsertRequest; create requires credential.replace; keep on create is rejected; no provider fields
+C-052,MODEL,PATCH,/api/v1/admin/model-connections/{modelConnectionId},拟新增,P5-03,管理员；写/测试按策略再次验证,baseURL;modelID;contextWindow(integer|null);credential{action=keep}|{action=replace;apiKey};expectedRevision,connectionView with new revision,ui-v12-model/v1 connectionUpsertRequest; keep preserves stored secret and must not clear it; replace writes a new controlled version
+C-053,MODEL,POST,/api/v1/admin/model-connections/{modelConnectionId}:test,拟新增,P5-03,管理员；写/测试按策略再次验证,expectedRevision,connectionTestResult with checks and protocol,ui-v12-model/v1 connectionTestRequest and connectionTestResult; no admission material
+C-054,MODEL,GET,/api/v1/admin/model-connection-tests/{testId},拟新增,P5-03,管理员；写/测试按策略再次验证,testId,connectionTestResult,ui-v12-model/v1 connectionTestResult
+C-055,ACTION,POST,/api/v1/commands:risk-assess,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,actualCommand;target;shell;executionProfileId;executionProfileVersion;incidentId;actionPlanId;executionOptions;verification;relatedExecutionId;executionRelation;Idempotency-Key,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
+C-056,ACTION,POST,/api/v1/commands:risk-acknowledge,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,assessmentId;executionRequestDigest;Idempotency-Key,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
+C-057,ACTION,POST,/api/v1/command-executions,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,actualCommand;target;shell;executionProfileId;executionProfileVersion;incidentId;actionPlanId;executionOptions;verification;riskAcknowledgementId;Idempotency-Key,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
 C-058,ACTION,GET,/api/v1/command-executions,拟新增,P6-01,运维+目标/固定配置；按风险真实再次验证,实际命令/目标/固定版本/风险确认/幂等,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
-C-059,ACTION,GET,/api/v1/command-executions/{executionId},已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,实际命令/目标/固定版本/风险确认/幂等,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
-C-060,ACTION,GET,/api/v1/command-executions/{executionId}/events,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,实际命令/目标/固定版本/风险确认/幂等,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
-C-061,ACTION,POST,/api/v1/command-executions/{executionId}:cancel,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,实际命令/目标/固定版本/风险确认/幂等,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
-C-062,ACTION,GET,/api/v1/command-executions/{executionId}/post-check,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,实际命令/目标/固定版本/风险确认/幂等,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
+C-059,ACTION,GET,/api/v1/command-executions/{executionId},已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,executionId,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
+C-060,ACTION,GET,/api/v1/command-executions/{executionId}/events,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,executionId;Last-Event-ID,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
+C-061,ACTION,POST,/api/v1/command-executions/{executionId}:cancel,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,executionId;Idempotency-Key,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
+C-062,ACTION,GET,/api/v1/command-executions/{executionId}/post-check,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,executionId,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
 C-063,ACTION,POST,/api/v1/command-executions/{executionId}/post-checks,拟新增,P6-01,运维+执行所有者/当前目标范围,执行ID/固定判据/expectedRevision/幂等,独立验证尝试及固定报告,现有GET post-check读取Worker自动验证；人工重新发起新尝试不覆盖旧报告、不重跑命令
 C-064,ACTION,GET,/api/v1/command-executions/{executionId}/post-checks/{checkId},拟新增,P6-01,运维+执行所有者/当前目标范围,执行ID/固定判据/expectedRevision/幂等,独立验证尝试及固定报告,现有GET post-check读取Worker自动验证；人工重新发起新尝试不覆盖旧报告、不重跑命令
-C-065,INV,GET,/api/v1/incidents/{incidentId}/investigations,已有-适配,P4-05,运维+当前故障/资源/证据范围,triggerRevision/triggerKind；预算及重点拟扩展,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
-C-066,INV,POST,/api/v1/incidents/{incidentId}/investigations,已有-适配,P4-05,运维+当前故障/资源/证据范围,triggerRevision/triggerKind；预算及重点拟扩展,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
-C-067,INV,GET,/api/v1/investigations/{jobId},已有-适配,P4-05,运维+当前故障/资源/证据范围,triggerRevision/triggerKind；预算及重点拟扩展,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
-C-068,INV,GET,/api/v1/investigations/{jobId}/events,已有-适配,P4-05,运维+当前故障/资源/证据范围,triggerRevision/triggerKind；预算及重点拟扩展,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
-C-069,INV,GET,/api/v1/investigations/{jobId}/steps,已有-适配,P4-05,运维+当前故障/资源/证据范围,triggerRevision/triggerKind；预算及重点拟扩展,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
-C-070,INV,POST,/api/v1/investigations/{jobId}:cancel,已有-适配,P4-05,运维+当前故障/资源/证据范围,triggerRevision/triggerKind；预算及重点拟扩展,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
-C-071,INV,GET,/api/v1/incidents/{incidentId}/rca/revisions/{revision},已有-适配,P4-05,运维+当前故障/资源/证据范围,triggerRevision/triggerKind；预算及重点拟扩展,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
-C-072,AI,GET,/api/v1/assistant/capabilities,已有-适配,P5-01,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
-C-073,AI,GET,/api/v1/assistant/conversations,已有-适配,P5-02,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
-C-074,AI,POST,/api/v1/assistant/conversations,已有-适配,P5-02,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-065,INV,GET,/api/v1/incidents/{incidentId}/investigations,已有-适配,P4-05,运维+当前故障/资源/证据范围,incidentId;cursor;limit,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
+C-066,INV,POST,/api/v1/incidents/{incidentId}/investigations,已有-适配,P4-05,运维+当前故障/资源/证据范围,triggerRevision;triggerKind;Idempotency-Key,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
+C-067,INV,GET,/api/v1/investigations/{jobId},已有-适配,P4-05,运维+当前故障/资源/证据范围,jobId,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
+C-068,INV,GET,/api/v1/investigations/{jobId}/events,已有-适配,P4-05,运维+当前故障/资源/证据范围,jobId;Last-Event-ID,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
+C-069,INV,GET,/api/v1/investigations/{jobId}/steps,已有-适配,P4-05,运维+当前故障/资源/证据范围,jobId,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
+C-070,INV,POST,/api/v1/investigations/{jobId}:cancel,已有-适配,P4-05,运维+当前故障/资源/证据范围,jobId;Idempotency-Key,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
+C-071,INV,GET,/api/v1/incidents/{incidentId}/rca/revisions/{revision},已有-适配,P4-05,运维+当前故障/资源/证据范围,incidentId;revision,公开步骤/部分结果/固定根因引用,允许用户收紧预算；不自动确认RCA；模型与机制质量分开
+C-072,AI,GET,/api/v1/assistant/capabilities,已有-适配,P5-01,运维+个人所有者+当前数据范围,clusterUid,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-073,AI,GET,/api/v1/assistant/conversations,已有-适配,P5-02,运维+个人所有者+当前数据范围,limit;cursor,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-074,AI,POST,/api/v1/assistant/conversations,已有-适配,P5-02,运维+个人所有者+当前数据范围,title;mode;authorizationDomain;clusterUid;namespaceSelection;includeClusterScoped;incidentId;resourceCanonicalIds;symptom;timeRange;timezone;Idempotency-Key,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
 C-075,AI,PATCH,/api/v1/assistant/conversations/{conversationId},拟新增,P5-02,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
-C-076,AI,POST,/api/v1/assistant/conversations/{conversationId}/binding,已有-适配,P5-02,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
-C-077,AI,POST,/api/v1/assistant/conversations/{conversationId}/messages,已有-适配,P5-02,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
-C-078,AI,GET,/api/v1/assistant/conversations/{conversationId}/events,已有-适配,P5-02,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
-C-079,AI,POST,/api/v1/assistant/conversations/{conversationId}:archive,已有-适配,P5-02,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
-C-080,AI,POST,/api/v1/assistant/turns/{turnId}:cancel,已有-适配,P5-01,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
-C-081,AI,GET,/api/v1/assistant/query-results/{queryResultId},已有-适配,P5-01,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
-C-082,AI,GET,/api/v1/assistant/turns/{turnId}/formal-references,已有-适配,P5-01,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-076,AI,POST,/api/v1/assistant/conversations/{conversationId}/binding,已有-适配,P5-02,运维+个人所有者+当前数据范围,expectedConversationRevision;namespaceSelection;includeClusterScoped;resourceCanonicalId;timeRange;Idempotency-Key,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-077,AI,POST,/api/v1/assistant/conversations/{conversationId}/messages,已有-适配,P5-02,运维+个人所有者+当前数据范围,message;expectedConversationRevision;parentTurnId;clarificationId;referentCanonicalId;faultChainRequest;Idempotency-Key,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-078,AI,GET,/api/v1/assistant/conversations/{conversationId}/events,已有-适配,P5-02,运维+个人所有者+当前数据范围,conversationId;Last-Event-ID,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-079,AI,POST,/api/v1/assistant/conversations/{conversationId}:archive,已有-适配,P5-02,运维+个人所有者+当前数据范围,conversationId;Idempotency-Key,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-080,AI,POST,/api/v1/assistant/turns/{turnId}:cancel,已有-适配,P5-01,运维+个人所有者+当前数据范围,turnId;Idempotency-Key,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-081,AI,GET,/api/v1/assistant/query-results/{queryResultId},已有-适配,P5-01,运维+个人所有者+当前数据范围,queryResultId,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-082,AI,GET,/api/v1/assistant/turns/{turnId}/formal-references,已有-适配,P5-01,运维+个人所有者+当前数据范围,turnId;index,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
 C-083,SERVICE,GET,/api/v1/business-services,拟新增,P4-02,运维+当前对象范围,规范资源引用/责任成员/版本,业务服务及资源集合,列表/创建代表接口族；其余操作在专用行明确，P0校准复用
 C-084,SERVICE,POST,/api/v1/business-services,拟新增,P4-02,运维+当前对象范围,规范资源引用/责任成员/版本,业务服务及资源集合,列表/创建代表接口族；其余操作在专用行明确，P0校准复用
 C-085,INSPECT,GET,/api/v1/inspections,拟新增,P6-03,运维+当前对象范围,范围/检查项/版本/幂等,只读任务/固定报告,列表/创建代表接口族；其余操作在专用行明确，P0校准复用
@@ -125,15 +125,54 @@ C-123,KNOWLEDGE,GET,/api/v1/knowledge/index-jobs/{jobId},拟新增,P7-04,运维+
 C-124,KNOWLEDGE,POST,/api/v1/knowledge/documents/{documentId}:restore,拟新增,P7-04,运维+当前对象范围,expectedRevision,归档内容恢复为新草稿,后台状态真实可读取；版本及引用不覆盖
 C-125,TEMPLATE,PATCH,/api/v1/job-templates/{templateId},拟新增,P6-02,运维+当前对象范围,expectedRevision/受控内容,新模板版本,后台状态真实可读取；版本及引用不覆盖
 C-126,SERVICE,GET,/api/v1/business-services/{serviceId},拟新增,P4-02,运维+当前对象范围,服务ID,授权服务与资源归属,后台状态真实可读取；版本及引用不覆盖
-C-127,CONFIG,GET,/api/v1/admin/policy-bundles,已有-复用,P7-06,管理员；写需再次验证,固定版本/内容/签名/expectedRevision/幂等,不可变版本/激活/退役,保留现有合同签名与任务固定版本
-C-128,CONFIG,GET,/api/v1/admin/recipes,已有-复用,P7-06,管理员；写需再次验证,固定版本/内容/签名/expectedRevision/幂等,不可变版本/激活/退役,保留现有合同签名与任务固定版本
-C-129,CONFIG,POST,/api/v1/admin/registry-drafts,已有-复用,P7-06,管理员；写需再次验证,固定版本/内容/签名/expectedRevision/幂等,不可变版本/激活/退役,保留现有合同签名与任务固定版本
-C-130,CONFIG,PATCH,/api/v1/admin/registry-drafts/{draftId},已有-复用,P7-06,管理员；写需再次验证,固定版本/内容/签名/expectedRevision/幂等,不可变版本/激活/退役,保留现有合同签名与任务固定版本
-C-131,CONFIG,POST,/api/v1/admin/registry-drafts/{draftId}:publish,已有-复用,P7-06,管理员；写需再次验证,固定版本/内容/签名/expectedRevision/幂等,不可变版本/激活/退役,保留现有合同签名与任务固定版本
-C-132,CONFIG,POST,/api/v1/admin/registry-activations,已有-复用,P7-06,管理员；写需再次验证,固定版本/内容/签名/expectedRevision/幂等,不可变版本/激活/退役,保留现有合同签名与任务固定版本
-C-133,CONFIG,POST,/api/v1/admin/registry-versions/{versionId}:retire,已有-复用,P7-06,管理员；写需再次验证,固定版本/内容/签名/expectedRevision/幂等,不可变版本/激活/退役,保留现有合同签名与任务固定版本
-C-134,CONFIG,GET,/api/v1/admin/execution-profiles,已有-复用,P7-06,管理员；写需再次验证,固定版本/内容/签名/expectedRevision/幂等,不可变版本/激活/退役,保留现有合同签名与任务固定版本
-C-135,CONFIG,POST,/api/v1/admin/execution-profiles,已有-复用,P7-06,管理员；写需再次验证,固定版本/内容/签名/expectedRevision/幂等,不可变版本/激活/退役,保留现有合同签名与任务固定版本
-C-136,AUDIT,GET,/api/v1/capabilities,已有-复用,P7-06,依现有能力/审计授权,范围/时间/游标/ID,真实资格/审计及完整性证据,公开readyz不是业务资格，审计不可用时不显示已验证
-C-137,AUDIT,GET,/api/v1/audit-records,已有-复用,P7-06,依现有能力/审计授权,范围/时间/游标/ID,真实资格/审计及完整性证据,公开readyz不是业务资格，审计不可用时不显示已验证
-C-138,AUDIT,GET,/api/v1/audit-records/{auditId},已有-复用,P7-06,依现有能力/审计授权,范围/时间/游标/ID,真实资格/审计及完整性证据,公开readyz不是业务资格，审计不可用时不显示已验证
+C-127,CONFIG,GET,/api/v1/admin/policy-bundles,已有-复用,P7-06,管理员；写需再次验证,logicalName;cursor;limit,不可变版本/激活/退役,保留现有合同签名与任务固定版本
+C-128,CONFIG,GET,/api/v1/admin/recipes,已有-复用,P7-06,管理员；写需再次验证,logicalName;cursor;limit,不可变版本/激活/退役,保留现有合同签名与任务固定版本
+C-129,CONFIG,POST,/api/v1/admin/registry-drafts,已有-复用,P7-06,管理员；写需再次验证,kind;logicalName;content;Idempotency-Key,不可变版本/激活/退役,保留现有合同签名与任务固定版本
+C-130,CONFIG,PATCH,/api/v1/admin/registry-drafts/{draftId},已有-复用,P7-06,管理员；写需再次验证,expectedRevision;content;Idempotency-Key,不可变版本/激活/退役,保留现有合同签名与任务固定版本
+C-131,CONFIG,POST,/api/v1/admin/registry-drafts/{draftId}:publish,已有-复用,P7-06,管理员；写需再次验证,draftId;Idempotency-Key,不可变版本/激活/退役,保留现有合同签名与任务固定版本
+C-132,CONFIG,POST,/api/v1/admin/registry-activations,已有-复用,P7-06,管理员；写需再次验证,versionId;Idempotency-Key,不可变版本/激活/退役,保留现有合同签名与任务固定版本
+C-133,CONFIG,POST,/api/v1/admin/registry-versions/{versionId}:retire,已有-复用,P7-06,管理员；写需再次验证,versionId;Idempotency-Key,不可变版本/激活/退役,保留现有合同签名与任务固定版本
+C-134,CONFIG,GET,/api/v1/admin/execution-profiles,已有-复用,P7-06,管理员全量；operator按当前目标范围；原生会话/授权版本事务内复检,cursor(max128);limit(1..200;default100),不可变版本/激活/退役,保留现有合同签名与任务固定版本; r10 fixes native list authority; r11 pagination/meta implemented after current authorization filtering; raw catalog still loaded; no runtime acceptance
+C-135,CONFIG,POST,/api/v1/admin/execution-profiles,已有-复用,P7-06,管理员；写需再次验证,profile{schemaVersion;executionProfileId;version;name;type;allowedTargets;clusterUid;namespace;toolImageDigest;tools;networkPolicyRef;credentialRef;timeoutSeconds;maxOutputBytes;principal;hostOnboardingRef};Idempotency-Key,不可变版本/激活/退役,保留现有合同签名与任务固定版本
+C-136,AUDIT,GET,/api/v1/capabilities,已有-复用,P7-06,依现有能力/审计授权,none,真实资格/审计及完整性证据,公开readyz不是业务资格，审计不可用时不显示已验证
+C-137,AUDIT,GET,/api/v1/audit-records,已有-复用,P7-06,依现有能力/审计授权,subject;operation;incidentId;actionPlanId;resource;from;to;cursor;limit;verifyChain,真实资格/审计及完整性证据,公开readyz不是业务资格，审计不可用时不显示已验证
+C-138,AUDIT,GET,/api/v1/audit-records/{auditId},已有-复用,P7-06,依现有能力/审计授权,auditId,真实资格/审计及完整性证据,公开readyz不是业务资格，审计不可用时不显示已验证
+C-139,CONFIG,POST,/api/v1/admin/execution-profiles/{executionProfileId}/versions/{version}:retire,已有-复用,P7-06,管理员+真实再次验证,executionProfileId;version;Idempotency-Key,固定执行配置退役,P0核实补录；独立于C-133 registry version退役；ActionHandlers.Service.RetireProfile
+C-140,AI,GET,/api/v1/assistant/conversations/{conversationId},已有-复用,P5-02,owner subject + tenant,conversationId,conversation with binding and revision,detail read used by session open and rebind; owner only
+C-141,AI,GET,/api/v1/assistant/conversations/{conversationId}/messages,已有-复用,P5-02,owner subject + tenant,limit;cursor,message page with nextCursor,old messages keep their fixed binding
+C-142,AI,GET,/api/v1/assistant/turns/{turnId},已有-复用,P5-01,owner subject + tenant,none,turn state and stored answer,used for partial and failure states
+C-143,AI,GET,/api/v1/assistant/turns/{turnId}/source-steps/{stepId},已有-复用,P5-01,owner subject + tenant,none,source step and evidence reference,fixed turn and step
+C-144,AI,GET,/api/v1/assistant/turns/{turnId}/fault-chain-context,已有-复用,P4-05,owner subject + tenant,none,fault chain context,read reauthorizes current scope
+C-145,AI,POST,/api/v1/assistant/conversations/{conversationId}/fault-chain-investigations,已有-复用,P4-05,owner subject + operator,faultChainRequest;Idempotency-Key,202 job with fixed request,does not create a second agent loop
+C-146,AI,POST,/api/v1/assistant/resources:interpret,已有-复用,P5-01,operator,text;clusterUid,intent projection,no model quality claim
+C-147,AI,POST,/api/v1/assistant/resources:resolve,已有-复用,P5-01,operator + resource scope,selector;clusterUid;timeRange,resolved canonical resource,ambiguous or denied returns explicit state
+C-148,AI,POST,/api/v1/assistant/legal-holds,已有-适配,P5-02,platform_admin,turnId;held;reason,hold state on turn,retention boundary; not a business fact edit
+C-149,AUDIT,GET,/api/v1/admin/legal-holds,已有-复用,P7-06,platform_admin,cursor;limit,evidence hold list,separate from assistant turn holds
+C-150,AUDIT,POST,/api/v1/admin/legal-holds,已有-复用,P7-06,platform_admin,evidenceId;hold;Idempotency-Key,evidence hold state,evidence retention only
+C-151,ACTION,POST,/api/v1/action-plans,已有-适配,P6-01,operator,action-plan/v2 body;Idempotency-Key,persisted suggestion with state suggested,grants no execution authority
+C-152,ACTION,GET,/api/v1/action-plans/{actionPlanId},已有-复用,P6-01,operator + target scope,none,plan content and state,revalidates resource scope
+C-153,ACTION,POST,/api/v1/action-plans/{actionPlanId}:accept,已有-复用,P6-01,operator + target scope,empty body;Idempotency-Key,state accepted,does not execute the command
+C-154,ACTION,POST,/api/v1/action-plans/{actionPlanId}:dismiss,已有-复用,P6-01,operator + target scope,empty body;Idempotency-Key,state dismissed,does not execute the command
+C-155,CONFIG,GET,/api/v1/admin/registry-drafts/{draftId},已有-复用,P7-06,platform_admin,none,draft content and revision,used by policy detail
+C-156,CONFIG,POST,/api/v1/admin/policy-bundles:publish,已有-复用,P7-06,platform_admin + step-up,draftId;expectedRevision;Idempotency-Key,immutable signed version,trust store required; no bypass
+C-157,SOURCE,POST,/api/v1/admin/source-registrations/{sourceId}/rollback,已有-适配,P7-01,platform_admin + step-up,expectedRevision;targetRevision;Idempotency-Key,registration rollback revision,does not grant data qualification
+C-158,EVENT,GET,/api/v1/incidents/{incidentId}/rca,已有-适配,P4-05,operator + incident scope,incidentId,current RCA view,uses fixed revision
+C-159,EVENT,GET,/api/v1/incidents/{incidentId}/rca/revisions,已有-适配,P4-05,operator + incident scope,incidentId;cursor;limit,RCA revision page,old revisions remain readable under current authorization
+C-160,EVENT,POST,/api/v1/incidents/{incidentId}:split,已有-适配,P4-04,operator + incident scope,expectedRevision;findingIds;reason;Idempotency-Key,new incident and timeline,source findings unchanged
+C-161,EVENT,POST,/api/v1/incidents:merge,已有-适配,P4-04,operator + both incident scopes,sourceIncidentId;targetIncidentId;targetRevision;expectedRevision;reason;Idempotency-Key,merged incident and timeline,no source fact rewrite
+C-162,EVENT,POST,/api/v1/findings:ingest,已有-适配,P4-03,bound publisher only,finding envelope v1;Idempotency-Key,409 CAPABILITY_DISABLED,historically disabled; v2 required
+C-163,EVENT,POST,/api/v2/findings:ingest,已有-复用,P4-03,explicit ingestion binding,finding-envelope/v2;Idempotency-Key,accepted or duplicate disposition,binding must match tenant and subject
+C-164,AUTH,GET,/api/v1/admin/tenants,已有-适配,P2-04,platform_admin,none,current tenant only,not a tenant list; multi-tenant admin missing
+C-165,AUTH,POST,/api/v1/admin/tenants,已有-适配,P2-04,platform_admin + step-up,slug;displayName;Idempotency-Key,tenant record,no client tenant selection at login
+C-166,CONFIG,GET,/api/v1/admin/tools,已有-复用,P7-06,platform_admin,logicalName;cursor;limit,published tool versions,read-only tool catalog
+C-167,COMPONENT,POST,/api/v1/admin/host-onboardings,已有-适配,P7-02,platform_admin + step-up,report;Idempotency-Key,host onboarding receipt,does not install third-party components
+C-168,OBS,GET,/api/v1/observability/queries/{queryId}/results,拟新增,P3-02,owner subject + tenant + reauthorization,queryId;cursor;limit,resultView with population; samples; statistics; coverage; truncation,ui-v12-observability/v1 resultView; expired result returns result_expired
+C-169,MODEL,GET,/api/v1/model-run-options,拟新增,P5-03,operator capability projection,clusterUid;taskKind,runOptionView list with admission and worker state,ui-v12-model/v1 runOptionView; connection exists does not mean runnable
+C-170,AUTH,POST,/api/v1/admin/subject-mappings,已有-新增,P2-04,platform_admin + step-up,legacySubject;userId;basis=verified_inventory;evidenceDigest;expectedUserRevision,subjectMappingView,ui-v12-identity/v1 subjectMappingRequest; no confirmExplicit/matchBy/loginName fields; r9 source only: reviewed inventory import prerequisite; exact native ID/subject; no role inheritance or history-read authorization; migration56 unexecuted
+C-171,AUTH,GET,/api/v1/admin/subject-mappings,已有-新增,P2-04,platform_admin,userId;legacySubject;cursor;limit,subjectMappingView list,ui-v12-identity/v1 subjectMappingView; r9 source only: reviewed inventory import prerequisite; exact native ID/subject; no role inheritance or history-read authorization; migration56 unexecuted
+C-172,AUTH,POST,/api/v1/auth/mfa/enrollments,已有-改造,P2-03,authenticated user + credential version,method;expectedCredentialVersion,mfaEnrollmentCreated with one-time otpauthUri,ui-v12-stepup/v1 mfaEnrollmentCreateRequest; provisioning secret returned once
+C-173,AUTH,POST,/api/v1/auth/mfa/enrollments/{enrollmentId}:verify,已有-改造,P2-03,authenticated user + enrollment revision,totpCode;expectedEnrollmentRevision;stepUp{challengeId;sessionRef},mfaEnrollmentVerifyResult with recoveryCodes,ui-v12-stepup/v1 mfaEnrollmentVerifyRequest; stepUp binding is required; cookie+TOTP alone is insufficient
+C-174,AUTH,GET,/api/v1/auth/mfa/enrollments/{enrollmentId},已有-改造,P2-03,authenticated user,none,mfaEnrollmentView without provisioning secret,ui-v12-stepup/v1 mfaEnrollmentView
+C-175,AUTH,POST,/api/v1/auth/mfa/recovery-codes:verify,已有-改造,P2-03,authenticated user + challenge,challengeId;recoveryCode;expectedChallengeRevision,recoveryCodeVerifyResult; sessions revoked; mustReenrollMfa,ui-v12-stepup/v1 recoveryCodeVerifyRequest; challengeId is required and cannot be inferred from cookie
+C-176,AUTH,POST,/api/v1/admin/users/{userId}/mfa:reset,已有-改造,P2-03,platform_admin + high-risk step-up,userId;confirmLoginName;reason;expectedUserRevision;expectedCredentialVersion,adminMfaResetResult with sessionsRevoked; writeRecheck; auditRecordId,ui-v12-stepup/v1; target login name comparison and audit in one transaction
+C-177,CONFIG,POST,/api/v1/admin/policy-bundles:validate,拟新增,P7-06,platform_admin,draftId;expectedRevision,compile and signature-check result only; no version created; no activation,"validation-only; must not publish, sign a version, activate or write registry_versions; policy publish remains C-156"

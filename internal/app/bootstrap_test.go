@@ -3,6 +3,8 @@ package app
 import (
 	"errors"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 func TestBootstrapRequiresConfig(t *testing.T) {
@@ -66,5 +68,24 @@ func TestBootstrapRequiresConfig(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+// Constructor validation makes no network or database calls; this is not a cold-start acceptance.
+func TestNativeBootstrapDoesNotRequireOIDC(t *testing.T) {
+	config := AppConfig{DatabaseURL: "postgres://fixture@localhost/not-used", ProfilePath: "not-opened-by-constructor", HumanAuthMode: HumanAuthModeNative, NativeAuthTenantID: uuid.New()}
+	if _, err := NewAPI(config); err != nil {
+		t.Fatalf("native API required issuer: %v", err)
+	}
+	if _, err := NewWorker(config); err != nil {
+		t.Fatalf("native Worker required issuer: %v", err)
+	}
+	config.NativeAuthTenantID = uuid.Nil
+	if _, err := NewAPI(config); err == nil {
+		t.Fatal("native API accepted an unknown deployment tenant")
+	}
+	config.HumanAuthMode = "typo"
+	if _, err := NewAPI(config); err == nil {
+		t.Fatal("unknown identity mode fell back to OIDC")
 	}
 }

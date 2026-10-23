@@ -38,6 +38,7 @@ type CommandRequest struct {
 	Options        Options    `json:"executionOptions"`
 }
 type Binding struct {
+	TargetRevision         int               `json:"targetRevision,omitempty"`
 	VerificationNamespace  string            `json:"verificationNamespace,omitempty"`
 	VerificationTargetName string            `json:"verificationTargetName,omitempty"`
 	Verification           *VerificationSpec `json:"verification,omitempty"`

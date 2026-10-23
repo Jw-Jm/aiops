@@ -1,0 +1,147 @@
+{
+  "date": "2026-10-22T15:05:26.226300+08:00",
+  "actor": "GPT in this Codex conversation; direct implementation authorized by user",
+  "authorization": "本轮修改由本对话框的gpt完成，不发送给codebuddy",
+  "reviewed_codebuddy_task": "766b08fa-17fd-45ca-af7a-564aa3f83fd9",
+  "new_codebuddy_task_dispatched": false,
+  "head": "9bd78d84e212217626cdf0cfe54af84a155a9a3d",
+  "worktree": "uncommitted feat/ui-v12-replication; inherited changes retained",
+  "status": "P2_02_mechanism_subset_verified_after_direct_fixes; product acceptance pending",
+  "fixes": [
+    "Aligned Go failed-counter result columns with SQL out_failed_count/out_locked_until.",
+    "Added missing issued_session_version comparison in active lookup before migration45 first execution.",
+    "Fixed inclusive admission limit before migration45 execution; forward46 resets expired entry/account locks when windows restart.",
+    "Forward46 restores exact clear_password_failure account RLS access; clearing now commits inside login/password/audit transaction instead of swallowing a postcommit error.",
+    "Native logout clears identity and cancels old HTTP/SSE immediately; revocation uses an independent bounded signal; late logout cannot clear a replacement identity. Native login participates in credential cancellation.",
+    "Normalized X-Request-ID once so HTTP response header and native envelope identify the same request.",
+    "Locked/unknown login failures share401/message and bounded dummy Argon path;429 represents entry-wide admission limits.",
+    "Corrected test session versions after logout, isolated token fixtures per run, asserted exact concurrent counts, and derived expected DB version from migration sources."
+  ],
+  "environment": {
+    "task": "ui-v12-http-20261022-r1",
+    "host": "mssc-direct",
+    "directory": "/data/ops-ui-v12-http-20261022-r1",
+    "container": "ops-ui-v12-http-pg-20261022-r1",
+    "client_port": 15452,
+    "image": "sha256:589f742565e4f6d22149176b032974f55f8201a8a37b71ed587ec5c6902e689f",
+    "scope": "isolated synthetic native HTTP/session verification only",
+    "legacy_guard_comment": "ui-v12-p2-01-r1 retained for unchanged shared test guard; dedicated new instance",
+    "previous_instances_unchanged": [
+      15449,
+      15450,
+      15451,
+      30451
+    ],
+    "server_version": "17.11 (Debian 17.11-1.pgdg12+2)",
+    "schema_version": 46,
+    "database": "ui_v12_native_identity"
+  },
+  "source_sha256": {
+    "migrations/00044_native_identity.sql": "b6975c11e51bcfab8bad0c7f6b6044aa165365a0694d8399a3c87f55069fd524",
+    "migrations/00045_native_http_sessions.sql": "398a8faf7542b883dfca67167f0d7185a92f4ca2b889ac0770b14acebd67339f",
+    "migrations/00046_native_login_window_reset.sql": "ca5acb01018a8819bf79efedc1ced42b98a916e87c8086c1f3b322f7d1517cd1",
+    "internal/identity/session.go": "29a9a5dcd2456db9e88a1e2b7bd21418524359e385a087a9f0cd438e37524a82",
+    "internal/httpapi/native_auth.go": "c9e3e600ddaf1e9a36c2bc24beffb670f3c5422bc45e6724708cead9ff0c4068",
+    "internal/auth/native.go": "9783f78272010201bf04ac6581945ec4bdf111fd83d5cc07de06048861006c89",
+    "test/integration/native_http_session_test.go": "c6e1c0d8cfc51b62a3e8e83bbd07619ffef4376cf0317067a31f2cef7f66d1ab",
+    "test/integration/native_identity_test.go": "dc469a84804b9e47cd694a72168c723da2ab44ef4c6a1bfc36a459bff9cd943f",
+    "web/src/auth/AuthProvider.tsx": "66602c6c04e3dfad1d6dcecbc6d673a289e7f83457da05143616536c1b8db1ff",
+    "web/tests/native_authprovider.test.tsx": "4331f0230973b16fc0faba7cca216cd7c263b8df6af060cdf781a77b23bfed91",
+    "web/tests/native_fetch_login.test.tsx": "91b2580c42b5a0b692e19be634cf18c945a60f63816b3787f339681b71d528fe",
+    "docs/release/delivery-baseline.json": "8514cfd7543d4452b8ff2a90f5ff0ba26764fcf4ca3ed20f839f61115f0bd127"
+  },
+  "binary_sha256": {
+    "integration": "efa887b20116d1d6dfc80c9f64eb124fff0620ca829a82d620b6bcdbd98e7595",
+    "api": "79913067691b77f360efb7364636353d4781de344bf753d832c7afd3412d85d1"
+  },
+  "request_evidence": {
+    "tenant_id": "6d5e09b5-31ba-4832-b543-dd4adc8654df",
+    "user_id": "01a1626a-1958-7eb9-9c16-7bf9bed9e923",
+    "login_request_id": "01a1626a-19f4-7787-981a-5feba1104be3"
+  },
+  "checks": [
+    {
+      "command": "go test ./internal/identity ./internal/auth ./internal/httpapi ./internal/app -count=1",
+      "result": "PASS",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p2-direct-unit-privacy.log"
+    },
+    {
+      "command": "go test ./test/contract -count=1",
+      "result": "PASS after migration baseline46",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p2-direct-contract-r3.log"
+    },
+    {
+      "command": "pnpm test",
+      "result": "PASS 31 files/131 Vitest +6 Node SSE checks",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p2-direct-web-final.log"
+    },
+    {
+      "command": "pnpm build",
+      "result": "PASS, existing chunk warning",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p2-direct-web-build-final.log"
+    },
+    {
+      "command": "Linux integration test and platform-api cross-compilation",
+      "result": "PASS"
+    },
+    {
+      "command": "TestNativeHTTPSessionFlow + TestNativeIdentityRepositoryAndRoles on real isolated PostgreSQL17.11",
+      "result": "PASS including registered role/tenant scope, audit failure rollback, absolute expiry; migrations1..45 from empty then forward46 upgrade",
+      "log": "evidence/codex-http-r1/http-test-privacy.log"
+    },
+    {
+      "command": "validate-progress.py",
+      "result": "PASS tracking structure only; g0_passed=true; product six dimensions remain0"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS; inherited feat/ui-v12-replication and HEAD unchanged"
+    }
+  ],
+  "database_coverage": [
+    "NOINHERIT/FORCE RLS and GUC spoof boundaries",
+    "login cookie flags and header ordering, first-only empty grants and forbidden business access",
+    "same-session CSRF recovery; missing CSRF/cross-origin rejection",
+    "first password rotation, old cookie rejection, logout and repeated logout audit count",
+    "session-version invalidation independent of credential version",
+    "20 concurrent entry admissions with exact limit3; window restart clears old lock",
+    "10 simultaneous first account failures with exact count10; account-lock reset and constant locked/unknown error",
+    "registered UID/internal-ID mapping; two roles with different clusters; namespace allow/deny; foreign tenant rejection",
+    "audit storage rejection rolls back password and session rotation; missing cluster projection rolls back new session",
+    "touch near absolute expiry, expired lookup/touch/password change rejection",
+    "P2-01 account/bootstrap foundation regression against schema46"
+  ],
+  "failures_retained": [
+    {
+      "log": "evidence/codex-http-r1/http-test-r1.log",
+      "cause": "macOS AppleDouble migration metadata; SQL-only archive fixed packaging before migration45"
+    },
+    {
+      "log": "evidence/codex-http-r1/http-test-r3.log",
+      "cause": "expired entry lock violates new window constraint; stale test schema44 assertion",
+      "server_error": "evidence/codex-http-r1/server-error-r3.log"
+    },
+    {
+      "log": "evidence/codex-http-r1/http-test-r4.log",
+      "cause": "repeated test reused globally unique fixed token digest; fixture now run-specific"
+    }
+  ],
+  "migration_policy": "44 unchanged from prior independent acceptance;45 frozen after first execution in15452;46 is forward repair and now executed/frozen. Future SQL changes require new migration.",
+  "limits": [
+    "Real PostgreSQL + HTTP handler chain, not a deployed network API/Web service or browser acceptance.",
+    "P2-02 remains in_progress; all458 slice visual/interaction/api/persistence/authorization/live product statuses remain unverified.",
+    "Browser reload/cookie enforcement/TLS proxy and HTML pixel comparisons not run.",
+    "Simultaneous password-change versus logout/disable races not exhaustively exercised; SQL locking reviewed.",
+    "No statistical timing study; common bounded password path and error status/message parity checked.",
+    "P2-03 MFA/step-up, P2-04 administration/history mapping, P2-05 switch remain unimplemented.",
+    "No new user-login V1.2 page deployed;30451 remains old OIDC.15449/15450/15451 and shared environment unchanged."
+  ],
+  "tracking_files": [
+    "progress.md",
+    "task-progress.csv",
+    "acceptance.csv",
+    "p0-decisions.md",
+    "p2-native-auth.md",
+    "evidence/tested-source.json"
+  ]
+}

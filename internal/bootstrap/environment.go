@@ -21,6 +21,7 @@ type EnvironmentInput struct {
 	SchemaVersion int               `json:"schemaVersion"`
 	Context       string            `json:"context"`
 	Namespace     string            `json:"namespace"`
+	HumanAuthMode string            `json:"humanAuthMode,omitempty"`
 	PublicTrust   map[string]string `json:"publicTrust"`
 }
 
@@ -35,6 +36,7 @@ type EnvironmentReceipt struct {
 	InstallationID  string              `json:"installationId"`
 	PublicTrustKeys []string            `json:"publicTrustKeys"`
 	SecretKeys      map[string][]string `json:"secretKeys"`
+	HumanAuthMode   string              `json:"humanAuthMode,omitempty"`
 }
 
 var environmentName = regexp.MustCompile(`^[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?$`)
@@ -44,10 +46,19 @@ func (c EnvironmentInput) Validate(secrets []EnvironmentSecret) error {
 	if c.SchemaVersion != 1 || c.Context == "" || !environmentName.MatchString(c.Namespace) || c.Namespace == "default" || strings.HasPrefix(c.Namespace, "kube-") {
 		return errors.New("explicit context and dedicated bootstrap namespace required")
 	}
-	if len(c.PublicTrust) != 5 {
+	if c.HumanAuthMode != "" && c.HumanAuthMode != "oidc" && c.HumanAuthMode != "native" {
+		return errors.New("unknown human authentication mode")
+	}
+	caKeys := []string{"openbao-ca.pem", "archive-ca.pem"}
+	if c.HumanAuthMode != "native" {
+		caKeys = append(caKeys, "oidc-ca.pem")
+	} else if _, exists := c.PublicTrust["oidc-ca.pem"]; exists {
+		return errors.New("native bootstrap must not include OIDC trust")
+	}
+	if len(c.PublicTrust) != len(caKeys)+2 {
 		return errors.New("exact independent public bootstrap trust required")
 	}
-	for _, key := range []string{"openbao-ca.pem", "oidc-ca.pem", "archive-ca.pem"} {
+	for _, key := range caKeys {
 		ca := c.PublicTrust[key]
 		if strings.Contains(ca, "PRIVATE KEY") || !x509.NewCertPool().AppendCertsFromPEM([]byte(ca)) {
 			return errors.New("bootstrap trust requires public CA certificates")
@@ -71,6 +82,11 @@ func (c EnvironmentInput) Validate(secrets []EnvironmentSecret) error {
 		"ops-keycloak-database": {"username", "password"}, "ops-seaweedfs-auth": {"accessKey", "secretKey"},
 		"ops-openbao-bootstrap-tls": {"tls.crt", "tls.key"}, "ops-keycloak-tls": {"tls.crt", "tls.key"},
 		"ops-seaweedfs-tls": {"tls.crt", "tls.key"}, "ops-seaweedfs-iam": {"s3.json"},
+	}
+	if c.HumanAuthMode == "native" {
+		delete(required, "ops-keycloak-auth")
+		delete(required, "ops-keycloak-database")
+		delete(required, "ops-keycloak-tls")
 	}
 	if len(secrets) != len(required) {
 		return errors.New("all explicit core dependency secrets required")
@@ -175,7 +191,7 @@ func CreateEnvironment(ctx context.Context, client EnvironmentClient, c Environm
 	if err != nil || uid == "" {
 		return receipt, errors.New("bootstrap namespace creation failed")
 	}
-	receipt = EnvironmentReceipt{Namespace: c.Namespace, NamespaceUID: uid, InstallationID: id, SecretKeys: map[string][]string{}}
+	receipt = EnvironmentReceipt{Namespace: c.Namespace, NamespaceUID: uid, InstallationID: id, SecretKeys: map[string][]string{}, HumanAuthMode: c.HumanAuthMode}
 	trust := object("ConfigMap", "ops-platform-bootstrap")
 	trust["data"] = c.PublicTrust
 	if _, err := client.Create(ctx, trust); err != nil {

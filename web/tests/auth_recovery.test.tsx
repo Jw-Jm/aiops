@@ -1,4 +1,4 @@
-import { it, expect, vi } from "vitest";
+import { beforeEach, it, expect, vi } from "vitest";
 import {
   render,
   screen,
@@ -35,6 +35,18 @@ vi.mock("../src/auth/oidc", () => ({
   login: vi.fn(),
 }));
 vi.mock("../src/api/generated/platform", () => ({ getAuthSession: vi.fn() }));
+
+beforeEach(() => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () =>
+      new Response(JSON.stringify({ auth: { mode: "oidc" } }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    ),
+  );
+});
 function Consumer() {
   const auth = useAuth();
   return (
@@ -200,7 +212,9 @@ for (const lateResponse of [grantedResponse, deniedResponse])
       await waitFor(() => expect(getAuthSession).toHaveBeenCalledTimes(2));
       act(() => authEvents.dispatchEvent(new Event("expired")));
       await act(async () => complete(lateResponse()));
-      expect(screen.getByText("使用 OIDC 登录")).toBeVisible();
+      await waitFor(() =>
+        expect(screen.getByText("使用 OIDC 登录")).toBeVisible(),
+      );
       expect(screen.queryByText("已授权工作区")).not.toBeInTheDocument();
       expect(
         screen.queryByText("当前身份没有可用授权"),

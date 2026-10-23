@@ -1,0 +1,31 @@
+{
+  "task_id": "db50f9a0-a96d-4ee0-9eba-e006edcb5a06",
+  "reviewer": "Codex",
+  "date": "2026-10-21T08:24:38.897088+00:00",
+  "result": "accepted incremental functional repair; P1 overall remains in_progress pending remote visual/live checks",
+  "checks": [
+    {
+      "command": "pnpm exec vitest run tests/v12/p1_assistant_integration.test.tsx tests/v12/p1_shell.test.tsx tests/v12/p1_shell_app.test.tsx tests/v12/p1_layer.test.tsx",
+      "result": "21 passed /4 files",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p1-r4-targeted.log"
+    },
+    {
+      "command": "pnpm build",
+      "result": "TypeScript/Vite passed; existing chunk warning",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p1-r4-build.log"
+    }
+  ],
+  "findings_closed": [
+    "generated API success envelope and current-scope positive create navigation verified",
+    "valid delayed create success guarded after switch/unmount",
+    "data router useBlocker preserves mounted Assistant draft and full URL on cancel; confirm commits new object",
+    "same-scope bound object effect now switches mode; create body test covers new incident",
+    "real conversation stream hook receives controlled stream generator and old AbortSignal is aborted on scope transition"
+  ],
+  "limits": [
+    "streamJSONEvents is controlled at transport seam; no real network stream/live server proven",
+    "remote browser visual/persistence and all product six dimensions not verified",
+    "P1 navigation guard is not native authentication; P2 still required"
+  ],
+  "next": "P2-01 depends on completed P0-03 and can proceed independently while P1 browser/visual verification remains pending"
+}

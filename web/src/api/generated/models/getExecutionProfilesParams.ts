@@ -8,10 +8,12 @@
 export type GetExecutionProfilesParams = {
 /**
  * Opaque cursor for keyset pagination.
+ * @maxLength 128
  */
 cursor?: string;
 /**
  * @minimum 1
+ * @maximum 200
  */
 limit?: number;
 };

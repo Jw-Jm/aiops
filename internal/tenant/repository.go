@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/authz"
 	"ops-platform/internal/persistence"
 )
 
@@ -82,18 +83,14 @@ func (r *Repository) ListCurrentRoleBindings(ctx context.Context, request auth.R
 	return result, nil
 }
 
+// authorizeAdmin delegates to the shared layer so the native grant source is
+// the only proof for a native session.
 func authorizeAdmin(ctx context.Context, tx pgx.Tx, request auth.RequestContext) error {
-	if err := requireAdminContext(request); err != nil {
-		return err
-	}
-	var active bool
-	if err := tx.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM platform.tenants WHERE tenant_id = $1 AND status = 'active') "+
-		"AND EXISTS (SELECT 1 FROM platform.role_bindings WHERE tenant_id = $1 AND subject = $2 AND role_name = 'platform_admin' AND status = 'active')",
-		request.TenantID, request.Subject).Scan(&active); err != nil {
+	if err := authz.RequireAdmin(ctx, tx, request); err != nil {
+		if errors.Is(err, authz.ErrUnauthorized) || errors.Is(err, authz.ErrIdentityMismatch) {
+			return ErrUnauthorized
+		}
 		return fmt.Errorf("verify tenant administrator: %w", err)
-	}
-	if !active {
-		return ErrUnauthorized
 	}
 	return nil
 }

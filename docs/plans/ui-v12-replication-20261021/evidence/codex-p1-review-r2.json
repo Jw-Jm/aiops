@@ -1,0 +1,45 @@
+{
+  "task_id": "feaf0223-3007-4482-aadb-8830ee66bcff",
+  "reviewer": "Codex",
+  "date": "2026-10-21T07:03:05.015213+00:00",
+  "result": "incremental repairs accepted, changes still requested; P1 in_progress",
+  "accepted": [
+    "separate admin config candidates and full source pagination filter",
+    "source-based collapsible navigation, separate role route guards, legacy operator capability path",
+    "portal root skin and stable LayerContext",
+    "scope generation included in Assistant SSE key, added abort controller",
+    "product unavailable wording simplified"
+  ],
+  "checks": [
+    {
+      "command": "pnpm test",
+      "result": "passed 6 Node contracts + 100 Vitest /25 files",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p1-r2-tests.log"
+    },
+    {
+      "command": "pnpm build",
+      "result": "passed TypeScript/Vite with existing chunk warning",
+      "log": "artifacts/test-reports/ui-v12-session-r2/codex-p1-r2-build.log"
+    }
+  ],
+  "findings": [
+    {
+      "id": "P1-R2-01",
+      "issue": "AssistantPage mount cleanup effect unconditionally setMode(data_query), undoing useState initializer for incidentId/canonicalId deep links. Reset only for an actual scope transition; validate/preserve new deep-link context. Cover real AssistantPage initial resource and incident entries."
+    },
+    {
+      "id": "P1-R2-02",
+      "issue": "ClusterContext URL effect calls apply(requested), which strips all new URL object parameters via scopeUrl; navigating A->deep link explicitly bound to B loses the newly requested canonicalId/conversation. Dirty history transition rollback uses scopeUrl(old cluster) rather than previous committed full location, so cancel can already have lost old conversation/object/time window. Distinguish deliberate scope-selector change from validated new bound-object navigation; restore full committed location on cancel and gate children during pending transitions."
+    },
+    {
+      "id": "P1-R2-03",
+      "issue": "Assistant mutate checks generation only after awaiting action(signal), but create/send/resolve callbacks themselves setUrl/setTurn/etc before that check; guard every local commit and navigation after async resolution and cleanup AbortController on unmount. Include late non-cooperative success and same-tick transition tests. Existing tests exercise provider/header but do not verify real AssistantPage stream/mutation boundary."
+    }
+  ],
+  "extra_boundary_to_verify": "Initial unknown UID and active-scope revocation while another candidate remains must stay unavailable after effects settle; generation=0 auto-select effect must not recover into first candidate after invalidation. Test settled final URL and actual requests, not just transient no-scope span.",
+  "limits": [
+    "no model-setting verification requested or performed",
+    "remote browser/live/persistence and six product dimensions not verified",
+    "G0 remains preparation-only"
+  ]
+}

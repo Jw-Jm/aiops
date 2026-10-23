@@ -1,0 +1,33 @@
+{
+  "task_id": "5190104a-7197-4d33-a5a3-6459d0843d24",
+  "reviewer": "Codex",
+  "date": "2026-10-21T09:47:21.959688+00:00",
+  "result": "changes requested; remote isolation boundary approved for subsequent task, not existing databases",
+  "accepted": [
+    "bootstrap account/marker order and advisory lock",
+    "rolsuper and NOINHERIT transaction-local migration duty checks",
+    "identity schema USAGE and explicit preauth function/policy direction",
+    "task-specific DSN guard and NOINHERIT test role direction"
+  ],
+  "findings": [
+    {
+      "id": "P2-R2-01",
+      "issue": "All six account child tables declare user_id uuid REFERENCES identity.accounts(tenant_id,user_id); a one-column foreign key cannot reference two columns. Use table-level FOREIGN KEY(tenant_id,user_id) REFERENCES identity.accounts(tenant_id,user_id), keep NOT NULL on user_id. Migration cannot apply as written."
+    },
+    {
+      "id": "P2-R2-02",
+      "issue": "find_login_account SELECT references p.failed_count/p.window_started_at/p.locked_until but LEFT JOIN uses alias attempt, so the login lookup raises missing-FROM-clause on execution."
+    },
+    {
+      "id": "P2-R2-03",
+      "issue": "Preauth exception duplicated onto sessions/role_grants/mappings/initializations though the three functions only need accounts/credentials/password_attempts. Restrict exceptions to necessary tables and operations; keep FORCE RLS and no direct runtime secret access, and test spoofed GUC with ordinary API duty."
+    }
+  ],
+  "next_verification": "Fix syntax/alias, then test only a fresh task-owned PostgreSQL container/data directory/loopback15450 with existing pinned17.11 image; no writes to current migration43 fixture container or shared DB. Preserve all failure rounds and secrets outside evidence.",
+  "not_proven": [
+    "migration44 SQL execution",
+    "true bootstrap CLI and concurrent initialization",
+    "preauth FORCE RLS/failure counters",
+    "database persistence and cross-tenant FK/privilege rejection"
+  ]
+}

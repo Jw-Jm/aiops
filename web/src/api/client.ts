@@ -1,27 +1,102 @@
 import { record, text } from "../components/data";
 let accessToken: string | undefined;
 let tenant: string | undefined;
+let nativeSession = false;
+let csrfToken: string | undefined;
 let credentialEpoch = 0;
+let credentialController = new AbortController();
 export const authEvents = new EventTarget();
-export function setCredentials(token?: string, tenantId?: string) {
+function invalidateCredentials() {
   credentialEpoch++;
-  accessToken = token;
-  tenant = tenantId;
+  credentialController.abort();
+  credentialController = new AbortController();
 }
-export function clearCredentials() {
-  credentialEpoch++;
+authEvents.addEventListener("authorizationChanged", invalidateCredentials);
+export function setCredentials(token?: string, tenantId?: string) {
+  const nextTenant = tenantId ?? (token === accessToken ? tenant : undefined);
+  if (token === accessToken && nextTenant === tenant && !nativeSession) return;
+  invalidateCredentials();
+  accessToken = token;
+  tenant = nextTenant;
+  nativeSession = false;
+  csrfToken = undefined;
+}
+export function setNativeCredentials(tenantId?: string, token?: string) {
+  const nextTenant = tenantId ?? tenant;
+  const nextCSRF = token ?? csrfToken;
+  if (nativeSession && nextTenant === tenant && nextCSRF === csrfToken) return;
+  invalidateCredentials();
+  accessToken = undefined;
+  tenant = nextTenant;
+  nativeSession = true;
+  csrfToken = nextCSRF;
+}
+export function clearCredentials(notifyExpired = true) {
+  invalidateCredentials();
   accessToken = undefined;
   tenant = undefined;
-  authEvents.dispatchEvent(new Event("expired"));
+  nativeSession = false;
+  csrfToken = undefined;
+  if (notifyExpired) authEvents.dispatchEvent(new Event("expired"));
 }
+// nativeSessionRequestOptions builds a same-origin native request without
+// depending on the in-memory credential state. A pending revocation runs after
+// the local identity was cleared, but the browser still carries the HttpOnly
+// session cookie that must be revoked.
+export function nativeSessionRequestOptions(timeoutMs = 15_000): RequestInit {
+  return {
+    signal: AbortSignal.timeout(timeoutMs),
+    cache: "no-store",
+    credentials: "same-origin",
+  };
+}
+
+// nativeRevocationRequestOptions adds the CSRF token of the session that must
+// be revoked. The token is bound to that session and is not a credential on
+// its own.
+export function nativeRevocationRequestOptions(
+  csrfToken: string,
+  timeoutMs = 15_000,
+): RequestInit {
+  return {
+    ...nativeSessionRequestOptions(timeoutMs),
+    headers: {
+      "Content-Type": "application/json",
+      ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
+      "Idempotency-Key": crypto.randomUUID(),
+    },
+  };
+}
+
 export function requestOptions(
   signal?: AbortSignal,
   mutation = false,
   idempotencyKey?: string,
 ): RequestInit {
+  if (nativeSession) {
+    return {
+      signal: signal
+        ? AbortSignal.any([signal, credentialController.signal])
+        : credentialController.signal,
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: {
+        // Native requests never accept a tenant from the browser. The fixed
+        // deployment tenant and roles come from the server session database.
+        ...(mutation && csrfToken
+          ? { "X-CSRF-Token": csrfToken }
+          : {}),
+        ...(mutation
+          ? { "Idempotency-Key": idempotencyKey ?? crypto.randomUUID() }
+          : {}),
+      },
+    };
+  }
   if (!accessToken) throw new ApiError(401, "UNAUTHENTICATED", "请登录");
   return {
-    signal,
+    signal: signal
+      ? AbortSignal.any([signal, credentialController.signal])
+      : credentialController.signal,
     cache: "no-store",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -81,5 +156,7 @@ export async function checked<
       typeof d.requestId === "string" ? d.requestId : undefined,
     );
   }
+  if (!current())
+    throw new DOMException("身份或授权已变化，已丢弃旧请求结果", "AbortError");
   return result.data as Extract<T, { status: 200 | 201 | 202 | 204 }>["data"];
 }

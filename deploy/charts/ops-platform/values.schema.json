@@ -1061,6 +1061,28 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "humanAuthMode": {
+          "type": "string",
+          "enum": [
+            "oidc",
+            "native"
+          ]
+        },
+        "nativeAuth": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tenantId": {
+              "type": "string"
+            },
+            "publicOrigin": {
+              "type": "string"
+            },
+            "mfaTransitKey": {
+              "type": "string"
+            }
+          }
         }
       }
     }

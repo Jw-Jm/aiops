@@ -1,0 +1,25 @@
+=== RUN   TestNativeHTTPSessionFlow
+2026/10/22 15:30:46 goose: no migrations to run. current version: 46
+2026/10/22 15:30:46 goose: no migrations to run. current version: 46
+{"time":"2026-10-22T15:30:46.640926533+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-0266-752d-aa27-652a0a175c62","method":"POST","status_code":401,"duration_ms":138}
+{"time":"2026-10-22T15:30:46.747601607+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-02f0-7eaf-a913-76c54fa6969d","method":"POST","status_code":201,"duration_ms":106}
+    native_http_session_test.go:185: tenant=8fbafd80-1d88-48b6-a025-6ca5bcc190c7 user=01a16285-0244-7910-b0b8-aac69f209ce3 loginRequestId=01a16285-02f0-7eaf-a913-76c54fa6969d
+{"time":"2026-10-22T15:30:46.770171524+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-035d-7390-975e-bbfeb334facb","method":"GET","status_code":200,"duration_ms":20}
+{"time":"2026-10-22T15:30:46.771222291+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-0372-7398-a0a4-1c28024f98d0","method":"GET","status_code":403,"duration_ms":0}
+{"time":"2026-10-22T15:30:46.772255352+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-0373-73bd-b494-0a7df3df3ff7","method":"POST","status_code":403,"duration_ms":0}
+{"time":"2026-10-22T15:30:46.773179334+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-0374-745f-b8b8-a1e3b87c3f2b","method":"POST","status_code":403,"duration_ms":0}
+{"time":"2026-10-22T15:30:46.988214025+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-0375-7312-94a4-818e2816305f","method":"POST","status_code":201,"duration_ms":214}
+{"time":"2026-10-22T15:30:46.988708196+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-044c-7450-aef6-5040b40647fd","method":"GET","status_code":401,"duration_ms":0}
+{"time":"2026-10-22T15:30:47.0124999+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-044c-7b31-8612-ee694637e738","method":"POST","status_code":200,"duration_ms":23}
+{"time":"2026-10-22T15:30:47.01289218+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-0464-78a5-9e73-9f4d96575a2b","method":"GET","status_code":401,"duration_ms":0}
+{"time":"2026-10-22T15:30:47.013258984+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-0464-7e34-a8bb-e80839dba027","method":"POST","status_code":401,"duration_ms":0}
+=== RUN   TestNativeHTTPSessionFlow/registered_scopes_keep_roles_and_tenants_separate
+=== RUN   TestNativeHTTPSessionFlow/audit_failure_rolls_back_password_and_session_rotation
+=== RUN   TestNativeHTTPSessionFlow/absolute_expiry_caps_touch_and_rejects_password_change
+{"time":"2026-10-22T15:30:48.12596095+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-0864-78e1-972c-9648c2036057","method":"POST","status_code":401,"duration_ms":89}
+{"time":"2026-10-22T15:30:48.228659543+08:00","level":"INFO","msg":"http request complete","request_id":"01a16285-08be-7086-9412-e81630ee69b7","method":"POST","status_code":401,"duration_ms":102}
+--- PASS: TestNativeHTTPSessionFlow (2.06s)
+    --- PASS: TestNativeHTTPSessionFlow/registered_scopes_keep_roles_and_tenants_separate (0.11s)
+    --- PASS: TestNativeHTTPSessionFlow/audit_failure_rolls_back_password_and_session_rotation (0.16s)
+    --- PASS: TestNativeHTTPSessionFlow/absolute_expiry_caps_touch_and_rejects_password_change (0.04s)
+PASS

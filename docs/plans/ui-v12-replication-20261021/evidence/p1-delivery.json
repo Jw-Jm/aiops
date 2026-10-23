@@ -1,0 +1,116 @@
+{
+  "task": "P1-01/P1-02 implementation slice",
+  "date": "2026-10-21",
+  "source_head": "9bd78d84e212217626cdf0cfe54af84a155a9a3d",
+  "design_source": "ui-handoff/ops-platform-v1.2-20261020",
+  "nav_items": 23,
+  "nav_groups": [
+    "工作空间",
+    "运行与处置",
+    "经验沉淀",
+    "平台配置"
+  ],
+  "implemented_routes": [
+    "/overview",
+    "/assistant",
+    "/resources",
+    "/resources/detail",
+    "/events/alerts",
+    "/events/incidents",
+    "/events/incidents/:incidentId",
+    "/access/sources",
+    "/access/readiness",
+    "/settings/policies",
+    "/settings/execution",
+    "/settings/deployment",
+    "/settings/audit"
+  ],
+  "unavailable_routes": [
+    "/resources/topology",
+    "/observe/metrics",
+    "/observe/logs",
+    "/observe/network",
+    "/observe/hardware",
+    "/jobs/commands",
+    "/jobs/inspections",
+    "/knowledge/cases",
+    "/knowledge/runbooks",
+    "/access/clusters",
+    "/access/models",
+    "/settings/permissions"
+  ],
+  "legacy_redirects": [
+    "/findings",
+    "/incidents",
+    "/incidents/:incidentId",
+    "/admin/sources",
+    "/admin/policies",
+    "/admin/execution-profiles",
+    "/admin/deployment",
+    "/admin/audit"
+  ],
+  "primitives": [
+    "PageHeader",
+    "Surface",
+    "Toolbar",
+    "Field",
+    "StatusPill",
+    "DataTable",
+    "UnavailablePanel",
+    "LayerProvider",
+    "V12Modal",
+    "V12Drawer",
+    "ConfirmDialog"
+  ],
+  "cluster_context": {
+    "operational": "URL/authorization transitions share apply/generation/cancel; navigation preserves clusterUid; object params cleared atomically",
+    "config": "independent admin getClusters candidates/all pages; sources filtered by clusterId over all pages; policy/execution/deployment tenant-wide; config draft guard",
+    "cache": "cancelQueries + removeQueries on every guarded transition",
+    "draft": "registerDraft/useClusterDraft and registerConfigDraft/useConfigDraft confirm before switch"
+  },
+  "tests": {
+    "vitest": "113 passed (28 files)",
+    "node_contracts": "6 passed",
+    "new_tests": "tests/v12/p1_shell.test.tsx 10 passed + p1_shell_app.test.tsx 2 passed",
+    "p1_targeted": "tests/v12/p1_shell.test.tsx + p1_shell_app.test.tsx cover source NAV, URL B, object clearing, config separation, portal/focus, role menus"
+  },
+  "build": "tsc --noEmit + vite build passed",
+  "not_verified": [
+    "formal page-by-page desktop visual comparison",
+    "remote browser/runtime",
+    "native authentication/CSRF",
+    "unavailable business modules",
+    "product six dimensions"
+  ],
+  "logs": [
+    "evidence/web-tests-p1.log",
+    "evidence/web-build-p1.log",
+    "evidence/web-tests-p1-r2.log",
+    "evidence/web-build-p1-r2.log",
+    "evidence/web-tests-p1-r3.log",
+    "evidence/web-build-p1-r3.log",
+    "evidence/web-tests-p1-r4.log",
+    "evidence/web-build-p1-r4.log"
+  ],
+  "checks": [
+    "pnpm test",
+    "pnpm build"
+  ],
+  "nav_hierarchy": "7 collapsible source modules; knowledge cases/runbooks; /knowledge maps to cases; no forced 22-link flattening",
+  "layers": "portal rootClassName v12-layer-root; stable context API; focus restore/top-only Escape/long drawer footer tests",
+  "review": "evidence/codex-p1-review-r1.json fixes applied; P1 remains in_progress",
+  "route_notes": {
+    "manifest_22_routes": "manifest /knowledge maps to /knowledge/cases",
+    "source_links": "source NAV has 23 links because knowledge module has cases/runbooks",
+    "operator_capabilities": "/capabilities remains an operator route and is not redirected into admin-only /access/readiness"
+  },
+  "review_fixes": {
+    "P1-R1": "nav/URL/auth/manual selectors share apply+generation+draft guards; object params cleared; assistant scopeKey includes cluster/generation and resets draft/targets; SSE and mutations use scope abort",
+    "P1-R2": "config candidates from admin getClusters over all pages; sources scoped by clusterId over all pages; policy/execution/deployment explicitly tenant-wide; config draft resets selection/receipt/step-up with confirmation",
+    "P1-R3": "frozen source NAV hierarchy and roles preserved; knowledge cases/runbooks kept; /knowledge maps to cases; operator /capabilities retained; pure admin has no operator menu",
+    "P1-R4": "portal root skin scoped by rootClassName; Layer API stabilized; focus restore/top-only Escape/long drawer footer tested",
+    "P1-R5": "product fallback copy hides task/contract/engineering notes; mobile drawer/media removed; desktop-only shell retained"
+  },
+  "r2_fixes": "evidence/p1-r2-fixes.json",
+  "r3_fixes": "evidence/p1-r3-fixes.json"
+}

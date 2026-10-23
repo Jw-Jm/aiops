@@ -2,12 +2,14 @@ import { useResourceNames, resourceLabel } from "../components/ResourceLabel";
 import { symptomLabel, resourceIdentifier } from "../components/FaultSummary";
 import { fieldLabels, stateLabel } from "../components/presentation";
 import { useQuery } from "@tanstack/react-query";
-import { Table, Input, Button, Select } from "antd";
+import { Input, Button, Select } from "antd";
+import { DataTable as Table } from "../components/v12/primitives";
 import { Link, useSearchParams } from "react-router-dom";
 import { getFindings, getIncidents } from "../api/generated/platform";
 import { checked, requestOptions } from "../api/client";
 import { PageHeading } from "../components/PageHeading";
-import { ScopeFilter, useClusters } from "../components/ScopeFilter";
+import { ScopeFilter } from "../components/ScopeFilter";
+import { useOperationalCluster } from "../app/ClusterContext";
 import { QueryState } from "../components/QueryState";
 import { Status } from "../components/Status";
 import { Details, FullText } from "../components/Details";
@@ -15,8 +17,7 @@ import { EnvelopeMeta } from "../components/EnvelopeMeta";
 import { list, record, text, displayTime } from "../components/data";
 export function FindingsPage({ incidents = false }: { incidents?: boolean }) {
   const [url, setUrl] = useSearchParams();
-  const clusters = useClusters();
-  const cluster = url.get("clusterUid") || clusters[0] || "";
+  const { clusterUid: cluster, invalid } = useOperationalCluster();
   const params = {
     clusterUid: cluster,
     limit: 50,
@@ -67,10 +68,7 @@ export function FindingsPage({ incidents = false }: { incidents?: boolean }) {
       />
       <section className="section">
         <div className="filters">
-          <ScopeFilter
-            value={cluster}
-            onChange={(v) => update("clusterUid", v)}
-          />
+          <ScopeFilter value={cluster} />
           {[
             "state",
             "severity",
@@ -157,7 +155,7 @@ export function FindingsPage({ incidents = false }: { incidents?: boolean }) {
         <QueryState
           loading={q.isPending && !!cluster}
           error={q.error}
-          noScope={!cluster}
+          noScope={!cluster || invalid}
           empty={rows.length === 0}
           retry={() => void q.refetch()}
         >
@@ -180,7 +178,7 @@ export function FindingsPage({ incidents = false }: { incidents?: boolean }) {
                   incidents ? (
                     <Link
                       to={
-                        "/incidents/" + encodeURIComponent(text(r.incidentId))
+                        "/events/incidents/" + encodeURIComponent(text(r.incidentId))
                       }
                     >
                       {resourceLabel(r.resourceCanonicalId, resourceNames)}

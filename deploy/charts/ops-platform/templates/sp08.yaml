@@ -4,11 +4,22 @@
 {{- if not (regexMatch "^.+@sha256:[0-9a-f]{64}$" $image) }}{{ fail "Web image must be digest pinned" }}{{- end }}
 {{- $origin := required "SP08 requires public HTTPS origin" .Values.sp08.publicOrigin }}
 {{- if not (regexMatch "^https://[A-Za-z0-9.-]+(:[0-9]+)?$" $origin) }}{{ fail "Web public origin must be HTTPS without path" }}{{- end }}
+{{- $port := regexFind ":[0-9]+$" $origin | trimPrefix ":" }}
+{{- if and $port (or (lt (int $port) 1) (gt (int $port) 65535)) }}{{ fail "Web public origin port is invalid" }}{{- end }}
 {{- $apiHost := .Values.sp08.apiHost | default (printf "ops-api.%s.svc.cluster.local" .Release.Namespace) }}
+{{- $mode := .Values.runtime.humanAuthMode | default "oidc" }}
+{{- $oidcLocation := " location ^~ /oidc/ { return 404; }" }}
+{{- $config := dict "auth" (dict "mode" $mode) "release" .Values.sp08.release }}
+{{- if not (regexMatch "^[A-Za-z0-9.-]+$" $apiHost) }}{{ fail "Proxy hostnames must be exact DNS/IP names" }}{{- end }}
+{{- if eq $mode "oidc" }}
 {{- $oidcHost := required "OIDC proxy hostname required" .Values.sp08.oidc.proxyHost }}
-{{- if not (and (regexMatch "^[A-Za-z0-9.-]+$" $apiHost) (regexMatch "^[A-Za-z0-9.-]+$" $oidcHost)) }}{{ fail "Proxy hostnames must be exact DNS/IP names" }}{{- end }}
+{{- if not (regexMatch "^[A-Za-z0-9.-]+$" $oidcHost) }}{{ fail "Proxy hostnames must be exact DNS/IP names" }}{{- end }}
 {{- if not (hasPrefix "https://" .Values.sp08.oidc.authority) }}{{ fail "OIDC authority must use HTTPS" }}{{- end }}
-{{- $server := .Files.Get "files/sp08-nginx.conf" | replace "${OPS_API_UPSTREAM}" $apiHost | replace "${OPS_OIDC_UPSTREAM}" $oidcHost | replace "${OPS_OIDC_HOST}" $oidcHost | replace "${OPS_PUBLIC_ORIGIN}" $origin }}
+{{- $oidcLocation = .Files.Get "files/sp08-oidc-location.conf" | replace "${OPS_OIDC_UPSTREAM}" $oidcHost | replace "${OPS_OIDC_HOST}" $oidcHost | replace "${OPS_PUBLIC_ORIGIN}" $origin }}
+{{- $_ := set $config "oidc" (dict "authority" .Values.sp08.oidc.authority "clientId" (required "Public PKCE clientId required" .Values.sp08.oidc.clientId) "proxyPath" "/oidc") }}
+{{- else if ne $mode "native" }}{{ fail "Unknown human authentication mode" }}
+{{- end }}
+{{- $server := .Files.Get "files/sp08-nginx.conf" | replace "${OPS_API_UPSTREAM}" $apiHost | replace "${OPS_OIDC_LOCATION}" $oidcLocation }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -17,7 +28,7 @@ metadata:
 data:
   server.conf: |
 {{ $server | indent 4 }}
-  runtime-config.json: {{ dict "oidc" (dict "authority" .Values.sp08.oidc.authority "clientId" (required "Public PKCE clientId required" .Values.sp08.oidc.clientId) "proxyPath" "/oidc") "release" .Values.sp08.release | toJson | quote }}
+  runtime-config.json: {{ $config | toJson | quote }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -30,7 +41,7 @@ spec:
   template:
     metadata:
       labels: {ops.platform.io/release: {{ .Release.Name | quote }}, ops.platform.io/component: web}
-      annotations: {checksum/web-runtime: {{ .Values.sp08 | toJson | sha256sum | quote }}}
+      annotations: {checksum/web-runtime: {{ (dict "sp08" .Values.sp08 "server" $server "config" $config) | toJson | sha256sum | quote }}}
     spec:
       serviceAccountName: ops-web
       automountServiceAccountToken: false
@@ -54,12 +65,16 @@ spec:
             - {name: runtime, mountPath: /etc/nginx/conf.d, readOnly: true}
             - {name: runtime, mountPath: /usr/share/nginx/html/runtime-config.json, subPath: runtime-config.json, readOnly: true}
             - {name: tls, mountPath: /etc/ops-tls, readOnly: true}
+            {{- if eq $mode "oidc" }}
             - {name: oidc-ca, mountPath: /etc/ops-oidc-ca, readOnly: true}
+            {{- end }}
       volumes:
         - {name: tmp, emptyDir: {medium: Memory, sizeLimit: 32Mi}}
         - {name: runtime, configMap: {name: ops-web-runtime}}
         - {name: tls, secret: {secretName: {{ required "Web TLS secret required" .Values.sp08.tlsSecretName | quote }}, defaultMode: 288}}
+        {{- if eq $mode "oidc" }}
         - {name: oidc-ca, configMap: {name: {{ required "Independent OIDC CA ConfigMap required" .Values.sp08.oidcCAConfigMapName | quote }}}}
+        {{- end }}
 ---
 apiVersion: v1
 kind: Service

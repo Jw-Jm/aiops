@@ -18,9 +18,10 @@
 
 - 22 个菜单页面，458 个设计基准切片。
 - 39 个实施任务包，按依赖推进；P0 核实后估时，不按切片张数估算工期。
-- 138 项接口操作：62 项现有合同的复用/适配/改造，76 项拟新增操作。
-- 现有合同状态表示已在 OpenAPI 核对方法与路径，并有候选代码，不表示本轮完成运行验收。
+- 当前接口清单 177 项：94 项现有合同的复用/适配/改造，83 项拟新增操作；其中 C-009/C-010/C-011 已有 P2-02 源码实现但未做运行验收。方案基准 138 项（62 现有、76 拟新增）保留在 `original-plan/contracts.csv`；P0-02 逐动作核实补录 28 项 OpenAPI 已存在但原清单遗漏的操作，另加 C-139 执行配置版本退役；P0-03 再补 9 项拟新增操作 C-168～C-176；P0-02 另补 validation-only C-177。
+- 现有合同状态表示已在 OpenAPI 核对方法与路径，并在 `evidence/contract-audit.csv` 定位处理器与服务；不表示本轮完成运行验收。
 - 拟新增操作是 P0 合同设计输入；核实底层能力后可以合并或调整，但必须同步清单和切片，不以调整清单为由遗漏功能。
+- 逐动作/字段绑定见 [act-bindings.csv](evidence/act-bindings.csv)、[form-bindings.csv](evidence/form-bindings.csv)、[confirm-bindings.csv](evidence/confirm-bindings.csv)、[form-inventory.csv](evidence/form-inventory.csv)、[nonform-inventory.csv](evidence/nonform-inventory.csv)；458 状态见 [state-bindings.csv](evidence/state-bindings.csv)。动作区分 open/prefetch/submit/confirm/local，表单覆盖 54 种（53 种 snapshot DOM + 隐藏 login；含 8 种不在 recipe 提交步骤中的表单）。这些都是静态源码核实，不是运行验收；P0-02 仍待复审。
 
 ## 清单填写规则
 

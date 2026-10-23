@@ -1,0 +1,37 @@
+{
+  "status": "partial_verified_continuing",
+  "execution": "GPT direct; canceledCodeBuddyTask c767b57e-5387-4f7e-86dd-57f01a0c0360; future implementation byGPT peruser",
+  "schema": 52,
+  "runtime": {
+    "host": "mssc-direct / mssc /192.168.0.63",
+    "directory": "/data/ops-ui-v12-mfa-20261022-r1/gpt-r4/preview",
+    "databasePort": 15453,
+    "apiPort": 18085,
+    "webPort": 30465,
+    "identity": "separate synthetic administrator; secrets only remote private files"
+  },
+  "verified": [
+    "real UI enrollment creates challenge; password/TOTP wrong-to-correct retries; separate new factor confirmation",
+    "replacement proof uses old factor while old factor stays active until atomic confirmation",
+    "logout500, synthetic timeout/offline: real server session200 then reload stays logged out; retry revokes and oldcookie401",
+    "recovery budget persists;5 failures across new challenges remain limited",
+    "recovery persists across login; no businessgrants/requests403 untilnewfactor confirmed; reenrollment restores businessaccess",
+    "genuine minted proof refuses late transaction after parent session logout; integration-second.log",
+    "existing session-bound authorization regression"
+  ],
+  "evidence": [
+    "runtime/browser-result.json",
+    "integration-second.log"
+  ],
+  "limitations": [
+    "UI timeout/offline simulated at request transport; no host/network outage injected",
+    "no independent visual comparison for supplemental MFA states",
+    "OpenBao startup wiring added but only file backend used in this runtime",
+    "R7 source write proven subsequently atschema53; other business routes/command andP2-04/05/P3 still inprogress",
+    "source changed after this browser build; r4 records runtime artifact hashes, next build needs current full source binding"
+  ],
+  "artifact_sha256": {
+    "api": "82764e07b39eb9919edf82adf139fa75ea2179d01637400402ec48a6d29f2343",
+    "webIndex": "eb0c542b1c6cd33dcedcca7671d56a8d63d964c1e93a9514b4f35a248a32e6a6"
+  }
+}

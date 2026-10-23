@@ -1,0 +1,53 @@
+{
+  "origin": "https://192.168.0.63:30462",
+  "checks": [
+    "native login renders without OIDC",
+    "resumed with previously rotated password; first-password evidence retained separately"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16286-abb7-7e73-9055-57dcfb954cf8"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16286-ac77-7868-9067-03947f308109"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16286-ad00-70c0-a3db-6ec38189e462"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16286-ad35-786a-999e-1771de51235a"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16286-ad47-75fb-b351-77529eb64d48"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16286-adb3-7b64-9819-0e24944220a6"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 403,
+      "requestId": "01a16286-adfe-7cde-8de5-b24245b4a75d"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16286-ae17-74d2-ac90-649037286245"
+    }
+  ],
+  "consoleErrors": [],
+  "browser": "156.0.8078.4",
+  "status": "FAIL",
+  "failure": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: /^退\\s*出$/ }) to be visible\n"
+}

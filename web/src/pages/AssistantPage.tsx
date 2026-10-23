@@ -1,7 +1,7 @@
 import { LegalHoldControl } from "../features/assistant/LegalHoldControl";
 import { FaultChainCollector } from "../features/assistant/FaultChainCollector";
 import { BindingEditor } from "../features/assistant/BindingEditor";
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Alert,
@@ -18,6 +18,7 @@ import {
 } from "antd";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
+import { useOperationalCluster, useClusterDraft } from "../app/ClusterContext";
 import { ApiError, checked, requestOptions } from "../api/client";
 import {
   archiveAssistantConversation,
@@ -48,12 +49,20 @@ export function AssistantPage() {
   const client = useQueryClient();
   const [url, setUrl] = useSearchParams();
   const id = url.get("conversation") || undefined;
+  const {
+    clusterUid: scopedCluster,
+    candidates,
+    scopeKey: scopeGeneration,
+    generation,
+  } = useOperationalCluster();
   const scopeKey = JSON.stringify([
     session?.tenantId,
     session?.subject,
     session?.roles,
     session?.clusterScopes,
     session?.namespaceScopes,
+    scopeGeneration,
+    generation,
   ]);
   const [mode, setMode] = useState<"data_query" | "troubleshoot">(
     url.get("incidentId") || url.get("canonicalId")
@@ -63,9 +72,10 @@ export function AssistantPage() {
   const [domain, setDomain] = useState<"operational" | "audit">(
     session?.roles.includes("operator") ? "operational" : "audit",
   );
-  const [cluster, setCluster] = useState(
-    url.get("clusterUid") || session?.authorizedClusters[0]?.clusterUid || "",
-  );
+  const [cluster, setCluster] = useState(scopedCluster);
+  useEffect(() => {
+    setCluster(scopedCluster);
+  }, [scopedCluster]);
   const [namespace, setNamespace] = useState("");
   const [targetName, setTargetName] = useState("");
   const [targetKind, setTargetKind] = useState("Pod");
@@ -92,6 +102,15 @@ export function AssistantPage() {
     (targetCandidates.some((c) => c.canonicalId === selectedTarget)
       ? selectedTarget
       : undefined);
+  const boundObject = url.get("incidentId") || url.get("canonicalId") || "";
+  const previousObjectRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    const previous = previousObjectRef.current;
+    previousObjectRef.current = boundObject;
+    if (boundObject === previous || !boundObject) return;
+    setMode("troubleshoot");
+    setDomain("operational");
+  }, [boundObject]);
   const [symptom, setSymptom] = useState("");
   const [windowMinutes, setWindowMinutes] = useState<number | "custom">(30);
   const [windowFrom, setWindowFrom] = useState(() =>
@@ -101,6 +120,35 @@ export function AssistantPage() {
     new Date().toISOString().slice(0, 16),
   );
   const [message, setMessage] = useState("");
+  useClusterDraft(
+    symptom.trim().length > 0 ||
+      message.trim().length > 0 ||
+      targetName.trim().length > 0 ||
+      !!selectedTarget,
+  );
+  // Initialization reads the deep-link object. Cleanup runs only after an
+  // actual scope transition, never on first mount or a same-scope deep link.
+  const previousScopeRef = useRef(scopeKey);
+  useEffect(() => {
+    const previousScope = previousScopeRef.current;
+    previousScopeRef.current = scopeKey;
+    if (previousScope === scopeKey) return;
+    setSymptom("");
+    setMessage("");
+    setTargetName("");
+    setSelectedTarget(undefined);
+    setNamespace("");
+    setTurn(undefined);
+    setReferent(undefined);
+    setError(undefined);
+    setMessageCursor(undefined);
+    setMode(
+      url.get("incidentId") || url.get("canonicalId")
+        ? "troubleshoot"
+        : "data_query",
+    );
+    setDomain(session?.roles.includes("operator") ? "operational" : "audit");
+  }, [scopeKey, session?.roles, url]);
   const [referent, setReferent] = useState<string>();
   const [listCursor, setListCursor] = useState<string>();
   const [messageCursor, setMessageCursor] = useState<string>();
@@ -200,29 +248,54 @@ export function AssistantPage() {
         ? 2000
         : false,
   });
+  const scopeRef = useRef(scopeKey);
+  const scopeAbort = useRef(new AbortController());
+  const unmountedRef = useRef(false);
+  useEffect(() => {
+    scopeRef.current = scopeKey;
+    scopeAbort.current.abort();
+    scopeAbort.current = new AbortController();
+  }, [scopeKey]);
+  useEffect(
+    () => () => {
+      unmountedRef.current = true;
+      scopeAbort.current.abort();
+    },
+    [],
+  );
   const streamError = useConversationStream(id, scopeKey);
   const active =
     currentTurn.data?.data || turn || conversation.data?.data.activeTurn;
   const running = active && ["queued", "running"].includes(active.state);
   const reload = () =>
     client.invalidateQueries({ queryKey: ["assistant", scopeKey] });
-  async function mutate(action: () => Promise<void>) {
+  async function mutate(
+    action: (signal: AbortSignal, canCommit: () => boolean) => Promise<void>,
+  ) {
+    const runScope = scopeKey;
+    const signal = scopeAbort.current.signal;
+    const canCommit = () =>
+      !unmountedRef.current &&
+      scopeRef.current === runScope &&
+      !signal.aborted;
     setBusy(true);
     setError(undefined);
     try {
-      await action();
+      await action(signal, canCommit);
+      if (!canCommit()) return;
       await reload();
     } catch (cause) {
+      if (scopeRef.current !== runScope || signal.aborted) return;
       const e = cause instanceof Error ? cause : new Error("操作失败");
       setError(e);
       if (e instanceof ApiError && [401, 403].includes(e.status))
         client.removeQueries({ queryKey: ["assistant", scopeKey] });
     } finally {
-      setBusy(false);
+      if (canCommit()) setBusy(false);
     }
   }
   async function create() {
-    await mutate(async () => {
+    await mutate(async (signal, canCommit) => {
       const now = new Date();
       const body: AssistantCreateConversationV1 = {
         title:
@@ -271,15 +344,21 @@ export function AssistantPage() {
         }
       }
       const out = await checked(
-        createAssistantConversation(body, requestOptions(undefined, true)),
+        createAssistantConversation(body, requestOptions(signal, true)),
       );
+      if (!canCommit()) return;
       setTurn(undefined);
-      setUrl({ conversation: out.data.conversationId });
+      setUrl((previous) => {
+        const next = new URLSearchParams(previous);
+        next.set("clusterUid", cluster);
+        next.set("conversation", out.data.conversationId);
+        return next;
+      });
     });
   }
   async function send() {
     if (!id || !conversation.data) return;
-    await mutate(async () => {
+    await mutate(async (signal, canCommit) => {
       const clarification = active?.answer?.clarification?.clarificationId;
       const out = await checked(
         submitAssistantMessage(
@@ -291,9 +370,10 @@ export function AssistantPage() {
             ...(clarification ? { clarificationId: clarification } : {}),
             ...(referent ? { referentCanonicalId: referent } : {}),
           },
-          requestOptions(undefined, true),
+          requestOptions(signal, true),
         ),
       );
+      if (!canCommit()) return;
       setTurn(out.data);
       setReferent(undefined);
       setMessage("");
@@ -401,15 +481,18 @@ export function AssistantPage() {
                 <Button
                   disabled={busy || !!running}
                   onClick={() =>
-                    void mutate(async () => {
+                    void mutate(async (signal, canCommit) => {
                       await checked(
                         archiveAssistantConversation(
                           id,
                           {},
-                          requestOptions(undefined, true),
+                          requestOptions(signal, true),
                         ),
                       );
-                      setUrl({});
+                      if (!canCommit()) return;
+                      const next = new URLSearchParams();
+                      next.set("clusterUid", cluster);
+                      setUrl(next);
                       setTurn(undefined);
                     })
                   }
@@ -463,7 +546,7 @@ export function AssistantPage() {
                       placeholder="选择授权集群"
                       value={cluster || undefined}
                       onChange={setCluster}
-                      options={session?.authorizedClusters.map((c) => ({
+                      options={candidates.map((c) => ({
                         value: c.clusterUid,
                         label: c.displayName,
                       }))}
@@ -509,7 +592,7 @@ export function AssistantPage() {
                           loading={busy}
                           disabled={!cluster || !targetName}
                           onClick={() =>
-                            void mutate(async () => {
+                            void mutate(async (signal, canCommit) => {
                               const response = await checked(
                                 resolveAssistantResource(
                                   {
@@ -524,9 +607,10 @@ export function AssistantPage() {
                                       ...(namespace ? { namespace } : {}),
                                     },
                                   },
-                                  requestOptions(),
+                                  requestOptions(signal),
                                 ),
                               );
+                              if (!canCommit()) return;
                               setResolution({
                                 key: targetKey,
                                 candidates: response.data.candidates,
@@ -576,13 +660,14 @@ export function AssistantPage() {
                       <Button
                         disabled={!symptom || busy}
                         onClick={() =>
-                          void mutate(async () => {
+                          void mutate(async (signal, canCommit) => {
                             const response = await checked(
                               interpretAssistantSymptom(
                                 { symptom },
-                                requestOptions(),
+                                requestOptions(signal),
                               ),
                             );
+                            if (!canCommit()) return;
                             const intent = response.data;
                             if (intent.selector.kind)
                               setTargetKind(intent.selector.kind);
@@ -860,12 +945,12 @@ export function AssistantPage() {
                     {running && (
                       <Button
                         onClick={() =>
-                          void mutate(async () => {
+                          void mutate(async (signal, canCommit) => {
                             await checked(
                               cancelAssistantTurn(
                                 active.turnId,
                                 {},
-                                requestOptions(undefined, true),
+                                requestOptions(signal, true),
                               ),
                             );
                           })

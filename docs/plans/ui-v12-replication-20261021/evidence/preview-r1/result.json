@@ -1,0 +1,136 @@
+{
+  "date": "2026-10-22T15:44:28.969852+08:00",
+  "actor": "GPT in current conversation; no CodeBuddy dispatch",
+  "head": "9bd78d84e212217626cdf0cfe54af84a155a9a3d",
+  "branch": "feat/ui-v12-replication",
+  "status": "P2-02 in_progress; independent native preview live, product acceptance incomplete",
+  "environment": {
+    "task": "ui-v12-preview-20261022-r1",
+    "origin": "https://192.168.0.63:30462",
+    "tenantId": "293812d4-deb8-4f15-aaa2-5b9aa05e6e3b",
+    "login": "v12.admin",
+    "databasePort": 15452,
+    "apiPort": 18062,
+    "metricsPort": 19062,
+    "schemaVersion": 46,
+    "scope": "native login preview; no SP04/06/07 runtime or Worker configured",
+    "profileSource": "/opt/ops-verification-20261019-1a7c7da/install-r10/resolved-profile.yaml"
+  },
+  "source_sha256": {
+    "internal/httpapi/foundation.go": "385b6c05632881a5876079ce9fa7774e01100f0faead3d689c2cd9c02d702015",
+    "test/integration/native_http_session_test.go": "8661f9ac3822fd60bb23f7a2bd5632759633818e5033ddc747b49f56af3361f1",
+    "web/src/pages/Login.tsx": "69bdd8a487474d1903ac9de7e183e2b27281e86298db1e0bdef5a2e74767a77a",
+    "web/src/design/v12.css": "ecd725402474939131d5a337db02de4692fa2fb6625b536dd3e1c747930c581a",
+    "web/tests/native_auth.test.tsx": "47032897fc58182a955b46153ed46fb7d0116be3426160d0128bde1c515f7178",
+    "web/tests/native_fetch_login.test.tsx": "65cc57ccee6b42aa5d3e98e035e1e64f639b67a6ee48b026bb09d439811ddb99"
+  },
+  "binary_sha256": {
+    "api": "f18a3eaf4b3a533a70b1e3e83201685380e67917594cacc2a7f634937d58d030",
+    "integration": "6695f42607e547ad9d92ba1d094226fa78379e941f43310e1d779a92e0036d94"
+  },
+  "web_index_sha256": "97f902fd088fa5eba66c002c32165a1ea176d7ac311613ba7916517b20b2573d",
+  "fixes": [
+    "Formal Foundation dispatcher now connects native login/session/logout/password handlers through the contract router and native middleware.",
+    "Integration uses the real Foundation assembly, replacing its custom router which missed the wiring failure.",
+    "SL-001 uses fixed prototype desktop two-column layout, resource icon, copy and form dimensions; no demonstration credentials."
+  ],
+  "checks": [
+    {
+      "check": "go test ./internal/httpapi ./internal/app -count=1",
+      "result": "PASS",
+      "log": "artifacts/test-reports/ui-v12-session-r2/preview-foundation-unit.log"
+    },
+    {
+      "check": "native login and generated fetch client Vitest",
+      "result": "PASS 2 files /11 tests",
+      "log": "artifacts/test-reports/ui-v12-session-r2/preview-login-tests-final.log"
+    },
+    {
+      "check": "TypeScript/Vite build",
+      "result": "PASS; existing chunk warning",
+      "log": "artifacts/test-reports/ui-v12-session-r2/preview-login-build-final.log"
+    },
+    {
+      "check": "real PG17.11 TestNativeHTTPSessionFlow with Foundation dispatch",
+      "result": "PASS including role scope/audit rollback/expiry subtests",
+      "log": "evidence/preview-r1/foundation-integration.log"
+    },
+    {
+      "check": "remote Chrome native login/first password",
+      "result": "201 login and password rotation; first-only rejection; subsequent locator failure retained",
+      "log": "evidence/preview-r1/browser-first-password-and-exit-locator.json"
+    },
+    {
+      "check": "remote Chrome reload/logout/replay/new-password login",
+      "result": "PASS",
+      "log": "evidence/preview-r1/browser-result.json"
+    },
+    {
+      "check": "real API process restart and browser reload same session",
+      "result": "PASS",
+      "log": "evidence/preview-r1/restart-result.json"
+    },
+    {
+      "check": "HTML comparison against existing SL-001 full-resolution reference",
+      "result": "failed; report actual remaining differences, no masks/no recapture",
+      "log": "evidence/preview-r1/visual-comparison.json"
+    },
+    {
+      "check": "validate-progress.py",
+      "result": "PASS; G0 stays passed; SL-001 visual failed and no product pass inferred",
+      "log": "artifacts/test-reports/ui-v12-session-r2/preview-progress-validation.json"
+    }
+  ],
+  "persistence": {
+    "tenantId": "293812d4-deb8-4f15-aaa2-5b9aa05e6e3b",
+    "credentialVersions": [
+      2
+    ],
+    "auditEvents": [
+      {
+        "event_type": "identity.first_administrator.initialized",
+        "count": 1
+      },
+      {
+        "event_type": "identity.native_login.succeeded",
+        "count": 7
+      },
+      {
+        "event_type": "identity.native_password.changed",
+        "count": 1
+      },
+      {
+        "event_type": "identity.native_session.revoked",
+        "count": 4
+      }
+    ],
+    "sessionRows": 8,
+    "revokedSessions": 5
+  },
+  "implemented_action_binding": {
+    "login-form": "username -> loginName; password -> password; POST /api/v1/auth/login -> Foundation dispatch -> NativeAuthHandlers.Login -> SessionRepository -> identity accounts/credentials/sessions + audit -> cookie and first/full view",
+    "first-password supplemental state": "currentPassword/newPassword/expectedCredentialVersion -> POST password:change -> Foundation -> ChangePassword -> one identity/audit transaction -> rotated cookie/full view",
+    "logout": "expectedSessionVersion + CSRF -> POST logout -> Foundation -> Logout -> durable revocation + audit -> browser cookie deletion and old cookie 401"
+  },
+  "failures_retained": [
+    "one-shot Path.open opener error after dedicated role/tenant creation; corrected private writer and rotated only newly-created role passwords before completing preparation",
+    "nonroot Nginx TLS ownership and absent temp directories; failed container retained, task TLS101:101 +16MiB tmpfs used",
+    "browser-startup-failure.json",
+    "browser-button-locator-failure.json",
+    "browser-missing-route-failure.json",
+    "browser-first-password-and-exit-locator.json",
+    "browser-exit-icon-locator.json",
+    "browser-invalid-query-failure.json",
+    "browser-premature-cookie-assertion.json"
+  ],
+  "remaining": [
+    "P2-03 MFA/recovery/step-up not implemented; sensitive operations remain fail closed.",
+    "P2-04/P2-05 native grants not yet used by existing source service transactional role-binding recheck; preview clusters read403. No legacy grants were inserted.",
+    "SL-001 visual differences remain; supplemental first-password screen and administrator shell not visually accepted.",
+    "Other458 slice dimensions not inherited from these mechanism checks; no full product acceptance.",
+    "No Worker, source/model runtime, Kubernetes deployment, production publishing or virtualization.",
+    "API transient unit requires recreation after host reboot; private credential retrieval in preview-runtime.md."
+  ],
+  "historical_binding_scope": "G0 state/form/act classifications describe the audited pre-implementation gap; current native runtime action chain is explicitly recorded here. Original design and original-plan untouched.",
+  "final_browser_build": "browser-result.json rerun against final Web build; native login/logout chain PASS. first-password original201 retained separately."
+}

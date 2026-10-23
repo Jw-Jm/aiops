@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"ops-platform/internal/action"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/persistence"
 	"ops-platform/internal/policy"
 	"strconv"
 	"strings"
@@ -70,6 +71,30 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" && (len(r.Header.Values("Idempotency-Key")) != 1 || !validIdempotencyKey(key)) {
 		fail(action.ErrInvalid)
 		return
+	}
+	if _, native := auth.NativeSessionFromContext(r.Context()); native && r.Method == http.MethodPost {
+		operation := ""
+		switch {
+		case r.URL.Path == "/api/v1/admin/execution-profiles":
+			operation = "publish-execution-profile"
+		case strings.HasPrefix(r.URL.Path, "/api/v1/admin/execution-profiles/") && strings.HasSuffix(r.URL.Path, ":retire"):
+			operation = "retire-execution-profile"
+		case r.URL.Path == "/api/v1/admin/host-onboardings":
+			operation = "onboard-host"
+		}
+		if operation != "" {
+			var intent auth.NativeStepUpIntent
+			err := persistence.WithTenantTx(r.Context(), h.Service.Pool, a.TenantID, func(tx pgx.Tx) error {
+				var err error
+				intent, err = nativeHTTPWriteIntent(r, tx, operation)
+				return err
+			})
+			if err != nil {
+				fail(err)
+				return
+			}
+			r = r.WithContext(auth.WithNativeStepUpIntent(r.Context(), intent))
+		}
 	}
 	switch r.URL.Path {
 	case "/api/v1/action-plans":
@@ -164,12 +189,27 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	case "/api/v1/admin/execution-profiles":
 		if r.Method == "GET" {
+			limit := registryQueryLimit(r)
+			cursor := r.URL.Query().Get("cursor")
+			if limit < 1 || len(cursor) > 128 {
+				fail(action.ErrInvalid)
+				return
+			}
 			out, err := h.Service.ListProfiles(r.Context(), a)
 			if err != nil {
 				fail(err)
 				return
 			}
-			writeJSON(w, 200, map[string]any{"data": out, "requestId": a.RequestID})
+			page, next, err := paginateExecutionProfiles(out, cursor, limit)
+			if err != nil {
+				fail(err)
+				return
+			}
+			meta := map[string]any{}
+			if next != nil {
+				meta["nextCursor"] = *next
+			}
+			writeJSON(w, 200, map[string]any{"data": page, "meta": meta, "requestId": a.RequestID})
 			return
 		}
 		if r.Method == "POST" {

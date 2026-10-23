@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"ops-platform/internal/audit"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/authz"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/persistence"
 	"strconv"
@@ -58,16 +59,11 @@ func auditFilter(r *http.Request) (map[string]string, error) {
 	return out, nil
 }
 func auditAdmin(ctx context.Context, tx pgx.Tx, a auth.RequestContext) error {
-	if !auth.HasRole(auth.WithRequestContext(ctx, a), auth.PlatformAdmin) {
-		return auth.ErrForbidden
-	}
-	var active bool
-	err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM platform.role_bindings WHERE tenant_id=$1 AND subject=$2 AND role_name='platform_admin' AND status='active')`, a.TenantID, a.Subject).Scan(&active)
-	if err != nil {
+	if err := authz.RequireAdmin(ctx, tx, a); err != nil {
+		if errors.Is(err, authz.ErrUnauthorized) || errors.Is(err, authz.ErrIdentityMismatch) {
+			return auth.ErrForbidden
+		}
 		return err
-	}
-	if !active {
-		return auth.ErrForbidden
 	}
 	return nil
 }

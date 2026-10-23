@@ -111,6 +111,9 @@ func ReadBusinessValues(r io.Reader) (BusinessValues, error) {
 	if err := validateBusinessNetwork(document); err != nil {
 		return BusinessValues{}, err
 	}
+	if err := validateHumanIdentityValues(document); err != nil {
+		return BusinessValues{}, err
+	}
 	if err := validateBusinessCapabilities(document); err != nil {
 		return BusinessValues{}, err
 	}
@@ -415,10 +418,12 @@ func preflightBusinessSecrets(ctx context.Context, p profile.ResolvedProfile, b 
 	if b.WebEnabled() && b.installStage == "business" {
 		secret := textValue(object(b.values, "sp08"), "tlsSecretName")
 		required[secret] = append(required[secret], "web.crt", "web.key")
-		template := `go-template={{if index .data "oidc-ca.pem"}}present{{else}}absent{{end}}`
-		raw, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", b.Namespace(), "get", "configmap", textValue(object(b.values, "sp08"), "oidcCAConfigMapName"), "-o", template)
-		if err != nil || strings.TrimSpace(string(raw)) != "present" {
-			return errors.New("Web OIDC CA ConfigMap lacks oidc-ca.pem")
+		if !b.NativeIdentity() {
+			template := `go-template={{if index .data "oidc-ca.pem"}}present{{else}}absent{{end}}`
+			raw, err := run(ctx, "kubectl", "--context", p.Kubernetes.Context, "-n", b.Namespace(), "get", "configmap", textValue(object(b.values, "sp08"), "oidcCAConfigMapName"), "-o", template)
+			if err != nil || strings.TrimSpace(string(raw)) != "present" {
+				return errors.New("Web OIDC CA ConfigMap lacks oidc-ca.pem")
+			}
 		}
 	}
 	for _, x := range sp04["sources"].([]any) {

@@ -31,7 +31,47 @@
           "$ref": "#/definitions/component"
         },
         "keycloak": {
-          "$ref": "#/definitions/component"
+          "oneOf": [
+            {
+              "$ref": "#/definitions/component"
+            },
+            {
+              "type": "object",
+              "required": [
+                "mode",
+                "image"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "disabled"
+                },
+                "image": {
+                  "type": "string",
+                  "pattern": "^[^\\s@]+@sha256:[a-f0-9]{64}$"
+                },
+                "endpoint": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "iamSecretName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 253,
+                  "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
+                },
+                "tlsSecretName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 253,
+                  "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
+                },
+                "storage": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]*(Mi|Gi)$"
+                }
+              }
+            }
+          ]
         },
         "seaweedfs": {
           "allOf": [

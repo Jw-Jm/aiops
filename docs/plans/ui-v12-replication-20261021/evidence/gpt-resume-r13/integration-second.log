@@ -1,0 +1,25 @@
+=== RUN   TestNativeMFAEnrollmentStepUpAndReset
+2026/10/23 08:47:00 goose: no migrations to run. current version: 54
+2026/10/23 08:47:06 OK   00055_native_user_administration.sql (2.74s)
+2026/10/23 08:47:08 OK   00056_native_subject_inventory.sql (2.31s)
+2026/10/23 08:47:08 goose: successfully migrated database to version: 56
+    native_mfa_test.go:240: schema version after the forward chain = 56
+{"time":"2026-10-23T08:47:18.464506453+08:00","level":"INFO","msg":"http request complete","request_id":"01a16639-f783-755c-871b-17bacf15afbe","method":"POST","status_code":201,"duration_ms":1085}
+{"time":"2026-10-23T08:47:19.915460939+08:00","level":"INFO","msg":"http request complete","request_id":"01a16639-fbc0-7969-9829-0d8ee2e50b54","method":"POST","status_code":201,"duration_ms":1450}
+{"time":"2026-10-23T08:47:21.722688582+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-016b-787c-925c-f7ed6ee5c0b7","method":"POST","status_code":201,"duration_ms":1807}
+{"time":"2026-10-23T08:47:23.116978887+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-087a-7b70-8f13-19a99fa7570e","method":"POST","status_code":201,"duration_ms":1394}
+{"time":"2026-10-23T08:47:23.932742709+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-0ded-70b4-896c-73e8d9d033b5","method":"GET","status_code":200,"duration_ms":815}
+{"time":"2026-10-23T08:47:26.677493775+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-111c-7c35-8eac-9cdad8b641ad","method":"POST","status_code":201,"duration_ms":2744}
+{"time":"2026-10-23T08:47:28.371560963+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-1bd5-7860-b918-684065948eba","method":"POST","status_code":200,"duration_ms":1693}
+{"time":"2026-10-23T08:47:29.435277414+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-2273-7a04-913a-404e68c26d3d","method":"POST","status_code":200,"duration_ms":1063}
+{"time":"2026-10-23T08:47:30.585794724+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-269b-7576-8b8b-ca21f455b2b3","method":"POST","status_code":200,"duration_ms":1150}
+{"time":"2026-10-23T08:47:31.483612087+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-2b19-7d53-9a8b-48bf78748026","method":"GET","status_code":200,"duration_ms":897}
+{"time":"2026-10-23T08:47:32.091952506+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-2e9b-7a33-8816-eb4f14dd233d","method":"GET","status_code":200,"duration_ms":608}
+{"time":"2026-10-23T08:47:32.284583645+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-30fc-70b9-a3b3-0e2ed283471a","method":"POST","status_code":200,"duration_ms":192}
+{"time":"2026-10-23T08:47:32.410193505+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-31bd-74c0-81b5-7b228c664f78","method":"POST","status_code":201,"duration_ms":124}
+{"time":"2026-10-23T08:47:33.126520134+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-323a-74d4-9ec8-937a0f1b4553","method":"POST","status_code":201,"duration_ms":716}
+{"time":"2026-10-23T08:47:33.251401135+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-3506-7970-8ce6-3ab42560e98d","method":"POST","status_code":200,"duration_ms":124}
+{"time":"2026-10-23T08:47:33.31692733+08:00","level":"INFO","msg":"http request complete","request_id":"01a1663a-3583-7708-876e-873474b5a642","method":"POST","status_code":200,"duration_ms":65}
+    native_mfa_test.go:513: a replayed TOTP code was accepted: map[acr:urn:ops:loa:2 challengeState:verified completedMethods:[password totp] failureCode:<nil> method:totp remainingAttempts:5 revision:3 stepUpSession:map[absoluteExpiresAt:2026-10-23T09:02:33.289937+08:00 bindingDigest:sha256:2810629736f8806b8e80a758e570aa2507b6aa5ae20535e1ee9decd32a088489 idleExpiresAt:2026-10-23T08:57:33.289936+08:00 operation:user_administration sessionRef:stepup:01a1663a-35a8-7bfd-b9e9-83b9c5325cf3 verifiedMethods:[password totp]] verified:true verifiedAt:2026-10-23T08:47:33.26616+08:00]
+--- FAIL: TestNativeMFAEnrollmentStepUpAndReset (32.72s)
+FAIL

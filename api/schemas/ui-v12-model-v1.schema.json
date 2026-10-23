@@ -1,0 +1,834 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/ui-v12-model/v1",
+  "title": "UI v1.2 four-field model connection, admission and job binding contract",
+  "description": "The user configures exactly baseURL, modelID, apiKey and contextWindow. The credential is written through the controlled OpenBao path and is never returned. Connection, admission, executable task capability and answer quality are separate records: a successful connection test cannot manufacture admission evidence, and an unknown model stays not admitted. New assistant jobs freeze one admitted profile reference that the API, Go worker and Python dispatcher all verify; existing investigation job versions are unchanged. The root document accepts no instance; every payload is validated through a #/$defs fragment.",
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false,
+  "not": {},
+  "$defs": {
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "timestamp": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "optionalTimestamp": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "profileReference": {
+      "type": "string",
+      "minLength": 73,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]{0,95}@sha256:[a-f0-9]{64}$"
+    },
+    "contextWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server projection only, never client input. A provider-reported limit may be adopted; a manual value may only tighten it and can never enlarge the model's real capability.",
+      "properties": {
+        "value": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 1000000
+        },
+        "source": {
+          "enum": [
+            "provider_reported",
+            "administrator_entered"
+          ]
+        },
+        "providerReportedMax": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1024,
+              "maximum": 1000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "value",
+        "source",
+        "providerReportedMax"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "provider_reported"
+              }
+            },
+            "required": [
+              "source"
+            ]
+          },
+          "then": {
+            "properties": {
+              "providerReportedMax": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "apiKeyInput": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 4096,
+      "writeOnly": true
+    },
+    "credentialUpdate": {
+      "description": "Keep the stored credential or replace it explicitly. A profile edit does not force the administrator to re-enter the key.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "keep"
+            }
+          },
+          "required": [
+            "action"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "replace"
+            },
+            "apiKey": {
+              "$ref": "#/$defs/apiKeyInput"
+            }
+          },
+          "required": [
+            "action",
+            "apiKey"
+          ]
+        }
+      ]
+    },
+    "connectionUpsertRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Only the four user-facing fields plus optimistic concurrency. contextWindow is a plain integer or null for automatic detection; provider measurement, source attribution and tightening are server-side facts and are not client input. Credential edits use an explicit keep/replace action.",
+      "properties": {
+        "baseURL": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^https?://[^/?#@]+/v1$"
+        },
+        "modelID": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,127}$"
+        },
+        "contextWindow": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1024,
+              "maximum": 1000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "credential": {
+          "$ref": "#/$defs/credentialUpdate"
+        },
+        "expectedRevision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/revision"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "baseURL",
+        "modelID",
+        "contextWindow",
+        "credential",
+        "expectedRevision"
+      ]
+    },
+    "credentialState": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server projection only. The secret itself is never part of any response.",
+      "properties": {
+        "store": {
+          "const": "openbao"
+        },
+        "vaultPathRef": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 192,
+          "pattern": "^secret://model/[A-Za-z0-9][A-Za-z0-9._/-]{0,171}$"
+        },
+        "configured": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "store",
+        "vaultPathRef",
+        "configured"
+      ]
+    },
+    "connectionState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "untested",
+            "passed",
+            "failed",
+            "unknown"
+          ]
+        },
+        "checkedAt": {
+          "$ref": "#/$defs/optionalTimestamp"
+        },
+        "failureCode": {
+          "anyOf": [
+            {
+              "enum": [
+                "unreachable",
+                "authentication_failed",
+                "model_missing",
+                "protocol_unsupported",
+                "timeout"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "checkedAt",
+        "failureCode"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "passed"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "failureCode": {
+                "const": null
+              },
+              "checkedAt": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "failed"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "failureCode": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "admissionState": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Admitted requires admission evidence and a frozen profile reference. Unknown, pending and rejected must carry no profile reference, so a connection record cannot masquerade as runnable.",
+      "properties": {
+        "state": {
+          "enum": [
+            "admitted",
+            "pending",
+            "unknown",
+            "rejected"
+          ]
+        },
+        "evidenceDigest": {
+          "anyOf": [
+            {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "profileReference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/profileReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evaluatedAt": {
+          "$ref": "#/$defs/optionalTimestamp"
+        }
+      },
+      "required": [
+        "state",
+        "evidenceDigest",
+        "profileReference",
+        "evaluatedAt"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "admitted"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidenceDigest": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "profileReference": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "evaluatedAt": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "profileReference": {
+                "const": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    "connectionView": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "connectionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "baseURL": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^https?://[^/?#@]+/v1$"
+        },
+        "modelID": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,127}$"
+        },
+        "contextWindow": {
+          "$ref": "#/$defs/contextWindow"
+        },
+        "credential": {
+          "$ref": "#/$defs/credentialState"
+        },
+        "connection": {
+          "$ref": "#/$defs/connectionState"
+        },
+        "admission": {
+          "$ref": "#/$defs/admissionState"
+        },
+        "updatedAt": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "required": [
+        "connectionId",
+        "revision",
+        "baseURL",
+        "modelID",
+        "contextWindow",
+        "credential",
+        "connection",
+        "admission",
+        "updatedAt"
+      ]
+    },
+    "connectionTestRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expectedRevision": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "expectedRevision"
+      ]
+    },
+    "connectionCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "enum": [
+            "reachability",
+            "authentication",
+            "model_presence",
+            "task_protocol",
+            "context_measurement"
+          ]
+        },
+        "state": {
+          "enum": [
+            "passed",
+            "failed",
+            "unknown"
+          ]
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "state",
+        "detail"
+      ]
+    },
+    "connectionTestResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A test observes connectivity and protocol only. It has no admission, task or quality fields, so one successful HTTP response cannot be reused as admission or quality proof.",
+      "properties": {
+        "testId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "connectionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "connectionState": {
+          "enum": [
+            "passed",
+            "failed",
+            "unknown"
+          ]
+        },
+        "protocol": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "detected": {
+              "const": "openai_compatible"
+            },
+            "taskProtocolSupported": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "detected",
+            "taskProtocolSupported"
+          ]
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/connectionCheck"
+          }
+        },
+        "testedAt": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "required": [
+        "testId",
+        "connectionId",
+        "connectionState",
+        "protocol",
+        "checks",
+        "testedAt"
+      ]
+    },
+    "capabilityRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Four independent verdicts. They are never collapsed into one 'available' flag.",
+      "properties": {
+        "connection": {
+          "$ref": "#/$defs/connectionState"
+        },
+        "admission": {
+          "$ref": "#/$defs/admissionState"
+        },
+        "task": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "enum": [
+                "supported",
+                "unsupported",
+                "unknown"
+              ]
+            },
+            "taskKinds": {
+              "type": "array",
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "data_query",
+                  "resource_troubleshooting",
+                  "incident_followup"
+                ]
+              }
+            }
+          },
+          "required": [
+            "state",
+            "taskKinds"
+          ]
+        },
+        "quality": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "enum": [
+                "not_assessed",
+                "assessed"
+              ]
+            },
+            "rubricVersion": {
+              "anyOf": [
+                {
+                  "$ref": "https://ops.local/schemas/common/v1#/$defs/versionRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidenceDigest": {
+              "anyOf": [
+                {
+                  "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "state",
+            "rubricVersion",
+            "evidenceDigest"
+          ],
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "state": {
+                    "const": "assessed"
+                  }
+                },
+                "required": [
+                  "state"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rubricVersion": {
+                    "not": {
+                      "type": "null"
+                    }
+                  },
+                  "evidenceDigest": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "rubricVersion": {
+                    "const": null
+                  },
+                  "evidenceDigest": {
+                    "const": null
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "connection",
+        "admission",
+        "task",
+        "quality"
+      ]
+    },
+    "runOptionView": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The operator-facing projection only lists admitted profiles whose worker capability is currently ready.",
+      "properties": {
+        "optionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "modelID": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,127}$"
+        },
+        "contextWindow": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 1000000
+        },
+        "profileReference": {
+          "$ref": "#/$defs/profileReference"
+        },
+        "admission": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "const": "admitted"
+            },
+            "evidenceDigest": {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+            }
+          },
+          "required": [
+            "state",
+            "evidenceDigest"
+          ]
+        },
+        "worker": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "const": "ready"
+            },
+            "catalogVersion": {
+              "const": "assistant-tools/v2"
+            },
+            "readyUntil": {
+              "$ref": "#/$defs/timestamp"
+            }
+          },
+          "required": [
+            "state",
+            "catalogVersion",
+            "readyUntil"
+          ]
+        },
+        "taskKinds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "data_query",
+              "resource_troubleshooting",
+              "incident_followup"
+            ]
+          }
+        }
+      },
+      "required": [
+        "optionId",
+        "modelID",
+        "contextWindow",
+        "profileReference",
+        "admission",
+        "worker",
+        "taskKinds"
+      ]
+    },
+    "assistantJobBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "New job envelope shared by the API, the Go worker and the Python dispatcher. The frozen profile reference and the worker capability are both recorded at creation time and must match at execution. The existing investigation-job/v3 contract is not changed or silently reused.",
+      "properties": {
+        "jobContractVersion": {
+          "const": "ui-v12-assistant-job/v1"
+        },
+        "jobId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "taskKind": {
+          "enum": [
+            "data_query",
+            "resource_troubleshooting",
+            "incident_followup"
+          ]
+        },
+        "profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "reference": {
+              "$ref": "#/$defs/profileReference"
+            },
+            "modelID": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,127}$"
+            },
+            "contextWindow": {
+              "type": "integer",
+              "minimum": 1024,
+              "maximum": 1000000
+            },
+            "admissionEvidenceDigest": {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+            }
+          },
+          "required": [
+            "reference",
+            "modelID",
+            "contextWindow",
+            "admissionEvidenceDigest"
+          ]
+        },
+        "workerCapability": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "workerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "catalogVersion": {
+              "const": "assistant-tools/v2"
+            },
+            "modelProfileVersion": {
+              "$ref": "#/$defs/profileReference"
+            },
+            "readyAt": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "expiresAt": {
+              "$ref": "#/$defs/timestamp"
+            }
+          },
+          "required": [
+            "workerId",
+            "catalogVersion",
+            "modelProfileVersion",
+            "readyAt",
+            "expiresAt"
+          ]
+        },
+        "frozenAt": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "required": [
+        "jobContractVersion",
+        "jobId",
+        "taskKind",
+        "profile",
+        "workerCapability",
+        "frozenAt"
+      ]
+    }
+  }
+}

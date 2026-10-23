@@ -1,0 +1,40 @@
+﻿task_id,status,evidence,remaining
+P0-01,complete,evidence/baseline-code.json;evidence/remote-environment.txt;evidence/shared-db-readonly.txt,
+P0-02,complete,evidence/act-bindings.csv;evidence/form-bindings.csv;evidence/form-inventory.csv;evidence/nonform-inventory.csv;evidence/password-form-bindings.csv;evidence/confirm-bindings.csv;evidence/state-bindings.csv;evidence/contract-audit.csv;acceptance.csv;evidence/codex-callback-review-r7.json;evidence/g0-independent-approval.json,
+P0-03,complete,p0-version-contracts.md;evidence/p0-schema-test-run.json;api/schemas/ui-v12-*-v1.schema.json;test/contract/ui_v12_contract_test.go;evidence/codex-callback-review-r6.json;evidence/codex-callback-review-r7.json;evidence/g0-independent-approval.json,
+P0-04,complete,p0-environment.md;evidence/ui-v12-fixture-run-r2.json;evidence/fixture-run-r2.log;evidence/remote-environment-r2.txt,
+P1-01,in_progress,web/src/design/tokens.ts;web/src/design/v12.css;web/src/components/v12;web/src/components/PageHeading.tsx;web/src/components/Status.tsx;web/src/layout/AppShell.tsx;web/tests/v12/p1_layer.test.tsx;evidence/web-tests-p1-r4.log;evidence/web-build-p1-r4.log;evidence/p1-r3-fixes.json,公共控件、portal/焦点/长内容测试完成；正式页面逐项桌面视觉对比与P1-04状态定位未完成
+P1-02,in_progress,web/src/app/router.tsx;web/src/app/navigation.tsx;web/src/app/ClusterContext.tsx;web/src/layout/AppShell.tsx;web/src/pages/admin/AdminPage.tsx;web/src/pages/AssistantPage.tsx;web/tests/v12/p1_shell.test.tsx;web/tests/v12/p1_assistant_integration.test.tsx;evidence/p1-r3-fixes.json;evidence/codex-p1-review-r3.json,真实AppShell+Assistant路由阻断、成功包络、create body与SSE abort已测试；正式浏览器与真实API联调未验证，P1-04未完成
+P1-03,in_progress,evidence/web-tests.log;evidence/web-build.log,仅完成共用迟到响应与请求/SSE中断修复；原生Cookie/CSRF/授权缓存合同依赖P0/P2，未过阶段门
+P1-04,in_progress,evidence/reference-capture.json;evidence/reference-rounds.json;web/tests/v12/capture-reference.mjs,458张1440×960参考图及长页/内部滚动补图已生成；正式组件状态定位与像素比较待P1-01页面接入，本轮未重采
+P2-01,complete,migrations/00044_native_identity.sql;internal/identity;cmd/opsctl/bootstrap_native_administrator.go;test/integration/native_identity_test.go;p2-native-identity.md;evidence/p2-native-identity.json;evidence/p2-native-identity-tests.log;evidence/remote-native-r1;evidence/codex-p2-review-r3.json;evidence/codex-native-r2/native-codex-r2.log,
+P2-02,in_progress,migrations/00045_native_http_sessions.sql;migrations/00046_native_login_window_reset.sql;internal/auth/native.go;internal/httpapi/native_auth.go;web/src/pages/Login.tsx;web/src/pages/FirstPassword.tsx;web/src/design/v12.css;web/src/layout/AppShell.tsx;web/tests/native_fetch_login.test.tsx;test/integration/native_http_session_test.go;p2-native-auth.md;preview-runtime.md;evidence/preview-r2/result.json;evidence/preview-r2/auth-browser-result.json;evidence/preview-r2/geometry.json;evidence/preview-r2/visual-diff-filled.json;evidence/codex-mfa-r3-review-r1/result.json;evidence/gpt-mfa-r4/runtime/browser-result.json;evidence/gpt-resume-r13/result.json,当前r13已实测错误当前密码不误退出、首次改密/旧Cookie拒绝/无权限/退出及刷新；SL-005独立页未对齐HTML对话框与完整逐状态视觉，保持in_progress。
+P2-03,in_progress,evidence/mfa-r3/mfa-integration.log;evidence/mfa-r3/session-binding-integration.log;evidence/mfa-r3/mfa-browser-result.json;evidence/mfa-r3/visual-diff-current.json;evidence/mfa-r3/go-tests.log;evidence/mfa-r3/web-tests.log;evidence/codex-mfa-r3-review-r1/result.json;evidence/gpt-mfa-r4/result.json;evidence/gpt-mfa-r6/runtime-openbao/browser-result.json;evidence/gpt-mfa-r6/integration-r6-command-fixed.log;evidence/gpt-admin-r7/source.json;continuation-handoff.md;evidence/gpt-resume-r13/result.json,52～56已执行冻结；合并MFA/恢复/管理精确证明真实集成与Transit浏览器机制通过；完整补充状态视觉及业务/Worker全链仍未完成。
+P2-04,in_progress,migrations/00047_native_authorization.sql;migrations/00048_native_authorization_found_fix.sql;migrations/00049_native_authorization_policy_restore.sql;internal/authz/authorization.go;internal/authz/authorization_test.go;internal/source/service.go;internal/tenant/repository.go;internal/configregistry/service.go;internal/action/repository.go;internal/httpapi/audit_handlers.go;internal/app/sp08_audit_verify.go;internal/investigation/assistant_v3.go;evidence/preview-r2/result.json;evidence/preview-r2/integration-native-authz.log;evidence/gpt-users-r8/result.json;internal/httpapi/native_users.go;internal/identity/administration.go;migrations/00055_native_user_administration.sql;web/src/pages/admin/UsersPage.tsx;test/integration/native_user_administration_test.go;evidence/gpt-mapping-r9/result.json;migrations/00056_native_subject_inventory.sql;internal/identity/subject_inventory.go;cmd/opsctl/import_subject_inventory.go;web/src/pages/admin/SubjectMappingsPanel.tsx;evidence/gpt-native-deploy-r10/result.json;internal/action/native_profile_list_test.go;evidence/gpt-review-r11/result.json;evidence/gpt-review-r11/review.md;evidence/gpt-resume-r13/result.json,55/56已执行冻结；真实DB/HTTP用户生命周期、双角色与显式映射集成及用户创建浏览器通过；历史业务归属、管理并发/故障注入、namespace200/SQL100差异与逐状态像素未完成。
+P2-05,in_progress,evidence/gpt-native-deploy-r10/result.json;native-deployment-runbook.md;deploy/charts/ops-platform/templates/deployments.yaml;deploy/charts/ops-platform/templates/sp08.yaml;test/contract/native_auth_chart_test.go;evidence/gpt-review-r11/result.json;evidence/gpt-review-r11/review.md;evidence/gpt-resume-r13/result.json;evidence/gpt-installer-r12/result.json,chart及安装器原生配置/环境引导/CLI Cookie核验已本地实现；签名Bundle来源摘要、first-tenant原生引导、无OIDC冷启动、Job/Worker显式authority/user/version及前滚恢复仍待完成；未部署安装器。
+P3-01,not_started,,服务端授权聚合；规范标识/UID正确；图节点与详情跳转一致
+P3-02,not_started,,手动查询不建立假 AI 会话；统计来自真实总体；资格和读取重检
+P3-03,not_started,,固定设计 1:1；范围切换失效；样例数量不当总量，时间桶有真实口径
+P3-04,not_started,,真实 API/DB/来源可核对；无跨范围数据；加载和实际回执对应
+P4-01,not_started,,单位/覆盖/缺失正确；未采样不伪造；不用完整 Trace 冒充网络统计
+P4-02,not_started,,与 K8s Service 区分；删除重建资源不误绑；成员选择受限
+P4-03,not_started,,不复制冲突事实；发生恢复观测时间分开；跨集群拒绝
+P4-04,not_started,,revision和审计齐全；转交不等于恢复；无越权或篡改原始事实
+P4-05,not_started,,用户只能收紧服务端上限；部分结果与根因假设准确；引用固定且重新授权
+P5-01,not_started,,数字与证据可定位；模型解释质量不覆盖已提交结果；实际命令独立输入
+P5-02,not_started,,归档不级联删除引用；越权历史不可读；闲置/版本围栏及法律保留保持
+P5-03,not_started,,真实测试后准确标状态；未知准入不伪造；旧Job固定版本；兼容范围明确
+P6-01,not_started,,篡改/重放拒绝；命令成功与故障恢复分开；未知外部结果不盲重试
+P6-02,not_started,,不自由拼接Shell，不自动填入或执行命令，目标和版本重新核对
+P6-03,not_started,,复用检查适配器；各项真实状态；重启恢复且报告不随实时数据变更
+P6-04,not_started,,双Worker/重启不重复派发；默认不追赶堆积；停用不假取消运行任务
+P7-01,not_started,,无权限/未知/缺失/不兼容分开；登记不授予权限或资格
+P7-02,not_started,,只装明确缺失，不接管第三方；离线物料合格；部署完成不等于数据可用
+P7-03,not_started,,静默不改事实；秘密不回显；未知回执诚实标识；隔离接收端验证
+P7-04,not_started,,固定版本不可变；导入不执行脚本；旧引用不级联丢失；索引失败可重试
+P7-05,not_started,,已发布且授权版本才进新检索；归档后新问答不引用；旧引用按权限读取
+P7-06,not_started,,签名/固定版本不绕过；公开健康探针不能代替业务资格；审计不虚报完整性
+P8-01,not_started,,各片适用项通过；不以新实现改黄金图；长页、内部滚动、嵌套层级无遗漏
+P8-02,not_started,,代码/制品/UID/来源/窗口可追溯；Fixture和机制/质量独立；失败不得美化
+P8-03,not_started,,不只回滚旧API或恢复旧凭据；新写入/撤销/历史记录无不明倒退
+P8-04,not_started,,不以开发通过宣称生产发布/HA/离线发行或延期项已通过

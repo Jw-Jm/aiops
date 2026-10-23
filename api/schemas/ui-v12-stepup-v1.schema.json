@@ -1,0 +1,1586 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/ui-v12-stepup/v1",
+  "title": "UI v1.2 built-in step-up, MFA enrolment, recovery and administrator MFA reset contract",
+  "description": "Re-verification is performed by the platform itself. A challenge is bound to one explicit operation plus the object and revision it acts on. Command execution carries the real command binding (assessment, execution request digest, profile id/version, incident, actual command digest); administrative operations carry their own object types and never invent a command or risk assessment. The client submits a credential, never a method policy or an assurance level. The verify response reports the server-accumulated methods and is produced before any business write; the high-risk write performs its own recheck in its own transaction. The root document accepts no instance; every payload is validated through a #/$defs fragment.",
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false,
+  "not": {},
+  "$defs": {
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "timestamp": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "optionalTimestamp": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "target": {
+      "description": "The exact object the operation acts on. A challenge cannot be replayed against another object or revision.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "k8s_object"
+            },
+            "canonicalId": {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/canonicalId"
+            },
+            "uid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "clusterUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "namespace": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 63,
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "revision": {
+              "$ref": "#/$defs/revision"
+            }
+          },
+          "required": [
+            "kind",
+            "canonicalId",
+            "uid",
+            "clusterUid",
+            "namespace",
+            "revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "user"
+            },
+            "userId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "revision": {
+              "$ref": "#/$defs/revision"
+            },
+            "write": {
+              "$ref": "#/$defs/writeBinding"
+            }
+          },
+          "required": [
+            "kind",
+            "userId",
+            "revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "mfa_enrollment"
+            },
+            "enrollmentId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "revision": {
+              "$ref": "#/$defs/revision"
+            }
+          },
+          "required": [
+            "kind",
+            "enrollmentId",
+            "revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "source_registration"
+            },
+            "registrationId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "revision": {
+              "$ref": "#/$defs/revision"
+            },
+            "write": {
+              "$ref": "#/$defs/writeBinding"
+            }
+          },
+          "required": [
+            "kind",
+            "registrationId",
+            "revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "cluster_registration"
+            },
+            "clusterId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "revision": {
+              "$ref": "#/$defs/revision"
+            },
+            "write": {
+              "$ref": "#/$defs/writeBinding"
+            }
+          },
+          "required": [
+            "kind",
+            "clusterId",
+            "revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "registry_object"
+            },
+            "objectKind": {
+              "enum": [
+                "draft",
+                "version",
+                "activation"
+              ]
+            },
+            "objectId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "revision": {
+              "$ref": "#/$defs/revision"
+            },
+            "write": {
+              "$ref": "#/$defs/writeBinding"
+            }
+          },
+          "required": [
+            "kind",
+            "objectKind",
+            "objectId",
+            "revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "execution_profile"
+            },
+            "executionProfileId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "revision": {
+              "$ref": "#/$defs/revision"
+            },
+            "write": {
+              "$ref": "#/$defs/writeBinding"
+            }
+          },
+          "required": [
+            "kind",
+            "executionProfileId",
+            "revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "administrative_write"
+            },
+            "write": {
+              "$ref": "#/$defs/writeBinding"
+            }
+          },
+          "required": [
+            "kind",
+            "write"
+          ],
+          "description": "Exact proposed administrative mutation. No invented object ID or revision; existing-object revisions, immutable version IDs and expected digests remain in the bound request and are checked by its service."
+        }
+      ]
+    },
+    "commandBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Existing command-binding facts reused verbatim. executionProfileId is a UUID and executionProfileVersion is the integer version, matching internal/action.CommandRequest and Binding.",
+      "properties": {
+        "assessmentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "riskAssessmentVersion": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/versionRef"
+        },
+        "executionRequestDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        "policyVersion": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/versionRef"
+        },
+        "incidentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "executionProfileId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "executionProfileVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "actualCommandDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        }
+      },
+      "required": [
+        "assessmentId",
+        "riskAssessmentVersion",
+        "executionRequestDigest",
+        "policyVersion",
+        "incidentId",
+        "executionProfileId",
+        "executionProfileVersion",
+        "actualCommandDigest"
+      ]
+    },
+    "challengeCreateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The server derives the required methods from the operation policy; there is no client field to lower them. Only command execution carries a command binding. Each administrative operation targets its own projection.",
+      "properties": {
+        "operation": {
+          "enum": [
+            "command_execution",
+            "user_administration",
+            "mfa_enrollment",
+            "mfa_reset",
+            "recovery_code_regenerate",
+            "source_administration",
+            "cluster_administration",
+            "registry_administration",
+            "execution_profile_administration"
+          ]
+        },
+        "target": {
+          "$ref": "#/$defs/target"
+        },
+        "command": {
+          "$ref": "#/$defs/commandBinding"
+        },
+        "expectedSessionVersion": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "operation",
+        "target",
+        "expectedSessionVersion"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "command_execution"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "required": [
+              "command"
+            ],
+            "properties": {
+              "target": {
+                "properties": {
+                  "kind": {
+                    "const": "k8s_object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "enum": [
+                  "user_administration",
+                  "mfa_enrollment",
+                  "mfa_reset",
+                  "recovery_code_regenerate",
+                  "source_administration",
+                  "cluster_administration",
+                  "registry_administration",
+                  "execution_profile_administration"
+                ]
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "command"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "mfa_enrollment"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "properties": {
+                  "kind": {
+                    "const": "mfa_enrollment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "enum": [
+                  "mfa_reset",
+                  "recovery_code_regenerate"
+                ]
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "properties": {
+                  "kind": {
+                    "const": "user"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "source_administration"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "source_registration",
+                      "administrative_write"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "cluster_administration"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "cluster_registration",
+                      "administrative_write"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "registry_administration"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "registry_object",
+                      "administrative_write"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "execution_profile_administration"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "execution_profile",
+                      "administrative_write"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "user_administration"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "user",
+                      "administrative_write"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "challengeView": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "requiredMethods is the server policy for this operation and always contains password and TOTP. completedMethods accumulates only the methods actually verified for the current challenge.",
+      "properties": {
+        "challengeId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operation": {
+          "enum": [
+            "command_execution",
+            "user_administration",
+            "mfa_enrollment",
+            "mfa_reset",
+            "recovery_code_regenerate",
+            "source_administration",
+            "cluster_administration",
+            "registry_administration",
+            "execution_profile_administration"
+          ]
+        },
+        "target": {
+          "$ref": "#/$defs/target"
+        },
+        "bindingDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        "requiredMethods": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "password",
+              "totp"
+            ]
+          }
+        },
+        "completedMethods": {
+          "type": "array",
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "password",
+              "totp"
+            ]
+          }
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "verified",
+            "expired",
+            "used",
+            "revoked"
+          ]
+        },
+        "createdAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "verifiedAt": {
+          "$ref": "#/$defs/optionalTimestamp"
+        },
+        "attemptLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "remainingAttempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "command": {
+          "$ref": "#/$defs/commandBinding"
+        }
+      },
+      "required": [
+        "challengeId",
+        "operation",
+        "target",
+        "bindingDigest",
+        "requiredMethods",
+        "completedMethods",
+        "state",
+        "createdAt",
+        "expiresAt",
+        "verifiedAt",
+        "attemptLimit",
+        "remainingAttempts"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "verified"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "verifiedAt": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "completedMethods": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "password"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "totp"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "pending"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "verifiedAt": {
+                "const": null
+              },
+              "completedMethods": {
+                "not": {
+                  "allOf": [
+                    {
+                      "contains": {
+                        "const": "password"
+                      }
+                    },
+                    {
+                      "contains": {
+                        "const": "totp"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "enum": [
+                  "expired",
+                  "used",
+                  "revoked"
+                ]
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "remainingAttempts": {
+                "const": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "challengeVerifyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A client may only submit one credential. acr, loa, assuranceLevel, method policy or a pre-verified flag are unknown fields and must be rejected.",
+      "properties": {
+        "method": {
+          "enum": [
+            "password",
+            "totp"
+          ]
+        },
+        "credential": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "writeOnly": true
+        },
+        "expectedChallengeRevision": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "method",
+        "credential",
+        "expectedChallengeRevision"
+      ]
+    },
+    "stepUpSessionView": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A step-up session exists only after the challenge completed every required method for the bound operation. It authorises nothing by itself: the high-risk write still rechecks it in its own transaction.",
+      "properties": {
+        "sessionRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "operation": {
+          "enum": [
+            "command_execution",
+            "user_administration",
+            "mfa_enrollment",
+            "mfa_reset",
+            "recovery_code_regenerate",
+            "source_administration",
+            "cluster_administration",
+            "registry_administration",
+            "execution_profile_administration"
+          ]
+        },
+        "bindingDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        "verifiedMethods": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "password",
+              "totp"
+            ]
+          }
+        },
+        "absoluteExpiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "idleExpiresAt": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "required": [
+        "sessionRef",
+        "operation",
+        "bindingDigest",
+        "verifiedMethods",
+        "absoluteExpiresAt",
+        "idleExpiresAt"
+      ]
+    },
+    "challengeVerifyResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Reports the accumulated state of the current challenge before any business write. completedMethods may be empty after a rejected first factor; only a server-accumulated password plus TOTP result becomes LoA2.",
+      "properties": {
+        "verified": {
+          "type": "boolean"
+        },
+        "method": {
+          "enum": [
+            "password",
+            "totp"
+          ]
+        },
+        "challengeState": {
+          "enum": [
+            "pending",
+            "verified",
+            "expired",
+            "used",
+            "revoked"
+          ]
+        },
+        "completedMethods": {
+          "type": "array",
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "password",
+              "totp"
+            ]
+          }
+        },
+        "acr": {
+          "enum": [
+            "urn:ops:loa:1",
+            "urn:ops:loa:2"
+          ]
+        },
+        "stepUpSession": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/stepUpSessionView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verifiedAt": {
+          "$ref": "#/$defs/optionalTimestamp"
+        },
+        "failureCode": {
+          "anyOf": [
+            {
+              "enum": [
+                "invalid_credential",
+                "expired",
+                "already_used",
+                "too_many_attempts",
+                "revoked"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "remainingAttempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        }
+      },
+      "required": [
+        "verified",
+        "method",
+        "challengeState",
+        "completedMethods",
+        "acr",
+        "stepUpSession",
+        "verifiedAt",
+        "failureCode"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "verified": {
+                "const": true
+              }
+            },
+            "required": [
+              "verified"
+            ]
+          },
+          "then": {
+            "properties": {
+              "challengeState": {
+                "const": "verified"
+              },
+              "completedMethods": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "password"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "totp"
+                    }
+                  }
+                ]
+              },
+              "acr": {
+                "const": "urn:ops:loa:2"
+              },
+              "stepUpSession": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "verifiedAt": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "failureCode": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verified": {
+                "const": false
+              }
+            },
+            "required": [
+              "verified"
+            ]
+          },
+          "then": {
+            "properties": {
+              "stepUpSession": {
+                "const": null
+              },
+              "acr": {
+                "const": "urn:ops:loa:1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "properties": {
+                "completedMethods": {
+                  "allOf": [
+                    {
+                      "contains": {
+                        "const": "password"
+                      }
+                    },
+                    {
+                      "contains": {
+                        "const": "totp"
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "completedMethods"
+              ]
+            }
+          },
+          "then": {
+            "properties": {
+              "acr": {
+                "const": "urn:ops:loa:1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "completedMethods": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "password"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "totp"
+                    }
+                  }
+                ]
+              }
+            },
+            "required": [
+              "completedMethods"
+            ]
+          },
+          "then": {
+            "properties": {
+              "verified": {
+                "const": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    "writeRecheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Recorded by the high-risk write in its own transaction, bound to the write attempt and the step-up session. It is not part of the pre-write verify response.",
+      "properties": {
+        "writeAttemptId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "writeOperation": {
+          "enum": [
+            "command_execution",
+            "user_administration",
+            "mfa_reset",
+            "source_administration",
+            "cluster_administration",
+            "registry_administration",
+            "execution_profile_administration"
+          ]
+        },
+        "checkedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "result": {
+          "enum": [
+            "passed",
+            "failed",
+            "conflict"
+          ]
+        },
+        "sessionDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        "authorizationVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "credentialVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "objectDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        "actualCommandDigest": {
+          "anyOf": [
+            {
+              "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "writeAttemptId",
+        "writeOperation",
+        "checkedAt",
+        "result",
+        "sessionDigest",
+        "authorizationVersion",
+        "credentialVersion",
+        "objectDigest",
+        "actualCommandDigest"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "writeOperation": {
+                "const": "command_execution"
+              }
+            },
+            "required": [
+              "writeOperation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "actualCommandDigest": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "actualCommandDigest": {
+                "const": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    "mfaEnrollmentCreateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "totp"
+        },
+        "expectedCredentialVersion": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "method",
+        "expectedCredentialVersion"
+      ]
+    },
+    "mfaEnrollmentCreated": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Creation response only. The provisioning URI contains the pending secret and is returned exactly once here; later status reads use mfaEnrollmentView, which has no such field.",
+      "properties": {
+        "enrollmentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "method": {
+          "const": "totp"
+        },
+        "state": {
+          "const": "pending_confirmation"
+        },
+        "otpauthUri": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "pattern": "^otpauth://totp/"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "required": [
+        "enrollmentId",
+        "method",
+        "state",
+        "otpauthUri",
+        "createdAt",
+        "expiresAt"
+      ]
+    },
+    "mfaEnrollmentView": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Status view. It deliberately has no provisioning URI or secret field.",
+      "properties": {
+        "enrollmentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "method": {
+          "const": "totp"
+        },
+        "state": {
+          "enum": [
+            "pending_confirmation",
+            "confirmed",
+            "expired"
+          ]
+        },
+        "createdAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "confirmedAt": {
+          "$ref": "#/$defs/optionalTimestamp"
+        }
+      },
+      "required": [
+        "enrollmentId",
+        "method",
+        "state",
+        "createdAt",
+        "expiresAt",
+        "confirmedAt"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "confirmed"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "confirmedAt": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "confirmedAt": {
+                "const": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    "mfaEnrollmentVerifyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Confirmation is ordered: the current password and a TOTP must first complete an mfa_enrollment challenge bound to this enrolment and the current session. Submitting only the logged-in cookie plus a new TOTP code is not sufficient.",
+      "properties": {
+        "totpCode": {
+          "type": "string",
+          "pattern": "^[0-9]{6}$"
+        },
+        "expectedEnrollmentRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "stepUp": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "challengeId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "sessionRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          "required": [
+            "challengeId",
+            "sessionRef"
+          ]
+        }
+      },
+      "required": [
+        "totpCode",
+        "expectedEnrollmentRevision",
+        "stepUp"
+      ]
+    },
+    "recoveryCodeSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "codes": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z0-9]{4}-[A-Z0-9]{4}$"
+          }
+        }
+      },
+      "required": [
+        "codes"
+      ]
+    },
+    "mfaEnrollmentVerifyResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enrollmentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "state": {
+          "const": "confirmed"
+        },
+        "confirmedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "credentialVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "recoveryCodes": {
+          "$ref": "#/$defs/recoveryCodeSet"
+        }
+      },
+      "required": [
+        "enrollmentId",
+        "state",
+        "confirmedAt",
+        "credentialVersion",
+        "recoveryCodes"
+      ]
+    },
+    "recoveryCodeVerifyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The challenge id is required so the server can locate the single active recovery challenge for this session; it cannot be inferred from a cookie.",
+      "properties": {
+        "challengeId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "recoveryCode": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{4}-[A-Z0-9]{4}$"
+        },
+        "expectedChallengeRevision": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "challengeId",
+        "recoveryCode",
+        "expectedChallengeRevision"
+      ]
+    },
+    "recoveryCodeVerifyResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A valid recovery code restores access for one attempt only: it never yields LoA2, it revokes the existing sessions and it forces MFA re-enrolment.",
+      "properties": {
+        "verified": {
+          "type": "boolean"
+        },
+        "method": {
+          "const": "recovery_code"
+        },
+        "acr": {
+          "const": "urn:ops:loa:1"
+        },
+        "sessionsRevoked": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "recoveryCodesRemaining": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "mustReenrollMfa": {
+          "type": "boolean"
+        },
+        "stepUpSession": {
+          "const": null
+        },
+        "challengeRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "challengeState": {
+          "enum": [
+            "pending",
+            "verified",
+            "used",
+            "revoked",
+            "expired"
+          ]
+        }
+      },
+      "required": [
+        "verified",
+        "method",
+        "acr",
+        "sessionsRevoked",
+        "recoveryCodesRemaining",
+        "mustReenrollMfa",
+        "stepUpSession"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "verified": {
+                "const": true
+              }
+            },
+            "required": [
+              "verified"
+            ]
+          },
+          "then": {
+            "properties": {
+              "sessionsRevoked": {
+                "minimum": 1
+              },
+              "mustReenrollMfa": {
+                "const": true
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verified": {
+                "const": false
+              }
+            },
+            "required": [
+              "verified"
+            ]
+          },
+          "then": {
+            "properties": {
+              "sessionsRevoked": {
+                "const": 0
+              },
+              "mustReenrollMfa": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "adminMfaResetRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Administrator reset is a high-risk write: it needs a step-up challenge bound to the target user and an explicit target confirmation. Session revocation is the service policy, not a client assertion.",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "confirmLoginName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 512
+        },
+        "expectedUserRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "expectedCredentialVersion": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "userId",
+        "confirmLoginName",
+        "reason",
+        "expectedUserRevision",
+        "expectedCredentialVersion"
+      ]
+    },
+    "adminMfaResetResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "sessionsRevoked may be zero when the target had no active sessions; the real guarantee is the credential/session version bump recorded in revocation, not a fabricated session count.",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "mfaState": {
+          "const": "reset_required"
+        },
+        "credentialVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "sessionsRevoked": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "revocation": {
+          "$ref": "https://ops.local/schemas/ui-v12-identity/v1#/$defs/sessionRevocation"
+        },
+        "writeRecheck": {
+          "$ref": "#/$defs/writeRecheck"
+        },
+        "auditRecordId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "userId",
+        "mfaState",
+        "credentialVersion",
+        "sessionsRevoked",
+        "revocation",
+        "writeRecheck",
+        "auditRecordId"
+      ]
+    },
+    "writeBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "path",
+        "bodyDigest"
+      ],
+      "properties": {
+        "method": {
+          "enum": [
+            "POST",
+            "PATCH",
+            "DELETE"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^/api/v1/admin/[^?\\s]+$",
+          "maxLength": 2048
+        },
+        "bodyDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

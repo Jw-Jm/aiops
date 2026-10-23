@@ -5,9 +5,20 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"ops-platform/internal/auth"
+	"ops-platform/internal/authz"
 	"ops-platform/internal/graph"
 	"ops-platform/internal/persistence"
 	"slices"
+	"sort"
+)
+
+// Authorization sources for audit-domain work. The source is persisted with the
+// job, so a Worker recheck can never silently downgrade a native grant to the
+// legacy binding table (or the reverse).
+const (
+	AuditSourceLegacy = "legacy"
+	AuditSourceNative = "native"
 )
 
 type AssistantTask struct {
@@ -27,6 +38,13 @@ type AssistantTask struct {
 	PromptVersion           string      `json:"promptVersion"`
 	ModelProfileVersion     string      `json:"modelProfileVersion"`
 	ResultSchemaVersion     string      `json:"resultSchemaVersion"`
+	// AuthorizationSource records which identity system proved this job's audit
+	// authority. Empty is only valid for rows written before this field existed;
+	// those rows were necessarily legacy, because the native path rejected them
+	// outright. New jobs always persist an explicit source.
+	AuthorizationSource  string    `json:"authorizationSource,omitempty"`
+	AuthorizationUserID  uuid.UUID `json:"authorizationUserId,omitempty"`
+	AuthorizationVersion int       `json:"authorizationVersion,omitempty"`
 }
 
 func (a *AssistantTask) Valid(j Job) bool {
@@ -37,6 +55,9 @@ func (a *AssistantTask) Valid(j Job) bool {
 		return false
 	}
 	if a.AuthorizationDomain == "audit" {
+		if !a.validAuditAuthority() {
+			return false
+		}
 		return a.TaskKind == "data_query" && j.IncidentID == uuid.Nil && j.TriggerRevision == 0 && j.Scope.Cluster == "" && a.GrantSnapshot.Tenant == j.TenantID.String() && graph.ScopeDigest(j.Scope) == a.GrantSnapshotDigest && !j.Scope.ClusterScoped && len(j.Scope.Resources) == 0 && len(j.Scope.Namespaces) == 0
 	}
 	if a.AuthorizationDomain != "operational" || !ScopeSubset(a.GrantSnapshot, j.Scope) {
@@ -46,9 +67,133 @@ func (a *AssistantTask) Valid(j Job) bool {
 }
 func ScopeSubset(grant, scope graph.Scope) bool { return graph.ContainsScope(grant, scope) }
 
-// AuditScopeTx is independent of Graph/operator scope and locks current admin grants.
+// validAuditAuthority rejects an audit job whose identity source is unknown, or
+// a native job that lost the user/version its digest was computed from. An
+// empty source is accepted only as the historical legacy encoding.
+func (a *AssistantTask) validAuditAuthority() bool {
+	switch a.AuthorizationSource {
+	case AuditSourceNative:
+		return a.AuthorizationUserID != uuid.Nil && a.AuthorizationVersion >= 1
+	case AuditSourceLegacy:
+		return a.AuthorizationUserID == uuid.Nil && a.AuthorizationVersion == 0
+	case "":
+		return a.AuthorizationUserID == uuid.Nil && a.AuthorizationVersion == 0
+	default:
+		return false
+	}
+}
+
+// AuditAuthorityRef identifies which identity system proved a job's audit
+// authority and at which version. It is persisted with the job.
+type AuditAuthorityRef struct {
+	Source               string
+	UserID               uuid.UUID
+	AuthorizationVersion int
+}
+
+// AuditAuthorityFromContext returns the source that the current request proves
+// its audit authority with. A native session is never described as legacy.
+func AuditAuthorityFromContext(ctx context.Context) AuditAuthorityRef {
+	if native, ok := auth.NativeSessionFromContext(ctx); ok {
+		return AuditAuthorityRef{
+			Source: AuditSourceNative, UserID: native.Session.UserID,
+			AuthorizationVersion: native.Session.AuthorizationVersion,
+		}
+	}
+	return AuditAuthorityRef{Source: AuditSourceLegacy}
+}
+
+func emptyAuditScope(tenant uuid.UUID) graph.Scope {
+	return graph.Scope{Tenant: tenant.String(), Namespaces: []string{}, Resources: []string{}}
+}
+
+// AuditScopeTx is independent of Graph/operator scope and locks current admin
+// grants. The decision is dispatched on the trusted identity source first: a
+// native request never reaches the legacy binding fence (that fence only knows
+// platform.role_bindings and would deny every native administrator before the
+// native branch could run).
 func AuditScopeTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, subject string) (graph.Scope, error) {
-	out := graph.Scope{Tenant: tenant.String(), Namespaces: []string{}, Resources: []string{}}
+	out := emptyAuditScope(tenant)
+	if tx == nil || tenant == uuid.Nil || subject == "" {
+		return out, ErrDenied
+	}
+	ref := AuditAuthorityFromContext(ctx)
+	if ref.Source == AuditSourceNative {
+		// Request path: prove the live session first, then the grant set. The
+		// session-bound check pins the session and grant rows for this
+		// transaction, so a revocation that commits first is refused here.
+		native, ok := auth.NativeSessionFromContext(ctx)
+		if !ok || native.Session.UserID != ref.UserID ||
+			native.Session.AuthorizationVersion != ref.AuthorizationVersion {
+			return out, ErrDenied
+		}
+		allowed, err := authz.NativeRoleAuthorized(ctx, tx, auth.RequestContext{
+			TenantID: tenant, Subject: subject,
+		}, "platform_admin")
+		if err != nil || !allowed {
+			return out, ErrDenied
+		}
+		return nativeAuditScope(ctx, tx, tenant, subject, ref, out)
+	}
+	return legacyAuditScope(ctx, tx, tenant, subject, out)
+}
+
+// AuditScopeForJobTx re-proves a queued job's authority without a browser
+// session. The persisted source decides the branch: a native job cannot degrade
+// to the legacy binding table, and a legacy job cannot borrow a native grant.
+func AuditScopeForJobTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, subject string, ref AuditAuthorityRef) (graph.Scope, error) {
+	out := emptyAuditScope(tenant)
+	if tx == nil || tenant == uuid.Nil || subject == "" {
+		return out, ErrDenied
+	}
+	switch ref.Source {
+	case AuditSourceNative:
+		return nativeAuditScope(ctx, tx, tenant, subject, ref, out)
+	case AuditSourceLegacy, "":
+		// Rows written before the source field existed could only be legacy:
+		// the native branch was unreachable then, so no native job exists.
+		return legacyAuditScope(ctx, tx, tenant, subject, out)
+	default:
+		return out, ErrDenied
+	}
+}
+
+func nativeAuditScope(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, subject string, ref AuditAuthorityRef, out graph.Scope) (graph.Scope, error) {
+	if ref.UserID == uuid.Nil || ref.AuthorizationVersion < 1 {
+		return out, ErrDenied
+	}
+	authority, err := authz.NativeAuthorityFor(ctx, tx, tenant, ref.UserID, "platform_admin")
+	if err != nil || authority.AuthorizationVersion != ref.AuthorizationVersion {
+		// Revoked, re-granted, disabled or re-versioned authority changes the
+		// digest and denies the job; it never falls back to legacy bindings.
+		return out, ErrDenied
+	}
+	var revision int64
+	if err := tx.QueryRow(ctx, `SELECT revision FROM platform.tenants WHERE tenant_id=$1 AND status='active'`, tenant).Scan(&revision); err != nil {
+		return out, ErrDenied
+	}
+	out.AuthorizationRevision = NativeAuditRevision(revision, subject, ref.UserID, authority.AuthorizationVersion, authority.BindingIDs)
+	return out, nil
+}
+
+// NativeAuditRevision is the audit authorization digest for a native subject.
+// It binds the real native authorization basis: tenant revision, subject,
+// account user, current authorization version and the active grant rows.
+// Revoking and re-granting a role increments the version (and changes the grant
+// rows), so the digest changes and the stored job binding no longer matches.
+func NativeAuditRevision(tenantRevision int64, subject string, userID uuid.UUID, authorizationVersion int, bindingIDs []uuid.UUID) string {
+	bindings := make([]string, 0, len(bindingIDs))
+	for _, bindingID := range bindingIDs {
+		bindings = append(bindings, bindingID.String())
+	}
+	sort.Strings(bindings)
+	return graph.ScopeDigest([]any{
+		"audit-native/v1", tenantRevision, subject, userID.String(),
+		authorizationVersion, bindings,
+	})
+}
+
+func legacyAuditScope(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, subject string, out graph.Scope) (graph.Scope, error) {
 	var locked bool
 	if err := tx.QueryRow(ctx, `SELECT platform.assistant_lock_audit_authority($1,$2)`, tenant, subject).Scan(&locked); err != nil || !locked {
 		return out, ErrDenied
@@ -92,7 +237,13 @@ func currentAssistant(ctx context.Context, tx pgx.Tx, j Job) error {
 	var grant graph.Scope
 	var err error
 	if j.Assistant.AuthorizationDomain == "audit" {
-		grant, err = AuditScopeTx(ctx, tx, j.TenantID, j.Subject)
+		// Recheck with the source recorded at admission. A Worker has no browser
+		// session, and must not guess its way into the legacy binding table.
+		grant, err = AuditScopeForJobTx(ctx, tx, j.TenantID, j.Subject, AuditAuthorityRef{
+			Source:               j.Assistant.AuthorizationSource,
+			UserID:               j.Assistant.AuthorizationUserID,
+			AuthorizationVersion: j.Assistant.AuthorizationVersion,
+		})
 	} else {
 		grant, err = graph.EffectiveTx(ctx, tx, j.TenantID.String(), j.Subject, j.Scope.Cluster, true)
 	}

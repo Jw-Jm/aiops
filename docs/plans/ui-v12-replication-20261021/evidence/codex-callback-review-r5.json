@@ -1,0 +1,59 @@
+{
+  "task_id": "d8526e37-c4f4-4893-ba47-734893cd5835",
+  "reviewer": "Codex independent callback review",
+  "head": "9bd78d84e212217626cdf0cfe54af84a155a9a3d",
+  "date": "2026-10-21T06:03:07.385762+00:00",
+  "conclusion": "changes_requested; G0 remains open",
+  "checks": [
+    {
+      "command": "go test ./test/contract ./internal/contract -count=1",
+      "result": "passed; contract 28.606s; internal/contract no test files"
+    },
+    {
+      "command": "go test ./test/integration -run '^TestUIV12FixtureDSNGuard$' -count=1",
+      "result": "passed 1.027s"
+    },
+    {
+      "command": "validate-progress.py",
+      "result": "structure passed; 458 states/177 contracts/62 composite; semantic findings below are not caught"
+    },
+    {
+      "command": "independently crosscompile Linux amd64, copy to mssc-direct and run TestUIV12FixtureSeedAndVerify",
+      "result": "passed 46/46; fixture_verified_not_accepted; source unchanged from r2; exact binary SHA matches r2",
+      "source_sha256": "106a528e216e1599a43936290cc63f0d340c72274bbfa152d477ca389b1be26e",
+      "binary_sha256": "f0af7faf474d9e786dbcb686233725be6740eadbfcab42c8e5bd40e8bc60681c",
+      "evidence": [
+        "evidence/ui-v12-fixture-independent-r3.json",
+        "evidence/fixture-independent-r3.log"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "R5-01",
+      "scope": "P0-02",
+      "issue": "SL-001/002 login is mapped as authorized overview read with zero surfaces; actual visible login form is excluded by validator. Account login/error fields and missing C-009 must be bound without requesting overview before auth."
+    },
+    {
+      "id": "R5-02",
+      "scope": "P0-02",
+      "issue": "SL-009 topology primary C-003 entity read omits C-004 neighbors and graph-root/graph-depth controls outside forms. Audit all non-form fields/change/input handlers and active overlays by concrete slice context, not route or modal majority heuristics. SL-106 must retain finding parent C-030 and incident candidate C-031 alongside missing C-039."
+    },
+    {
+      "id": "R5-03",
+      "scope": "P0-03 + P0-02",
+      "issue": "contracts C-051/052 still advertise apiKey and contextWindow object with providerReportedMax, while connectionUpsertRequest requires credential keep/replace and int/null contextWindow. form-bindings model uses endpoint/modelId/credentialRef/contextLength. C-173 omits required stepUp; C-175 omits challengeId; C-170 adds confirmExplicit rejected by subjectMappingRequest. Reconcile all versioned operations, forms, field paths and header/path/body distinctions; do not loosen reviewed schemas to match stale CSV."
+    },
+    {
+      "id": "R5-04",
+      "scope": "progress/G0",
+      "issue": "progress.md incorrectly makes full six-dimension product verification a G0 prerequisite and retains outdated disk100%/r1 runtime statements as current. implementation-plan G0 is mapping/contract/security-state readiness; product verification belongs later. validator hardcodes all dimensions not_verified and G0 ignores P0-01/dependency validity. Separate historical baseline/current state and structural checks/independent approval; do not claim G0 from CSV status alone."
+    }
+  ],
+  "not_proven": [
+    "product six dimensions",
+    "native authentication/history migration",
+    "real source qualification",
+    "model runtime/admission/answer quality"
+  ]
+}

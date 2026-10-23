@@ -1,0 +1,61 @@
+{
+  "scope": "isolated synthetic registration; source qualification/live ingestion not asserted",
+  "checks": [
+    "actual source UI requires proof, verifies password+TOTP through real Transit factor, sends exact challenge header and persists status/revision"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16359-aae7-74e0-b023-c1d3df6bb928"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16359-ab84-74bb-af74-b0036d2e2641"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16359-aca9-7c93-8db8-32c7685ba846"
+    },
+    {
+      "path": "/api/v1/admin/source-registrations",
+      "status": 200,
+      "requestId": "01a16359-ad10-7864-8181-d6a0b019b43e"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a16359-b093-78fd-80cc-343776a20d63"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16359-b0c6-7de0-aa49-e8a1a2b7da51:verify",
+      "status": 200,
+      "requestId": "01a16359-b0f9-758b-b6ba-707235f3a39a"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16359-b0c6-7de0-aa49-e8a1a2b7da51:verify",
+      "status": 200,
+      "requestId": "01a16359-b198-76b4-8404-c691999af10c"
+    },
+    {
+      "path": "/api/v1/admin/source-registrations/37728671-b5f0-40b3-8f75-0092787510f2",
+      "status": 200,
+      "requestId": "01a16359-b24e-7406-8400-2a7c46710b53"
+    },
+    {
+      "path": "/api/v1/admin/source-registrations",
+      "status": 200,
+      "requestId": "01a16359-b273-7263-b7b6-8cababa01b59"
+    }
+  ],
+  "source": "37728671-b5f0-40b3-8f75-0092787510f2",
+  "cluster": "d3562cbc-902f-4526-ae55-a395c023b8ef",
+  "tenant": "abf33a27-b600-4eae-8bf8-4eb02bd14477",
+  "stored": {
+    "status": "disabled",
+    "revision": 2
+  },
+  "status": "passed"
+}

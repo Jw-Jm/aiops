@@ -144,7 +144,7 @@ it("shows scoped active counts, domain navigation and a bounded priority inciden
   );
   expect(
     await screen.findByRole("link", { name: "节点未就绪" }),
-  ).toHaveAttribute("href", "/incidents/incident-one");
+  ).toHaveAttribute("href", "/events/incidents/incident-one");
   expect(screen.getByText("活动告警").closest(".stat")).toHaveTextContent("3");
   expect(
     screen.getByText("未确认故障（open）").closest(".stat"),

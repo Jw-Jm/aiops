@@ -1,0 +1,53 @@
+{
+  "task_id": "ddf77c78-f50d-4857-806a-3339cd5cd35a",
+  "reviewer": "Codex independent acceptance",
+  "date": "2026-10-22T00:45:20.095182+00:00",
+  "status": "accepted_P2_01_data_and_bootstrap_scope",
+  "head": "9bd78d84e212217626cdf0cfe54af84a155a9a3d",
+  "worktree": "uncommitted feat/ui-v12-replication",
+  "environment": {
+    "host": "mssc-direct",
+    "container": "ops-ui-v12-native-pg-20261022-codex-r2",
+    "directory": "/data/ops-ui-v12-native-20261022-codex-r2",
+    "client_port": 15451,
+    "database": "ui_v12_native_identity",
+    "postgres": "17.11",
+    "schema_version": 44,
+    "fresh_database": true,
+    "image": "sha256:589f742565e4f6d22149176b032974f55f8201a8a37b71ed587ec5c6902e689f"
+  },
+  "checks": [
+    {
+      "command": "identity + CLI focused Go unit tests",
+      "result": "passed identity1.036s CLI1.116s"
+    },
+    {
+      "command": "independently crosscompile current integration source and run NativeIdentity on fresh isolated remote PostgreSQL",
+      "result": "PASS, migrations1..44 applied from empty; TestNativeIdentityRepositoryAndRoles2.98s; guard PASS",
+      "evidence": "evidence/codex-native-r2/native-codex-r2.log"
+    },
+    {
+      "command": "independently crosscompile opsctl and execute bootstrap native-administrator twice on separate synthetic tenant",
+      "result": "first exit0, repeat exit1, no password reset",
+      "evidence": "evidence/codex-native-r2/cli-codex-r2-summary.json"
+    }
+  ],
+  "source_sha256": {
+    "migrations/00044_native_identity.sql": "b6975c11e51bcfab8bad0c7f6b6044aa165365a0694d8399a3c87f55069fd524",
+    "internal/identity/repository.go": "baac4e23e78bf8aa7c0a014a8b4bbdc17d28cac4c575c4c8035a58e1f8f0bba8",
+    "test/integration/native_identity_test.go": "8b15bf03d57c16003097a5d4def974d5b6673fc8f4aacd212f76b84423241e9c",
+    "cmd/opsctl/bootstrap_native_administrator.go": "0e01997d124f7167c1e914cbc686e6622aeaaf53069850202c2c4325b4365173"
+  },
+  "binary_sha256": {
+    "integration": "92f28d49d61fc5df0328f3948328e3c819ba445b9f053cefad6a11c9ce48d129",
+    "cli": "ae5c8f704ca42ddd61951aa5348661cc20848b6ee2ff1a82a47a0aa24a40283d"
+  },
+  "failure_retained": "Fresh-container readiness initially failed before SQL mutations; retained evidence/codex-native-r2/setup-r1-startup-failure.txt. Recovered after TCP-started server probe. No secret printed.",
+  "limits": [
+    "P2-01 data/bootstrap scope only",
+    "native HTTP/session cookie/CSRF/first password/MFA/role administration not implemented",
+    "P1 visual/live and all six product dimensions unverified",
+    "existing15449 Fixture and shared databases untouched",
+    "OPA source-lock failure attribution remains unresolved"
+  ]
+}

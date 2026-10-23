@@ -1,0 +1,58 @@
+task=ui-v12-p2-01-r1
+container=ops-ui-v12-native-pg-20261021-r1
+image=sha256:589f742565e4f6d22149176b032974f55f8201a8a37b71ed587ec5c6902e689f
+ports={"5432/tcp":[{"HostIp":"127.0.0.1","HostPort":"15450"}]}
+data_host_path=/data/ops-ui-v12-native-20261021-r1/pgdata
+evidence_files=
+native-r1-cli-ids-20261021T103211Z.txt
+native-r1-cli-repeat-rejected-b-20261021T103300Z.log
+native-r1-cli-success-20261021T103224Z.log
+native-r1-cli-success-b-20261021T103300Z.log
+native-r1-dbtest-20261021T095641Z.log
+native-r1-dbtest-b-20261021T095859Z.log
+native-r1-dbtest-c-20261021T100044Z.log
+native-r1-dbtest-d-20261021T100733Z.log
+native-r1-dbtest-e-20261021T101156Z.log
+native-r1-dbtest-f-20261021T101307Z.log
+native-r1-dbtest-g-20261021T101429Z.log
+native-r1-dbtest-h-20261021T101607Z.log
+native-r1-dbtest-i-20261021T101654Z.log
+native-r1-dbtest-j-20261021T101826Z.log
+native-r1-dbtest-k-20261021T101909Z.log
+native-r1-dbtest-l-20261021T102151Z.log
+native-r1-dbtest-m-20261021T102214Z.log
+native-r1-dbtest-n-20261021T102357Z.log
+native-r1-dbtest-o-20261021T102520Z.log
+native-r1-dbtest-p-20261021T102548Z.log
+native-r1-dbtest-p2-20261021T102609Z.log
+native-r1-dbtest-q-20261021T102706Z.log
+native-r1-dbtest-r-20261021T103010Z.log
+native-r1-dbtest-s-20261021T103129Z.log
+native-r1-final-verification-20261021T103414Z.txt
+server_version=17.11 (Debian 17.11-1.pgdg12+2)
+database=ui_v12_native_identity
+database_owner=ui_v12_native_owner
+database_comment=ops.task=ui-v12-p2-01-r1; isolated native identity only
+schema_version=44
+capability_roles
+  api_runtime_role login=false super=false inherit=false bypass=false
+  audit_append_owner login=false super=false inherit=false bypass=false
+  migration_role login=false super=false inherit=false bypass=false
+  ops_readonly_role login=false super=false inherit=false bypass=false
+  schema_owner login=false super=false inherit=false bypass=false
+  worker_runtime_role login=false super=false inherit=false bypass=false
+bootstrap_logins
+  ui_v12_native_cli login=true super=false inherit=false bypass=false
+  ui_v12_native_owner login=true super=false inherit=false bypass=false
+identity_functions
+  identity.clear_password_failure owner=schema_owner security_definer=true
+  identity.find_login_account owner=schema_owner security_definer=true
+  identity.preauth_context_active owner=schema_owner security_definer=false
+  identity.record_password_failure owner=schema_owner security_definer=true
+accounts=4
+credentials=4
+initializations=4
+audit_first_admin=4
+active_platform_admin_grants=4
+active_operator_grants=0
+composite_account_fks=6

@@ -1,0 +1,83 @@
+{
+  "origin": "https://192.168.0.63:30467",
+  "schemaVersion": 56,
+  "scope": "isolated account fixture; no source qualification or pixel acceptance",
+  "checks": [
+    "native administrator login and cluster/user reads",
+    "create UI blocked before exact password+TOTP proof via real Transit",
+    "201 creation persists native principal without grants and with mandatory first password",
+    "reload reads persisted account"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16654-559a-709b-92e7-350ab868a27a"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16654-5647-752f-87d1-6e23061f8904"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16654-5a53-72ad-a7cf-1cd6e7a63e76"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a16654-5d4b-780e-badb-1214685053a1"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16654-5d4c-7c73-9e48-2678be698195"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a16654-5fd7-7923-8e11-604e9e216aa9"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16654-61af-7b79-8167-edca542b150e:verify",
+      "status": 200,
+      "requestId": "01a16654-61d1-7c99-b705-687b6a8e7f0f"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16654-61af-7b79-8167-edca542b150e:verify",
+      "status": 200,
+      "requestId": "01a16654-6261-7d31-b378-809dd7d7ee82"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 201,
+      "requestId": "01a16654-6505-7eff-8303-e6173eadb728"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16654-65ce-7b91-b2d2-2f6dbf7c7564"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a16654-660e-7f25-b3b1-e347feba6447"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16654-6610-77db-850f-066b18f5d6bc"
+    }
+  ],
+  "pageErrors": [],
+  "account": {
+    "userId": "01a16654-6517-7b3f-b4b5-1c367445d5ca",
+    "subject": "native:01a16654-6517-7b3f-b4b5-1c367445d5ca",
+    "revision": 1,
+    "mustChangePassword": true,
+    "status": "active"
+  },
+  "loginName": "browser.r13.94cfa043c86d",
+  "status": "passed"
+}

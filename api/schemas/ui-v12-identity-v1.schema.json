@@ -1,0 +1,794 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/ui-v12-identity/v1",
+  "title": "UI v1.2 native identity, session, authorization and subject-mapping contract",
+  "description": "Versioned P0 contract for built-in accounts. Requests never carry tenant, role, subject, administrator-count or assurance claims: those are server facts resolved inside the writing transaction. Revocation versions and independent operator/platform_admin grants are part of the payload so clients cannot omit them. The root document deliberately accepts no instance; every payload is validated through a fragment such as #/$defs/sessionView.",
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false,
+  "not": {},
+  "$defs": {
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "loginName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "password": {
+      "type": "string",
+      "minLength": 12,
+      "maxLength": 256,
+      "writeOnly": true
+    },
+    "timestamp": {
+      "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+    },
+    "optionalTimestamp": {
+      "anyOf": [
+        {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "clusterUids": {
+          "type": "array",
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "namespaces": {
+          "type": "array",
+          "maxItems": 200,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 63,
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+          }
+        }
+      },
+      "required": [
+        "clusterUids",
+        "namespaces"
+      ]
+    },
+    "loginRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "loginName": {
+          "$ref": "#/$defs/loginName"
+        },
+        "password": {
+          "$ref": "#/$defs/password"
+        },
+        "deviceLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "required": [
+        "loginName",
+        "password"
+      ]
+    },
+    "firstPasswordRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Only valid on a first_password_only session. The session may change its own credential and log out, nothing else.",
+      "properties": {
+        "currentPassword": {
+          "$ref": "#/$defs/password"
+        },
+        "newPassword": {
+          "$ref": "#/$defs/password"
+        },
+        "expectedCredentialVersion": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "currentPassword",
+        "newPassword",
+        "expectedCredentialVersion"
+      ]
+    },
+    "passwordChangeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "currentPassword": {
+          "$ref": "#/$defs/password"
+        },
+        "newPassword": {
+          "$ref": "#/$defs/password"
+        },
+        "expectedCredentialVersion": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "currentPassword",
+        "newPassword",
+        "expectedCredentialVersion"
+      ]
+    },
+    "accountCreateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Creation takes a login name, display name and initial password. The server always forces a password change on first sign-in; there is no email or one-time-link delivery flow. Tenant, subject and roles are assigned separately by the server and are unknown fields here.",
+      "properties": {
+        "loginName": {
+          "$ref": "#/$defs/loginName"
+        },
+        "displayName": {
+          "$ref": "#/$defs/displayName"
+        },
+        "initialPassword": {
+          "$ref": "#/$defs/password"
+        }
+      },
+      "required": [
+        "loginName",
+        "displayName",
+        "initialPassword"
+      ]
+    },
+    "accountUpdateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A profile edit and a status change are independent intents. The last-administrator decision is made by the service inside the write transaction and returned as a conflict projection; no client-supplied administrator count, target flag or guard assertion is accepted.",
+      "properties": {
+        "displayName": {
+          "$ref": "#/$defs/displayName"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "disabled"
+          ]
+        },
+        "expectedRevision": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "expectedRevision"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "displayName"
+          ]
+        },
+        {
+          "required": [
+            "status"
+          ]
+        }
+      ]
+    },
+    "accountUpdateConflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server projection returned when a status change would remove the last active administrator. It records the transaction-time count and the effective state; the client cannot supply or override it.",
+      "properties": {
+        "code": {
+          "const": "last_active_administrator"
+        },
+        "activeAdministrators": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "protectedUserId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "attemptedStatus": {
+          "const": "disabled"
+        },
+        "effectiveStatus": {
+          "const": "active"
+        },
+        "detectedAt": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "required": [
+        "code",
+        "activeAdministrators",
+        "protectedUserId",
+        "attemptedStatus",
+        "effectiveStatus",
+        "detectedAt"
+      ]
+    },
+    "adminPasswordResetRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Administrator password reset is a separate operation from profile/status editing. The target user comes from the path; the body carries the new initial password and both optimistic revisions. The server forces a change on next sign-in and revokes sessions.",
+      "properties": {
+        "initialPassword": {
+          "$ref": "#/$defs/password"
+        },
+        "expectedRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "expectedCredentialVersion": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "initialPassword",
+        "expectedRevision",
+        "expectedCredentialVersion"
+      ]
+    },
+    "adminPasswordResetResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The reset bumps the credential and session versions and forces a first-password change. sessionsRevoked may be zero if the target had no active sessions.",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "passwordState": {
+          "const": "change_required"
+        },
+        "credentialVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "sessionsRevoked": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "revocation": {
+          "$ref": "#/$defs/sessionRevocation"
+        },
+        "auditRecordId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "userId",
+        "passwordState",
+        "credentialVersion",
+        "sessionsRevoked",
+        "revocation",
+        "auditRecordId"
+      ]
+    },
+    "roleGrantRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One grant carries exactly one role. operator and platform_admin are independent grants and must not be combined into a single request field.",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "role": {
+          "enum": [
+            "operator",
+            "platform_admin"
+          ]
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "expectedAuthorizationVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "userId",
+        "role",
+        "scope",
+        "expectedAuthorizationVersion",
+        "reason"
+      ]
+    },
+    "roleGrantView": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bindingId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "tenantId": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+        },
+        "role": {
+          "enum": [
+            "operator",
+            "platform_admin"
+          ]
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "authorizationVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "grantedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "revokedAt": {
+          "$ref": "#/$defs/optionalTimestamp"
+        }
+      },
+      "required": [
+        "bindingId",
+        "userId",
+        "tenantId",
+        "role",
+        "scope",
+        "authorizationVersion",
+        "grantedAt",
+        "revokedAt"
+      ]
+    },
+    "subjectMappingRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Historical subjects migrate only through an explicit, evidence-backed mapping. Matching by login name or display name is not part of this contract.",
+      "properties": {
+        "legacySubject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "basis": {
+          "const": "verified_inventory"
+        },
+        "evidenceDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        "expectedUserRevision": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "legacySubject",
+        "userId",
+        "basis",
+        "evidenceDigest",
+        "expectedUserRevision"
+      ]
+    },
+    "subjectMappingView": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The mapping view carries the mapped historical subject and the evidence it was verified against. It has no role fields: roles are never inherited from a name.",
+      "properties": {
+        "mappingId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "legacySubject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "tenantId": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+        },
+        "basis": {
+          "const": "verified_inventory"
+        },
+        "evidenceDigest": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/sha256"
+        },
+        "mappedAt": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "required": [
+        "mappingId",
+        "legacySubject",
+        "userId",
+        "tenantId",
+        "basis",
+        "evidenceDigest",
+        "mappedAt"
+      ]
+    },
+    "sessionRevocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "credentialVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "sessionVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "authorizationVersion": {
+          "$ref": "#/$defs/revision"
+        }
+      },
+      "required": [
+        "credentialVersion",
+        "sessionVersion",
+        "authorizationVersion"
+      ]
+    },
+    "csrf": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The response exposes the CSRF header and token the browser must echo. Cookie flags, the Origin check and the server-side session store are runtime requirements and are not modelled as asserted booleans.",
+      "properties": {
+        "headerName": {
+          "const": "X-CSRF-Token"
+        },
+        "token": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 512
+        },
+        "cookieName": {
+          "const": "__Host-ops-session"
+        },
+        "sameSite": {
+          "const": "Strict"
+        }
+      },
+      "required": [
+        "headerName",
+        "token",
+        "cookieName",
+        "sameSite"
+      ]
+    },
+    "sessionView": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server-resolved session state. Raw session material stays in an HttpOnly cookie; acr urn:ops:loa:2 is only emitted after real password plus TOTP verification for the current session.",
+      "properties": {
+        "sessionRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "tenantId": {
+          "$ref": "https://ops.local/schemas/common/v1#/$defs/tenantId"
+        },
+        "mode": {
+          "enum": [
+            "full",
+            "first_password_only"
+          ]
+        },
+        "authMethods": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "password",
+              "totp",
+              "recovery_code"
+            ]
+          }
+        },
+        "acr": {
+          "enum": [
+            "urn:ops:loa:1",
+            "urn:ops:loa:2"
+          ]
+        },
+        "issuedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "absoluteExpiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "idleExpiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "mustChangePassword": {
+          "type": "boolean"
+        },
+        "revocation": {
+          "$ref": "#/$defs/sessionRevocation"
+        },
+        "csrf": {
+          "$ref": "#/$defs/csrf"
+        },
+        "authorization": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "grants": {
+              "type": "array",
+              "maxItems": 50,
+              "items": {
+                "$ref": "#/$defs/roleGrantView"
+              }
+            }
+          },
+          "required": [
+            "grants"
+          ]
+        },
+        "administratorState": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Read-only server facts used to explain why a status change may be refused. They are never accepted in a request.",
+          "properties": {
+            "activeAdministrators": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "isAdministrator": {
+              "type": "boolean"
+            },
+            "isLastActiveAdministrator": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "activeAdministrators",
+            "isAdministrator",
+            "isLastActiveAdministrator"
+          ]
+        },
+        "mustReenrollMfa": {
+          "type": "boolean",
+          "description": "Server-enforced MFA setup restriction; no business authorization until a new factor is confirmed."
+        }
+      },
+      "required": [
+        "sessionRef",
+        "subject",
+        "tenantId",
+        "mode",
+        "authMethods",
+        "acr",
+        "issuedAt",
+        "absoluteExpiresAt",
+        "idleExpiresAt",
+        "mustChangePassword",
+        "revocation",
+        "csrf",
+        "authorization",
+        "administratorState"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "acr": {
+                "const": "urn:ops:loa:2"
+              }
+            },
+            "required": [
+              "acr"
+            ]
+          },
+          "then": {
+            "properties": {
+              "authMethods": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "password"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "totp"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "first_password_only"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "mustChangePassword": {
+                "const": true
+              },
+              "authorization": {
+                "properties": {
+                  "grants": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sessionRevocationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expectedSessionVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "expectedSessionVersion",
+        "reason"
+      ]
+    },
+    "accountView": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "loginName": {
+          "$ref": "#/$defs/loginName"
+        },
+        "displayName": {
+          "$ref": "#/$defs/displayName"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "disabled",
+            "archived"
+          ]
+        },
+        "mustChangePassword": {
+          "type": "boolean"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "revocation": {
+          "$ref": "#/$defs/sessionRevocation"
+        },
+        "roleGrants": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/$defs/roleGrantView"
+          }
+        },
+        "administratorState": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "activeAdministrators": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "isAdministrator": {
+              "type": "boolean"
+            },
+            "isLastActiveAdministrator": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "activeAdministrators",
+            "isAdministrator",
+            "isLastActiveAdministrator"
+          ]
+        }
+      },
+      "required": [
+        "userId",
+        "loginName",
+        "displayName",
+        "status",
+        "mustChangePassword",
+        "subject",
+        "revision",
+        "revocation",
+        "roleGrants",
+        "administratorState"
+      ]
+    },
+    "roleGrantStatusRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expectedRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "status": {
+          "const": "disabled"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "userId",
+        "expectedRevision",
+        "status",
+        "reason"
+      ],
+      "description": "Native status change revokes one current binding at the user authorization version. Re-enabling uses a new explicit roleGrantRequest; legacy subject bindings are never mutated."
+    }
+  }
+}

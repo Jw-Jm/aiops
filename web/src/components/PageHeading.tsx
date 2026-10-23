@@ -1,20 +1,23 @@
 import type { ReactNode } from "react";
+import { PageHeader } from "./v12/primitives";
+
 export function PageHeading({
   title,
   description,
   extra,
+  kicker,
 }: {
   title: string;
   description: string;
   extra?: ReactNode;
+  kicker?: string;
 }) {
   return (
-    <header className="page-heading">
-      <div>
-        <h1>{title}</h1>
-        <p>{description}</p>
-      </div>
-      {extra}
-    </header>
+    <PageHeader
+      kicker={kicker}
+      title={title}
+      description={description}
+      actions={extra}
+    />
   );
 }

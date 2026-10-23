@@ -1,0 +1,43 @@
+{
+  "status": "local_verified_remote_pending",
+  "date": "2026-10-22",
+  "implementation": [
+    "platform Helm single humanAuthMode for API/Worker/Web; native mode removes issuer/CA/identity proxy dependencies",
+    "native fixed tenant/origin and existing MFA Transit key; independent CA and bounded existing OpenBao-audience token projection; no MFA key env on Worker",
+    "native missing/invalid config and API/Web origin mismatch rejected; OIDC compatibility and independent CA proxy preserved",
+    "Web rendered runtime/server checksum triggers rollout; existing TLS/CSP/SSE/proxy failure semantics retained",
+    "C-134 profile listing rechecks shared native administrator/current operator session and role in transaction; no legacy fallback"
+  ],
+  "checks": {
+    "go": "action/authz/app full package tests passed",
+    "contract": "complete test/contract passed; final targeted Helm native/OIDC/identity tests passed after origin port and checksum edits",
+    "native_authorization_cases": "administrator, revoked admin, revoked operator, independent operator, identity mismatch, DB failure",
+    "native_bootstrap": "constructor-only no issuer requirement and unknown mode rejection; no runtime cold start",
+    "linux": "latest API and guarded integration executable cross-compiled successfully; not remotely run",
+    "progress": "177 contracts / 458 states validate-progress passed; no product dimension upgraded",
+    "frozen_migrations": "1..54 unchanged compared to r9 evidence;55/56 still unexecuted",
+    "web": "no web/src changes; existing r9 145 Vitest+6 SSE results historical only, not repeated or treated as r10 runtime evidence"
+  },
+  "failed_checks_preserved": [
+    "gpt-native-deploy-r10-chart-fixture-failed.log: initial SP06 test fixture missing its required SP05 dependency; fixture fixed with dependency preserved; later checks passed",
+    "r9 full opsctl source-material lock mismatch remains unresolved and unchanged"
+  ],
+  "integration_prepared_not_run": [
+    "current native administrator profile list",
+    "independent newly granted profile administrator",
+    "revoked profile reader rejected"
+  ],
+  "remaining": [
+    "formal installer runtime_values.go / business_values and Web Profile OIDC bindings; no official native opsctl install yet",
+    "Job/Worker explicit native authority/user/version persistence and signed cross-process/current scope rechecks",
+    "historical subject ownership reads with current permission checks",
+    "migration55/56 on isolated approved task DB, concurrency and audit rollback",
+    "C-134 cursor/limit/meta pagination and actual target projection/browser coverage",
+    "no-OIDC real cold start/matched versions/forward recovery exercise",
+    "HTML visual and SL-049 full resource/log sample; V1.2 incomplete"
+  ],
+  "remote": "No remote calls this round; no local DB/Kubernetes/model/business browser or CodeBuddy dispatch",
+  "task_status": "P2-05 in_progress only for independent configuration subtask; P2-03/04 acceptance not closed",
+  "source": "source.json",
+  "runbook": "../../native-deployment-runbook.md"
+}

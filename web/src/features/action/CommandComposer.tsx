@@ -1,3 +1,7 @@
+import {
+  NativeStepUpControl,
+  type NativeWriteIntent,
+} from "../../auth/NativeStepUpControl";
 import { getResourceByCanonicalID } from "../../api/generated/platform";
 import { resourceIdentifier } from "../../components/FaultSummary";
 import { matchesAssessment } from "./assessmentBinding";
@@ -94,6 +98,11 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
   const [maxBytes, setMaxBytes] = useState(1048576);
   const [planInput, setPlanInput] = useState("");
   const [assessment, setAssessment] = useState<Record<string, unknown>>();
+  const [nativeStep, setNativeStep] = useState<{
+    id: string;
+    stamp: string;
+    expires: string;
+  } | null>(null);
   const [ack, setAck] = useState<Record<string, unknown>>();
   const [accepted, setAccepted] = useState(false);
   const [output, setOutput] = useState("");
@@ -207,6 +216,7 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
   fingerprint.current = current;
   useEffect(() => {
     setAssessment(undefined);
+    setNativeStep(null);
     setAck(undefined);
     setAccepted(false);
     submissionKey.current = crypto.randomUUID();
@@ -252,6 +262,36 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
       }
     },
   });
+  const binding = record(assessment?.binding);
+  const nativeIntent: NativeWriteIntent = {
+    operation: "command_execution" as NativeWriteIntent["operation"],
+    target: {
+      kind: "k8s_object",
+      canonicalId: binding.targetCanonicalId,
+      uid: binding.targetUid,
+      clusterUid: binding.clusterUid,
+      namespace: binding.namespace ?? null,
+      revision: Number(binding.targetRevision),
+    },
+    command: {
+      assessmentId: assessment?.assessmentId,
+      riskAssessmentVersion: binding.riskAssessmentVersion,
+      executionRequestDigest: assessment?.executionRequestDigest,
+      policyVersion: binding.policyVersion,
+      incidentId: binding.incidentId,
+      executionProfileId: binding.executionProfileId,
+      executionProfileVersion: binding.executionProfileVersion,
+      actualCommandDigest: binding.actualCommandDigest,
+    },
+  };
+  const nativeStepStamp = JSON.stringify([
+    nativeIntent,
+    current,
+    authorizationEpoch.current,
+  ]);
+  const nativeStepReady =
+    nativeStep?.stamp === nativeStepStamp &&
+    Date.parse(nativeStep.expires) > Date.now();
   const stepUp = useMutation({
     mutationFn: async () => {
       const epoch = authorizationEpoch.current;
@@ -295,7 +335,16 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
       return checked(
         createCommandExecution(
           body,
-          requestOptions(undefined, true, submissionKey.current),
+          auth.authMode === "native"
+            ? {
+                ...requestOptions(undefined, true, submissionKey.current),
+                headers: {
+                  ...requestOptions(undefined, true, submissionKey.current)
+                    .headers,
+                  "X-Ops-Step-Up-Challenge": nativeStep?.id ?? "",
+                },
+              }
+            : requestOptions(undefined, true, submissionKey.current),
         ),
       );
     },
@@ -742,7 +791,16 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
           {!riskValid && (
             <Alert type="warning" title="风险评估已过期，请重新评估" />
           )}
-          {needsStep && (
+          {needsStep && auth.authMode === "native" && riskValid ? (
+            <NativeStepUpControl
+              key={nativeStepStamp}
+              intent={nativeIntent}
+              onReady={(expires, id) =>
+                setNativeStep({ id, expires, stamp: nativeStepStamp })
+              }
+            />
+          ) : null}
+          {needsStep && auth.authMode !== "native" && (
             <Space wrap className="status-note">
               <Button onClick={() => void login(true)}>3 · 重新验证身份</Button>
               <Button
@@ -765,7 +823,12 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
           <Space wrap className="status-note">
             <Button
               disabled={
-                !accepted || !riskValid || (needsStep && !stepUp.isSuccess)
+                !accepted ||
+                !riskValid ||
+                (needsStep &&
+                  !(auth.authMode === "native"
+                    ? nativeStepReady
+                    : stepUp.isSuccess))
               }
               loading={confirm.isPending}
               onClick={() => confirm.mutate()}

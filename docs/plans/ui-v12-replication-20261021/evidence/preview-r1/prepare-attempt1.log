@@ -1,0 +1,3 @@
+2026-10-22 initial one-shot preparation failed after dedicated roles/tenant were created:
+TypeError: Path.open() got an unexpected keyword argument 'opener'
+Private directory was still empty. Corrected to built-in open(..., opener=...), inspected existing tenant, rotated only ui_v12_preview_r1_api/bootstrap passwords, then continued bootstrap/TLS/runtime preparation. No existing task identities or shared data changed.

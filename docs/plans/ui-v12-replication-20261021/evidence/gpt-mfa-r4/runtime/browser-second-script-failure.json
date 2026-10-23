@@ -1,0 +1,132 @@
+{
+  "origin": "https://192.168.0.63:30465",
+  "schemaVersion": 52,
+  "checks": [
+    "actual UI initial enrollment creates challenge, retries password/TOTP and confirms"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a16325-441c-7970-95cb-615dc07b6660"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a16325-44aa-7346-8460-0250fd20af8b"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 201,
+      "requestId": "01a16325-45a3-731d-82cc-7ea86c5115de"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16325-4722-788d-b04a-99d3ef716657"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16325-4789-7bee-b66c-def41cdd7281"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16325-478b-7a13-bb41-a65f98fe2c1f"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a16325-47b7-7aac-98a3-372077941113"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a16325-47e3-77fb-8e8c-95d0e612d84f"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16325-47f5-7b77-be2e-4d63a8b9c17f:verify",
+      "status": 200,
+      "requestId": "01a16325-4b49-7a1e-aeeb-c59666b08646"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16325-47f5-7b77-be2e-4d63a8b9c17f:verify",
+      "status": 200,
+      "requestId": "01a16325-4cea-7739-b680-56923b036491"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16325-47f5-7b77-be2e-4d63a8b9c17f:verify",
+      "status": 200,
+      "requestId": "01a16325-5146-771e-8bf6-947b1362129a"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16325-47f5-7b77-be2e-4d63a8b9c17f:verify",
+      "status": 200,
+      "requestId": "01a16325-567b-74f5-b742-e64e63948d49"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a16325-47d5-70e5-ac3a-78ea3eae44e4:verify",
+      "status": 200,
+      "requestId": "01a16325-59be-750d-a149-72c779e3f929"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16325-5c1d-7b8a-ae71-a49e53254e88"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a16325-5d18-70ae-94c1-0233b7d505b9"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16325-5d6c-7801-a000-435bb35b0ebd"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a16325-5d6d-7780-83cf-ac3e4672a404"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a16325-5df5-7ed8-9f85-37fafd346e2d"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a16325-5e3d-7682-8f5e-7cbb1eb7d8be"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16325-5e62-7738-a320-f04058ffee3b:verify",
+      "status": 200,
+      "requestId": "01a16325-618d-74c1-b4b2-e95693d146fd"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16325-5e62-7738-a320-f04058ffee3b:verify",
+      "status": 200,
+      "requestId": "01a16325-632e-70eb-9f32-dd8c7a815ea2"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16325-5e62-7738-a320-f04058ffee3b:verify",
+      "status": 200,
+      "requestId": "01a16325-678a-73d2-9229-f32ac9b1fba1"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a16325-5e62-7738-a320-f04058ffee3b:verify",
+      "status": 200,
+      "requestId": "01a16325-6acb-7305-987e-a0e3b80efa36"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a16325-6b26-7600-a825-ada060e8959c"
+    }
+  ],
+  "pageErrors": [],
+  "status": "failed",
+  "failure": "page.evaluate: TypeError: r.status is not a function\n    at eval (eval at evaluate (:370:30), <anonymous>:1:51)\n    at async <anonymous>:396:30"
+}
