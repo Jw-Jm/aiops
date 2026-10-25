@@ -444,3 +444,7 @@
 最终结果：远程集成8项、原生RPC 1项（3子项）、OpenBao全包25项均通过且无跳过；本地四包race、CLI及vet通过。实际PG/RLS/签名/mTLS/HTTP入口与受控来源/Lease/Transit/S3/Audit verifier的边界见报告，不冒充安装态全量验收。其他MR的原有待审核/待验收状态继续保留。
 
 本轮未调用CodeBuddy、未提交/推送/合并/发布；完成本轮后停止。
+
+## 主分支合入与r15部署（2026-10-25）
+
+用户随后授权将全部修改合入主分支、推送GitHub，并明确更新r15(API18089)。代码提交 `16858c1` 已快进合入并推送main；前端全量174项测试、构建、internal/cmd/contract全量Go测试通过。r15已切换至主分支API/前端及隔离69版本数据库副本，原共用57版本库和其他预览保留。详见 [main-integration-and-r15-deployment.md](main-integration-and-r15-deployment.md) 及对应上线回执。这次授权取代此前“未提交/部署”的停止边界；原各轮停止记录保留为历史。
