@@ -1,0 +1,118 @@
+{
+  "completedAt": "2026-10-25T10:40:30.781188+00:00",
+  "outcome": "fixed",
+  "scope": [
+    "r11 independent findings 1-3",
+    "MR-001 end-to-end budget reservation before source",
+    "MR-017 native Graph/Evidence/Analysis/Audit RPC",
+    "MR-018 metric judgement to source-step HTTP",
+    "MR-019 Node Unknown to Incident recovery",
+    "migration 63 to 69"
+  ],
+  "worktree": "/Users/mssc/Documents/Code/ops/.worktrees/main-review-fixes-20261025",
+  "remoteHost": "mssc-direct",
+  "remoteRoot": "/opt/ops-main-review-r13-20261025",
+  "remoteDatabaseContainer": "ops-main-review-r13-pg",
+  "postgresVersion": "17.11",
+  "build": {
+    "toolchain": "go1.27.1 darwin/arm64",
+    "target": "linux/amd64",
+    "CGO_ENABLED": "0",
+    "method": "go test -c; test binaries executed on mssc-direct"
+  },
+  "remoteResults": [
+    {
+      "log": "integration-final.log",
+      "topLevelPassed": 8,
+      "tests": [
+        "TestMainReviewCurrentResourceMCPReservationBeforeSource",
+        "TestMainReviewNativeInteractiveAndTaskGraphRPC200",
+        "TestMainReviewNodeUnknownIncidentRecovery",
+        "TestMainReviewMetricJudgementSourceStepHTTP",
+        "TestMainReviewMigration63To69",
+        "TestNativeFaultChainSourceStepReadBack",
+        "TestOpenBaoBootstrapTLSLive",
+        "TestObservedRelationsUseTheExactIdentity"
+      ],
+      "failed": false,
+      "skipped": false
+    },
+    {
+      "log": "native-rpc-final.log",
+      "topLevelPassed": 1,
+      "tests": [
+        "TestMainReviewNativeEvidenceAnalysisAuditRPC200"
+      ],
+      "failed": false,
+      "skipped": false
+    },
+    {
+      "log": "openbao-final.log",
+      "topLevelPassed": 25,
+      "tests": [
+        "TestRuntimeTransitRoleRequiresProjectedTokenAudience",
+        "TestServiceDomainBindsTheInstalledNamespace",
+        "TestEnsureBootstrapTLSCreatesSecretAndTrust",
+        "TestEnsureBootstrapTLSKeepsTrustAndIdentityWhenOutcomeIsUnknown",
+        "TestEnsureBootstrapTLSRefusesForeignSecret",
+        "TestEnsureBootstrapTLSRefusesKeyMismatch",
+        "TestEnsureBootstrapTLSCaWithoutIdentityFailsClosed",
+        "TestEnsureBootstrapTLSRejectsPendingLinks",
+        "TestEnsureBootstrapTLSAcceptsExternalCAAlias",
+        "TestPendingWriterNeverOverwritesExistingEntry",
+        "TestCommandTransitInitializationScopeAndRerun",
+        "TestConfigureAcceptsAnAlreadyExtendedCommandPolicy",
+        "TestInitializeReportsUnrecoverableWhenResponseIsLost",
+        "TestInitializeStaysRetryableWhenTheInstanceIsStillUninitialized",
+        "TestInitializeDiscardsAnEmptyResidueOnlyWhenUninitialized",
+        "TestRotationLoopRefreshesCRLWhenRenewalFails",
+        "TestRotationLoopRecoversAfterRenewalFailure",
+        "TestCertReloaderKeepsPrivateKeyInMemoryAndRotatesWithOpenBaoLogin",
+        "TestCertReloaderRetainsValidCertificateAfterFailedRotationAndFailsClosedAtExpiry",
+        "TestCertReloaderRefreshesCRLAndFailsClosedWhenStaleOrRevoked",
+        "TestCertReloaderRejectsWrongOpenBaoBootstrapCA",
+        "TestPinnedWorkloadIssuerDriftCannotReplaceActiveIdentity",
+        "TestConcurrentInvocationSigningRenewsRotatedProjectedTokenAndFailsClosed",
+        "TestProjectedTokenAcceptsKubernetesAtomicWriterLayout",
+        "TestTransitLargeResponseAndOrdinaryResponseBoundaries"
+      ],
+      "failed": false,
+      "skipped": false
+    }
+  ],
+  "localResults": [
+    {
+      "command": "go test -race ./internal/integrations/openbao ./internal/app ./internal/resourcestore ./internal/resource -count=1",
+      "result": "passed",
+      "log": "local-race.log"
+    },
+    {
+      "command": "go test ./cmd/opsctl -count=1",
+      "result": "passed",
+      "log": "local-opsctl.log"
+    },
+    {
+      "command": "go vet ./internal/integrations/openbao ./internal/app ./test/integration",
+      "result": "passed",
+      "log": "local-vet.log"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --quiet -- migrations",
+      "result": "passed; tracked applied migration files unchanged"
+    }
+  ],
+  "codeBuddyCalled": false,
+  "committed": false,
+  "pushed": false,
+  "limitations": [
+    "Production-installed full deployment and browser acceptance not rerun",
+    "Business E2E uses explicitly controlled source/Lease/Transit/S3 protocol fixtures; native identity, PostgreSQL, signed HTTP, mTLS and production business entry points are real",
+    "Audit verifier is a counted fixture; no claim of live archive signature verification",
+    "OpenBao bootstrap uses real Kubernetes API; the lost client receipt is injected after real Secret creation",
+    "Retained audit/evidence test databases and dedicated PostgreSQL container were not deleted"
+  ]
+}

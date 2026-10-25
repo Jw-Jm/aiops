@@ -20,6 +20,43 @@ import (
 	"ops-platform/internal/persistence"
 )
 
+// historicalDownSections are the applied migrations that still carry a Goose Down
+// section. Their bytes are frozen: the exact digest of every file is recorded
+// here, so an edit of an applied migration is refused by the gate.
+//
+// The kind states what the Down section actually does:
+//   - comments_only: the section documents that the migration is forward-only
+//     and holds no statement at all.
+//   - raise_exception_guard: the section actively blocks a rollback.
+//   - drop_column / drop_read_function: the historical section really drops an
+//     object. It is admitted only because the file is byte identical to the
+//     applied migration and because the migration CLI has no Down path at all.
+//
+// A new or edited Down section is not admitted by this list.
+var historicalDownSections = map[string]struct {
+	kind   string
+	digest string
+}{
+	"00038_sp08_safe_step_input_summary.sql":         {kind: "drop_column", digest: "114ed90f37b58b6bc83187c0793b2fee48d91a3545ed8c1e3a5e28d57358a05a"},
+	"00047_native_authorization.sql":                 {kind: "comments_only", digest: "2a5a37693445be3b433b3f8ceeec945cc299cff5cdf4b061fae312027f032974"},
+	"00048_native_authorization_found_fix.sql":       {kind: "comments_only", digest: "a0d050c80ef04a58dd3143d87faf817a7d4f0a8d2839826d3b527fe344cf9b32"},
+	"00049_native_authorization_policy_restore.sql":  {kind: "comments_only", digest: "b0bd44a407c9eec9650d316f5f9270ce8b57cc638efe1a5fbaa9f214165128f8"},
+	"00050_native_authorization_session_binding.sql": {kind: "comments_only", digest: "c8d3886c0988028eeffb1d2d151382c314829132959763ec8dc2cc560d393dfa"},
+	"00051_native_mfa_stepup.sql":                    {kind: "comments_only", digest: "f166fd75335a31b22a7fbf297def86c8d078ea4ef5e2220d60c4c239e827526e"},
+	"00052_native_mfa_lifecycle.sql":                 {kind: "comments_only", digest: "e45332919ba8b098628ab6c1a120ba93713822db07ee635684b05757d171f44d"},
+	"00053_native_stepup_resolution.sql":             {kind: "comments_only", digest: "46f317e7fe2c64fc88f12db27d034974e6a5e2ed10305fff76babef862f7aab0"},
+	"00054_resource_projection_revision.sql":         {kind: "comments_only", digest: "59e4c3895d31c61bfc31aa2954499e69ddd65384659f1089dd78a44911974eec"},
+	"00055_native_user_administration.sql":           {kind: "raise_exception_guard", digest: "9bc7b4fa73ec59a4f94b18a5f4b22aa1d33eefdbc306facddf30f433d27c6166"},
+	"00056_native_subject_inventory.sql":             {kind: "raise_exception_guard", digest: "5b9be139240eba257daf5efbed76cf984a41f75648e2ede44085239005c9cff0"},
+	"00057_native_grant_scope_limits.sql":            {kind: "raise_exception_guard", digest: "4ae99de5dbf74d9937905c3c90c064f6e9b9347fb275bbb2b34571b2315ede4b"},
+	"00058_native_historical_read.sql":               {kind: "drop_read_function", digest: "95aa520bfeac63dc2fa2bbf2a417cc27f351da9daa0ceff75c8b156e8c4ca031"},
+	"00059_native_operator_job_authority.sql":        {kind: "comments_only", digest: "26e462b26f055a754ed5def804e3a732f69c38b9b40337f26246826cf36402a9"},
+	"00060_native_first_tenant.sql":                  {kind: "comments_only", digest: "fe696b1f3d3b16de4209a73efe6a39809e69b83ef90d26cb14f60cfe3dc49f97"},
+	"00061_native_job_authority_locks.sql":           {kind: "comments_only", digest: "371743940c5fe6c49fd72aa26ad8817b89bc416d4448bede87a6d3469585f761"},
+	"00062_action_native_authority.sql":              {kind: "comments_only", digest: "3dbdee6decd629532d371c8a67a4bc574b3777a65dde48df77d817eccfd3d5e1"},
+	"00063_native_authority_share_locks.sql":         {kind: "comments_only", digest: "a1d42391f37dc1ef7927f03b2063e53e152a75124d08807b053c9d3db2032c6c"},
+}
+
 func TestMigrationScriptsAreForwardOnlyAndContiguous(t *testing.T) {
 	files, err := os.ReadDir("../../migrations")
 	if err != nil {
@@ -39,15 +76,47 @@ func TestMigrationScriptsAreForwardOnlyAndContiguous(t *testing.T) {
 			t.Fatal(err)
 		}
 		text := string(source)
-		// Preserve the exact historical migration; new or edited Down sections remain forbidden.
-		historical := file.Name() == "00038_sp08_safe_step_input_summary.sql" && fmt.Sprintf("%x", sha256.Sum256(source)) == "114ed90f37b58b6bc83187c0793b2fee48d91a3545ed8c1e3a5e28d57358a05a"
-		if !strings.HasPrefix(text, "-- +goose Up\n") || (strings.Contains(text, "-- +goose Down") && !historical) {
+		// The applied migrations keep their exact historical bytes: a Down section
+		// is only admitted when the file still hashes to the recorded digest of the
+		// applied migration. A new or edited Down section is refused.
+		historical, admitted := historicalDownSections[file.Name()]
+		if admitted && fmt.Sprintf("%x", sha256.Sum256(source)) != historical.digest {
+			t.Errorf("migration %s no longer matches its applied digest", file.Name())
+		}
+		if !strings.HasPrefix(text, "-- +goose Up\n") || (strings.Contains(text, "-- +goose Down") && !admitted) {
 			t.Errorf("migration %s must provide only a forward Goose Up section", file.Name())
 		}
 		version++
 	}
 	if version == 1 {
 		t.Fatal("no SQL migrations found")
+	}
+	// The delivery baseline has to name the real migration set.
+	baseline, err := os.ReadFile("../../docs/release/delivery-baseline.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	latest := version - 1
+	if !strings.Contains(string(baseline), fmt.Sprintf(`"latest": %d`, latest)) || !strings.Contains(string(baseline), fmt.Sprintf(`"count": %d`, latest)) {
+		t.Errorf("the delivery baseline must name the real migration set: latest=%d count=%d", latest, latest)
+	}
+}
+
+// The migration CLI has no Down path: it only moves forward, so a historical
+// Down section is never executed by the product.
+func TestMigrationCLIHasNoDownPath(t *testing.T) {
+	source, err := os.ReadFile("../../cmd/db-migrate/main.go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(source)
+	for _, forbidden := range []string{"goose.Down", "goose.DownTo", "goose.Reset", `"down"`, "rollback"} {
+		if strings.Contains(text, forbidden) {
+			t.Errorf("the migration CLI must not offer a Down path: %s", forbidden)
+		}
+	}
+	if !strings.Contains(text, "goose.UpToContext") && !strings.Contains(text, "goose.UpContext") {
+		t.Error("the migration CLI must migrate forward")
 	}
 }
 

@@ -1,0 +1,8 @@
+=== RUN   TestReviewBootstrapTLSLosesTrustAfterCommittedApplyError
+    main_review_probe_test.go:37: CONFIRMED: a committed apply with a lost response deletes the only CA file and the retry cannot verify the existing Secret. No cluster was called.
+--- PASS: TestReviewBootstrapTLSLosesTrustAfterCommittedApplyError (0.52s)
+=== RUN   TestReviewPKIRenewFailureStopsIndependentCRLFreshness
+    main_review_probe_test.go:72: CONFIRMED: signing outage bypasses reachable CRL refresh; an independent CRL refresh restores the still-valid identity.
+--- PASS: TestReviewPKIRenewFailureStopsIndependentCRLFreshness (0.00s)
+PASS
+ok  	ops-platform/internal/integrations/openbao	1.997s

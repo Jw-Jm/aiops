@@ -125,8 +125,9 @@ type CreateInvestigationRequest struct {
 	Budget            Budget
 }
 type Job struct {
-	Assistant            *AssistantTask  `json:"assistant,omitempty"`
-	SchemaVersion        string          `json:"schemaVersion"`
+	Assistant            *AssistantTask `json:"assistant,omitempty"`
+	SchemaVersion        string         `json:"schemaVersion"`
+	authority            jobAuthority
 	TenantID             uuid.UUID       `json:"tenantId"`
 	JobID                uuid.UUID       `json:"jobId"`
 	IncidentID           uuid.UUID       `json:"incidentId"`

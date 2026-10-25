@@ -43,9 +43,9 @@ func startSP05OfficialObservations(ctx context.Context, archive *evidence.Archiv
 			report, err := InspectSP05OfficialObservations(pass, archive, cluster, client, round)
 			round++
 			cancel()
-			runtime.Metrics.SetComponentDegraded("sp05-control-plane/"+cluster.SourceID, !report.ProbeAvailable || err != nil)
-			runtime.Metrics.SetComponentDegraded("sp05-metrics/"+cluster.SourceID, !report.MetricAvailable || err != nil)
-			runtime.Metrics.SetComponentDegraded("sp05-pod-metrics/"+cluster.SourceID, report.PodMetricDegraded || err != nil)
+			runtime.Metrics.SetBusinessDegraded("sp05-control-plane/"+cluster.SourceID, !report.ProbeAvailable || err != nil)
+			runtime.Metrics.SetBusinessDegraded("sp05-metrics/"+cluster.SourceID, !report.MetricAvailable || err != nil)
+			runtime.Metrics.SetBusinessDegraded("sp05-pod-metrics/"+cluster.SourceID, report.PodMetricDegraded || err != nil)
 			if err != nil {
 				runtime.Logger.WarnContext(ctx, "SP05 official observation unavailable", "errorClass", collectionErrorClass(err))
 			}

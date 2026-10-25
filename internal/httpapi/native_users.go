@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -22,6 +23,22 @@ import (
 type NativeUserHandlers struct{ Pool persistence.TxBeginner }
 
 func writeNativeAdminError(w http.ResponseWriter, r *http.Request, err error) {
+	requestID := nativeRequestID(r)
+	if errors.Is(err, identity.ErrPasswordWorkBusy) {
+		w.Header().Set("Retry-After", "1")
+		writeTenantError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "password hashing is at capacity; retry shortly", true, requestID)
+		return
+	}
+	if errors.Is(err, identity.ErrMFAStepUpBudget) {
+		var budget *identity.StepUpBudgetError
+		retryAfter := identity.StepUpBudgetCooldown
+		if errors.As(err, &budget) && budget.RetryAfter > 0 {
+			retryAfter = budget.RetryAfter
+		}
+		w.Header().Set("Retry-After", strconv.Itoa(max(1, int(retryAfter.Round(time.Second).Seconds()))))
+		writeTenantError(w, http.StatusTooManyRequests, "RATE_LIMITED", "the account verification attempt budget is exhausted; retry after the cooldown", true, requestID)
+		return
+	}
 	status, code := http.StatusInternalServerError, "INTERNAL"
 	message := "native user operation was rejected"
 	var database *pgconn.PgError
@@ -173,7 +190,7 @@ func (h NativeUserHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return &pgconn.PgError{Code: "40001"}
 		}
 		if password, ok := body["initialPassword"].(string); ok {
-			hashed, err := identity.HashPassword(password)
+			hashed, err := identity.HashPasswordContext(r.Context(), password)
 			if err != nil {
 				return err
 			}

@@ -484,6 +484,16 @@ func (r *SessionRepository) FindLoginAccount(ctx context.Context, loginName stri
 	return accounts.FindLoginAccount(ctx, loginName)
 }
 
+// FindLoginAccountTx is the transaction-scoped variant used by step-up
+// verification, which must read the password hash while holding the account lock.
+func (r *SessionRepository) FindLoginAccountTx(ctx context.Context, tx pgx.Tx, loginName string) (LoginAccount, error) {
+	accounts, err := NewRepository(r.pool)
+	if err != nil {
+		return LoginAccount{}, err
+	}
+	return accounts.FindLoginAccountTx(ctx, tx, loginName)
+}
+
 func (r *SessionRepository) RecordPasswordFailure(ctx context.Context, tenantID, userID uuid.UUID, failedAt, lockedUntil *time.Time) error {
 	accounts, err := NewRepository(r.pool)
 	if err != nil {

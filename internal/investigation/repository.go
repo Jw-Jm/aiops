@@ -28,7 +28,7 @@ type Repository struct {
 
 func raw(v any) []byte { b, _ := json.Marshal(v); return b }
 
-const jobColumns = `schema_version,tenant_id,job_id,COALESCE(incident_id,'00000000-0000-0000-0000-000000000000'::uuid),requesting_subject,COALESCE(trigger_revision,0),trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,state,budget,budget_reserved,budget_consumed,expires_at,event_seq,next_call_seq,result,error_code,assistant_binding`
+const jobColumns = `schema_version,tenant_id,job_id,COALESCE(incident_id,'00000000-0000-0000-0000-000000000000'::uuid),requesting_subject,COALESCE(trigger_revision,0),trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,state,budget,budget_reserved,budget_consumed,expires_at,event_seq,next_call_seq,result,error_code,assistant_binding,COALESCE(authorization_source,''),COALESCE(authorization_user_id,'00000000-0000-0000-0000-000000000000'::uuid),COALESCE(authorization_version,0)`
 
 func load(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, lock bool) (Job, error) {
 	var j Job
@@ -37,9 +37,14 @@ func load(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, lock bool) (Job,
 	if lock {
 		suffix = " FOR UPDATE"
 	}
-	err := tx.QueryRow(ctx, `SELECT `+jobColumns+` FROM investigation.jobs WHERE tenant_id=$1 AND job_id=$2 AND schema_version IN('investigation-job/v2','investigation-job/v3')`+suffix, tenant, id).Scan(&j.SchemaVersion, &j.TenantID, &j.JobID, &j.IncidentID, &j.Subject, &j.TriggerRevision, &j.TriggerKind, &j.PolicyVersion, &scope, &j.EffectiveScopeDigest, &j.ToolCatalogDigest, &j.State, &budget, &reserved, &consumed, &j.ExpiresAt, &j.EventSeq, &j.NextCallSeq, &result, &j.ErrorCode, &assistant)
+	err := tx.QueryRow(ctx, `SELECT `+jobColumns+` FROM investigation.jobs WHERE tenant_id=$1 AND job_id=$2 AND schema_version IN('investigation-job/v2','investigation-job/v3')`+suffix, tenant, id).Scan(&j.SchemaVersion, &j.TenantID, &j.JobID, &j.IncidentID, &j.Subject, &j.TriggerRevision, &j.TriggerKind, &j.PolicyVersion, &scope, &j.EffectiveScopeDigest, &j.ToolCatalogDigest, &j.State, &budget, &reserved, &consumed, &j.ExpiresAt, &j.EventSeq, &j.NextCallSeq, &result, &j.ErrorCode, &assistant, &j.authority.source, &j.authority.userID, &j.authority.version)
 	if err != nil {
 		return j, err
+	}
+	if !j.authority.valid() {
+		// Unknown or incomplete provenance is a denial, never a fallback to the
+		// other identity system.
+		return j, ErrDenied
 	}
 	for _, v := range []struct {
 		b   []byte
@@ -58,14 +63,74 @@ func load(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, lock bool) (Job,
 	}
 	return j, nil
 }
+
+// current re-proves a Job that is already persisted. The persisted source
+// decides the branch. A Worker has no browser session, so a native Job is rebuilt
+// from the frozen account/version and the live grant rows under the shared
+// account -> grants locks; a legacy Job keeps the frozen role_bindings fence.
+// Neither branch can borrow the other, and an unknown source is denied instead of
+// guessed.
 func current(ctx context.Context, tx pgx.Tx, j Job) error {
 	if j.SchemaVersion == "investigation-job/v3" {
 		return currentAssistant(ctx, tx, j)
 	}
-	s, err := graph.EffectiveTx(ctx, tx, j.TenantID.String(), j.Subject, j.Scope.Cluster, true)
+	if j.JobID == uuid.Nil || !j.authority.valid() {
+		return ErrDenied
+	}
+	var s graph.Scope
+	var err error
+	switch j.authority.source {
+	case JobAuthorityNative:
+		// The frozen native subject must be the account's own subject. The narrow
+		// projection locks account -> grants -> job and returns nothing for a
+		// disabled account or a version mismatch.
+		var accountSubject string
+		if err = tx.QueryRow(ctx, `SELECT COALESCE(platform.native_incident_job_subject_shared($1,$2),'')`, j.TenantID, j.JobID).Scan(&accountSubject); err != nil || accountSubject == "" || accountSubject != j.Subject {
+			return ErrDenied
+		}
+		s, err = graph.EffectivePersistedNativeTx(ctx, tx, j.TenantID.String(), j.Subject, j.Scope.Cluster, j.authority.userID, j.authority.version)
+	case JobAuthorityLegacy, "":
+		s, err = graph.EffectiveLegacyTx(ctx, tx, j.TenantID.String(), j.Subject, j.Scope.Cluster, true)
+	default:
+		return ErrDenied
+	}
 	if err != nil || graph.ScopeDigest(s) != j.EffectiveScopeDigest {
 		return ErrDenied
 	}
+	return currentPolicy(ctx, tx, j)
+}
+
+// admit is the pre-insert proof for a new v2 Job: it applies the same identity
+// branch and frozen-digest equality as current, but the row being created does
+// not exist yet, so the persisted-subject projection cannot be consulted.
+func admit(ctx context.Context, tx pgx.Tx, j Job) error {
+	if !j.authority.valid() {
+		return ErrDenied
+	}
+	var s graph.Scope
+	var err error
+	switch j.authority.source {
+	case JobAuthorityNative:
+		// The Job is created by a browser session, so the session-bound proof is
+		// repeated here: a revocation, password reset or credential/session version
+		// rotation between the HTTP pre-check and this write must deny admission
+		// instead of persisting a Job that re-proves against a live account only.
+		if err = reproveNativeSessionTx(ctx, tx, j); err != nil {
+			return err
+		}
+		s, err = graph.EffectivePersistedNativeTx(ctx, tx, j.TenantID.String(), j.Subject, j.Scope.Cluster, j.authority.userID, j.authority.version)
+	case JobAuthorityLegacy, "":
+		s, err = graph.EffectiveLegacyTx(ctx, tx, j.TenantID.String(), j.Subject, j.Scope.Cluster, true)
+	default:
+		return ErrDenied
+	}
+	if err != nil || graph.ScopeDigest(s) != j.EffectiveScopeDigest {
+		return ErrDenied
+	}
+	return currentPolicy(ctx, tx, j)
+}
+
+func currentPolicy(ctx context.Context, tx pgx.Tx, j Job) error {
 	vid, err := uuid.Parse(j.PolicyVersion)
 	if err != nil {
 		return ErrDenied
@@ -103,7 +168,13 @@ func (r Repository) CreateJob(ctx context.Context, q CreateInvestigationRequest)
 	if q.TenantID == uuid.Nil || q.IncidentID == uuid.Nil || q.Subject == "" || q.TriggerRevision < 1 || q.PolicyVersion == "" || q.ToolCatalogDigest == "" || !q.Budget.Valid() || q.Scope.Tenant != q.TenantID.String() || (q.TriggerKind != "manual" && q.TriggerKind != "incident_policy" && q.TriggerKind != "new_evidence") {
 		return out, ErrInvalid
 	}
-	err := persistence.WithTenantTx(ctx, r.Pool, q.TenantID, func(tx pgx.Tx) error {
+	// The identity source comes from the trusted authentication context, never
+	// from the request body, and is persisted in the same transaction as the Job.
+	authority, err := jobAuthorityFromContext(ctx)
+	if err != nil {
+		return out, err
+	}
+	err = persistence.WithTenantTx(ctx, r.Pool, q.TenantID, func(tx pgx.Tx) error {
 		if q.IdempotencyKey != "" {
 			if len(q.IdempotencyKey) > 128 || q.RequestDigest == "" {
 				return ErrInvalid
@@ -119,14 +190,24 @@ func (r Repository) CreateJob(ctx context.Context, q CreateInvestigationRequest)
 				if err != nil {
 					return err
 				}
+				if !out.authority.same(authority) {
+					return ErrConflict
+				}
+				// Replay is a new request, not a stored grant: the current browser
+				// session must still be the one that admitted this Job.
+				if out.authority.native() {
+					if err = reproveNativeSessionTx(ctx, tx, out); err != nil {
+						return err
+					}
+				}
 				return current(ctx, tx, out)
 			}
 			if !errors.Is(err, pgx.ErrNoRows) {
 				return err
 			}
 		}
-		j := Job{SchemaVersion: "investigation-job/v2", TenantID: q.TenantID, IncidentID: q.IncidentID, Subject: q.Subject, Scope: q.Scope, EffectiveScopeDigest: graph.ScopeDigest(q.Scope), PolicyVersion: q.PolicyVersion}
-		if err := current(ctx, tx, j); err != nil {
+		j := Job{SchemaVersion: "investigation-job/v2", TenantID: q.TenantID, IncidentID: q.IncidentID, Subject: q.Subject, Scope: q.Scope, EffectiveScopeDigest: graph.ScopeDigest(q.Scope), PolicyVersion: q.PolicyVersion, authority: authority}
+		if err := admit(ctx, tx, j); err != nil {
 			return err
 		}
 		var revision int64
@@ -157,7 +238,12 @@ func (r Repository) CreateJob(ctx context.Context, q CreateInvestigationRequest)
 			return err
 		}
 		var id uuid.UUID
-		err = tx.QueryRow(ctx, `INSERT INTO investigation.jobs(tenant_id,job_id,incident_id,trigger_revision,state,schema_version,requesting_subject,trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,budget,budget_reserved,budget_consumed,expires_at) VALUES($1,$2,$3,$4,'queued','investigation-job/v2',$5,$6,$7,$8,$9,$10,$11,$12,$12,clock_timestamp()+make_interval(secs=>$13)) ON CONFLICT(tenant_id,incident_id,policy_version,trigger_revision,trigger_kind,requesting_subject,effective_scope_digest) WHERE schema_version IN('investigation-job/v1','investigation-job/v2') DO UPDATE SET updated_at=investigation.jobs.updated_at RETURNING job_id`, q.TenantID, uuid.Must(uuid.NewV7()), q.IncidentID, q.TriggerRevision, q.Subject, q.TriggerKind, q.PolicyVersion, raw(q.Scope), j.EffectiveScopeDigest, q.ToolCatalogDigest, raw(q.Budget), raw(Usage{}), q.Budget.DurationSeconds).Scan(&id)
+		var userID *uuid.UUID
+		var version *int
+		if authority.source == JobAuthorityNative {
+			userID, version = &authority.userID, &authority.version
+		}
+		err = tx.QueryRow(ctx, `INSERT INTO investigation.jobs(tenant_id,job_id,incident_id,trigger_revision,state,schema_version,requesting_subject,trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,budget,budget_reserved,budget_consumed,expires_at,authorization_source,authorization_user_id,authorization_version) VALUES($1,$2,$3,$4,'queued','investigation-job/v2',$5,$6,$7,$8,$9,$10,$11,$12,$12,clock_timestamp()+make_interval(secs=>$13),$14,$15,$16) ON CONFLICT(tenant_id,incident_id,policy_version,trigger_revision,trigger_kind,requesting_subject,effective_scope_digest) WHERE schema_version IN('investigation-job/v1','investigation-job/v2') DO UPDATE SET updated_at=investigation.jobs.updated_at RETURNING job_id`, q.TenantID, uuid.Must(uuid.NewV7()), q.IncidentID, q.TriggerRevision, q.Subject, q.TriggerKind, q.PolicyVersion, raw(q.Scope), j.EffectiveScopeDigest, q.ToolCatalogDigest, raw(q.Budget), raw(Usage{}), q.Budget.DurationSeconds, authority.source, userID, version).Scan(&id)
 		if err != nil {
 			return err
 		}
@@ -168,6 +254,9 @@ func (r Repository) CreateJob(ctx context.Context, q CreateInvestigationRequest)
 		out, err = load(ctx, tx, q.TenantID, id, true)
 		if err != nil {
 			return err
+		}
+		if !out.authority.same(authority) {
+			return ErrConflict
 		}
 		if q.IdempotencyKey != "" {
 			if _, err = tx.Exec(ctx, `INSERT INTO investigation.request_keys(tenant_id,subject,idempotency_key,request_digest,job_id) VALUES($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING`, q.TenantID, q.Subject, q.IdempotencyKey, q.RequestDigest, id); err != nil {

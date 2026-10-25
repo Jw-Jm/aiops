@@ -225,6 +225,7 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
     const invalidate = () => {
       authorizationEpoch.current++;
       setAssessment(undefined);
+      setNativeStep(null);
       setAck(undefined);
       setAccepted(false);
       stepUp.reset();
@@ -307,13 +308,26 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
     mutationFn: async () => {
       const snapshot = current;
       const epoch = authorizationEpoch.current;
+      const base = requestOptions(undefined, true);
+      // The server derives the exact step-up target from the assessment; the
+      // browser only references the challenge it verified for that target.
+      const options =
+        auth.authMode === "native" && nativeStep
+          ? {
+              ...base,
+              headers: {
+                ...base.headers,
+                "X-Ops-Step-Up-Challenge": nativeStep.id,
+              },
+            }
+          : base;
       const response = await checked(
         acknowledgeCommandRisk(
           {
             assessmentId: text(assessment?.assessmentId),
             executionRequestDigest: text(assessment?.executionRequestDigest),
           },
-          requestOptions(undefined, true),
+          options,
         ),
       );
       return { response, snapshot, epoch };
@@ -332,21 +346,20 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
         ...request,
         riskAcknowledgementId: text(ack?.acknowledgementId),
       };
-      return checked(
-        createCommandExecution(
-          body,
-          auth.authMode === "native"
-            ? {
-                ...requestOptions(undefined, true, submissionKey.current),
-                headers: {
-                  ...requestOptions(undefined, true, submissionKey.current)
-                    .headers,
-                  "X-Ops-Step-Up-Challenge": nativeStep?.id ?? "",
-                },
-              }
-            : requestOptions(undefined, true, submissionKey.current),
-        ),
-      );
+      const base = requestOptions(undefined, true, submissionKey.current);
+      // An empty header would be rejected as an invalid reference, so it is only
+      // sent when this command actually needs a step-up proof.
+      const options =
+        auth.authMode === "native" && nativeStep
+          ? {
+              ...base,
+              headers: {
+                ...base.headers,
+                "X-Ops-Step-Up-Challenge": nativeStep.id,
+              },
+            }
+          : base;
+      return checked(createCommandExecution(body, options));
     },
     onSuccess: (response) => {
       submissionKey.current = crypto.randomUUID();

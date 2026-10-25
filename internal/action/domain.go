@@ -100,7 +100,19 @@ type Authority struct {
 	AuthorizationVersion int       `json:"authorizationVersion,omitempty"`
 }
 
+// frozenStepUp is the accepted native step-up proof a high-privilege execution was
+// prepared with. It is unexported so the execution JSON contract does not change and
+// a client can never supply it; every asynchronous re-proof reads it from the row.
+type frozenStepUp struct {
+	SessionID     uuid.UUID
+	ProofID       uuid.UUID
+	Operation     string
+	BindingDigest []byte
+	ExpiresAt     time.Time
+}
+
 type Execution struct {
+	stepUp            *frozenStepUp
 	Authority         Authority       `json:"authority"`
 	Iteration         int             `json:"iteration"`
 	OutputPreviews    json.RawMessage `json:"outputPreviews,omitempty"`

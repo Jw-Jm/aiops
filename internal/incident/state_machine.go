@@ -23,21 +23,12 @@ type Change struct {
 	SuppressedUntil  *time.Time `json:"suppressedUntil"`
 }
 
-// Caller must supply a current, verified operator scope. Authorization is checked
-// again against persistent bindings inside the mutating transaction.
+// Authorize re-proves the caller's current authority for one Incident inside the
+// caller's transaction. The trusted identity source selects the native or legacy
+// branch; see authorizeTx.
 func Authorize(ctx context.Context, tx pgx.Tx, scope graph.Scope, subject string, i Incident) error {
-	if subject == "" || scope.Tenant != i.TenantID || scope.Cluster != i.ClusterUID || !scope.Allows(i.ResourceCanonicalID, i.Namespace) {
-		return graph.ErrScope
-	}
-	var current bool
-	err := tx.QueryRow(ctx, `SELECT platform.sp05_lock_operator_scope($1,$2,$3,$4)`, i.TenantID, subject, i.ClusterUID, i.Namespace).Scan(&current)
-	if err != nil {
-		return err
-	}
-	if !current {
-		return graph.ErrScope
-	}
-	return nil
+	_, err := authorizeTx(ctx, tx, scope, subject, i)
+	return err
 }
 func (s Service) Change(ctx context.Context, scope graph.Scope, subject, id string, c Change) (Incident, error) {
 	var out Incident
@@ -62,10 +53,11 @@ func (s Service) Change(ctx context.Context, scope graph.Scope, subject, id stri
 		if err != nil {
 			return err
 		}
-		if err := Authorize(ctx, tx, scope, subject, i); err != nil {
+		authority, err := authorizeTx(ctx, tx, scope, subject, i)
+		if err != nil {
 			return err
 		}
-		if err := authorizeLinked(ctx, tx, scope, subject, i); err != nil {
+		if err := authorizeLinked(ctx, tx, authority, i); err != nil {
 			return err
 		}
 		if c.ExpectedRevision != i.Revision {
@@ -92,7 +84,7 @@ func (s Service) Change(ctx context.Context, scope graph.Scope, subject, id stri
 		if c.State == "resolved" && len(c.EvidenceRefs) == 0 {
 			return ErrTransition
 		}
-		if err := manualEvidence(ctx, tx, tenant, scope, subject, i, c); err != nil {
+		if err := manualEvidence(ctx, tx, authority, i, c); err != nil {
 			return err
 		}
 		previous := i.State
@@ -240,10 +232,11 @@ func (s Service) Merge(ctx context.Context, scope graph.Scope, subject, targetID
 			if err != nil {
 				return err
 			}
-			if err := Authorize(ctx, tx, scope, subject, i); err != nil {
+			authority, err := authorizeTx(ctx, tx, scope, subject, i)
+			if err != nil {
 				return err
 			}
-			if err := authorizeLinked(ctx, tx, scope, subject, i); err != nil {
+			if err := authorizeLinked(ctx, tx, authority, i); err != nil {
 				return err
 			}
 			items[id] = i

@@ -75,17 +75,29 @@ func serveWorkerAudit(w http.ResponseWriter, r *http.Request, trust auth.Workloa
 		return persistence.WithTenantTx(ctx, pool, request.TenantID, func(tx pgx.Tx) error {
 			var count int64
 			// This machine-to-machine path carries a signed graph context, not a
-			// browser session, so the shared layer resolves the legacy binding
-			// for the signed subject. It never accepts a browser-supplied role.
-			if err := authz.RequireAdmin(ctx, tx, auth.RequestContext{
-				TenantID: request.TenantID,
-				Subject:  claims.Subject,
-				Roles:    []auth.Role{auth.PlatformAdmin},
-			}); err != nil {
-				if errors.Is(err, authz.ErrUnauthorized) || errors.Is(err, authz.ErrIdentityMismatch) {
+			// browser session. The source in that context decides how current
+			// platform administration is re-proved: legacy resolves the frozen
+			// binding for the signed subject, a native source re-reads the account
+			// and live grants for the referenced session or persisted task. There
+			// is no fallback between the two and no browser-supplied role.
+			switch claims.Source {
+			case graph.SourceLegacy:
+				if err := authz.RequireAdmin(ctx, tx, auth.RequestContext{
+					TenantID: request.TenantID,
+					Subject:  claims.Subject,
+					Roles:    []auth.Role{auth.PlatformAdmin},
+				}); err != nil {
+					if errors.Is(err, authz.ErrUnauthorized) || errors.Is(err, authz.ErrIdentityMismatch) {
+						return auth.ErrForbidden
+					}
+					return err
+				}
+			case graph.SourceNativeInteractive, graph.SourceNativeTask:
+				if err := graph.RequireNativeRoleTx(ctx, tx, claims, "platform_admin"); err != nil {
 					return auth.ErrForbidden
 				}
-				return err
+			default:
+				return auth.ErrForbidden
 			}
 			if err := tx.QueryRow(ctx, `SELECT count(*) FROM (SELECT 1 FROM audit.records WHERE tenant_id=$1 AND audit_seq BETWEEN $2 AND $3 LIMIT 201) budget`, request.TenantID, first, last).Scan(&count); err != nil {
 				return err

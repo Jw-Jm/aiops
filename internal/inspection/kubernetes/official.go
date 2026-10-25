@@ -63,7 +63,13 @@ func Signals(o unstructured.Unstructured) []Candidate {
 				if status == "False" {
 					add("node", "NotReady", "Node", string(o.GetUID()), "", "firing", start)
 				} else if status == "True" {
+					// A confirmed healthy node closes both the NotReady and the
+					// NodeReadyUnknown occurrence of the same node. The unknown
+					// occurrence keeps its own rule identity, so it is settled by
+					// an explicit resolution of that rule and not by the absence of
+					// a new unknown sample. An unknown node is never healthy.
 					add("node", "NotReady", "Node", string(o.GetUID()), "", "resolved", start)
+					add("node", "NodeReadyUnknown", "Node", string(o.GetUID()), "", "resolved", start)
 				} else if status == "Unknown" {
 					add("node", "NodeReadyUnknown", "Node", string(o.GetUID()), "", "firing", start)
 				}

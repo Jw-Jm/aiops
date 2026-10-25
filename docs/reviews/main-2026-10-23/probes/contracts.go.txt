@@ -1,0 +1,19 @@
+package contract
+
+import "testing"
+
+// Compile the entire embedded set, including tools not exercised by the old fixtures.
+func TestReviewCompileAllContracts(t *testing.T) {
+	loadSchemas()
+	if loadErr != nil { t.Fatal(loadErr) }
+	for id, document := range loadedSchemas {
+		if _, err := compiledSchema(id); err != nil { t.Errorf("%s: %v", id, err) }
+		doc := document.doc.(map[string]any)
+		if defs, ok := doc["$defs"].(map[string]any); ok {
+			for name := range defs {
+				if _, err := compiledSchema(id+"#/$defs/"+name); err != nil { t.Errorf("%s/%s: %v", id, name, err) }
+			}
+		}
+	}
+	t.Logf("compiled %d embedded root contracts and their definitions",len(loadedSchemas))
+}

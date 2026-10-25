@@ -12,6 +12,12 @@ paths:
         - in: header
           name: X-Graph-Context
           required: true
+          description: |
+            Compact `base64url(claims).base64url(ed25519-signature)` envelope, valid
+            for at most 30 seconds and bound to this exact body. It must name one
+            explicit source; see SignedContextEnvelope. A source that is missing,
+            unknown or incomplete is rejected, and a native source never falls back
+            to the legacy role binding table.
           schema: {type: string}
       requestBody:
         required: true
@@ -36,6 +42,36 @@ components:
       x-mutual-tls-required: true
       description: TLS client certificate is mandatory in addition to the signed audience-bound scope context.
   schemas:
+    SignedContextEnvelope:
+      type: object
+      description: |
+        Signed claims envelope inside X-Graph-Context (compact JWS-like, not JSON in
+        the header). The Worker verifies the signature and the mTLS peer, then
+        re-proves the source from persisted state: a live native session for
+        `native_interactive`, or the persisted assistant task authority for
+        `native_task`. `legacy` keeps the frozen role binding behaviour. The signed
+        scope is only compared against the re-proven scope; it is never trusted on
+        its own.
+      additionalProperties: false
+      required: [source, audience, subject, scope, deadline, queryDigest]
+      properties:
+        source: {type: string, enum: [legacy, native_interactive, native_task]}
+        nativeProof:
+          type: object
+          additionalProperties: false
+          description: >
+            Only for native sources: a reference, never a credential. sessionId for
+            native_interactive, jobId for native_task. No cookie, password, role or
+            reusable credential is ever carried.
+          properties:
+            sessionId: {type: string, format: uuid}
+            jobId: {type: string, format: uuid}
+        grantSnapshotDigest: {type: string}
+        audience: {type: string}
+        subject: {type: string}
+        scope: {$ref: '#/components/schemas/Scope'}
+        deadline: {type: string, format: date-time}
+        queryDigest: {type: string}
     GraphRevision:
       type: object
       required: [ownerEpoch, graphGeneration]

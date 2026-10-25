@@ -36,7 +36,28 @@ func (a assistantGraphReader) Query(ctx context.Context, q graph.Query) (graph.R
 	if h == nil || h.Client == nil || h.EndpointAllowed == nil || !investigation.ScopeSubset(a.Job.Scope, q.Scope) {
 		return out, investigation.ErrDenied
 	}
-	current, err := (graph.Authorization{Pool: h.Pool}).Effective(ctx, q.Scope.Tenant, a.Job.Subject, q.Scope.Cluster)
+	// A persisted native task carries its own authority; without a browser session
+	// the pre-check must re-prove that task instead of reading the empty legacy
+	// binding table. An unknown source or a task without a persisted id fails
+	// closed rather than degrading to legacy.
+	authorityContext := ctx
+	proof := nativeTaskProof(a.Job)
+	if a.Job.Assistant != nil {
+		switch a.Job.Assistant.AuthorizationSource {
+		case investigation.AuditSourceNative:
+			if proof == nil {
+				return out, investigation.ErrDenied
+			}
+			authorityContext = graph.WithTaskAuthority(ctx, a.Job.JobID)
+		case investigation.AuditSourceLegacy, "":
+			if proof != nil {
+				return out, investigation.ErrDenied
+			}
+		default:
+			return out, investigation.ErrDenied
+		}
+	}
+	current, err := (graph.Authorization{Pool: h.Pool}).Effective(authorityContext, q.Scope.Tenant, a.Job.Subject, q.Scope.Cluster)
 	if err != nil || a.Job.Assistant == nil || graph.ScopeDigest(current) != a.Job.Assistant.GrantSnapshotDigest {
 		return out, investigation.ErrDenied
 	}
@@ -44,7 +65,7 @@ func (a assistantGraphReader) Query(ctx context.Context, q graph.Query) (graph.R
 	if err != nil || route.Epoch != q.ExpectedOwnerEpoch || !route.ExpiresAt.After(time.Now()) || !h.EndpointAllowed(route.Endpoint) {
 		return out, graph.ErrNotReady
 	}
-	reply, err := h.callWithGrantDigest(ctx, route.Endpoint, "/internal/v1/graph:query", "platform-graph-query", a.Job.Subject, q.Scope, rawJSON(q), a.Job.Assistant.GrantSnapshotDigest)
+	reply, err := h.callWithGrantDigest(authorityContext, route.Endpoint, "/internal/v1/graph:query", "platform-graph-query", a.Job.Subject, q.Scope, rawJSON(q), a.Job.Assistant.GrantSnapshotDigest, proof)
 	if err != nil {
 		return out, err
 	}
@@ -432,7 +453,7 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 				return out, graph.ErrNotReady
 			}
 			payload := rawJSON(map[string]any{"intent": intent, "ownerEpoch": route.Epoch})
-			reply, err := h.callWithGrantDigest(ctx, route.Endpoint, "/internal/v1/analysis:query", "platform-analysis-query", j.Subject, queryScope, payload, j.Assistant.GrantSnapshotDigest)
+			reply, err := h.callWithGrantDigest(ctx, route.Endpoint, "/internal/v1/analysis:query", "platform-analysis-query", j.Subject, queryScope, payload, j.Assistant.GrantSnapshotDigest, nativeTaskProof(j))
 			if err != nil {
 				return out, err
 			}

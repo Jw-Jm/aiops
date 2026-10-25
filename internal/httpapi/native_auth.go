@@ -107,8 +107,11 @@ func (h *NativeAuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, identity.ErrLoginNotFound) {
 			// Equalize the expensive password path for unknown accounts without
-			// persisting attacker-chosen usernames.
-			_, _ = identity.VerifyPassword(body.Password, dummyPasswordHash)
+			// persisting attacker-chosen usernames. Congestion is still reported
+			// as capacity, never as a rejected credential.
+			if writePasswordWorkUnavailable(w, verifyDummyPassword(r.Context(), body.Password), requestID) {
+				return
+			}
 			writeConstantLoginFailure(w, requestID)
 			return
 		}
@@ -116,11 +119,17 @@ func (h *NativeAuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if account.LockedUntil != nil && now.Before(*account.LockedUntil) {
-		_, _ = identity.VerifyPassword(body.Password, dummyPasswordHash)
+		if writePasswordWorkUnavailable(w, verifyDummyPassword(r.Context(), body.Password), requestID) {
+			return
+		}
 		writeConstantLoginFailure(w, requestID)
 		return
 	}
-	valid, verifyErr := identity.VerifyPassword(body.Password, account.PasswordHash)
+	valid, verifyErr := identity.VerifyPasswordContext(r.Context(), body.Password, account.PasswordHash)
+	if writePasswordWorkUnavailable(w, verifyErr, requestID) {
+		// A busy or cancelled hash never counts as a failed password attempt.
+		return
+	}
 	if verifyErr != nil || !valid || account.Status != "active" {
 		if account.Status == "active" {
 			if _, _, fenceErr := h.Sessions.RecordKnownLoginFailure(
@@ -331,7 +340,11 @@ func (h *NativeAuthHandlers) ChangePassword(w http.ResponseWriter, r *http.Reque
 		writeTenantError(w, http.StatusTooManyRequests, "RATE_LIMITED", "password change is temporarily unavailable", false, requestID)
 		return
 	}
-	valid, err := identity.VerifyPassword(body.CurrentPassword, account.PasswordHash)
+	valid, err := identity.VerifyPasswordContext(r.Context(), body.CurrentPassword, account.PasswordHash)
+	if writePasswordWorkUnavailable(w, err, requestID) {
+		// Capacity and cancellation are not evidence about the current password.
+		return
+	}
 	if err != nil || !valid || account.Status != "active" {
 		if account.Status == "active" {
 			if _, _, fenceErr := h.Sessions.RecordKnownLoginFailure(
@@ -348,7 +361,10 @@ func (h *NativeAuthHandlers) ChangePassword(w http.ResponseWriter, r *http.Reque
 		}
 		return
 	}
-	newHash, err := identity.HashPassword(body.NewPassword)
+	newHash, err := identity.HashPasswordContext(r.Context(), body.NewPassword)
+	if writePasswordWorkUnavailable(w, err, requestID) {
+		return
+	}
 	if err != nil {
 		writeTenantError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "new credentials are invalid", false, requestID)
 		return
@@ -560,8 +576,43 @@ func writeConstantLoginFailure(w http.ResponseWriter, requestID string) {
 	writeTenantError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "login credentials were not accepted", false, requestID)
 }
 
+// verifyDummyPassword spends the same bounded password work as a real account
+// so an unknown or locked login name cannot be told apart by timing or by
+// capacity behaviour.
+func verifyDummyPassword(ctx context.Context, password string) error {
+	_, err := identity.VerifyPasswordContext(ctx, password, dummyPasswordHash)
+	return err
+}
+
+// writePasswordWorkUnavailable maps the bounded password-work result. Congestion
+// is a retryable capacity answer and cancellation is a client-side stop: neither
+// may be reported as "the password was wrong" nor counted as a failed attempt.
+func writePasswordWorkUnavailable(w http.ResponseWriter, err error, requestID string) bool {
+	switch {
+	case errors.Is(err, identity.ErrPasswordWorkBusy):
+		w.Header().Set("Retry-After", "1")
+		writeTenantError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "password verification is at capacity; retry shortly", true, requestID)
+		return true
+	case errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded):
+		writeTenantError(w, http.StatusRequestTimeout, "TIMEOUT", "password verification was cancelled", true, requestID)
+		return true
+	}
+	return false
+}
+
 func writeNativeSessionError(w http.ResponseWriter, err error, requestID string) {
 	switch {
+	case errors.Is(err, identity.ErrPasswordWorkBusy):
+		w.Header().Set("Retry-After", "1")
+		writeTenantError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "password verification is at capacity; retry shortly", true, requestID)
+	case errors.Is(err, identity.ErrMFAStepUpBudget):
+		var budget *identity.StepUpBudgetError
+		retryAfter := identity.StepUpBudgetCooldown
+		if errors.As(err, &budget) && budget.RetryAfter > 0 {
+			retryAfter = budget.RetryAfter
+		}
+		w.Header().Set("Retry-After", strconv.Itoa(max(1, int(retryAfter.Round(time.Second).Seconds()))))
+		writeTenantError(w, http.StatusTooManyRequests, "RATE_LIMITED", "the account verification attempt budget is exhausted; retry after the cooldown", true, requestID)
 	case errors.Is(err, identity.ErrSessionVersion):
 		writeTenantError(w, http.StatusConflict, "CONFLICT", "session or credential version is stale", false, requestID)
 	case errors.Is(err, identity.ErrSessionNotFound):

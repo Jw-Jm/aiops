@@ -1,0 +1,76 @@
+=== RUN   TestNativeActionPostCheckAuthority
+    sp05_finding_test.go:32: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeActionPostCheckAuthority (0.00s)
+=== RUN   TestNativeActionDispatchRefusesLostAuthority
+    sp05_finding_test.go:32: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeActionDispatchRefusesLostAuthority (0.00s)
+=== RUN   TestNativeActionCancelAndUnknownRecovery
+    sp05_finding_test.go:32: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeActionCancelAndUnknownRecovery (0.00s)
+=== RUN   TestNativeAssistantSignedContextAndToolPersistence
+    native_assistant_context_test.go:91: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeAssistantSignedContextAndToolPersistence (0.00s)
+=== RUN   TestNativeAssistantContextRefusesRevocationAndCancel
+    native_assistant_context_test.go:260: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeAssistantContextRefusesRevocationAndCancel (0.00s)
+=== RUN   TestNativeFirstTenantBootstrap
+    native_first_tenant_test.go:22: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeFirstTenantBootstrap (0.00s)
+=== RUN   TestNativeMappedHistoricalOwnerRead
+    native_historical_read_test.go:285: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeMappedHistoricalOwnerRead (0.00s)
+=== RUN   TestNativeMappedHistoricalTurnRead
+    native_historical_read_test.go:339: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeMappedHistoricalTurnRead (0.00s)
+=== RUN   TestNativeHTTPSessionFlow
+    native_http_session_test.go:37: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not an HTTP/database pass
+--- SKIP: TestNativeHTTPSessionFlow (0.00s)
+=== RUN   TestNativeIdentityGuardRejectsSharedOrOverriddenDSN
+--- PASS: TestNativeIdentityGuardRejectsSharedOrOverriddenDSN (0.00s)
+=== RUN   TestNativeIdentityRepositoryAndRoles
+    native_identity_test.go:80: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not a database pass
+--- SKIP: TestNativeIdentityRepositoryAndRoles (0.00s)
+=== RUN   TestNativeMFAResetPreservesThePasswordVersion
+    native_mfa_hardening_test.go:397: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not an HTTP/database pass
+--- SKIP: TestNativeMFAResetPreservesThePasswordVersion (0.00s)
+=== RUN   TestNativeStepUpFailureBudgetSurvivesChallenges
+    native_mfa_hardening_test.go:584: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not an HTTP/database pass
+--- SKIP: TestNativeStepUpFailureBudgetSurvivesChallenges (0.00s)
+=== RUN   TestNativeStepUpSameChallengeComparesOnce
+    native_mfa_race_test.go:90: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not an HTTP/database pass
+--- SKIP: TestNativeStepUpSameChallengeComparesOnce (0.00s)
+=== RUN   TestNativeStepUpStaleExpiredAndReplacedNeverCompare
+    native_mfa_race_test.go:214: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not an HTTP/database pass
+--- SKIP: TestNativeStepUpStaleExpiredAndReplacedNeverCompare (0.00s)
+=== RUN   TestNativeStepUpCooldownBoundary
+    native_mfa_race_test.go:288: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not an HTTP/database pass
+--- SKIP: TestNativeStepUpCooldownBoundary (0.00s)
+=== RUN   TestNativeMFAResetRacesPasswordChange
+    native_mfa_race_test.go:333: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not an HTTP/database pass
+--- SKIP: TestNativeMFAResetRacesPasswordChange (0.00s)
+=== RUN   TestNativeMFABrokenAccountDiagnosticAndRecovery
+    native_mfa_race_test.go:421: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not an HTTP/database pass
+--- SKIP: TestNativeMFABrokenAccountDiagnosticAndRecovery (0.00s)
+=== RUN   TestNativeMFAEnrollmentStepUpAndReset
+    native_mfa_test.go:205: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not an HTTP/database pass
+--- SKIP: TestNativeMFAEnrollmentStepUpAndReset (0.00s)
+=== RUN   TestNativeOperationalJobWorkerAuthority
+    native_operational_job_test.go:204: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeOperationalJobWorkerAuthority (0.00s)
+=== RUN   TestNativeJobAuthorityLocksSerializeRevocation
+    native_operational_job_test.go:392: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeJobAuthorityLocksSerializeRevocation (0.00s)
+=== RUN   TestNativeJobAuthorityRevocationBeforeWorkerRecheck
+    native_operational_job_test.go:440: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeJobAuthorityRevocationBeforeWorkerRecheck (0.00s)
+=== RUN   TestNativeAuditJobWorkerAuthority
+    native_operational_job_test.go:490: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeAuditJobWorkerAuthority (0.00s)
+=== RUN   TestNativeAuthoritySharedLockNoDeadlock
+    native_operational_job_test.go:532: SP03_TEST_DATABASE_URL must point at a disposable PostgreSQL test instance
+--- SKIP: TestNativeAuthoritySharedLockNoDeadlock (0.00s)
+=== RUN   TestNativeSessionBindingRejectsLateWrites
+    native_session_binding_test.go:50: OPS_UI_V12_NATIVE_IDENTITY_DBTEST=1 is required; a default skip is not a database pass
+--- SKIP: TestNativeSessionBindingRejectsLateWrites (0.00s)
+PASS
+ok  	ops-platform/test/integration	1.033s

@@ -1,0 +1,41 @@
+package investigation
+
+import (
+ "context"
+ "errors"
+ "strings"
+ "testing"
+ "github.com/google/uuid"
+ "github.com/jackc/pgx/v5"
+ "ops-platform/internal/graph"
+)
+
+type reviewAuthorityTx struct { pgx.Tx; called string; bindingsRead bool }
+type reviewAuthorityRow struct { cluster bool }
+func (r reviewAuthorityRow) Scan(out ...any) error {
+ if !r.cluster { *out[0].(*bool) = true; return nil }
+ *out[0].(*uuid.UUID)=uuid.New();*out[1].(*int64)=1;*out[2].(*int64)=1
+ return nil
+}
+func (tx *reviewAuthorityTx) QueryRow(_ context.Context, query string, _ ...any) pgx.Row {
+ tx.called = query
+ return reviewAuthorityRow{cluster:strings.Contains(query,"c.cluster_id,c.revision")}
+}
+type reviewEmptyBindings struct { pgx.Rows }
+func (*reviewEmptyBindings) Next() bool {return false}
+func (*reviewEmptyBindings) Close() {}
+func (*reviewEmptyBindings) Err() error {return nil}
+func (tx *reviewAuthorityTx) Query(_ context.Context, query string, _ ...any) (pgx.Rows,error) {
+ tx.bindingsRead=strings.Contains(query,"FROM platform.role_bindings")
+ return &reviewEmptyBindings{},nil
+}
+
+func TestReviewNativeV2WorkerUsesLegacyAuthority(t *testing.T) {
+ tenant := uuid.New()
+ scope := graph.Scope{Tenant:tenant.String(), Cluster:"cluster-a", AuthorizationRevision:"native-scope"}
+ job := Job{SchemaVersion:"investigation-job/v2",TenantID:tenant,Subject:"native:user",Scope:scope,EffectiveScopeDigest:graph.ScopeDigest(scope)}
+ tx := &reviewAuthorityTx{}
+ err := current(context.Background(), tx, job)
+ if !errors.Is(err, ErrDenied) || !tx.bindingsRead { t.Fatalf("err=%v bindingsRead=%v",err,tx.bindingsRead) }
+ t.Log("CONFIRMED: V2 worker reads empty legacy role bindings and denies the native-only subject.")
+}

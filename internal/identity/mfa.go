@@ -31,7 +31,23 @@ var (
 	ErrMFAVerification     = errors.New("verification code was not accepted")
 	ErrMFATargetMismatch   = errors.New("target confirmation does not match")
 	ErrMFANotEnrolled      = errors.New("the account has no confirmed second factor")
+	// ErrMFAStepUpBudget means the account/factor failure budget is locked. It is
+	// a bounded, retryable capacity answer, never a credential verdict.
+	ErrMFAStepUpBudget = errors.New("step-up attempt budget is exhausted")
+	// ErrMFAResetCredentialUnavailable means an administrator MFA reset found no
+	// active password credential at the account's current version. The reset is
+	// refused instead of guessing which historical hash to preserve.
+	ErrMFAResetCredentialUnavailable = errors.New("the account has no active password credential to preserve")
 )
+
+// StepUpBudgetError carries the server-computed cooldown so the HTTP layer can
+// send an accurate Retry-After header without duplicating the policy.
+type StepUpBudgetError struct {
+	RetryAfter time.Duration
+}
+
+func (e *StepUpBudgetError) Error() string { return ErrMFAStepUpBudget.Error() }
+func (e *StepUpBudgetError) Unwrap() error { return ErrMFAStepUpBudget }
 
 const (
 	StepUpOperationMFAEnrollment = "mfa_enrollment"
@@ -41,6 +57,12 @@ const (
 	StepUpIdleLifetime     = 10 * time.Minute
 	StepUpAbsoluteLifetime = 15 * time.Minute
 	mfaEnrollmentLifetime  = 10 * time.Minute
+	// StepUpBudgetCooldown is the fixed server-side lock applied after five
+	// failures inside fifteen minutes. It mirrors the native login lock.
+	StepUpBudgetCooldown = 15 * time.Minute
+
+	stepUpFactorPassword = "password"
+	stepUpFactorTOTP     = "totp"
 )
 
 var stepUpOperations = map[string]struct{}{
@@ -67,17 +89,21 @@ type MFAStatus struct {
 }
 
 type StepUpChallenge struct {
-	ID                         uuid.UUID
-	SessionID                  uuid.UUID
-	Operation                  string
-	Target                     json.RawMessage
-	BindingDigest              []byte
-	State                      string
-	Revision                   int
-	RequiredMethods            []string
-	CompletedMethods           []string
-	Attempts                   int
-	AttemptLimit               int
+	ID               uuid.UUID
+	SessionID        uuid.UUID
+	Operation        string
+	Target           json.RawMessage
+	BindingDigest    []byte
+	State            string
+	Revision         int
+	RequiredMethods  []string
+	CompletedMethods []string
+	Attempts         int
+	AttemptLimit     int
+	// BudgetRemaining is the account/factor failure budget shared by every
+	// challenge, session and API instance. It is never larger than the
+	// per-challenge remainder and is nil when it could not be read.
+	BudgetRemaining            *int
 	IssuedCredentialVersion    int
 	IssuedAuthorizationVersion int
 	IssuedSessionVersion       int
@@ -136,6 +162,47 @@ func NewMFARepository(sessions *SessionRepository, sealer SecretSealer) (*MFARep
 }
 
 func (r *MFARepository) Now() time.Time { return r.now() }
+
+// budgetState reads the account/factor failure budget. Creating or replacing a
+// challenge and every factor verification consult it before any work is done.
+func (r *MFARepository) budgetState(ctx context.Context, tenantID, userID uuid.UUID) (bool, int, *time.Time, error) {
+	if tenantID == uuid.Nil || userID == uuid.Nil {
+		return false, 0, nil, ErrSessionInvalid
+	}
+	var allowed bool
+	var retryAt *time.Time
+	var remaining int
+	err := r.sessions.pool.QueryRow(ctx, `SELECT out_allowed, out_retry_at, out_remaining
+		FROM identity.step_up_budget_check($1,$2)`, tenantID, userID).
+		Scan(&allowed, &retryAt, &remaining)
+	if err != nil {
+		return false, 0, nil, mapMFADBError("read step-up failure budget", err)
+	}
+	if remaining < 0 {
+		remaining = 0
+	}
+	return allowed, remaining, retryAt, nil
+}
+
+// budgetDenial turns a locked budget into the bounded retryable result. The
+// cooldown comes from the database row so both API instances agree.
+func budgetDenial(retryAt *time.Time) error {
+	wait := StepUpBudgetCooldown
+	if retryAt != nil {
+		remaining := time.Until(*retryAt)
+		switch {
+		case remaining <= 0:
+			// The row is already past its cooldown: the next call may succeed.
+			wait = time.Second
+		case remaining < wait:
+			wait = remaining
+		}
+	}
+	if wait < time.Second {
+		wait = time.Second
+	}
+	return &StepUpBudgetError{RetryAfter: wait.Round(time.Second)}
+}
 
 // StepUpBindingDigest binds one challenge to the exact session, operation,
 // target and version set. The same value is recomputed by the high-risk write,
@@ -389,6 +456,20 @@ func (r *MFARepository) BeginChallenge(ctx context.Context, session ActiveSessio
 	if err := validateTarget(operation, target); err != nil {
 		return StepUpChallenge{}, err
 	}
+	// A new or replacement challenge never resets the account budget: refuse to
+	// create one while any required factor is cooling down. Recovery codes keep
+	// their own account lock and must stay usable.
+	var budgetRemaining *int
+	if operation != StepUpOperationRecovery {
+		allowed, remaining, retryAt, budgetErr := r.budgetState(ctx, session.TenantID, session.UserID)
+		if budgetErr != nil {
+			return StepUpChallenge{}, budgetErr
+		}
+		if !allowed {
+			return StepUpChallenge{}, budgetDenial(retryAt)
+		}
+		budgetRemaining = &remaining
+	}
 	encoded, err := json.Marshal(target)
 	if err != nil {
 		return StepUpChallenge{}, ErrMFAChallengeInvalid
@@ -417,6 +498,7 @@ func (r *MFARepository) BeginChallenge(ctx context.Context, session ActiveSessio
 	challenge.State = "pending"
 	challenge.RequiredMethods = []string{"password", "totp"}
 	challenge.CompletedMethods = []string{}
+	challenge.BudgetRemaining = budgetRemaining
 	return challenge, nil
 }
 
@@ -449,134 +531,211 @@ func (r *MFARepository) Challenge(ctx context.Context, tenantID, userID, challen
 	if challenge.CompletedMethods == nil {
 		challenge.CompletedMethods = []string{}
 	}
+	if challenge.Operation != StepUpOperationRecovery {
+		allowed, remaining, _, budgetErr := r.budgetState(ctx, tenantID, userID)
+		if budgetErr != nil {
+			return StepUpChallenge{}, budgetErr
+		}
+		if !allowed {
+			remaining = 0
+		}
+		challenge.BudgetRemaining = &remaining
+	}
 	return challenge, nil
 }
 
-func (r *MFARepository) FailChallenge(ctx context.Context, tenantID, userID, challengeID, sessionID uuid.UUID, expectedRevision int) (StepUpChallenge, error) {
-	err := r.sessions.pool.QueryRow(ctx, `SELECT out_revision, out_state, out_remaining
-		FROM identity.step_up_challenge_fail($1,$2,$3,$4,$5)`,
-		tenantID, userID, challengeID, sessionID, expectedRevision,
-	).Scan(new(int), new(string), new(int))
-	if err != nil {
-		return StepUpChallenge{}, mapMFADBError("record failed step-up attempt", err)
-	}
-	return r.Challenge(ctx, tenantID, userID, challengeID)
+// stepUpAttempt is the reservation returned by identity.step_up_attempt_begin.
+// The attempt is already counted when it is returned, so the caller may compare
+// a credential only after this call succeeded.
+type stepUpAttempt struct {
+	Revision         int
+	State            string
+	Remaining        int
+	AttemptRemaining int
+	RetryAt          *time.Time
 }
 
-func (r *MFARepository) addMethod(ctx context.Context, session ActiveSession, challenge StepUpChallenge, method string) (StepUpChallenge, error) {
-	next, err := r.Challenge(ctx, session.TenantID, session.UserID, challenge.ID)
+func beginStepUpAttempt(ctx context.Context, tx pgx.Tx, session ActiveSession, challenge StepUpChallenge, method string) (stepUpAttempt, error) {
+	var attempt stepUpAttempt
+	err := tx.QueryRow(ctx, `SELECT out_revision, out_state, out_remaining, out_attempt_remaining, out_retry_at
+		FROM identity.step_up_attempt_begin($1,$2,$3,$4,$5,$6)`,
+		session.TenantID, session.UserID, challenge.ID, session.SessionID,
+		challenge.Revision, method,
+	).Scan(&attempt.Revision, &attempt.State, &attempt.Remaining, &attempt.AttemptRemaining, &attempt.RetryAt)
 	if err != nil {
-		return StepUpChallenge{}, err
+		return attempt, mapMFADBError("reserve step-up attempt", err)
 	}
-	next.IdleExpiresAt = r.now().UTC().Add(StepUpIdleLifetime)
+	return attempt, nil
+}
+
+func failStepUpAttempt(ctx context.Context, tx pgx.Tx, session ActiveSession, challenge StepUpChallenge, method string, expectedRevision int) (stepUpAttempt, error) {
+	var attempt stepUpAttempt
+	err := tx.QueryRow(ctx, `SELECT out_revision, out_state, out_remaining, out_attempt_remaining, out_retry_at
+		FROM identity.step_up_attempt_failed($1,$2,$3,$4,$5,$6)`,
+		session.TenantID, session.UserID, challenge.ID, session.SessionID, expectedRevision, method,
+	).Scan(&attempt.Revision, &attempt.State, &attempt.Remaining, &attempt.AttemptRemaining, &attempt.RetryAt)
+	if err != nil {
+		return attempt, mapMFADBError("record failed step-up attempt", err)
+	}
+	return attempt, nil
+}
+
+func (r *MFARepository) addStepUpMethod(ctx context.Context, tx pgx.Tx, session ActiveSession, challenge StepUpChallenge, method string, expectedRevision int) (StepUpChallenge, error) {
 	var revision int
 	var state string
 	var completed []string
 	var verifiedAt *time.Time
-	err = r.sessions.pool.QueryRow(ctx, `SELECT out_revision, out_state, out_completed_methods, out_verified_at
+	err := tx.QueryRow(ctx, `SELECT out_revision, out_state, out_completed_methods, out_verified_at
 		FROM identity.step_up_challenge_add_method($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
 		session.TenantID, session.UserID, challenge.ID, session.SessionID,
-		challenge.Revision, method, session.CredentialVersion, session.SessionVersion,
-		minTime(next.IdleExpiresAt, challenge.AbsoluteExpiresAt),
+		expectedRevision, method, session.CredentialVersion, session.SessionVersion,
+		minTime(r.now().UTC().Add(StepUpIdleLifetime), challenge.AbsoluteExpiresAt),
 	).Scan(&revision, &state, &completed, &verifiedAt)
 	if err != nil {
 		return StepUpChallenge{}, mapMFADBError("record verified step-up method", err)
 	}
-	challenge.Revision = revision
-	challenge.State = state
-	challenge.CompletedMethods = completed
-	challenge.VerifiedAt = verifiedAt
-	return challenge, nil
+	updated := challenge
+	updated.Revision = revision
+	updated.State = state
+	updated.CompletedMethods = completed
+	updated.VerifiedAt = verifiedAt
+	return updated, nil
 }
 
-// VerifyPasswordStep verifies the account password inside one challenge. A
-// wrong password only consumes an attempt: it never yields a method.
+// VerifyPasswordStep verifies the account password inside one challenge. The
+// reservation, the comparison and the outcome share one transaction that holds
+// the account row lock, so two API instances, sessions or challenges cannot
+// compare guesses in parallel or lose a failure to a later CAS.
 func (r *MFARepository) VerifyPasswordStep(ctx context.Context, session ActiveSession, challenge StepUpChallenge, password string) (StepUpChallenge, error) {
-	account, err := r.sessions.FindLoginAccount(ctx, session.LoginName)
-	if err != nil || account.TenantID != session.TenantID || account.UserID != session.UserID || account.Status != "active" {
-		return StepUpChallenge{}, ErrMFAVerification
-	}
-	valid, verifyErr := VerifyPassword(password, account.PasswordHash)
-	if verifyErr != nil || !valid {
-		if _, failErr := r.FailChallenge(ctx, session.TenantID, session.UserID, challenge.ID, session.SessionID, challenge.Revision); failErr != nil {
-			return StepUpChallenge{}, failErr
+	var (
+		updated StepUpChallenge
+		failed  bool
+	)
+	err := persistence.WithTenantTx(ctx, r.sessions.pool, session.TenantID, func(tx pgx.Tx) error {
+		attempt, err := beginStepUpAttempt(ctx, tx, session, challenge, stepUpFactorPassword)
+		if err != nil {
+			return err
 		}
+		account, err := r.sessions.FindLoginAccountTx(ctx, tx, session.LoginName)
+		if err != nil || account.TenantID != session.TenantID ||
+			account.UserID != session.UserID || account.Status != "active" {
+			return ErrMFAVerification
+		}
+		valid, verifyErr := VerifyPasswordContext(ctx, password, account.PasswordHash)
+		switch {
+		case errors.Is(verifyErr, ErrPasswordWorkBusy), errors.Is(verifyErr, context.Canceled),
+			errors.Is(verifyErr, context.DeadlineExceeded):
+			// No comparison happened. Returning an error rolls the reservation
+			// back, so capacity or cancellation never consumes an attempt and is
+			// never recorded as a wrong password.
+			return verifyErr
+		case verifyErr != nil:
+			// A malformed stored hash fails closed and is counted as an attempt.
+			valid = false
+		}
+		if !valid {
+			result, failErr := failStepUpAttempt(ctx, tx, session, challenge, stepUpFactorPassword, attempt.Revision)
+			if failErr != nil {
+				return failErr
+			}
+			updated = challenge
+			updated.State = result.State
+			updated.BudgetRemaining = &result.Remaining
+			failed = true
+			return nil
+		}
+		updated, err = r.addStepUpMethod(ctx, tx, session, challenge, stepUpFactorPassword, attempt.Revision)
+		return err
+	})
+	if err != nil {
+		return StepUpChallenge{}, err
+	}
+	if failed {
 		return StepUpChallenge{}, ErrMFAVerification
 	}
-	return r.addMethod(ctx, session, challenge, "password")
+	return updated, nil
 }
 
 // VerifyTOTPStep verifies a TOTP code against the secret the operation targets
 // (the pending enrolment for mfa_enrollment, the confirmed factor otherwise) and
-// consumes the time step so it cannot be replayed.
+// consumes the time step so it cannot be replayed. Like the password step it runs
+// reserve -> compare -> record inside one account-locked transaction.
 func (r *MFARepository) VerifyTOTPStep(ctx context.Context, session ActiveSession, challenge StepUpChallenge, code string) (StepUpChallenge, error) {
 	var target struct {
 		Kind         string `json:"kind"`
 		EnrollmentID string `json:"enrollmentId"`
 	}
 	_ = json.Unmarshal(challenge.Target, &target)
-	var enrollmentID uuid.UUID
-	state := "confirmed"
-	status, statusErr := r.Status(ctx, session.TenantID, session.UserID)
-	if statusErr != nil {
-		return StepUpChallenge{}, statusErr
-	}
-	if challenge.Operation == StepUpOperationMFAEnrollment && status.State != "confirmed" {
-		parsed, err := uuid.Parse(target.EnrollmentID)
+	var (
+		updated StepUpChallenge
+		failed  bool
+	)
+	err := persistence.WithTenantTx(ctx, r.sessions.pool, session.TenantID, func(tx pgx.Tx) error {
+		attempt, err := beginStepUpAttempt(ctx, tx, session, challenge, stepUpFactorTOTP)
 		if err != nil {
-			return StepUpChallenge{}, ErrMFAChallengeInvalid
+			return err
 		}
-		enrollmentID = parsed
-		state = "pending_confirmation"
-	} else {
-		if status.State != "confirmed" || status.EnrollmentID == nil {
-			return StepUpChallenge{}, ErrMFANotEnrolled
+		var enrollmentID uuid.UUID
+		state := "confirmed"
+		var confirmedState string
+		var confirmedID *uuid.UUID
+		if err := tx.QueryRow(ctx, `SELECT out_state, out_enrollment_id
+			FROM identity.mfa_state($1,$2)`, session.TenantID, session.UserID).
+			Scan(&confirmedState, &confirmedID); err != nil {
+			return mapMFADBError("read mfa state", err)
 		}
-		enrollmentID = *status.EnrollmentID
-	}
-	var envelope SecretEnvelope
-	var revision int
-	var expiresAt time.Time
-	if err := r.sessions.pool.QueryRow(ctx, `SELECT out_ciphertext, out_key_ref, out_key_version,
-		out_revision, out_expires_at FROM identity.mfa_enrollment_secret($1,$2,$3,$4)`,
-		session.TenantID, session.UserID, enrollmentID, state,
-	).Scan(&envelope.Ciphertext, &envelope.KeyRef, &envelope.KeyVersion, &revision, &expiresAt); err != nil {
-		return StepUpChallenge{}, ErrMFANotEnrolled
-	}
-	secret, err := r.sealer.Open(ctx, session.TenantID, session.UserID, enrollmentID, envelope)
+		if challenge.Operation == StepUpOperationMFAEnrollment && confirmedState != "confirmed" {
+			parsed, parseErr := uuid.Parse(target.EnrollmentID)
+			if parseErr != nil {
+				return ErrMFAChallengeInvalid
+			}
+			enrollmentID = parsed
+			state = "pending_confirmation"
+		} else {
+			if confirmedState != "confirmed" || confirmedID == nil {
+				return ErrMFANotEnrolled
+			}
+			enrollmentID = *confirmedID
+		}
+		var envelope SecretEnvelope
+		var revision int
+		var expiresAt time.Time
+		if err := tx.QueryRow(ctx, `SELECT out_ciphertext, out_key_ref, out_key_version,
+			out_revision, out_expires_at FROM identity.mfa_enrollment_secret($1,$2,$3,$4)`,
+			session.TenantID, session.UserID, enrollmentID, state,
+		).Scan(&envelope.Ciphertext, &envelope.KeyRef, &envelope.KeyVersion, &revision, &expiresAt); err != nil {
+			return ErrMFANotEnrolled
+		}
+		secret, err := r.sealer.Open(ctx, session.TenantID, session.UserID, enrollmentID, envelope)
+		if err != nil {
+			return err
+		}
+		step, accepted := VerifyTOTP(string(secret), code, r.now().UTC())
+		if accepted && state == "confirmed" {
+			if err := tx.QueryRow(ctx, `SELECT identity.mfa_record_totp_step($1,$2,$3,$4)`,
+				session.TenantID, session.UserID, enrollmentID, step).Scan(&accepted); err != nil {
+				return mapMFADBError("consume totp step", err)
+			}
+		}
+		if !accepted {
+			result, failErr := failStepUpAttempt(ctx, tx, session, challenge, stepUpFactorTOTP, attempt.Revision)
+			if failErr != nil {
+				return failErr
+			}
+			updated = challenge
+			updated.State = result.State
+			updated.BudgetRemaining = &result.Remaining
+			failed = true
+			return nil
+		}
+		updated, err = r.addStepUpMethod(ctx, tx, session, challenge, stepUpFactorTOTP, attempt.Revision)
+		return err
+	})
 	if err != nil {
 		return StepUpChallenge{}, err
 	}
-	step, ok := VerifyTOTP(string(secret), code, r.now().UTC())
-	if !ok {
-		if _, failErr := r.FailChallenge(ctx, session.TenantID, session.UserID, challenge.ID, session.SessionID, challenge.Revision); failErr != nil {
-			return StepUpChallenge{}, failErr
-		}
+	if failed {
 		return StepUpChallenge{}, ErrMFAVerification
-	}
-	var updated StepUpChallenge
-	err = persistence.WithTenantTx(ctx, r.sessions.pool, session.TenantID, func(tx pgx.Tx) error {
-		var active bool
-		if err := tx.QueryRow(ctx, `SELECT identity.mfa_session_proof($1,$2,$3,$4,$5)`, session.TenantID, session.UserID, session.SessionID, session.CredentialVersion, session.SessionVersion).Scan(&active); err != nil {
-			return err
-		}
-		if !active {
-			return ErrMFAChallengeInvalid
-		}
-		if state == "confirmed" {
-			var accepted bool
-			if err := tx.QueryRow(ctx, `SELECT identity.mfa_record_totp_step($1,$2,$3,$4)`, session.TenantID, session.UserID, enrollmentID, step).Scan(&accepted); err != nil {
-				return err
-			}
-			if !accepted {
-				return ErrMFAVerification
-			}
-		}
-		updated = challenge
-		return tx.QueryRow(ctx, `SELECT out_revision, out_state, out_completed_methods, out_verified_at FROM identity.step_up_challenge_add_method($1,$2,$3,$4,$5,$6,$7,$8,$9)`, session.TenantID, session.UserID, challenge.ID, session.SessionID, challenge.Revision, "totp", session.CredentialVersion, session.SessionVersion, minTime(r.now().UTC().Add(StepUpIdleLifetime), challenge.AbsoluteExpiresAt)).Scan(&updated.Revision, &updated.State, &updated.CompletedMethods, &updated.VerifiedAt)
-	})
-	if err != nil {
-		return StepUpChallenge{}, mapMFADBError("verify totp challenge", err)
 	}
 	return updated, nil
 }
@@ -786,6 +945,10 @@ func mapMFADBError(operation string, err error) error {
 			return ErrSessionVersion
 		case "28000":
 			return ErrMFAChallengeInvalid
+		case "42900":
+			return budgetDenial(nil)
+		case "55000":
+			return ErrMFAResetCredentialUnavailable
 		case "22023", "23505", "23503", "23514":
 			return ErrMFAVerification
 		}

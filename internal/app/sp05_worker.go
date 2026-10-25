@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -39,12 +40,29 @@ func startSP05Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 	if err != nil {
 		return err
 	}
+	// The Worker owns the health of its collection sources. The complete key set
+	// is validated and registered before the first goroutine starts, so a startup
+	// either owns every configured source or none of them. The registration
+	// lives with the Worker goroutines: it is released when the run context ends,
+	// not when this function returns.
+	keys := []string{}
+	for _, cluster := range c.Clusters {
+		keys = append(keys, sp05HealthKeys(cluster)...)
+	}
+	if err := runtime.Metrics.RegisterBusinessComponents(keys); err != nil {
+		return fmt.Errorf("register the SP05 business health: %w", err)
+	}
 	for _, cluster := range c.Clusters {
 		cluster := cluster
+		ownKeys := sp05HealthKeys(cluster)
 		startSP05Analyzer(ctx, archive, cluster, handlers[cluster.Tenant+"|"+cluster.ClusterUID], c.SP05.Analyzer, runtime, group)
 		group.Add(1)
 		go func() {
 			defer group.Done()
+			// The registration of this source is released with its Worker, not
+			// with the startup call: the health of a running source stays
+			// observable until the run context ends.
+			defer runtime.Metrics.UnregisterBusinessComponents(ownKeys)
 			ticker := time.NewTicker(2 * time.Second)
 			defer ticker.Stop()
 			round := 0
@@ -63,7 +81,7 @@ func startSP05Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 				rcaErr := sp05RCAPass(pass, pool, archive, cluster, handlers[cluster.Tenant+"|"+cluster.ClusterUID], registry, trust)
 				err := errors.Join(relayErr, npdErr, recoveryErr, rcaErr)
 				cancel()
-				runtime.Metrics.SetComponentDegraded("sp05", err != nil)
+				runtime.Metrics.SetBusinessDegraded(sp05WorkerHealthKey(cluster), err != nil)
 				if err != nil {
 					runtime.Logger.WarnContext(ctx, "SP05 durable reducer pass unavailable", "errorClass", collectionErrorClass(err))
 				}
@@ -294,4 +312,22 @@ func sp05WorkerGraphScope(ctx context.Context, pool persistence.TxBeginner, clus
 func resourceKind(raw string) (string, error) {
 	id, err := resource.ParseCanonicalID(raw)
 	return id.Kind, err
+}
+
+// sp05HealthKeys are the business health keys one configured cluster source
+// owns. Every key names a configured source, never a free runtime label.
+func sp05HealthKeys(cluster SP04Cluster) []string {
+	return []string{
+		"sp05/" + cluster.Tenant + "/" + cluster.ClusterUID,
+		"sp05-analyzer/" + cluster.SourceID,
+		"sp05-control-plane/" + cluster.SourceID,
+		"sp05-metrics/" + cluster.SourceID,
+		"sp05-pod-metrics/" + cluster.SourceID,
+	}
+}
+
+// sp05WorkerHealthKey is the health key of the durable reducer pass of one
+// configured cluster source.
+func sp05WorkerHealthKey(cluster SP04Cluster) string {
+	return "sp05/" + cluster.Tenant + "/" + cluster.ClusterUID
 }

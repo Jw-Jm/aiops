@@ -1,0 +1,34 @@
+package graph
+import (
+ "context"
+ "crypto/ed25519"
+ "crypto/rand"
+ "errors"
+ "encoding/json"
+ "strings"
+ "testing"
+ "time"
+ "github.com/google/uuid"
+ "github.com/jackc/pgx/v5"
+)
+type reviewWorkerTx struct { pgx.Tx; legacyRead bool }
+type reviewWorkerRow struct{}
+func (reviewWorkerRow) Scan(out ...any) error { *out[0].(*uuid.UUID)=uuid.New();*out[1].(*int64)=1;*out[2].(*int64)=1;return nil }
+func (tx *reviewWorkerTx) QueryRow(context.Context,string,...any) pgx.Row {return reviewWorkerRow{}}
+type reviewWorkerRows struct { pgx.Rows }
+func (*reviewWorkerRows) Next() bool{return false}
+func (*reviewWorkerRows) Close(){}
+func (*reviewWorkerRows) Err()error{return nil}
+func (tx *reviewWorkerTx) Query(_ context.Context,q string,_ ...any)(pgx.Rows,error){tx.legacyRead=strings.Contains(q,"FROM platform.role_bindings");return &reviewWorkerRows{},nil}
+func TestReviewSignedNativeScopeUsesLegacyWorkerBranch(t *testing.T){
+ public,private,_:=ed25519.GenerateKey(rand.Reader)
+ scope:=Scope{Tenant:uuid.NewString(),Cluster:"cluster-a",Namespaces:[]string{"apps"},AuthorizationRevision:"native-grant-digest"}
+ payload:=[]byte(`{"queryKind":"list"}`)
+ token,err:=SignContext(private,Claims{Audience:"platform-graph-query",Subject:"native:account",Scope:scope,Deadline:time.Now().Add(time.Second),QueryDigest:ScopeDigest(json.RawMessage(payload))})
+ if err!=nil{t.Fatal(err)}
+ claims,err:=VerifyContext(public,token,"platform-graph-query",payload);if err!=nil{t.Fatal(err)}
+ tx:=&reviewWorkerTx{}
+ _,err=EffectiveTx(context.Background(),tx,claims.Scope.Tenant,claims.Subject,claims.Scope.Cluster,false)
+ if !errors.Is(err,ErrScope)||!tx.legacyRead{t.Fatalf("error=%v legacy=%t",err,tx.legacyRead)}
+ t.Log("CONFIRMED: signed native scope/subject survives the RPC, but Worker has no native session/source proof and reads the empty legacy binding table. No PostgreSQL or cluster was used.")
+}

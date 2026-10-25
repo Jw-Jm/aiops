@@ -169,8 +169,12 @@ func EvaluateCommittedFaultChainTx(ctx context.Context, tx pgx.Tx, j Job, reques
 				if data.CanonicalID != "" {
 					sourceSteps = append(sourceSteps, ResourceSourceStep{StepID: id, Tool: tool, CanonicalID: data.CanonicalID, ContentDigest: graph.ScopeDigest(json.RawMessage(raw))})
 				}
-				for _, id := range data.QueryResultRefs {
-					q, err := ReadCommittedQueryResultTx(ctx, tx, j, id)
+				// The committed Step is the source of the judgement: the query
+				// result is only the fact behind it. The inner reference must not
+				// shadow the outer Step id, or the judgement would name a query
+				// result the source-step reader can never resolve.
+				for _, queryResultID := range data.QueryResultRefs {
+					q, err := ReadCommittedQueryResultTx(ctx, tx, j, queryResultID)
 					if err != nil {
 						return err
 					}

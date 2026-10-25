@@ -17,7 +17,7 @@
     "finalCommit": null,
     "bundleId": null,
     "imageDigests": null,
-    "note": "\u672c\u6587\u4ef6\u662f\u6e90\u7801\u517c\u5bb9\u51c6\u5907\u57fa\u7ebf\uff0c\u4e0d\u662f Bundle inventory\u3001\u7b7e\u540d\u56de\u6267\u6216\u53d1\u884c\u8bb8\u53ef\u3002\u6b63\u5f0f\u51bb\u7ed3\u540e\u7531\u65e2\u6709 BuildSpec/Manifest \u7ed1\u5b9a\u5b9e\u9645\u63d0\u4ea4\u3001\u9010\u67b6\u6784\u955c\u50cf\u548c\u6e90\u7801\u6750\u6599\u3002",
+    "note": "本文件是源码兼容准备基线，不是 Bundle inventory、签名回执或发行许可。正式冻结后由既有 BuildSpec/Manifest 绑定实际提交、逐架构镜像和源码材料。",
     "candidateCommit": "1a7c7da4af7d74d80df0df0aec72868cbe2785cc",
     "candidateManifest": "docs/evidence/verification-candidate-20261019/candidate-manifest.json",
     "signedCandidate": {
@@ -35,59 +35,59 @@
       "source": "cmd/platform-api",
       "material": "platform-api",
       "buildRecipe": "build/images/api/Dockerfile",
-      "pairing": "\u4e0e Worker\u3001Schema\u3001\u8fc1\u79fb\u6765\u81ea\u540c\u4e00\u51bb\u7ed3\u63d0\u4ea4"
+      "pairing": "与 Worker、Schema、迁移来自同一冻结提交"
     },
     {
       "name": "worker",
       "source": "cmd/platform-worker",
       "material": "platform-worker",
       "buildRecipe": "build/images/worker/Dockerfile",
-      "pairing": "\u4e0e API \u540c\u4e00\u51bb\u7ed3\u63d0\u4ea4\uff1b\u539f\u751f K8sGPT \u4fdd\u6301\u7cbe\u786e\u51c6\u5165"
+      "pairing": "与 API 同一冻结提交；原生 K8sGPT 保持精确准入"
     },
     {
       "name": "investigator",
       "source": "services/investigator",
       "material": "holmesgpt",
       "buildRecipe": "build/images/investigator/Dockerfile",
-      "pairing": "\u5e73\u53f0 wrapper \u4e0e\u9501\u5b9a HolmesGPT/\u5bf9\u5e94\u6e90\u7801\u95ed\u5305\u540c\u6279\u5236\u5305\uff0c\u4e0d\u7531 Python \u5305\u7248\u672c\u5355\u72ec\u8bc1\u660e\u517c\u5bb9"
+      "pairing": "平台 wrapper 与锁定 HolmesGPT/对应源码闭包同批制包，不由 Python 包版本单独证明兼容"
     },
     {
       "name": "web",
       "source": "web",
       "material": "platform-web",
       "buildRecipe": "build/images/web/Dockerfile",
-      "pairing": "\u4ece\u540c\u4e00\u516c\u5f00 OpenAPI \u751f\u6210\u5ba2\u6237\u7aef\uff1b\u65e0\u72ec\u7acb package version\uff0c\u4f9d\u9760\u51bb\u7ed3\u63d0\u4ea4\u4e0e image digest"
+      "pairing": "从同一公开 OpenAPI 生成客户端；无独立 package version，依靠冻结提交与 image digest"
     },
     {
       "name": "runner",
       "source": "cmd/command-runner",
       "material": "command-runner",
       "buildRecipe": "build/images/command-runner/Dockerfile",
-      "pairing": "Profile toolImageDigest \u5fc5\u987b\u7b49\u4e8e Bundle \u51c6\u5165 Runner digest"
+      "pairing": "Profile toolImageDigest 必须等于 Bundle 准入 Runner digest"
     },
     {
       "name": "installer",
       "source": "cmd/opsctl",
       "material": "opsctl",
-      "pairing": "\u72ec\u7acb\u9a8c\u7b7e\u5de5\u5177\u5305\u4e0e core \u5305\u9700\u660e\u786e\u914d\u5bf9\uff0c\u4e0d\u66ff\u6362\u672a\u8ba4\u8bc1\u4e8c\u8fdb\u5236"
+      "pairing": "独立验签工具包与 core 包需明确配对，不替换未认证二进制"
     },
     {
       "name": "migration",
       "source": "cmd/db-migrate",
       "material": "db-migrate",
-      "pairing": "\u53d7\u63a7 migration LOGIN\uff0c\u7cbe\u786e db-migrate-source \u914d\u5bf9"
+      "pairing": "受控 migration LOGIN，精确 db-migrate-source 配对"
     },
     {
       "name": "schemas",
       "source": "api/schemas",
       "material": "opsctl-source",
-      "pairing": "API/Worker\u3001Python \u8f93\u51fa\u4e0e Web \u751f\u6210\u7269\u540c\u4e00\u6e90\u7801\u57fa\u7ebf"
+      "pairing": "API/Worker、Python 输出与 Web 生成物同一源码基线"
     },
     {
       "name": "chart",
       "source": "deploy/charts/ops-platform",
       "material": "ops-platform-chart",
-      "pairing": "Chart version \u4e0e appVersion \u5206\u522b\u767b\u8bb0\uff0c\u7cbe\u786e Chart \u5185\u5bb9\u7531\u73b0\u6709 Bundle payload \u6458\u8981\u7ed1\u5b9a"
+      "pairing": "Chart version 与 appVersion 分别登记，精确 Chart 内容由现有 Bundle payload 摘要绑定"
     }
   ],
   "contracts": [
@@ -158,8 +158,8 @@
   ],
   "migrations": {
     "first": 1,
-    "latest": 57,
-    "count": 57,
+    "latest": 69,
+    "count": 69,
     "direction": "forward_only",
     "rollback": "no_down_no_automatic_binary_downgrade",
     "runbook": "docs/runbooks/database-migrations.md"
@@ -182,7 +182,7 @@
     {
       "id": "DEL-001",
       "status": "development_complete_runtime_pending",
-      "title": "Web \u4e0e\u52a9\u624b/\u6545\u969c\u94fe\u7edf\u4e00\u5b89\u88c5\u5f00\u53d1\u5b8c\u6210\uff0c\u771f\u5b9e\u5b89\u88c5\u5f85\u9a8c\u6536",
+      "title": "Web 与助手/故障链统一安装开发完成，真实安装待验收",
       "evidence": [
         "api/schemas/installation-business-values-v1.schema.json",
         "internal/bundle/installer.go",
@@ -191,36 +191,36 @@
         "internal/bundle/business_capabilities_test.go",
         "docs/release/unified-installer-closeout.md"
       ],
-      "requiredBeforeRelease": "\u4f7f\u7528\u5f53\u524d\u51bb\u7ed3\u6e90\u7801\u4e0e\u65b0\u7b7e\u540d Bundle \u5b8c\u6210\u771f\u5b9e\u4e09\u9636\u6bb5\u5b89\u88c5\u3001OIDC/TLS\u3001\u52a9\u624b\u548c\u6545\u969c\u94fe\u8fd0\u884c\u9a8c\u8bc1\uff1b\u672c\u5730\u914d\u7f6e/\u6e32\u67d3\u68c0\u67e5\u4e0d\u66ff\u4ee3\u8fd0\u884c\u51c6\u5165\u3002"
+      "requiredBeforeRelease": "使用当前冻结源码与新签名 Bundle 完成真实三阶段安装、OIDC/TLS、助手和故障链运行验证；本地配置/渲染检查不替代运行准入。"
     },
     {
       "id": "DEL-002",
       "status": "open",
-      "title": "\u524d\u7aef\u955c\u50cf\u914d\u65b9\u4f7f\u7528\u56fa\u5b9a amd64 \u5e93\u8def\u5f84",
+      "title": "前端镜像配方使用固定 amd64 库路径",
       "evidence": [
         "build/images/web/Dockerfile"
       ],
-      "requiredBeforeRelease": "\u9010\u76ee\u6807\u67b6\u6784\u51c6\u5907\u771f\u5b9e\u955c\u50cf/\u4f9d\u8d56/\u6e90\u7801\u95ed\u5305\u4e0e\u517c\u5bb9\u9a8c\u8bc1\uff0c\u4e0d\u80fd\u636e API/Worker \u7684\u4ea4\u53c9\u7f16\u8bd1\u5ba3\u79f0\u5b8c\u6574 ARM64/AMD64 \u4ea4\u4ed8\u3002 \u5f53\u524d Installer \u5bf9\u542f\u7528 Web \u7684\u975e amd64 \u76ee\u6807\u63d0\u524d\u62d2\u7edd\uff0c\u4e0d\u5ba3\u79f0\u591a\u67b6\u6784\u5df2\u5b8c\u6210\u3002"
+      "requiredBeforeRelease": "逐目标架构准备真实镜像/依赖/源码闭包与兼容验证，不能据 API/Worker 的交叉编译宣称完整 ARM64/AMD64 交付。 当前 Installer 对启用 Web 的非 amd64 目标提前拒绝，不宣称多架构已完成。"
     },
     {
       "id": "DEL-003",
       "status": "pending",
-      "title": "\u5019\u9009\u5305\u5df2\u7b7e\u540d\uff0c\u5b8c\u6574\u72ec\u7acb\u590d\u6838\u4e0e\u6574\u5957\u8fd0\u884c\u672a\u5b8c\u6210",
+      "title": "候选包已签名，完整独立复核与整套运行未完成",
       "evidence": [
         "internal/bundle/build.go",
         "internal/bundle/verify.go"
       ],
-      "requiredBeforeRelease": "\u5148\u53d6\u5f97 Core \u5b8c\u6574 payload \u7684\u72ec\u7acb\u590d\u6838\u5b8c\u6210\u56de\u6267\uff0c\u518d\u4ee5\u540c\u4e00\u7b7e\u540d\u5305\u5b8c\u6210\u72ec\u7acb\u73af\u5883\u7684\u5b89\u88c5\u4e0e\u529f\u80fd\u95ed\u73af\uff1b\u5347\u7ea7\u56de\u9000\u548c\u53d1\u884c\u4ecd\u6309\u5404\u81ea\u9636\u6bb5\u5b89\u6392\u3002"
+      "requiredBeforeRelease": "先取得 Core 完整 payload 的独立复核完成回执，再以同一签名包完成独立环境的安装与功能闭环；升级回退和发行仍按各自阶段安排。"
     },
     {
       "id": "DEL-004",
       "status": "pending",
-      "title": "\u5f53\u524d\u771f\u5b9e\u95ed\u73af\u4e0e\u8d28\u91cf/\u5bb9\u91cf\u8bc1\u636e\u4e0d\u80fd\u7ee7\u627f\u65e7\u56de\u6267",
+      "title": "当前真实闭环与质量/容量证据不能继承旧回执",
       "evidence": [
         "docs/evidence/five-source-reverify-20261018/round5/acceptance-status.json",
         "docs/evidence/five-source-reverify-20261018/round5/prior-retention-reassessment.json"
       ],
-      "requiredBeforeRelease": "\u6309\u65b0\u6e90\u7801\u53ca\u5b9e\u9645\u6765\u6e90/\u6388\u6743\u91cd\u65b0\u5b89\u6392\u9a8c\u6536\uff1b\u8fdc\u7a0b\u6027\u80fd\u4ec5\u8bb0\u5f55\uff0c\u4eba\u5de5\u6a21\u578b\u8d28\u91cf pending \u4e0d\u4ee3\u586b\u3002"
+      "requiredBeforeRelease": "按新源码及实际来源/授权重新安排验收；远程性能仅记录，人工模型质量 pending 不代填。"
     }
   ],
   "qualification": {

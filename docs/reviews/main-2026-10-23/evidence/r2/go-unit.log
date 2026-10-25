@@ -1,0 +1,76 @@
+ok  	ops-platform/internal/action	0.836s
+ok  	ops-platform/internal/analytics	1.720s
+ok  	ops-platform/internal/app	1.489s
+ok  	ops-platform/internal/archive	1.194s
+ok  	ops-platform/internal/assistant	1.575s
+ok  	ops-platform/internal/audit	2.013s
+ok  	ops-platform/internal/auth	2.536s
+ok  	ops-platform/internal/authz	2.833s
+ok  	ops-platform/internal/bootstrap	3.066s
+--- FAIL: TestImportValidatesEveryLayerBeforeAnyRuntimeCall (17.50s)
+    importer_test.go:242: missing layer error = checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestPlanImportReturnsEveryImageWithoutRuntimeSideEffects (0.35s)
+    importer_test.go:253: checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestImportVerifiedOCIArchivesWithoutPull (0.61s)
+    importer_test.go:270: checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestInstallIncompleteBundleNeverRunsHelmOrRuntime (0.48s)
+    installer_test.go:28: incomplete install error = checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+FAIL
+FAIL	ops-platform/internal/bundle	30.312s
+ok  	ops-platform/internal/bundle/drivers	3.836s
+ok  	ops-platform/internal/configregistry	4.021s
+?   	ops-platform/internal/contract	[no test files]
+ok  	ops-platform/internal/crypto	4.038s
+?   	ops-platform/internal/datascope	[no test files]
+ok  	ops-platform/internal/evidence	4.173s
+ok  	ops-platform/internal/finding	4.136s
+ok  	ops-platform/internal/graph	220.446s
+ok  	ops-platform/internal/httpapi	6.291s
+ok  	ops-platform/internal/identity	3.768s
+ok  	ops-platform/internal/incident	3.262s
+ok  	ops-platform/internal/inspection/hardware	3.247s
+ok  	ops-platform/internal/inspection/kubernetes	3.234s
+ok  	ops-platform/internal/inspection/npd	3.286s
+?   	ops-platform/internal/integrations	[no test files]
+ok  	ops-platform/internal/integrations/deepflow	6.864s
+ok  	ops-platform/internal/integrations/k8sgpt	2.952s
+ok  	ops-platform/internal/integrations/keycloak	2.750s
+ok  	ops-platform/internal/integrations/kubernetes	23.294s
+ok  	ops-platform/internal/integrations/openbao	3.030s
+ok  	ops-platform/internal/integrations/redfish	1.646s
+ok  	ops-platform/internal/integrations/s3	3.286s
+?   	ops-platform/internal/integrations/victorialogs	[no test files]
+?   	ops-platform/internal/integrations/victorialogs/adapter	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics/adapter	[no test files]
+?   	ops-platform/internal/integrations/vmalert	[no test files]
+ok  	ops-platform/internal/investigation	0.751s
+ok  	ops-platform/internal/investigation/mcp	0.773s
+ok  	ops-platform/internal/investigation/tools	1.435s
+ok  	ops-platform/internal/modelprofile	1.809s
+ok  	ops-platform/internal/observability	0.909s
+ok  	ops-platform/internal/persistence	1.174s
+?   	ops-platform/internal/persistence/dbgen	[no test files]
+ok  	ops-platform/internal/policy	1.649s
+ok  	ops-platform/internal/profile	4.539s
+ok  	ops-platform/internal/rca	1.989s
+ok  	ops-platform/internal/resource	2.056s
+ok  	ops-platform/internal/resourcestore	2.164s
+ok  	ops-platform/internal/source	2.013s
+ok  	ops-platform/internal/supplychain	3.102s
+ok  	ops-platform/internal/tenant	2.026s
+?   	ops-platform/internal/upstream/corootcheck	[no test files]
+?   	ops-platform/internal/upstream/keepmodel	[no test files]
+?   	ops-platform/internal/upstream/metal3	[no test files]
+?   	ops-platform/internal/upstream/ontology/api	[no test files]
+?   	ops-platform/internal/upstream/ontology/model	[no test files]
+?   	ops-platform/internal/upstream/ontology/service/diagnostic	[no test files]
+?   	ops-platform/cmd/command-runner	[no test files]
+ok  	ops-platform/cmd/db-migrate	1.836s
+--- FAIL: TestBundleBuildCLIAndIndependentVerify (14.24s)
+    build_bundle_test.go:103: source material opa-sdk-source differs from the reviewed corresponding-source lock
+FAIL
+FAIL	ops-platform/cmd/opsctl	15.344s
+?   	ops-platform/cmd/platform-api	[no test files]
+?   	ops-platform/cmd/platform-worker	[no test files]
+FAIL

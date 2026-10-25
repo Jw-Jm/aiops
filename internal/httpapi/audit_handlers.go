@@ -251,7 +251,7 @@ func (h *SP04Handlers) verifyAuditRange(ctx context.Context, a auth.RequestConte
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	deadline, _ := ctx.Deadline()
-	token, err := graph.SignContext(h.SigningKey, graph.Claims{Audience: "platform-audit-verify", Subject: a.Subject, Scope: graph.Scope{Tenant: a.TenantID.String(), Cluster: "audit"}, Deadline: deadline, QueryDigest: graph.ScopeDigest(json.RawMessage(body))})
+	token, err := graph.SignContext(h.SigningKey, internalClaims(nativeProofFromContext(ctx), graph.Claims{Audience: "platform-audit-verify", Subject: a.Subject, Scope: graph.Scope{Tenant: a.TenantID.String(), Cluster: "audit"}, Deadline: deadline, QueryDigest: graph.ScopeDigest(json.RawMessage(body))}))
 	if err != nil {
 		return "unavailable", "verification context unavailable"
 	}

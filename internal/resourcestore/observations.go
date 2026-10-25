@@ -116,8 +116,32 @@ func observedRelations(ctx context.Context, tx pgx.Tx, tenant, canonical, source
 	if volume, _, _ := unstructured.NestedString(o.Object, "spec", "volumeName"); volume != "" {
 		candidates = append(candidates, endpoint{"PersistentVolume", "", volume, "", "core", "bound_to"})
 	}
+	anchor, _ := resource.ParseCanonicalID(canonical)
+	// The cluster of the anchor is the cluster of the relation. It is resolved
+	// from the cluster registration, so a same-named object of another cluster
+	// can never be a candidate.
+	var anchorCluster uuid.UUID
+	if err := tx.QueryRow(ctx, `SELECT cluster_id FROM platform.cluster_registrations WHERE tenant_id=$1 AND cluster_uid=$2`, tenant, anchor.Scope).Scan(&anchorCluster); err != nil {
+		return nil, err
+	}
 	for _, c := range candidates {
-		rows, err := tx.Query(ctx, `SELECT canonical_id FROM platform.resource_entities WHERE tenant_id=$1 AND kind=$2 AND namespace=$3 AND name=$4 AND deleted_at IS NULL AND observed_at<=$5 ORDER BY canonical_id LIMIT 2`, tenant, c.kind, c.namespace, c.name, at)
+		// The candidate is looked up by its exact identity: the anchor's cluster
+		// and the API group of the endpoint are part of the query, so a same-named
+		// object of another cluster or another API group can never consume the
+		// uniqueness budget. When the endpoint carries a UID, the identity is
+		// exact: a deleted and recreated object has another UID and is never
+		// linked.
+		var rows pgx.Rows
+		var err error
+		if c.uid != "" {
+			exact := resource.CanonicalID{Domain: anchor.Domain, Tenant: anchor.Tenant, Scope: anchor.Scope, APIGroup: c.group, Kind: c.kind, StableID: c.uid}.String()
+			rows, err = tx.Query(ctx, `SELECT canonical_id FROM platform.resource_entities WHERE tenant_id=$1 AND cluster_id=$2 AND canonical_id=$3 AND deleted_at IS NULL AND observed_at<=$4`, tenant, anchorCluster, exact, at)
+		} else {
+			// The prefix is compared literally: a scope that contains a wildcard
+			// character is part of the identity, never a pattern.
+			prefix := resource.CanonicalID{Domain: anchor.Domain, Tenant: anchor.Tenant, Scope: anchor.Scope, APIGroup: c.group, Kind: c.kind}.Prefix()
+			rows, err = tx.Query(ctx, `SELECT canonical_id FROM platform.resource_entities WHERE tenant_id=$1 AND cluster_id=$2 AND left(canonical_id,length($3))=$3 AND kind=$4 AND namespace=$5 AND name=$6 AND deleted_at IS NULL AND observed_at<=$7 ORDER BY canonical_id LIMIT 2`, tenant, anchorCluster, prefix, c.kind, c.namespace, c.name, at)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -139,11 +163,10 @@ func observedRelations(ctx context.Context, tx pgx.Tx, tenant, canonical, source
 			continue
 		}
 		parsed, err := resource.ParseCanonicalID(ids[0])
-		anchor, _ := resource.ParseCanonicalID(canonical)
-		if parsed.Scope != anchor.Scope {
+		if err != nil || parsed.Scope != anchor.Scope || parsed.APIGroup != c.group {
 			continue
 		}
-		if err != nil || c.uid != "" && parsed.StableID != c.uid || parsed.APIGroup != c.group {
+		if c.uid != "" && parsed.StableID != c.uid {
 			continue
 		}
 		out = append(out, resource.Relation{From: canonical, To: ids[0], Kind: c.relation, ObservedAt: at, ValidFrom: at, Confidence: 1, Provenance: resource.Provenance{SourceRegistrationID: source, RuleVersion: "native-history/v1", ObservedAt: at}})

@@ -259,13 +259,13 @@ type callError struct {
 
 func (e callError) Error() string { return e.Code }
 func (h *SP04Handlers) call(ctx context.Context, endpoint, path, audience, subject string, scope graph.Scope, payload []byte) ([]byte, error) {
-	return h.callWithGrantDigest(ctx, endpoint, path, audience, subject, scope, payload, "")
+	return h.callWithGrantDigest(ctx, endpoint, path, audience, subject, scope, payload, "", internalProofFromContext(ctx))
 }
-func (h *SP04Handlers) callWithGrantDigest(ctx context.Context, endpoint, path, audience, subject string, scope graph.Scope, payload []byte, grantDigest string) ([]byte, error) {
+func (h *SP04Handlers) callWithGrantDigest(ctx context.Context, endpoint, path, audience, subject string, scope graph.Scope, payload []byte, grantDigest string, proof *graph.NativeProof) ([]byte, error) {
 	deadline, cancel := context.WithTimeout(ctx, 9*time.Second)
 	defer cancel()
 	expires, _ := deadline.Deadline()
-	token, err := graph.SignContext(h.SigningKey, graph.Claims{GrantSnapshotDigest: grantDigest, Audience: audience, Subject: subject, Scope: scope, Deadline: expires, QueryDigest: graph.ScopeDigest(json.RawMessage(payload))})
+	token, err := graph.SignContext(h.SigningKey, internalClaims(proof, graph.Claims{GrantSnapshotDigest: grantDigest, Audience: audience, Subject: subject, Scope: scope, Deadline: expires, QueryDigest: graph.ScopeDigest(json.RawMessage(payload))}))
 	if err != nil {
 		return nil, err
 	}
@@ -311,7 +311,7 @@ type graphCursor struct {
 
 func encodeCursor(key ed25519.PrivateKey, c graphCursor) (string, error) {
 	raw, _ := json.Marshal(c)
-	return graph.SignContext(key, graph.Claims{Audience: "platform-graph-cursor", Subject: "cursor", Deadline: time.Now().Add(25 * time.Second), QueryDigest: graph.ScopeDigest(json.RawMessage(raw)), Scope: graph.Scope{Resources: []string{base64.RawURLEncoding.EncodeToString(raw)}}})
+	return graph.SignContext(key, graph.Claims{Source: graph.SourceLegacy, Audience: "platform-graph-cursor", Subject: "cursor", Deadline: time.Now().Add(25 * time.Second), QueryDigest: graph.ScopeDigest(json.RawMessage(raw)), Scope: graph.Scope{Resources: []string{base64.RawURLEncoding.EncodeToString(raw)}}})
 }
 func decodeCursor(key ed25519.PublicKey, token string, c *graphCursor) error {
 	parts := strings.Split(token, ".")
@@ -463,7 +463,7 @@ func (h *SP04Handlers) queryEvidence(w http.ResponseWriter, r *http.Request, req
 		return
 	}
 	raw, _ := json.Marshal(q)
-	reply, err := h.callWithGrantDigest(r.Context(), route.Endpoint, "/internal/v1/evidence:query", "platform-evidence-query", request.Subject, scope, raw, signedGrantDigest)
+	reply, err := h.callWithGrantDigest(r.Context(), route.Endpoint, "/internal/v1/evidence:query", "platform-evidence-query", request.Subject, scope, raw, signedGrantDigest, internalProofFromContext(r.Context()))
 	if err != nil {
 		h.writeCallError(w, err, request.RequestID)
 		return

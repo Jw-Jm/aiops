@@ -96,7 +96,7 @@ it("submits a fixed readonly check tied to an old turn with unchanged windows, r
       edge={context.edges[0]}
       gap="network_window_statistics"
       turnId="old-turn"
-      controls={{ conversation, disabled: false, onSubmitted: submitted }}
+      controls={{ conversation, disabled: false, epoch: 1, onSubmitted: submitted }}
     />,
   );
   fireEvent.click(screen.getByRole("button", { name: "执行冻结窗口统计检查" }));
@@ -125,10 +125,13 @@ it("submits a fixed readonly check tied to an old turn with unchanged windows, r
       direction: "incoming",
     },
   });
-  expect(submitted).toHaveBeenCalledWith({
-    turnId: "new-turn",
-    state: "queued",
-  });
+  expect(submitted).toHaveBeenCalledWith(
+    {
+      turnId: "new-turn",
+      state: "queued",
+    },
+    1,
+  );
   expect(context.edges[0].missingEvidence).toEqual([
     "network_window_statistics",
   ]);
@@ -146,7 +149,7 @@ it("blocks concurrent submission and reports scope denial without resubmission o
     edge: context.edges[0],
     gap: "network_window_statistics",
     turnId: "old-turn",
-    controls: { conversation, disabled: true, onSubmitted: submitted },
+    controls: { conversation, disabled: true, epoch: 1, onSubmitted: submitted },
   };
   const view = render(<FaultChainGapCheck {...props} />);
   fireEvent.click(screen.getByRole("button"));

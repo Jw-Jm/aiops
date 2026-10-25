@@ -1,7 +1,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { setNativeCredentials } from "../src/api/client";
+import { ApiError, setNativeCredentials } from "../src/api/client";
 import { AccountSecurity } from "../src/pages/AccountSecurity";
 import {
   createNativeMFAEnrollment,
@@ -181,4 +181,50 @@ it("cancels in-flight verification and discards a late factor response", async (
   expect(screen.queryByLabelText("当前密码")).toBeNull();
   expect(screen.queryByLabelText("新绑定动态码")).toBeNull();
   expect(verifyNativeMFAEnrollment).not.toHaveBeenCalled();
+});
+
+it("surfaces the server step-up cooldown and clears the challenge instead of hinting at a wrong code", async () => {
+  vi.mocked(verifyNativeStepUpChallenge).mockRejectedValue(
+    new ApiError(429, "RATE_LIMITED", "budget", "req-rate"),
+  );
+  render(
+    <MemoryRouter>
+      <AccountSecurity />
+    </MemoryRouter>,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "重新绑定双因素" }),
+  );
+  await waitFor(() =>
+    expect(createNativeStepUpChallenge).toHaveBeenCalledTimes(1),
+  );
+  fireEvent.change(screen.getByLabelText("当前密码"), {
+    target: { value: "right" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "验证密码" }));
+  await screen.findByText(/验证失败次数已达上限/);
+  expect(screen.queryByText("当前密码不正确，挑战仍待完成。")).toBeNull();
+});
+
+it("reports password-work capacity as retryable and keeps the challenge open", async () => {
+  vi.mocked(verifyNativeStepUpChallenge).mockRejectedValue(
+    new ApiError(503, "UNAVAILABLE", "busy", "req-busy"),
+  );
+  render(
+    <MemoryRouter>
+      <AccountSecurity />
+    </MemoryRouter>,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "重新绑定双因素" }),
+  );
+  await waitFor(() =>
+    expect(createNativeStepUpChallenge).toHaveBeenCalledTimes(1),
+  );
+  fireEvent.change(screen.getByLabelText("当前密码"), {
+    target: { value: "right" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "验证密码" }));
+  await screen.findByText(/本次请求未判定为密码错误/);
+  expect(screen.getByLabelText("当前密码")).toBeTruthy();
 });

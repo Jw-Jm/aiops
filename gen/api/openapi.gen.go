@@ -5538,6 +5538,9 @@ type GetCapabilitiesdefaultJSONResponseBody struct {
 type CreateCommandExecutionParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+
+	// XOpsStepUpChallenge Reference of the verified step-up challenge. Required for a high-privilege execution profile (k8s_cluster, ssh_root) on a native session; the server re-derives the exact command target from the immutable risk assessment and never trusts a client target.
+	XOpsStepUpChallenge *openapi_types.UUID `json:"X-Ops-Step-Up-Challenge,omitempty"`
 }
 
 // StreamCommandExecutionEventsParams defines parameters for StreamCommandExecutionEvents.
@@ -5556,6 +5559,9 @@ type CancelCommandExecutionParams struct {
 type AcknowledgeCommandRiskParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
 	IdempotencyKey string `json:"Idempotency-Key"`
+
+	// XOpsStepUpChallenge Reference of the verified step-up challenge. Required for a high-privilege execution profile (k8s_cluster, ssh_root) on a native session; the server re-derives the exact command target from the immutable risk assessment and never trusts a client target.
+	XOpsStepUpChallenge *openapi_types.UUID `json:"X-Ops-Step-Up-Challenge,omitempty"`
 }
 
 // AssessCommandRiskParams defines parameters for AssessCommandRisk.
@@ -13392,6 +13398,25 @@ func (siw *ServerInterfaceWrapper) CreateCommandExecution(w http.ResponseWriter,
 		return
 	}
 
+	// ------------- Optional header parameter "X-Ops-Step-Up-Challenge" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Ops-Step-Up-Challenge")]; found {
+		var XOpsStepUpChallenge openapi_types.UUID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Ops-Step-Up-Challenge", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Ops-Step-Up-Challenge", valueList[0], &XOpsStepUpChallenge, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uuid"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+			return
+		}
+
+		params.XOpsStepUpChallenge = &XOpsStepUpChallenge
+
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateCommandExecution(w, r, params)
 	}))
@@ -13591,6 +13616,25 @@ func (siw *ServerInterfaceWrapper) AcknowledgeCommandRisk(w http.ResponseWriter,
 		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
 		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
 		return
+	}
+
+	// ------------- Optional header parameter "X-Ops-Step-Up-Challenge" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Ops-Step-Up-Challenge")]; found {
+		var XOpsStepUpChallenge openapi_types.UUID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Ops-Step-Up-Challenge", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Ops-Step-Up-Challenge", valueList[0], &XOpsStepUpChallenge, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uuid"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Ops-Step-Up-Challenge", Err: err})
+			return
+		}
+
+		params.XOpsStepUpChallenge = &XOpsStepUpChallenge
+
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,67 @@
+{
+  "reviewedAt": "2026-10-25T09:56:05.065305+00:00",
+  "scope": [
+    "MR-005",
+    "MR-006 (r12 evidence reused)",
+    "MR-007",
+    "MR-008",
+    "MR-010",
+    "MR-013",
+    "MR-015"
+  ],
+  "productFilesModified": false,
+  "codeBuddyCalled": false,
+  "databaseExecuted": false,
+  "checks": [
+    {
+      "command": "go test -race ./internal/app ./internal/observability ./internal/resourcestore ./internal/resource ./internal/integrations/openbao -count=1",
+      "result": "all 5 packages passed"
+    },
+    {
+      "command": "npx vitest run tests/v12/p1_assistant_faultchain_ownership.test.tsx tests/v12/p1_assistant_scope.test.tsx tests/fault_chain_late_response.test.tsx tests/fault_chain_checks.test.tsx",
+      "result": "4 files, 19 tests passed"
+    },
+    {
+      "command": "make check-generated",
+      "result": "passed"
+    },
+    {
+      "command": "go test ./test/contract ./internal/bundle -count=1",
+      "result": "both packages passed"
+    },
+    {
+      "command": "go test ./test/integration -run '^(TestMigrationScriptsAreForwardOnlyAndContiguous|TestMigrationCLIHasNoDownPath|TestNativeTaskProjectionsUseScopeWireKeys)$' -count=1",
+      "result": "passed; static tests only"
+    },
+    {
+      "command": "go test -overlay /var/folders/71/5876xm8s6d37d5873yq80dc80000gn/T/ops-independent-review-5eaeiz_3/overlay.json ./internal/integrations/openbao -run '^TestCodexReview' -v -count=1",
+      "result": "both controlled bug probes reproduced the findings; probes assert current faulty behavior"
+    },
+    {
+      "command": "git diff --quiet -- migrations",
+      "result": "applied migration files unchanged; new 64-69 remain untracked"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/prepare-migration-source.py --check --architecture arm64",
+      "result": "passed; 10 modules, 296 selected module files, 1129 standard library files; sourceBundleSHA256=sha256:1593549bab206e0406655774c401846f904ec21f2d97c34037a50a009b0d4a85"
+    },
+    {
+      "command": "python3 scripts/prepare-migration-source.py --check --architecture amd64",
+      "result": "passed; 10 modules, 296 selected module files, 1150 standard library files; sourceBundleSHA256=sha256:37c9a2cfe7eb63c878ae9e7a38b3058334c62c7f2802bf847ad74ef29aa5c9ab"
+    }
+  ],
+  "probeResults": [
+    {
+      "name": "TestCodexReviewPendingSymlinkEscape",
+      "observed": "pending symlink wrote leaf private key into a protected temporary repository"
+    },
+    {
+      "name": "TestCodexReviewExistingSecretKeyMismatch",
+      "observed": "valid certificate with a mismatched private key was accepted after pending cleanup"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+package mcp
+
+import (
+ "encoding/json"
+ "errors"
+ "testing"
+ "time"
+ "ops-platform/internal/analytics"
+ "ops-platform/internal/graph"
+ "ops-platform/internal/investigation"
+ "ops-platform/internal/investigation/tools"
+)
+
+func TestReviewLegalGraphIntentCannotPassMCPReservation(t *testing.T) {
+ intent:=analytics.QueryIntent{SchemaVersion:"query-intent/v1",DatasetID:"resources.current",Operation:"aggregate",Metrics:[]string{"resource_count"},Dimensions:[]string{},Filters:[]analytics.Filter{{Field:"kind",Operator:"eq",Value:"Pod"}},Sort:[]analytics.Sort{},Limit:50}
+ binding:=analytics.Binding{Subject:"operator-a",OwnerEpoch:1,Grant:graph.Scope{Tenant:"018f0000-0000-7000-8000-000000000001",Cluster:"cluster-a",Namespaces:[]string{"apps"},AuthorizationRevision:"grant-v1"}}
+ if _,err:=analytics.Compile(intent,binding);err!=nil {t.Fatalf("legal graph intent: %v",err)}
+ args,_:=json.Marshal(map[string]any{"intent":intent})
+ if _,err:=toolReservation(tools.Definition{Name:"execute_analysis_query",RawQuery:true,Version:"v3"},args);!errors.Is(err,investigation.ErrInvalid) {t.Fatalf("reservation: %v",err)}
+ now:=time.Now().UTC()
+ intent.TimeRange=&analytics.QueryTimeRange{From:now.Add(-time.Minute),To:now,Timezone:"UTC"}
+ if _,err:=analytics.Compile(intent,binding);!errors.Is(err,analytics.ErrUnsupported) {t.Fatalf("adding a window must remain unsupported: %v",err)}
+ t.Log("CONFIRMED: legal graph intent fails reservation; adding a window fails graph compilation.")
+}

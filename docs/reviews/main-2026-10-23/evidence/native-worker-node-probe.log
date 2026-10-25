@@ -1,0 +1,10 @@
+=== RUN   TestReviewSignedNativeScopeUsesLegacyWorkerBranch
+    main_review_probe_test.go:33: CONFIRMED: signed native scope/subject survives the RPC, but Worker has no native session/source proof and reads the empty legacy binding table. No PostgreSQL or cluster was used.
+--- PASS: TestReviewSignedNativeScopeUsesLegacyWorkerBranch (0.00s)
+PASS
+ok  	ops-platform/internal/graph	0.971s
+=== RUN   TestReviewNodeReadyUnknownHasNoHealthyResolution
+    main_review_probe_test.go:14: CONFIRMED: Unknown fires a distinct durable signal, then Ready=True resolves only NotReady. The existing Unknown occurrence receives no resolution. No database was used.
+--- PASS: TestReviewNodeReadyUnknownHasNoHealthyResolution (0.00s)
+PASS
+ok  	ops-platform/internal/inspection/kubernetes	1.368s

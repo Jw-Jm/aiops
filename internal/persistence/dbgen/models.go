@@ -75,6 +75,17 @@ type ActionExecution struct {
 	RunnerTerminationRequestedAt pgtype.Timestamptz `json:"runner_termination_requested_at"`
 	OutputPreviews               []byte             `json:"output_previews"`
 	CancellationRequestedAt      pgtype.Timestamptz `json:"cancellation_requested_at"`
+	Authority                    []byte             `json:"authority"`
+	// Native session whose verified password+TOTP step-up authorized this command.
+	StepUpSessionID pgtype.UUID `json:"step_up_session_id"`
+	// identity.step_up_sessions reference of the accepted proof; re-proved at dispatch and claim.
+	StepUpProofID pgtype.UUID `json:"step_up_proof_id"`
+	// Operation the proof was minted for (command_execution); never re-used across operations.
+	StepUpOperation pgtype.Text `json:"step_up_operation"`
+	// Proof binding digest of the exact command target, frozen with the execution.
+	StepUpBindingDigest []byte `json:"step_up_binding_digest"`
+	// Proof expiry observed at prepare time; a later dispatch never extends it.
+	StepUpExpiresAt pgtype.Timestamptz `json:"step_up_expires_at"`
 }
 
 type ActionHostOnboarding struct {
@@ -278,6 +289,186 @@ type FindingTransportKey struct {
 	KeyValue  string      `json:"key_value"`
 	Digest    string      `json:"digest"`
 	FindingID pgtype.UUID `json:"finding_id"`
+}
+
+type IdentityAccount struct {
+	TenantID             pgtype.UUID        `json:"tenant_id"`
+	UserID               pgtype.UUID        `json:"user_id"`
+	LoginName            string             `json:"login_name"`
+	DisplayName          string             `json:"display_name"`
+	Subject              string             `json:"subject"`
+	Status               string             `json:"status"`
+	PasswordState        string             `json:"password_state"`
+	MustChangePassword   bool               `json:"must_change_password"`
+	AccountRevision      int32              `json:"account_revision"`
+	CredentialVersion    int32              `json:"credential_version"`
+	AuthorizationVersion int32              `json:"authorization_version"`
+	SessionVersion       int32              `json:"session_version"`
+	CreatedAt            pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt            pgtype.Timestamptz `json:"updated_at"`
+	MfaResetRequired     bool               `json:"mfa_reset_required"`
+	RecoveryFailures     int32              `json:"recovery_failures"`
+	RecoveryWindowAt     pgtype.Timestamptz `json:"recovery_window_at"`
+}
+
+type IdentityAdministratorInitialization struct {
+	TenantID      pgtype.UUID        `json:"tenant_id"`
+	UserID        pgtype.UUID        `json:"user_id"`
+	InitializedAt pgtype.Timestamptz `json:"initialized_at"`
+	ActorSubject  string             `json:"actor_subject"`
+}
+
+type IdentityCredential struct {
+	TenantID          pgtype.UUID        `json:"tenant_id"`
+	UserID            pgtype.UUID        `json:"user_id"`
+	CredentialVersion int32              `json:"credential_version"`
+	PasswordHash      string             `json:"password_hash"`
+	Status            string             `json:"status"`
+	CreatedAt         pgtype.Timestamptz `json:"created_at"`
+}
+
+type IdentityLoginEntryAttempt struct {
+	Singleton       bool               `json:"singleton"`
+	AttemptCount    int32              `json:"attempt_count"`
+	WindowStartedAt pgtype.Timestamptz `json:"window_started_at"`
+	LockedUntil     pgtype.Timestamptz `json:"locked_until"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+}
+
+type IdentityMfaEnrollment struct {
+	TenantID         pgtype.UUID        `json:"tenant_id"`
+	EnrollmentID     pgtype.UUID        `json:"enrollment_id"`
+	UserID           pgtype.UUID        `json:"user_id"`
+	Revision         int32              `json:"revision"`
+	Method           string             `json:"method"`
+	SecretCiphertext string             `json:"secret_ciphertext"`
+	SecretKeyRef     string             `json:"secret_key_ref"`
+	SecretKeyVersion string             `json:"secret_key_version"`
+	State            string             `json:"state"`
+	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+	ExpiresAt        pgtype.Timestamptz `json:"expires_at"`
+	ConfirmedAt      pgtype.Timestamptz `json:"confirmed_at"`
+	RevokedAt        pgtype.Timestamptz `json:"revoked_at"`
+	LastUsedStep     pgtype.Int8        `json:"last_used_step"`
+}
+
+type IdentityMfaRecoveryCode struct {
+	TenantID   pgtype.UUID        `json:"tenant_id"`
+	UserID     pgtype.UUID        `json:"user_id"`
+	CodeDigest []byte             `json:"code_digest"`
+	IssuedAt   pgtype.Timestamptz `json:"issued_at"`
+	UsedAt     pgtype.Timestamptz `json:"used_at"`
+}
+
+type IdentityPasswordAttempt struct {
+	TenantID        pgtype.UUID        `json:"tenant_id"`
+	UserID          pgtype.UUID        `json:"user_id"`
+	FailedCount     int32              `json:"failed_count"`
+	WindowStartedAt pgtype.Timestamptz `json:"window_started_at"`
+	LockedUntil     pgtype.Timestamptz `json:"locked_until"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+}
+
+type IdentityRoleGrant struct {
+	TenantID             pgtype.UUID        `json:"tenant_id"`
+	UserID               pgtype.UUID        `json:"user_id"`
+	BindingID            pgtype.UUID        `json:"binding_id"`
+	Role                 string             `json:"role"`
+	Scope                []byte             `json:"scope"`
+	AuthorizationVersion int32              `json:"authorization_version"`
+	Status               string             `json:"status"`
+	GrantedAt            pgtype.Timestamptz `json:"granted_at"`
+	RevokedAt            pgtype.Timestamptz `json:"revoked_at"`
+	RevokedReason        pgtype.Text        `json:"revoked_reason"`
+}
+
+type IdentitySession struct {
+	TenantID                   pgtype.UUID        `json:"tenant_id"`
+	SessionID                  pgtype.UUID        `json:"session_id"`
+	UserID                     pgtype.UUID        `json:"user_id"`
+	Mode                       string             `json:"mode"`
+	TokenDigest                []byte             `json:"token_digest"`
+	CsrfDigest                 []byte             `json:"csrf_digest"`
+	IssuedCredentialVersion    int32              `json:"issued_credential_version"`
+	IssuedAuthorizationVersion int32              `json:"issued_authorization_version"`
+	IssuedAt                   pgtype.Timestamptz `json:"issued_at"`
+	LastSeenAt                 pgtype.Timestamptz `json:"last_seen_at"`
+	IdleExpiresAt              pgtype.Timestamptz `json:"idle_expires_at"`
+	AbsoluteExpiresAt          pgtype.Timestamptz `json:"absolute_expires_at"`
+	RevokedAt                  pgtype.Timestamptz `json:"revoked_at"`
+	RevokedReason              pgtype.Text        `json:"revoked_reason"`
+	IssuedSessionVersion       int32              `json:"issued_session_version"`
+}
+
+type IdentityStepUpChallenge struct {
+	TenantID                   pgtype.UUID        `json:"tenant_id"`
+	ChallengeID                pgtype.UUID        `json:"challenge_id"`
+	UserID                     pgtype.UUID        `json:"user_id"`
+	SessionID                  pgtype.UUID        `json:"session_id"`
+	Operation                  string             `json:"operation"`
+	Target                     []byte             `json:"target"`
+	BindingDigest              []byte             `json:"binding_digest"`
+	Revision                   int32              `json:"revision"`
+	State                      string             `json:"state"`
+	RequiredMethods            []string           `json:"required_methods"`
+	CompletedMethods           []string           `json:"completed_methods"`
+	Attempts                   int32              `json:"attempts"`
+	AttemptLimit               int32              `json:"attempt_limit"`
+	IssuedCredentialVersion    int32              `json:"issued_credential_version"`
+	IssuedAuthorizationVersion int32              `json:"issued_authorization_version"`
+	IssuedSessionVersion       int32              `json:"issued_session_version"`
+	CreatedAt                  pgtype.Timestamptz `json:"created_at"`
+	IdleExpiresAt              pgtype.Timestamptz `json:"idle_expires_at"`
+	AbsoluteExpiresAt          pgtype.Timestamptz `json:"absolute_expires_at"`
+	VerifiedAt                 pgtype.Timestamptz `json:"verified_at"`
+	UsedAt                     pgtype.Timestamptz `json:"used_at"`
+}
+
+type IdentityStepUpFailure struct {
+	TenantID        pgtype.UUID        `json:"tenant_id"`
+	UserID          pgtype.UUID        `json:"user_id"`
+	Factor          string             `json:"factor"`
+	FailedCount     int32              `json:"failed_count"`
+	WindowStartedAt pgtype.Timestamptz `json:"window_started_at"`
+	LockedUntil     pgtype.Timestamptz `json:"locked_until"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+}
+
+type IdentityStepUpSession struct {
+	TenantID                   pgtype.UUID        `json:"tenant_id"`
+	StepUpRef                  pgtype.UUID        `json:"step_up_ref"`
+	ChallengeID                pgtype.UUID        `json:"challenge_id"`
+	UserID                     pgtype.UUID        `json:"user_id"`
+	SessionID                  pgtype.UUID        `json:"session_id"`
+	Operation                  string             `json:"operation"`
+	BindingDigest              []byte             `json:"binding_digest"`
+	VerifiedMethods            []string           `json:"verified_methods"`
+	IssuedCredentialVersion    int32              `json:"issued_credential_version"`
+	IssuedAuthorizationVersion int32              `json:"issued_authorization_version"`
+	IssuedSessionVersion       int32              `json:"issued_session_version"`
+	CreatedAt                  pgtype.Timestamptz `json:"created_at"`
+	IdleExpiresAt              pgtype.Timestamptz `json:"idle_expires_at"`
+	AbsoluteExpiresAt          pgtype.Timestamptz `json:"absolute_expires_at"`
+	RevokedAt                  pgtype.Timestamptz `json:"revoked_at"`
+}
+
+type IdentitySubjectMapping struct {
+	TenantID        pgtype.UUID        `json:"tenant_id"`
+	MappingID       pgtype.UUID        `json:"mapping_id"`
+	LegacySubject   string             `json:"legacy_subject"`
+	UserID          pgtype.UUID        `json:"user_id"`
+	Basis           string             `json:"basis"`
+	EvidenceDigest  []byte             `json:"evidence_digest"`
+	MappedAt        pgtype.Timestamptz `json:"mapped_at"`
+	InventoryDigest []byte             `json:"inventory_digest"`
+}
+
+type IdentitySubjectMappingInventory struct {
+	TenantID       pgtype.UUID        `json:"tenant_id"`
+	EvidenceDigest []byte             `json:"evidence_digest"`
+	Document       []byte             `json:"document"`
+	ImportedBy     string             `json:"imported_by"`
+	ImportedAt     pgtype.Timestamptz `json:"imported_at"`
 }
 
 type IncidentAppliedRevision struct {
@@ -566,6 +757,12 @@ type InvestigationJob struct {
 	AssistantBinding        []byte             `json:"assistant_binding"`
 	AssistantConversationID pgtype.UUID        `json:"assistant_conversation_id"`
 	AssistantTurnID         pgtype.UUID        `json:"assistant_turn_id"`
+	// Identity system that proved this v2 Job: legacy or native. NULL only for rows written before the column existed (legacy).
+	AuthorizationSource pgtype.Text `json:"authorization_source"`
+	// Frozen native account that admitted this v2 Job; NULL for legacy and historical rows.
+	AuthorizationUserID pgtype.UUID `json:"authorization_user_id"`
+	// Frozen native authorization version of the admitting account; a later version never revives the Job.
+	AuthorizationVersion pgtype.Int4 `json:"authorization_version"`
 }
 
 type InvestigationReplayLedger struct {
@@ -821,15 +1018,16 @@ type PlatformResourceAlias struct {
 }
 
 type PlatformResourceEntity struct {
-	TenantID    pgtype.UUID        `json:"tenant_id"`
-	CanonicalID string             `json:"canonical_id"`
-	ClusterID   pgtype.UUID        `json:"cluster_id"`
-	Kind        string             `json:"kind"`
-	Namespace   string             `json:"namespace"`
-	Name        string             `json:"name"`
-	Metadata    []byte             `json:"metadata"`
-	ObservedAt  pgtype.Timestamptz `json:"observed_at"`
-	DeletedAt   pgtype.Timestamptz `json:"deleted_at"`
+	TenantID         pgtype.UUID        `json:"tenant_id"`
+	CanonicalID      string             `json:"canonical_id"`
+	ClusterID        pgtype.UUID        `json:"cluster_id"`
+	Kind             string             `json:"kind"`
+	Namespace        string             `json:"namespace"`
+	Name             string             `json:"name"`
+	Metadata         []byte             `json:"metadata"`
+	ObservedAt       pgtype.Timestamptz `json:"observed_at"`
+	DeletedAt        pgtype.Timestamptz `json:"deleted_at"`
+	ResourceRevision int32              `json:"resource_revision"`
 }
 
 type PlatformResourceObservation struct {

@@ -1,0 +1,73 @@
+package openbao
+import (
+ "context"
+ "crypto/tls"
+ "crypto/x509"
+ "encoding/json"
+ "encoding/pem"
+ "net/http"
+ "os"
+ "path/filepath"
+ "strings"
+ "sync/atomic"
+ "testing"
+ "time"
+)
+func TestReviewBootstrapTLSLosesTrustAfterCommittedApplyError(t *testing.T) {
+ dir:=t.TempDir()
+ state:=filepath.Join(dir,"secret.json")
+ ca:=filepath.Join(dir,"ca.pem")
+ script:=`#!/bin/sh
+umask 077
+case " $* " in
+ *" get "*) if test -f "$OPS_REVIEW_SECRET"; then /bin/cat "$OPS_REVIEW_SECRET"; fi; exit 0;;
+ *" apply "*) /bin/cat > "$OPS_REVIEW_SECRET"; exit 1;;
+esac
+exit 2
+`
+ if err:=os.WriteFile(filepath.Join(dir,"kubectl"),[]byte(script),0700);err!=nil {t.Fatal(err)}
+ t.Setenv("PATH",dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+ t.Setenv("OPS_REVIEW_SECRET",state)
+ err:=EnsureBootstrapTLS(context.Background(),"review-fixture","ops-system","ops-openbao",ca,"","")
+ if err==nil {t.Fatal("expected the lost apply response")}
+ if _,err:=os.Stat(state);err!=nil {t.Fatal("stub did not persist the Kubernetes Secret")}
+ if _,err:=os.Stat(ca);!os.IsNotExist(err) {t.Fatalf("trust file unexpectedly retained: %v",err)}
+ err=EnsureBootstrapTLS(context.Background(),"review-fixture","ops-system","ops-openbao",ca,"","")
+ if err==nil||!strings.Contains(err.Error(),"no explicitly trusted bootstrap CA") {t.Fatalf("unexpected retry: %v",err)}
+ t.Log("CONFIRMED: a committed apply with a lost response deletes the only CA file and the retry cannot verify the existing Secret. No cluster was called.")
+}
+func TestReviewPKIRenewFailureStopsIndependentCRLFreshness(t *testing.T) {
+ var fail atomic.Bool
+ var crlReads atomic.Int32
+ ca,key:=makeTestCA(t)
+ server,client:=newPKITestServer(t,ca,key,func(w http.ResponseWriter,r *http.Request){
+  switch r.URL.Path {
+  case "/v1/auth/kubernetes/login":writeJSON(w,map[string]any{"auth":map[string]any{"client_token":"review-token","lease_duration":900}})
+  case "/v1/pki/crl/pem":crlReads.Add(1);w.Write(testCRLPEM(t,ca,key))
+  case "/v1/pki/sign/platform-workload-ops-api":
+   if fail.Load(){http.Error(w,"fixture signing outage",503);return}
+   var body struct{CSR string `json:"csr"`}
+   if err:=json.NewDecoder(r.Body).Decode(&body);err!=nil{t.Error(err);return}
+   block,_:=pem.Decode([]byte(body.CSR));csr,err:=x509.ParseCertificateRequest(block.Bytes);if err!=nil{t.Error(err);return}
+   leaf:=signCSRForTest(t,ca,key,csr,77,45*time.Minute)
+   writeJSON(w,map[string]any{"data":map[string]any{"certificate":leaf,"issuing_ca":string(pem.EncodeToMemory(&pem.Block{Type:"CERTIFICATE",Bytes:ca.Raw}))}})
+  default:http.NotFound(w,r)
+  }
+ })
+ defer server.Close()
+ r,err:=NewCertReloader(client,"ops-system","ops-api");if err!=nil{t.Fatal(err)}
+ token:=writeProjectedToken(t)
+ if err=r.refresh(context.Background(),token);err!=nil{t.Fatal(err)}
+ deadline,err:=r.rotationDeadline();if err!=nil{t.Fatal(err)}
+ now:=deadline;r.now=func()time.Time{return now}
+ if err=r.refreshCRL(context.Background());err!=nil{t.Fatal(err)}
+ before:=crlReads.Load();fail.Store(true);now=deadline.Add(6*time.Minute)
+ if !now.Before(r.current.Load().certificate.Leaf.NotAfter){t.Fatal("fixture leaf expired")}
+ // After the deadline rotationLoop chooses refresh, without a CRL fallback.
+ if err=r.refresh(context.Background(),token);err==nil{t.Fatal("expected signer outage")}
+ if crlReads.Load()!=before{t.Fatal("renewal unexpectedly refreshed the independent CRL")}
+ if _,err=r.getCertificate(&tls.CertificateRequestInfo{});err==nil{t.Fatal("expected stale-CRL refusal")}
+ if err=r.refreshCRL(context.Background());err!=nil{t.Fatal(err)}
+ if _,err=r.getCertificate(&tls.CertificateRequestInfo{});err!=nil{t.Fatal("fresh public CRL should allow the still-valid leaf",err)}
+ t.Log("CONFIRMED: signing outage bypasses reachable CRL refresh; an independent CRL refresh restores the still-valid identity.")
+}

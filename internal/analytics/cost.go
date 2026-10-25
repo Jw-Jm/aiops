@@ -11,7 +11,8 @@ import (
 //
 // Semantics are derived from the frozen intent and the analysis catalog, not
 // from the current backend state:
-//   - graph and postgresql datasets execute a single statement.
+//   - graph and postgresql datasets execute a single statement. The current
+//     resource aggregate is an instant query and carries no time window.
 //   - victoriametrics trend is one range query with a step; compare/compare_percent
 //     evaluate two windows; aggregate/average is one instant query.
 //   - victorialogs trend issues one bounded request per inclusive grid point;
@@ -22,9 +23,6 @@ import (
 // Operations whose expansion cannot be bounded from the intent alone are
 // rejected instead of being under-reserved.
 func SourceRequestCost(intent QueryIntent) (int64, error) {
-	if intent.TimeRange == nil || intent.TimeRange.From.IsZero() || !intent.TimeRange.To.After(intent.TimeRange.From) {
-		return 0, ErrInvalid
-	}
 	catalog, err := Catalog()
 	if err != nil {
 		return 0, err
@@ -37,6 +35,15 @@ func SourceRequestCost(intent QueryIntent) (int64, error) {
 	if !slices.Contains(dataset.Operations, intent.Operation) {
 		return 0, ErrUnsupported
 	}
+	// The dataset and the operation decide the contract first, then the source
+	// decides whether a window is part of it. The current resource aggregate is an
+	// instant query over the live graph: it has no window, and a caller must not
+	// invent one to satisfy the budget. Every time-series source keeps its strict
+	// window contract.
+	instant := dataset.Source == "graph"
+	if !instant && (intent.TimeRange == nil || intent.TimeRange.From.IsZero() || !intent.TimeRange.To.After(intent.TimeRange.From)) {
+		return 0, ErrInvalid
+	}
 	switch intent.Operation {
 	case "compare", "compare_percent":
 		if intent.ComparisonTimeRange == nil {
@@ -44,7 +51,7 @@ func SourceRequestCost(intent QueryIntent) (int64, error) {
 		}
 		return 2, nil
 	case "trend":
-		if intent.StepSeconds < 60 {
+		if intent.TimeRange == nil || intent.StepSeconds < 60 {
 			return 0, ErrInvalid
 		}
 		seconds := int64(intent.TimeRange.To.Sub(intent.TimeRange.From) / time.Second)

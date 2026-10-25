@@ -1,0 +1,68 @@
+ok  	ops-platform/internal/action	1.050s
+ok  	ops-platform/internal/analytics	1.602s
+ok  	ops-platform/internal/app	1.783s
+ok  	ops-platform/internal/archive	1.004s
+ok  	ops-platform/internal/assistant	1.687s
+ok  	ops-platform/internal/audit	2.090s
+ok  	ops-platform/internal/auth	2.446s
+ok  	ops-platform/internal/authz	2.769s
+ok  	ops-platform/internal/bootstrap	3.349s
+--- FAIL: TestImportValidatesEveryLayerBeforeAnyRuntimeCall (17.26s)
+    importer_test.go:242: missing layer error = checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestPlanImportReturnsEveryImageWithoutRuntimeSideEffects (0.32s)
+    importer_test.go:253: checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestImportVerifiedOCIArchivesWithoutPull (0.31s)
+    importer_test.go:270: checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestInstallIncompleteBundleNeverRunsHelmOrRuntime (0.31s)
+    installer_test.go:28: incomplete install error = checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+FAIL
+FAIL	ops-platform/internal/bundle	28.773s
+ok  	ops-platform/internal/bundle/drivers	4.129s
+ok  	ops-platform/internal/configregistry	4.374s
+?   	ops-platform/internal/contract	[no test files]
+ok  	ops-platform/internal/crypto	4.337s
+?   	ops-platform/internal/datascope	[no test files]
+ok  	ops-platform/internal/evidence	4.993s
+ok  	ops-platform/internal/finding	5.007s
+ok  	ops-platform/internal/graph	220.942s
+ok  	ops-platform/internal/httpapi	7.363s
+ok  	ops-platform/internal/identity	5.191s
+ok  	ops-platform/internal/incident	4.597s
+ok  	ops-platform/internal/inspection/hardware	4.553s
+ok  	ops-platform/internal/inspection/kubernetes	3.977s
+ok  	ops-platform/internal/inspection/npd	3.942s
+?   	ops-platform/internal/integrations	[no test files]
+ok  	ops-platform/internal/integrations/deepflow	6.897s
+ok  	ops-platform/internal/integrations/k8sgpt	2.932s
+ok  	ops-platform/internal/integrations/keycloak	2.881s
+ok  	ops-platform/internal/integrations/kubernetes	23.498s
+ok  	ops-platform/internal/integrations/openbao	3.947s
+ok  	ops-platform/internal/integrations/redfish	3.529s
+ok  	ops-platform/internal/integrations/s3	6.041s
+?   	ops-platform/internal/integrations/victorialogs	[no test files]
+?   	ops-platform/internal/integrations/victorialogs/adapter	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics/adapter	[no test files]
+?   	ops-platform/internal/integrations/vmalert	[no test files]
+ok  	ops-platform/internal/investigation	0.701s
+ok  	ops-platform/internal/investigation/mcp	1.111s
+ok  	ops-platform/internal/investigation/tools	1.768s
+ok  	ops-platform/internal/modelprofile	1.889s
+ok  	ops-platform/internal/observability	1.244s
+ok  	ops-platform/internal/persistence	1.791s
+?   	ops-platform/internal/persistence/dbgen	[no test files]
+ok  	ops-platform/internal/policy	1.939s
+ok  	ops-platform/internal/profile	4.861s
+ok  	ops-platform/internal/rca	1.572s
+ok  	ops-platform/internal/resource	1.726s
+ok  	ops-platform/internal/resourcestore	2.084s
+ok  	ops-platform/internal/source	2.495s
+ok  	ops-platform/internal/supplychain	3.077s
+ok  	ops-platform/internal/tenant	2.370s
+?   	ops-platform/internal/upstream/corootcheck	[no test files]
+?   	ops-platform/internal/upstream/keepmodel	[no test files]
+?   	ops-platform/internal/upstream/metal3	[no test files]
+?   	ops-platform/internal/upstream/ontology/api	[no test files]
+?   	ops-platform/internal/upstream/ontology/model	[no test files]
+?   	ops-platform/internal/upstream/ontology/service/diagnostic	[no test files]
+FAIL

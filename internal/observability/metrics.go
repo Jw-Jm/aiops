@@ -1,8 +1,10 @@
 package observability
 
 import (
+	"errors"
 	"math"
 	"net/http"
+	"regexp"
 	"strconv"
 	"sync"
 	"time"
@@ -26,13 +28,30 @@ type Metrics struct {
 	queryCompleteness *prometheus.CounterVec
 	exportFailures    *prometheus.CounterVec
 	degraded          prometheus.Gauge
+	businessDegraded  prometheus.Gauge
 	processUp         prometheus.Gauge
 	auditDelay        prometheus.Gauge
 	degradedMu        sync.Mutex
 	degradedState     uint32
+	// businessComponents is the registered business health state. Only the
+	// components a Worker registered are kept, so the key space stays finite
+	// and no runtime label can grow the map.
+	businessComponents map[string]bool
 }
 
+// degradationBits are the fixed observability export components. Their health
+// is the responsibility of the export itself and keeps its own semantics.
 var degradationBits = map[string]uint32{"traces": 1, "metrics_listener": 2, "runtime": 4, "audit_signing": 8}
+
+// maxBusinessComponents bounds the registered business health keys. A Worker
+// registers the sources it owns; the space is finite by construction. The bound
+// is far above any legitimate configuration: it exists to stop a runaway
+// registration, not to cap a real deployment.
+const maxBusinessComponents = 4096
+
+// businessComponentPattern is the accepted shape of a business health key. A
+// key is a stable identifier of a configured source, never a free label.
+var businessComponentPattern = regexp.MustCompile(`^[a-z][a-z0-9._/-]{0,127}$`)
 
 var operationSet = map[string]map[string]struct{}{
 	"kubernetes": {"query": {}, "error": {}},
@@ -50,6 +69,143 @@ var operationSet = map[string]map[string]struct{}{
 }
 
 var operationResults = map[string]struct{}{"ok": {}, "error": {}, "retry": {}, "rejected": {}, "unavailable": {}}
+
+// RegisterBusinessComponent registers one business health key. It returns false
+// when the key is not a stable identifier or the bounded key space is full. A
+// key that is already registered keeps its current state: a repeated
+// registration must never clear an existing failure.
+func (m *Metrics) RegisterBusinessComponent(key string) bool {
+	if !businessComponentPattern.MatchString(key) {
+		return false
+	}
+	m.degradedMu.Lock()
+	defer m.degradedMu.Unlock()
+	if m.businessComponents == nil {
+		m.businessComponents = map[string]bool{}
+	}
+	if _, ok := m.businessComponents[key]; ok {
+		return true
+	}
+	if len(m.businessComponents) >= maxBusinessComponents {
+		return false
+	}
+	m.businessComponents[key] = false
+	m.publishBusinessDegraded()
+	return true
+}
+
+// RegisterBusinessComponents registers a whole set of business health keys. The
+// identity and the capacity of every key are checked before the first key is
+// registered, so a startup either owns the complete set or none of it.
+func (m *Metrics) RegisterBusinessComponents(keys []string) error {
+	for _, key := range keys {
+		if !businessComponentPattern.MatchString(key) {
+			return errors.New("business health key " + key + " is not a stable source identity")
+		}
+	}
+	m.degradedMu.Lock()
+	defer m.degradedMu.Unlock()
+	if m.businessComponents == nil {
+		m.businessComponents = map[string]bool{}
+	}
+	added := 0
+	for _, key := range keys {
+		if _, ok := m.businessComponents[key]; ok {
+			continue
+		}
+		added++
+	}
+	if len(m.businessComponents)+added > maxBusinessComponents {
+		return errors.New("the business health key space is exhausted")
+	}
+	for _, key := range keys {
+		if _, ok := m.businessComponents[key]; !ok {
+			m.businessComponents[key] = false
+		}
+	}
+	m.publishBusinessDegraded()
+	return nil
+}
+
+// UnregisterBusinessComponents removes a set of registered keys together with
+// their state. A removed source never keeps a failure alive.
+func (m *Metrics) UnregisterBusinessComponents(keys []string) {
+	m.degradedMu.Lock()
+	defer m.degradedMu.Unlock()
+	changed := false
+	for _, key := range keys {
+		if _, ok := m.businessComponents[key]; !ok {
+			continue
+		}
+		delete(m.businessComponents, key)
+		changed = true
+	}
+	if changed {
+		m.publishBusinessDegraded()
+	}
+}
+
+// UnregisterBusinessComponent removes a registered key together with its state.
+// A removed source never keeps a failure alive.
+func (m *Metrics) UnregisterBusinessComponent(key string) {
+	m.degradedMu.Lock()
+	defer m.degradedMu.Unlock()
+	if _, ok := m.businessComponents[key]; !ok {
+		return
+	}
+	delete(m.businessComponents, key)
+	m.publishBusinessDegraded()
+}
+
+// SetBusinessDegraded records the health of one registered business component.
+// An unregistered key is refused: a caller may not invent components at runtime.
+func (m *Metrics) SetBusinessDegraded(key string, degraded bool) {
+	m.degradedMu.Lock()
+	defer m.degradedMu.Unlock()
+	if _, ok := m.businessComponents[key]; !ok {
+		return
+	}
+	m.businessComponents[key] = degraded
+	m.publishBusinessDegraded()
+}
+
+// BusinessComponentRegistered reports whether a business health key is
+// registered. It never registers anything, so a caller can check the ownership
+// of a source without taking it.
+func (m *Metrics) BusinessComponentRegistered(key string) bool {
+	m.degradedMu.Lock()
+	defer m.degradedMu.Unlock()
+	_, ok := m.businessComponents[key]
+	return ok
+}
+
+// BusinessDegraded reports whether any registered business component is
+// degraded. One source recovering never clears the failure of another source.
+func (m *Metrics) BusinessDegraded() bool {
+	m.degradedMu.Lock()
+	defer m.degradedMu.Unlock()
+	for _, degraded := range m.businessComponents {
+		if degraded {
+			return true
+		}
+	}
+	return false
+}
+
+// publishBusinessDegraded publishes the aggregated business health. The caller
+// holds the lock.
+func (m *Metrics) publishBusinessDegraded() {
+	if m.businessDegraded == nil {
+		return
+	}
+	for _, degraded := range m.businessComponents {
+		if degraded {
+			m.businessDegraded.Set(1)
+			return
+		}
+	}
+	m.businessDegraded.Set(0)
+}
 
 func NewMetrics() *Metrics {
 	registry := prometheus.NewRegistry()
@@ -76,6 +232,10 @@ func NewMetrics() *Metrics {
 		exportFailures: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: "platform", Name: "observability_export_failures_total", Help: "Observability exporter failures by signal.",
 		}, []string{"signal"}),
+		businessDegraded: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "platform", Name: "business_degraded",
+			Help: "Whether any registered business collection component is degraded.",
+		}),
 		degraded: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "platform", Name: "observability_degraded", Help: "Whether a configured platform observability export is degraded.",
 		}),
@@ -89,7 +249,7 @@ func NewMetrics() *Metrics {
 	m.processUp.Set(1)
 	m.InvalidateBusinessSnapshot()
 	m.databaseUp.Set(math.NaN())
-	registry.MustRegister(m.workDuration, m.queueDepth, m.recentResults, m.jobDuration, m.databaseUp, m.businessAvailable, m.businessSampledAt, m.httpRequests, m.httpDuration, m.operations, m.exportFailures, m.degraded, m.processUp, m.auditDelay, m.queryCompleteness)
+	registry.MustRegister(m.workDuration, m.queueDepth, m.recentResults, m.jobDuration, m.databaseUp, m.businessAvailable, m.businessSampledAt, m.httpRequests, m.httpDuration, m.operations, m.exportFailures, m.degraded, m.businessDegraded, m.processUp, m.auditDelay, m.queryCompleteness)
 	return m
 }
 

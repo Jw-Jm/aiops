@@ -94,15 +94,23 @@ test('investigation fetch SSE resumes with Bearer and durable cursor, suppresses
   } finally { globalThis.fetch=originalFetch; }
 });
 
-test('investigation SSE fails closed on missing Bearer, sequence gaps and 410', async () => {
+test('investigation SSE streams a native cookie session and fails closed on sequence gaps and 410', async () => {
  const { streamInvestigationEventsWithResume } = await import(readerURL.href);
- await assert.rejects(async()=>{for await (const event of streamInvestigationEventsWithResume('/events',{})) {}},/Bearer/);
  const originalFetch=globalThis.fetch;
  try {
+  let seenOptions=null;
+  globalThis.fetch=async(_url,options)=>{seenOptions=options;return new Response(`id: signed-1\ndata: ${JSON.stringify({eventId:'1',eventType:'job.state',jobId:'j',occurredAt:'now',payload:{}})}\n\n`,{headers:{'content-type':'text/event-stream'}});};
+  const events=[];
+  for await(const event of streamInvestigationEventsWithResume('/events',{credentials:'same-origin',headers:{}})){events.push(event.data.eventId);}
+  assert.deepEqual(events,['1']);
+  assert.equal(seenOptions.credentials,'same-origin');
+  assert.equal(new Headers(seenOptions.headers).get('Authorization'),null);
   globalThis.fetch=async()=>new Response(`id: signed-2\ndata: ${JSON.stringify({eventId:'2',eventType:'job.state',jobId:'j',occurredAt:'now',payload:{}})}\n\n`,{headers:{'content-type':'text/event-stream'}});
   await assert.rejects(async()=>{for await(const event of streamInvestigationEventsWithResume('/events',{headers:{Authorization:'Bearer token'}})){}},/sequence gap/);
   globalThis.fetch=async()=>new Response('{}',{status:410});
   await assert.rejects(async()=>{for await(const event of streamInvestigationEventsWithResume('/events',{headers:{Authorization:'Bearer token'}})){}},/410/);
+  globalThis.fetch=async()=>new Response('{}',{status:401});
+  await assert.rejects(async()=>{for await(const event of streamInvestigationEventsWithResume('/events',{credentials:'same-origin',headers:{}})){}},/401/);
  }finally{globalThis.fetch=originalFetch;}
 });
 

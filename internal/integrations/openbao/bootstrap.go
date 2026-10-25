@@ -4,9 +4,12 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha256"
+	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"encoding/pem"
 	"errors"
@@ -895,6 +898,134 @@ func ioReadLimited(reader io.Reader, limit int64) ([]byte, error) {
 	return contents, nil
 }
 
+// bootstrapPendingMaterial is the minimal material of the identity that is about
+// to be submitted. It holds the leaf certificate and its private key, never the
+// CA key, and it is bound to the CA and to the service identity. It is written
+// with 0600 outside the repository so that a submission whose outcome is unknown
+// can be retried with exactly the same identity.
+type bootstrapPendingMaterial struct {
+	SchemaVersion string `json:"schemaVersion"`
+	CADigest      string `json:"caDigest"`
+	Service       string `json:"service"`
+	Namespace     string `json:"namespace"`
+	Secret        string `json:"secret"`
+	Certificate   string `json:"certificate"`
+	PrivateKey    string `json:"privateKey"`
+}
+
+const bootstrapSecretName = "ops-openbao-bootstrap-tls"
+
+// pendingMaterialPath is the protected location of the pending submission.
+func pendingMaterialPath(caFile string) string { return caFile + ".pending" }
+
+func writePendingMaterial(root *os.Root, path string, material bootstrapPendingMaterial) error {
+	encoded, err := json.Marshal(material)
+	if err != nil {
+		return fmt.Errorf("encode the pending bootstrap material: %w", err)
+	}
+	file, err := root.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
+	if err != nil {
+		return fmt.Errorf("create the pending bootstrap material: %w", err)
+	}
+	if err := file.Chmod(0o600); err != nil {
+		_ = file.Close()
+		return fmt.Errorf("set the pending bootstrap material permissions: %w", err)
+	}
+	if _, err := file.Write(encoded); err != nil {
+		_ = file.Close()
+		return fmt.Errorf("write the pending bootstrap material: %w", err)
+	}
+	if err := file.Sync(); err != nil {
+		_ = file.Close()
+		return fmt.Errorf("sync the pending bootstrap material: %w", err)
+	}
+	return file.Close()
+}
+
+func readPendingMaterial(root *os.Root, path string) (bootstrapPendingMaterial, bool, error) {
+	var material bootstrapPendingMaterial
+	info, err := root.Lstat(path)
+	if errors.Is(err, os.ErrNotExist) {
+		return material, false, nil
+	}
+	if err != nil {
+		return material, false, fmt.Errorf("inspect the pending bootstrap material: %w", err)
+	}
+	if !info.Mode().IsRegular() {
+		return material, false, errors.New("OPENBAO_TLS_PENDING_INVALID: pending material must be a regular file")
+	}
+	file, err := root.Open(path)
+	if err != nil {
+		return material, false, fmt.Errorf("open the pending bootstrap material: %w", err)
+	}
+	defer file.Close()
+	opened, err := file.Stat()
+	if err != nil || !os.SameFile(info, opened) {
+		return material, false, errors.New("OPENBAO_TLS_PENDING_INVALID: pending material changed while opening")
+	}
+	encoded, err := ioReadLimited(file, 1<<20)
+	if err != nil {
+		return material, false, err
+	}
+	if err := json.Unmarshal(encoded, &material); err != nil {
+		return material, false, errors.New("OPENBAO_TLS_PENDING_INVALID: the pending bootstrap material is not readable")
+	}
+	if material.SchemaVersion != "bootstrap-pending/v1" || material.Certificate == "" || material.PrivateKey == "" {
+		return material, false, errors.New("OPENBAO_TLS_PENDING_INVALID: the pending bootstrap material is incomplete")
+	}
+	return material, true, nil
+}
+
+// createBootstrapSecret submits the identity. The Secret is created, never
+// applied: an existing Secret of another source is not overwritten.
+func createBootstrapSecret(ctx context.Context, kubeContext, namespace, name string, material bootstrapPendingMaterial) error {
+	secretObject := map[string]any{
+		"apiVersion": "v1", "kind": "Secret",
+		"metadata": map[string]any{
+			"name": name, "namespace": namespace,
+			"labels": map[string]string{"ops.platform.io/managed-by": "opsctl", "ops.platform.io/component": "openbao"},
+		},
+		"type": "kubernetes.io/tls",
+		"data": map[string]string{
+			"tls.crt": material.Certificate,
+			"tls.key": material.PrivateKey,
+		},
+	}
+	encoded, err := json.Marshal(secretObject)
+	if err != nil {
+		return fmt.Errorf("encode bootstrap TLS Secret: %w", err)
+	}
+	command := exec.CommandContext(ctx, "kubectl", "--context", kubeContext, "create", "--filename", "-")
+	command.Stdin = strings.NewReader(string(encoded))
+	if _, err := command.Output(); err != nil {
+		return errors.New("OPENBAO_TLS_SECRET_CREATE_FAILED: kubectl could not create the bootstrap TLS Secret")
+	}
+	return nil
+}
+
+// submitBootstrapIdentity submits the pending identity and confirms its outcome.
+// A create whose result is unknown is never read as "it will never land": the
+// remote is inspected, and only a matching certificate and key converge.
+func submitBootstrapIdentity(ctx context.Context, kubeContext, namespace, serviceName string, material bootstrapPendingMaterial) error {
+	createErr := createBootstrapSecret(ctx, kubeContext, namespace, bootstrapSecretName, material)
+	remote, exists, readErr := readBootstrapSecret(ctx, kubeContext, namespace, bootstrapSecretName)
+	if readErr != nil {
+		return errors.New("OPENBAO_TLS_SECRET_CREATE_UNKNOWN: the bootstrap TLS Secret write could not be confirmed; the CA trust and the pending identity were kept")
+	}
+	if !exists {
+		if createErr != nil {
+			return errors.New("OPENBAO_TLS_SECRET_CREATE_UNKNOWN: the bootstrap TLS Secret write could not be confirmed; the CA trust and the pending identity were kept")
+		}
+		return errors.New("OPENBAO_TLS_SECRET_CREATE_UNKNOWN: the bootstrap TLS Secret is not readable yet; the CA trust and the pending identity were kept")
+	}
+	if remote.Data["tls.crt"] != material.Certificate || remote.Data["tls.key"] != material.PrivateKey {
+		// The remote holds another identity. The trust anchor and the pending
+		// material are kept; an unknown certificate is never trusted.
+		return errors.New("OPENBAO_TLS_SECRET_IDENTITY_MISMATCH: the bootstrap TLS Secret does not hold the submitted identity")
+	}
+	return nil
+}
+
 func EnsureBootstrapTLS(ctx context.Context, kubeContext, namespace, serviceName, caFile, repositoryRoot, bundleDirectory string) error {
 	if !validKubernetesName(namespace) || !validKubernetesName(serviceName) {
 		return errors.New("OpenBao TLS bootstrap requires a valid namespace and service name")
@@ -902,77 +1033,136 @@ func EnsureBootstrapTLS(ctx context.Context, kubeContext, namespace, serviceName
 	if err := validateExternalPath(caFile, repositoryRoot, bundleDirectory); err != nil {
 		return fmt.Errorf("bootstrap CA path: %w", err)
 	}
-	secret, exists, err := readBootstrapSecret(ctx, kubeContext, namespace, "ops-openbao-bootstrap-tls")
+	parent, err := filepath.EvalSymlinks(filepath.Dir(caFile))
+	if err != nil {
+		return fmt.Errorf("resolve bootstrap directory: %w", err)
+	}
+	parentInfo, err := os.Stat(parent)
+	if err != nil {
+		return fmt.Errorf("inspect bootstrap directory: %w", err)
+	}
+	pendingFile := pendingMaterialPath(caFile)
+	if err := validateExternalPath(filepath.Join(parent, filepath.Base(pendingFile)), repositoryRoot, bundleDirectory); err != nil {
+		return fmt.Errorf("bootstrap pending path: %w", err)
+	}
+	// Pin the validated directory; exclusive creation never follows pending links.
+	root, err := os.OpenRoot(parent)
+	if err != nil {
+		return fmt.Errorf("open bootstrap directory: %w", err)
+	}
+	defer root.Close()
+	openedParent, err := root.Stat(".")
+	if err != nil || !os.SameFile(parentInfo, openedParent) {
+		return errors.New("OPENBAO_TLS_PENDING_INVALID: bootstrap directory changed while opening")
+	}
+	caPath, pendingPath := filepath.Base(caFile), filepath.Base(pendingFile)
+	pending, hasPending, err := readPendingMaterial(root, pendingPath)
 	if err != nil {
 		return err
 	}
+	secret, exists, err := readBootstrapSecret(ctx, kubeContext, namespace, bootstrapSecretName)
+	if err != nil {
+		return err
+	}
+	// Existing public CA aliases may point to another validated external directory.
 	caPEM, caErr := os.ReadFile(caFile)
 	if exists {
+		// The Secret is in place: it has to be signed by the trusted CA, and when
+		// the pending identity of this CA is known, it has to hold the same key.
 		if caErr != nil {
 			return errors.New("OPENBAO_CA_UNTRUSTED: existing TLS Secret has no explicitly trusted bootstrap CA file")
 		}
 		if err := verifyServerCertificate(caPEM, secret.Data["tls.crt"], serviceName, namespace); err != nil {
 			return err
 		}
+		certificate, certErr := base64.StdEncoding.DecodeString(secret.Data["tls.crt"])
+		key, keyErr := base64.StdEncoding.DecodeString(secret.Data["tls.key"])
+		if certErr != nil || keyErr != nil {
+			return errors.New("OPENBAO_TLS_SECRET_INVALID: TLS certificate or key data is invalid")
+		}
+		if _, err := tls.X509KeyPair(certificate, key); err != nil {
+			return errors.New("OPENBAO_TLS_SECRET_INVALID: TLS certificate and private key do not form a valid pair")
+		}
+		if hasPending && pending.CADigest == digestBytes(caPEM) && secret.Data["tls.key"] != pending.PrivateKey {
+			return errors.New("OPENBAO_TLS_SECRET_IDENTITY_MISMATCH: the bootstrap TLS Secret does not hold the submitted identity")
+		}
+		// The identity is in place; the pending material is no longer needed.
+		_ = root.Remove(pendingPath)
 		return nil
 	}
 	if caErr == nil {
-		return errors.New("OPENBAO_TLS_TRUST_DRIFT: bootstrap CA exists but the Kubernetes TLS Secret is missing")
+		// A CA trust exists but the Secret is not readable. The identity of that
+		// trust is only known through the pending material. Without it the trust
+		// anchor is never destroyed: the recovery is explicit.
+		if !hasPending {
+			return errors.New("OPENBAO_TLS_TRUST_UNRECOVERABLE: the bootstrap CA trust exists but the identity behind it is unknown; remove the CA file and the pending material by hand to bootstrap a new identity")
+		}
+		if pending.CADigest != digestBytes(caPEM) || pending.Service != serviceName || pending.Namespace != namespace {
+			return errors.New("OPENBAO_TLS_TRUST_UNRECOVERABLE: the pending bootstrap identity does not belong to the trusted CA")
+		}
+		// The same identity is submitted again; a create that already landed is
+		// confirmed by the remote instead of overwriting it.
+		if err := submitBootstrapIdentity(ctx, kubeContext, namespace, serviceName, pending); err != nil {
+			return err
+		}
+		_ = root.Remove(pendingPath)
+		return nil
 	}
 	if !errors.Is(caErr, os.ErrNotExist) {
 		return fmt.Errorf("read bootstrap CA path: %w", caErr)
 	}
-
 	caCert, leafCert, leafKey, err := generateBootstrapCertificates(serviceName, namespace)
 	if err != nil {
 		return err
 	}
-	ca, err := os.OpenFile(caFile, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
+	ca, err := root.OpenFile(caPath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
 	if err != nil {
 		return fmt.Errorf("create bootstrap CA trust file: %w", err)
 	}
 	if err := ca.Chmod(0o600); err != nil {
 		_ = ca.Close()
-		_ = os.Remove(caFile)
+		_ = root.Remove(caPath)
 		return fmt.Errorf("set bootstrap CA trust file permissions: %w", err)
 	}
 	if _, err := ca.Write(caCert); err != nil {
 		_ = ca.Close()
-		_ = os.Remove(caFile)
+		_ = root.Remove(caPath)
 		return fmt.Errorf("write bootstrap CA trust file: %w", err)
 	}
 	if err := ca.Sync(); err != nil {
 		_ = ca.Close()
-		_ = os.Remove(caFile)
+		_ = root.Remove(caPath)
 		return fmt.Errorf("sync bootstrap CA trust file: %w", err)
 	}
 	if err := ca.Close(); err != nil {
 		return fmt.Errorf("close bootstrap CA trust file: %w", err)
 	}
-	secretObject := map[string]any{
-		"apiVersion": "v1", "kind": "Secret",
-		"metadata": map[string]any{
-			"name": "ops-openbao-bootstrap-tls", "namespace": namespace,
-			"labels": map[string]string{"ops.platform.io/managed-by": "opsctl", "ops.platform.io/component": "openbao"},
-		},
-		"type": "kubernetes.io/tls",
-		"data": map[string]string{
-			"tls.crt": base64.StdEncoding.EncodeToString(leafCert),
-			"tls.key": base64.StdEncoding.EncodeToString(leafKey),
-		},
+	material := bootstrapPendingMaterial{
+		SchemaVersion: "bootstrap-pending/v1",
+		CADigest:      digestBytes(caCert),
+		Service:       serviceName,
+		Namespace:     namespace,
+		Secret:        bootstrapSecretName,
+		Certificate:   base64.StdEncoding.EncodeToString(leafCert),
+		PrivateKey:    base64.StdEncoding.EncodeToString(leafKey),
 	}
-	encoded, err := json.Marshal(secretObject)
-	if err != nil {
-		_ = os.Remove(caFile)
-		return fmt.Errorf("encode bootstrap TLS Secret: %w", err)
+	// The pending identity is stored before the submission, so an unknown
+	// outcome can be retried with exactly the same identity.
+	if err := writePendingMaterial(root, pendingPath, material); err != nil {
+		_ = root.Remove(caPath)
+		return err
 	}
-	command := exec.CommandContext(ctx, "kubectl", "--context", kubeContext, "apply", "--filename", "-")
-	command.Stdin = strings.NewReader(string(encoded))
-	if _, err := command.Output(); err != nil {
-		_ = os.Remove(caFile)
-		return errors.New("OPENBAO_TLS_SECRET_CREATE_FAILED: kubectl could not create the bootstrap TLS Secret")
+	if err := submitBootstrapIdentity(ctx, kubeContext, namespace, serviceName, material); err != nil {
+		return err
 	}
+	_ = root.Remove(pendingPath)
 	return nil
+}
+
+// digestBytes is the identity of a trust anchor or a submitted certificate.
+func digestBytes(raw []byte) string {
+	sum := sha256.Sum256(raw)
+	return "sha256:" + hex.EncodeToString(sum[:])
 }
 
 func ReadBootstrapCA(caFile, repositoryRoot, bundleDirectory string) ([]byte, error) {

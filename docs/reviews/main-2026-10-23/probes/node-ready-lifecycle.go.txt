@@ -1,0 +1,15 @@
+package kubernetes
+import (
+ "testing"
+ "time"
+ "k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+)
+func TestReviewNodeReadyUnknownHasNoHealthyResolution(t *testing.T){
+ node:=unstructured.Unstructured{Object:map[string]any{"apiVersion":"v1","kind":"Node","metadata":map[string]any{"name":"n","uid":"node-uid","resourceVersion":"1","creationTimestamp":time.Now().Add(-time.Hour).UTC().Format(time.RFC3339),"annotations":map[string]any{"ops.internal/observed-at":time.Now().UTC().Format(time.RFC3339)}},"status":map[string]any{"conditions":[]any{map[string]any{"type":"Ready","status":"Unknown","lastTransitionTime":time.Now().Add(-time.Minute).UTC().Format(time.RFC3339)}}}}}
+ initial:=Signals(node);if len(initial)!=1||initial[0].State!="firing"||initial[0].NormalizedSymptom!="NodeReadyUnknown"{t.Fatal(initial)}
+ key:=initial[0].SignalKey()
+ node.Object["status"]=map[string]any{"conditions":[]any{map[string]any{"type":"Ready","status":"True","lastTransitionTime":time.Now().UTC().Format(time.RFC3339)}}}
+ healthy:=Signals(node);if len(healthy)!=1||healthy[0].State!="resolved"{t.Fatal(healthy)}
+ for _,c:=range healthy{if c.SignalKey()==key{t.Fatal("unknown occurrence was resolved; candidate refuted")}}
+ t.Log("CONFIRMED: Unknown fires a distinct durable signal, then Ready=True resolves only NotReady. The existing Unknown occurrence receives no resolution. No database was used.")
+}

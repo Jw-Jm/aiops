@@ -1,0 +1,22 @@
+package auth
+
+import (
+ "context"
+ "errors"
+ "testing"
+ "github.com/google/uuid"
+ "ops-platform/internal/identity"
+)
+
+func TestReviewNativeStepUpNeedsBoundIntentAndWorkerHasNoLegacySID(t *testing.T) {
+ tenant := uuid.New()
+ actor := RequestContext{TenantID:tenant,Subject:"native:user",ACR:NativeACRLevel1}
+ ctx := WithNativeSession(context.Background(), NativeSessionContext{
+  StepUpChallengeID:uuid.New(), Session:identity.ActiveSession{TenantID:tenant,Subject:actor.Subject,Mode:"full"},
+ })
+ // No database is consulted: this is the acknowledgement path's missing intent.
+ if _,err := TouchCurrentStepUpSession(ctx,nil,actor,[]string{StepUpACRLevel2}); !errors.Is(err,ErrStepUpInvalid) {t.Fatal(err)}
+ // Dispatch has the stored actor but no browser context and no Keycloak SID.
+ if _,err := TouchCurrentStepUpSession(context.Background(),nil,actor,[]string{StepUpACRLevel2}); !errors.Is(err,ErrStepUpInvalid) {t.Fatal(err)}
+ t.Log("CONFIRMED: acknowledgement lacks intent; asynchronous native actor cannot pass legacy step-up.")
+}

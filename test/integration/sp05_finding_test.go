@@ -30,6 +30,9 @@ func sp05Database(t *testing.T, seed ...sp05Seed) (context.Context, *sql.DB, *pg
 
 func sp05DatabaseTimed(t *testing.T, timeout time.Duration, seed ...sp05Seed) (context.Context, *sql.DB, *pgxpool.Pool, source.BoundSourceContext) {
 	ctx, db, dir, dsn := newMigrationDatabaseWithTimeout(t, timeout)
+	if err := goose.UpToContext(ctx, db, dir, 1); err != nil {
+		t.Fatal(err)
+	}
 	var database string
 	if err := db.QueryRowContext(ctx, `SELECT current_database()`).Scan(&database); err != nil {
 		t.Fatal(err)
@@ -38,9 +41,6 @@ func sp05DatabaseTimed(t *testing.T, timeout time.Duration, seed ...sp05Seed) (c
 	// owner still needs CREATE on it for the identity schema migration.
 	if _, err := db.ExecContext(ctx, `GRANT CREATE ON DATABASE "`+database+`" TO schema_owner`); err != nil {
 		t.Fatalf("grant schema duty on the disposable database: %v", err)
-	}
-	if err := goose.UpToContext(ctx, db, dir, 1); err != nil {
-		t.Fatal(err)
 	}
 	if err := runRemainingMigrationsAsMigrationRole(t, ctx, db, dsn, dir); err != nil {
 		t.Fatal(err)

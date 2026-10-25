@@ -88,7 +88,7 @@ func (r *Repository) CreateFirstAdministrator(ctx context.Context, input FirstAd
 	if err := input.Validate(); err != nil {
 		return result, err
 	}
-	passwordHash, err := HashPassword(input.Password)
+	passwordHash, err := HashPasswordContext(ctx, input.Password)
 	if err != nil {
 		return result, err
 	}
@@ -113,15 +113,34 @@ func (r *Repository) CreateFirstAdministrator(ctx context.Context, input FirstAd
 // FindLoginAccount uses the fixed SECURITY DEFINER lookup. It never grants the
 // caller broad table access and returns at most one globally unique login.
 func (r *Repository) FindLoginAccount(ctx context.Context, rawLoginName string) (LoginAccount, error) {
-	var account LoginAccount
 	if r == nil || r.pool == nil {
-		return account, ErrRepositoryRequired
+		return LoginAccount{}, ErrRepositoryRequired
 	}
+	return scanLoginAccount(ctx, r.pool, rawLoginName)
+}
+
+// FindLoginAccountTx reads the same projection inside an existing transaction so
+// a step-up verification can compare the credential while it still holds the
+// account row lock.
+func (r *Repository) FindLoginAccountTx(ctx context.Context, tx pgx.Tx, rawLoginName string) (LoginAccount, error) {
+	if r == nil {
+		return LoginAccount{}, ErrRepositoryRequired
+	}
+	if tx == nil {
+		return LoginAccount{}, ErrRepositoryRequired
+	}
+	return scanLoginAccount(ctx, tx, rawLoginName)
+}
+
+func scanLoginAccount(ctx context.Context, query interface {
+	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
+}, rawLoginName string) (LoginAccount, error) {
+	var account LoginAccount
 	loginName := NormalizeLoginName(rawLoginName)
 	if err := ValidateLoginName(loginName); err != nil {
 		return account, err
 	}
-	err := r.pool.
+	err := query.
 		QueryRow(ctx, "SELECT * FROM identity.find_login_account($1)", loginName).
 		Scan(&account.TenantID, &account.UserID, &account.LoginName, &account.DisplayName,
 			&account.Status, &account.PasswordState, &account.MustChangePassword,

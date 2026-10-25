@@ -1,0 +1,51 @@
+pnpm --dir web exec tsc --noEmit
+pnpm --dir web test
+$ node --experimental-strip-types --test ./test/*.test.mjs && vitest run
+✔ typed SSE reader yields a decoded envelope before the stream closes (26.903042ms)
+✔ typed SSE fetch client requests and parses text/event-stream (10.429375ms)
+✔ typed SSE envelope decoder rejects incomplete event data (0.262042ms)
+✔ investigation fetch SSE resumes with Bearer and durable cursor, suppresses duplicate event sequences (0.4585ms)
+✔ investigation SSE fails closed on missing Bearer, sequence gaps and 410 (0.601125ms)
+✔ SSE discards already-buffered events when its request scope is revoked (0.281583ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 79.604833
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/.worktrees/main-review-fixes-20261025/web
+
+ ❯ tests/v12/p1_shell.test.tsx (10 tests | 1 failed) 118ms
+   × matches the frozen source NAV hierarchy without flattening modules 2ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/v12/p1_shell.test.tsx > matches the frozen source NAV hierarchy without flattening modules
+Error: ENOENT: no such file or directory, open '/Users/mssc/Documents/Code/ops/.worktrees/ui-handoff/ops-platform-v1.2-20261020/source/prototype.html'
+ ❯ tests/v12/p1_shell.test.tsx:28:18
+     26|
+     27| it("matches the frozen source NAV hierarchy without flattening modules…
+     28|   const source = readFileSync(
+       |                  ^
+     29|     resolve(
+     30|       process.cwd(),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 36 passed (37)
+      Tests  1 failed | 153 passed (154)
+   Start at  10:38:54
+   Duration  21.71s (import 35%, tests 33%, environment 24%, setup 6%, transform 1%)
+
+     Import  128 modules were evaluated 444 times · 14.21s total, 35% of tracked time
+             ~4.06s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+
+[ELIFECYCLE] Test failed. See above for more details.
+make: *** [test-web] Error 1

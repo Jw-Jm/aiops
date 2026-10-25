@@ -206,6 +206,10 @@ type CertReloader struct {
 	mu             sync.Mutex
 	now            func() time.Time
 	pinnedRoots    *x509.CertPool
+	// refreshInterval is the period of the rotation loop. It is a field so the
+	// loop itself can be exercised with a short period; the production value is
+	// the workload CRL refresh interval.
+	refreshInterval time.Duration
 }
 
 func NewCertReloader(client *Client, namespace, serviceAccount string) (*CertReloader, error) {
@@ -222,11 +226,12 @@ func NewCertReloader(client *Client, namespace, serviceAccount string) (*CertRel
 	}
 	return &CertReloader{
 		client: client, namespace: namespace, serviceAccount: serviceAccount,
-		spiffeURI: "spiffe://ops.local/ns/" + namespace + "/sa/" + serviceAccount,
-		dnsName:   serviceAccount + "." + namespace + ".svc.cluster.local",
-		loginRole: loginRole,
-		pkiRole:   role,
-		now:       func() time.Time { return time.Now().UTC() },
+		spiffeURI:       "spiffe://ops.local/ns/" + namespace + "/sa/" + serviceAccount,
+		dnsName:         serviceAccount + "." + namespace + ".svc.cluster.local",
+		loginRole:       loginRole,
+		pkiRole:         role,
+		now:             func() time.Time { return time.Now().UTC() },
+		refreshInterval: workloadCRLRefreshInterval,
 	}, nil
 }
 
@@ -252,7 +257,11 @@ func (r *CertReloader) StartPinned(ctx context.Context, projectedServiceAccountT
 }
 
 func (r *CertReloader) rotationLoop(ctx context.Context, tokenPath string) {
-	ticker := time.NewTicker(workloadCRLRefreshInterval)
+	interval := r.refreshInterval
+	if interval <= 0 {
+		interval = workloadCRLRefreshInterval
+	}
+	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {
 		select {
@@ -266,7 +275,13 @@ func (r *CertReloader) rotationLoop(ctx context.Context, tokenPath string) {
 		}
 		deadline := state.certificate.Leaf.NotBefore.Add(time.Duration(float64(state.certificate.Leaf.NotAfter.Sub(state.certificate.Leaf.NotBefore)) * workloadRefreshFraction))
 		if !r.now().Before(deadline) {
-			_ = r.refresh(ctx, tokenPath)
+			// The renewal is due. A failed renewal must not stop the revocation
+			// list from being refreshed: a reachable CRL is still applied to the
+			// still-valid leaf, and the renewal failure stays the reported
+			// health of this round.
+			if renewalErr := r.refresh(ctx, tokenPath); renewalErr != nil {
+				_ = r.refreshCRL(ctx)
+			}
 		} else {
 			_ = r.refreshCRL(ctx)
 		}

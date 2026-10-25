@@ -58,7 +58,7 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 		fail(400, "INVALID_ARGUMENT")
 		return
 	}
-	current, err := (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
+	current, err := (graph.Authorization{Pool: pool}).EffectiveClaim(r.Context(), claims)
 	if err != nil || !claims.AllowsCurrent(current) {
 		fail(403, "FORBIDDEN")
 		return
@@ -90,7 +90,7 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 				capabilities = append(capabilities, entries...)
 			}
 		}
-		refreshed, err := (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
+		refreshed, err := (graph.Authorization{Pool: pool}).EffectiveClaim(r.Context(), claims)
 		if err != nil || !claims.AllowsCurrent(refreshed) || owner.Lease.Confirm(r.Context(), q.OwnerEpoch) != nil {
 			fail(409, "STALE_CONTEXT")
 			return
@@ -160,7 +160,7 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 			}
 			refs = append(refs, fact.EvidenceID)
 		}
-		current, err = (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
+		current, err = (graph.Authorization{Pool: pool}).EffectiveClaim(r.Context(), claims)
 		if err != nil || !claims.AllowsCurrent(current) || owner.Lease.Confirm(r.Context(), q.OwnerEpoch) != nil {
 			fail(409, "STALE_CONTEXT")
 			return
@@ -198,7 +198,7 @@ func serveWorkerAnalysis(w http.ResponseWriter, r *http.Request, trust auth.Work
 		fail(503, "SOURCE_CAPABILITY_UNAVAILABLE")
 		return
 	}
-	current, err = (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
+	current, err = (graph.Authorization{Pool: pool}).EffectiveClaim(r.Context(), claims)
 	if err != nil || !claims.AllowsCurrent(current) || owner.Lease.Confirm(r.Context(), q.OwnerEpoch) != nil {
 		fail(409, "STALE_CONTEXT")
 		return

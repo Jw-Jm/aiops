@@ -733,7 +733,7 @@ func serveWorkerEvidence(w http.ResponseWriter, r *http.Request, trust auth.Work
 		fail(400, "INVALID_ARGUMENT")
 		return
 	}
-	scope, err := (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
+	scope, err := (graph.Authorization{Pool: pool}).EffectiveClaim(r.Context(), claims)
 	if err != nil || !claims.AllowsCurrent(scope) {
 		fail(409, "STALE_CONTEXT")
 		return
@@ -765,7 +765,7 @@ func serveWorkerEvidence(w http.ResponseWriter, r *http.Request, trust auth.Work
 			fail(503, "SOURCE_CAPABILITY_UNAVAILABLE")
 			return
 		}
-		current, err := (graph.Authorization{Pool: pool}).Effective(r.Context(), claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
+		current, err := (graph.Authorization{Pool: pool}).EffectiveClaim(r.Context(), claims)
 		if err != nil || !claims.AllowsCurrent(current) {
 			fail(409, "STALE_CONTEXT")
 			return
@@ -874,7 +874,7 @@ func serveWorkerEvidence(w http.ResponseWriter, r *http.Request, trust auth.Work
 	for i := range result.Evidence {
 		result.Evidence[i].FactSlice = json.RawMessage(result.Evidence[i].Data)
 	}
-	current, err := (graph.Authorization{Pool: pool}).Effective(ctx, claims.Scope.Tenant, claims.Subject, claims.Scope.Cluster)
+	current, err := (graph.Authorization{Pool: pool}).EffectiveClaim(ctx, claims)
 	if err != nil || !claims.AllowsCurrent(current) {
 		fail(409, "STALE_CONTEXT")
 		return

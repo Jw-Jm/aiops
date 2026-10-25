@@ -54,11 +54,10 @@ func (r Repository) Stop(ctx context.Context, tenant, id uuid.UUID, subject stri
 				return ErrLease
 			}
 		} else {
-			scope := j.Scope
-			if j.Assistant == nil {
-				scope, err = graph.EffectiveTx(ctx, tx, tenant.String(), subject, j.Scope.Cluster, true)
-			}
-			if err != nil || graph.ScopeDigest(scope) != j.EffectiveScopeDigest || subject != j.Subject {
+			// Cancellation is a subject decision. The authority re-proof below uses
+			// the Job's persisted identity source, so a native v2 Job is checked
+			// against its frozen account/version instead of the legacy table.
+			if j.Assistant == nil && subject != j.Subject {
 				return ErrDenied
 			}
 			if err = current(ctx, tx, j); err != nil {

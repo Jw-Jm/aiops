@@ -129,10 +129,17 @@ export function AssistantPage() {
   // Initialization reads the deep-link object. Cleanup runs only after an
   // actual scope transition, never on first mount or a same-scope deep link.
   const previousScopeRef = useRef(scopeKey);
+  // The busy state belongs to the newest request. A request that lost the scope or
+  // was superseded must not release the loading state of the current one.
+  const busyEpoch = useRef(0);
   useEffect(() => {
     const previousScope = previousScopeRef.current;
     previousScopeRef.current = scopeKey;
     if (previousScope === scopeKey) return;
+    // The request that was in flight belonged to the previous scope: it no longer
+    // owns the busy state, and the new scope starts without a pending request.
+    busyEpoch.current += 1;
+    setBusy(false);
     setSymptom("");
     setMessage("");
     setTargetName("");
@@ -250,6 +257,12 @@ export function AssistantPage() {
   });
   const scopeRef = useRef(scopeKey);
   const scopeAbort = useRef(new AbortController());
+  // The conversation currently shown. A child that answers for another
+  // conversation must not write into this page.
+  const conversationRef = useRef(id);
+  useEffect(() => {
+    conversationRef.current = id;
+  }, [id]);
   const unmountedRef = useRef(false);
   useEffect(() => {
     scopeRef.current = scopeKey;
@@ -267,13 +280,52 @@ export function AssistantPage() {
   const active =
     currentTurn.data?.data || turn || conversation.data?.data.activeTurn;
   const running = active && ["queued", "running"].includes(active.state);
+  // The ownership of a fault-chain submission is the state the page actually
+  // shows: the conversation, the scope, the bound revision of the conversation
+  // and the turn that is active. The epoch advances whenever that ownership
+  // changes, so a late answer of an older ownership is refused even when the
+  // same conversation is shown again (A -> B -> A).
+  const ownershipKey = [
+    id ?? "",
+    scopeKey,
+    conversation.data?.data.binding.revision ?? "",
+    active?.turnId ?? "",
+  ].join("|");
+  const [ownership, setOwnership] = useState({ key: ownershipKey, epoch: 1 });
+  if (ownership.key !== ownershipKey) {
+    // The ownership changed during this render. React re-renders the page with
+    // the new epoch before it commits, so the children and the acceptance check
+    // always use the same epoch.
+    setOwnership({ key: ownershipKey, epoch: ownership.epoch + 1 });
+  }
+  const submissionEpoch = ownership.epoch;
+  const epochRef = useRef(submissionEpoch);
+  epochRef.current = submissionEpoch;
   const reload = () =>
     client.invalidateQueries({ queryKey: ["assistant", scopeKey] });
+  // A fault-chain child answers for the conversation it was mounted with. The page
+  // re-checks the live scope and the live conversation before the answer may
+  // become the current turn: a late answer of another conversation, another
+  // scope or an unmounted page is dropped instead of overwriting this one.
+  const acceptFaultChainTurn = (
+    next: AssistantTurnV1,
+    submittedConversationId: string,
+    submittedEpoch: number,
+  ) => {
+    if (unmountedRef.current) return;
+    if (submittedEpoch !== epochRef.current) return;
+    if (scopeRef.current !== scopeKey) return;
+    if (conversationRef.current !== submittedConversationId) return;
+    setTurn(next);
+    setMessageCursor(undefined);
+    void reload();
+  };
   async function mutate(
     action: (signal: AbortSignal, canCommit: () => boolean) => Promise<void>,
   ) {
     const runScope = scopeKey;
     const signal = scopeAbort.current.signal;
+    const epoch = (busyEpoch.current += 1);
     const canCommit = () =>
       !unmountedRef.current &&
       scopeRef.current === runScope &&
@@ -291,7 +343,9 @@ export function AssistantPage() {
       if (e instanceof ApiError && [401, 403].includes(e.status))
         client.removeQueries({ queryKey: ["assistant", scopeKey] });
     } finally {
-      if (canCommit()) setBusy(false);
+      // Only the newest request may release the busy state; an older request that
+      // finished after a scope change must not clear the current loading state.
+      if (epoch === busyEpoch.current) setBusy(false);
     }
   }
   async function create() {
@@ -823,11 +877,14 @@ export function AssistantPage() {
                       key={id}
                       conversation={conversation.data.data}
                       disabled={Boolean(running) || busy}
-                      onSubmitted={(next) => {
-                        setTurn(next);
-                        setMessageCursor(undefined);
-                        void reload();
-                      }}
+                      epoch={submissionEpoch}
+                      onSubmitted={(next, epoch) =>
+                        acceptFaultChainTurn(
+                          next,
+                          conversation.data!.data.conversationId,
+                          epoch,
+                        )
+                      }
                     />
                   )}
                 {active?.answer?.clarification?.missingFields.includes(
@@ -883,11 +940,14 @@ export function AssistantPage() {
                                 ? {
                                     conversation: conversation.data!.data,
                                     disabled: Boolean(running) || busy,
-                                    onSubmitted: (next) => {
-                                      setTurn(next);
-                                      setMessageCursor(undefined);
-                                      reload();
-                                    },
+                                    epoch: submissionEpoch,
+                                    onSubmitted: (next, epoch) =>
+                                      acceptFaultChainTurn(
+                                        next,
+                                        conversation.data!.data
+                                          .conversationId,
+                                        epoch,
+                                      ),
                                   }
                                 : undefined
                             }
@@ -923,11 +983,13 @@ export function AssistantPage() {
                             ? {
                                 conversation: conversation.data!.data,
                                 disabled: Boolean(running) || busy,
-                                onSubmitted: (next) => {
-                                  setTurn(next);
-                                  setMessageCursor(undefined);
-                                  reload();
-                                },
+                                epoch: submissionEpoch,
+                                onSubmitted: (next, epoch) =>
+                                  acceptFaultChainTurn(
+                                    next,
+                                    conversation.data!.data.conversationId,
+                                    epoch,
+                                  ),
                               }
                             : undefined
                         }

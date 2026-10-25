@@ -130,11 +130,52 @@ it.each([
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((resolveIn) => {
+  let reject!: (reason: unknown) => void;
+  const promise = new Promise<T>((resolveIn, rejectIn) => {
     resolve = resolveIn;
+    reject = rejectIn;
   });
-  return { promise, resolve };
+  return { promise, resolve, reject };
 }
+
+// A request that belonged to the previous scope must not keep the new scope in a
+// busy state, whatever the old request does when it finishes.
+it.each(["resolve", "reject", "pending"] as const)(
+  "releases the new scope after the old request %s",
+  async (finish) => {
+    const pending = deferred<{ conversationId: string }>();
+    api.create.mockReturnValueOnce(pending.promise);
+    renderAssistant("/assistant?clusterUid=uid-a");
+    const createButton = (await screen.findByText("创建会话")).closest(
+      "button",
+    )!;
+    await waitFor(() => expect(createButton).toBeEnabled());
+    fireEvent.click(createButton);
+    await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByText("switch-scope"));
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent("clusterUid=uid-b"),
+    );
+    if (finish === "resolve") {
+      await act(async () => {
+        pending.resolve({ conversationId: "conversation-old-scope" });
+      });
+    }
+    if (finish === "reject") {
+      await act(async () => {
+        pending.reject(new Error("old scope failed"));
+      });
+    }
+    const newButton = (await screen.findByText("创建会话")).closest("button")!;
+    await waitFor(() => expect(newButton).not.toHaveClass("ant-btn-loading"));
+    await waitFor(() => expect(newButton).toBeEnabled());
+    api.create.mockResolvedValueOnce({
+      conversationId: "conversation-new-scope",
+    } as never);
+    fireEvent.click(newButton);
+    await waitFor(() => expect(api.create).toHaveBeenCalledTimes(2));
+  },
+);
 
 it("does not navigate to a conversation created for the old scope after a same-tick scope switch", async () => {
   const pending = deferred<{ conversationId: string }>();
@@ -158,6 +199,40 @@ it("does not navigate to a conversation created for the old scope after a same-t
   expect(screen.getByTestId("location")).not.toHaveTextContent(
     "conversation-old-scope",
   );
+});
+
+// The busy state belongs to the newest request: when an older request finishes
+// while a newer one is still pending, the newer one keeps its loading state.
+it("keeps the busy state of the newer request when the older one finishes", async () => {
+  const first = deferred<{ conversationId: string }>();
+  const second = deferred<{ conversationId: string }>();
+  api.create.mockReturnValueOnce(first.promise);
+  renderAssistant("/assistant?clusterUid=uid-a");
+  const createButton = (await screen.findByText("创建会话")).closest(
+    "button",
+  )!;
+  await waitFor(() => expect(createButton).toBeEnabled());
+  fireEvent.click(createButton);
+  await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+  fireEvent.click(screen.getByText("switch-scope"));
+  await waitFor(() =>
+    expect(screen.getByTestId("location")).toHaveTextContent("clusterUid=uid-b"),
+  );
+  api.create.mockReturnValueOnce(second.promise);
+  const newButton = (await screen.findByText("创建会话")).closest("button")!;
+  await waitFor(() => expect(newButton).toBeEnabled());
+  fireEvent.click(newButton);
+  await waitFor(() => expect(api.create).toHaveBeenCalledTimes(2));
+  // The older request finishes now. The newer request is still pending and must
+  // keep its loading state.
+  await act(async () => {
+    first.resolve({ conversationId: "conversation-old" });
+    await Promise.resolve();
+  });
+  const pendingButton = (await screen.findByText("创建会话")).closest(
+    "button",
+  )!;
+  await waitFor(() => expect(pendingButton).toHaveClass("ant-btn-loading"));
 });
 
 it("discards a late created conversation when AssistantPage unmounts", async () => {

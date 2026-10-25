@@ -1,0 +1,32 @@
+package incident
+import (
+ "context"
+ "errors"
+ "strings"
+ "testing"
+ "github.com/google/uuid"
+ "github.com/jackc/pgx/v5"
+ "ops-platform/internal/auth"
+ "ops-platform/internal/graph"
+ "ops-platform/internal/identity"
+)
+type reviewIncidentTx struct { pgx.Tx; query string; allowed bool }
+type reviewIncidentRow struct { allowed bool }
+func (r reviewIncidentRow) Scan(out ...any) error {*out[0].(*bool)=r.allowed; return nil}
+func (tx *reviewIncidentTx) QueryRow(_ context.Context, query string, _ ...any) pgx.Row {tx.query=query;return reviewIncidentRow{tx.allowed}}
+func TestReviewNativeIncidentMutationRechecksLegacyOnly(t *testing.T) {
+ tenant:=uuid.New()
+ subject:="native:"+uuid.NewString()
+ canonical:="k8s+v1://"+tenant.String()+"/cluster-a/core/Pod/pod-a"
+ scope:=graph.Scope{Tenant:tenant.String(),Cluster:"cluster-a",Namespaces:[]string{"apps"}}
+ item:=Incident{TenantID:tenant.String(),ClusterUID:"cluster-a",Namespace:"apps",ResourceCanonicalID:canonical}
+ ctx:=auth.WithNativeSession(context.Background(),auth.NativeSessionContext{Session:identity.ActiveSession{TenantID:tenant,Subject:subject,UserID:uuid.New(),AuthorizationVersion:1}})
+ if !scope.Allows(canonical,"apps") {t.Fatal("invalid fixture scope")}
+ tx:=&reviewIncidentTx{}
+ if err:=Authorize(ctx,tx,scope,subject,item);!errors.Is(err,graph.ErrScope)||!strings.Contains(tx.query,"sp05_lock_operator_scope") {t.Fatalf("err=%v query=%s",err,tx.query)}
+ // The only SQL definition (migration 00028) returns false for an empty legacy
+ // role table; it has no identity.role_grants branch. A legacy grant control works.
+ tx.allowed=true
+ if err:=Authorize(ctx,tx,scope,subject,item);err!=nil {t.Fatal(err)}
+ t.Log("CONFIRMED: native context does not change Incident's legacy-only recheck.")
+}

@@ -1,0 +1,80 @@
+go vet ./...
+?   	ops-platform/cmd/command-runner	[no test files]
+ok  	ops-platform/cmd/db-migrate	(cached)
+--- FAIL: TestBundleBuildCLIAndIndependentVerify (21.89s)
+    build_bundle_test.go:103: source material opa-sdk-source differs from the reviewed corresponding-source lock
+FAIL
+FAIL	ops-platform/cmd/opsctl	22.754s
+?   	ops-platform/cmd/platform-api	[no test files]
+?   	ops-platform/cmd/platform-worker	[no test files]
+ok  	ops-platform/internal/action	1.364s
+ok  	ops-platform/internal/analytics	2.044s
+ok  	ops-platform/internal/app	2.568s
+ok  	ops-platform/internal/archive	(cached)
+ok  	ops-platform/internal/assistant	2.827s
+ok  	ops-platform/internal/audit	3.243s
+ok  	ops-platform/internal/auth	3.841s
+ok  	ops-platform/internal/authz	3.776s
+ok  	ops-platform/internal/bootstrap	4.193s
+--- FAIL: TestImportValidatesEveryLayerBeforeAnyRuntimeCall (17.51s)
+    importer_test.go:242: missing layer error = checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestPlanImportReturnsEveryImageWithoutRuntimeSideEffects (0.29s)
+    importer_test.go:253: checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestImportVerifiedOCIArchivesWithoutPull (0.29s)
+    importer_test.go:270: checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+--- FAIL: TestInstallIncompleteBundleNeverRunsHelmOrRuntime (0.29s)
+    installer_test.go:28: incomplete install error = checkpoint=verify-bundle: material "opa-sdk-source" digest does not match payload file "sources/opa-sdk-source.tar"
+FAIL
+FAIL	ops-platform/internal/bundle	29.135s
+ok  	ops-platform/internal/bundle/drivers	(cached)
+ok  	ops-platform/internal/configregistry	3.640s
+?   	ops-platform/internal/contract	[no test files]
+ok  	ops-platform/internal/crypto	(cached)
+?   	ops-platform/internal/datascope	[no test files]
+ok  	ops-platform/internal/evidence	4.040s
+ok  	ops-platform/internal/finding	4.088s
+ok  	ops-platform/internal/graph	6.510s
+ok  	ops-platform/internal/httpapi	6.275s
+ok  	ops-platform/internal/identity	4.975s
+ok  	ops-platform/internal/incident	3.565s
+ok  	ops-platform/internal/inspection/hardware	(cached)
+ok  	ops-platform/internal/inspection/kubernetes	3.732s
+ok  	ops-platform/internal/inspection/npd	4.084s
+?   	ops-platform/internal/integrations	[no test files]
+ok  	ops-platform/internal/integrations/deepflow	5.468s
+ok  	ops-platform/internal/integrations/k8sgpt	1.597s
+ok  	ops-platform/internal/integrations/keycloak	(cached)
+ok  	ops-platform/internal/integrations/kubernetes	(cached)
+ok  	ops-platform/internal/integrations/openbao	(cached)
+ok  	ops-platform/internal/integrations/redfish	2.067s
+ok  	ops-platform/internal/integrations/s3	(cached)
+?   	ops-platform/internal/integrations/victorialogs	[no test files]
+?   	ops-platform/internal/integrations/victorialogs/adapter	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics/adapter	[no test files]
+?   	ops-platform/internal/integrations/vmalert	[no test files]
+ok  	ops-platform/internal/investigation	2.067s
+ok  	ops-platform/internal/investigation/mcp	2.664s
+ok  	ops-platform/internal/investigation/tools	3.220s
+ok  	ops-platform/internal/modelprofile	3.046s
+ok  	ops-platform/internal/observability	0.751s
+ok  	ops-platform/internal/persistence	(cached)
+?   	ops-platform/internal/persistence/dbgen	[no test files]
+ok  	ops-platform/internal/policy	1.198s
+ok  	ops-platform/internal/profile	4.444s
+ok  	ops-platform/internal/rca	1.934s
+ok  	ops-platform/internal/resource	(cached)
+ok  	ops-platform/internal/resourcestore	2.439s
+ok  	ops-platform/internal/source	2.974s
+ok  	ops-platform/internal/supplychain	(cached)
+ok  	ops-platform/internal/tenant	3.296s
+?   	ops-platform/internal/upstream/corootcheck	[no test files]
+?   	ops-platform/internal/upstream/keepmodel	[no test files]
+?   	ops-platform/internal/upstream/metal3	[no test files]
+?   	ops-platform/internal/upstream/ontology/api	[no test files]
+?   	ops-platform/internal/upstream/ontology/model	[no test files]
+?   	ops-platform/internal/upstream/ontology/service/diagnostic	[no test files]
+?   	ops-platform/gen/api	[no test files]
+?   	ops-platform/gen/internalgraph	[no test files]
+FAIL
+make: *** [test-unit] Error 1

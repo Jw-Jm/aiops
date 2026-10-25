@@ -195,16 +195,17 @@ async function* readSSELines(
 }
 
 // Reconnect with the last verified cursor and yield each persisted business
-// event once. The caller supplies Bearer headers using the shared fetch client.
+// event once. Authentication belongs to the shared request options and to the
+// server: a native session streams with its same-origin cookie and an OIDC
+// session with its bearer token. This reader never decides locally that a
+// credential is acceptable, and it never pretends an unauthenticated stream is
+// authorized: the server answers 401/403 and the caller reacts to that.
 export async function* streamInvestigationEventsWithResume(
   url: string,
   options: RequestInit,
   resume: { cursor?: string; eventSeq: bigint } = { eventSeq: 0n },
 ): AsyncGenerator<JSONServerSentEvent<InvestigationEvent>> {
   const headers = new Headers(options.headers);
-  if (!headers.get("Authorization")?.startsWith("Bearer ")) {
-    throw new Error("Investigation SSE requires Bearer authentication");
-  }
   if (resume.cursor) headers.set("Last-Event-ID", resume.cursor);
   for await (const message of streamJSONEvents(url, decodeInvestigationEvent, {
     ...options,

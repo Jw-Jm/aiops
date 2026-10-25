@@ -2,16 +2,21 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { useInvestigationStream } from "../src/features/investigation/useInvestigationStream";
-import { authEvents, setCredentials } from "../src/api/client";
+import { authEvents, setCredentials, setNativeCredentials } from "../src/api/client";
 
 const calls: {
   headers: Headers;
   signal: AbortSignal;
   controller: ReadableStreamDefaultController<Uint8Array>;
+  credentials?: RequestCredentials;
 }[] = [];
-function transport() {
+function transport(native = false) {
   calls.length = 0;
-  setCredentials("fixture-token", "fixture-tenant");
+  if (native) {
+    setNativeCredentials("fixture-tenant");
+  } else {
+    setCredentials("fixture-token", "fixture-tenant");
+  }
   vi.stubGlobal(
     "fetch",
     vi.fn(async (_url: string, options: RequestInit) => {
@@ -27,7 +32,12 @@ function transport() {
           );
         },
       });
-      calls.push({ headers: new Headers(options.headers), signal, controller });
+      calls.push({
+        headers: new Headers(options.headers),
+        signal,
+        controller,
+        credentials: options.credentials,
+      });
       return new Response(body, {
         headers: { "Content-Type": "text/event-stream" },
       });
@@ -76,6 +86,22 @@ it("manual reconnect sends the last cursor, deduplicates replay, bounds the ring
   expect(calls[1].signal.aborted).toBe(true);
   expect(result.current.events).toHaveLength(100);
   expect(result.current.status).toBe("idle");
+  unmount();
+});
+
+it("streams the investigation events with the native cookie session and keeps the order", async () => {
+  transport(true);
+  const { result, unmount } = renderHook(() =>
+    useInvestigationStream("fixture-job", true, () => {}),
+  );
+  await waitFor(() => expect(calls).toHaveLength(1));
+  expect(calls[0].credentials).toBe("same-origin");
+  expect(calls[0].headers.get("Authorization")).toBeNull();
+  act(() => emit(0, 1));
+  await waitFor(() => expect(result.current.events).toHaveLength(1));
+  act(() => emit(0, 2));
+  await waitFor(() => expect(result.current.events).toHaveLength(2));
+  expect(result.current.events.map((e) => e.eventId)).toEqual(["1", "2"]);
   unmount();
 });
 

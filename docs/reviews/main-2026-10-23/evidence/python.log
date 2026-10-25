@@ -1,0 +1,54 @@
+cd services/investigator && uv run --offline --locked --group dev python -m pytest
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/mssc/Documents/Code/ops/platform/services/investigator
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collected 93 items
+
+tests/test_assistant_binding.py .................                        [ 18%]
+tests/test_assistant_context_preload.py .....                            [ 23%]
+tests/test_budget_failures.py ..........                                 [ 34%]
+tests/test_context_projection_unittest.py ......                         [ 40%]
+tests/test_failure_cause_unittest.py ..                                  [ 43%]
+tests/test_fault_chain_unittest.py ...................                   [ 63%]
+tests/test_initial_tool_choice_unittest.py .........                     [ 73%]
+tests/test_mcp_bridge_unittest.py .                                      [ 74%]
+tests/test_model_contract.py ...                                         [ 77%]
+tests/test_model_profile.py .....                                        [ 82%]
+tests/test_prompt_binding_unittest.py ......                             [ 89%]
+tests/test_provider_tool_schema.py ...                                   [ 92%]
+tests/test_security.py ...                                               [ 95%]
+tests/test_worker_cleanup_unittest.py ..                                 [ 97%]
+tests/test_workload_tls.py ..                                            [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/typer/__init__.py:24
+  /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/typer/__init__.py:24: DeprecationWarning: 'click.utils.get_binary_stream' is deprecated and will be removed in Click 9.0.
+    from click.utils import get_binary_stream as get_binary_stream
+
+.venv/lib/python3.12/site-packages/typer/__init__.py:25
+  /Users/mssc/Documents/Code/ops/platform/services/investigator/.venv/lib/python3.12/site-packages/typer/__init__.py:25: DeprecationWarning: 'click.utils.get_text_stream' is deprecated and will be removed in Click 9.0.
+    from click.utils import get_text_stream as get_text_stream
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 93 passed, 2 warnings in 5.30s ========================
+python3 -m unittest discover -s scripts/deepflow-dev -p 'test_*.py'
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 0.003s
+
+OK
+python3 -m unittest discover -s scripts/assistant-eval -p 'test_*.py'
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 0.004s
+
+OK
+python3 -m unittest discover -s scripts/assistant-runtime -p 'test_*.py'
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.000s
+
+OK

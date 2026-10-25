@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"io"
 	"log/slog"
@@ -98,6 +99,21 @@ func (a InvestigationTools) read(ctx context.Context, j investigation.Job, path 
 	}
 	if j.Assistant != nil {
 		ctx = context.WithValue(ctx, assistantEvidenceScopeKey{}, assistantEvidenceScope{Scope: j.Scope, GrantDigest: j.Assistant.GrantSnapshotDigest})
+	}
+	// Nested SP04 resource/evidence reads run for a persisted task, not for a
+	// browser session: every pre-check, final check and signed RPC below must
+	// re-prove the persisted authority. This covers both a v3 assistant task and a
+	// v2 Incident investigation Job admitted by a native operator. Unknown sources
+	// fail closed.
+	switch j.AuthoritySource() {
+	case investigation.AuditSourceNative:
+		if j.JobID == uuid.Nil {
+			return nil, graph.ErrScope
+		}
+		ctx = graph.WithTaskAuthority(ctx, j.JobID)
+	case investigation.AuditSourceLegacy, "":
+	default:
+		return nil, graph.ErrScope
 	}
 	actor := auth.RequestContext{TenantID: j.TenantID, Subject: j.Subject, Roles: []auth.Role{auth.Operator}, RequestID: j.JobID.String()}
 	method := "GET"

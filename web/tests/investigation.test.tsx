@@ -36,13 +36,36 @@ it("requires an authenticated persisted event envelope", () => {
     }),
   ).not.toThrow();
 });
-it("requires Bearer for reconnect", async () => {
-  await expect(async () => {
-    for await (const _ of streamInvestigationEventsWithResume("/test", {
+it("streams the investigation events with the native cookie session", async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    let seen: RequestInit | undefined;
+    globalThis.fetch = (async (_url: string, options?: RequestInit) => {
+      seen = options;
+      return new Response(
+        `id: signed-1\ndata: ${JSON.stringify({
+          eventId: "1",
+          eventType: "step",
+          jobId: "j",
+          occurredAt: "now",
+          payload: {},
+        })}\n\n`,
+        { headers: { "content-type": "text/event-stream" } },
+      );
+    }) as typeof fetch;
+    const events: string[] = [];
+    for await (const event of streamInvestigationEventsWithResume("/test", {
+      credentials: "same-origin",
       headers: {},
     })) {
+      events.push(event.data.eventId);
     }
-  }).rejects.toThrow("Bearer");
+    expect(events).toEqual(["1"]);
+    expect(seen?.credentials).toBe("same-origin");
+    expect(new Headers(seen?.headers).get("Authorization")).toBeNull();
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 import { abortDelay } from "../src/features/investigation/delay";

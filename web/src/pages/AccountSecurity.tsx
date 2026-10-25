@@ -142,8 +142,23 @@ export function AccountSecurity() {
     } catch (cause) {
       if (generation !== operationGeneration.current || !active.current) return;
       if (cause instanceof DOMException && cause.name === "AbortError") return;
-      if (cause instanceof ApiError) setError(new Error(cause.message));
-      else setError(cause instanceof Error ? cause : new Error("操作失败"));
+      if (cause instanceof ApiError) {
+        // The account/factor failure budget and password-work capacity are server
+        // decisions, not client-side state: show the cooldown truthfully and let
+        // the server decide when the next attempt is allowed.
+        if (cause.code === "RATE_LIMITED") {
+          setChallenge(null);
+          setStepUp(null);
+          setCompleted([]);
+          setError(new Error("该账户的验证失败次数已达上限，已进入服务端冷却时间，请稍后重新开始验证。"));
+          return;
+        }
+        if (cause.code === "UNAVAILABLE") {
+          setError(new Error("密码校验暂时繁忙，本次请求未判定为密码错误，请稍后重试。"));
+          return;
+        }
+        setError(new Error(cause.message));
+      } else setError(cause instanceof Error ? cause : new Error("操作失败"));
     } finally {
       if (generation === operationGeneration.current && active.current) {
         inFlight.current = false;

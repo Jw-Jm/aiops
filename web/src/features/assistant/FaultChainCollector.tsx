@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -22,11 +22,16 @@ import type {
 export function FaultChainCollector({
   conversation,
   disabled,
+  epoch,
   onSubmitted,
 }: {
   conversation: AssistantConversationV1;
   disabled: boolean;
-  onSubmitted: (turn: AssistantTurnV1) => void;
+  // epoch identifies the page scope this collector was mounted for. The page
+  // advances it on every scope, conversation, binding or turn change, so a late
+  // answer of an older epoch is never accepted.
+  epoch: number;
+  onSubmitted: (turn: AssistantTurnV1, epoch: number) => void;
 }) {
   const [name, setName] = useState("");
   const [kind, setKind] = useState("Pod");
@@ -42,6 +47,26 @@ export function FaultChainCollector({
   const [recoveryFrom, setRecoveryFrom] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error>();
+  // The request belongs to this mounted collector: when the page switches the
+  // conversation or unmounts the collector, the request is cancelled instead of
+  // answering for a conversation that is no longer shown. The controller of the
+  // running request is captured before the call; the effect replaces the ref
+  // with a fresh controller and aborts the captured one.
+  const pending = useRef(new AbortController());
+  // The live epoch of the mounted scope. A running request compares its own
+  // epoch with this one, so an answer, an error or a busy release of an older
+  // scope never touches the current state.
+  const epochRef = useRef(epoch);
+  epochRef.current = epoch;
+  useEffect(() => {
+    const controller = new AbortController();
+    pending.current = controller;
+    setBusy(false);
+    setError(undefined);
+    return () => controller.abort();
+    // The state belongs to the mounted scope: a new conversation or a new page
+    // epoch starts from a clean state.
+  }, [conversation.conversationId, epoch]);
   const binding = conversation.binding.executionScope as
     | { namespaces?: string[]; clusterScoped?: boolean }
     | undefined;
@@ -50,19 +75,32 @@ export function FaultChainCollector({
     kind === "Node"
       ? !!binding?.clusterScoped && namespaces.length <= 1
       : namespaces.length === 1;
-  async function run(action: () => Promise<void>) {
+  // run executes one request of this collector. The controller of the running
+  // request is captured here, so the success, the failure and the busy release
+  // all belong to the same request: a request of an older conversation can
+  // neither show an error nor release the busy state of the current one.
+  async function run(
+    action: (owns: () => boolean, signal: AbortSignal) => Promise<void>,
+  ) {
+    const controller = pending.current;
+    const requestEpoch = epochRef.current;
+    const owns = () =>
+      !controller.signal.aborted &&
+      pending.current === controller &&
+      requestEpoch === epochRef.current;
     setBusy(true);
     setError(undefined);
     try {
-      await action();
+      await action(owns, controller.signal);
     } catch (cause) {
+      if (!owns()) return;
       setError(cause instanceof Error ? cause : new Error("调查请求失败"));
     } finally {
-      setBusy(false);
+      if (owns()) setBusy(false);
     }
   }
   async function collect() {
-    await run(async () => {
+    await run(async (owns, signal) => {
       if (!target) throw new Error("请先查找并选择真实资源身份。");
       const start = new Date(from + "Z"),
         end = new Date(to + "Z");
@@ -106,10 +144,11 @@ export function FaultChainCollector({
             expectedConversationRevision: conversation.revision,
             faultChainRequest: request,
           },
-          requestOptions(undefined, true),
+          requestOptions(signal, true),
         ),
       );
-      onSubmitted(result.data);
+      if (!owns()) return;
+      onSubmitted(result.data, epoch);
     });
   }
   return (
@@ -154,7 +193,10 @@ export function FaultChainCollector({
       <Button
         disabled={disabled || busy || !name || !scopeReady}
         onClick={() =>
-          void run(async () => {
+          void run(async (owns, signal) => {
+            // The lookup belongs to the same request ownership as the collection:
+            // it is cancelled with the conversation and its answer is dropped
+            // when the collector no longer owns the state.
             const result = await checked(
               resolveAssistantResource(
                 {
@@ -168,9 +210,10 @@ export function FaultChainCollector({
                     ...(kind === "Node" ? {} : { namespace: namespaces[0] }),
                   },
                 },
-                requestOptions(),
+                requestOptions(signal),
               ),
             );
+            if (!owns()) return;
             setOptions(
               result.data.candidates.map((item) => ({
                 value: item.canonicalId,

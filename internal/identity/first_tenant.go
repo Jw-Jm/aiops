@@ -88,7 +88,7 @@ func (r *Repository) CreateFirstTenant(ctx context.Context, input FirstTenantInp
 		TenantSlug: input.Slug, LoginName: input.AdminLoginName,
 		DisplayName: input.AdminDisplayName, Password: input.Password,
 	}
-	passwordHash, err := HashPassword(input.Password)
+	passwordHash, err := HashPasswordContext(ctx, input.Password)
 	if err != nil {
 		return result, err
 	}

@@ -28,7 +28,7 @@ func startSP05Analyzer(ctx context.Context, archive *evidence.ArchiveService, cl
 			err := sp05AnalyzerPass(pass, archive, cluster, h, config, round)
 			round++
 			cancel()
-			runtime.Metrics.SetComponentDegraded("sp05-analyzer/"+cluster.SourceID, err != nil)
+			runtime.Metrics.SetBusinessDegraded("sp05-analyzer/"+cluster.SourceID, err != nil)
 			if err != nil {
 				runtime.Logger.WarnContext(ctx, "SP05 fixed Analyzer unavailable", "errorClass", collectionErrorClass(err))
 			}

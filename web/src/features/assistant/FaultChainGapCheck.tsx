@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Select, Space } from "antd";
 import { checked, requestOptions } from "../../api/client";
 import { collectAssistantFaultChain } from "../../api/generated/platform";
@@ -13,7 +13,12 @@ import type {
 export type FaultChainCheckControls = {
   conversation: AssistantConversationV1;
   disabled: boolean;
-  onSubmitted: (turn: AssistantTurnV1) => void;
+  // epoch identifies the page scope this control was mounted for. The page
+  // advances it on every scope, conversation, binding or turn change, so an
+  // answer of an older epoch is never accepted, even when the same
+  // conversation id is shown again.
+  epoch: number;
+  onSubmitted: (turn: AssistantTurnV1, epoch: number) => void;
 };
 const tools: Record<string, AssistantFaultChainRequestV1ReadOnlyCheckTool> = {
   shared_resource_cause_not_checked: "get_resource_health",
@@ -42,6 +47,28 @@ export function FaultChainGapCheck({
   controls: FaultChainCheckControls;
 }) {
   const [target, setTarget] = useState<string>();
+  // The request belongs to this mounted check: a conversation switch or an
+  // unmount cancels it, so a late answer cannot be attributed to another
+  // conversation. The controller of the running request is captured before the
+  // call; the effect replaces the ref with a fresh controller for the next
+  // conversation and aborts the captured one, so an old answer can never pass
+  // the check of a new controller.
+  const pending = useRef(new AbortController());
+  // The live epoch of the mounted scope. A running request compares its own
+  // epoch with this one, so an answer, an error or a busy release of an older
+  // scope never touches the current state.
+  const epochRef = useRef(controls.epoch);
+  epochRef.current = controls.epoch;
+  useEffect(() => {
+    const controller = new AbortController();
+    pending.current = controller;
+    setBusy(false);
+    setSubmitted(false);
+    setError(undefined);
+    return () => controller.abort();
+    // The state belongs to the mounted scope: a new conversation or a new page
+    // epoch starts from a clean state.
+  }, [controls.conversation.conversationId, controls.epoch]);
   const [busy, setBusy] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<Error>();
@@ -70,6 +97,14 @@ export function FaultChainGapCheck({
     ]),
   ];
   async function submit() {
+    // The ownership of this request: the controller, the epoch and the
+    // conversation it was started for.
+    const controller = pending.current;
+    const epoch = controls.epoch;
+    const owns = () =>
+      !controller.signal.aborted &&
+      pending.current === controller &&
+      epoch === epochRef.current;
     setBusy(true);
     setError(undefined);
     try {
@@ -106,15 +141,20 @@ export function FaultChainGapCheck({
               },
             },
           },
-          requestOptions(undefined, true),
+          requestOptions(controller.signal, true),
         ),
       );
+      if (!owns()) return;
       setSubmitted(true);
-      controls.onSubmitted(result.data);
+      controls.onSubmitted(result.data, epoch);
     } catch (cause) {
+      // A failed or cancelled request of an older epoch must not show an error
+      // on the current state.
+      if (!owns()) return;
       setError(cause instanceof Error ? cause : new Error("只读检查提交失败"));
     } finally {
-      setBusy(false);
+      // Only the request that still owns the state may release the busy flag.
+      if (owns()) setBusy(false);
     }
   }
   return (

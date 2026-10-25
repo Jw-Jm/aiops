@@ -1,0 +1,14 @@
+package observability
+
+import "testing"
+
+func TestReviewCollectorDegradationIsSilentlyIgnored(t *testing.T) {
+ metrics:=NewMetrics()
+ for _,component:=range []string{"sp05","sp05-control-plane/source-a","sp05-metrics/source-a","sp05-pod-metrics/source-a","sp05-analyzer/source-a"} {
+  metrics.SetComponentDegraded(component,true)
+  if metrics.Degraded() {t.Fatalf("unexpected accepted component %s",component)}
+ }
+ metrics.SetComponentDegraded("audit_signing",true)
+ if !metrics.Degraded() {t.Fatal("control component was not accepted")}
+ t.Log("CONFIRMED: every SP05 collector key used by app is ignored; audit_signing control works.")
+}

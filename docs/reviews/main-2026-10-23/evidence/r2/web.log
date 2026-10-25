@@ -1,0 +1,92 @@
+pnpm --dir web exec tsc --noEmit
+✓ Lockfile passes supply-chain policies (verified 12d ago)
+Lockfile is up to date, resolution step is skipped
+Packages are cloned from the content-addressable store to the virtual store.
+  Content-addressable store is at: /Users/mssc/Library/pnpm/store/v11
+  Virtual store is at:             node_modules/.pnpm
+Packages: +278
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 278, reused 278, downloaded 0, added 278, done
+
+dependencies:
++ @ant-design/icons 6.3.4
++ @codemirror/state 6.7.6
++ @codemirror/view 6.43.14
++ @tanstack/react-query 5.104.1
++ @xterm/addon-fit 0.11.0
++ @xterm/xterm 6.0.0
++ antd 6.6.5
++ cytoscape 3.34.3
++ oidc-client-ts 3.5.0
++ react 19.3.0
++ react-dom 19.3.0
++ react-router-dom 7.18.4
+
+devDependencies:
++ @playwright/test 1.64.0
++ @testing-library/jest-dom 7.0.1
++ @testing-library/react 16.3.3
++ @testing-library/user-event 14.6.7
++ @types/cytoscape 3.31.0
++ @types/node 26.6.5
++ @types/react 19.3.0
++ @types/react-dom 19.3.0
++ @vitejs/plugin-react 6.1.2
++ jsdom 30.1.2
++ orval 8.37.0
++ prettier 3.7.4
++ typescript 7.0.2
++ vite 8.3.4
++ vitest 5.0.3
+
+Done in 1.3s using pnpm v12.7.0
+pnpm --dir web test
+$ node --experimental-strip-types --test ./test/*.test.mjs && vitest run
+✔ typed SSE reader yields a decoded envelope before the stream closes (38.290959ms)
+✔ typed SSE fetch client requests and parses text/event-stream (27.637083ms)
+✔ typed SSE envelope decoder rejects incomplete event data (0.288667ms)
+✔ investigation fetch SSE resumes with Bearer and durable cursor, suppresses duplicate event sequences (0.514125ms)
+✔ investigation SSE fails closed on missing Bearer, sequence gaps and 410 (0.686083ms)
+✔ SSE discards already-buffered events when its request scope is revoked (0.37175ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 117.0975
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/.worktrees/main-review-fixes-20261025/web
+
+ ❯ tests/v12/p1_shell.test.tsx (10 tests | 1 failed) 117ms
+   × matches the frozen source NAV hierarchy without flattening modules 2ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/v12/p1_shell.test.tsx > matches the frozen source NAV hierarchy without flattening modules
+Error: ENOENT: no such file or directory, open '/Users/mssc/Documents/Code/ops/.worktrees/ui-handoff/ops-platform-v1.2-20261020/source/prototype.html'
+ ❯ tests/v12/p1_shell.test.tsx:28:18
+     26|
+     27| it("matches the frozen source NAV hierarchy without flattening modules…
+     28|   const source = readFileSync(
+       |                  ^
+     29|     resolve(
+     30|       process.cwd(),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 36 passed (37)
+      Tests  1 failed | 151 passed (152)
+   Start at  10:09:12
+   Duration  23.78s (import 35%, tests 32%, environment 25%, setup 6%, transform 1%)
+
+     Import  128 modules were evaluated 445 times · 15.80s total, 35% of tracked time
+             ~4.51s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+
+[ELIFECYCLE] Test failed. See above for more details.
+make: *** [test-web] Error 1

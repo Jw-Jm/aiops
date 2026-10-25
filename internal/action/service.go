@@ -66,6 +66,14 @@ func profileTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, version int
 	return p, vid, err
 }
 func (s Service) authorize(ctx context.Context, tx pgx.Tx, a auth.RequestContext, b Binding, p Profile, touch bool) (policy.PolicyDecision, error) {
+	decision, _, err := s.authorizeAs(ctx, tx, a, b, p, touch, nil)
+	return decision, err
+}
+
+// authorizeWithProof is authorize for the boundary that must freeze the accepted
+// step-up proof (prepare). It returns the proof reference, if the accepted step-up
+// was a native one.
+func (s Service) authorizeWithProof(ctx context.Context, tx pgx.Tx, a auth.RequestContext, b Binding, p Profile, touch bool) (policy.PolicyDecision, *auth.NativeProof, error) {
 	return s.authorizeAs(ctx, tx, a, b, p, touch, nil)
 }
 
@@ -74,15 +82,15 @@ func (s Service) authorize(ctx context.Context, tx pgx.Tx, a auth.RequestContext
 // claim paths pass the execution's frozen authority: they have no browser session,
 // so a native command must be re-proved from the persisted account/version and the
 // live grant rows rather than from the legacy binding table.
-func (s Service) authorizeAs(ctx context.Context, tx pgx.Tx, a auth.RequestContext, b Binding, p Profile, touch bool, frozen *Authority) (policy.PolicyDecision, error) {
+func (s Service) authorizeAs(ctx context.Context, tx pgx.Tx, a auth.RequestContext, b Binding, p Profile, touch bool, frozen *Authority) (policy.PolicyDecision, *auth.NativeProof, error) {
 	if a.TenantID != b.TenantID || a.Subject != b.Subject || !p.Allows(b.Target, b.Options) || p.ID != b.ProfileID || p.Version != b.ProfileVersion || p.ClusterUID != b.ClusterUID || s.Policy == nil {
-		return policy.PolicyDecision{}, ErrDenied
+		return policy.PolicyDecision{}, nil, ErrDenied
 	}
 	if b.Verification != nil && (!b.Verification.Valid(b.Target) || p.Type != "k8s_namespace" || !slices.Contains(p.Tools, "ops-verify") || b.VerificationNamespace != s.RunnerNamespace || b.VerificationTargetName == "" || b.Namespace == nil || b.Verification.Kind == "pvc_read_write" && *b.Namespace != b.VerificationNamespace) {
-		return policy.PolicyDecision{}, ErrDenied
+		return policy.PolicyDecision{}, nil, ErrDenied
 	}
 	if err := relatedExecutionTx(ctx, tx, b); err != nil {
-		return policy.PolicyDecision{}, err
+		return policy.PolicyDecision{}, nil, err
 	}
 	var effective graph.Scope
 	var err error
@@ -96,15 +104,15 @@ func (s Service) authorizeAs(ctx context.Context, tx pgx.Tx, a auth.RequestConte
 		ns = *b.Namespace
 	}
 	if err != nil || !effective.Allows(b.Target, ns) || (p.HighPrivilege() && !effective.ClusterScoped) || (p.Type == "k8s_namespace" && p.Namespace != ns) {
-		return policy.PolicyDecision{}, ErrDenied
+		return policy.PolicyDecision{}, nil, ErrDenied
 	}
 	if err := hostAdmittedTx(ctx, tx, a.TenantID, p); err != nil {
-		return policy.PolicyDecision{}, err
+		return policy.PolicyDecision{}, nil, err
 	}
 	// Inventory identity and incident ownership are server facts, never caller claims.
 	var locked bool
 	if err = tx.QueryRow(ctx, `SELECT action.lock_target($1,$2,$3)`, a.TenantID, b.Target, b.ClusterUID).Scan(&locked); err != nil || !locked {
-		return policy.PolicyDecision{}, ErrDenied
+		return policy.PolicyDecision{}, nil, ErrDenied
 	}
 	var raw []byte
 	var namespace string
@@ -113,17 +121,32 @@ func (s Service) authorizeAs(ctx context.Context, tx pgx.Tx, a auth.RequestConte
 	err = tx.QueryRow(ctx, `SELECT e.metadata,e.namespace,e.cluster_id,e.resource_revision FROM platform.resource_entities e JOIN platform.cluster_registrations c USING(tenant_id,cluster_id) WHERE e.tenant_id=$1 AND e.canonical_id=$2 AND e.deleted_at IS NULL AND c.cluster_uid=$3 AND c.status='active'`, a.TenantID, b.Target, b.ClusterUID).Scan(&raw, &namespace, &clusterID, &targetRevision)
 	var identity resource.Resolution
 	if err != nil || json.Unmarshal(raw, &identity) != nil || targetIdentity(identity) != b.TargetUID || namespace != ns || targetRevision != b.TargetRevision {
-		return policy.PolicyDecision{}, ErrDenied
+		return policy.PolicyDecision{}, nil, ErrDenied
 	}
 	var exists bool
 	if tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM incident.records i JOIN incident.finding_links l USING(tenant_id,incident_id) JOIN finding.records f USING(tenant_id,finding_id) WHERE i.tenant_id=$1 AND i.incident_id=$2 AND f.cluster_uid=$3)`, a.TenantID, b.IncidentID, b.ClusterUID).Scan(&exists) != nil || !exists {
-		return policy.PolicyDecision{}, ErrDenied
+		return policy.PolicyDecision{}, nil, ErrDenied
 	}
 	step := false
+	var proof *auth.NativeProof
 	native, hasNative := auth.NativeSessionFromContext(ctx)
 	if touch && (p.HighPrivilege() || (hasNative && native.StepUpChallengeID != uuid.Nil)) {
-		if _, err = auth.TouchCurrentStepUpSession(ctx, tx, a, []string{auth.StepUpACRLevel2}); err != nil {
-			return policy.PolicyDecision{}, err
+		if verified, ok := auth.VerifiedNativeStepUpFromContext(ctx); ok {
+			// Asynchronous native dispatch/claim: the caller has already re-proved
+			// the frozen proof in this transaction. There is no session to touch, and
+			// the assertion is limited to the exact command operation and digest.
+			if err := verifiedStepUpProof(verified, time.Now()); err != nil {
+				return policy.PolicyDecision{}, nil, err
+			}
+			proof = &verified
+		} else {
+			_, evidence, err := auth.TouchCurrentStepUpEvidence(ctx, tx, a, []string{auth.StepUpACRLevel2})
+			if err != nil {
+				return policy.PolicyDecision{}, nil, err
+			}
+			if evidence.Ref != uuid.Nil {
+				proof = &evidence
+			}
 		}
 		step = true
 	}
@@ -135,10 +158,10 @@ func (s Service) authorizeAs(ctx context.Context, tx pgx.Tx, a auth.RequestConte
 	risk := ClassifyRiskBinding(b)
 	decision, err := s.Policy.Evaluate(ctx, policy.PolicyInput{Request: a, PrincipalType: policy.PrincipalOperator, RequestType: policy.RequestAction, Scope: scope, Risk: policy.Risk(risk), RiskAcknowledged: touch, ClusterLevel: p.Type == "k8s_cluster", RootLevel: p.Type == "ssh_root", StepUpVerified: step, ActualCommandDigest: b.CommandDigest, ConfirmedCommandDigest: b.CommandDigest})
 	if err != nil && !(!touch && errors.Is(err, policy.ErrPolicyDenied) && decision.PolicyVersion != "") {
-		return decision, err
+		return decision, nil, err
 	}
 	if touch && !decision.Allow {
-		return decision, ErrDenied
+		return decision, nil, ErrDenied
 	}
 	var policyLocked bool
 	namespaces := []string{}
@@ -146,12 +169,12 @@ func (s Service) authorizeAs(ctx context.Context, tx pgx.Tx, a auth.RequestConte
 		namespaces = append(namespaces, ns)
 	}
 	if err = tx.QueryRow(ctx, `SELECT platform.sp06_lock_policy($1,$2,$3,$4)`, a.TenantID, decision.PolicyVersion, b.ClusterUID, namespaces).Scan(&policyLocked); err != nil || !policyLocked {
-		return decision, ErrDenied
+		return decision, nil, ErrDenied
 	}
 	if b.PolicyVersion != "" && decision.PolicyVersion != b.PolicyVersion {
-		return decision, ErrConflict
+		return decision, nil, ErrConflict
 	}
-	return decision, nil
+	return decision, proof, nil
 }
 
 // Risk is recomputed from the immutable server assessment in prepare; the
@@ -282,7 +305,10 @@ func (s Service) AcknowledgeRisk(ctx context.Context, a auth.RequestContext, id 
 		if err != nil {
 			return err
 		}
-		if _, err = s.authorize(ctx, tx, a, assessment.Binding, p, true); err != nil {
+		// Acknowledge and prepare derive the exact same target from the immutable
+		// server assessment; only the verified challenge reference comes from the
+		// browser (X-Ops-Step-Up-Challenge).
+		if _, err = s.authorize(commandStepUpContext(ctx, assessment.ID, assessment.Binding), tx, a, assessment.Binding, p, true); err != nil {
 			return err
 		}
 		d, err := persistence.Begin(ctx, tx, persistence.Scope{TenantID: a.TenantID, Subject: a.Subject, Operation: "acknowledge-command-risk"}, key, persistence.Digest(Digest(Canonical([]any{id, digest}))))
@@ -357,12 +383,9 @@ func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestCont
 		if b.Digest() != confirmed.Digest() {
 			return ErrAckScopeMismatch
 		}
-		writeCtx := ctx
-		if native, ok := auth.NativeSessionFromContext(ctx); ok {
-			target, _ := json.Marshal(NativeCommandStepUpTarget(b, assessmentID))
-			writeCtx = auth.WithNativeStepUpIntent(ctx, auth.NativeStepUpIntent{ChallengeID: native.StepUpChallengeID, Operation: "command_execution", Target: target})
-		}
-		decision, err := s.authorize(writeCtx, tx, a, b, p, true)
+		// The same server-derived target as acknowledge, so the proof the browser
+		// verified for the assessment also covers this execution.
+		decision, proof, err := s.authorizeWithProof(commandStepUpContext(ctx, assessmentID, b), tx, a, b, p, true)
 		if err != nil {
 			return err
 		}
@@ -390,6 +413,17 @@ func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestCont
 			return ErrConflict
 		}
 		out = Execution{Iteration: 1, AckID: ackID, PolicyID: decision.DecisionID, ID: uuid.Must(uuid.NewV7()), Binding: b, RequestDigest: b.Digest(), State: "prepared", SuggestionMatch: "not_applicable", ComparatorVersion: ComparatorVersion, PostCheck: "inconclusive", Authority: commandAuthorityFromContext(ctx)}
+		if _, isNative := auth.NativeSessionFromContext(ctx); isNative && p.HighPrivilege() && proof == nil {
+			// A native high-privilege command must never be prepared without a proof:
+			// asynchronous dispatch refuses to re-prove what was never frozen.
+			return ErrDenied
+		}
+		if proof != nil {
+			// Freeze the accepted native proof reference. The asynchronous stages
+			// re-prove exactly this reference; no cookie, password, TOTP or bearer is
+			// stored.
+			out.stepUp = &frozenStepUp{SessionID: proof.SessionID, ProofID: proof.Ref, Operation: proof.Operation, BindingDigest: append([]byte(nil), proof.BindingDigest...), ExpiresAt: proof.ExpiresAt}
+		}
 		if b.ActionPlanID != nil {
 			var suggestion string
 			if err = tx.QueryRow(ctx, `SELECT content->>'suggestedCommand',(content->>'iteration')::int FROM action.plans WHERE tenant_id=$1 AND action_plan_id=$2`, a.TenantID, *b.ActionPlanID).Scan(&suggestion, &out.Iteration); err != nil {
@@ -403,7 +437,15 @@ func (s Service) PrepareCommandExecution(ctx context.Context, a auth.RequestCont
 		if err != nil {
 			return err
 		}
-		err = tx.QueryRow(ctx, `INSERT INTO action.executions(tenant_id,execution_id,subject,target_canonical_id,shell,command_digest,risk_acknowledgement_id,execution_profile_version_id,idempotency_key_digest,state,binding,request_digest,command_envelope,suggestion_match,comparator_version,policy_decision_id,actor_context,dispatch_deadline,authority) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'prepared',$10,$11,$12,$13,$14,$15,$16,LEAST($17,(SELECT expires_at FROM action.risk_acknowledgements WHERE tenant_id=$1 AND acknowledgement_id=$7)),$18) RETURNING created_at`, a.TenantID, out.ID, a.Subject, b.Target, b.Shell, b.CommandDigest, ackID, vid, persistence.HashIdempotencyKey(key), Canonical(b), b.Digest(), Canonical(envelope), out.SuggestionMatch, ComparatorVersion, decision.DecisionID, Canonical(a), a.TokenExpiresAt, Canonical(commandAuthorityFromContext(ctx))).Scan(&out.CreatedAt)
+		var proofSession, proofID *uuid.UUID
+		var proofOperation *string
+		var proofDigest []byte
+		var proofExpires *time.Time
+		if out.stepUp != nil {
+			proofSession, proofID = &out.stepUp.SessionID, &out.stepUp.ProofID
+			proofOperation, proofDigest, proofExpires = &out.stepUp.Operation, out.stepUp.BindingDigest, &out.stepUp.ExpiresAt
+		}
+		err = tx.QueryRow(ctx, `INSERT INTO action.executions(tenant_id,execution_id,subject,target_canonical_id,shell,command_digest,risk_acknowledgement_id,execution_profile_version_id,idempotency_key_digest,state,binding,request_digest,command_envelope,suggestion_match,comparator_version,policy_decision_id,actor_context,dispatch_deadline,authority,step_up_session_id,step_up_proof_id,step_up_operation,step_up_binding_digest,step_up_expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'prepared',$10,$11,$12,$13,$14,$15,$16,LEAST($17,(SELECT expires_at FROM action.risk_acknowledgements WHERE tenant_id=$1 AND acknowledgement_id=$7)),$18,$19,$20,$21,$22,$23) RETURNING created_at`, a.TenantID, out.ID, a.Subject, b.Target, b.Shell, b.CommandDigest, ackID, vid, persistence.HashIdempotencyKey(key), Canonical(b), b.Digest(), Canonical(envelope), out.SuggestionMatch, ComparatorVersion, decision.DecisionID, Canonical(a), a.TokenExpiresAt, Canonical(commandAuthorityFromContext(ctx)), proofSession, proofID, proofOperation, proofDigest, proofExpires).Scan(&out.CreatedAt)
 		if err != nil {
 			return err
 		}

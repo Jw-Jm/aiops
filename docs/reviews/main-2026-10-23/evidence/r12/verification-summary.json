@@ -1,0 +1,39 @@
+{
+  "scope": "MR-006 platform binary offline rebuild; Codex implementation and verification",
+  "scriptSHA256": "sha256:aaa3363d66e732602881ea54a81b898ab15edea5f4accd1ccd3645e65965a108",
+  "checks": [
+    {
+      "command": "python3 -m unittest discover -s scripts -p test_rebuild_platform_runtime.py -v",
+      "exitCode": 0,
+      "result": "2 tests passed"
+    },
+    {
+      "command": "go test ./internal/bundle ./cmd/opsctl -count=1",
+      "exitCode": 0,
+      "result": "both packages passed"
+    },
+    {
+      "command": "go test ./test/contract -run '^TestDeliveryPreparation' -count=1",
+      "exitCode": 0,
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/prepare-runtime-source.py --check --architecture arm64",
+      "exitCode": 0,
+      "result": "99 modules; archive matches admitted Catalog"
+    },
+    {
+      "command": "python3 scripts/prepare-runtime-source.py --check --architecture amd64",
+      "exitCode": 0,
+      "result": "99 modules; archive matches admitted Catalog"
+    },
+    {
+      "command": "independent SHA256 verification after moving persisted archives and binaries",
+      "exitCode": 0,
+      "result": "2 source archives and 6 binaries match the rebuild receipts"
+    }
+  ],
+  "remoteVerified": false,
+  "nativeExecutionTested": false,
+  "stoppedAfterThisRound": true
+}

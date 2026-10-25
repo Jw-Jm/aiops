@@ -1,0 +1,26 @@
+import { act, waitFor } from "@testing-library/react";
+import { useState } from "react";
+it("review probe: an unmounted fault-chain check overwrites the next conversation active turn", async () => {
+  setCredentials("FIXTURE", "tenant");
+  let finish!: (r: Response) => void;
+  const pending = new Promise<Response>((resolve) => { finish=resolve; });
+  const fetcher=vi.fn(() => pending);
+  vi.stubGlobal("fetch",fetcher);
+  function Host() {
+    const [cid,setCid]=useState("conversation-a");
+    const [turn,setTurn]=useState("");
+    return <>
+      <button onClick={() => {setCid("conversation-b");setTurn("");}}>next-conversation</button>
+      <span data-testid="active-conversation">{cid}</span>
+      <span data-testid="active-turn">{turn}</span>
+      {cid==="conversation-a" && <FaultChainGapCheck context={context} edge={context.edges[0]} gap="network_window_statistics" turnId="old-turn" controls={{conversation:{...conversation,conversationId:cid},disabled:false,onSubmitted:(next)=>setTurn(next.turnId)}}/>}
+    </>;
+  }
+  render(<Host/>);
+  fireEvent.click(screen.getByRole("button",{name:"执行冻结窗口统计检查"}));
+  await waitFor(()=>expect(fetcher).toHaveBeenCalledTimes(1));
+  fireEvent.click(screen.getByRole("button",{name:"next-conversation"}));
+  await act(async()=>{finish(response({data:{turnId:"turn-from-a",conversationId:"conversation-a",state:"queued"}},202));});
+  expect(screen.getByTestId("active-conversation")).toHaveTextContent("conversation-b");
+  expect(screen.getByTestId("active-turn")).toHaveTextContent("turn-from-a");
+});

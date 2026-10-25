@@ -1,0 +1,33 @@
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/.worktrees/main-review-fixes-20261025/web
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ tests/v12/p1_shell.test.tsx (10 tests | 1 failed) 123ms
+   × matches the frozen source NAV hierarchy without flattening modules 3ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/v12/p1_shell.test.tsx > matches the frozen source NAV hierarchy without flattening modules
+Error: ENOENT: no such file or directory, open '/Users/mssc/Documents/Code/ops/.worktrees/ui-handoff/ops-platform-v1.2-20261020/source/prototype.html'
+ ❯ tests/v12/p1_shell.test.tsx:28:18
+     26|
+     27| it("matches the frozen source NAV hierarchy without flattening modules…
+     28|   const source = readFileSync(
+       |                  ^
+     29|     resolve(
+     30|       process.cwd(),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 38 passed (39)
+      Tests  1 failed | 164 passed (165)
+   Start at  16:35:56
+   Duration  22.26s (import 35%, tests 34%, environment 24%, setup 6%, transform 1%)
+
+     Import  130 modules were evaluated 478 times · 14.49s total, 35% of tracked time
+             ~4.30s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+

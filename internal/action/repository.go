@@ -2,6 +2,7 @@ package action
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"github.com/google/uuid"
@@ -106,12 +107,19 @@ func executionTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID) (Executio
 	var authorityRaw []byte
 	var suggested *string
 	e.ID = id
-	err := tx.QueryRow(ctx, `SELECT binding,authority,request_digest,state,suggestion_match,comparator_version,exit_code,output_bytes,output_truncated,post_check,created_at,risk_acknowledgement_id,policy_decision_id,claimed_at,completed_at,output_archive_ref,output_digest,output_previews,post_checked_at,COALESCE((SELECT (content->>'iteration')::int FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),1),(SELECT content->>'suggestedCommand' FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid) FROM action.executions WHERE tenant_id=$1 AND execution_id=$2 FOR UPDATE`, tenant, id).Scan(&b, &authorityRaw, &e.RequestDigest, &e.State, &e.SuggestionMatch, &e.ComparatorVersion, &e.ExitCode, &e.OutputBytes, &e.Truncated, &e.PostCheck, &e.CreatedAt, &e.AckID, &e.PolicyID, &e.StartedAt, &e.CompletedAt, &e.ArchiveRef, &e.OutputDigest, &e.OutputPreviews, &e.PostCheckedAt, &e.Iteration, &suggested)
+	var stepSession, stepProof *uuid.UUID
+	var stepOperation *string
+	var stepDigest []byte
+	var stepExpires *time.Time
+	err := tx.QueryRow(ctx, `SELECT binding,authority,request_digest,state,suggestion_match,comparator_version,exit_code,output_bytes,output_truncated,post_check,created_at,risk_acknowledgement_id,policy_decision_id,claimed_at,completed_at,output_archive_ref,output_digest,output_previews,post_checked_at,COALESCE((SELECT (content->>'iteration')::int FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),1),(SELECT content->>'suggestedCommand' FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),step_up_session_id,step_up_proof_id,step_up_operation,step_up_binding_digest,step_up_expires_at FROM action.executions WHERE tenant_id=$1 AND execution_id=$2 FOR UPDATE`, tenant, id).Scan(&b, &authorityRaw, &e.RequestDigest, &e.State, &e.SuggestionMatch, &e.ComparatorVersion, &e.ExitCode, &e.OutputBytes, &e.Truncated, &e.PostCheck, &e.CreatedAt, &e.AckID, &e.PolicyID, &e.StartedAt, &e.CompletedAt, &e.ArchiveRef, &e.OutputDigest, &e.OutputPreviews, &e.PostCheckedAt, &e.Iteration, &suggested, &stepSession, &stepProof, &stepOperation, &stepDigest, &stepExpires)
 	if err != nil {
 		return e, err
 	}
 	if json.Unmarshal(b, &e.Binding) != nil || json.Unmarshal(authorityRaw, &e.Authority) != nil {
 		return e, ErrInvalid
+	}
+	if stepSession != nil && stepProof != nil && stepOperation != nil && len(stepDigest) == sha256.Size && stepExpires != nil {
+		e.stepUp = &frozenStepUp{SessionID: *stepSession, ProofID: *stepProof, Operation: *stepOperation, BindingDigest: stepDigest, ExpiresAt: *stepExpires}
 	}
 	if suggested != nil {
 		d := Digest([]byte(*suggested))

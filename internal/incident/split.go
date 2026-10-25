@@ -29,10 +29,11 @@ func (s Service) Split(ctx context.Context, scope graph.Scope, subject, id, reas
 		if err != nil {
 			return err
 		}
-		if err := Authorize(ctx, tx, scope, subject, i); err != nil {
+		authority, err := authorizeTx(ctx, tx, scope, subject, i)
+		if err != nil {
 			return err
 		}
-		if err := authorizeLinked(ctx, tx, scope, subject, i); err != nil {
+		if err := authorizeLinked(ctx, tx, authority, i); err != nil {
 			return err
 		}
 		if i.Revision != expected {

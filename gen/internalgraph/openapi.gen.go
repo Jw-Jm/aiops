@@ -5,6 +5,8 @@ package internalgraph
 
 import (
 	"time"
+
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Defines values for GraphQueryDirection.
@@ -136,6 +138,27 @@ func (e GraphResultSchemaVersion) Valid() bool {
 	}
 }
 
+// Defines values for SignedContextEnvelopeSource.
+const (
+	Legacy            SignedContextEnvelopeSource = "legacy"
+	NativeInteractive SignedContextEnvelopeSource = "native_interactive"
+	NativeTask        SignedContextEnvelopeSource = "native_task"
+)
+
+// Valid indicates whether the value is a known member of the SignedContextEnvelopeSource enum.
+func (e SignedContextEnvelopeSource) Valid() bool {
+	switch e {
+	case Legacy:
+		return true
+	case NativeInteractive:
+		return true
+	case NativeTask:
+		return true
+	default:
+		return false
+	}
+}
+
 // GraphQuery defines model for GraphQuery.
 type GraphQuery struct {
 	AfterCanonicalId   *string              `json:"afterCanonicalId,omitempty"`
@@ -216,8 +239,39 @@ type Scope struct {
 	TenantId              string   `json:"tenantId"`
 }
 
+// SignedContextEnvelope Signed claims envelope inside X-Graph-Context (compact JWS-like, not JSON in
+// the header). The Worker verifies the signature and the mTLS peer, then
+// re-proves the source from persisted state: a live native session for
+// `native_interactive`, or the persisted assistant task authority for
+// `native_task`. `legacy` keeps the frozen role binding behaviour. The signed
+// scope is only compared against the re-proven scope; it is never trusted on
+// its own.
+type SignedContextEnvelope struct {
+	Audience            string    `json:"audience"`
+	Deadline            time.Time `json:"deadline"`
+	GrantSnapshotDigest *string   `json:"grantSnapshotDigest,omitempty"`
+
+	// NativeProof Only for native sources: a reference, never a credential. sessionId for native_interactive, jobId for native_task. No cookie, password, role or reusable credential is ever carried.
+	NativeProof *struct {
+		JobId     *openapi_types.UUID `json:"jobId,omitempty"`
+		SessionId *openapi_types.UUID `json:"sessionId,omitempty"`
+	} `json:"nativeProof,omitempty"`
+	QueryDigest string                      `json:"queryDigest"`
+	Scope       Scope                       `json:"scope"`
+	Source      SignedContextEnvelopeSource `json:"source"`
+	Subject     string                      `json:"subject"`
+}
+
+// SignedContextEnvelopeSource defines model for SignedContextEnvelope.Source.
+type SignedContextEnvelopeSource string
+
 // QueryGraphParams defines parameters for QueryGraph.
 type QueryGraphParams struct {
+	// XGraphContext Compact `base64url(claims).base64url(ed25519-signature)` envelope, valid
+	// for at most 30 seconds and bound to this exact body. It must name one
+	// explicit source; see SignedContextEnvelope. A source that is missing,
+	// unknown or incomplete is rejected, and a native source never falls back
+	// to the legacy role binding table.
 	XGraphContext string `json:"X-Graph-Context"`
 }
 

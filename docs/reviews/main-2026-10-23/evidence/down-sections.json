@@ -1,0 +1,92 @@
+[
+  {
+    "path": "migrations/00038_sp08_safe_step_input_summary.sql",
+    "kind": "drop_column",
+    "body": "SET ROLE schema_owner;\nALTER TABLE investigation.steps DROP COLUMN args_summary;\nRESET ROLE;"
+  },
+  {
+    "path": "migrations/00047_native_authorization.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00048_native_authorization_found_fix.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00049_native_authorization_policy_restore.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00050_native_authorization_session_binding.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00051_native_mfa_stepup.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00052_native_mfa_lifecycle.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00053_native_stepup_resolution.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00054_resource_projection_revision.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00055_native_user_administration.sql",
+    "kind": "raise_exception_guard",
+    "body": "DO $$ BEGIN RAISE EXCEPTION 'native user writes are forward-only; do not restore old credentials or authorization'; END $$;"
+  },
+  {
+    "path": "migrations/00056_native_subject_inventory.sql",
+    "kind": "raise_exception_guard",
+    "body": "DO $$ BEGIN RAISE EXCEPTION 'subject inventories and mappings are forward-only; retain historical ownership evidence'; END $$;"
+  },
+  {
+    "path": "migrations/00057_native_grant_scope_limits.sql",
+    "kind": "raise_exception_guard",
+    "body": "DO $$ BEGIN RAISE EXCEPTION 'native authorization is forward-only; preserve granted scopes and revocations'; END $$;"
+  },
+  {
+    "path": "migrations/00058_native_historical_read.sql",
+    "kind": "drop_read_function",
+    "body": "SET ROLE schema_owner;\nDROP FUNCTION IF EXISTS identity.read_mapped_legacy_subjects(uuid, uuid);\nRESET ROLE;"
+  },
+  {
+    "path": "migrations/00059_native_operator_job_authority.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00060_native_first_tenant.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00061_native_job_authority_locks.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00062_action_native_authority.sql",
+    "kind": "comments_only",
+    "body": ""
+  },
+  {
+    "path": "migrations/00063_native_authority_share_locks.sql",
+    "kind": "comments_only",
+    "body": ""
+  }
+]

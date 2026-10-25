@@ -127,15 +127,23 @@ func TouchStepUpSession(ctx context.Context, tx pgx.Tx, session StepUpSession, r
 // TouchCurrentStepUpSession resolves the session exclusively from the verified request identity,
 // then applies the accepted-ACR check and database-time expiry update in the caller's transaction.
 func TouchCurrentStepUpSession(ctx context.Context, tx pgx.Tx, request RequestContext, acceptedACRs []string) (StepUpSession, error) {
+	session, _, err := TouchCurrentStepUpEvidence(ctx, tx, request, acceptedACRs)
+	return session, err
+}
+
+// TouchCurrentStepUpEvidence is TouchCurrentStepUpSession plus the accepted native
+// proof reference. A business boundary freezes that reference so the asynchronous
+// stages can re-prove the same proof without the browser session.
+func TouchCurrentStepUpEvidence(ctx context.Context, tx pgx.Tx, request RequestContext, acceptedACRs []string) (StepUpSession, NativeProof, error) {
 	if _, native := NativeSessionFromContext(ctx); native {
 		if !containsString(acceptedACRs, StepUpACRLevel2) {
-			return StepUpSession{}, ErrStepUpInvalid
+			return StepUpSession{}, NativeProof{}, ErrStepUpInvalid
 		}
 		return touchNativeStepUp(ctx, tx, request)
 	}
 	if request.TenantID == uuid.Nil || request.Subject == "" || request.KeycloakSID == "" || request.AuthTime.IsZero() ||
 		!containsString(acceptedACRs, request.ACR) {
-		return StepUpSession{}, ErrStepUpInvalid
+		return StepUpSession{}, NativeProof{}, ErrStepUpInvalid
 	}
 	var session StepUpSession
 	err := tx.QueryRow(ctx, `
@@ -146,12 +154,17 @@ func TouchCurrentStepUpSession(ctx context.Context, tx pgx.Tx, request RequestCo
 	).Scan(&session.SessionID, &session.TenantID, &session.Subject, &session.KeycloakSID, &session.ACR,
 		&session.AuthTime, &session.CreatedAt, &session.LastUsedAt, &session.RevokedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return StepUpSession{}, ErrStepUpInvalid
+		return StepUpSession{}, NativeProof{}, ErrStepUpInvalid
 	}
 	if err != nil {
-		return StepUpSession{}, fmt.Errorf("load current step-up session: %w", err)
+		return StepUpSession{}, NativeProof{}, fmt.Errorf("load current step-up session: %w", err)
 	}
-	return TouchStepUpSession(ctx, tx, session, request)
+	touched, err := TouchStepUpSession(ctx, tx, session, request)
+	if err != nil {
+		return StepUpSession{}, NativeProof{}, err
+	}
+	// A legacy (Keycloak) step-up has no native proof reference to freeze.
+	return touched, NativeProof{}, nil
 }
 
 func appendStepUpAudit(ctx context.Context, tx pgx.Tx, session StepUpSession, eventType string) error {

@@ -6246,6 +6246,15 @@ paths:
         schema:
           minLength: 1
           type: string
+      - description: Reference of the verified step-up challenge. Required for a high-privilege
+          execution profile (k8s_cluster, ssh_root) on a native session; the server re-derives the
+          exact command target from the immutable risk assessment and never trusts a client target.
+        in: header
+        name: X-Ops-Step-Up-Challenge
+        required: false
+        schema:
+          format: uuid
+          type: string
       requestBody:
         content:
           application/json:
@@ -6420,6 +6429,15 @@ paths:
         required: true
         schema:
           minLength: 1
+          type: string
+      - description: Reference of the verified step-up challenge. Required for a high-privilege
+          execution profile (k8s_cluster, ssh_root) on a native session; the server re-derives the
+          exact command target from the immutable risk assessment and never trusts a client target.
+        in: header
+        name: X-Ops-Step-Up-Challenge
+        required: false
+        schema:
+          format: uuid
           type: string
       requestBody:
         content:

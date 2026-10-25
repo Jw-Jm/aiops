@@ -1,0 +1,1178 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: deepflow-mysql-auth
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+type: Opaque
+stringData:
+  mysql-root-password: __DEEPFLOW_POC_DB_PASSWORD__
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: deepflow-server-config
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+type: Opaque
+stringData:
+  server.yaml: "controller:\n    clickhouse:\n        database: flow_tag\n        endpoint-tcp-port-name: tcp-port\n        host: ops-sp02-deepflow-clickhouse\n\
+    \        port: 9000\n        user-name: default\n        user-password: null\n    election-name: ops-sp02-deepflow-server\n    election-namespace:\
+    \ ops-sp02-deepflow-poc\n    grpc-max-message-length: 104857600\n    grpc-port: 20035\n    kubeconfig: null\n    listen-port: 20417\n    mysql:\n\
+    \        database: deepflow\n        host: ops-sp02-deepflow-mysql\n        port: 30130\n        timeout: 30\n        user-name: root\n  \
+    \      user-password: __DEEPFLOW_POC_DB_PASSWORD__\n    reporting-disabled: true\n    trisolaris:\n        chrony:\n            host: null\n\
+    \            port: 123\n            timeout: 1\n        trident-type-for-unknow-vtap: 3\ningester:\n    ckdb:\n        cluster-name: null\n\
+    \        endpoint-tcp-port-name: tcp-port\n        external: false\n        host: ops-sp02-deepflow-clickhouse\n        port: 9000\n     \
+    \   storage-policy: null\n        type: clickhouse\n    ckdb-auth:\n        password: null\n        username: default\n    es-syslog: false\n\
+    \    flow-log-ttl-hour:\n        l4-flow-log: 6\n        l4-packet: 6\n        l7-flow-log: 6\n    flow-metrics-ttl-hour:\n        vtap-app-1m:\
+    \ 6\n        vtap-app-1s: 6\n        vtap-flow-1m: 6\n        vtap-flow-1s: 6\nlog-file: /var/log/deepflow/server.log\nlog-level: info\nquerier:\n\
+    \    clickhouse:\n        database: flow_tag\n        host: ops-sp02-deepflow-clickhouse\n        port: 9000\n        timeout: 60\n      \
+    \  user-name: default\n        user-password: null\n    listen-port: 20416\nreporting:\n    reporting-disabled: true"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: deepflow-agent
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-sp02-deepflow-server
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+    app.kubernetes.io/version: 7.2.0
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ops-sp02-deepflow-clickhouse-config
+  labels:
+    helm.sh/chart: clickhouse-0.1.000
+    app: deepflow
+    component: clickhouse
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 23.10.4.25
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+data:
+  config.xml: "<?xml version=\"1.0\"?>\n<yandex>\n    <logger>\n        <level>warning</level>\n        <size>1000M</size>\n        <count>10</count>\n\
+    \        <console>1</console>\n    </logger>\n    <http_port>8123</http_port>\n    <tcp_port>9000</tcp_port>\n    <interserver_http_port>9009</interserver_http_port>\n\
+    \    <listen_host>0.0.0.0</listen_host>\n    <max_connections>4096</max_connections>\n    <keep_alive_timeout>3</keep_alive_timeout>\n   \
+    \ <grpc>\n        <enable_ssl>false</enable_ssl>\n        <ssl_cert_file>/path/to/ssl_cert_file</ssl_cert_file>\n        <ssl_key_file>/path/to/ssl_key_file</ssl_key_file>\n\
+    \        <ssl_require_client_auth>false</ssl_require_client_auth>\n        <ssl_ca_cert_file>/path/to/ssl_ca_cert_file</ssl_ca_cert_file>\n\
+    \        <compression>deflate</compression>\n        <compression_level>medium</compression_level>\n        <max_send_message_size>-1</max_send_message_size>\n\
+    \        <max_receive_message_size>-1</max_receive_message_size>\n        <verbose_logs>false</verbose_logs>\n    </grpc>\n    <openSSL>\n\
+    \        <server> \n            <certificateFile>/etc/clickhouse-server/server.crt</certificateFile>\n            <privateKeyFile>/etc/clickhouse-server/server.key</privateKeyFile>\n\
+    \            <dhParamsFile>/etc/clickhouse-server/dhparam.pem</dhParamsFile>\n            <verificationMode>none</verificationMode>\n    \
+    \        <loadDefaultCAFile>true</loadDefaultCAFile>\n            <cacheSessions>true</cacheSessions>\n            <disableProtocols>sslv2,sslv3</disableProtocols>\n\
+    \            <preferServerCiphers>true</preferServerCiphers>\n        </server>\n        <client> \n            <loadDefaultCAFile>true</loadDefaultCAFile>\n\
+    \            <cacheSessions>true</cacheSessions>\n            <disableProtocols>sslv2,sslv3</disableProtocols>\n            <preferServerCiphers>true</preferServerCiphers>\n\
+    \            <invalidCertificateHandler>\n                <name>RejectCertificateHandler</name>\n            </invalidCertificateHandler>\n\
+    \        </client>\n    </openSSL>\n    <max_concurrent_queries>2000</max_concurrent_queries>\n    <max_server_memory_usage>0</max_server_memory_usage>\n\
+    \    <max_thread_pool_size>10000</max_thread_pool_size>\n    <max_server_memory_usage_to_ram_ratio>0.9</max_server_memory_usage_to_ram_ratio>\n\
+    \    <total_memory_profiler_step>4194304</total_memory_profiler_step>\n    <total_memory_tracker_sample_probability>0</total_memory_tracker_sample_probability>\n\
+    \    <uncompressed_cache_size>8589934592</uncompressed_cache_size>\n    <mark_cache_size>5368709120</mark_cache_size>\n    <mmap_cache_size>1000</mmap_cache_size>\n\
+    \    <path>/var/lib/clickhouse/</path>\n    <storage_configuration>\n        <disks>\n            <path_0>\n                <path>/var/lib/clickhouse_storage/</path>\n\
+    \            </path_0>\n        </disks>\n        <policies>\n            <df_storage>\n                <volumes>\n                    <vol_path_0>\n\
+    \                        <disk>path_0</disk>\n                    </vol_path_0>\n                </volumes>\n            </df_storage>\n \
+    \       </policies>\n    </storage_configuration>\n    <tmp_path>/var/lib/clickhouse/tmp/</tmp_path>\n    <user_files_path>/var/lib/clickhouse/user_files/</user_files_path>\n\
+    \    <ldap_servers>\n    </ldap_servers>\n    <user_directories>\n        <users_xml>\n            <path>users.xml</path>\n        </users_xml>\n\
+    \        <local_directory>\n            <path>/var/lib/clickhouse/access/</path>\n        </local_directory>\n    </user_directories>\n  \
+    \  <default_profile>default</default_profile>\n    <custom_settings_prefixes></custom_settings_prefixes>\n    <default_database>default</default_database>\n\
+    \    <mlock_executable>true</mlock_executable>\n    <remap_executable>false</remap_executable>\n    <remote_servers>\n        <df_cluster>\n\
+    \            <shard>\n                 <replica>\n                      <host>ops-sp02-deepflow-clickhouse-0.ops-sp02-deepflow-clickhouse-headless</host>\n\
+    \                      <port>9000</port>\n                      <user>default</user>\n                      <password></password>\n      \
+    \           </replica>\n            </shard>\n        </df_cluster>\n    </remote_servers>\n    <macros>\n    </macros>\n    <builtin_dictionaries_reload_interval>3600</builtin_dictionaries_reload_interval>\n\
+    \    <max_session_timeout>3600</max_session_timeout>\n    <default_session_timeout>60</default_session_timeout>\n    <query_log>\n       \
+    \ <database>system</database>\n        <table>query_log</table>\n        <partition_by>toYYYYMM(event_date)</partition_by>\n        <ttl>event_date\
+    \ + INTERVAL 15 DAY DELETE</ttl>\n        <flush_interval_milliseconds>7500</flush_interval_milliseconds>\n    </query_log>\n    <trace_log>\n\
+    \        <database>system</database>\n        <table>trace_log</table>\n        <partition_by>toYYYYMM(event_date)</partition_by>\n      \
+    \  <flush_interval_milliseconds>7500</flush_interval_milliseconds>\n        <ttl>event_date + INTERVAL 15 DAY DELETE</ttl>\n    </trace_log>\n\
+    \    <query_thread_log>\n        <database>system</database>\n        <table>query_thread_log</table>\n        <partition_by>toYYYYMM(event_date)</partition_by>\n\
+    \        <flush_interval_milliseconds>7500</flush_interval_milliseconds>\n        <ttl>event_date + INTERVAL 15 DAY DELETE</ttl>\n    </query_thread_log>\n\
+    \    <metric_log>\n        <database>system</database>\n        <table>metric_log</table>\n        <flush_interval_milliseconds>7500</flush_interval_milliseconds>\n\
+    \        <collect_interval_milliseconds>10000</collect_interval_milliseconds>\n        <ttl>event_date + INTERVAL 15 DAY DELETE</ttl>\n  \
+    \  </metric_log>\n    <asynchronous_metric_log>\n        <database>system</database>\n        <table>asynchronous_metric_log</table>\n   \
+    \     <flush_interval_milliseconds>60000</flush_interval_milliseconds>\n        <ttl>event_date + INTERVAL 15 DAY DELETE</ttl>\n    </asynchronous_metric_log>\n\
+    \    <opentelemetry_span_log>\n        <engine>\n            engine MergeTree\n            partition by toYYYYMM(finish_date)\n          \
+    \  order by (finish_date, finish_time_us, trace_id)\n        </engine>\n        <database>system</database>\n        <table>opentelemetry_span_log</table>\n\
+    \        <flush_interval_milliseconds>7500</flush_interval_milliseconds>\n    </opentelemetry_span_log>\n    <crash_log>\n        <database>system</database>\n\
+    \        <table>crash_log</table>\n        <partition_by />\n        <flush_interval_milliseconds>1000</flush_interval_milliseconds>\n   \
+    \ </crash_log>\n    <top_level_domains_lists>\n    </top_level_domains_lists>\n    <dictionaries_config>*_dictionary.xml</dictionaries_config>\n\
+    \    <distributed_ddl>\n        <path>/clickhouse/task_queue/ddl</path>\n    </distributed_ddl>\n    <merge_tree>\n        <max_suspicious_broken_parts>1000</max_suspicious_broken_parts>\n\
+    \    </merge_tree>\n    <max_table_size_to_drop>0</max_table_size_to_drop>\n    <max_partition_size_to_drop>0</max_partition_size_to_drop>\n\
+    \    <graphite_rollup_example>\n        <pattern>\n            <regexp>click_cost</regexp>\n            <function>any</function>\n       \
+    \     <retention>\n                <age>0</age>\n                <precision>3600</precision>\n            </retention>\n            <retention>\n\
+    \                <age>86400</age>\n                <precision>60</precision>\n            </retention>\n        </pattern>\n        <default>\n\
+    \            <function>max</function>\n            <retention>\n                <age>0</age>\n                <precision>60</precision>\n\
+    \            </retention>\n            <retention>\n                <age>3600</age>\n                <precision>300</precision>\n        \
+    \    </retention>\n            <retention>\n                <age>86400</age>\n                <precision>3600</precision>\n            </retention>\n\
+    \        </default>\n    </graphite_rollup_example>\n    <format_schema_path>/var/lib/clickhouse/format_schemas/</format_schema_path>\n  \
+    \  <query_masking_rules>\n        <rule>\n            <name>hide encrypt/decrypt arguments</name>\n            <regexp>((?:aes_)?(?:encrypt|decrypt)(?:_mysql)?)\\\
+    s*\\(\\s*(?:'(?:\\\\'|.)+'|.*?)\\s*\\)</regexp>\n            <replace>\\1(???)</replace>\n        </rule>\n    </query_masking_rules>\n  \
+    \  <send_crash_reports>\n        <enabled>false</enabled>\n        <anonymize>false</anonymize>\n        <endpoint>https://6f33034cfe684dd7a3ab9875e57b1c8d@o388870.ingest.sentry.io/5226277</endpoint>\n\
+    \    </send_crash_reports>\n</yandex>"
+  users.xml: "<?xml version=\"1.0\"?>\n<yandex>\n    <profiles>\n        <default>\n            <max_memory_usage>10000000000</max_memory_usage>\n\
+    \            <load_balancing>random</load_balancing>\n            <max_query_size>10737418240</max_query_size>\n            <max_ast_elements>2000000</max_ast_elements>\n\
+    \            <max_expanded_ast_elements>2000000</max_expanded_ast_elements>\n            <connect_timeout_with_failover_ms>500</connect_timeout_with_failover_ms>\n\
+    \            <background_pool_size>32</background_pool_size>\n            <hedged_connection_timeout_ms>500</hedged_connection_timeout_ms>\n\
+    \            <max_distributed_connections>2048</max_distributed_connections>\n            <distributed_connections_pool_size>2048</distributed_connections_pool_size>\n\
+    \            <connections_with_failover_max_tries>10</connections_with_failover_max_tries>\n            <skip_unavailable_shards>1</skip_unavailable_shards>\n\
+    \            <allow_experimental_live_view>1</allow_experimental_live_view>\n        </default>\n        <readonly>\n            <readonly>1</readonly>\n\
+    \        </readonly>\n    </profiles>\n    <users>\n        <default>\n            <password></password>\n            <networks>\n       \
+    \         <ip>::/0</ip>\n            </networks>\n            <profile>default</profile>\n            <quota>default</quota>\n        </default>\n\
+    \    </users>\n    <quotas>\n        <default>\n            <interval>\n                <duration>3600</duration>\n                <queries>0</queries>\n\
+    \                <errors>0</errors>\n                <result_rows>0</result_rows>\n                <read_rows>0</read_rows>\n            \
+    \    <execution_time>0</execution_time>\n            </interval>\n        </default>\n    </quotas>\n</yandex>"
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: deepflow-agent
+  labels:
+    helm.sh/chart: deepflow-agent-7.1.002
+    app: deepflow
+    component: deepflow-agent
+    app.kubernetes.io/name: deepflow-agent
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 7.2.0
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+data:
+  deepflow-agent.yaml: 'controller-ips:
+
+    - ''ops-sp02-deepflow-server''
+
+    kubernetes-cluster-name: ops-sp02-deepflow-poc'
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ops-sp02-deepflow-mysql
+  labels:
+    helm.sh/chart: mysql-0.1.000
+    app: deepflow
+    component: mysql
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 8.0.39
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+data:
+  my.cnf: '[client]
+
+    default-character-set=utf8
+
+    [mysqld]
+
+    default-authentication-plugin=mysql_native_password
+
+    # Network related
+
+    bind-address=*
+
+    port=30130
+
+    # Enable query cache
+
+    innodb_buffer_pool_size=20M
+
+    max_connections=1000
+
+    wait_timeout=60
+
+    # Replication related
+
+    slave_skip_errors=all
+
+    ## Binlog expiration time, default 1 days
+
+    binlog_expire_logs_seconds = 86400'
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ops-sp02-deepflow-mysql-data-pvc
+  labels:
+    helm.sh/chart: mysql-0.1.000
+    app: deepflow
+    component: mysql
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 8.0.39
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  annotations:
+    helm.sh/resource-policy: keep
+  namespace: ops-sp02-deepflow-poc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ops-sp02-deepflow-agent
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - nodes
+  - namespaces
+  - configmaps
+  - services
+  - pods
+  - replicationcontrollers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  - deployments
+  - replicasets
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - route.openshift.io
+  resources:
+  - routes
+  verbs:
+  - get
+  - list
+  - watch
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ops-sp02-deepflow-agent
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+subjects:
+- kind: ServiceAccount
+  name: deepflow-agent
+  namespace: ops-sp02-deepflow-poc
+  apiGroup: ''
+roleRef:
+  kind: ClusterRole
+  name: ops-sp02-deepflow-agent
+  apiGroup: ''
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: deepflow-agent-update
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - configmaps
+  resourceNames:
+  - deepflow-agent-config
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+  - patch
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  resourceNames:
+  - deepflow-agent
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+  - patch
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ops-sp02-deepflow-server
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+    app.kubernetes.io/version: 7.2.0
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - endpoints
+  - services
+  verbs:
+  - list
+  - get
+  - watch
+  - create
+  - update
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  verbs:
+  - list
+  - get
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: deepflow-agent-update
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: deepflow-agent-update
+subjects:
+- kind: ServiceAccount
+  name: deepflow-agent
+  apiGroup: ''
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ops-sp02-deepflow-server
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+    app.kubernetes.io/version: 7.2.0
+subjects:
+- kind: ServiceAccount
+  name: ops-sp02-deepflow-server
+  namespace: ops-sp02-deepflow-poc
+  apiGroup: ''
+roleRef:
+  kind: Role
+  name: ops-sp02-deepflow-server
+  apiGroup: ''
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-sp02-deepflow-clickhouse
+  labels:
+    helm.sh/chart: clickhouse-0.1.000
+    app: deepflow
+    component: clickhouse
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 23.10.4.25
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+spec:
+  ports:
+  - name: http-port
+    port: 8123
+    targetPort: 8123
+    protocol: TCP
+  - name: tcp-port
+    port: 9000
+    targetPort: 9000
+    protocol: TCP
+  - name: interserver-http-port
+    port: 9009
+    targetPort: 9009
+    protocol: TCP
+  selector:
+    app: deepflow
+    component: clickhouse
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/instance: ops-sp02-deepflow
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-sp02-deepflow-clickhouse-headless
+  labels:
+    helm.sh/chart: clickhouse-0.1.000
+    app: deepflow
+    component: clickhouse
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 23.10.4.25
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+spec:
+  clusterIP: None
+  ports:
+  - name: http-port
+    port: 8123
+    targetPort: 8123
+    protocol: TCP
+  - name: tcp-port
+    port: 9000
+    targetPort: 9000
+    protocol: TCP
+  - name: interserver-http-port
+    port: 9009
+    targetPort: 9009
+    protocol: TCP
+  selector:
+    app: deepflow
+    component: clickhouse
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/instance: ops-sp02-deepflow
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: deepflow-agent
+  labels:
+    helm.sh/chart: deepflow-agent-7.1.002
+    app: deepflow
+    component: deepflow-agent
+    app.kubernetes.io/name: deepflow-agent
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 7.2.0
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+spec:
+  ports:
+  - name: receive
+    port: 80
+    targetPort: receive
+    protocol: TCP
+  selector:
+    app: deepflow
+    component: deepflow-agent
+    app.kubernetes.io/name: deepflow-agent
+    app.kubernetes.io/instance: ops-sp02-deepflow
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-sp02-deepflow-mysql
+  labels:
+    helm.sh/chart: mysql-0.1.000
+    app: deepflow
+    component: mysql
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 8.0.39
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+spec:
+  ports:
+  - name: tcp
+    port: 30130
+    targetPort: 30130
+    protocol: TCP
+  selector:
+    app: deepflow
+    component: mysql
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/instance: ops-sp02-deepflow
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-sp02-deepflow-server
+  labels:
+    helm.sh/chart: deepflow-7.1.002
+    app: deepflow
+    app.kubernetes.io/name: deepflow
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 7.2.0
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+spec:
+  ports:
+  - name: querier
+    port: 20416
+    targetPort: 20416
+    protocol: TCP
+  - name: profile
+    port: 20419
+    targetPort: 20419
+    protocol: TCP
+  - name: health-check
+    port: 20417
+    targetPort: 20417
+    protocol: TCP
+  - name: grpc
+    port: 20035
+    targetPort: 20035
+    protocol: TCP
+  - name: grpc-30035
+    port: 30035
+    targetPort: 20035
+    protocol: TCP
+  - name: ssl-grpc
+    port: 20135
+    targetPort: 20135
+    protocol: TCP
+  - name: ingester
+    port: 20033
+    targetPort: 20033
+    protocol: TCP
+  - name: ingester-30033
+    port: 30033
+    targetPort: 20033
+    protocol: TCP
+  selector:
+    app: deepflow
+    component: deepflow-server
+    app.kubernetes.io/name: deepflow
+    app.kubernetes.io/instance: ops-sp02-deepflow
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: deepflow-agent
+  labels:
+    helm.sh/chart: deepflow-agent-7.1.002
+    app: deepflow
+    component: deepflow-agent
+    app.kubernetes.io/name: deepflow-agent
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 7.2.0
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+spec:
+  selector:
+    matchLabels:
+      app: deepflow
+      component: deepflow-agent
+      app.kubernetes.io/name: deepflow-agent
+      app.kubernetes.io/instance: ops-sp02-deepflow
+  template:
+    metadata:
+      annotations:
+        checksum/config: 7ee43c65b26dadd112218ff171c11dc03185d038f2f6aa63ef6ef05fbdc70632
+        checksum/customConfig: 3d95ff769cd179327e6b4ffa0f93f99108bc58296bcd363ae9aa040581dabcb2
+        container.apparmor.security.beta.kubernetes.io/deepflow-agent: unconfined
+      labels:
+        app: deepflow
+        component: deepflow-agent
+        app.kubernetes.io/name: deepflow-agent
+        app.kubernetes.io/instance: ops-sp02-deepflow
+        ops.platform.io/test-release: sp02-task-2-5
+    spec:
+      dnsPolicy: ClusterFirst
+      hostNetwork: false
+      hostPID: true
+      imagePullSecrets: null
+      serviceAccountName: deepflow-agent
+      securityContext: {}
+      initContainers:
+      - name: network-policy-gate
+        image: docker.io/deepflowce/deepflow-agent:v7.2.0@sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9
+        imagePullPolicy: Never
+        command:
+        - sh
+        - -c
+        - while ! grep -Fxq "$POD_UID" /network-policy/approved-uids; do sleep 1; done
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        volumeMounts:
+        - name: network-policy-gate
+          mountPath: /network-policy
+          readOnly: true
+      containers:
+      - name: deepflow-agent
+        securityContext:
+          capabilities:
+            add:
+            - SYS_ADMIN
+            - SYS_RESOURCE
+            - SYS_PTRACE
+            - NET_ADMIN
+            - NET_RAW
+            - IPC_LOCK
+            - SYSLOG
+        image: docker.io/deepflowce/deepflow-agent:v7.2.0@sha256:25419423b6ea1c73897f5ed09a244f9172acadd95cec5ac1bf07a1ba3ed31bf9
+        imagePullPolicy: Never
+        ports:
+        - name: receive
+          containerPort: 38086
+          protocol: TCP
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: K8S_NAMESPACE_FOR_DEEPFLOW
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: K8S_NODE_IP_FOR_DEEPFLOW
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: K8S_NODE_NAME_FOR_DEEPFLOW
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: K8S_POD_NAME_FOR_DEEPFLOW
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: K8S_POD_IP_FOR_DEEPFLOW
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources: null
+        volumeMounts:
+        - name: sys-kernel-debug
+          mountPath: /sys/kernel/debug
+          readOnly: true
+        - name: deepflow-agent-conf
+          mountPath: /etc/deepflow-agent
+      volumes:
+      - name: network-policy-gate
+        configMap:
+          name: ops-sp02-deepflow-network-gate
+      - name: sys-kernel-debug
+        hostPath:
+          path: /sys/kernel/debug
+      - name: deepflow-agent-conf
+        configMap:
+          name: deepflow-agent
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution: null
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ops-sp02-deepflow-mysql
+  labels:
+    helm.sh/chart: mysql-0.1.000
+    app: deepflow
+    component: mysql
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 8.0.39
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: deepflow
+      component: mysql
+      app.kubernetes.io/name: mysql
+      app.kubernetes.io/instance: ops-sp02-deepflow
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        app: deepflow
+        component: mysql
+        app.kubernetes.io/name: mysql
+        app.kubernetes.io/instance: ops-sp02-deepflow
+        ops.platform.io/test-release: sp02-task-2-5
+    spec:
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: null
+      securityContext: {}
+      initContainers:
+      - name: network-policy-gate
+        image: docker.io/library/mysql:8.0.39@sha256:a1f202a397782b7e2a98359b3f476132189b179e04f9123d4750d527e937f138
+        imagePullPolicy: Never
+        command:
+        - sh
+        - -c
+        - while ! grep -Fxq "$POD_UID" /network-policy/approved-uids; do sleep 1; done
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        volumeMounts:
+        - name: network-policy-gate
+          mountPath: /network-policy
+          readOnly: true
+      containers:
+      - name: mysql
+        securityContext: null
+        image: docker.io/library/mysql:8.0.39@sha256:a1f202a397782b7e2a98359b3f476132189b179e04f9123d4750d527e937f138
+        imagePullPolicy: Never
+        ports:
+        - name: tcp
+          containerPort: 30130
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 6
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          successThreshold: 1
+          tcpSocket:
+            port: tcp
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 6
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: tcp
+        resources: {}
+        env:
+        - name: MYSQL_DATABASE
+          value: deepflow
+        - name: TZ
+          value: Asia/Shanghai
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: deepflow-mysql-auth
+              key: mysql-root-password
+        - name: MYSQL_ROOT_HOST
+          value: '%'
+        volumeMounts:
+        - name: mysql-config
+          mountPath: /etc/my.cnf
+          subPath: my.cnf
+        - mountPath: /var/lib/mysql
+          name: data-path
+      volumes:
+      - name: network-policy-gate
+        configMap:
+          name: ops-sp02-deepflow-network-gate
+      - name: mysql-config
+        configMap:
+          name: ops-sp02-deepflow-mysql
+          items:
+          - key: my.cnf
+            path: my.cnf
+      - name: data-path
+        persistentVolumeClaim:
+          claimName: ops-sp02-deepflow-mysql-data-pvc
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution: null
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ops-sp02-deepflow-server
+  labels:
+    helm.sh/chart: deepflow-7.1.002
+    app: deepflow
+    app.kubernetes.io/name: deepflow
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 7.2.0
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: deepflow
+      component: deepflow-server
+      app.kubernetes.io/name: deepflow
+      app.kubernetes.io/instance: ops-sp02-deepflow
+  template:
+    metadata:
+      annotations:
+        checksum/config: 4882c883b7d0501d52b99e775d1d4a5a1f338a30d12aa159fd65250f6ddd7e55
+        checksum/customConfig: 12c12b0a3c06d43791c02175633e45bc831717d93f235e0af34855dd5b62e3da
+      labels:
+        app: deepflow
+        component: deepflow-server
+        app.kubernetes.io/name: deepflow
+        app.kubernetes.io/instance: ops-sp02-deepflow
+        ops.platform.io/test-release: sp02-task-2-5
+    spec:
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers: null
+      imagePullSecrets: null
+      securityContext: {}
+      serviceAccountName: ops-sp02-deepflow-server
+      initContainers:
+      - name: network-policy-gate
+        image: docker.io/deepflowce/deepflow-server:v7.2.0@sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939
+        imagePullPolicy: Never
+        command:
+        - sh
+        - -c
+        - while ! grep -Fxq "$POD_UID" /network-policy/approved-uids; do sleep 1; done
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        volumeMounts:
+        - name: network-policy-gate
+          mountPath: /network-policy
+          readOnly: true
+      containers:
+      - name: deepflow-server
+        securityContext: {}
+        image: docker.io/deepflowce/deepflow-server:v7.2.0@sha256:609d1f8a2020a750a9a34dbb7fff4b785cbe9b78549d86bc7cefb5bccf70b939
+        imagePullPolicy: Never
+        ports:
+        - name: server
+          containerPort: 20417
+          protocol: TCP
+        - containerPort: 20035
+          name: grpc
+          protocol: TCP
+        - containerPort: 20135
+          name: ssl-grpc
+          protocol: TCP
+        - containerPort: 20416
+          name: querier
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 6
+          httpGet:
+            path: /v1/health/
+            port: server
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /v1/health/
+            port: server
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+        resources: {}
+        volumeMounts:
+        - name: server-config
+          mountPath: /etc/server.yaml
+          subPath: server.yaml
+        env:
+        - name: K8S_NODE_IP_FOR_DEEPFLOW
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: K8S_NODE_NAME_FOR_DEEPFLOW
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: K8S_POD_NAME_FOR_DEEPFLOW
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: K8S_POD_IP_FOR_DEEPFLOW
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: K8S_NAMESPACE_FOR_DEEPFLOW
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: TZ
+          value: Asia/Shanghai
+      volumes:
+      - name: network-policy-gate
+        configMap:
+          name: ops-sp02-deepflow-network-gate
+      - name: server-config
+        secret:
+          secretName: deepflow-server-config
+          items:
+          - key: server.yaml
+            path: server.yaml
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution: null
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - deepflow
+              - key: component
+                operator: In
+                values:
+                - deepflow-server
+            topologyKey: kubernetes.io/hostname
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ops-sp02-deepflow-clickhouse
+  labels:
+    helm.sh/chart: clickhouse-0.1.000
+    app: deepflow
+    component: clickhouse
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/instance: ops-sp02-deepflow
+    app.kubernetes.io/version: 23.10.4.25
+    app.kubernetes.io/managed-by: Helm
+    ops.platform.io/test-release: sp02-task-2-5
+  namespace: ops-sp02-deepflow-poc
+spec:
+  replicas: 1
+  podManagementPolicy: OrderedReady
+  serviceName: ops-sp02-deepflow-clickhouse-headless
+  selector:
+    matchLabels:
+      app: deepflow
+      component: clickhouse
+      app.kubernetes.io/name: clickhouse
+      app.kubernetes.io/instance: ops-sp02-deepflow
+  template:
+    metadata:
+      labels:
+        app: deepflow
+        component: clickhouse
+        app.kubernetes.io/name: clickhouse
+        app.kubernetes.io/instance: ops-sp02-deepflow
+        ops.platform.io/test-release: sp02-task-2-5
+    spec:
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: null
+      securityContext: {}
+      initContainers:
+      - name: network-policy-gate
+        image: docker.io/clickhouse/clickhouse-server:23.10.4.25@sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76
+        imagePullPolicy: Never
+        command:
+        - sh
+        - -c
+        - while ! grep -Fxq "$POD_UID" /network-policy/approved-uids; do sleep 1; done
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        volumeMounts:
+        - name: network-policy-gate
+          mountPath: /network-policy
+          readOnly: true
+      - name: clickhouse-init
+        image: docker.io/clickhouse/clickhouse-server:23.10.4.25@sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76
+        volumeMounts:
+        - name: clickhouse-path
+          mountPath: /var/lib/clickhouse/
+        - name: clickhouse-storage-path
+          mountPath: /var/lib/clickhouse_storage/
+        command:
+        - sh
+        - -c
+        - chown clickhouse:clickhouse /var/lib/clickhouse_storage;chown clickhouse:clickhouse /var/lib/clickhouse/
+      containers:
+      - name: clickhouse
+        securityContext: {}
+        image: docker.io/clickhouse/clickhouse-server:23.10.4.25@sha256:757180f5d4efcf4a29a3147ac9f0b58b8986a42adaa79febcd70b57ea68eac76
+        imagePullPolicy: Never
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        ports:
+        - name: tcp
+          containerPort: 9000
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: tcp
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: tcp
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources: {}
+        volumeMounts:
+        - name: clickhouse-config
+          mountPath: /etc/clickhouse-server/
+        - name: clickhouse-path
+          mountPath: /var/lib/clickhouse/
+        - name: clickhouse-storage-path
+          mountPath: /var/lib/clickhouse_storage/
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution: null
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - deepflow
+                - key: component
+                  operator: In
+                  values:
+                  - deepflow-server
+              topologyKey: kubernetes.io/hostname
+            weight: 10
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - deepflow
+              - key: component
+                operator: In
+                values:
+                - clickhouse
+            topologyKey: kubernetes.io/hostname
+      volumes:
+      - name: network-policy-gate
+        configMap:
+          name: ops-sp02-deepflow-network-gate
+      - name: clickhouse-config
+        configMap:
+          name: ops-sp02-deepflow-clickhouse-config
+  volumeClaimTemplates:
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: clickhouse-path
+      annotations: null
+      labels:
+        ops.platform.io/test-release: sp02-task-2-5
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: clickhouse-storage-path
+      annotations: null
+      labels:
+        ops.platform.io/test-release: sp02-task-2-5
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deepflow-isolated
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+spec:
+  podSelector:
+    matchLabels:
+      ops.platform.io/test-release: sp02-task-2-5
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ops-sp02-deepflow-poc
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ops-sp02-deepflow-poc
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+---
+apiVersion: coordination.k8s.io/v1
+kind: Lease
+metadata:
+  name: ops-sp02-deepflow-server
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+spec: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ops-sp02-deepflow-network-gate
+  namespace: ops-sp02-deepflow-poc
+  labels:
+    ops.platform.io/test-release: sp02-task-2-5
+data:
+  approved-uids: ''

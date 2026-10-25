@@ -53,16 +53,16 @@ func newNativeJobFixture(t *testing.T) *nativeJobFixture {
 	f := &nativeJobFixture{clusterUID: "native-job-cluster"}
 	ctx, db, dir, dsn := newMigrationDatabaseWithTimeout(t, 10*time.Minute)
 	f.ctx, f.db = ctx, db
+	goose.SetDialect("postgres")
+	if err := goose.UpToContext(ctx, db, dir, 1); err != nil {
+		t.Fatal(err)
+	}
 	var database string
 	if err := db.QueryRowContext(ctx, `SELECT current_database()`).Scan(&database); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := db.ExecContext(ctx, `GRANT CREATE ON DATABASE "`+database+`" TO schema_owner`); err != nil {
 		t.Fatalf("grant schema duty on the disposable database: %v", err)
-	}
-	goose.SetDialect("postgres")
-	if err := goose.UpToContext(ctx, db, dir, 1); err != nil {
-		t.Fatal(err)
 	}
 	if err := runRemainingMigrationsAsMigrationRole(t, ctx, db, dsn, dir); err != nil {
 		t.Fatalf("apply remaining migrations: %v", err)

@@ -1,0 +1,67 @@
+CONFIRMED: native cookie SSE is rejected before fetch (calls=0).
+=== RUN   TestReviewNativeStepUpNeedsBoundIntentAndWorkerHasNoLegacySID
+    main_review_probe_test.go:21: CONFIRMED: acknowledgement lacks intent; asynchronous native actor cannot pass legacy step-up.
+--- PASS: TestReviewNativeStepUpNeedsBoundIntentAndWorkerHasNoLegacySID (0.00s)
+PASS
+ok  	ops-platform/internal/auth	0.668s
+=== RUN   TestReviewNativeV2WorkerUsesLegacyAuthority
+    main_review_probe_test.go:40: CONFIRMED: V2 worker reads empty legacy role bindings and denies the native-only subject.
+--- PASS: TestReviewNativeV2WorkerUsesLegacyAuthority (0.00s)
+PASS
+ok  	ops-platform/internal/investigation	2.584s
+=== RUN   TestReviewHistoryRelationsDisappearAcrossClusters
+    main_review_probe_test.go:29: CONFIRMED: a same-name Node in a second cluster suppresses the valid historical relation.
+--- PASS: TestReviewHistoryRelationsDisappearAcrossClusters (0.00s)
+PASS
+ok  	ops-platform/internal/resourcestore	1.356s
+=== RUN   TestReviewLegalGraphIntentCannotPassMCPReservation
+    main_review_probe_test.go:23: CONFIRMED: legal graph intent fails reservation; adding a window fails graph compilation.
+--- PASS: TestReviewLegalGraphIntentCannotPassMCPReservation (0.01s)
+PASS
+ok  	ops-platform/internal/investigation/mcp	0.784s
+=== RUN   TestReviewCollectorDegradationIsSilentlyIgnored
+    main_review_probe_test.go:13: CONFIRMED: every SP05 collector key used by app is ignored; audit_signing control works.
+--- PASS: TestReviewCollectorDegradationIsSilentlyIgnored (0.00s)
+PASS
+ok  	ops-platform/internal/observability	3.754s
+=== RUN   TestReviewNativeIncidentMutationRechecksLegacyOnly
+    main_review_probe_test.go:31: CONFIRMED: native context does not change Incident's legacy-only recheck.
+--- PASS: TestReviewNativeIncidentMutationRechecksLegacyOnly (0.00s)
+PASS
+ok  	ops-platform/internal/incident	3.121s
+=== RUN   TestReviewSignedNativeScopeUsesLegacyWorkerBranch
+    main_review_probe_test.go:33: CONFIRMED: signed native scope/subject survives the RPC, but Worker has no native session/source proof and reads the empty legacy binding table. No PostgreSQL or cluster was used.
+--- PASS: TestReviewSignedNativeScopeUsesLegacyWorkerBranch (0.00s)
+PASS
+ok  	ops-platform/internal/graph	1.922s
+=== RUN   TestReviewNodeReadyUnknownHasNoHealthyResolution
+    main_review_probe_test.go:14: CONFIRMED: Unknown fires a distinct durable signal, then Ready=True resolves only NotReady. The existing Unknown occurrence receives no resolution. No database was used.
+--- PASS: TestReviewNodeReadyUnknownHasNoHealthyResolution (0.00s)
+PASS
+ok  	ops-platform/internal/inspection/kubernetes	4.696s
+=== RUN   TestReviewBootstrapTLSLosesTrustAfterCommittedApplyError
+    main_review_probe_test.go:37: CONFIRMED: a committed apply with a lost response deletes the only CA file and the retry cannot verify the existing Secret. No cluster was called.
+--- PASS: TestReviewBootstrapTLSLosesTrustAfterCommittedApplyError (1.10s)
+=== RUN   TestReviewPKIRenewFailureStopsIndependentCRLFreshness
+    main_review_probe_test.go:72: CONFIRMED: signing outage bypasses reachable CRL refresh; an independent CRL refresh restores the still-valid identity.
+--- PASS: TestReviewPKIRenewFailureStopsIndependentCRLFreshness (0.00s)
+PASS
+ok  	ops-platform/internal/integrations/openbao	5.242s
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/platform/web
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 4 skipped (5)
+   Start at  09:13:34
+   Duration  1.70s (import 46%, environment 25%, tests 15%, setup 8%, transform 7%)
+
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/platform/web
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 4 skipped (5)
+   Start at  09:13:36
+   Duration  959ms (import 45%, environment 26%, tests 12%, transform 10%, setup 6%)
+

@@ -31,6 +31,18 @@ func (id CanonicalID) String() string {
 	}
 	return id.Domain + "+v1://" + id.Tenant + "/" + url.PathEscape(id.Scope) + "/" + url.PathEscape(id.APIGroup) + "/" + url.PathEscape(id.Kind) + "/" + url.PathEscape(id.StableID)
 }
+
+// Prefix is the canonical identity without its stable id. It is the exact
+// prefix every canonical id of the same tenant, scope, API group and kind
+// starts with. It exists so a lookup by identity uses one encoding instead of a
+// second, hand written one.
+func (id CanonicalID) Prefix() string {
+	if id.Domain == "" || id.Tenant == "" || id.Scope == "" || id.APIGroup == "" || id.Kind == "" {
+		return ""
+	}
+	return id.Domain + "+v1://" + id.Tenant + "/" + url.PathEscape(id.Scope) + "/" + url.PathEscape(id.APIGroup) + "/" + url.PathEscape(id.Kind) + "/"
+}
+
 func ParseCanonicalID(raw string) (CanonicalID, error) {
 	u, err := url.Parse(raw)
 	if err != nil || u.User != nil || u.RawQuery != "" || u.Fragment != "" || !strings.HasSuffix(u.Scheme, "+v1") {

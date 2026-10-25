@@ -1,0 +1,19 @@
+it("review probe: cluster selector leaves the new page busy after abort", async () => {
+  const pending = deferred<unknown>();
+  api.create.mockReturnValueOnce(pending.promise);
+  renderAssistant("/assistant?clusterUid=uid-a&canonicalId=pod-1");
+  const createButton = (await screen.findByText("创建会话")).closest("button")!;
+  await waitFor(() => expect(createButton).toBeEnabled());
+  fireEvent.click(createButton);
+  await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+  fireEvent.click(screen.getByText("switch-scope"));
+  await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent("clusterUid=uid-b"));
+  await act(async () => {
+    pending.resolve({status: 201, headers: new Headers(), data: envelope({conversationId: "old-scope"})});
+  });
+  const newCreate = (await screen.findByText("创建会话")).closest("button")!;
+  expect(newCreate).toHaveClass("ant-btn-loading");
+  fireEvent.click(newCreate);
+  expect(api.create).toHaveBeenCalledTimes(1);
+  console.log("CONFIRMED: old response discarded, but the new scope remains busy and cannot create.");
+});

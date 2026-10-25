@@ -7,6 +7,7 @@
 package identity
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/subtle"
 	"encoding/base64"
@@ -34,24 +35,92 @@ const (
 	minEncodedHashLength  = 80
 	minPasswordCharacters = 12
 	maxPasswordCharacters = 256
+
+	// passwordWorkLimit bounds how many Argon2id workspaces may exist at the
+	// same time in one API process. Each workspace is ~64 MiB, so a small fixed
+	// number keeps a login burst inside the default 512 MiB API container while
+	// leaving room for the server, database pool and other heaps. It is a
+	// memory-safety bound, not a password policy: callers that cannot obtain a
+	// slot fail quickly with a retryable error instead of queueing.
+	passwordWorkLimit = 2
 )
 
 var (
 	ErrPasswordInvalid = errors.New("password is invalid")
 	ErrPasswordHash    = errors.New("password hash is invalid")
+	// ErrPasswordWorkBusy means every password workspace was occupied. It is a
+	// capacity result, never a credential result, and is safe to retry.
+	ErrPasswordWorkBusy = errors.New("password work capacity is exhausted")
 )
+
+// passwordKDF is the Argon2id entry point. It is a variable only so tests can
+// substitute a controllable blocking work function; production always uses the
+// reviewed standard library implementation.
+var passwordKDF = argon2.IDKey
+
+// passwordWork is the process-wide, shared slot set for every password hash and
+// verification: native login (including the dummy hash for unknown accounts),
+// password change, administrator create/reset and the MFA password step.
+var passwordWork = newPasswordWorkGate(passwordWorkLimit)
+
+type passwordWorkGate struct {
+	slots chan struct{}
+}
+
+func newPasswordWorkGate(limit int) *passwordWorkGate {
+	if limit < 1 {
+		limit = 1
+	}
+	return &passwordWorkGate{slots: make(chan struct{}, limit)}
+}
+
+// acquire takes a slot without waiting. A cancelled request never starts work,
+// and callers that would otherwise queue are rejected with a bounded error.
+func (gate *passwordWorkGate) acquire(ctx context.Context) error {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	select {
+	case gate.slots <- struct{}{}:
+	default:
+		return ErrPasswordWorkBusy
+	}
+	if err := ctx.Err(); err != nil {
+		gate.release()
+		return err
+	}
+	return nil
+}
+
+// release returns one slot. It is only called after the KDF actually returned:
+// a cancelled HTTP context does not make the Argon2 call stop, so the memory it
+// uses stays accounted for until the work is really finished.
+func (gate *passwordWorkGate) release() { <-gate.slots }
 
 // HashPassword encodes the fixed Argon2id profile. The plaintext is neither
 // trimmed nor normalized; a rejected length is never silently truncated.
 func HashPassword(password string) (string, error) {
+	return HashPasswordContext(context.Background(), password)
+}
+
+// HashPasswordContext is HashPassword with request cancellation and the shared
+// password-work bound. Validation is cheap and happens before a slot is taken.
+func HashPasswordContext(ctx context.Context, password string) (string, error) {
 	if err := ValidatePassword(password); err != nil {
 		return "", err
 	}
+	if err := passwordWork.acquire(ctx); err != nil {
+		return "", err
+	}
+	defer passwordWork.release()
 	salt := make([]byte, argon2SaltBytes)
 	if _, err := rand.Read(salt); err != nil {
 		return "", fmt.Errorf("generate password salt: %w", err)
 	}
-	key := argon2.IDKey([]byte(password), salt, argon2Time, argon2MemoryKiB, argon2Parallelism, argon2KeyBytes)
+	key := passwordKDF([]byte(password), salt, argon2Time, argon2MemoryKiB, argon2Parallelism, argon2KeyBytes)
 	encoded := fmt.Sprintf(
 		"argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s",
 		argon2Version, argon2MemoryKiB, argon2Time, argon2Parallelism,
@@ -77,6 +146,13 @@ type argon2Parameters struct {
 // parsing. Unknown formats and out-of-range parameters fail closed; they are
 // never upgraded, relaxed, or silently re-derived with different parameters.
 func VerifyPassword(password, encoded string) (bool, error) {
+	return VerifyPasswordContext(context.Background(), password, encoded)
+}
+
+// VerifyPasswordContext is VerifyPassword with request cancellation and the same
+// shared password-work bound as every other Argon2id caller. Parsing happens
+// before a slot is taken so a malformed row cannot consume work capacity.
+func VerifyPasswordContext(ctx context.Context, password, encoded string) (bool, error) {
 	if err := validatePasswordLength(password); err != nil {
 		return false, err
 	}
@@ -91,7 +167,11 @@ func VerifyPassword(password, encoded string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	key := argon2.IDKey([]byte(password), parameters.Salt, parameters.Time,
+	if err := passwordWork.acquire(ctx); err != nil {
+		return false, err
+	}
+	defer passwordWork.release()
+	key := passwordKDF([]byte(password), parameters.Salt, parameters.Time,
 		parameters.MemoryKiB, parameters.Parallelism, uint32(len(parameters.Key)))
 	return subtle.ConstantTimeCompare(key, parameters.Key) == 1, nil
 }

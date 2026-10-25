@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "architecture": "linux/amd64",
+  "goVersion": "go1.27.1",
+  "buildCommand": "go build -mod=mod -trimpath -buildvcs=false -o db-migrate ./cmd/db-migrate",
+  "target": {
+    "GOOS": "linux",
+    "GOARCH": "amd64",
+    "CGO_ENABLED": "0"
+  },
+  "GOPROXY": "off",
+  "GOSUMDB": "off",
+  "GOTOOLCHAIN": "local",
+  "GOMODCACHE": "task-owned initially empty directory",
+  "moduleSource": "packaged source archive with first-party local replacements only",
+  "sourceBundleSHA256": "sha256:37c9a2cfe7eb63c878ae9e7a38b3058334c62c7f2802bf847ad74ef29aa5c9ab",
+  "binarySHA256": "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8",
+  "admittedBinarySHA256": "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8",
+  "binaryMatchesAdmission": true,
+  "migrationSqlIncluded": true,
+  "exitCode": 0,
+  "stderr": "",
+  "observedAt": "2026-10-25T00:00:00Z",
+  "scope": "offline rebuild of the first-party migration CLI from the renewed corresponding-source archive; the renewed archive adds the forward-only migrations 00044-00069, which the CLI does not embed, so the rebuilt binary is byte identical to the admitted one; the native forward-migration run evidence still covers 00001-00043 and was not re-executed in this environment"
+}

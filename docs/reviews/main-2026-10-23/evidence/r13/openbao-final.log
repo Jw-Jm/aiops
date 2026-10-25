@@ -1,0 +1,72 @@
+=== RUN   TestRuntimeTransitRoleRequiresProjectedTokenAudience
+--- PASS: TestRuntimeTransitRoleRequiresProjectedTokenAudience (0.00s)
+=== RUN   TestServiceDomainBindsTheInstalledNamespace
+--- PASS: TestServiceDomainBindsTheInstalledNamespace (0.00s)
+=== RUN   TestEnsureBootstrapTLSCreatesSecretAndTrust
+--- PASS: TestEnsureBootstrapTLSCreatesSecretAndTrust (0.18s)
+=== RUN   TestEnsureBootstrapTLSKeepsTrustAndIdentityWhenOutcomeIsUnknown
+--- PASS: TestEnsureBootstrapTLSKeepsTrustAndIdentityWhenOutcomeIsUnknown (0.11s)
+=== RUN   TestEnsureBootstrapTLSRefusesForeignSecret
+--- PASS: TestEnsureBootstrapTLSRefusesForeignSecret (0.05s)
+=== RUN   TestEnsureBootstrapTLSRefusesKeyMismatch
+--- PASS: TestEnsureBootstrapTLSRefusesKeyMismatch (0.25s)
+=== RUN   TestEnsureBootstrapTLSCaWithoutIdentityFailsClosed
+--- PASS: TestEnsureBootstrapTLSCaWithoutIdentityFailsClosed (0.00s)
+=== RUN   TestEnsureBootstrapTLSRejectsPendingLinks
+=== RUN   TestEnsureBootstrapTLSRejectsPendingLinks/existing=false
+=== RUN   TestEnsureBootstrapTLSRejectsPendingLinks/existing=true
+--- PASS: TestEnsureBootstrapTLSRejectsPendingLinks (0.00s)
+    --- PASS: TestEnsureBootstrapTLSRejectsPendingLinks/existing=false (0.00s)
+    --- PASS: TestEnsureBootstrapTLSRejectsPendingLinks/existing=true (0.00s)
+=== RUN   TestEnsureBootstrapTLSAcceptsExternalCAAlias
+--- PASS: TestEnsureBootstrapTLSAcceptsExternalCAAlias (0.15s)
+=== RUN   TestPendingWriterNeverOverwritesExistingEntry
+--- PASS: TestPendingWriterNeverOverwritesExistingEntry (0.00s)
+=== RUN   TestCommandTransitInitializationScopeAndRerun
+=== RUN   TestCommandTransitInitializationScopeAndRerun/base
+=== RUN   TestCommandTransitInitializationScopeAndRerun/transit
+=== RUN   TestCommandTransitInitializationScopeAndRerun/ssh
+=== RUN   TestCommandTransitInitializationScopeAndRerun/drift
+--- PASS: TestCommandTransitInitializationScopeAndRerun (0.01s)
+    --- PASS: TestCommandTransitInitializationScopeAndRerun/base (0.00s)
+    --- PASS: TestCommandTransitInitializationScopeAndRerun/transit (0.00s)
+    --- PASS: TestCommandTransitInitializationScopeAndRerun/ssh (0.00s)
+    --- PASS: TestCommandTransitInitializationScopeAndRerun/drift (0.00s)
+=== RUN   TestConfigureAcceptsAnAlreadyExtendedCommandPolicy
+=== RUN   TestConfigureAcceptsAnAlreadyExtendedCommandPolicy/base
+=== RUN   TestConfigureAcceptsAnAlreadyExtendedCommandPolicy/transit
+=== RUN   TestConfigureAcceptsAnAlreadyExtendedCommandPolicy/ssh
+=== RUN   TestConfigureAcceptsAnAlreadyExtendedCommandPolicy/drift
+--- PASS: TestConfigureAcceptsAnAlreadyExtendedCommandPolicy (0.01s)
+    --- PASS: TestConfigureAcceptsAnAlreadyExtendedCommandPolicy/base (0.00s)
+    --- PASS: TestConfigureAcceptsAnAlreadyExtendedCommandPolicy/transit (0.00s)
+    --- PASS: TestConfigureAcceptsAnAlreadyExtendedCommandPolicy/ssh (0.00s)
+    --- PASS: TestConfigureAcceptsAnAlreadyExtendedCommandPolicy/drift (0.00s)
+=== RUN   TestInitializeReportsUnrecoverableWhenResponseIsLost
+--- PASS: TestInitializeReportsUnrecoverableWhenResponseIsLost (0.00s)
+=== RUN   TestInitializeStaysRetryableWhenTheInstanceIsStillUninitialized
+--- PASS: TestInitializeStaysRetryableWhenTheInstanceIsStillUninitialized (0.00s)
+=== RUN   TestInitializeDiscardsAnEmptyResidueOnlyWhenUninitialized
+--- PASS: TestInitializeDiscardsAnEmptyResidueOnlyWhenUninitialized (0.00s)
+=== RUN   TestRotationLoopRefreshesCRLWhenRenewalFails
+--- PASS: TestRotationLoopRefreshesCRLWhenRenewalFails (0.02s)
+=== RUN   TestRotationLoopRecoversAfterRenewalFailure
+--- PASS: TestRotationLoopRecoversAfterRenewalFailure (0.01s)
+=== RUN   TestCertReloaderKeepsPrivateKeyInMemoryAndRotatesWithOpenBaoLogin
+--- PASS: TestCertReloaderKeepsPrivateKeyInMemoryAndRotatesWithOpenBaoLogin (0.01s)
+=== RUN   TestCertReloaderRetainsValidCertificateAfterFailedRotationAndFailsClosedAtExpiry
+--- PASS: TestCertReloaderRetainsValidCertificateAfterFailedRotationAndFailsClosedAtExpiry (0.00s)
+=== RUN   TestCertReloaderRefreshesCRLAndFailsClosedWhenStaleOrRevoked
+--- PASS: TestCertReloaderRefreshesCRLAndFailsClosedWhenStaleOrRevoked (0.00s)
+=== RUN   TestCertReloaderRejectsWrongOpenBaoBootstrapCA
+2026/10/25 18:32:48 http: TLS handshake error from 127.0.0.1:40870: remote error: tls: bad certificate
+--- PASS: TestCertReloaderRejectsWrongOpenBaoBootstrapCA (0.00s)
+=== RUN   TestPinnedWorkloadIssuerDriftCannotReplaceActiveIdentity
+--- PASS: TestPinnedWorkloadIssuerDriftCannotReplaceActiveIdentity (0.00s)
+=== RUN   TestConcurrentInvocationSigningRenewsRotatedProjectedTokenAndFailsClosed
+--- PASS: TestConcurrentInvocationSigningRenewsRotatedProjectedTokenAndFailsClosed (0.00s)
+=== RUN   TestProjectedTokenAcceptsKubernetesAtomicWriterLayout
+--- PASS: TestProjectedTokenAcceptsKubernetesAtomicWriterLayout (0.00s)
+=== RUN   TestTransitLargeResponseAndOrdinaryResponseBoundaries
+--- PASS: TestTransitLargeResponseAndOrdinaryResponseBoundaries (0.61s)
+PASS

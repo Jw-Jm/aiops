@@ -67,15 +67,18 @@ func releaseReferences(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, id stri
 	}
 	return nil
 }
-func authorizeLinked(ctx context.Context, tx pgx.Tx, scope graph.Scope, subject string, i Incident) error {
+func authorizeLinked(ctx context.Context, tx pgx.Tx, authority operationAuthority, i Incident) error {
 	rows, err := tx.Query(ctx, `SELECT f.resource_canonical_id,f.namespace FROM incident.finding_links l JOIN finding.records f USING(tenant_id,finding_id) WHERE l.tenant_id=$1 AND l.incident_id=$2 ORDER BY f.finding_id`, i.TenantID, i.IncidentID)
 	if err != nil {
 		return err
 	}
-	items := []Incident{}
+	type linked struct {
+		resource, namespace string
+	}
+	items := []linked{}
 	for rows.Next() {
-		f := i
-		if err := rows.Scan(&f.ResourceCanonicalID, &f.Namespace); err != nil {
+		var f linked
+		if err := rows.Scan(&f.resource, &f.namespace); err != nil {
 			rows.Close()
 			return err
 		}
@@ -86,8 +89,11 @@ func authorizeLinked(ctx context.Context, tx pgx.Tx, scope graph.Scope, subject 
 	if err != nil {
 		return err
 	}
+	// Every linked resource must still be inside the authority proven for this
+	// transaction. A historical Finding whose namespace or cluster left the grant
+	// blocks the whole mutation, exactly like the primary Incident.
 	for _, f := range items {
-		if err := Authorize(ctx, tx, scope, subject, f); err != nil {
+		if err := authority.authorizeResource(ctx, tx, i.ClusterUID, f.resource, f.namespace); err != nil {
 			return err
 		}
 	}
@@ -96,8 +102,9 @@ func authorizeLinked(ctx context.Context, tx pgx.Tx, scope graph.Scope, subject 
 
 // AuthorizeAll fences the primary and every linked resource on mutation replay.
 func AuthorizeAll(ctx context.Context, tx pgx.Tx, scope graph.Scope, subject string, i Incident) error {
-	if err := Authorize(ctx, tx, scope, subject, i); err != nil {
+	authority, err := authorizeTx(ctx, tx, scope, subject, i)
+	if err != nil {
 		return err
 	}
-	return authorizeLinked(ctx, tx, scope, subject, i)
+	return authorizeLinked(ctx, tx, authority, i)
 }

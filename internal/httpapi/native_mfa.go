@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -100,6 +101,19 @@ func nativeMFASession(w http.ResponseWriter, r *http.Request) (auth.NativeSessio
 
 func writeMFAError(w http.ResponseWriter, err error, requestID string) {
 	switch {
+	case errors.Is(err, identity.ErrMFAStepUpBudget):
+		var budget *identity.StepUpBudgetError
+		retryAfter := identity.StepUpBudgetCooldown
+		if errors.As(err, &budget) && budget.RetryAfter > 0 {
+			retryAfter = budget.RetryAfter
+		}
+		w.Header().Set("Retry-After", strconv.Itoa(max(1, int(retryAfter.Round(time.Second).Seconds()))))
+		writeTenantError(w, http.StatusTooManyRequests, "RATE_LIMITED", "the account verification attempt budget is exhausted; retry after the cooldown", true, requestID)
+	case errors.Is(err, identity.ErrPasswordWorkBusy):
+		w.Header().Set("Retry-After", "1")
+		writeTenantError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "password verification is at capacity; retry shortly", true, requestID)
+	case errors.Is(err, identity.ErrMFAResetCredentialUnavailable):
+		writeTenantError(w, http.StatusConflict, "CONFLICT", "the target account has no active password credential; use the password reset flow", false, requestID)
 	case errors.Is(err, identity.ErrMFAVerification):
 		writeTenantError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "the verification code was not accepted", false, requestID)
 	case errors.Is(err, identity.ErrMFATargetMismatch):
@@ -300,6 +314,11 @@ func challengeView(challenge identity.StepUpChallenge) map[string]any {
 	if remaining < 0 {
 		remaining = 0
 	}
+	// The shared account/factor budget is authoritative across challenges and
+	// sessions, so the smaller of the two limits is what the caller can still use.
+	if challenge.BudgetRemaining != nil && *challenge.BudgetRemaining < remaining {
+		remaining = *challenge.BudgetRemaining
+	}
 	if challenge.State != "pending" {
 		remaining = 0
 	}
@@ -414,6 +433,10 @@ func challengeResult(challenge identity.StepUpChallenge, method string, proof *i
 			"idleExpiresAt":     proof.IdleExpiresAt,
 		}
 	}
+	remaining := max(challenge.AttemptLimit-challenge.Attempts, 0)
+	if challenge.BudgetRemaining != nil && *challenge.BudgetRemaining < remaining {
+		remaining = *challenge.BudgetRemaining
+	}
 	return map[string]any{
 		"verified":          verified,
 		"method":            method,
@@ -424,7 +447,7 @@ func challengeResult(challenge identity.StepUpChallenge, method string, proof *i
 		"stepUpSession":     stepUp,
 		"verifiedAt":        challenge.VerifiedAt,
 		"failureCode":       nullableString(failureCode),
-		"remainingAttempts": max(challenge.AttemptLimit-challenge.Attempts, 0),
+		"remainingAttempts": remaining,
 	}
 }
 
